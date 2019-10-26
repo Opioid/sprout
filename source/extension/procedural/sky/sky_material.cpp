@@ -6,7 +6,8 @@
 #include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
-#include "core/image/texture/texture_adapter.inl"
+#include "core/image/texture/texture.inl"
+#include "core/image/texture/texture_sampler.hpp"
 #include "core/scene/entity/composed_transformation.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "core/scene/material/material_sample.inl"
@@ -47,14 +48,14 @@ float3 Sky_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*
     return sky_.model().evaluate_sky(wi);
 }
 
-float3 Sky_material::average_radiance(float /*area*/) const noexcept {
+float3 Sky_material::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return sky_.model().evaluate_sky(sky_.model().zenith());
 }
 
 void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/,
-                                    thread::Pool& /*threads*/) noexcept {}
+                                    bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                    Scene const& /*scene*/) noexcept {}
 
 size_t Sky_material::num_bytes() const noexcept {
     return sizeof(*this);
@@ -65,8 +66,7 @@ static int2 constexpr Bake_dimensions(256);
 Sky_baked_material::Sky_baked_material(Sky& sky) noexcept
     : Material(sky),
       cache_(image::Description(Bake_dimensions)),
-      cache_texture_(image::texture::Float3(cache_)),
-      emission_map_(&cache_texture_) {}
+      cache_texture_(image::texture::Float3(cache_)) {}
 
 Sky_baked_material::~Sky_baked_material() noexcept {}
 
@@ -82,7 +82,7 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene:
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    float3 const radiance = emission_map_.sample_3(sampler, rs.uv);
+    float3 const radiance = sampler.sample_3(cache_texture_, rs.uv);
 
     sample.set(radiance);
 
@@ -92,10 +92,13 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene:
 float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
                                              Filter filter, Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-    return emission_map_.sample_3(sampler, uv);
+
+    return sampler.sample_3(cache_texture_, uv);
+
+    //    return emission_map_.sample_3(worker, sampler, uv);
 }
 
-float3 Sky_baked_material::average_radiance(float /*area*/) const noexcept {
+float3 Sky_baked_material::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return average_emission_;
 }
 
@@ -118,8 +121,8 @@ float Sky_baked_material::emission_pdf(float2 uv, Filter filter, Worker const& w
 
 void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                           Transformation const& transformation, float /*area*/,
-                                          bool                  importance_sampling,
-                                          thread::Pool&         threads) noexcept {
+                                          bool importance_sampling, thread::Pool& threads,
+                                          Scene const& /*scene*/) noexcept {
     using namespace image;
 
     if (!sky_.sky_changed_since_last_check()) {

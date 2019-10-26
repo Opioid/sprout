@@ -16,11 +16,11 @@ float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float2 uv, fl
                                              Filter filter, Worker const& worker) const noexcept {
     if (emission_map_.is_valid()) {
         auto const&  sampler  = worker.sampler_2D(sampler_key(), filter);
-        float3 const radiance = emission_factor_ * emission_map_.sample_3(sampler, uv);
+        float3 const radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
 
         float thickness;
         if (coating_thickness_map_.is_valid()) {
-            float const relative_thickness = coating_thickness_map_.sample_1(sampler, uv);
+            float const relative_thickness = coating_thickness_map_.sample_1(worker, sampler, uv);
 
             thickness = coating_.thickness * relative_thickness;
         } else {
@@ -48,7 +48,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
     float thickness;
     float weight;
     if (coating_thickness_map_.is_valid()) {
-        float const relative_thickness = coating_thickness_map_.sample_1(sampler, rs.uv);
+        float const relative_thickness = coating_thickness_map_.sample_1(worker, sampler, rs.uv);
 
         thickness = coating_.thickness * relative_thickness;
         weight    = relative_thickness > 0.1f ? 1.f : relative_thickness;
@@ -59,9 +59,9 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
 
     float const coating_ior = lerp(rs.ior, coating_.ior, weight);
 
-    set_sample(wo, rs, coating_ior, sampler, sample);
+    set_sample(wo, rs, coating_ior, sampler, worker, sample);
 
-    set_coating_basis(wo, rs, sampler, sample);
+    set_coating_basis(wo, rs, sampler, worker, sample);
 
     sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
                         fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
@@ -100,9 +100,9 @@ material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray con
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, coating_.ior, sampler, sample);
+    set_sample(wo, rs, coating_.ior, sampler, worker, sample);
 
-    set_coating_basis(wo, rs, sampler, sample);
+    set_coating_basis(wo, rs, sampler, worker, sample);
 
     sample.coating_.set(coating_.ior, ior_, coating_.alpha, coating_.thickness);
 

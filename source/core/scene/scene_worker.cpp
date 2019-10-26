@@ -2,7 +2,6 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
-#include "camera/camera.hpp"
 #include "material/material_sample.hpp"
 #include "material/sampler_cache.hpp"
 #include "prop/interface_stack.inl"
@@ -17,8 +16,8 @@ namespace scene {
 
 static material::Sampler_cache const Sampler_cache;
 
-using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
-using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
+using Texture_sampler_2D = image::texture::Sampler_2D;
+using Texture_sampler_3D = image::texture::Sampler_3D;
 
 Worker::Worker() noexcept : node_stack_(128 + 16) {}
 
@@ -30,14 +29,6 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     scene_  = &scene;
     camera_ = &camera;
     sample_cache_.init(max_sample_size);
-}
-
-bool Worker::intersect(Ray& ray, Intersection& intersection) const noexcept {
-    return scene_->intersect(ray, *this, intersection);
-}
-
-bool Worker::intersect(Ray& ray, shape::Normals& normals) const noexcept {
-    return scene_->intersect(ray, *this, normals);
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept {
@@ -66,49 +57,12 @@ bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) n
     return true;
 }
 
-bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
-                                        Filter filter) noexcept {
-    if (!intersect(ray, intersection)) {
-        return false;
-    }
-
-    return resolve_mask(ray, intersection, filter);
-}
-
-bool Worker::visibility(Ray const& ray) const noexcept {
-    return !scene_->intersect_p(ray, *this);
-}
-
-bool Worker::masked_visibility(Ray const& ray, Filter filter, float& mv) const noexcept {
-    return scene_->visibility(ray, filter, *this, mv);
-}
-
-camera::Camera const& Worker::camera() const noexcept {
-    return *camera_;
-}
-
-uint64_t Worker::absolute_time(uint32_t frame, float frame_delta) const noexcept {
-    return camera_->absolute_time(frame, frame_delta);
-}
-
-shape::Node_stack& Worker::node_stack() const noexcept {
-    return node_stack_;
-}
-
-material::Sample_cache& Worker::sample_cache() const noexcept {
-    return sample_cache_;
-}
-
 Texture_sampler_2D const& Worker::sampler_2D(uint32_t key, Filter filter) const noexcept {
     return Sampler_cache.sampler_2D(key, filter);
 }
 
 Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Filter filter) const noexcept {
     return Sampler_cache.sampler_3D(key, filter);
-}
-
-prop::Interface_stack& Worker::interface_stack() noexcept {
-    return interface_stack_;
 }
 
 void Worker::reset_interface_stack(Interface_stack const& stack) noexcept {

@@ -27,10 +27,12 @@ namespace scene {
 static size_t constexpr Num_reserved_props = 32;
 
 Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
-             std::vector<Material*> const& material_resources) noexcept
+             std::vector<Material*> const& material_resources,
+             std::vector<Texture*> const&  texture_resources) noexcept
     : null_shape_(null_shape),
       shape_resources_(shape_resources),
-      material_resources_(material_resources) {
+      material_resources_(material_resources),
+      texture_resources_(texture_resources) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_parts_.reserve(Num_reserved_props);
@@ -158,7 +160,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexce
     }
 
     for (auto m : material_resources_) {
-        m->simulate(start, end, tick_duration_, threads);
+        m->simulate(start, end, tick_duration_, threads, *this);
     }
 
     compile(start, threads);
@@ -516,8 +518,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     light_ids_[p] = light_id;
 
-    material_resources_[materials_[p]]->prepare_sampling(*shape, part, time, transformation, area,
-                                                         material_importance_sampling, threads);
+    material_resources_[materials_[p]]->prepare_sampling(
+        *shape, part, time, transformation, area, material_importance_sampling, threads, *this);
 }
 
 void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
@@ -538,8 +540,8 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     light_ids_[p] = light_id;
 
-    material_resources_[materials_[p]]->prepare_sampling(*shape, part, time, transformation, volume,
-                                                         material_importance_sampling, threads);
+    material_resources_[materials_[p]]->prepare_sampling(
+        *shape, part, time, transformation, volume, material_importance_sampling, threads, *this);
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) noexcept {

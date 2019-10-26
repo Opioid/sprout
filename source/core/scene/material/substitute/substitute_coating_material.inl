@@ -39,11 +39,12 @@ template <typename Coating>
 template <typename Sample>
 void Material_coating<Coating>::set_coating_basis(float3 const& wo, Renderstate const& rs,
                                                   Texture_sampler_2D const& sampler,
-                                                  Sample&                   sample) const noexcept {
+                                                  Worker const& worker, Sample& sample) const
+    noexcept {
     if (Material_base::normal_map_ == coating_normal_map_) {
         sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
     } else if (coating_normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, coating_normal_map_, sampler);
+        float3 const n = sample_normal(wo, rs, coating_normal_map_, sampler, worker);
         sample.coating_.set_tangent_frame(n);
     } else {
         sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);

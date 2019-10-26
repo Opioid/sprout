@@ -1,23 +1,9 @@
-#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_ADRESS_MODE_HPP
-#define SU_CORE_IMAGE_TEXTURE_SAMPLER_ADRESS_MODE_HPP
+#ifndef SU_CORE_IMAGE_TEXTURE_ADRESS_MODE_HPP
+#define SU_CORE_IMAGE_TEXTURE_ADRESS_MODE_HPP
 
 #include "base/math/math.hpp"
 
-namespace image::texture::sampler {
-
-struct Address_mode_identity {
-    static float f(float x) noexcept {
-        return x;
-    }
-
-    static int32_t increment(int32_t v, int32_t /*max*/) noexcept {
-        return ++v;
-    }
-
-    static int32_t lower_bound(int32_t v, int32_t /*max*/) noexcept {
-        return v;
-    }
-};
+namespace image::texture {
 
 struct Address_mode_clamp {
     static float f(float x) noexcept {
@@ -63,6 +49,6 @@ struct Address_mode_repeat {
     }
 };
 
-}  // namespace image::texture::sampler
+}  // namespace image::texture
 
 #endif

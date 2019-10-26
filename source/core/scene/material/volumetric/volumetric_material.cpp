@@ -54,7 +54,7 @@ bool Material::is_scattering_volume() const noexcept {
     return is_scattering_;
 }
 
-float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
+float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const noexcept {
     return cc_.a * emission_;
 }
 

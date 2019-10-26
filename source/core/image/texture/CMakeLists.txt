@@ -1,7 +1,7 @@
-add_subdirectory(sampler)
-
 target_sources(core
     PRIVATE
+    "address_mode.hpp"
+    "bilinear.hpp"
     "texture_adapter.hpp"
     "texture_adapter.inl"
     "texture_byte1_unorm.cpp"
@@ -30,6 +30,8 @@ target_sources(core
     "texture_half3.hpp"
     "texture_provider.cpp"
     "texture_provider.hpp"
+    "texture_sampler.cpp"
+    "texture_sampler.hpp"
     "texture_test.cpp"
     "texture_test.hpp"
     "texture_types.hpp"

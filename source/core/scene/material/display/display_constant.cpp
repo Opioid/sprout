@@ -36,7 +36,7 @@ float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*
     return emission_;
 }
 
-float3 Constant::average_radiance(float /*area*/) const noexcept {
+float3 Constant::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return emission_;
 }
 

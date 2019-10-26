@@ -1,5 +1,6 @@
 #include "substitute_base_material.hpp"
 #include "base/math/vector4.inl"
+#include "image/texture/texture.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
@@ -16,15 +17,15 @@ float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /
                                         Filter filter, Worker const& worker) const noexcept {
     if (emission_map_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-        return emission_factor_ * emission_map_.sample_3(sampler, uv);
+        return emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
     } else {
         return float3(0.f);
     }
 }
 
-float3 Material_base::average_radiance(float /*area*/) const noexcept {
+float3 Material_base::average_radiance(float /*area*/, Scene const& scene) const noexcept {
     if (emission_map_.is_valid()) {
-        return emission_factor_ * emission_map_.texture().average_3();
+        return emission_factor_ * emission_map_.texture(scene).average_3();
     } else {
         return float3(0.f);
     }

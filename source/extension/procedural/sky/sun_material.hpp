@@ -18,11 +18,12 @@ class Sun_material : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              scene::Worker const& worker) const noexcept override final;
 
-    float3 average_radiance(float area) const noexcept override final;
+    float3 average_radiance(float area, scene::Scene const& scene) const noexcept override final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads) noexcept override final;
+                          bool importance_sampling, thread::Pool& threads,
+                          scene::Scene const& scene) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 };
@@ -39,11 +40,12 @@ class Sun_baked_material : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              scene::Worker const& worker) const noexcept override final;
 
-    float3 average_radiance(float area) const noexcept override final;
+    float3 average_radiance(float area, scene::Scene const& scenr) const noexcept override final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads) noexcept override final;
+                          bool importance_sampling, thread::Pool& threads,
+                          scene::Scene const& scene) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

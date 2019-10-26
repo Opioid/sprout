@@ -9,10 +9,11 @@
 #include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
 
-namespace image::texture::sampler {
+namespace image::texture {
+class Texture;
 class Sampler_2D;
 class Sampler_3D;
-}  // namespace image::texture::sampler
+}  // namespace image::texture
 
 namespace scene {
 
@@ -40,8 +41,9 @@ class Worker {
   public:
     using Camera             = camera::Camera;
     using Filter             = material::Sampler_settings::Filter;
-    using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
-    using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
+    using Texture            = image::texture::Texture;
+    using Texture_sampler_2D = image::texture::Sampler_2D;
+    using Texture_sampler_3D = image::texture::Sampler_3D;
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
 
@@ -80,6 +82,8 @@ class Worker {
     Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const noexcept;
 
     Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const noexcept;
+
+    Texture const* texture(uint32_t id) const noexcept;
 
     Interface_stack& interface_stack() noexcept;
 

@@ -31,7 +31,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     if (flakes_normal_map_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), Filter::Nearest);
 
-        float3 const n = sample_normal(wo, rs, flakes_normal_map_, sampler);
+        float3 const n = sample_normal(wo, rs, flakes_normal_map_, sampler, worker);
 
         sample.flakes_.set_tangent_frame(n);
     } else {
@@ -44,7 +44,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     if (flakes_mask_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-        flakes_weight = flakes_mask_.sample_1(sampler, rs.uv);
+        flakes_weight = flakes_mask_.sample_1(worker, sampler, rs.uv);
     } else {
         flakes_weight = 1.f;
     }

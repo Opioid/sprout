@@ -30,7 +30,7 @@ float3 Material_overcast::evaluate_radiance(float3 const& wi, float2 /*uv*/, flo
     return overcast(wi);
 }
 
-float3 Material_overcast::average_radiance(float /*area*/) const noexcept {
+float3 Material_overcast::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     if (is_two_sided()) {
         return 2.f * color_;
     }

@@ -1,7 +1,6 @@
 #include "debug_material.hpp"
 #include "base/math/vector3.inl"
 #include "debug_sample.hpp"
-#include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"

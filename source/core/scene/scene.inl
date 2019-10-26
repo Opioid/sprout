@@ -110,6 +110,10 @@ inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const no
     return prop_topology_[entity];
 }
 
+inline image::texture::Texture const* Scene::texture(uint32_t id) const noexcept {
+    return texture_resources_[id];
+}
+
 inline uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const noexcept {
     uint32_t const p = prop_parts_[entity] + part;
     return light_ids_[p];

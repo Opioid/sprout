@@ -24,6 +24,10 @@ namespace thread {
 class Pool;
 }
 
+namespace image::texture {
+class Texture;
+}
+
 namespace scene {
 
 namespace shape {
@@ -85,9 +89,11 @@ class Scene {
     using Shape          = shape::Shape;
     using Shape_ptr      = resource::Resource_ptr<Shape>;
     using Materials      = memory::Array<resource::Resource_ptr<Material>>;
+    using Texture        = image::texture::Texture;
 
     Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
-          std::vector<Material*> const& material_resources) noexcept;
+          std::vector<Material*> const& material_resources,
+          std::vector<Texture*> const&  texture_resources) noexcept;
 
     ~Scene() noexcept;
 
@@ -213,6 +219,8 @@ class Scene {
 
     prop::Prop_topology const& prop_topology(uint32_t entity) const noexcept;
 
+    Texture const* texture(uint32_t id) const noexcept;
+
     uint32_t prop_light_id(uint32_t entity, uint32_t part) const noexcept;
 
     float light_area(uint32_t entity, uint32_t part) const noexcept;
@@ -281,6 +289,8 @@ class Scene {
     std::vector<Shape*> const& shape_resources_;
 
     std::vector<Material*> const& material_resources_;
+
+    std::vector<Texture*> const& texture_resources_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;

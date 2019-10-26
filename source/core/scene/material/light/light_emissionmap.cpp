@@ -5,6 +5,7 @@
 #include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "image/texture/texture.inl"
 #include "image/texture/texture_adapter.inl"
 #include "light_material_sample.hpp"
 #include "scene/material/material_sample.inl"
@@ -31,7 +32,7 @@ material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    float3 const radiance = emission_map_.sample_3(sampler, rs.uv);
+    float3 const radiance = emission_map_.sample_3(worker, sampler, rs.uv);
 
     sample.set(emission_factor_ * radiance);
 
@@ -42,10 +43,10 @@ float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*a
                                       Filter filter, Worker const& worker) const noexcept {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    return emission_factor_ * emission_map_.sample_3(sampler, uv);
+    return emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
 }
 
-float3 Emissionmap::average_radiance(float /*area*/) const noexcept {
+float3 Emissionmap::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return average_emission_;
 }
 
@@ -71,14 +72,15 @@ float Emissionmap::emission_pdf(float2 uv, Filter filter, Worker const& worker) 
 
 void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                    Transformation const& /*transformation*/, float /*area*/,
-                                   bool importance_sampling, thread::Pool& threads) noexcept {
+                                   bool importance_sampling, thread::Pool& threads,
+                                   Scene const& scene) noexcept {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
         return;
     }
 
-    prepare_sampling_internal(shape, 0, importance_sampling, threads);
+    prepare_sampling_internal(shape, 0, importance_sampling, threads, scene);
 }
 
 void Emissionmap::set_emission_map(Texture_adapter const& emission_map) noexcept {
@@ -94,14 +96,14 @@ size_t Emissionmap::num_bytes() const noexcept {
 }
 
 void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
-                                            bool          importance_sampling,
-                                            thread::Pool& threads) noexcept {
+                                            bool importance_sampling, thread::Pool& threads,
+                                            Scene const& scene) noexcept {
     if (importance_sampling) {
-        auto const& texture = emission_map_.texture();
+        auto const& texture = emission_map_.texture(scene);
 
         auto const d = texture.dimensions_2();
 
-        Distribution_2D::Distribution_impl* conditional = distribution_.allocate(d[1]);
+        Distribution_2D::Distribution_impl* conditional = distribution_.allocate(uint32_t(d[1]));
 
         memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 
@@ -151,7 +153,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         distribution_.init();
     } else {
-        average_emission_ = emission_factor_ * emission_map_.texture().average_3();
+        average_emission_ = emission_factor_ * emission_map_.texture(scene).average_3();
     }
 
     if (is_two_sided()) {

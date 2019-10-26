@@ -15,6 +15,7 @@
 #include "glass/glass_material.hpp"
 #include "glass/glass_rough_material.hpp"
 #include "glass/glass_thin_material.hpp"
+#include "image/texture/texture.inl"
 #include "image/texture/texture_adapter.inl"
 #include "image/texture/texture_provider.hpp"
 #include "light/light_constant.hpp"
@@ -42,6 +43,7 @@
 
 namespace scene::material {
 
+using Texture       = image::texture::Texture;
 using Texture_usage = image::texture::Provider::Usage;
 
 static Material* load_substitute(json::Value const& substitute_value,
@@ -63,7 +65,7 @@ static void read_sampler_settings(json::Value const& sampler_value,
 
 static Texture_description read_texture_description(json::Value const& texture_value) noexcept;
 
-static Texture_adapter create_texture(const Texture_description& description,
+static Texture_adapter create_texture(Texture_description const& description,
                                       memory::Variant_map&       options,
                                       resource::Manager&         manager) noexcept;
 
@@ -193,8 +195,6 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
         logging::push_error("Material is of unknown type.");
         return nullptr;
     }
-
-    material->compile(manager.threads());
 
     return material;
 }
@@ -1338,7 +1338,7 @@ Texture_adapter create_texture(const Texture_description& description, memory::V
         options.set("swizzle", description.swizzle);
     }
 
-    return Texture_adapter(manager.load<image::texture::Texture>(description.filename, options).ptr,
+    return Texture_adapter(manager.load<Texture>(description.filename, options).id,
                            description.scale);
 }
 

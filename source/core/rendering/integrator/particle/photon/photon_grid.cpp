@@ -303,7 +303,7 @@ static inline float conely_filter(float squared_distance, float inv_squared_radi
 }
 
 void Grid::set_num_paths(uint64_t num_paths) noexcept {
-    float const radius2   = search_radius_ * search_radius_;
+    float const radius2 = search_radius_ * search_radius_;
 
     // conely
     surface_normalization_ = 1.f / (((1.f / 2.f) * Pi) * float(num_paths) * radius2);
@@ -311,7 +311,7 @@ void Grid::set_num_paths(uint64_t num_paths) noexcept {
     // cone
     // surface_normalization_ = 1.f / (((1.f / 3.f) * Pi) * float(num_paths) * radius2);
 
-    float const radius3  = search_radius_ * radius2;
+    float const radius3   = search_radius_ * radius2;
     volume_normalization_ = 1.f / (((4.f / 3.f) * Pi) * (radius3 * float(num_paths)));
 }
 

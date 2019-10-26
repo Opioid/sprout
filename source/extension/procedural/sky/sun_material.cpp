@@ -43,14 +43,14 @@ float3 Sun_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*
     return sky_.model().evaluate_sky_and_sun(wi);
 }
 
-float3 Sun_material::average_radiance(float /*area*/) const noexcept {
+float3 Sun_material::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
 void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/,
-                                    thread::Pool& /*threads*/) noexcept {}
+                                    bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                    Scene const& /*scene*/) noexcept {}
 
 size_t Sun_material::num_bytes() const noexcept {
     return sizeof(*this);
@@ -87,15 +87,15 @@ float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, fl
     return radiance;
 }
 
-float3 Sun_baked_material::average_radiance(float /*area*/) const noexcept {
+float3 Sun_baked_material::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
 void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                           uint64_t /*time*/,
                                           Transformation const& /*transformation*/, float /*area*/,
-                                          bool /*importance_sampling*/,
-                                          thread::Pool& /*threads*/) noexcept {
+                                          bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                          Scene const& /*scene*/) noexcept {
     using namespace image;
 
     if (!sky_.sun_changed_since_last_check()) {

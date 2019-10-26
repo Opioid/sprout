@@ -3,21 +3,26 @@
 
 #include "base/math/vector2.hpp"
 
+namespace scene {
+class Worker;
+class Scene;
+}  // namespace scene
+
 namespace image::texture {
 
-namespace sampler {
 class Sampler_2D;
 class Sampler_3D;
-}  // namespace sampler
 
-class Texture;
 class Texture;
 
 class Adapter {
   public:
+    using Scene  = scene::Scene;
+    using Worker = scene::Worker;
+
     Adapter() noexcept;
-    Adapter(Texture* texture) noexcept;
-    Adapter(Texture* texture, float2 scale) noexcept;
+    Adapter(uint32_t texture) noexcept;
+    Adapter(uint32_t texture, float2 scale) noexcept;
 
     ~Adapter();
 
@@ -25,31 +30,34 @@ class Adapter {
 
     bool is_valid() const noexcept;
 
-    Texture const& texture() const noexcept;
+    Texture const& texture(Scene const& scene) const noexcept;
 
-    using Sampler_2D = sampler::Sampler_2D;
+    float  sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
+    float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
+    float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
 
-    float  sample_1(Sampler_2D const& sampler, float2 uv) const noexcept;
-    float2 sample_2(Sampler_2D const& sampler, float2 uv) const noexcept;
-    float3 sample_3(Sampler_2D const& sampler, float2 uv) const noexcept;
-
-    float  sample_1(Sampler_2D const& sampler, float2 uv, int32_t element) const noexcept;
-    float2 sample_2(Sampler_2D const& sampler, float2 uv, int32_t element) const noexcept;
-    float3 sample_3(Sampler_2D const& sampler, float2 uv, int32_t element) const noexcept;
+    float  sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv,
+                    int32_t element) const noexcept;
+    float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv,
+                    int32_t element) const noexcept;
+    float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv,
+                    int32_t element) const noexcept;
 
     float2 address(Sampler_2D const& sampler, float2 uv) const noexcept;
 
-    using Sampler_3D = sampler::Sampler_3D;
-
-    float  sample_1(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
-    float2 sample_2(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
-    float3 sample_3(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
-    float4 sample_4(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
+    float sample_1(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
+        noexcept;
+    float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
+        noexcept;
+    float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
+        noexcept;
+    float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
+        noexcept;
 
     float3 address(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
 
   private:
-    Texture* texture_;
+    uint32_t texture_;
 
     float2 scale_;
 };

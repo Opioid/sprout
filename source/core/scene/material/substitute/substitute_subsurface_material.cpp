@@ -20,9 +20,9 @@ namespace scene::material::substitute {
 Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings) noexcept
     : Material_base(sampler_settings, false) {}
 
-void Material_subsurface::compile(thread::Pool& threads) noexcept {
+void Material_subsurface::compile(thread::Pool& threads, Scene const& scene) noexcept {
     if (density_map_.is_valid()) {
-        auto const& texture = density_map_.texture();
+        auto const& texture = density_map_.texture(scene);
 
         volumetric::Octree_builder builder;
         builder.build(tree_, texture, cm_, threads);
@@ -49,7 +49,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, rs.ior, sampler, sample);
+    set_sample(wo, rs, rs.ior, sampler, worker, sample);
 
     sample.set_volumetric(anisotropy_, ior_, rs.ior);
 
@@ -97,7 +97,7 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
                                                    Worker const& worker) const noexcept {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const color   = color_map_.sample_3(sampler, uv);
+        float3 const color   = color_map_.sample_3(worker, sampler, uv);
 
         return extinction_coefficient(color, attenuation_distance_);
     }
@@ -115,7 +115,7 @@ CC Material_subsurface::collision_coefficients(float2 uv, Filter filter, Worker 
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    float3 const color = color_map_.sample_3(sampler, uv);
+    float3 const color = color_map_.sample_3(worker, sampler, uv);
 
     return attenuation(color, attenuation_distance_);
 }
@@ -178,7 +178,7 @@ float Material_subsurface::density(float3 const& p, Filter filter, Worker const&
 
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return density_map_.sample_1(sampler, p_g);
+    return density_map_.sample_1(worker, sampler, p_g);
 }
 
 float3 Material_subsurface::color(float3 const& p, Filter /*filter*/,
@@ -187,7 +187,7 @@ float3 Material_subsurface::color(float3 const& p, Filter /*filter*/,
 
     //	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    //	float const d = std::min(16.f * density_map_.sample_1(sampler, p_g), 1.f);
+    //	float const d = std::min(16.f * density_map_.sample_1(worker, sampler, p_g), 1.f);
 
     float const x = 1.f - (p_g[1] - 0.5f);
     float const d = std::clamp(x * x, 0.1f, 1.f);

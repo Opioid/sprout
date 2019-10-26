@@ -113,9 +113,9 @@ int main(int argc, char* argv[]) noexcept {
     resource_manager.register_provider(image_provider);
 
     image::texture::Provider texture_provider;
-    if (!args.no_textures) {
-        resource_manager.register_provider(texture_provider);
-    }
+    //  if (!args.no_textures) {
+    auto const& texture_resources = resource_manager.register_provider(texture_provider);
+    //   }
 
     scene::shape::triangle::Provider mesh_provider;
     auto const& shape_resources = resource_manager.register_provider(mesh_provider);
@@ -128,7 +128,8 @@ int main(int argc, char* argv[]) noexcept {
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    scene::Scene scene(scene_loader.null_shape(), shape_resources, material_resources);
+    scene::Scene scene(scene_loader.null_shape(), shape_resources, material_resources,
+                       texture_resources);
 
     std::string take_name;
 

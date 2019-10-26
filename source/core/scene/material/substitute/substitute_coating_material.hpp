@@ -20,7 +20,8 @@ class Material_coating : public Material_base {
   protected:
     template <typename Sample>
     void set_coating_basis(float3 const& wo, Renderstate const& rs,
-                           Texture_sampler_2D const& sampler, Sample& sample) const noexcept;
+                           Texture_sampler_2D const& sampler, Worker const& worker,
+                           Sample& sample) const noexcept;
 
     Texture_adapter coating_thickness_map_;
     Texture_adapter coating_normal_map_;

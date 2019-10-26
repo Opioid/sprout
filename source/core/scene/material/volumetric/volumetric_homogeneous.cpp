@@ -7,7 +7,7 @@ namespace scene::material::volumetric {
 Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) noexcept
     : Material(sampler_settings) {}
 
-void Homogeneous::compile(thread::Pool& /*threads*/) noexcept {
+void Homogeneous::compile(thread::Pool& /*threads*/, Scene const& /*scene*/) noexcept {
     is_scattering_ = any_greater_zero(cc_.s);
 }
 
