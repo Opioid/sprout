@@ -241,9 +241,9 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
 
     float3 const wo = material_sample.wo();
 
-    auto const& layer = material_sample.base_layer();
+    float3 const& n = material_sample.base_shading_normal();
 
-    float const nsc = non_symmetry_compensation(wo, wi, intersection.geo.geo_n, layer.n_);
+    float const nsc = non_symmetry_compensation(wo, wi, intersection.geo.geo_n, n);
 
     float3 const result = camera_sample.pdf * nsc * tv * radiance * bxdf.reflection;
 

@@ -81,11 +81,13 @@ void size() {
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
     print_size<sampler::Sampler>("Sampler", 48);
+    print_size<sampler::Golden_ratio>("Golden_ratio", 64);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
 
     print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
+    print_size<scene::material::Material>("material::Material", 24);
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
     print_size<scene::material::debug::Material>("debug::Material", 32);
@@ -95,7 +97,7 @@ void size() {
     print_size<scene::material::glass::Sample>("glass::Sample", 128);
 
     print_size<scene::material::light::Constant>("light::Constant", 64);
-    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
+    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 128);
     print_size<scene::material::light::Sample>("light::Sample", 128);
 
     print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 128);
@@ -103,7 +105,7 @@ void size() {
     print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
     print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 192);
 
-    print_size<scene::material::substitute::Material>("substitute::Material", 128);
+    print_size<scene::material::substitute::Material>("substitute::Material", 96);
     print_size<scene::material::substitute::Sample>("substitute::Sample", 192);
 
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);

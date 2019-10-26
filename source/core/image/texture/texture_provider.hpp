@@ -38,8 +38,7 @@ class Provider final : public resource::Provider<Texture> {
 
     size_t num_bytes(Texture const* resource) const noexcept override final;
 
-private:
-
+  private:
     bool no_textures_;
 };
 

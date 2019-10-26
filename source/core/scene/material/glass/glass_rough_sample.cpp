@@ -13,10 +13,13 @@
 
 namespace scene::material::glass {
 
-material::Layer const& Sample_rough::base_layer() const noexcept {
-    return layer_;
+float3 const& Sample_rough::base_shading_normal() const noexcept {
+    return layer_.n_;
 }
 
+float3 Sample_rough::base_tangent_to_world(float3 const& v) const noexcept {
+    return layer_.tangent_to_world(v);
+}
 bxdf::Result Sample_rough::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
     return evaluate<true>(wi);
 }

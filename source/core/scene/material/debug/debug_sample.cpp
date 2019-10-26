@@ -9,8 +9,12 @@ namespace scene::material::debug {
 static float3 constexpr color_front(0.4f, 0.9f, 0.1f);
 static float3 constexpr color_back(0.9f, 0.1f, 0.4f);
 
-material::Layer const& Sample::base_layer() const noexcept {
-    return layer_;
+float3 const& Sample::base_shading_normal() const noexcept {
+    return layer_.n_;
+}
+
+float3 Sample::base_tangent_to_world(float3 const& v) const noexcept {
+    return layer_.tangent_to_world(v);
 }
 
 bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {

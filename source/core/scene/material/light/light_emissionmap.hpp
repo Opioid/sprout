@@ -49,11 +49,11 @@ class alignas(64) Emissionmap : public Material {
 
     Distribution_2D distribution_;
 
-    float3 average_emission_;
-
     float emission_factor_;
 
     float total_weight_;
+
+    float3 average_emission_;
 };
 
 }  // namespace scene::material::light

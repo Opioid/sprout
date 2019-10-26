@@ -45,7 +45,9 @@ class Sample_base : public material::Sample {
   public:
     using Sampler = sampler::Sampler;
 
-    Layer const& base_layer() const noexcept override final;
+    float3 const& base_shading_normal() const noexcept override final;
+
+    float3 base_tangent_to_world(float3 const& v) const noexcept override final;
 
     Layer layer_;
 

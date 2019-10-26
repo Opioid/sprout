@@ -45,7 +45,7 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
         float2 const sample = sampler_.generate_sample_2D();
         float3 const hs     = sample_hemisphere_cosine(sample);
         //		float3 ws = intersection.geo.tangent_to_world(hs);
-        float3 const ws = material_sample.base_layer().tangent_to_world(hs);
+        float3 const ws = material_sample.base_tangent_to_world(hs);
 
         occlusion_ray.set_direction(ws);
 

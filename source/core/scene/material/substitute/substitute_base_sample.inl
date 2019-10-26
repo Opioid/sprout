@@ -182,8 +182,12 @@ float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_d
     return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
 }
 
-inline material::Layer const& Sample_base::base_layer() const noexcept {
-    return layer_;
+inline float3 const& Sample_base::base_shading_normal() const noexcept {
+    return layer_.n_;
+}
+
+inline float3 Sample_base::base_tangent_to_world(float3 const& v) const noexcept {
+    return layer_.tangent_to_world(v);
 }
 
 }  // namespace scene::material::substitute

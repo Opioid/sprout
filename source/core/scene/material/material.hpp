@@ -6,14 +6,12 @@
 #include "base/spectrum/discrete.hpp"
 #include "collision_coefficients.hpp"
 #include "image/texture/texture_adapter.hpp"
-#include "image/texture/texture_types.hpp"
 #include "sampler_settings.hpp"
 
 #include <string_view>
 
 namespace math {
 struct ray;
-struct AABB;
 }  // namespace math
 
 namespace rnd {
@@ -53,10 +51,11 @@ class Sample;
 
 class Material {
   public:
-    using Filter         = Sampler_settings::Filter;
-    using Shape          = shape::Shape;
-    using Transformation = entity::Composed_transformation;
-    using Sampler        = sampler::Sampler;
+    using Filter          = Sampler_settings::Filter;
+    using Shape           = shape::Shape;
+    using Transformation  = entity::Composed_transformation;
+    using Sampler         = sampler::Sampler;
+    using Texture_adapter = image::texture::Adapter;
 
     static char const* identifier() noexcept;
 
