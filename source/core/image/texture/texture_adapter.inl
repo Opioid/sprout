@@ -11,9 +11,9 @@ namespace image::texture {
 
 inline Adapter::Adapter() noexcept : texture_(0xFFFFFFFF) {}
 
-inline Adapter::Adapter(uint32_t texture) noexcept : texture_(texture), scale_(float2(1.f, 1.f)) {}
+inline Adapter::Adapter(uint32_t texture) noexcept : texture_(texture), scale_(1.f) {}
 
-inline Adapter::Adapter(uint32_t texture, float2 scale) noexcept
+inline Adapter::Adapter(uint32_t texture, float scale) noexcept
     : texture_(texture), scale_(scale) {}
 
 inline Adapter::~Adapter() {}

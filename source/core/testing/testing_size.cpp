@@ -139,7 +139,7 @@ void size() {
 
     print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 8);
 
-    print_size<image::texture::Adapter>("texture::Adapter", 16);
+    print_size<image::texture::Adapter>("texture::Adapter", 8);
 
     print_size<scene::bvh::Split_candidate>("Split_candidate", 96);
 

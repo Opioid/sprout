@@ -22,7 +22,7 @@ class Adapter {
 
     Adapter() noexcept;
     Adapter(uint32_t texture) noexcept;
-    Adapter(uint32_t texture, float2 scale) noexcept;
+    Adapter(uint32_t texture, float scale) noexcept;
 
     ~Adapter();
 
@@ -36,10 +36,12 @@ class Adapter {
     float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
     float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
 
-    float  sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                    int32_t element) const noexcept;
+    float sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv,
+                   int32_t element) const noexcept;
+
     float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv,
                     int32_t element) const noexcept;
+
     float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv,
                     int32_t element) const noexcept;
 
@@ -47,10 +49,13 @@ class Adapter {
 
     float sample_1(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
         noexcept;
+
     float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
         noexcept;
+
     float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
         noexcept;
+
     float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
         noexcept;
 
@@ -59,7 +64,7 @@ class Adapter {
   private:
     uint32_t texture_;
 
-    float2 scale_;
+    float scale_;
 };
 
 }  // namespace image::texture

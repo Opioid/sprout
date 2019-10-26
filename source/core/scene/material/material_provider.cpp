@@ -55,7 +55,7 @@ struct Texture_description {
 
     image::Swizzle swizzle;
 
-    float2 scale;
+    float scale;
 
     int32_t num_elements;
 };
@@ -699,10 +699,10 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
     float  roughness      = 0.575f;
     float  flakes_size    = 0.1f;
     float  flakes_density = 0.2f;
-    float3 flakes_ior(1.f, 1.f, 1.f);
-    float3 flakes_absorption(0.75f, 0.75f, 0.75f);
+    float3 flakes_ior(1.f);
+    float3 flakes_absorption(0.75f);
     float  flakes_roughness = 0.3f;
-    float2 flakes_scale(1.f, 1.f);
+    float  flakes_scale     = 1.f;
 
     Coating_description coating;
     coating.ior = 1.5f;
@@ -729,7 +729,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
             flakes_size      = json::read_float(n.value, "size", flakes_size);
             flakes_density   = json::read_float(n.value, "density", flakes_density);
             flakes_roughness = json::read_float(n.value, "roughness", flakes_roughness);
-            flakes_scale     = json::read_float2(n.value, "scale", flakes_scale);
+            flakes_scale     = json::read_float(n.value, "scale", flakes_scale);
         } else if ("coating" == n.name) {
             read_coating_description(n.value, coating);
         } else if ("textures" == n.name) {
@@ -1305,7 +1305,7 @@ Texture_description read_texture_description(json::Value const& texture_value) n
     description.filename     = "";
     description.usage        = "Color";
     description.swizzle      = image::Swizzle::XYZW;
-    description.scale        = float2(1.f, 1.f);
+    description.scale        = 1.f;
     description.num_elements = 1;
 
     for (auto& n : texture_value.GetObject()) {
@@ -1319,7 +1319,7 @@ Texture_description read_texture_description(json::Value const& texture_value) n
                 description.swizzle = image::Swizzle::YXZW;
             }
         } else if ("scale" == n.name) {
-            description.scale = json::read_float2(n.value);
+            description.scale = json::read_float(n.value);
         } else if ("num_elements" == n.name) {
             description.num_elements = json::read_int(n.value);
         }
@@ -1328,7 +1328,7 @@ Texture_description read_texture_description(json::Value const& texture_value) n
     return description;
 }
 
-Texture_adapter create_texture(const Texture_description& description, memory::Variant_map& options,
+Texture_adapter create_texture(Texture_description const& description, memory::Variant_map& options,
                                resource::Manager& manager) noexcept {
     if (description.num_elements > 1) {
         options.set("num_elements", description.num_elements);
