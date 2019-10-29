@@ -30,8 +30,6 @@ material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*
 
     sample.set_basis(rs.geo_n, wo);
 
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-
     float3 const radiance = emission_map_.sample_3(worker, sampler, rs.uv);
 
     sample.set(emission_factor_ * radiance);

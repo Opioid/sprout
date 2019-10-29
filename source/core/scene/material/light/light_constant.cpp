@@ -20,8 +20,6 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
 
     sample.set_basis(rs.geo_n, wo);
 
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-
     sample.set(emittance_.radiance(worker.scene().light_area(rs.prop, rs.part)));
 
     return sample;

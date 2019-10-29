@@ -45,7 +45,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads,
               take.lighttracer_factory ? tail(take.view.num_particles) : 0,
               Num_particles_per_chunk),
 #else
-      ranges_(take.lighttracer_factory ? take.num_particles : 0, 0, Num_particles_per_chunk),
+	  ranges_(take.lighttracer_factory ? take.view.num_particles : 0, 0, Num_particles_per_chunk),
 #endif
 
       target_(Description(take.view.camera->sensor_dimensions())),

@@ -186,10 +186,6 @@ inline float3 const& Sample_base::base_shading_normal() const noexcept {
     return layer_.n_;
 }
 
-inline float3 Sample_base::base_tangent_to_world(float3 const& v) const noexcept {
-    return layer_.tangent_to_world(v);
-}
-
 }  // namespace scene::material::substitute
 
 #endif

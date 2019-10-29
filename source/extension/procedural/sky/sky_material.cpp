@@ -36,8 +36,6 @@ material::Sample const& Sky_material::sample(float3 const&      wo, scene::Ray c
 
     sample.set_basis(rs.geo_n, wo);
 
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-
     sample.set(sky_.model().evaluate_sky(-wo));
 
     return sample;
@@ -79,8 +77,6 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene:
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
     sample.set_basis(rs.geo_n, wo);
-
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     float3 const radiance = sampler.sample_3(cache_texture_, rs.uv);
 

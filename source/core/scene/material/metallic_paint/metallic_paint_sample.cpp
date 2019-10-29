@@ -13,10 +13,6 @@ float3 const& Sample::base_shading_normal() const noexcept {
     return base_.n_;
 }
 
-float3 Sample::base_tangent_to_world(float3 const& v) const noexcept {
-    return base_.tangent_to_world(v);
-}
-
 bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};

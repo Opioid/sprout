@@ -51,8 +51,6 @@ class Sample {
 
     virtual float3 const& base_shading_normal() const noexcept = 0;
 
-    virtual float3 base_tangent_to_world(float3 const& v) const noexcept = 0;
-
     virtual bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept = 0;
 
     virtual bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept = 0;

@@ -12,10 +12,6 @@ float3 const& Sample::base_shading_normal() const noexcept {
     return layer_.n_;
 }
 
-float3 Sample::base_tangent_to_world(float3 const& v) const noexcept {
-    return layer_.tangent_to_world(v);
-}
-
 bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);

@@ -31,8 +31,6 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
 
     sample.set_basis(rs.geo_n, wo);
 
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-
     sample.set(sky_.model().evaluate_sky_and_sun(-wo));
 
     return sample;
@@ -65,8 +63,6 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
     auto& sample = worker.sample<material::light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
-
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     float3 const radiance = emission_(sky_.sun_v(-wo));
 

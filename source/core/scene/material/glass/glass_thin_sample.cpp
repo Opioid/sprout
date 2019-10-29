@@ -16,10 +16,6 @@ float3 const& Sample_thin::base_shading_normal() const noexcept {
     return layer_.n_;
 }
 
-float3 Sample_thin::base_tangent_to_world(float3 const& v) const noexcept {
-    return layer_.tangent_to_world(v);
-}
-
 bxdf::Result Sample_thin::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
     return {float3(0.f), 0.f};
 }
