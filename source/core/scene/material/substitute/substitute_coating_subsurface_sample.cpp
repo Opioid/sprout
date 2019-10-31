@@ -217,7 +217,7 @@ void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample&
 }
 
 float3 const& Sample_coating_subsurface_volumetric::base_shading_normal() const noexcept {
-	return layer_.n_;
+    return layer_.n_;
 }
 
 bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,

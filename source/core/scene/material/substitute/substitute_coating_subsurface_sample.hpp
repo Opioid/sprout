@@ -33,7 +33,7 @@ class Sample_coating_subsurface final
 
 class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
   public:
-	float3 const& base_shading_normal() const noexcept override final;
+    float3 const& base_shading_normal() const noexcept override final;
 
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
 
@@ -45,7 +45,7 @@ class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
     float3 attenuation(float3 const& wi) const noexcept;
 
   public:
-	Layer layer_;
+    Layer layer_;
 
     coating::Clearcoat_layer coating_;
 };

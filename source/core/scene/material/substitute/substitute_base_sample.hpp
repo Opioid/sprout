@@ -9,17 +9,16 @@ template <typename Diffuse>
 struct Base_closure {
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& color, float3 const& radiance, float f0, float alpha,
-             float metallic) noexcept;
+    void set(float3 const& color, float3 const& radiance, float f0, float alpha, float metallic,
+             bool avoid_caustics) noexcept;
 
     template <bool Forward>
     bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                               Layer const& layer, bool avoid_caustics) const noexcept;
+                               Layer const& layer) const noexcept;
 
     template <bool Forward>
     bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                                     float wo_dot_h, Layer const& layer, bool avoid_caustics) const
-        noexcept;
+                                     float wo_dot_h, Layer const& layer) const noexcept;
 
     void diffuse_sample(float3 const& wo, Layer const& layer, Sampler& sampler, bool avoid_caustics,
                         bxdf::Sample& result) const noexcept;
@@ -39,6 +38,8 @@ struct Base_closure {
 
     float metallic_;
     float alpha_;
+
+    bool avoid_caustics_;
 };
 
 class Sample_base : public material::Sample {
@@ -48,8 +49,6 @@ class Sample_base : public material::Sample {
     float3 const& base_shading_normal() const noexcept override final;
 
     Layer layer_;
-
-    bool avoid_caustics_;
 };
 
 }  // namespace scene::material::substitute

@@ -7,7 +7,7 @@ namespace scene::material::volumetric {
 
 class Sample : public material::Sample {
   public:
-	float3 const& base_shading_normal() const noexcept override;
+    float3 const& base_shading_normal() const noexcept override;
 
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override;
 

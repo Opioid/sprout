@@ -6,7 +6,7 @@
 namespace scene::material::null {
 
 float3 const& Sample::base_shading_normal() const noexcept {
-	return geo_n_;
+    return geo_n_;
 }
 
 bxdf::Result Sample::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
