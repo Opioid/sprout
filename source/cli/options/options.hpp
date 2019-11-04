@@ -18,6 +18,7 @@ struct Options {
     bool debug_material = false;
     bool verbose        = false;
     bool quit           = false;
+    bool baking         = false;
 };
 
 Options parse(int argc, char* argv[]) noexcept;

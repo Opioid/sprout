@@ -21,7 +21,7 @@ class Loader {
     using Scene = scene::Scene;
 
     static bool load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
-                     resource::Manager& manager) noexcept;
+                     bool baking, resource::Manager& manager) noexcept;
 };
 
 }  // namespace take

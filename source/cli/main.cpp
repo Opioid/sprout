@@ -150,7 +150,8 @@ int main(int argc, char* argv[]) noexcept {
             auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
                                              : file_system.read_stream(args.take, take_name);
 
-            if (!stream || !take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
+            if (!stream || !take::Loader::load(take, *stream, take_name, scene, args.baking,
+                                               resource_manager)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }
@@ -173,15 +174,15 @@ int main(int argc, char* argv[]) noexcept {
 
                 auto const rendering_start = std::chrono::high_resolution_clock::now();
 
-                if (take.view.camera) {
+                if (args.baking) {
+                    baking::Driver driver(take, scene, threads, max_sample_size, progressor);
+
+                    driver.render();
+                } else {
                     rendering::Driver_finalframe driver(take, scene, threads, max_sample_size,
                                                         progressor);
 
                     driver.render(take.exporters);
-                } else {
-                    baking::Driver driver(take, scene, threads, max_sample_size, progressor);
-
-                    driver.render();
                 }
 
                 logging::info("Total render time %f s", chrono::seconds_since(rendering_start));

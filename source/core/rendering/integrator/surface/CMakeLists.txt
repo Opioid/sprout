@@ -6,6 +6,8 @@ target_sources(core
 	"debug.hpp"
 	"pathtracer_dl.cpp"
 	"pathtracer_dl.hpp"
+	"pathtracer_dldl.cpp"
+	"pathtracer_dldl.hpp"
 	"pathtracer_mis.cpp"
 	"pathtracer_mis.hpp"
 	"pathtracer.cpp"

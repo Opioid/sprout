@@ -51,6 +51,7 @@
 #include "sampler/sampler_rd.hpp"
 #include "sampler/sampler_uniform.hpp"
 #include "scene/animation/animation_loader.hpp"
+#include "scene/camera/camera_baking.hpp"
 #include "scene/camera/camera_cubic.hpp"
 #include "scene/camera/camera_cubic_stereoscopic.hpp"
 #include "scene/camera/camera_hemispherical.hpp"
@@ -116,7 +117,7 @@ static void load_settings(json::Value const& settings_value, Settings& settings)
 static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) noexcept;
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
-                  resource::Manager& manager) noexcept {
+                  bool baking, resource::Manager& manager) noexcept {
     uint32_t const num_threads = manager.threads().num_threads();
 
     std::string error;
@@ -130,7 +131,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     json::Value const* exporter_value       = nullptr;
 
     for (auto& n : root->GetObject()) {
-        if ("camera" == n.name) {
+        if (!baking && "camera" == n.name) {
             if (!load_camera(n.value, take, scene)) {
                 return false;
             }
@@ -189,6 +190,14 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
             logging::warning("No valid exporter was specified, defaulting to PNG writer.");
         }
+    } else if (baking) {
+        scene::camera::Camera* camera = new scene::camera::Baking;
+
+        uint32_t const prop_id = scene.create_dummy();
+
+        camera->init(prop_id);
+
+        take.view.camera = camera;
     }
 
     if (!take.sampler_factory) {

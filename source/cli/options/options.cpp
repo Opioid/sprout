@@ -62,6 +62,8 @@ bool handle_all(std::string const& command, std::string const& parameter,
 bool handle(std::string const& command, std::string const& parameter, Options& result) noexcept {
     if ("help" == command || "h" == command) {
         help();
+    } else if ("baking" == command || "b" == command) {
+        result.baking = true;
     } else if ("input" == command || "i" == command) {
         result.take = parameter;
     } else if ("mount" == command || "m" == command) {
