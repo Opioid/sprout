@@ -1,4 +1,5 @@
 #include "pathtracer_dldl.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
@@ -22,40 +23,47 @@ using namespace scene;
 
 Pathtracer_DLDL::Pathtracer_DLDL(rnd::Generator& rng, take::Settings const& take_settings,
                                  Settings const& settings) noexcept
-    : Integrator(rng, take_settings),
-      settings_(settings),
-      sampler_(rng),
-      material_samplers_{rng, rng, rng},
-      light_samplers_{rng, rng, rng} {}
+    : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
 
 void Pathtracer_DLDL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
-
-    for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, 1, 1, 1);
-    }
-
-    for (auto& s : light_samplers_) {
-        s.resize(num_samples_per_pixel, settings_.num_light_samples, 1, 2);
-    }
 }
 
 void Pathtracer_DLDL::start_pixel() noexcept {
     sampler_.start_pixel();
-
-    for (auto& s : material_samplers_) {
-        s.start_pixel();
-    }
-
-    for (auto& s : light_samplers_) {
-        s.start_pixel();
-    }
 }
 
 float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
                            Interface_stack const& initial_stack) noexcept {
-    worker.reset_interface_stack(initial_stack);
+    //  float3 const wi = ray.direction;
 
+    float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
+
+    //    float2 const uv(rng_.random_float(), rng_.random_float());
+
+    //    float3 const wi = sample_sphere_uniform(uv);
+
+    float4 li(0.f);
+
+    for (uint32_t i = settings_.num_samples; i > 0; --i) {
+        worker.reset_interface_stack(initial_stack);
+
+        Ray split_ray = ray;
+
+        Intersection split_intersection = intersection;
+
+        float4 result = integrate(split_ray, split_intersection, wi, worker);
+
+        li += result;
+    }
+
+    float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
+
+    return num_samples_reciprocal * li;
+}
+
+float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 const& wi,
+                                  Worker& worker) noexcept {
     Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -71,9 +79,7 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
     for (;;) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_is_vacuum_or_not_scattering(
-                                        worker);
+        bool const avoid_caustics = false;
 
         auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                     worker);
@@ -92,8 +98,8 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
 
-        result += throughput *
-                  direct_light(ray, intersection, material_sample, evaluate_back, filter, worker);
+        result += throughput * direct_light(ray, intersection, wi, material_sample, evaluate_back,
+                                            filter, worker);
 
         SOFT_ASSERT(all_finite_and_positive(result));
 
@@ -169,12 +175,14 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
 }
 
 float3 Pathtracer_DLDL::direct_light(Ray const& ray, Intersection const& intersection,
-                                     Material_sample const& material_sample, bool evaluate_back,
-                                     Filter filter, Worker& worker) noexcept {
-    float3 result(0.f);
+                                     float3 const& wi, Material_sample const& material_sample,
+                                     bool evaluate_back, Filter filter, Worker& worker) noexcept {
+    if ((0 == ray.depth) | !material_sample.ior_greater_one()) {
+        return float3(0.f);
+    }
 
-    if (!material_sample.ior_greater_one()) {
-        return result;
+    if (!material_sample.is_translucent() & (dot(material_sample.geometric_normal(), wi) <= 0.f)) {
+        return float3(0.f);
     }
 
     float3 const p = material_sample.offset_p(intersection.geo.p);
@@ -186,66 +194,37 @@ float3 Pathtracer_DLDL::direct_light(Ray const& ray, Intersection const& interse
     shadow_ray.time       = ray.time;
     shadow_ray.wavelength = ray.wavelength;
 
-    auto& sampler = light_sampler(ray.depth);
+    shadow_ray.set_direction(wi);
+    shadow_ray.max_t = scene::Almost_ray_max_t;
 
-    for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
-        float const select = sampler.generate_sample_1D(1);
-
-        auto const light = worker.scene().random_light(select);
-
-        shape::Sample_to light_sample;
-        if (!light.ref.sample(p, material_sample.geometric_normal(), ray.time,
-                              material_sample.is_translucent(), sampler, 0, worker, light_sample)) {
-            continue;
-        }
-
-        shadow_ray.set_direction(light_sample.wi);
-        shadow_ray.max_t = light_sample.t;
-
-        float3 tv;
-        if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
-                                           tv)) {
-            continue;
-        }
-
-        auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
-
-        float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
-
-        float const weight = 1.f / (light.pdf * light_sample.pdf);
-
-        result += weight * (tv * radiance * bxdf.reflection);
+    float3 tv;
+    if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
+                                       tv)) {
+        return float3(0.f);
     }
 
-    return result / float(settings_.num_light_samples);
+    auto const bxdf = material_sample.evaluate_f(wi, evaluate_back);
+
+    return tv * bxdf.reflection;
 }
 
-sampler::Sampler& Pathtracer_DLDL::material_sampler(uint32_t bounce) noexcept {
-    if (Num_material_samplers > bounce) {
-        return material_samplers_[bounce];
-    }
-
+sampler::Sampler& Pathtracer_DLDL::material_sampler(uint32_t /*bounce*/) noexcept {
     return sampler_;
 }
 
-sampler::Sampler& Pathtracer_DLDL::light_sampler(uint32_t bounce) noexcept {
-    if (Num_light_samplers > bounce) {
-        return light_samplers_[bounce];
-    }
-
+sampler::Sampler& Pathtracer_DLDL::light_sampler(uint32_t /*bounce*/) noexcept {
     return sampler_;
 }
 
 Pathtracer_DLDL_factory::Pathtracer_DLDL_factory(take::Settings const& take_settings,
-                                                 uint32_t num_integrators, uint32_t min_bounces,
-                                                 uint32_t max_bounces, uint32_t num_light_samples,
-                                                 bool enable_caustics) noexcept
+                                                 uint32_t num_integrators, uint32_t num_samples,
+                                                 uint32_t min_bounces,
+                                                 uint32_t max_bounces) noexcept
     : Factory(take_settings),
       integrators_(memory::allocate_aligned<Pathtracer_DLDL>(num_integrators)) {
-    settings_.min_bounces       = min_bounces;
-    settings_.max_bounces       = max_bounces;
-    settings_.num_light_samples = num_light_samples;
-    settings_.avoid_caustics    = !enable_caustics;
+    settings_.num_samples = num_samples;
+    settings_.min_bounces = min_bounces;
+    settings_.max_bounces = max_bounces;
 }
 
 Pathtracer_DLDL_factory::~Pathtracer_DLDL_factory() noexcept {

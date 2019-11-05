@@ -8,6 +8,7 @@ namespace baking {
 struct Item {
     float3 pos;
     float3 wi;
+    float  radiance;
 };
 
 }  // namespace baking

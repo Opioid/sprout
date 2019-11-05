@@ -165,7 +165,11 @@ int main(int argc, char* argv[]) noexcept {
         if (success) {
             logging::info("Loading time %f s", chrono::seconds_since(loading_start));
 
-            logging::info("Rendering...");
+            if (args.baking) {
+                logging::info("Baking...");
+            } else {
+                logging::info("Rendering...");
+            }
 
             if (args.progressive) {
                 controller::progressive(take, scene, resource_manager, threads, max_sample_size);
@@ -178,14 +182,16 @@ int main(int argc, char* argv[]) noexcept {
                     baking::Driver driver(take, scene, threads, max_sample_size, progressor);
 
                     driver.render();
+
+                    logging::info("Total bake time %f s", chrono::seconds_since(rendering_start));
                 } else {
                     rendering::Driver_finalframe driver(take, scene, threads, max_sample_size,
                                                         progressor);
 
                     driver.render(take.exporters);
-                }
 
-                logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
+                    logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
+                }
 
                 logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
             }

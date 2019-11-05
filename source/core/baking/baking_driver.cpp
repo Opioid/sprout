@@ -6,6 +6,7 @@
 #include "base/random/generator.inl"
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"
+#include "progress/progress_sink.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/prop/interface_stack.inl"
@@ -17,7 +18,7 @@
 
 namespace baking {
 
-static uint32_t constexpr Num_items = 1024 * 1024;
+static uint32_t constexpr Num_items = 16 * 1024 * 1024;
 
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads, uint32_t max_sample_size,
                progress::Sink& progressor) noexcept
@@ -33,6 +34,8 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads, uint32_t m
                          take.view.num_samples_per_pixel, *take.surface_integrator_factory,
                          *take.volume_integrator_factory, *take.sampler_factory, nullptr,
                          take.photon_settings, take.lighttracer_factory, 0, nullptr);
+
+        workers_[i].baking_init(items_);
     }
 }
 
@@ -44,11 +47,23 @@ Driver::~Driver() noexcept {
 void Driver::render() noexcept {
     scene_.simulate(0, scene_.tick_duration(), threads_);
 
-    threads_.run_range(
-        [](uint32_t id, int32_t begin, int32_t end) {
+    progressor_.start(Num_items / 100);
 
+    threads_.run_range(
+        [this](uint32_t id, int32_t begin, int32_t end) {
+            auto& worker = workers_[id];
+
+            for (int32_t b = begin; b < end;) {
+                int32_t const e = b + 100;
+
+                worker.bake(b, std::min(e, end));
+
+                b = e;
+
+                progressor_.tick();
+            }
         },
-        0, num_items_);
+        0, int32_t(num_items_));
 }
 
 }  // namespace baking

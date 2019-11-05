@@ -123,6 +123,8 @@ class Scene {
 
     Prop* prop(std::string_view name) noexcept;
 
+    uint32_t volume_entity(uint32_t index) const noexcept;
+
     std::vector<light::Light> const& lights() const noexcept;
 
     struct Light {

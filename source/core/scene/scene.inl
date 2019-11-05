@@ -148,6 +148,10 @@ inline prop::Prop* Scene::prop(std::string_view name) noexcept {
     return &props_[e->second];
 }
 
+inline uint32_t Scene::volume_entity(uint32_t index) const noexcept {
+    return volumes_[index];
+}
+
 }  // namespace scene
 
 #endif

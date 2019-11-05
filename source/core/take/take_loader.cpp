@@ -23,6 +23,7 @@
 #include "rendering/integrator/surface/debug.hpp"
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
+#include "rendering/integrator/surface/pathtracer_dldl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/pm.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
@@ -558,11 +559,14 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
             particle_node->value, take.settings, num_workers, take.num_particles);
     }
 
+    uint32_t const num_samples = 16;
+    uint32_t const num_bounces = 10 * 1024;
+
+    take.surface_integrator_factory = new rendering::integrator::surface::Pathtracer_DLDL_factory(
+        take.settings, num_workers, num_samples, num_bounces, num_bounces);
+
     for (auto& n : integrator_value.GetObject()) {
-        if ("surface" == n.name) {
-            take.surface_integrator_factory = load_surface_integrator_factory(
-                n.value, take.settings, num_workers, nullptr != take.lighttracer_factory);
-        } else if ("volume" == n.name) {
+        if ("volume" == n.name) {
             take.volume_integrator_factory = load_volume_integrator_factory(n.value, take.settings,
                                                                             num_workers);
         } else if ("photon" == n.name) {
