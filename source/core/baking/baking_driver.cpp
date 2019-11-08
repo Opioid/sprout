@@ -24,7 +24,7 @@ namespace baking {
 
 // static uint32_t constexpr Num_items = 1 * 1024 * 1024;
 
-static uint32_t constexpr Num_items = 100 * 1024;
+static uint32_t constexpr Num_items = 16 * 1024 * 1024;
 
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads, uint32_t max_sample_size,
                progress::Sink& progressor) noexcept
