@@ -1,4 +1,5 @@
 #include "rendering_camera_worker.hpp"
+#include "rendering_worker.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include "rendering/integrator/particle/lighttracer.hpp"

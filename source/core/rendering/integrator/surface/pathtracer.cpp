@@ -4,7 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/rendering_worker.hpp"
+#include "rendering/rendering_worker.inl"
 #include "scene/light/light.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
