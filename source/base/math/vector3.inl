@@ -274,7 +274,7 @@ static bool any_greater_one(Vector3<T> const& v) noexcept {
 
 template <typename T>
 static constexpr bool any_greater_equal(Vector3<T> const& a, Vector3<T> const& b) noexcept {
-    return a[0] >= b[0] || a[1] >= b[1] || a[2] >= b[2];
+    return (a[0] >= b[0]) | (a[1] >= b[1]) | (a[2] >= b[2]);
 }
 
 template <typename T>

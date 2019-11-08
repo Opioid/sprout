@@ -98,16 +98,6 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
     }
 }
 
-void Worker::particle_li(uint32_t frame, int4 const& bounds,
-                         Interface_stack const& interface_stack) noexcept {
-    lighttracer_->li(frame, bounds, *this, interface_stack);
-}
-
-Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
-                     float3& transmittance) noexcept {
-    return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
-}
-
 bool Worker::transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
                                     Filter filter, float3& v) noexcept {
     float3 tv;

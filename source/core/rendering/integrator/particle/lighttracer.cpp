@@ -5,7 +5,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/particle/particle_importance.hpp"
-#include "rendering/rendering_worker.hpp"
+#include "rendering/rendering_worker.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/camera/camera.hpp"

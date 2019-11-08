@@ -4,7 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/rendering_worker.hpp"
+#include "rendering/rendering_worker.inl"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
@@ -79,7 +79,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         Intersection split_intersection = intersection;
 
-        bool const integrate_photons = settings_.num_samples == i &&
+        bool const integrate_photons = (settings_.num_samples == i) &
                                        settings_.photons_not_only_through_specular;
 
         Result const result = integrate(split_ray, split_intersection, worker, integrate_photons);
@@ -122,7 +122,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
+        bool const avoid_caustics = settings_.avoid_caustics & !primary_ray &
                                     worker.interface_stack().top_is_vacuum_or_not_scattering(
                                         worker);
 
@@ -132,8 +132,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         bool const same_side = material_sample.same_hemisphere(wo);
 
         // Only check direct eye-light connections for the very first hit.
-        // Subsequent hits are handled by the MIS scheme.
-        if (0 == i && same_side) {
+        // Subsequent hits are handled by MIS.
+        if ((0 == i) & same_side) {
             result_li += material_sample.radiance();
         }
 
@@ -230,13 +230,13 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         SOFT_ASSERT(all_finite(result_li));
 
-        if (sample_result.type.is(Bxdf_type::Straight) && !treat_as_singular) {
+        if (sample_result.type.is(Bxdf_type::Straight) & !treat_as_singular) {
             sample_result.pdf = previous_bxdf_pdf;
         } else {
             is_translucent = material_sample.is_translucent();
         }
 
-        if (evaluate_back || treat_as_singular) {
+        if (evaluate_back | treat_as_singular) {
             bool         pure_emissive;
             float3 const radiance = evaluate_light(ray, intersection, sample_result,
                                                    treat_as_singular, is_translucent, filter,
@@ -245,8 +245,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             result_li += throughput * radiance;
 
             if (pure_emissive) {
-                transparent &= !worker.scene().prop(intersection.prop)->visible_in_camera() &&
-                               ray.max_t >= scene::Ray_max_t;
+                transparent &= !worker.scene().prop(intersection.prop)->visible_in_camera() &
+                               (ray.max_t >= scene::Ray_max_t);
                 break;
             }
         }
