@@ -7,11 +7,7 @@
 namespace scene::shape {
 
 struct Intersection {
-    union {
-        float3 p;    // position in world space
-        float3 uvw;  // position in texture space
-    };
-
+    float3 p;        // position in world space, or texture space, dependinng on context
     float3 geo_n;    // geometry normal in world space
     float3 t, b, n;  // interpolated tangent frame in world space
     float2 uv;       // texture coordinates
