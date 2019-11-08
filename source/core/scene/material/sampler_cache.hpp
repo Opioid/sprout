@@ -1,21 +1,22 @@
 #ifndef SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
 #define SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
 
-#include <cstdint>
 #include "sampler_settings.hpp"
 
-namespace image::texture::sampler {
+#include <cstdint>
+
+namespace image::texture {
 class Sampler_2D;
 class Sampler_3D;
-}  // namespace image::texture::sampler
+}  // namespace image::texture
 
 namespace scene::material {
 
 class Sampler_cache {
   public:
     using Filter             = Sampler_settings::Filter;
-    using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
-    using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
+    using Texture_sampler_2D = image::texture::Sampler_2D;
+    using Texture_sampler_3D = image::texture::Sampler_3D;
 
     Sampler_cache() noexcept;
 

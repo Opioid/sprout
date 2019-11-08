@@ -2,13 +2,14 @@
 
 namespace scene::material {
 
-Sampler_settings::Sampler_settings(Filter filter, Address address_u, Address address_v)
+Sampler_settings::Sampler_settings(Filter filter, Address address_u, Address address_v) noexcept
     : filter(filter), address_u(address_u), address_v(address_v) {}
 
-uint32_t Sampler_settings::key() const {
+uint32_t Sampler_settings::key() const noexcept {
     uint32_t const address_flat = uint32_t(address_u) << 1 | uint32_t(address_v);
 
     uint32_t const key = uint32_t(filter) | address_flat;
+
     return key;
 }
 

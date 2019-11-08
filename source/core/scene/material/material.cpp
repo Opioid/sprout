@@ -8,17 +8,9 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 
-//#include "image/typed_image.hpp"
-//#include "image/encoding/png/png_writer.hpp"
-//#include "base/spectrum/rgb.hpp"
-//#include "base/encoding/encoding.inl"
-//#include <fstream>
-//#include "base/math/print.hpp"
-//#include <iostream>
-
 namespace scene::material {
 
-std::string Material::identifier() noexcept {
+char const* Material::identifier() noexcept {
     return "Material";
 }
 
@@ -37,10 +29,10 @@ void Material::set_parameters(json::Value const& parameters) noexcept {
     }
 }
 
-void Material::compile(thread::Pool& /*pool*/) noexcept {}
+void Material::compile(thread::Pool& /*threads*/, Scene const& /*scene*/) noexcept {}
 
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
-                        thread::Pool& /*pool*/) noexcept {}
+                        thread::Pool& /*threads*/, Scene const& /*scene*/) noexcept {}
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
                                    Filter /*filter*/, Worker const& /*worker*/) const noexcept {
@@ -52,7 +44,7 @@ float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, 
     return float3(0.f);
 }
 
-float3 Material::average_radiance(float /*area_or_volume*/) const noexcept {
+float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const noexcept {
     return float3(0.f);
 }
 
@@ -82,7 +74,7 @@ float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker cons
     noexcept {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key_, filter);
-        return mask_.sample_1(sampler, uv);
+        return mask_.sample_1(worker, sampler, uv);
     } else {
         return 1.f;
     }
@@ -153,7 +145,8 @@ bool Material::is_scattering_volume() const noexcept {
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                 Transformation const& /*transformation*/, float /*area*/,
-                                bool /*importance_sampling*/, thread::Pool& /*pool*/) noexcept {}
+                                bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                Scene const& /*scene*/) noexcept {}
 
 bool Material::is_animated() const noexcept {
     return false;
@@ -175,13 +168,13 @@ bool Material::is_masked() const noexcept {
     return mask_.is_valid();
 }
 
-bool Material::is_emissive() const noexcept {
+bool Material::is_emissive(Scene const& scene) const noexcept {
     if (has_emission_map()) {
         return true;
     }
 
-    float3 const e = average_radiance(1.f);
-    return math::any_greater_zero(e);
+    float3 const e = average_radiance(1.f, scene);
+    return any_greater_zero(e);
 }
 
 bool Material::is_two_sided() const noexcept {

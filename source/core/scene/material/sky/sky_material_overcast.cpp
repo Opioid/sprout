@@ -17,7 +17,6 @@ material::Sample const& Material_overcast::sample(float3 const&      wo, Ray con
     auto& sample = worker.sample<light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     sample.set(overcast(-wo));
 
@@ -30,7 +29,7 @@ float3 Material_overcast::evaluate_radiance(float3 const& wi, float2 /*uv*/, flo
     return overcast(wi);
 }
 
-float3 Material_overcast::average_radiance(float /*area*/) const noexcept {
+float3 Material_overcast::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     if (is_two_sided()) {
         return 2.f * color_;
     }

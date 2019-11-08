@@ -18,7 +18,7 @@ class alignas(64) AO final : public Integrator {
         float    radius;
     };
 
-    AO(rnd::Generator& rng, take::Settings const& take_settings, Settings const& settings) noexcept;
+    AO(rnd::Generator& rng, Settings const& settings) noexcept;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -35,8 +35,7 @@ class alignas(64) AO final : public Integrator {
 
 class AO_factory final : public Factory {
   public:
-    AO_factory(take::Settings const& settings, uint32_t num_integrators, uint32_t num_samples,
-               float radius) noexcept;
+    AO_factory(uint32_t num_integrators, uint32_t num_samples, float radius) noexcept;
 
     ~AO_factory() noexcept override final;
 

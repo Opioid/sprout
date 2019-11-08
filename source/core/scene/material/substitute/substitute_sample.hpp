@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_SAMPLE_HPP
 
 #include "scene/material/disney/disney.hpp"
 #include "substitute_base_sample.hpp"
@@ -21,3 +22,5 @@ class alignas(64) Sample : public Sample_base {
 };
 
 }  // namespace scene::material::substitute
+
+#endif

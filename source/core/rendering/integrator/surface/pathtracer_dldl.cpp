@@ -21,9 +21,8 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Pathtracer_DLDL::Pathtracer_DLDL(rnd::Generator& rng, take::Settings const& take_settings,
-                                 Settings const& settings) noexcept
-    : Integrator(rng, take_settings), settings_(settings), sampler_(rng) {}
+Pathtracer_DLDL::Pathtracer_DLDL(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng), settings_(settings), sampler_(rng) {}
 
 void Pathtracer_DLDL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -218,12 +217,10 @@ sampler::Sampler& Pathtracer_DLDL::light_sampler(uint32_t /*bounce*/) noexcept {
     return sampler_;
 }
 
-Pathtracer_DLDL_factory::Pathtracer_DLDL_factory(take::Settings const& take_settings,
-                                                 uint32_t num_integrators, uint32_t num_samples,
+Pathtracer_DLDL_factory::Pathtracer_DLDL_factory(uint32_t num_integrators, uint32_t num_samples,
                                                  uint32_t min_bounces,
                                                  uint32_t max_bounces) noexcept
-    : Factory(take_settings),
-      integrators_(memory::allocate_aligned<Pathtracer_DLDL>(num_integrators)) {
+    : integrators_(memory::allocate_aligned<Pathtracer_DLDL>(num_integrators)) {
     settings_.num_samples = num_samples;
     settings_.min_bounces = min_bounces;
     settings_.max_bounces = max_bounces;
@@ -234,7 +231,7 @@ Pathtracer_DLDL_factory::~Pathtracer_DLDL_factory() noexcept {
 }
 
 Integrator* Pathtracer_DLDL_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Pathtracer_DLDL(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Pathtracer_DLDL(rng, settings_);
 }
 
 }  // namespace rendering::integrator::surface

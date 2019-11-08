@@ -31,8 +31,6 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
 
     sample.set_basis(rs.geo_n, wo);
 
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-
     sample.set(sky_.model().evaluate_sky_and_sun(-wo));
 
     return sample;
@@ -43,14 +41,14 @@ float3 Sun_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*
     return sky_.model().evaluate_sky_and_sun(wi);
 }
 
-float3 Sun_material::average_radiance(float /*area*/) const noexcept {
+float3 Sun_material::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
 void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*pool*/) noexcept {
-}
+                                    bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                    Scene const& /*scene*/) noexcept {}
 
 size_t Sun_material::num_bytes() const noexcept {
     return sizeof(*this);
@@ -65,8 +63,6 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
     auto& sample = worker.sample<material::light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
-
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     float3 const radiance = emission_(sky_.sun_v(-wo));
 
@@ -87,15 +83,15 @@ float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, fl
     return radiance;
 }
 
-float3 Sun_baked_material::average_radiance(float /*area*/) const noexcept {
+float3 Sun_baked_material::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
 void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                           uint64_t /*time*/,
                                           Transformation const& /*transformation*/, float /*area*/,
-                                          bool /*importance_sampling*/,
-                                          thread::Pool& /*pool*/) noexcept {
+                                          bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                          Scene const& /*scene*/) noexcept {
     using namespace image;
 
     if (!sky_.sun_changed_since_last_check()) {

@@ -14,7 +14,7 @@ namespace scene::material::substitute {
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::set(float3 const& color, float3 const& radiance, float f0, float alpha,
-                                float metallic) noexcept {
+                                float metallic, bool avoid_caustics) noexcept {
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
@@ -25,20 +25,21 @@ void Base_closure<Diffuse>::set(float3 const& color, float3 const& radiance, flo
     metallic_ = metallic;
 
     alpha_ = alpha;
+
+    avoid_caustics_ = avoid_caustics;
 }
 
 template <typename Diffuse>
 template <bool Forward>
 bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const& wo,
                                                   float3 const& h, float wo_dot_h,
-                                                  Layer const& layer, bool avoid_caustics) const
-    noexcept {
+                                                  Layer const& layer) const noexcept {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
 
-    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics_ && alpha_ <= ggx::Min_alpha) {
         if constexpr (Forward) {
             return {n_dot_wi * d.reflection, d.pdf};
         } else {
@@ -71,9 +72,8 @@ template <typename Diffuse>
 template <bool Forward>
 bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 const& wo,
                                                         float3 const& h, float wo_dot_h,
-                                                        Layer const& layer,
-                                                        bool avoid_caustics) const noexcept {
-    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
+                                                        Layer const& layer) const noexcept {
+    if (avoid_caustics_ && alpha_ <= ggx::Min_alpha) {
         return {float3(0.f), 0.f};
     }
 
@@ -182,8 +182,8 @@ float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_d
     return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
 }
 
-inline material::Layer const& Sample_base::base_layer() const noexcept {
-    return layer_;
+inline float3 const& Sample_base::base_shading_normal() const noexcept {
+    return layer_.n_;
 }
 
 }  // namespace scene::material::substitute

@@ -13,7 +13,7 @@ class Texture;
 
 class Provider final : public resource::Provider<Texture> {
   public:
-    Provider() noexcept;
+    Provider(bool no_textures) noexcept;
 
     enum class Usage {
         Undefined,
@@ -37,6 +37,9 @@ class Provider final : public resource::Provider<Texture> {
     size_t num_bytes() const noexcept override final;
 
     size_t num_bytes(Texture const* resource) const noexcept override final;
+
+  private:
+    bool no_textures_;
 };
 
 }  // namespace texture

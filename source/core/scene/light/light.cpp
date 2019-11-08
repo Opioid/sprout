@@ -13,7 +13,7 @@ Light::Light() = default;
 
 static inline float3 prop_power(uint32_t prop, uint32_t part, float area, AABB const& scene_bb,
                                 Scene const& scene) noexcept {
-    float3 const radiance = scene.prop_material(prop, part)->average_radiance(area);
+    float3 const radiance = scene.prop_material(prop, part)->average_radiance(area, scene);
 
     if (scene.prop_shape(prop)->is_finite()) {
         return area * radiance;
@@ -24,7 +24,7 @@ static inline float3 prop_power(uint32_t prop, uint32_t part, float area, AABB c
 
 static inline float3 volume_power(uint32_t prop, uint32_t part, float volume,
                                   Scene const& scene) noexcept {
-    float3 const radiance = scene.prop_material(prop, part)->average_radiance(volume);
+    float3 const radiance = scene.prop_material(prop, part)->average_radiance(volume, scene);
 
     return volume * radiance;
 }

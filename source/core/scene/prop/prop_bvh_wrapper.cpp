@@ -4,7 +4,7 @@
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_tree.inl"
 #include "scene/scene_ray.inl"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/shape/node_stack.inl"
 
 namespace scene::prop {

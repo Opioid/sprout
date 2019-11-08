@@ -10,7 +10,7 @@
 
 namespace op {
 uint32_t average(std::vector<Item> const& items, it::options::Options const& /*options*/,
-                 thread::Pool& /*pool*/) noexcept {
+                 thread::Pool& /*threads*/) noexcept {
     for (auto const& i : items) {
         if (1 == i.image->num_channels()) {
             logging::info(string::to_string(round(i.image->average_1(), 4)));

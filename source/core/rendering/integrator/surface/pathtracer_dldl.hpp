@@ -17,8 +17,7 @@ class alignas(64) Pathtracer_DLDL final : public Integrator {
         uint32_t max_bounces;
     };
 
-    Pathtracer_DLDL(rnd::Generator& rng, take::Settings const& take_settings,
-                    Settings const& settings) noexcept;
+    Pathtracer_DLDL(rnd::Generator& rng, Settings const& settings) noexcept;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -47,8 +46,7 @@ class alignas(64) Pathtracer_DLDL final : public Integrator {
 
 class Pathtracer_DLDL_factory final : public Factory {
   public:
-    Pathtracer_DLDL_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                            uint32_t num_samples, uint32_t min_bounces,
+    Pathtracer_DLDL_factory(uint32_t num_integrators, uint32_t num_samples, uint32_t min_bounces,
                             uint32_t max_bounces) noexcept;
 
     ~Pathtracer_DLDL_factory() noexcept override final;

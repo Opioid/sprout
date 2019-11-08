@@ -7,7 +7,7 @@ namespace scene::material::light {
 
 class alignas(64) Sample : public material::Sample {
   public:
-    Layer const& base_layer() const noexcept override final;
+    float3 const& base_shading_normal() const noexcept override final;
 
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
 
@@ -20,8 +20,6 @@ class alignas(64) Sample : public material::Sample {
     bool is_pure_emissive() const noexcept override final;
 
     void set(float3 const& radiance) noexcept;
-
-    Layer layer_;
 
   private:
     float3 radiance_;

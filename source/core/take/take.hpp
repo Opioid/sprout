@@ -2,7 +2,6 @@
 #define SU_CORE_TAKE_TAKE_HPP
 
 #include "base/memory/array.hpp"
-#include "take_settings.hpp"
 #include "take_view.hpp"
 
 #include <string>
@@ -38,15 +37,9 @@ struct Take {
 
     void clear() noexcept;
 
-    Settings settings;
-
     std::string scene_filename;
 
     take::View view;
-
-    Photon_settings photon_settings;
-
-    uint64_t num_particles;
 
     rendering::integrator::surface::Factory*              surface_integrator_factory = nullptr;
     rendering::integrator::volume::Factory*               volume_integrator_factory  = nullptr;

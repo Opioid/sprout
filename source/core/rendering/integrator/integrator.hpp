@@ -1,10 +1,9 @@
 #ifndef SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 #define SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 
-#include <cstddef>
-#include <cstdint>
 #include "scene/material/sampler_settings.hpp"
-#include "take/take_settings.hpp"
+
+#include <cstdint>
 
 namespace rnd {
 class Generator;
@@ -71,7 +70,7 @@ class Integrator {
     using Intersection    = scene::prop::Intersection;
     using Visibility      = scene::shape::Visibility;
 
-    Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept;
+    Integrator(rnd::Generator& rng) noexcept;
 
     virtual ~Integrator() noexcept;
 
@@ -81,8 +80,6 @@ class Integrator {
 
   protected:
     rnd::Generator& rng_;
-
-    take::Settings const take_settings_;
 };
 
 }  // namespace rendering::integrator

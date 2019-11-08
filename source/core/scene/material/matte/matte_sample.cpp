@@ -8,8 +8,8 @@
 
 namespace scene::material::matte {
 
-material::Layer const& Sample::base_layer() const noexcept {
-    return layer_;
+float3 const& Sample::base_shading_normal() const noexcept {
+    return layer_.n_;
 }
 
 bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {

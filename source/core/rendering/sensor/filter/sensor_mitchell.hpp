@@ -25,6 +25,9 @@ class Mitchell {
     float radius_inv_;
 
     Interpolated_function_1D<float> mitchell_;
+
+    float b_;
+    float c_;
 };
 
 }  // namespace rendering::sensor::filter

@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_SHAPE_NODE_STACK_HPP
 #define SU_CORE_SCENE_SHAPE_NODE_STACK_HPP
 
-#include <cstddef>
 #include <cstdint>
 
 namespace scene::shape {
@@ -20,11 +19,10 @@ class Node_stack {
 
     uint32_t pop() noexcept;
 
-    size_t num_bytes() const noexcept;
-
   private:
-    uint32_t  num_elements_;
-    uint32_t  end_;
+    uint32_t num_elements_;
+    uint32_t end_;
+
     uint32_t* stack_;
 };
 

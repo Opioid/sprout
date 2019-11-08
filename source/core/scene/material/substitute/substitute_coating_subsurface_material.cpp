@@ -22,9 +22,9 @@ Material_coating_subsurface::Material_coating_subsurface(
     Sampler_settings const& sampler_settings) noexcept
     : Material_clearcoat(sampler_settings, false) {}
 
-void Material_coating_subsurface::compile(thread::Pool& threads) noexcept {
+void Material_coating_subsurface::compile(thread::Pool& threads, Scene const& scene) noexcept {
     if (density_map_.is_valid()) {
-        auto const& texture = density_map_.texture();
+        auto const& texture = density_map_.texture(scene);
 
         volumetric::Octree_builder builder;
         builder.build(tree_, texture, cm_, threads);
@@ -42,7 +42,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
     float thickness;
     float weight;
     if (coating_thickness_map_.is_valid()) {
-        float const relative_thickness = coating_thickness_map_.sample_1(sampler, rs.uv);
+        float const relative_thickness = coating_thickness_map_.sample_1(worker, sampler, rs.uv);
 
         thickness = coating_.thickness * relative_thickness;
         weight    = relative_thickness > 0.1f ? 1.f : relative_thickness;
@@ -60,7 +60,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
 
         sample.set(anisotropy_);
 
-        set_coating_basis(wo, rs, sampler, sample);
+        set_coating_basis(wo, rs, sampler, worker, sample);
 
         sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
                             fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
@@ -70,9 +70,9 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
 
     auto& sample = worker.sample<Sample_coating_subsurface>();
 
-    set_sample(wo, rs, coating_ior, sampler, sample);
+    set_sample(wo, rs, coating_ior, sampler, worker, sample);
 
-    set_coating_basis(wo, rs, sampler, sample);
+    set_coating_basis(wo, rs, sampler, worker, sample);
 
     sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
                         fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
@@ -112,7 +112,7 @@ float3 Material_coating_subsurface::absorption_coefficient(float2 uv, Filter fil
                                                            Worker const& worker) const noexcept {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const color   = color_map_.sample_3(sampler, uv);
+        float3 const color   = color_map_.sample_3(worker, sampler, uv);
 
         return extinction_coefficient(color, attenuation_distance_);
     }
@@ -130,7 +130,7 @@ CC Material_coating_subsurface::collision_coefficients(float2 uv, Filter filter,
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    float3 const color = color_map_.sample_3(sampler, uv);
+    float3 const color = color_map_.sample_3(worker, sampler, uv);
 
     return attenuation(color, attenuation_distance_);
 }
@@ -193,7 +193,7 @@ float Material_coating_subsurface::density(float3 const& p, Filter filter,
 
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return density_map_.sample_1(sampler, p_g);
+    return density_map_.sample_1(worker, sampler, p_g);
 }
 
 float3 Material_coating_subsurface::color(float3 const& p, Filter /*filter*/,
@@ -202,7 +202,7 @@ float3 Material_coating_subsurface::color(float3 const& p, Filter /*filter*/,
 
     //	auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    //	float const d = std::min(16.f * density_map_.sample_1(sampler, p_g), 1.f);
+    //	float const d = std::min(16.f * density_map_.sample_1(worker, sampler, p_g), 1.f);
 
     float const x = 1.f - (p_g[1] - 0.5f);
     float const d = std::clamp(x * x, 0.1f, 1.f);

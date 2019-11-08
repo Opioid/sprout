@@ -15,7 +15,7 @@ class Constant : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override final;
 
-    float3 average_radiance(float area) const noexcept override final;
+    float3 average_radiance(float area, Scene const& scene) const noexcept override final;
 
     float ior() const noexcept override final;
 

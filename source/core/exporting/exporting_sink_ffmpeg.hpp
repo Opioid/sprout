@@ -1,9 +1,11 @@
-#pragma once
+#ifndef SU_CORE_EXPORTING_SINK_FFMPEG_HPP
+#define SU_CORE_EXPORTING_SINK_FFMPEG_HPP
+
+#include "exporting_sink.hpp"
+#include "image/encoding/encoding_srgb.hpp"
 
 #include <cstdio>
 #include <string>
-#include "exporting_sink.hpp"
-#include "image/encoding/encoding_srgb.hpp"
 
 namespace exporting {
 
@@ -12,7 +14,7 @@ class Ffmpeg : public Sink, image::encoding::Srgb {
     Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion,
            uint32_t framerate) noexcept;
 
-    ~Ffmpeg() noexcept;
+    ~Ffmpeg() noexcept override final;
 
     void write(image::Float4 const& image, uint32_t frame,
                thread::Pool& threads) noexcept override final;
@@ -22,3 +24,5 @@ class Ffmpeg : public Sink, image::encoding::Srgb {
 };
 
 }  // namespace exporting
+
+#endif

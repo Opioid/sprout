@@ -4,7 +4,6 @@
 #include "base/math/sincos.hpp"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
-#include "image/texture/sampler/address_mode.hpp"
 #include "image/typed_image.hpp"
 
 namespace image::procedural {

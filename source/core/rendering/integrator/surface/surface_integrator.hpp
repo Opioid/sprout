@@ -18,7 +18,7 @@ class Integrator : public integrator::Integrator {
   public:
     using Interface_stack = scene::prop::Interface_stack;
 
-    Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept;
+    Integrator(rnd::Generator& rng) noexcept;
 
     ~Integrator() noexcept override;
 
@@ -28,14 +28,11 @@ class Integrator : public integrator::Integrator {
 
 class Factory {
   public:
-    Factory(take::Settings const& settings) noexcept;
+    Factory() noexcept;
 
     virtual ~Factory() noexcept;
 
     virtual Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept = 0;
-
-  protected:
-    take::Settings const& take_settings_;
 };
 
 }  // namespace integrator::surface

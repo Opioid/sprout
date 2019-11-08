@@ -9,8 +9,8 @@
 
 namespace scene::material::metallic_paint {
 
-material::Layer const& Sample::base_layer() const noexcept {
-    return base_;
+float3 const& Sample::base_shading_normal() const noexcept {
+    return base_.n_;
 }
 
 bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {

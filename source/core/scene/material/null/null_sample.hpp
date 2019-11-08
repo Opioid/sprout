@@ -7,7 +7,7 @@ namespace scene::material::null {
 
 class Sample final : public material::Sample {
   public:
-    Layer const& base_layer() const noexcept override final;
+    float3 const& base_shading_normal() const noexcept override final;
 
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
 
@@ -18,9 +18,6 @@ class Sample final : public material::Sample {
     bool ior_greater_one() const noexcept override final;
 
     bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
-
-  private:
-    Layer layer_;
 };
 
 }  // namespace scene::material::null

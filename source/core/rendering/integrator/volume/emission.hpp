@@ -11,8 +11,7 @@ class alignas(64) Emission final : public Integrator {
         float step_size;
     };
 
-    Emission(rnd::Generator& rng, take::Settings const& take_settings,
-             Settings const& settings) noexcept;
+    Emission(rnd::Generator& rng, Settings const& settings) noexcept;
 
     virtual void prepare(scene::Scene const& scene,
                          uint32_t            num_samples_per_pixel) noexcept override final;
@@ -30,8 +29,7 @@ class alignas(64) Emission final : public Integrator {
 
 class Emission_factory final : public Factory {
   public:
-    Emission_factory(take::Settings const& settings, uint32_t num_integrators,
-                     float step_size) noexcept;
+    Emission_factory(uint32_t num_integrators, float step_size) noexcept;
 
     virtual ~Emission_factory() noexcept override final;
 

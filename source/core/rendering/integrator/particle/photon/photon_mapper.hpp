@@ -40,8 +40,7 @@ class Mapper : public Integrator {
         bool full_light_path;
     };
 
-    Mapper(rnd::Generator& rng, take::Settings const& take_settings,
-           Settings const& settings) noexcept;
+    Mapper(rnd::Generator& rng, Settings const& settings) noexcept;
 
     ~Mapper() noexcept override;
 

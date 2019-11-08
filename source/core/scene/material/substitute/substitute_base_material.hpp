@@ -12,7 +12,7 @@ class Material_base : public material::Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override;
 
-    float3 average_radiance(float area) const noexcept override final;
+    float3 average_radiance(float area, Scene const& scene) const noexcept override final;
 
     bool has_emission_map() const noexcept override final;
 
@@ -34,11 +34,12 @@ class Material_base : public material::Material {
     void set_emission_factor(float emission_factor) noexcept;
 
   protected:
-    using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
+    using Texture_sampler_2D = image::texture::Sampler_2D;
 
     template <typename Sample>
     void set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
-                    Texture_sampler_2D const& sampler, Sample& sample) const noexcept;
+                    Texture_sampler_2D const& sampler, Worker const& worker, Sample& sample) const
+        noexcept;
 
     Texture_adapter color_map_;
     Texture_adapter normal_map_;

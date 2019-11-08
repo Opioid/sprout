@@ -2,12 +2,11 @@
 
 namespace rendering::integrator::surface {
 
-Integrator::Integrator(rnd::Generator& rng, take::Settings const& settings) noexcept
-    : integrator::Integrator(rng, settings) {}
+Integrator::Integrator(rnd::Generator& rng) noexcept : integrator::Integrator(rng) {}
 
 Integrator::~Integrator() noexcept {}
 
-Factory::Factory(take::Settings const& settings) noexcept : take_settings_(settings) {}
+Factory::Factory() noexcept {}
 
 Factory::~Factory() noexcept {}
 

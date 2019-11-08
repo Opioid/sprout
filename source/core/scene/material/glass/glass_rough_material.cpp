@@ -25,7 +25,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     if (normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, normal_map_, sampler);
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -33,7 +33,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
 
     float alpha;
     if (roughness_map_.is_valid()) {
-        float const r = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
+        float const r = ggx::map_roughness(roughness_map_.sample_1(worker, sampler, rs.uv));
 
         alpha = r * r;
     } else {

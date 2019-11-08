@@ -14,13 +14,11 @@
 #include "texture_float3.hpp"
 #include "texture_half3.hpp"
 
-#include <string>
-
 namespace image::texture {
 
 class alignas(64) Texture {
   public:
-    static std::string identifier() noexcept;
+    static char const* identifier() noexcept;
 
     Texture(Byte1_unorm const& texture) noexcept;
     Texture(Byte2_snorm const& texture) noexcept;
@@ -36,12 +34,15 @@ class alignas(64) Texture {
     Texture(Float3 const& texture) noexcept;
 
     int32_t num_channels() const noexcept;
+
     int32_t num_elements() const noexcept;
 
-    int2        dimensions_2() const noexcept;
+    int2 dimensions_2() const noexcept;
+
     int3 const& dimensions_3() const noexcept;
 
-    int2        back_2() const noexcept;
+    int2 back_2() const noexcept;
+
     int3 const& back_3() const noexcept;
 
     float2        dimensions_float2() const noexcept;
@@ -71,6 +72,7 @@ class alignas(64) Texture {
     float average_1() const noexcept;
 
     float3 average_3() const noexcept;
+
     float3 average_3(int32_t element) const noexcept;
 
   private:

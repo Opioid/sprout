@@ -49,7 +49,7 @@ class Sample {
 
     virtual ~Sample();
 
-    virtual Layer const& base_layer() const noexcept = 0;
+    virtual float3 const& base_shading_normal() const noexcept = 0;
 
     virtual bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept = 0;
 

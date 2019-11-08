@@ -19,13 +19,12 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-#define ISLAND_MODE
+//#define ISLAND_MODE
 
 namespace rendering::integrator::particle::photon {
 
-Mapper::Mapper(rnd::Generator& rng, take::Settings const& take_settings,
-               Settings const& settings) noexcept
-    : Integrator(rng, take_settings),
+Mapper::Mapper(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng),
       settings_(settings),
       sampler_(rng),
       photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}

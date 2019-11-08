@@ -7,8 +7,8 @@
 
 namespace scene::material::metal {
 
-material::Layer const& Sample_isotropic::base_layer() const noexcept {
-    return layer_;
+float3 const& Sample_isotropic::base_shading_normal() const noexcept {
+    return layer_.n_;
 }
 
 bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
@@ -73,8 +73,8 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
     }
 }
 
-material::Layer const& Sample_anisotropic::base_layer() const noexcept {
-    return layer_;
+float3 const& Sample_anisotropic::base_shading_normal() const noexcept {
+    return layer_.n_;
 }
 
 bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const

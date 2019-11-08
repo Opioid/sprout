@@ -17,8 +17,7 @@ class Map {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Map(uint32_t num_photons, float search_radius, float merge_radius, float coarse_search_radius,
-        bool separate_indirect) noexcept;
+    Map(uint32_t num_photons, float search_radius, float merge_radius) noexcept;
 
     ~Map() noexcept;
 
@@ -41,17 +40,13 @@ class Map {
   private:
     AABB calculate_aabb(uint32_t num_photons, thread::Pool& threads) const noexcept;
 
-    uint64_t num_caustic_paths_;
-    uint64_t num_indirect_paths_;
+    uint64_t num_paths_;
 
     uint32_t num_photons_;
 
-    uint32_t red_num_fine_;
-    uint32_t red_num_coarse_;
+    uint32_t reduced_num_;
 
     Photon* photons_;
-
-    bool separate_indirect_;
 
     bool caustic_only_;
 
@@ -61,10 +56,7 @@ class Map {
 
     uint32_t* num_reduced_;
 
-    Grid fine_grid_;
-    Grid coarse_grid_;
-
-    Photon_ref* photon_refs_;
+    Grid grid_;
 };
 
 }  // namespace rendering::integrator::particle::photon

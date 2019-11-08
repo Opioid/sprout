@@ -29,7 +29,7 @@ void Postprocessor::apply(image::Float4 const& source, image::Float4& destinatio
 }
 
 void Postprocessor::pre_apply(image::Float4 const& /*source*/, image::Float4& /*destination*/,
-                              thread::Pool& /*pool*/) {}
+                              thread::Pool& /*threads*/) {}
 
 void Postprocessor::post_pass(uint32_t /*pass*/) {}
 

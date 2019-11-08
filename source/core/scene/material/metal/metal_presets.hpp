@@ -1,8 +1,9 @@
 #ifndef SU_CORE_SCENE_MATERIAL_METAL_PRESETS_HPP
 #define SU_CORE_SCENE_MATERIAL_METAL_PRESETS_HPP
 
-#include <string>
 #include "base/math/vector3.hpp"
+
+#include <string>
 
 namespace scene::material::metal {
 

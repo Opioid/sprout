@@ -19,7 +19,7 @@ class alignas(64) Emissionmap : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override;
 
-    float3 average_radiance(float area) const noexcept override final;
+    float3 average_radiance(float area, Scene const& scene) const noexcept override final;
 
     float ior() const noexcept override;
 
@@ -32,26 +32,28 @@ class alignas(64) Emissionmap : public Material {
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads) noexcept override;
+                          bool importance_sampling, thread::Pool& threads,
+                          Scene const& scene) noexcept override;
 
     void set_emission_map(Texture_adapter const& emission_map) noexcept;
+
     void set_emission_factor(float emission_factor) noexcept;
 
     size_t num_bytes() const noexcept override;
 
   protected:
     void prepare_sampling_internal(Shape const& shape, int32_t element, bool importance_sampling,
-                                   thread::Pool& threads) noexcept;
+                                   thread::Pool& threads, Scene const& scene) noexcept;
 
     Texture_adapter emission_map_;
 
     Distribution_2D distribution_;
 
-    float3 average_emission_;
-
     float emission_factor_;
 
     float total_weight_;
+
+    float3 average_emission_;
 };
 
 }  // namespace scene::material::light

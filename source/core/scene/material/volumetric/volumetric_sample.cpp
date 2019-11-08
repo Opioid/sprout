@@ -13,8 +13,8 @@ static inline float phase_hg(float cos_theta, float g) noexcept {
     return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
 }
 
-material::Layer const& Sample::base_layer() const noexcept {
-    return layer_;
+float3 const& Sample::base_shading_normal() const noexcept {
+    return geo_n_;
 }
 
 bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {

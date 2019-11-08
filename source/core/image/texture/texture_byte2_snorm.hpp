@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_BYTE2_SNORM_HPP
 #define SU_CORE_IMAGE_TEXTURE_BYTE2_SNORM_HPP
 
-#include <cstddef>
 #include "image/typed_image_fwd.hpp"
 
 namespace image::texture {

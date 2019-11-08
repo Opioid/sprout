@@ -7,7 +7,7 @@ namespace scene::material::volumetric {
 
 class Sample : public material::Sample {
   public:
-    Layer const& base_layer() const noexcept override final;
+    float3 const& base_shading_normal() const noexcept override;
 
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override;
 
@@ -26,10 +26,6 @@ class Sample : public material::Sample {
 
     float4 sample(float3 const& wo, float2 r2) const noexcept;
 
-  public:
-    Layer layer_;
-
-  private:
     float anisotropy_;
 };
 

@@ -391,7 +391,7 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) noexce
 // https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
 
 inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1D() noexcept
-    : lut_size_(0), lut_(nullptr), cdf_size_(0), cdf_(nullptr), integral_(-1.f) {}
+    : lut_size_(0), cdf_size_(0), lut_(nullptr), cdf_(nullptr), integral_(-1.f) {}
 
 inline Distribution_implicit_pdf_lut_lin_1D::~Distribution_implicit_pdf_lut_lin_1D() noexcept {
     memory::free_aligned(cdf_);

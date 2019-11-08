@@ -9,7 +9,7 @@ namespace math {
 struct AABB;
 }
 
-namespace image::texture::sampler {
+namespace image::texture {
 class Sampler_2D;
 }
 

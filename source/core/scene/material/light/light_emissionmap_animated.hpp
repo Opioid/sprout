@@ -13,8 +13,8 @@ class Emissionmap_animated : public Emissionmap {
 
     ~Emissionmap_animated() noexcept override;
 
-    void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
-                  thread::Pool& threads) noexcept override final;
+    void simulate(uint64_t start, uint64_t end, uint64_t frame_length, thread::Pool& threads,
+                  Scene const& scene) noexcept override final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
@@ -28,7 +28,8 @@ class Emissionmap_animated : public Emissionmap {
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads) noexcept override final;
+                          bool importance_sampling, thread::Pool& threads,
+                          Scene const& scene) noexcept override final;
 
     bool is_animated() const noexcept override final;
 
@@ -38,7 +39,7 @@ class Emissionmap_animated : public Emissionmap {
     size_t num_bytes() const noexcept override;
 
   protected:
-    uint64_t frame_length_;
+    uint64_t animation_duration_;
 
     int32_t element_;
 };

@@ -7,6 +7,7 @@
 #include "base/spectrum/heatmap.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "image/texture/texture.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/collision_coefficients.inl"
@@ -50,8 +51,8 @@ CCE Grid::collision_coefficients_emission(float3 const& uvw, Filter filter,
     return {{d * cc_.a, d * cc_.s}, emission_};
 }
 
-void Grid::compile(thread::Pool& threads) noexcept {
-    auto const& texture = density_.texture();
+void Grid::compile(thread::Pool& threads, Scene const& scene) noexcept {
+    auto const& texture = density_.texture(scene);
 
     Octree_builder builder;
     builder.build(tree_, texture, cm_, threads);
@@ -74,7 +75,7 @@ size_t Grid::num_bytes() const noexcept {
 float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return density_.sample_1(sampler, uvw);
+    return density_.sample_1(worker, sampler, uvw);
 }
 
 Grid_emission::Grid_emission(Sampler_settings const& sampler_settings,
@@ -102,34 +103,34 @@ float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const
 
 void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                      Transformation const& /*transformation*/, float /*area*/,
-                                     bool importance_sampling, thread::Pool& threads) noexcept {
+                                     bool importance_sampling, thread::Pool& threads,
+                                     Scene const& scene) noexcept {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
         return;
     }
 
-    auto const& texture = density_.texture();
+    auto const& texture = density_.texture(scene);
 
     float3 const emission = cc_.a * emission_;
 
     if (importance_sampling) {
         auto const& d = texture.dimensions_3();
 
-        Distribution_2D* conditional_2d = distribution_.allocate(d[2]);
+        Distribution_2D* conditional_2d = distribution_.allocate(uint32_t(d[2]));
 
         memory::Array<float3> ars(threads.num_threads());
 
         threads.run_range(
             [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
                                                             int32_t end) {
-                float* luminance = memory::allocate_aligned<float>(d[0]);
+                auto luminance = memory::Buffer<float>(uint32_t(d[0]));
 
                 float3 ar(0.f);
 
                 for (int32_t z = begin; z < end; ++z) {
-                    Distribution_2D::Distribution_impl* conditional = conditional_2d[z].allocate(
-                        d[1]);
+                    auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
 
                     for (int32_t y = 0; y < d[1]; ++y) {
                         for (int32_t x = 0; x < d[0]; ++x) {
@@ -142,15 +143,13 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                             ar += radiance;
                         }
 
-                        conditional[y].init(luminance, d[0]);
+                        conditional[y].init(luminance, uint32_t(d[0]));
                     }
 
                     conditional_2d[z].init();
                 }
 
                 ars[id] = ar;
-
-                memory::free_aligned(luminance);
             },
             0, d[2]);
 
@@ -226,8 +225,8 @@ void Grid_color::set_attenuation(float scattering_factor, float distance) noexce
     scattering_factor_ = scattering_factor;
 }
 
-void Grid_color::compile(thread::Pool& threads) noexcept {
-    auto const& texture = color_.texture();
+void Grid_color::compile(thread::Pool& threads, Scene const& scene) noexcept {
+    auto const& texture = color_.texture(scene);
 
     Octree_builder builder;
     builder.build(tree_, texture, CM(distance_, scattering_factor_), threads);
@@ -248,7 +247,7 @@ size_t Grid_color::num_bytes() const noexcept {
 float4 Grid_color::color(float3 const& uvw, Filter filter, Worker const& worker) const noexcept {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return color_.sample_4(sampler, uvw);
+    return color_.sample_4(worker, sampler, uvw);
 }
 
 }  // namespace scene::material::volumetric

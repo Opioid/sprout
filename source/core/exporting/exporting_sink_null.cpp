@@ -7,6 +7,6 @@ Null::Null() noexcept {}
 Null::~Null() noexcept {}
 
 void Null::write(image::Float4 const& /*image*/, uint32_t /*frame*/,
-                 thread::Pool& /*pool*/) noexcept {}
+                 thread::Pool& /*threads*/) noexcept {}
 
 }  // namespace exporting

@@ -1,18 +1,17 @@
 #ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
-#include <string_view>
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
 #include "collision_coefficients.hpp"
 #include "image/texture/texture_adapter.hpp"
-#include "image/texture/texture_types.hpp"
 #include "sampler_settings.hpp"
+
+#include <string_view>
 
 namespace math {
 struct ray;
-struct AABB;
 }  // namespace math
 
 namespace rnd {
@@ -32,6 +31,7 @@ namespace scene {
 struct Ray;
 struct Renderstate;
 class Worker;
+class Scene;
 
 namespace entity {
 struct Composed_transformation;
@@ -51,12 +51,13 @@ class Sample;
 
 class Material {
   public:
-    using Filter         = Sampler_settings::Filter;
-    using Shape          = shape::Shape;
-    using Transformation = entity::Composed_transformation;
-    using Sampler        = sampler::Sampler;
+    using Filter          = Sampler_settings::Filter;
+    using Shape           = shape::Shape;
+    using Transformation  = entity::Composed_transformation;
+    using Sampler         = sampler::Sampler;
+    using Texture_adapter = image::texture::Adapter;
 
-    static std::string identifier() noexcept;
+    static char const* identifier() noexcept;
 
     Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
 
@@ -66,10 +67,10 @@ class Material {
 
     void set_parameters(json::Value const& parameters) noexcept;
 
-    virtual void compile(thread::Pool& threads) noexcept;
+    virtual void compile(thread::Pool& threads, Scene const& scene) noexcept;
 
     virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
-                          thread::Pool& threads) noexcept;
+                          thread::Pool& threads, Scene const& scene) noexcept;
 
     virtual const Sample& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, Sampler& sampler, Worker const& worker) const
@@ -81,7 +82,7 @@ class Material {
     virtual float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume,
                                      Filter filter, Worker const& worker) const noexcept;
 
-    virtual float3 average_radiance(float area_or_volume) const noexcept;
+    virtual float3 average_radiance(float area_or_volume, Scene const& scene) const noexcept;
 
     virtual bool has_emission_map() const noexcept;
 
@@ -139,7 +140,8 @@ class Material {
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                                   Transformation const& transformation, float area,
-                                  bool importance_sampling, thread::Pool& threads) noexcept;
+                                  bool importance_sampling, thread::Pool& threads,
+                                  Scene const& scene) noexcept;
 
     virtual bool is_animated() const noexcept;
 
@@ -150,9 +152,11 @@ class Material {
     uint32_t sampler_key() const noexcept;
 
     virtual bool is_caustic() const noexcept;
+
     virtual bool is_masked() const noexcept;
 
-    bool is_emissive() const noexcept;
+    bool is_emissive(Scene const& scene) const noexcept;
+
     bool is_two_sided() const noexcept;
 
     virtual size_t num_bytes() const noexcept = 0;

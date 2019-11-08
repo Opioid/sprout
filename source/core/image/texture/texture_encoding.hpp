@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_ENCODING_HPP
 #define SU_CORE_IMAGE_TEXTURE_ENCODING_HPP
 
-#include <cstdint>
 #include "base/math/vector.hpp"
 
 namespace image::texture::encoding {

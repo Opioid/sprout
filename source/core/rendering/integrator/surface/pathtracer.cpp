@@ -20,12 +20,8 @@
 
 namespace rendering::integrator::surface {
 
-Pathtracer::Pathtracer(rnd::Generator& rng, take::Settings const& take_settings,
-                       Settings const& settings) noexcept
-    : Integrator(rng, take_settings),
-      settings_(settings),
-      sampler_(rng),
-      material_samplers_{rng, rng, rng} {}
+Pathtracer::Pathtracer(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng), settings_(settings), sampler_(rng), material_samplers_{rng, rng, rng} {}
 
 Pathtracer::~Pathtracer() noexcept {}
 
@@ -183,12 +179,10 @@ sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Pathtracer_factory::Pathtracer_factory(take::Settings const& take_settings,
-                                       uint32_t num_integrators, uint32_t num_samples,
+Pathtracer_factory::Pathtracer_factory(uint32_t num_integrators, uint32_t num_samples,
                                        uint32_t min_bounces, uint32_t max_bounces,
                                        bool enable_caustics) noexcept
-    : Factory(take_settings),
-      integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
+    : integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
       settings_{num_samples, min_bounces, max_bounces, !enable_caustics} {}
 
 Pathtracer_factory::~Pathtracer_factory() noexcept {
@@ -196,7 +190,7 @@ Pathtracer_factory::~Pathtracer_factory() noexcept {
 }
 
 Integrator* Pathtracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Pathtracer(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Pathtracer(rng, settings_);
 }
 
 }  // namespace rendering::integrator::surface

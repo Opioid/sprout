@@ -1,6 +1,6 @@
 #include "matte_material.hpp"
 #include "base/math/vector3.inl"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_sampler.hpp"
 #include "matte_sample.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"

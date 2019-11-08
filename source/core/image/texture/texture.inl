@@ -8,7 +8,7 @@
 
 namespace image::texture {
 
-inline std::string Texture::identifier() noexcept {
+inline char const* Texture::identifier() noexcept {
     return "Texture";
 }
 

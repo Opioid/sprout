@@ -21,11 +21,12 @@ class Sky_material : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              scene::Worker const& worker) const noexcept override final;
 
-    float3 average_radiance(float area) const noexcept override final;
+    float3 average_radiance(float area, scene::Scene const& scene) const noexcept override final;
 
-    void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
+    void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads) noexcept override final;
+                          bool importance_sampling, thread::Pool& threads,
+                          scene::Scene const& scene) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 };
@@ -44,7 +45,7 @@ class Sky_baked_material : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              scene::Worker const& worker) const noexcept override final;
 
-    float3 average_radiance(float area) const noexcept override final;
+    float3 average_radiance(float area, scene::Scene const& scene) const noexcept override final;
 
     bool has_emission_map() const noexcept override final;
 
@@ -55,7 +56,8 @@ class Sky_baked_material : public Material {
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads) noexcept override final;
+                          bool importance_sampling, thread::Pool& threads,
+                          scene::Scene const& scene) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
@@ -66,8 +68,6 @@ class Sky_baked_material : public Material {
     image::Float3 cache_;
 
     image::texture::Texture cache_texture_;
-
-    Texture_adapter emission_map_;
 
     float3 average_emission_;
 

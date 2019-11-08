@@ -20,8 +20,6 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
 
     sample.set_basis(rs.geo_n, wo);
 
-    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
-
     sample.set(emittance_.radiance(worker.scene().light_area(rs.prop, rs.part)));
 
     return sample;
@@ -32,7 +30,7 @@ float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float ar
     return emittance_.radiance(area);
 }
 
-float3 Constant::average_radiance(float area) const noexcept {
+float3 Constant::average_radiance(float area, Scene const& /*scene*/) const noexcept {
     float3 const radiance = emittance_.radiance(area);
 
     if (is_two_sided()) {

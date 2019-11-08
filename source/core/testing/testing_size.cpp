@@ -1,6 +1,4 @@
 #include "testing_size.hpp"
-#include <iostream>
-#include <string>
 #include "base/math/vector3.inl"
 #include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
@@ -10,6 +8,7 @@
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/rendering_camera_worker.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
@@ -43,6 +42,9 @@
 #include "scene/shape/triangle/triangle_mesh_bvh.hpp"
 #include "scene/shape/triangle/triangle_morphable_mesh.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
+
+#include <iostream>
+#include <string>
 
 namespace testing {
 
@@ -78,10 +80,14 @@ void size() {
 
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
+    print_size<sampler::Sampler>("Sampler", 48);
+    print_size<sampler::Golden_ratio>("Golden_ratio", 64);
+
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
 
     print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
+    print_size<scene::material::Material>("material::Material", 24);
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
     print_size<scene::material::debug::Material>("debug::Material", 32);
@@ -91,15 +97,15 @@ void size() {
     print_size<scene::material::glass::Sample>("glass::Sample", 128);
 
     print_size<scene::material::light::Constant>("light::Constant", 64);
-    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
-    print_size<scene::material::light::Sample>("light::Sample", 128);
+    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 128);
+    print_size<scene::material::light::Sample>("light::Sample", 64);
 
     print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 128);
     print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 128);
     print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
     print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 192);
 
-    print_size<scene::material::substitute::Material>("substitute::Material", 128);
+    print_size<scene::material::substitute::Material>("substitute::Material", 96);
     print_size<scene::material::substitute::Sample>("substitute::Sample", 192);
 
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);
@@ -135,12 +141,13 @@ void size() {
 
     print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 8);
 
-    print_size<image::texture::Adapter>("texture::Adapter", 16);
+    print_size<image::texture::Adapter>("texture::Adapter", 8);
 
-    print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
+    print_size<scene::bvh::Split_candidate>("Split_candidate", 96);
 
-    print_size<scene::Worker>("scene::Worker", 240);
-    print_size<rendering::Camera_worker>("rendering::Camera_worker", 320);
+    print_size<scene::Worker>("scene::Worker", 96);
+    print_size<rendering::Worker>("rendering::Worker", 152);
+    print_size<rendering::Camera_worker>("rendering::Camera_worker", 192);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 128);
     print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 512);

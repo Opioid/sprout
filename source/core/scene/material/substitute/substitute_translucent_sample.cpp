@@ -42,7 +42,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result)
             result.reflection *= (n_dot_wi * (1.f - f)) * attenuation;
         } else {
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, layer_, sampler, avoid_caustics_, result);
+                base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
             } else {
                 base_.gloss_sample(wo_, layer_, sampler, result);
             }
@@ -51,7 +51,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result)
         result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
-            base_.diffuse_sample(wo_, layer_, sampler, avoid_caustics_, result);
+            base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
         } else {
             base_.gloss_sample(wo_, layer_, sampler, result);
         }
@@ -104,7 +104,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool /*include_back*
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, avoid_caustics_);
+    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
 
     if (thickness_ > 0.f) {
         result.pdf *= 0.5f;

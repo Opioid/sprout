@@ -13,8 +13,8 @@
 
 namespace scene::material::glass {
 
-material::Layer const& Sample_rough::base_layer() const noexcept {
-    return layer_;
+float3 const& Sample_rough::base_shading_normal() const noexcept {
+    return layer_.n_;
 }
 
 bxdf::Result Sample_rough::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {

@@ -16,13 +16,6 @@ struct Photon {
     flags::Flags<Property> properties;
 };
 
-struct Photon_ref {
-    int32_t id;
-    float   sd;
-};
-
-static uint32_t constexpr Num_refs = 4 * 4096;
-
 }  // namespace rendering::integrator::particle::photon
 
 #endif

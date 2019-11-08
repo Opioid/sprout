@@ -18,8 +18,7 @@ class alignas(64) Whitted final : public Integrator {
         float    num_light_samples_reciprocal;
     };
 
-    Whitted(rnd::Generator& rng, take::Settings const& take_settings,
-            Settings const& settings) noexcept;
+    Whitted(rnd::Generator& rng, Settings const& settings) noexcept;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -41,8 +40,7 @@ class alignas(64) Whitted final : public Integrator {
 
 class Whitted_factory final : public Factory {
   public:
-    Whitted_factory(take::Settings const& take_settings, uint32_t num_integrators,
-                    uint32_t num_light_samples) noexcept;
+    Whitted_factory(uint32_t num_integrators, uint32_t num_light_samples) noexcept;
 
     ~Whitted_factory() noexcept override final;
 

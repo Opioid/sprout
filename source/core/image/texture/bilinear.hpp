@@ -1,10 +1,10 @@
-#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_BILINEAR_HPP
-#define SU_CORE_IMAGE_TEXTURE_SAMPLER_BILINEAR_HPP
+#ifndef SU_CORE_IMAGE_TEXTURE_BILINEAR_HPP
+#define SU_CORE_IMAGE_TEXTURE_BILINEAR_HPP
 
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector4.inl"
 
-namespace image::texture::sampler {
+namespace image::texture {
 
 static inline float bilinear(float c00, float c10, float c01, float c11, float s,
                              float t) noexcept {
@@ -78,6 +78,6 @@ static inline float3 bilinear_simd(float3 const c[4], float s, float t) noexcept
                   st * (_s * Simd3f(c[2]) + ss * Simd3f(c[3])));
 }
 
-}  // namespace image::texture::sampler
+}  // namespace image::texture
 
 #endif

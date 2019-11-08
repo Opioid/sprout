@@ -24,12 +24,16 @@
 
 namespace image::texture {
 
-Provider::Provider() noexcept {
+Provider::Provider(bool no_textures) noexcept : no_textures_(no_textures) {
     encoding::init();
 }
 
 Texture* Provider::load(std::string const& filename, Variant_map const& options,
                         resource::Manager& manager, std::string& resolved_name) noexcept {
+    if (no_textures_) {
+        return nullptr;
+    }
+
     Channels channels = Channels::XYZ;
 
     Usage usage = Usage::Undefined;

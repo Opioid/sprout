@@ -41,7 +41,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
             refract(sampler, result);
         } else {
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, layer_, sampler, avoid_caustics_, result);
+                base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
             } else {
                 base_.gloss_sample(wo_, layer_, sampler, result);
             }
@@ -166,10 +166,10 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
     float const wo_dot_h = clamp_dot(wo_, h);
 
     if (1.f == base_.metallic_) {
-        return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, avoid_caustics_);
+        return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
     }
 
-    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, avoid_caustics_);
+    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
     result.pdf *= 0.5f;
     return result;
 }

@@ -5,10 +5,15 @@
 #include "base/random/generator.hpp"
 #include "material/material_sample.hpp"
 #include "material/material_sample_cache.hpp"
-#include "material/sampler_cache.hpp"
+#include "material/sampler_settings.hpp"
 #include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
-#include "take/take_settings.hpp"
+
+namespace image::texture {
+class Texture;
+class Sampler_2D;
+class Sampler_3D;
+}  // namespace image::texture
 
 namespace scene {
 
@@ -36,8 +41,9 @@ class Worker {
   public:
     using Camera             = camera::Camera;
     using Filter             = material::Sampler_settings::Filter;
-    using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
-    using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
+    using Texture            = image::texture::Texture;
+    using Texture_sampler_2D = image::texture::Sampler_2D;
+    using Texture_sampler_3D = image::texture::Sampler_3D;
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
 
@@ -45,10 +51,8 @@ class Worker {
 
     ~Worker() noexcept;
 
-    void init(uint32_t id, take::Settings const& settings, Scene const& scene, Camera const& camera,
+    void init(uint32_t id, Scene const& scene, Camera const& camera,
               uint32_t max_sample_size) noexcept;
-
-    uint32_t id() const noexcept;
 
     bool intersect(Ray& ray, Intersection& intersection) const noexcept;
 
@@ -79,6 +83,8 @@ class Worker {
 
     Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const noexcept;
 
+    Texture const* texture(uint32_t id) const noexcept;
+
     Interface_stack& interface_stack() noexcept;
 
     void reset_interface_stack(Interface_stack const& stack) noexcept;
@@ -90,25 +96,16 @@ class Worker {
     material::IoR interface_change_ior(float3 const&       dir,
                                        Intersection const& intersection) noexcept;
 
-  private:
-    uint32_t id_;
-
   protected:
     rnd::Generator rng_;
-
-    take::Settings settings_;
 
     Scene const* scene_;
 
     Camera const* camera_;
 
-    //   Tile_queue const* tiles_;
-
     mutable shape::Node_stack node_stack_;
 
     mutable material::Sample_cache sample_cache_;
-
-    material::Sampler_cache const sampler_cache_;
 
     Interface_stack interface_stack_;
     Interface_stack interface_stack_temp_;

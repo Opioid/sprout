@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_BYTE3_SRGB_HPP
 #define SU_CORE_IMAGE_TEXTURE_BYTE3_SRGB_HPP
 
-#include <cstddef>
 #include "image/typed_image_fwd.hpp"
 
 namespace image::texture {

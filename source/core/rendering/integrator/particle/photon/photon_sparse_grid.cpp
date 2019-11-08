@@ -20,10 +20,6 @@ namespace rendering::integrator::particle::photon {
 
 using namespace scene;
 
-static inline bool operator<(Photon_ref a, Photon_ref b) noexcept {
-    return a.sd < b.sd;
-}
-
 enum Adjacent { None = 0, Positive = 1, Negative = 2 };
 
 static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
@@ -410,7 +406,7 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
                         continue;
                     }
 
-                    if (sample.base_layer().n_dot(photon.wi) > 0.f) {
+                    if (dot(sample.base_shading_normal(), photon.wi) > 0.f) {
                         // float const k = 1.f;
 
                         // float const k = cone_filter(distance_2, inv_radius_2);

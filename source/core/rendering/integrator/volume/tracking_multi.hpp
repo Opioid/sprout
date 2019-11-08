@@ -11,7 +11,7 @@ namespace rendering::integrator::volume {
 
 class alignas(64) Tracking_multi final : public Integrator {
   public:
-    Tracking_multi(rnd::Generator& rng, take::Settings const& take_settings) noexcept;
+    Tracking_multi(rnd::Generator& rng) noexcept;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -32,7 +32,7 @@ class alignas(64) Tracking_multi final : public Integrator {
 
 class Tracking_multi_factory final : public Factory {
   public:
-    Tracking_multi_factory(take::Settings const& take_settings, uint32_t num_integrators) noexcept;
+    Tracking_multi_factory(uint32_t num_integrators) noexcept;
 
     ~Tracking_multi_factory() noexcept override final;
 

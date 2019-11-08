@@ -22,7 +22,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     sample.set_basis(rs.geo_n, wo);
 
     if (normal_map_.is_valid()) {
-        float3 nm = normal_map_.sample_3(sampler, rs.uv);
+        float3 nm = normal_map_.sample_3(worker, sampler, rs.uv);
         float3 n  = normalize(rs.tangent_to_world(nm));
         sample.layer_.set_tangent_frame(rs.t, rs.b, n);
     } else {
@@ -31,7 +31,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
 
     float3 color;
     if (color_map_.is_valid()) {
-        color = color_map_.sample_3(sampler, rs.uv);
+        color = color_map_.sample_3(worker, sampler, rs.uv);
     } else {
         color = color_;
     }

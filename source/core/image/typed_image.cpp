@@ -1,7 +1,8 @@
 #include "typed_image.hpp"
-#include <cstring>
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
+
+#include <cstring>
 
 namespace image {
 

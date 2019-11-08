@@ -649,59 +649,59 @@ static inline Vector3f_a log(Vector3f_a const& v) noexcept {
 }
 
 static inline constexpr bool operator==(Vector3f_a const& a, Vector3f_a const& b) noexcept {
-    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+    return (a[0] == b[0]) & (a[1] == b[1]) & (a[2] == b[2]);
 }
 
 static inline constexpr bool operator!=(Vector3f_a const& a, Vector3f_a const& b) noexcept {
-    return a[0] != b[0] || a[1] != b[1] || a[2] != b[2];
+    return (a[0] != b[0]) | (a[1] != b[1]) | (a[2] != b[2]);
 }
 
 static inline constexpr bool all_equal_zero(Vector3f_a const& v) noexcept {
-    return v[0] == 0.f && v[1] == 0.f && v[2] == 0.f;
+    return (v[0] == 0.f) & (v[1] == 0.f) & (v[2] == 0.f);
 }
 
 static inline constexpr bool all_less(Vector3f_a const& v, float s) noexcept {
-    return v[0] < s && v[1] < s && v[2] < s;
+    return (v[0] < s) & (v[1] < s) & (v[2] < s);
 }
 
 static inline constexpr bool all_less_equal(Vector3f_a const& v, float s) noexcept {
-    return v[0] <= s && v[1] <= s && v[2] <= s;
+    return (v[0] <= s) & (v[1] <= s) & (v[2] <= s);
 }
 
 static inline constexpr bool all_greater_equal(Vector3f_a const& v, float s) noexcept {
-    return v[0] >= s && v[1] >= s && v[2] >= s;
+    return (v[0] >= s) & (v[1] >= s) & (v[2] >= s);
 }
 
 static inline constexpr bool any_negative(Vector3f_a const& v) noexcept {
-    return v[0] < 0.f || v[1] < 0.f || v[2] < 0.f;
+    return (v[0] < 0.f) | (v[1] < 0.f) | (v[2] < 0.f);
 }
 
 static inline constexpr bool any_greater_zero(Vector3f_a const& v) noexcept {
-    return v[0] > 0.f || v[1] > 0.f || v[2] > 0.f;
+    return (v[0] > 0.f) | (v[1] > 0.f) | (v[2] > 0.f);
 }
 
 static inline constexpr bool any_greater(Vector3f_a const& v, float s) noexcept {
-    return v[0] > s || v[1] > s || v[2] > s;
+    return (v[0] > s) | (v[1] > s) | (v[2] > s);
 }
 
 static inline constexpr bool any_greater_equal(Vector3f_a const& v, float s) noexcept {
-    return v[0] >= s || v[1] >= s || v[2] >= s;
+    return (v[0] >= s) | (v[1] >= s) | (v[2] >= s);
 }
 
 static inline constexpr bool any_greater_equal(Vector3f_a const& a, Vector3f_a const& b) noexcept {
-    return a[0] >= b[0] || a[1] >= b[1] || a[2] >= b[2];
+    return (a[0] >= b[0]) | (a[1] >= b[1]) | (a[2] >= b[2]);
 }
 
 static inline constexpr bool any_less(Vector3f_a const& v, float s) noexcept {
-    return v[0] < s || v[1] < s || v[2] < s;
+    return (v[0] < s) | (v[1] < s) | (v[2] < s);
 }
 
 static inline constexpr bool any_less(Vector3f_a const& a, Vector3f_a const& b) noexcept {
-    return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
+    return (a[0] < b[0]) | (a[1] < b[1]) | (a[2] < b[2]);
 }
 
 static inline constexpr bool any_less_equal(Vector3f_a const& v, float s) noexcept {
-    return v[0] <= s || v[1] <= s || v[2] <= s;
+    return (v[0] <= s) | (v[1] <= s) | (v[2] <= s);
 }
 
 static inline bool any_nan(Vector3f_a const& v) noexcept {

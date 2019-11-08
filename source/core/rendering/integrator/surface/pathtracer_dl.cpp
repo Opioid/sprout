@@ -20,9 +20,8 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, take::Settings const& take_settings,
-                             Settings const& settings) noexcept
-    : Integrator(rng, take_settings),
+Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, Settings const& settings) noexcept
+    : Integrator(rng),
       settings_(settings),
       sampler_(rng),
       material_samplers_{rng, rng, rng},
@@ -236,12 +235,10 @@ sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Pathtracer_DL_factory::Pathtracer_DL_factory(take::Settings const& take_settings,
-                                             uint32_t num_integrators, uint32_t min_bounces,
+Pathtracer_DL_factory::Pathtracer_DL_factory(uint32_t num_integrators, uint32_t min_bounces,
                                              uint32_t max_bounces, uint32_t num_light_samples,
                                              bool enable_caustics) noexcept
-    : Factory(take_settings),
-      integrators_(memory::allocate_aligned<Pathtracer_DL>(num_integrators)) {
+    : integrators_(memory::allocate_aligned<Pathtracer_DL>(num_integrators)) {
     settings_.min_bounces       = min_bounces;
     settings_.max_bounces       = max_bounces;
     settings_.num_light_samples = num_light_samples;
@@ -253,7 +250,7 @@ Pathtracer_DL_factory::~Pathtracer_DL_factory() noexcept {
 }
 
 Integrator* Pathtracer_DL_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Pathtracer_DL(rng, take_settings_, settings_);
+    return new (&integrators_[id]) Pathtracer_DL(rng, settings_);
 }
 
 }  // namespace rendering::integrator::surface
