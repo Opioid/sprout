@@ -14,7 +14,7 @@
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
@@ -183,7 +183,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
             break;
         }
 
-        if (intersection.same_hemisphere(ray.direction)) {
+        if (intersection.same_hemisphere(tray.direction)) {
             interface_stack_.remove(intersection);
         } else {
             interface_stack_.push(intersection);

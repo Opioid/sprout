@@ -18,7 +18,7 @@ inline material::Material const* Interface::material(Worker const& worker) const
 }
 
 inline bool Interface::matches(Intersection const& intersection) const noexcept {
-    return prop == intersection.prop && part == intersection.geo.part;
+    return (prop == intersection.prop) & (part == intersection.geo.part);
 }
 
 inline Interface_stack::Interface_stack() noexcept

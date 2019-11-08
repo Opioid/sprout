@@ -13,6 +13,10 @@
 
 namespace scene {
 
+inline bool Scene::has_volumes() const noexcept {
+    return has_volumes_;
+}
+
 inline bool Scene::intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
     noexcept {
     return prop_bvh_.intersect(ray, worker, intersection);
