@@ -24,7 +24,7 @@ namespace baking {
 
 // static uint32_t constexpr Num_items = 1 * 1024 * 1024;
 
-static uint32_t constexpr Num_items = 1 * 1024;
+static uint32_t constexpr Num_items = 10 * 1024;
 
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads, uint32_t max_sample_size,
                progress::Sink& progressor) noexcept
@@ -75,27 +75,15 @@ void Driver::render() noexcept {
 
     std::ofstream stream("radbak_v0_" + std::to_string(Num_items) + ".raw", std::ios::binary);
 
-    //    for (uint32_t i = 0, len = num_items_; i < len; ++i) {
-    //        Item const& item = items_[i];
+    stream.write(reinterpret_cast<char const*>(items_), Num_items * sizeof(Item));
 
-    //        stream.write(reinterpret_cast<char const*>(&item.pos.v[0]), sizeof(float));
-    //        stream.write(reinterpret_cast<char const*>(&item.pos.v[1]), sizeof(float));
-    //        stream.write(reinterpret_cast<char const*>(&item.pos.v[2]), sizeof(float));
-
-    //        stream.write(reinterpret_cast<char const*>(&item.wi.v[0]), sizeof(float));
-    //        stream.write(reinterpret_cast<char const*>(&item.wi.v[1]), sizeof(float));
-    //        stream.write(reinterpret_cast<char const*>(&item.wi.v[2]), sizeof(float));
-
-    //        stream.write(reinterpret_cast<char const*>(&item.radiance), sizeof(float));
-    //    }
-
-    //    stream.write(reinterpret_cast<char const*>(items_), Num_items * sizeof(Item));
-
+    /*
     std::ofstream txtstream("radbak.txt");
 
     for (uint32_t i = 0; i < Num_items; ++i) {
         txtstream << items_[i].pos << items_[i].wi << items_[i].radiance << "\n";
     }
+    */
 }
 
 }  // namespace baking

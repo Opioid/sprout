@@ -17,6 +17,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
+#define DLDL_BAKING 1
+
 namespace rendering::integrator::surface {
 
 using namespace scene;
@@ -34,11 +36,11 @@ void Pathtracer_DLDL::start_pixel() noexcept {
 
 float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
                            Interface_stack const& initial_stack) noexcept {
-    //  float3 const wi = ray.direction;
+    float3 const wi = ray.direction;
 
     //  ray.direction = float3(1.f, 0.f, 0.f);
 
-    float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
+    // float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
 
     //    float2 const uv(rng_.random_float(), rng_.random_float());
 
@@ -46,21 +48,46 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     float4 li(0.f);
 
-    for (uint32_t i = settings_.num_samples; i > 0; --i) {
+    uint32_t i = 0;
+
+    for (uint32_t len = settings_.num_samples; i < len;) {
         worker.reset_interface_stack(initial_stack);
 
         Ray split_ray = ray;
 
         Intersection split_intersection = intersection;
 
+#ifdef DLDL_BAKING
+        float2 const uv(rng_.random_float(), rng_.random_float());
+
+        split_ray.set_direction(sample_sphere_uniform(uv));
+
+        float3 vli, vtr;
+        if (auto const event = worker.volume(split_ray, split_intersection, Filter::Undefined, vli,
+                                             vtr);
+            (Event::Abort == event) | (Event::Absorb == event)) {
+            continue;
+        }
+
+        float4 result = integrate(split_ray, split_intersection, wi, worker);
+
+        li += float4(vtr * result.xyz(), result[3]);
+#else
         float4 result = integrate(split_ray, split_intersection, wi, worker);
 
         li += result;
+#endif
+
+        ++i;
     }
 
-    float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
+#ifdef DLDL_BAKING
+    float const weight = 1.f / (float(i) * (4.f * Pi));
+#else
+    float const weight = 1.f / float(i);
+#endif
 
-    return num_samples_reciprocal * li;
+    return weight * li;
 }
 
 float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 const& wi,
@@ -114,7 +141,21 @@ float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 c
             }
         }
 
+#ifndef DLDL_BAKING
+        if (!material_sample.ior_greater_one() || ray.depth > 0) {
+            material_sample.sample(material_sampler(ray.depth), sample_result);
+        } else {
+            float2 const uv(rng_.random_float(), rng_.random_float());
+
+            sample_result.wi         = sample_sphere_uniform(uv);
+            sample_result.reflection = float3(1.f);
+            sample_result.pdf        = 1.f / (4 * Pi);
+            sample_result.type.clear(Bxdf_type::Diffuse_reflection);
+        }
+#else
         material_sample.sample(material_sampler(ray.depth), sample_result);
+#endif
+
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -164,7 +205,7 @@ float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 c
 
             throughput *= vtr;
 
-            if (Event::Abort == hit || Event::Absorb == hit) {
+            if ((Event::Abort == hit) | (Event::Absorb == hit)) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
@@ -178,7 +219,13 @@ float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 c
 float3 Pathtracer_DLDL::direct_light(Ray const& ray, Intersection const& intersection,
                                      float3 const& wi, Material_sample const& material_sample,
                                      bool evaluate_back, Filter filter, Worker& worker) noexcept {
-    if ((0 == ray.depth) | !material_sample.ior_greater_one()) {
+#ifndef DLDL_BAKING
+    if (0 == ray.depth) {
+        return float3(0.f);
+    }
+#endif
+
+    if (!material_sample.ior_greater_one()) {
         return float3(0.f);
     }
 

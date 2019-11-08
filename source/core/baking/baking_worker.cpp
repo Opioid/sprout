@@ -1,11 +1,11 @@
 #include "baking_worker.hpp"
 #include "baking_item.hpp"
+#include "base/math/sampling.inl"
+#include "base/random/generator.inl"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene.inl"
-//#include "rendering/integrator/volume/volume_integrator.hpp"
-#include "base/math/sampling.inl"
 
 namespace baking {
 
