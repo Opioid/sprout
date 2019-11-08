@@ -462,7 +462,7 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume,
     float const shape_pdf = worker.scene().prop_shape(prop)->pdf_volume(ray, intersection,
                                                                         transformation, volume);
 
-    float const material_pdf = material->emission_pdf(intersection.uvw, filter, worker);
+    float const material_pdf = material->emission_pdf(intersection.p, filter, worker);
 
     return shape_pdf * material_pdf;
 }

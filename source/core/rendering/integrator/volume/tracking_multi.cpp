@@ -104,9 +104,9 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                         set_scattering(intersection, interface, ray.point(t));
                         break;
                     } else if (Event::Absorb == result) {
-                        transmittance        = w;
-                        ray.max_t            = t;
-                        intersection.geo.uvw = local_ray.point(t);
+                        transmittance      = w;
+                        ray.max_t          = t;
+                        intersection.geo.p = local_ray.point(t);
                         return Event::Absorb;
                     }
                 }
