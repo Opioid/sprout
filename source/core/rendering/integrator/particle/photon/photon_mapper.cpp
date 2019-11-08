@@ -7,7 +7,7 @@
 #include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/particle/particle_importance.hpp"
-#include "rendering/rendering_worker.hpp"
+#include "rendering/rendering_worker.inl"
 #include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
