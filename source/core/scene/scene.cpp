@@ -120,10 +120,6 @@ bool Scene::is_infinite() const noexcept {
     return !infinite_props_.empty() || !infinite_volumes_.empty();
 }
 
-bool Scene::has_volumes() const noexcept {
-    return has_volumes_;
-}
-
 Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
     // If the assert doesn't hold it would pose a problem,
     // but I think it is more efficient to handle those cases outside or implicitely.

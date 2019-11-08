@@ -74,10 +74,9 @@ bool Cube::intersect_fast(Ray& ray, Transformation const&           transformati
 
     uint32_t const i = index_min_component(distance);
 
-    float3 normal(0.f);
-    normal[i] = math::copysign1(local_p[i]);
+    float const s = copysign1(local_p[i]);
 
-    intersection.geo_n = transform_vector(transformation.rotation, normal);
+    intersection.geo_n = s * transformation.rotation.r[i];
 
     intersection.part = 0;
 
@@ -106,14 +105,13 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
     float3 const local_p = local_ray.point(hit_t);
 
-    float3 const distance = math::abs(1.f - math::abs(local_p));
+    float3 const distance = abs(1.f - abs(local_p));
 
-    uint32_t const i = math::index_min_component(distance);
+    uint32_t const i = index_min_component(distance);
 
-    float3 normal(0.f);
-    normal[i] = math::copysign1(local_p[i]);
+    float const s = copysign1(local_p[i]);
 
-    float3 const wn = transform_vector(transformation.rotation, normal);
+    float3 const wn = s * transformation.rotation.r[i];
 
     normals.geo_n = wn;
     normals.n     = wn;
