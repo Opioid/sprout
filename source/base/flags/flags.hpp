@@ -26,14 +26,14 @@ struct Flags {
     }
 
     constexpr bool any(T a, T b) const noexcept {
-        return static_cast<impl_type>(a) == (values & static_cast<impl_type>(a)) |
-               static_cast<impl_type>(b) == (values & static_cast<impl_type>(b));
+        return (static_cast<impl_type>(a) == (values & static_cast<impl_type>(a))) |
+               (static_cast<impl_type>(b) == (values & static_cast<impl_type>(b)));
     }
 
     constexpr bool any(T a, T b, T c) const noexcept {
-        return static_cast<impl_type>(a) == (values & static_cast<impl_type>(a)) |
-               static_cast<impl_type>(b) == (values & static_cast<impl_type>(b)) |
-               static_cast<impl_type>(c) == (values & static_cast<impl_type>(c));
+        return (static_cast<impl_type>(a) == (values & static_cast<impl_type>(a))) |
+               (static_cast<impl_type>(b) == (values & static_cast<impl_type>(b))) |
+               (static_cast<impl_type>(c) == (values & static_cast<impl_type>(c)));
     }
 
     constexpr bool operator!=(Flags other) const noexcept {
