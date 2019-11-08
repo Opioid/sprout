@@ -6,9 +6,9 @@
 namespace baking {
 
 struct Item {
-    float3 pos;
-    float3 wi;
-    float  radiance;
+    packed_float3 pos;
+    packed_float3 wi;
+    float         radiance;
 };
 
 }  // namespace baking

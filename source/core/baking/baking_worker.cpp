@@ -34,14 +34,14 @@ void Baking_worker::bake(int32_t begin, int32_t end) noexcept {
         interface_stack_.clear();
         interface_stack_.push(intersection);
 
-        Interface_stack temp_stack = interface_stack_;
+        Interface_stack const temp_stack = interface_stack_;
 
         Ray ray(p, wi, 0.f, scene::Ray_max_t);
 
         float4 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
 
-        items_[i].pos      = p;
-        items_[i].wi       = wi;
+        items_[i].pos      = packed_float3(p);
+        items_[i].wi       = packed_float3(wi);
         items_[i].radiance = li[0];
 
         ++i;

@@ -37,6 +37,8 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
                            Interface_stack const& initial_stack) noexcept {
     //  float3 const wi = ray.direction;
 
+    //  ray.direction = float3(1.f, 0.f, 0.f);
+
     float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
 
     //    float2 const uv(rng_.random_float(), rng_.random_float());
