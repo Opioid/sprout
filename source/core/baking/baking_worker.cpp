@@ -6,6 +6,7 @@
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene.inl"
+#include "scene/scene_ray.inl"
 
 namespace baking {
 
