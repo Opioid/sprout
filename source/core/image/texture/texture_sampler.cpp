@@ -78,8 +78,7 @@ int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(Texture const& texture, flo
 
     auto const b = texture.back_2();
 
-    return int2(std::min(static_cast<int32_t>(u * d[0]), b[0]),
-                std::min(static_cast<int32_t>(v * d[1]), b[1]));
+    return int2(std::min(int32_t(u * d[0]), b[0]), std::min(int32_t(v * d[1]), b[1]));
 }
 
 template <typename Address_U, typename Address_V>
@@ -240,9 +239,8 @@ int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) no
 
     auto const& b = texture.back_3();
 
-    return int3(std::min(static_cast<int32_t>(u * d[0]), b[0]),
-                std::min(static_cast<int32_t>(v * d[1]), b[1]),
-                std::min(static_cast<int32_t>(w * d[2]), b[2]));
+    return int3(std::min(int32_t(u * d[0]), b[0]), std::min(int32_t(v * d[1]), b[1]),
+                std::min(int32_t(w * d[2]), b[2]));
 }
 
 template <typename Address_mode>
@@ -343,9 +341,9 @@ float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, i
     float const fv = std::floor(v);
     float const fw = std::floor(w);
 
-    int32_t const x = static_cast<int32_t>(fu);
-    int32_t const y = static_cast<int32_t>(fv);
-    int32_t const z = static_cast<int32_t>(fw);
+    int32_t const x = int32_t(fu);
+    int32_t const y = int32_t(fv);
+    int32_t const z = int32_t(fw);
 
     auto const& b = texture.back_3();
 

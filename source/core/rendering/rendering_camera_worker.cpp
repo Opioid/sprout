@@ -1,5 +1,4 @@
 #include "rendering_camera_worker.hpp"
-#include "rendering_worker.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include "rendering/integrator/particle/lighttracer.hpp"
@@ -7,6 +6,7 @@
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "rendering/tile_queue.hpp"
+#include "rendering_worker.inl"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
