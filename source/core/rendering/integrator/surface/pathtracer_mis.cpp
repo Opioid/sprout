@@ -170,7 +170,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                 primary_ray = false;
                 filter      = Filter::Nearest;
 
-                if (integrate_photons || 0 != ray.depth) {
+                if (integrate_photons | (0 != ray.depth)) {
                     photon_li    = throughput * worker.photon_li(intersection, material_sample);
                     split_photon = 0 != ray.depth;
                 }
@@ -217,6 +217,9 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                 SOFT_ASSERT(all_finite_and_positive(result_li));
 
                 break;
+            } else {
+                // This is only needed for Tracking_single at the moment...
+                result_li += throughput * vli;
             }
 
             throughput *= vtr;
@@ -373,7 +376,7 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
 
     float3 const wo = -sample_result.wi;
 
-    // This will invalidate the contents of previous material samples.
+    // This will invalidate the contents of previous material sample.
     auto const& light_material_sample = intersection.sample(wo, ray, filter, false, sampler_,
                                                             worker);
 

@@ -22,6 +22,8 @@
 
 namespace rendering::integrator::volume {
 
+using namespace scene;
+
 Tracking_single::Tracking_single(rnd::Generator& rng) noexcept : Integrator(rng), sampler_(rng) {}
 
 void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
@@ -203,14 +205,13 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
                 }
             }
 
-            local_ray.min_t = local_ray.max_t + 0.00001f;
+            local_ray.min_t = scene::offset_f(local_ray.max_t);
             local_ray.max_t = d;
         }
 
         li            = float3(0.f);
         transmittance = w;
         return Event::Pass;
-
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
 
@@ -237,7 +238,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        transmittance = math::exp(-(d - ray.min_t) * extinction);
+        transmittance = exp(-(d - ray.min_t) * extinction);
 
         float const r = rng_.random_float();
         float const t = -std::log(1.f - r * (1.f - average(transmittance))) / average(extinction);
@@ -256,38 +257,35 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
 float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
                                      Intersection const& intersection, Worker& worker) noexcept {
-    float3 result = float3(0.f);
-
-    Ray shadow_ray;
-    shadow_ray.origin = position;
-    shadow_ray.min_t  = 0.f;
-    shadow_ray.depth  = ray.depth + 1;
-    shadow_ray.time   = ray.time;
-
     auto const light = worker.scene().random_light(rng_.random_float());
 
-    scene::shape::Sample_to light_sample;
-    if (light.ref.sample(position, ray.time, sampler_, 0, worker, light_sample)) {
-        shadow_ray.set_direction(light_sample.wi);
-        shadow_ray.max_t = light_sample.t;
-
-        //	float3 const tv = worker.tinted_visibility(shadow_ray, Filter::Nearest);
-
-        Intersection tintersection = intersection;
-        tintersection.subsurface   = true;
-
-        float3 tv;
-        if (worker.transmitted_visibility(shadow_ray, float3(0.f), tintersection, Filter::Nearest,
-                                          tv)) {
-            float const phase = 1.f / (4.f * Pi);
-
-            float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
-
-            result += (phase * tv * radiance) / (light.pdf * light_sample.pdf);
-        }
+    shape::Sample_to light_sample;
+    if (!light.ref.sample(position, ray.time,
+                      sampler_,
+                      0, worker, light_sample)) {
+        return float3(0.f);
     }
 
-    return result;
+    Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t, ray.depth, ray.time,
+                   ray.wavelength);
+
+    float3 tv;
+    if (!worker.transmitted_visibility(shadow_ray, float3(0.f), intersection, Filter::Nearest,
+                                       tv)) {
+        return float3(0.f);
+    }
+
+    SOFT_ASSERT(all_finite(tv));
+
+//    auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+
+    float const phase = 1.f / (4.f * Pi);
+
+    float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
+
+    float const light_pdf = light_sample.pdf * light.pdf;
+
+    return (phase * tv * radiance) / (light_pdf);
 }
 
 Tracking_single_factory::Tracking_single_factory(uint32_t num_integrators) noexcept
