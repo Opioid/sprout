@@ -247,8 +247,46 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 l = direct_light(ray, p, intersection, worker);
 
-        l *= (1.f - transmittance) * scattering_albedo;
+        // Short version
+        //      l *= (1.f - transmittance) * scattering_albedo;
 
+        // Instructive version
+        float3 const tr = exp(-t * extinction);
+
+        float3 const weight = (1.f - transmittance) / (tr * extinction);
+
+        l *= extinction * scattering_albedo * tr;
+        l *= weight;
+
+        /*
+                auto const light = worker.scene().random_light(rng_.random_float());
+
+                float3 const position = light.ref.center(worker.scene());
+
+                float const delta = dot(position - ray.origin, ray.direction);
+
+                float3 const closest_point = ray.point(delta);
+
+                float const D = distance(closest_point, position);
+
+                float const theta_a = std::atan2(ray.min_t - delta, D);
+                float const theta_b = std::atan2(d - delta, D);
+
+                float const r = rng_.random_float();
+                float const t = D * std::tan(lerp(theta_a, theta_b, r));
+
+                float3 const p = ray.point(delta + t);
+
+                float3 l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
+
+                float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
+
+                l *= 1.f / pdf;
+
+                float3 const tr = exp(-(delta + t - ray.min_t) * extinction);
+
+                l *= extinction * scattering_albedo * tr;
+        */
         li = l;
     }
 
@@ -260,9 +298,7 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
     auto const light = worker.scene().random_light(rng_.random_float());
 
     shape::Sample_to light_sample;
-    if (!light.ref.sample(position, ray.time,
-                      sampler_,
-                      0, worker, light_sample)) {
+    if (!light.ref.sample(position, ray.time, sampler_, 0, worker, light_sample)) {
         return float3(0.f);
     }
 
@@ -277,7 +313,7 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
 
     SOFT_ASSERT(all_finite(tv));
 
-//    auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+    //    auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
 
     float const phase = 1.f / (4.f * Pi);
 
@@ -286,6 +322,34 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
     float const light_pdf = light_sample.pdf * light.pdf;
 
     return (phase * tv * radiance) / (light_pdf);
+}
+
+float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
+                                     float3 const& position, Intersection const& intersection,
+                                     Worker& worker) noexcept {
+    shape::Sample_to light_sample;
+    if (!light.sample(position, ray.time, sampler_, 0, worker, light_sample)) {
+        return float3(0.f);
+    }
+
+    Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t, ray.depth, ray.time,
+                   ray.wavelength);
+
+    float3 tv;
+    if (!worker.transmitted_visibility(shadow_ray, float3(0.f), intersection, Filter::Nearest,
+                                       tv)) {
+        return float3(0.f);
+    }
+
+    SOFT_ASSERT(all_finite(tv));
+
+    //    auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+
+    float const phase = 1.f / (4.f * Pi);
+
+    float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
+
+    return (phase * tv * radiance) / (light_sample.pdf * light_pdf);
 }
 
 Tracking_single_factory::Tracking_single_factory(uint32_t num_integrators) noexcept

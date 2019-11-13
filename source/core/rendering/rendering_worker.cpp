@@ -197,7 +197,7 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                                Filter filter, float3& tv) noexcept {
     auto const& material = *intersection.material(*this);
 
-    if (intersection.subsurface && material.ior() > 1.f) {
+    if (intersection.subsurface & (material.ior() > 1.f)) {
         float const ray_max_t = ray.max_t;
 
         if (scene::shape::Normals normals; intersect(ray, normals)) {

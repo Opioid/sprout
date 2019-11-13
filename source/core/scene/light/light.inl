@@ -40,6 +40,10 @@ inline entity::Composed_transformation const& Light::transformation_at(
     return scene.prop_transformation_at(prop_, time, transformation);
 }
 
+inline float3 Light::center(Scene const& scene) const noexcept {
+    return scene.prop_aabb(prop_).position();
+}
+
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
                                float3 const&                          n,
                                entity::Composed_transformation const& transformation,

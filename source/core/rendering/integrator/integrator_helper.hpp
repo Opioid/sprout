@@ -1,24 +1,25 @@
 #ifndef SU_CORE_RENDERING_INTEGRATOR_HELPER_HPP
 #define SU_CORE_RENDERING_INTEGRATOR_HELPER_HPP
 
-#include <cmath>
 #include "base/math/vector4.inl"
 #include "scene/material/material_sample_helper.hpp"
+
+#include <cmath>
 
 namespace rendering {
 
 enum class Event { Absorb, Scatter, Pass, Abort };
 
 static inline float attenuation(float distance, float c) noexcept {
-    return math::exp(-distance * c);
+    return ::exp(-distance * c);
 }
 
 static inline float3 attenuation(float distance, float3 const& c) noexcept {
-    return math::exp(-distance * c);
+    return exp(-distance * c);
 }
 
 static inline float3 attenuation(float3 const& start, float3 const& end, float3 const& c) noexcept {
-    return attenuation(math::distance(start, end), c);
+    return attenuation(distance(start, end), c);
 }
 
 static inline float4 compose_alpha(float3 const& radiance, float3 const& throughput,

@@ -24,6 +24,9 @@ class alignas(64) Tracking_single final : public Integrator {
     float3 direct_light(Ray const& ray, float3 const& position, Intersection const& intersection,
                         Worker& worker) noexcept;
 
+    float3 direct_light(Light const& light, float light_pdf, Ray const& ray, float3 const& position,
+                        Intersection const& intersection, Worker& worker) noexcept;
+
     sampler::Random sampler_;
 };
 

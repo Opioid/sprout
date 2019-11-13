@@ -96,6 +96,10 @@ inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) co
     return frames[num_interpolation_frames_].transformation;
 }
 
+inline AABB const& Scene::prop_aabb(uint32_t entity) const noexcept {
+    return prop_aabbs_[entity];
+}
+
 inline bool Scene::prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept {
     return prop_aabbs_[entity].intersect_p(ray);
 }

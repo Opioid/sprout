@@ -211,6 +211,8 @@ class Scene {
                                       uint64_t time, bool material_importance_sampling,
                                       thread::Pool& threads) noexcept;
 
+    AABB const& prop_aabb(uint32_t entity) const noexcept;
+
     bool prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept;
 
     Shape* prop_shape(uint32_t entity) const noexcept;

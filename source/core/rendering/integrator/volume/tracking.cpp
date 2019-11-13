@@ -261,8 +261,7 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& da
         float const ps = ms * c;
         float const pn = mn * c;
 
-        float const r1 = rng.random_float();
-        if (r1 <= 1.f - pn && ps > 0.f) {
+        if (float const r1 = rng.random_float(); (r1 <= 1.f - pn) & (ps > 0.f)) {
             float3 const ws = mu.s / (mt * ps);
 
             SOFT_ASSERT(all_finite(ws));
@@ -326,8 +325,7 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
         float const ps = ms * c;
         float const pn = mn * c;
 
-        float const r1 = rng.random_float();
-        if (r1 <= 1.f - pn && ps > 0.f) {
+        if (float const r1 = rng.random_float(); (r1 <= 1.f - pn) & (ps > 0.f)) {
             float3 const ws = mu.s / (mt * ps);
 
             SOFT_ASSERT(all_finite(ws));
@@ -397,7 +395,7 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
             w     = float3(0.f);
             li    = lw * wa * cce.e;
             return Event::Absorb;
-        } else if (r1 <= 1.f - pn && ps > 0.f) {
+        } else if ((r1 <= 1.f - pn) & (ps > 0.f)) {
             float3 const ws = mu.s / (mt * ps);
 
             SOFT_ASSERT(all_finite(ws));
@@ -449,8 +447,7 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
         float const ps = ms * c;
         float const pn = mn * c;
 
-        float const r1 = rng.random_float();
-        if (r1 <= 1.f - pn && ps > 0.f) {
+        if (float const r1 = rng.random_float(); (r1 <= 1.f - pn) & (ps > 0.f)) {
             float3 const ws = mu.s / (mt * ps);
 
             t_out = t;
@@ -495,7 +492,7 @@ Event Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, fl
         float const mc = ma + ms + mn;
         if (mc < 1e-10f) {
             w  = lw;
-            li = float3(0.);
+            li = float3(0.f);
             return Event::Pass;
         }
 
@@ -513,7 +510,7 @@ Event Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, fl
             w     = float3(0.f);
             li    = lw * wa * cce.e;
             return Event::Absorb;
-        } else if (r1 <= 1.f - pn && ps > 0.f) {
+        } else if ((r1 <= 1.f - pn) & (ps > 0.f)) {
             float3 const ws = mu.s / (mt * ps);
 
             t_out = t;
