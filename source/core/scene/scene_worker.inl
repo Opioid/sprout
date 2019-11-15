@@ -8,10 +8,6 @@
 
 namespace scene {
 
-inline Scene const& Worker::scene() const noexcept {
-    return *scene_;
-}
-
 inline bool Worker::intersect(Ray& ray, Intersection& intersection) const noexcept {
     return scene_->intersect(ray, *this, intersection);
 }
@@ -35,6 +31,10 @@ inline bool Worker::visibility(Ray const& ray) const noexcept {
 
 inline bool Worker::masked_visibility(Ray const& ray, Filter filter, float& mv) const noexcept {
     return scene_->visibility(ray, filter, *this, mv);
+}
+
+inline Scene const& Worker::scene() const noexcept {
+    return *scene_;
 }
 
 inline camera::Camera const& Worker::camera() const noexcept {

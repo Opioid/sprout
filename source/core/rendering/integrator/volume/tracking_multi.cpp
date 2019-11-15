@@ -14,11 +14,22 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape.hpp"
-#include "tracking.hpp"
+#include "tracking.inl"
 
 #include "base/debug/assert.hpp"
 
 namespace rendering::integrator::volume {
+
+using namespace scene::prop;
+
+static inline void set_scattering(Intersection& intersection, Interface const* interface,
+                                  float3 const& p) noexcept {
+    intersection.prop       = interface->prop;
+    intersection.geo.p      = p;
+    intersection.geo.uv     = interface->uv;
+    intersection.geo.part   = interface->part;
+    intersection.subsurface = true;
+}
 
 Tracking_multi::Tracking_multi(rnd::Generator& rng) noexcept : Integrator(rng) {}
 
@@ -67,19 +78,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
     }
 
     if (material.is_heterogeneous_volume()) {
-        Transformation temp;
-        auto const&    transformation = worker.scene().prop_transformation_at(interface->prop,
-                                                                           ray.time, temp);
-
-        float3 const local_origin = transformation.world_to_object_point(ray.origin);
-        float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
-
-        auto const shape = worker.scene().prop_shape(interface->prop);
-
-        float3 const origin = shape->object_to_texture_point(local_origin);
-        float3 const dir    = shape->object_to_texture_vector(local_dir);
-
-        math::ray local_ray(origin, dir, ray.min_t, d);
+        math::ray local_ray = texture_space_ray(ray, interface->prop, worker);
 
         auto const& tree = *material.volume_tree();
 
@@ -246,75 +245,19 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
             } else {
-//                auto const mu = material.collision_coefficients();
-
-//                if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-//                    set_scattering(intersection, interface, ray.point(t));
-//                    event = Event::Scatter;
-//                }
-
-//                li            = float3(0.f);
-//                transmittance = w;
-//                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
-
-
-/*
                 auto const mu = material.collision_coefficients();
 
-                float3 const extinction = mu.a + mu.s;
+                if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
+                    set_scattering(intersection, interface, ray.point(t));
+                    event = Event::Scatter;
+                }
 
-                float3 const scattering_albedo = mu.s / extinction;
+                li            = float3(0.f);
+                transmittance = w;
+                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
 
-                float3 const transmittance1 = exp(-(d - ray.min_t) * extinction);
-
-                float const r = rng_.random_float();
-                float const t = -std::log(1.f - r * (1.f - average(transmittance1))) / average(extinction);
-
-                float3 const p = ray.point(ray.min_t + t);
-
-                intersection.prop       = interface->prop;
-                intersection.geo.p      = p;
-                intersection.geo.uv     = interface->uv;
-                intersection.geo.part   = interface->part;
-                intersection.subsurface = true;
-
-                event = Event::Scatter;
-
-                // Short version
-                //      l *= (1.f - transmittance) * scattering_albedo;
-
-                // Instructive version
-                float3 const tr = exp(-t * extinction);
-
-                float3 const weight = (1.f - transmittance1) / (tr * extinction);
-
-            //    l *= extinction * scattering_albedo * tr;
-            //    l *= weight;
-
-
-                li = extinction * scattering_albedo * weight;// / ( tr * weight);
-                transmittance = tr / weight;
-
-//                li            = extinction * scattering_albedo * weight;
-//                transmittance = li * tr;
-
-//                li = scattering_albedo * (1.f - transmittance1) / (tr);
-//                transmittance = scattering_albedo * (1.f - transmittance1);
-
-                return any_greater_equal(tr, Tracking::Abort_epsilon) ? event : Event::Abort;
-*/
-
-
-
-
-
-
-
-
-
-
-
-
+                // Tracking as reference
+                /*
                 auto const mu = material.collision_coefficients();
 
                 float3 const extinction = mu.a + mu.s;
@@ -333,33 +276,26 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                     event = Event::Scatter;
 
-                    transmittance = exp(-(t) * extinction);
+                    float3 const w = exp(-(t)*extinction);
 
-                    float3 const pdf = extinction * transmittance;
+                    float3 const pdf = extinction * w;
 
-                    li = scattering_albedo * extinction / pdf;
+                    float3 const weight = scattering_albedo * extinction / pdf;
 
+                    transmittance = w * weight;
+                    li            = float3(0.f);
                 } else {
-                    transmittance = float3(1.f);//exp(-(td) * extinction);
-                    li = float3(0.f);
+                    transmittance = float3(1.f);  // exp(-(td) * extinction);
+                    li            = float3(0.f);
 
                     event = Event::Pass;
                 }
 
                 return event;
-
+                */
             }
         }
     }
-}
-
-void Tracking_multi::set_scattering(Intersection& intersection, Interface const* interface,
-                                    float3 const& p) noexcept {
-    intersection.prop       = interface->prop;
-    intersection.geo.p      = p;
-    intersection.geo.uv     = interface->uv;
-    intersection.geo.part   = interface->part;
-    intersection.subsurface = true;
 }
 
 Tracking_multi_factory::Tracking_multi_factory(uint32_t num_integrators) noexcept

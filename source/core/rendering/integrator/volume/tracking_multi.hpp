@@ -22,12 +22,6 @@ class alignas(64) Tracking_multi final : public Integrator {
 
     Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
                     float3& transmittance) noexcept override final;
-
-  private:
-    using Interface = scene::prop::Interface;
-
-    static void set_scattering(Intersection& intersection, Interface const* interface,
-                               float3 const& p) noexcept;
 };
 
 class Tracking_multi_factory final : public Factory {

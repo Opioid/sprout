@@ -20,7 +20,8 @@ class Node_stack {
     uint32_t pop() noexcept;
 
   private:
-    uint32_t num_elements_;
+    [[maybe_unused]] uint32_t num_elements_;
+
     uint32_t end_;
 
     uint32_t* stack_;

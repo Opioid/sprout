@@ -1,4 +1,4 @@
-#include "tracking.hpp"
+#include "tracking.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
@@ -26,7 +26,7 @@ bool check(float3 const& majorant_mt, float mt);
 #endif
 
 // Code for hetereogeneous transmittance inspired by:
-// https://github.com/DaWelter/ToyTrace/blob/master/atmosphere.cxx
+// https://github.com/DaWelter/ToyTrace/blob/master/src/atmosphere.cxx
 
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray const& ray,
                                                        float minorant_mu_t, float majorant_mu_t,
@@ -153,19 +153,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
     }
 
     if (material.is_heterogeneous_volume()) {
-        Transformation temp;
-        auto const&    transformation = worker.scene().prop_transformation_at(interface->prop,
-                                                                           ray.time, temp);
-
-        float3 const local_origin = transformation.world_to_object_point(ray.origin);
-        float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
-
-        auto const shape = worker.scene().prop_shape(interface->prop);
-
-        float3 const origin = shape->object_to_texture_point(local_origin);
-        float3 const dir    = shape->object_to_texture_vector(local_dir);
-
-        math::ray local_ray(origin, dir, ray.min_t, ray.max_t);
+        math::ray local_ray = texture_space_ray(ray, interface->prop, worker);
 
         auto const& tree = *material.volume_tree();
 

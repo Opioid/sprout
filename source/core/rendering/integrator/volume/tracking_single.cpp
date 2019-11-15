@@ -16,7 +16,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/shape_sample.hpp"
-#include "tracking.hpp"
+#include "tracking.inl"
 
 #include "base/debug/assert.hpp"
 
@@ -178,19 +178,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     }
 
     if (material.is_heterogeneous_volume()) {
-        Transformation temp;
-        auto const&    transformation = worker.scene().prop_transformation_at(interface->prop,
-                                                                           ray.time, temp);
-
-        float3 const local_origin = transformation.world_to_object_point(ray.origin);
-        float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
-
-        auto const shape = worker.scene().prop_shape(interface->prop);
-
-        float3 const origin = shape->object_to_texture_point(local_origin);
-        float3 const dir    = shape->object_to_texture_vector(local_dir);
-
-        Ray local_ray(origin, dir, ray.min_t, ray.max_t);
+        math::ray local_ray = texture_space_ray(ray, interface->prop, worker);
 
         auto const& tree = *material.volume_tree();
 
@@ -258,35 +246,35 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         l *= extinction * scattering_albedo * tr;
         l *= weight;
 
-/*
-                auto const light = worker.scene().random_light(rng_.random_float());
+        /*
+                        auto const light = worker.scene().random_light(rng_.random_float());
 
-                float3 const position = light.ref.center(worker.scene());
+                        float3 const position = light.ref.center(worker.scene());
 
-                float const delta = dot(position - ray.origin, ray.direction);
+                        float const delta = dot(position - ray.origin, ray.direction);
 
-                float3 const closest_point = ray.point(delta);
+                        float3 const closest_point = ray.point(delta);
 
-                float const D = distance(closest_point, position);
+                        float const D = distance(closest_point, position);
 
-                float const theta_a = std::atan2(ray.min_t - delta, D);
-                float const theta_b = std::atan2(d - delta, D);
+                        float const theta_a = std::atan2(ray.min_t - delta, D);
+                        float const theta_b = std::atan2(d - delta, D);
 
-                float const r = rng_.random_float();
-                float const t = D * std::tan(lerp(theta_a, theta_b, r));
+                        float const r = rng_.random_float();
+                        float const t = D * std::tan(lerp(theta_a, theta_b, r));
 
-                float3 const p = ray.point(delta + t);
+                        float3 const p = ray.point(delta + t);
 
-                float3 l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
+                        float3 l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 
-                float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
+                        float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
-                l *= 1.f / pdf;
+                        l *= 1.f / pdf;
 
-                float3 const tr = exp(-(delta + t - ray.min_t) * extinction);
+                        float3 const tr = exp(-(delta + t - ray.min_t) * extinction);
 
-                l *= extinction * scattering_albedo * tr;
-*/
+                        l *= extinction * scattering_albedo * tr;
+        */
         li = l;
     }
 

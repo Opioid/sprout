@@ -9,6 +9,7 @@ target_sources(core
     "tracking_single.cpp"
     "tracking_single.hpp"
     "tracking.cpp"
+    "tracking.inl"
     "tracking.hpp"
     "volume_integrator.cpp"
     "volume_integrator.hpp"
