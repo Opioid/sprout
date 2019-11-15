@@ -67,6 +67,9 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
     float3 throughput(1.f);
     float3 result(0.f);
 
+
+    float3 weight(1.f);
+
     for (;;) {
         float3 const wo = -ray.direction;
 
@@ -91,7 +94,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
 
-        result += throughput *
+        result += weight * throughput *
                   direct_light(ray, intersection, material_sample, evaluate_back, filter, worker);
 
         SOFT_ASSERT(all_finite_and_positive(result));
@@ -135,16 +138,18 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         }
-
+weight = float3(1.f);
         if (!worker.interface_stack().empty()) {
             float3     vli, vtr;
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
-            if (treat_as_singular) {
-                result += throughput * vli;
-            }
+//            if (treat_as_singular) {
+//                result += throughput * vli;
+//            }
 
             throughput *= vtr;
+
+            weight = vli;
 
             if (Event::Abort == hit || Event::Absorb == hit) {
                 break;

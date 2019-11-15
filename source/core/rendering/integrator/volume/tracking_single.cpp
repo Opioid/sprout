@@ -258,7 +258,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         l *= extinction * scattering_albedo * tr;
         l *= weight;
 
-        /*
+/*
                 auto const light = worker.scene().random_light(rng_.random_float());
 
                 float3 const position = light.ref.center(worker.scene());
@@ -286,7 +286,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
                 float3 const tr = exp(-(delta + t - ray.min_t) * extinction);
 
                 l *= extinction * scattering_albedo * tr;
-        */
+*/
         li = l;
     }
 

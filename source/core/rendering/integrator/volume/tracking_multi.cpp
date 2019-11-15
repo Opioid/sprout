@@ -246,16 +246,63 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
             } else {
+//                auto const mu = material.collision_coefficients();
+
+//                if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
+//                    set_scattering(intersection, interface, ray.point(t));
+//                    event = Event::Scatter;
+//                }
+
+//                li            = float3(0.f);
+//                transmittance = w;
+//                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
+
+
+
                 auto const mu = material.collision_coefficients();
 
-                if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-                    set_scattering(intersection, interface, ray.point(t));
-                    event = Event::Scatter;
-                }
+                float3 const extinction = mu.a + mu.s;
 
-                li            = float3(0.f);
-                transmittance = w;
-                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
+                float3 const scattering_albedo = mu.s / extinction;
+
+                float3 const transmittance1 = exp(-(d - ray.min_t) * extinction);
+
+                float const r = rng_.random_float();
+                float const t = -std::log(1.f - r * (1.f - average(transmittance1))) / average(extinction);
+
+                float3 const p = ray.point(ray.min_t + t);
+
+                intersection.prop       = interface->prop;
+                intersection.geo.p      = p;
+                intersection.geo.uv     = interface->uv;
+                intersection.geo.part   = interface->part;
+                intersection.subsurface = true;
+
+                event = Event::Scatter;
+
+                // Short version
+                //      l *= (1.f - transmittance) * scattering_albedo;
+
+                // Instructive version
+                float3 const tr = exp(-t * extinction);
+
+                float3 const weight = (1.f - transmittance1) / (tr * extinction);
+
+            //    l *= extinction * scattering_albedo * tr;
+            //    l *= weight;
+
+
+                li = extinction * scattering_albedo * weight;// / ( tr * weight);
+                transmittance = tr / weight;
+
+//                li            = extinction * scattering_albedo * weight;
+//                transmittance = li * tr;
+
+//                li = scattering_albedo * (1.f - transmittance1) / (tr);
+//                transmittance = scattering_albedo * (1.f - transmittance1);
+
+                return any_greater_equal(tr, Tracking::Abort_epsilon) ? event : Event::Abort;
+
             }
         }
     }
