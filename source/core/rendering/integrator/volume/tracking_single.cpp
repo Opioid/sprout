@@ -205,7 +205,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        tr = math::exp(-(d - ray.min_t) * extinction);
+        tr = exp(-(d - ray.min_t) * extinction);
 
         float const r = rng_.random_float();
         float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
