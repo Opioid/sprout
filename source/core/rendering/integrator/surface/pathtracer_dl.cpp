@@ -96,15 +96,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         SOFT_ASSERT(all_finite_and_positive(result));
 
-        if (ray.depth >= settings_.max_bounces - 1) {
-            break;
-        }
 
-        if (ray.depth > settings_.min_bounces) {
-            if (russian_roulette(throughput, sampler_.generate_sample_1D())) {
-                break;
-            }
-        }
 
         material_sample.sample(material_sampler(ray.depth), sample_result);
         if (0.f == sample_result.pdf) {
@@ -161,6 +153,16 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
             break;
+        }
+
+        if (ray.depth >= settings_.max_bounces) {
+            break;
+        }
+
+        if (ray.depth > settings_.min_bounces) {
+            if (russian_roulette(throughput, sampler_.generate_sample_1D())) {
+                break;
+            }
         }
     }
 
