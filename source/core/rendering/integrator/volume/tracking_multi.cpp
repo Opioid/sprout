@@ -258,7 +258,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 //                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
 
 
-
+/*
                 auto const mu = material.collision_coefficients();
 
                 float3 const extinction = mu.a + mu.s;
@@ -302,6 +302,51 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 //                transmittance = scattering_albedo * (1.f - transmittance1);
 
                 return any_greater_equal(tr, Tracking::Abort_epsilon) ? event : Event::Abort;
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+                auto const mu = material.collision_coefficients();
+
+                float3 const extinction = mu.a + mu.s;
+
+                float3 const scattering_albedo = mu.s / extinction;
+
+                float const r = rng_.random_float();
+                float const t = -std::log(1.f - r) / average(extinction);
+
+                float const td = d - ray.min_t;
+
+                if (t < td) {
+                    float3 const p = ray.point(ray.min_t + t);
+
+                    set_scattering(intersection, interface, p);
+
+                    event = Event::Scatter;
+
+                    transmittance = exp(-(t) * extinction);
+
+                    float3 const pdf = extinction * transmittance;
+
+                    li = scattering_albedo * extinction / pdf;
+
+                } else {
+                    transmittance = float3(1.f);//exp(-(td) * extinction);
+                    li = float3(0.f);
+
+                    event = Event::Pass;
+                }
+
+                return event;
 
             }
         }
