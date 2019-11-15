@@ -14,11 +14,10 @@ class alignas(64) Tracking_single final : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    bool transmittance(Ray const& ray, Worker& worker,
-                       float3& transmittance) noexcept override final;
+    bool transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept override final;
 
     Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
-                    float3& transmittance) noexcept override final;
+                    float3& tr) noexcept override final;
 
   private:
     float3 direct_light(Ray const& ray, float3 const& position, Intersection const& intersection,

@@ -135,16 +135,15 @@ average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f / (ms
         wn = (mu_n / (mt * pn));
 }
 */
-bool Tracking_single::transmittance(Ray const& ray, Worker& worker,
-                                    float3& transmittance) noexcept {
-    return Tracking::transmittance(ray, rng_, worker, transmittance);
+bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept {
+    return Tracking::transmittance(ray, rng_, worker, tr);
 }
 
 Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter,
-                                 Worker& worker, float3& li, float3& transmittance) noexcept {
+                                 Worker& worker, float3& li, float3& tr) noexcept {
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
-        li            = float3(0.f);
-        transmittance = float3(1.f);
+        li = float3(0.f);
+        tr = float3(1.f);
         return Event::Abort;
     }
 
@@ -156,8 +155,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
     if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t <= d) {
-        li            = float3(0.f);
-        transmittance = float3(1.f);
+        li = float3(0.f);
+        tr = float3(1.f);
         return Event::Pass;
     }
 
@@ -171,9 +170,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         // Basically the "glass" case
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
-        li            = float3(0.f);
-        transmittance = attenuation(d - ray.min_t, mu_a);
-        //	weight = float3(1.f);
+        li = float3(0.f);
+        tr = attenuation(d - ray.min_t, mu_a);
         return Event::Pass;
     }
 
@@ -187,8 +185,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             if (Tracking::CM data; tree.intersect(local_ray, data)) {
                 if (float t; Tracking::tracking(local_ray, data, material, 1.f, filter, rng_,
                                                 worker, t, w)) {
-                    li            = w * direct_light(ray, ray.point(t), intersection, worker);
-                    transmittance = float3(0.f);
+                    li = w * direct_light(ray, ray.point(t), intersection, worker);
+                    tr = float3(0.f);
                     return Event::Pass;
                 }
             }
@@ -197,8 +195,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             local_ray.max_t = d;
         }
 
-        li            = float3(0.f);
-        transmittance = w;
+        li = float3(0.f);
+        tr = w;
         return Event::Pass;
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
@@ -207,16 +205,16 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        transmittance = math::exp(-(d - ray.min_t) * extinction);
+        tr = math::exp(-(d - ray.min_t) * extinction);
 
         float const r = rng_.random_float();
-        float const t = -std::log(1.f - r * (1.f - average(transmittance))) / average(extinction);
+        float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
         float3 const p = ray.point(ray.min_t + t);
 
         float3 l = direct_light(ray, p, intersection, worker);
 
-        l *= (1.f - transmittance) * scattering_albedo;
+        l *= (1.f - tr) * scattering_albedo;
 
         li = l;
     } else {
@@ -226,24 +224,24 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        transmittance = exp(-(d - ray.min_t) * extinction);
+        tr = exp(-(d - ray.min_t) * extinction);
 
         float const r = rng_.random_float();
-        float const t = -std::log(1.f - r * (1.f - average(transmittance))) / average(extinction);
+        float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
         float3 const p = ray.point(ray.min_t + t);
 
         float3 l = direct_light(ray, p, intersection, worker);
 
         // Short version
-        //      l *= (1.f - transmittance) * scattering_albedo;
+        //      l *= (1.f - tr) * scattering_albedo;
 
         // Instructive version
-        float3 const tr = exp(-t * extinction);
+        float3 const ltr = exp(-t * extinction);
 
-        float3 const weight = (1.f - transmittance) / (tr * extinction);
+        float3 const weight = (1.f - ltr) / (ltr * extinction);
 
-        l *= extinction * scattering_albedo * tr;
+        l *= extinction * scattering_albedo * ltr;
         l *= weight;
 
         /*
@@ -271,9 +269,9 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
                         l *= 1.f / pdf;
 
-                        float3 const tr = exp(-(delta + t - ray.min_t) * extinction);
+                        float3 const w = exp(-(delta + t - ray.min_t) * extinction);
 
-                        l *= extinction * scattering_albedo * tr;
+                        l *= extinction * scattering_albedo * w;
         */
         li = l;
     }

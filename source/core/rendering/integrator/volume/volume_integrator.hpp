@@ -17,10 +17,10 @@ class Integrator : public integrator::Integrator {
 
     virtual ~Integrator() noexcept;
 
-    virtual bool transmittance(Ray const& ray, Worker& worker, float3& transmittance) noexcept = 0;
+    virtual bool transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept = 0;
 
     virtual Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
-                            float3& li, float3& transmittance) noexcept = 0;
+                            float3& li, float3& tr) noexcept = 0;
 };
 
 class Factory {

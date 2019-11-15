@@ -138,7 +138,7 @@ static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tra
 }
 
 bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
-                             float3& transmittance) noexcept {
+                             float3& tr) noexcept {
     SOFT_ASSERT(!worker.interface_stack().empty());
 
     auto const interface = worker.interface_stack().top();
@@ -148,7 +148,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
     float const d = ray.max_t;
 
     if (scene::offset_f(ray.min_t) >= d) {
-        transmittance = float3(1.f);
+        tr = float3(1.f);
         return true;
     }
 
@@ -177,21 +177,21 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
             local_ray.max_t = d;
         }
 
-        transmittance = w;
+        tr = w;
         return true;
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, Filter::Nearest, worker);
 
         float3 const mu_t = mu.a + mu.s;
 
-        transmittance = attenuation(d - ray.min_t, mu_t);
+        tr = attenuation(d - ray.min_t, mu_t);
         return true;
     } else {
         auto const mu = material.collision_coefficients();
 
         float3 const mu_t = mu.a + mu.s;
 
-        transmittance = attenuation(d - ray.min_t, mu_t);
+        tr = attenuation(d - ray.min_t, mu_t);
         return true;
     }
 }

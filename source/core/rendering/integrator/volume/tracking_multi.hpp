@@ -17,11 +17,10 @@ class alignas(64) Tracking_multi final : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    bool transmittance(Ray const& ray, Worker& worker,
-                       float3& transmittance) noexcept override final;
+    bool transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept override final;
 
     Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
-                    float3& transmittance) noexcept override final;
+                    float3& tr) noexcept override final;
 };
 
 class Tracking_multi_factory final : public Factory {

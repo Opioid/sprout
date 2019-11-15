@@ -53,7 +53,7 @@ class Tracking {
     using Intersection   = scene::prop::Intersection;
 
     static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
-                              float3& transmittance) noexcept;
+                              float3& tr) noexcept;
 
     static bool tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
