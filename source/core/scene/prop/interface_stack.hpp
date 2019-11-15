@@ -42,6 +42,8 @@ class Interface_stack {
 
     bool empty() const noexcept;
 
+    bool empty_or_scattering(Worker const& worker) const noexcept;
+
     void clear() noexcept;
 
     Interface const* top() const noexcept;

@@ -96,8 +96,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         SOFT_ASSERT(all_finite_and_positive(result));
 
-
-
         material_sample.sample(material_sampler(ray.depth), sample_result);
         if (0.f == sample_result.pdf) {
             break;

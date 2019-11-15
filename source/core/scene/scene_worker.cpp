@@ -80,7 +80,8 @@ float Worker::ior_outside(float3 const& wo, Intersection const& intersection) co
 void Worker::interface_change(float3 const& dir, Intersection const& intersection) noexcept {
     if (intersection.same_hemisphere(dir)) {
         interface_stack_.remove(intersection);
-    } else if (interface_stack_.top_is_vacuum(*this) || intersection.material(*this)->ior() > 1.f) {
+    } else if (interface_stack_.top_is_vacuum(*this) |
+               (intersection.material(*this)->ior() > 1.f)) {
         interface_stack_.push(intersection);
     }
 }
@@ -100,7 +101,7 @@ material::IoR Worker::interface_change_ior(float3 const&       dir,
         ior.eta_t = intersection.material(*this)->ior();
         ior.eta_i = interface_stack_.top_ior(*this);
 
-        if (interface_stack_.top_is_vacuum(*this) || intersection.material(*this)->ior() > 1.f) {
+        if (interface_stack_.top_is_vacuum(*this) | (intersection.material(*this)->ior() > 1.f)) {
             interface_stack_.push(intersection);
         }
     }

@@ -45,7 +45,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
     // when in fact a very short intersection was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
-    if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t_minus_epsilon <= d) {
+    if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t <= d) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         return Event::Pass;
@@ -89,6 +89,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
         li = float3(0.f);
 
+        Event event = Event::Pass;
+
         if (material.is_emissive(worker.scene())) {
             for (; local_ray.min_t < d;) {
                 if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
@@ -101,6 +103,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                     if (Event::Scatter == result) {
                         set_scattering(intersection, interface, ray.point(t));
+                        event = Event::Scatter;
                         break;
                     } else if (Event::Absorb == result) {
                         transmittance      = w;
@@ -124,6 +127,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     if (float t; Tracking::tracking(local_ray, cm, material, srs, filter, rng_,
                                                     worker, t, w)) {
                         set_scattering(intersection, interface, ray.point(t));
+                        event = Event::Scatter;
                         break;
                     }
                 }
@@ -136,18 +140,21 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         }
 
         transmittance = w;
-        return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Abort;
+        return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
     } else if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
         float3 w;
+        Event  event = Event::Pass;
+
         if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
             set_scattering(intersection, interface, ray.point(t));
+            event = Event::Scatter;
         }
 
         li            = float3(0.f);
         transmittance = w;
-        return Event::Pass;
+        return event;
     } else {
         static bool constexpr decomposition = false;
 
@@ -219,6 +226,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         } else {
             float3 w;
 
+            Event event = Event::Pass;
+
             if (material.is_emissive(worker.scene())) {
                 auto const cce = material.collision_coefficients_emission();
 
@@ -229,22 +238,24 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 if (Event::Scatter == result) {
                     set_scattering(intersection, interface, ray.point(t));
+                    event = Event::Scatter;
                 } else if (Event::Absorb == result) {
                     ray.max_t = t;
                     return Event::Absorb;
                 }
 
-                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Abort;
+                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
             } else {
                 auto const mu = material.collision_coefficients();
 
                 if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
                     set_scattering(intersection, interface, ray.point(t));
+                    event = Event::Scatter;
                 }
 
                 li            = float3(0.f);
                 transmittance = w;
-                return any_greater_equal(w, Tracking::Abort_epsilon) ? Event::Pass : Event::Abort;
+                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
             }
         }
     }

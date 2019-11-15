@@ -53,6 +53,15 @@ inline bool Interface_stack::empty() const noexcept {
     return 0 == index_;
 }
 
+inline bool Interface_stack::empty_or_scattering(Worker const& worker) const noexcept {
+    if (0 == index_) {
+        return true;
+    }
+
+    auto const material = stack_[index_ - 1].material(worker);
+    return material->ior() > 1.f;
+}
+
 inline void Interface_stack::clear() noexcept {
     index_ = 0;
 }
@@ -84,7 +93,7 @@ inline bool Interface_stack::top_is_vacuum(Worker const& worker) const noexcept 
 inline bool Interface_stack::top_is_vacuum_or_not_scattering(Worker const& worker) const noexcept {
     if (index_ > 0) {
         auto const material = stack_[index_ - 1].material(worker);
-        return 1.f == material->ior() || !material->is_scattering_volume();
+        return (1.f == material->ior()) | (!material->is_scattering_volume());
     }
 
     return true;

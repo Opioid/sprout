@@ -142,12 +142,14 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             break;
         }
 
-        evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
+        if (ray.depth < max_bounces) {
+            evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
 
-        result_li += throughput * sample_lights(ray, intersection, material_sample, evaluate_back,
-                                                filter, worker);
+            result_li += throughput * sample_lights(ray, intersection, material_sample,
+                                                    evaluate_back, filter, worker);
 
-        SOFT_ASSERT(all_finite_and_positive(result_li));
+            SOFT_ASSERT(all_finite_and_positive(result_li));
+        }
 
         float const previous_bxdf_pdf = sample_result.pdf;
 
@@ -227,6 +229,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             if (Event::Abort == hit) {
                 break;
             }
+
+            if ((Event::Scatter == hit) & (ray.depth >= max_bounces)) {
+                break;
+            }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
             break;
         }
@@ -254,7 +260,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             }
         }
 
-        if (ray.depth >= max_bounces) {
+        if ((ray.depth >= max_bounces) & worker.interface_stack().empty_or_scattering(worker)) {
             break;
         }
 

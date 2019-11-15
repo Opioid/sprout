@@ -155,7 +155,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     // when in fact a very short intersection was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
-    if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t_minus_epsilon <= d) {
+    if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t <= d) {
         li            = float3(0.f);
         transmittance = float3(1.f);
         return Event::Pass;
