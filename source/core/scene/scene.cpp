@@ -534,7 +534,7 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     uint32_t const p = prop_parts_[entity] + part;
 
-    light_ids_[p] = light_id;
+    light_ids_[p] = light::Light::Volume_light_mask | light_id;
 
     material_resources_[materials_[p]]->prepare_sampling(
         *shape, part, time, transformation, volume, material_importance_sampling, threads, *this);

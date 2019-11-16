@@ -44,6 +44,10 @@ inline float3 Light::center(Scene const& scene) const noexcept {
     return scene.prop_aabb(prop_).position();
 }
 
+inline bool Light::is_finite(Scene const& scene) const noexcept {
+    return scene.prop_shape(prop_)->is_finite();
+}
+
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
                                float3 const&                          n,
                                entity::Composed_transformation const& transformation,
@@ -497,6 +501,18 @@ inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool t
 
 inline bool Light::equals(uint32_t prop, uint32_t part) const noexcept {
     return prop_ == prop && part_ == part;
+}
+
+inline bool Light::is_light(uint32_t id) noexcept {
+    return Null != id;
+}
+
+inline bool Light::is_area_light(uint32_t id) noexcept {
+    return 0 == (id & Volume_light_mask);
+}
+
+inline uint32_t Light::strip_mask(uint32_t id) noexcept {
+    return ~Volume_light_mask & id;
 }
 
 }  // namespace scene::light

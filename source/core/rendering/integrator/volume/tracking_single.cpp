@@ -212,11 +212,9 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const p = ray.point(ray.min_t + t);
 
-        float3 l = direct_light(ray, p, intersection, worker);
+        float3 const l = direct_light(ray, p, intersection, worker);
 
-        l *= (1.f - tr) * scattering_albedo;
-
-        li = l;
+        li = l * (1.f - tr) * scattering_albedo;
     } else {
         auto const mu = material.collision_coefficients();
 
@@ -226,54 +224,56 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         tr = exp(-(d - ray.min_t) * extinction);
 
-        float const r = rng_.random_float();
-        float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
+        auto const light = worker.scene().random_light(rng_.random_float());
 
-        float3 const p = ray.point(ray.min_t + t);
+        if (light.ref.is_finite(worker.scene())) {
+            // Equi-angular sampling
+            float3 const position = light.ref.center(worker.scene());
 
-        float3 l = direct_light(ray, p, intersection, worker);
+            float const delta = dot(position - ray.origin, ray.direction);
 
-        // Short version
-        //      l *= (1.f - tr) * scattering_albedo;
+            float3 const closest_point = ray.point(delta);
 
-        // Instructive version
-        float3 const ltr = exp(-t * extinction);
+            float const D = distance(closest_point, position);
 
-        float3 const weight = (1.f - ltr) / (ltr * extinction);
+            float const theta_a = std::atan2(ray.min_t - delta, D);
+            float const theta_b = std::atan2(d - delta, D);
 
-        l *= extinction * scattering_albedo * ltr;
-        l *= weight;
+            float const r = rng_.random_float();
+            float const t = D * std::tan(lerp(theta_a, theta_b, r));
 
-        /*
-                        auto const light = worker.scene().random_light(rng_.random_float());
+            float const sample_t = delta + t;
 
-                        float3 const position = light.ref.center(worker.scene());
+            float3 const p = ray.point(sample_t);
 
-                        float const delta = dot(position - ray.origin, ray.direction);
+            float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 
-                        float3 const closest_point = ray.point(delta);
+            float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
-                        float const D = distance(closest_point, position);
+            float3 const w = exp(-(sample_t - ray.min_t) * extinction);
 
-                        float const theta_a = std::atan2(ray.min_t - delta, D);
-                        float const theta_b = std::atan2(d - delta, D);
+            li = (l * extinction) * (scattering_albedo * w) / pdf;
+        } else {
+            // Distance sampling
+            float const r = rng_.random_float();
+            float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
-                        float const r = rng_.random_float();
-                        float const t = D * std::tan(lerp(theta_a, theta_b, r));
+            float3 const p = ray.point(ray.min_t + t);
 
-                        float3 const p = ray.point(delta + t);
+            float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 
-                        float3 l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
+            // Short version
+            li = l * (1.f - tr) * scattering_albedo;
 
-                        float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
+            // Instructive version
+            /*
+            float3 const ltr = exp(-t * extinction);
 
-                        l *= 1.f / pdf;
+            float3 const weight = (1.f - tr) / (ltr * extinction);
 
-                        float3 const w = exp(-(delta + t - ray.min_t) * extinction);
-
-                        l *= extinction * scattering_albedo * w;
-        */
-        li = l;
+            li = l * extinction * scattering_albedo * ltr * weight;
+            */
+        }
     }
 
     return Event::Pass;

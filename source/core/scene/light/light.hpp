@@ -72,6 +72,8 @@ class alignas(16) Light {
 
     float3 center(Scene const& scene) const noexcept;
 
+    bool is_finite(Scene const& scene) const noexcept;
+
     bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
                 bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                 Worker const& worker, Sample_to& result) const noexcept;
