@@ -34,13 +34,13 @@ float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_power(prop_, part_, area_, scene_bb, scene);
+            return prop_power(prop_, part_, extent_, scene_bb, scene);
         case Type::Prop_image:
-            return prop_power(prop_, part_, area_, scene_bb, scene);
+            return prop_power(prop_, part_, extent_, scene_bb, scene);
         case Type::Volume:
-            return volume_power(prop_, part_, volume_, scene);
+            return volume_power(prop_, part_, extent_, scene);
         case Type::Volume_image:
-            return volume_power(prop_, part_, volume_, scene);
+            return volume_power(prop_, part_, extent_, scene);
     }
 
     return float3(0.);

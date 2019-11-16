@@ -508,7 +508,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     float const area = shape->area(part, transformation.scale());
 
-    lights_[light_id].set_area(area);
+    lights_[light_id].set_extent(area);
 
     uint32_t const p = prop_parts_[entity] + part;
 
@@ -530,7 +530,7 @@ void Scene::prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_
 
     float const volume = shape->volume(part, transformation.scale());
 
-    lights_[light_id].set_volume(volume);
+    lights_[light_id].set_extent(volume);
 
     uint32_t const p = prop_parts_[entity] + part;
 

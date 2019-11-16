@@ -24,15 +24,11 @@ inline Light::Light(Type type, uint32_t prop, uint32_t part)
     : type_(type), prop_(prop), part_(part) {}
 
 inline float Light::area() const noexcept {
-    return area_;
+    return extent_;
 }
 
-inline void Light::set_area(float area) noexcept {
-    area_ = area;
-}
-
-inline void Light::set_volume(float volume) noexcept {
-    volume_ = volume;
+inline void Light::set_extent(float extent) noexcept {
+    extent_ = extent;
 }
 
 inline entity::Composed_transformation const& Light::transformation_at(
@@ -161,16 +157,16 @@ inline bool Light::sample(float3 const& p, float3 const& n, Transformation const
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, area_, p, n, transformation, total_sphere, sampler,
+            return prop_sample(prop_, part_, extent_, p, n, transformation, total_sphere, sampler,
                                sampler_dimension, worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, area_, p, n, transformation, total_sphere,
+            return prop_image_sample(prop_, part_, extent_, p, n, transformation, total_sphere,
                                      sampler, sampler_dimension, worker, result);
         case Type::Volume:
-            return volume_sample(prop_, part_, volume_, p, n, transformation, sampler,
+            return volume_sample(prop_, part_, extent_, p, n, transformation, sampler,
                                  sampler_dimension, worker, result);
         case Type::Volume_image:
-            return volume_image_sample(prop_, part_, volume_, p, n, transformation, sampler,
+            return volume_image_sample(prop_, part_, extent_, p, n, transformation, sampler,
                                        sampler_dimension, worker, result);
     }
 
@@ -199,13 +195,13 @@ inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker con
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Prop_image:
-            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume:
-            return volume_evaluate(prop_, part_, volume_, sample, filter, worker);
+            return volume_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume_image:
-            return volume_evaluate(prop_, part_, volume_, sample, filter, worker);
+            return volume_evaluate(prop_, part_, extent_, sample, filter, worker);
     }
 
     return float3(0.f);
@@ -267,10 +263,10 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, area_, transformation, sampler, sampler_dimension,
+            return prop_sample(prop_, part_, extent_, transformation, sampler, sampler_dimension,
                                bounds, worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, area_, transformation, sampler,
+            return prop_image_sample(prop_, part_, extent_, transformation, sampler,
                                      sampler_dimension, bounds, worker, result);
         case Type::Volume:
             return false;
@@ -351,10 +347,10 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, area_, transformation, sampler, sampler_dimension,
+            return prop_sample(prop_, part_, extent_, transformation, sampler, sampler_dimension,
                                importance, bounds, worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, area_, transformation, sampler,
+            return prop_image_sample(prop_, part_, extent_, transformation, sampler,
                                      sampler_dimension, importance, bounds, worker, result);
         case Type::Volume:
             return false;
@@ -379,13 +375,13 @@ inline float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker c
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Prop_image:
-            return prop_evaluate(prop_, part_, area_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume:
-            return prop_evaluate(prop_, part_, volume_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume_image:
-            return prop_evaluate(prop_, part_, volume_, sample, filter, worker);
+            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
     }
 
     return float3(0.f);
@@ -484,15 +480,15 @@ inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool t
         case Type::Null:
             return 0.f;
         case Type::Prop:
-            return prop_pdf(prop_, part_, area_, ray, intersection, transformation, total_sphere,
+            return prop_pdf(prop_, part_, extent_, ray, intersection, transformation, total_sphere,
                             worker);
         case Type::Prop_image:
-            return prop_image_pdf(prop_, part_, area_, ray, intersection, transformation, filter,
+            return prop_image_pdf(prop_, part_, extent_, ray, intersection, transformation, filter,
                                   worker);
         case Type::Volume:
-            return volume_pdf(prop_, part_, volume_, ray, intersection, transformation, worker);
+            return volume_pdf(prop_, part_, extent_, ray, intersection, transformation, worker);
         case Type::Volume_image:
-            return volume_image_pdf(prop_, part_, volume_, ray, intersection, transformation,
+            return volume_image_pdf(prop_, part_, extent_, ray, intersection, transformation,
                                     filter, worker);
     }
 

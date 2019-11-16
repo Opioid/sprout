@@ -63,9 +63,7 @@ class alignas(16) Light {
 
     float area() const noexcept;
 
-    void set_area(float area) noexcept;
-
-    void set_volume(float volume) noexcept;
+    void set_extent(float extent) noexcept;
 
     Transformation const& transformation_at(uint64_t time, Transformation& transformation,
                                             Scene const& scene) const noexcept;
@@ -127,10 +125,7 @@ class alignas(16) Light {
     uint32_t prop_;
     uint32_t part_;
 
-    union {
-        float area_;
-        float volume_;
-    };
+    float extent_;
 };
 
 }  // namespace light
