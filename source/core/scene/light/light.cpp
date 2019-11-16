@@ -30,7 +30,7 @@ static inline float3 volume_power(uint32_t prop, uint32_t part, float volume,
 }
 
 float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
@@ -48,7 +48,7 @@ float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
 
 void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                              thread::Pool& threads) const noexcept {
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             break;
         case Type::Prop:

@@ -59,7 +59,7 @@ class alignas(16) Light {
 
     Light();
 
-    Light(Type type, uint32_t prop, uint32_t part);
+    Light(Type type, uint32_t prop, uint32_t part, bool finite);
 
     float area() const noexcept;
 
@@ -70,7 +70,7 @@ class alignas(16) Light {
 
     float3 center(Scene const& scene) const noexcept;
 
-    bool is_finite(Scene const& scene) const noexcept;
+    bool is_finite() const noexcept;
 
     bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
                 bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
@@ -120,7 +120,9 @@ class alignas(16) Light {
     static uint32_t strip_mask(uint32_t id) noexcept;
 
   private:
-    Type type_;
+    static uint32_t constexpr Finite_mask = 0x80000000;
+
+    uint32_t type_;
 
     uint32_t prop_;
     uint32_t part_;

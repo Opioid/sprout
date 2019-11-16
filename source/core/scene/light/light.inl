@@ -20,8 +20,8 @@ using Sample_to   = shape::Sample_to;
 using Sample_from = shape::Sample_from;
 using Sampler     = sampler::Sampler;
 
-inline Light::Light(Type type, uint32_t prop, uint32_t part)
-    : type_(type), prop_(prop), part_(part) {}
+inline Light::Light(Type type, uint32_t prop, uint32_t part, bool finite)
+    : type_(uint32_t(type) | (finite ? Finite_mask : 0)), prop_(prop), part_(part) {}
 
 inline float Light::area() const noexcept {
     return extent_;
@@ -40,8 +40,8 @@ inline float3 Light::center(Scene const& scene) const noexcept {
     return scene.prop_aabb(prop_).position();
 }
 
-inline bool Light::is_finite(Scene const& scene) const noexcept {
-    return scene.prop_shape(prop_)->is_finite();
+inline bool Light::is_finite() const noexcept {
+    return Finite_mask == (type_ & Finite_mask);
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
@@ -153,7 +153,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
 inline bool Light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
                           bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                           Worker const& worker, Sample_to& result) const noexcept {
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             return false;
         case Type::Prop:
@@ -191,7 +191,7 @@ static inline float3 volume_evaluate(uint32_t prop, uint32_t part, float volume,
 
 inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
     noexcept {
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
@@ -259,7 +259,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 inline bool Light::sample(Transformation const& transformation, Sampler& sampler,
                           uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
                           Sample_from& result) const noexcept {
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             return false;
         case Type::Prop:
@@ -343,7 +343,7 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
                           uint32_t sampler_dimension, Distribution_2D const& importance,
                           AABB const& bounds, Worker const& worker, Sample_from& result) const
     noexcept {
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             return false;
         case Type::Prop:
@@ -371,7 +371,7 @@ static inline float3 prop_evaluate(uint32_t prop, uint32_t part, float area,
 
 inline float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
     noexcept {
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
@@ -476,7 +476,7 @@ inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool t
     Transformation temp;
     auto const&    transformation = transformation_at(ray.time, temp, worker.scene());
 
-    switch (type_) {
+    switch (Type(type_ & ~Finite_mask)) {
         case Type::Null:
             return 0.f;
         case Type::Prop:
