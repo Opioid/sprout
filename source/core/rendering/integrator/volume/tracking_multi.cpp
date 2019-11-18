@@ -306,23 +306,22 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                 float const mt  = max_component(mu_t);
                 float const imt = 1.f / mt;
 
-          //      float3 const mu_n = float3(mt) - mu_t;
+                //      float3 const mu_n = float3(mt) - mu_t;
 
                 float lw = 1.f;
-
 
                 float const pc_a = cm.a[0] * imt;
                 float const pc_s = cm.s[0] * imt;
 
-                float const cm_t = cm.a[0] + cm.s[0];
-                float const rm_t = rm.a[0] + rm.s[0];
+                float const cm_t   = cm.a[0] + cm.s[0];
+                float const rm_t   = rm.a[0] + rm.s[0];
                 float const factor = 1.f - cm_t * imt;
 
                 float const mu_n = std::max(mt - cm_t - rm_t, 0.f);
 
                 float const pr_a = factor * (rm.a[0] / (rm.a[0] + rm.s[0] + mu_n));
                 float const pr_s = factor * (rm.s[0] / (rm.a[0] + rm.s[0] + mu_n));
-                float const p_n  = factor * (mu_n    / (rm.a[0] + rm.s[0] + mu_n));
+                float const p_n  = factor * (mu_n / (rm.a[0] + rm.s[0] + mu_n));
 
                 for (float t = ray.min_t;;) {
                     float const r0 = rng_.random_float();
@@ -335,7 +334,6 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     float f = 0.f;
 
                     float const r1 = rng_.random_float();
-
 
                     if (r1 < (f += pc_a)) {
                         return Event::Absorb;
@@ -361,22 +359,6 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                         lw *= mu_n / (mt * p_n);
                     }
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             }
         }
     }

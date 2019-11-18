@@ -196,38 +196,32 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
     }
 }
 
-static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& data,
+static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm,
                                           Tracking::Material const& material,
                                           Tracking::Filter filter, rnd::Generator& rng,
                                           Worker& worker, float& t_out, float3& w) noexcept {
-    float const minorant_mu_t = data.minorant_mu_t();
-
     float const d = ray.max_t;
 
-    float const rc = rng.random_float();
-    float const tc = ray.min_t - std::log(1.f - rc) / minorant_mu_t;
-
-    if (tc < d) {
-        t_out = tc;
-        w *= data.minorant_mu_s / minorant_mu_t;
-        return true;
-    }
-
-    float const mt = data.majorant_mu_t() - minorant_mu_t;
-
-    if (mt < Tracking::Min_mt) {
-        return false;
-    }
-
-    float3 lw = w;
-
+    float const mt  = cm.majorant_mu_t();
     float const imt = 1.f / mt;
+
+    //      float3 const mu_n = float3(mt) - mu_t;
+
+    float lw = w[0];
+
+    float const pc_a = cm.minorant_mu_a * imt;
+    float const pc_s = cm.minorant_mu_s * imt;
+
+    float const cm_t = cm.minorant_mu_t();
+
+    float const factor = 1.f - cm_t * imt;
 
     for (float t = ray.min_t;;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
-            w = lw;
+            w     = float3(lw);
+            t_out = t;
             return false;
         }
 
@@ -235,34 +229,44 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& da
 
         auto mu = material.collision_coefficients(uvw, filter, worker);
 
-        mu.a -= data.minorant_mu_a;
-        mu.s -= data.minorant_mu_s;
+        scene::material::CC const rm{float3(mu.a - cm.minorant_mu_a),
+                                     float3(mu.s - cm.minorant_mu_s)};
 
-        float3 const mu_t = mu.a + mu.s;
+        float const rm_t = rm.a[0] + rm.s[0];
+        float const mu_n = std::max(mt - cm_t - rm_t, 0.f);
 
-        float3 const mu_n = float3(mt) - mu_t;
+        float const pr_a = factor * (rm.a[0] / (rm.a[0] + rm.s[0] + mu_n));
+        float const pr_s = factor * (rm.s[0] / (rm.a[0] + rm.s[0] + mu_n));
+        float const p_n  = factor * (mu_n / (rm.a[0] + rm.s[0] + mu_n));
 
-        float const ms = average(mu.s * lw);
-        float const mn = average(mu_n * lw);
-        float const c  = 1.f / (ms + mn);
+        float f = 0.f;
 
-        float const ps = ms * c;
-        float const pn = mn * c;
+        float const r1 = rng.random_float();
 
-        if (float const r1 = rng.random_float(); (r1 <= 1.f - pn) & (ps > 0.f)) {
-            float3 const ws = mu.s / (mt * ps);
-
-            SOFT_ASSERT(all_finite(ws));
+        if (r1 < (f += pc_a)) {
+            w     = float3(lw);
+            t_out = t;
+            return false;
+        } else if (r1 < (f += pc_s)) {
+            lw *= cm.minorant_mu_s / (mt * pc_s);
+            w = float3(lw);
 
             t_out = t;
-            w     = lw * ws;
+
+            return true;
+        } else if (r1 < (f += pr_a)) {
+            w     = float3(lw);
+            t_out = t;
+            return false;
+        } else if (r1 < (f += pr_s)) {
+            lw *= rm.s[0] / (mt * pr_s);
+            w = float3(lw);
+
+            t_out = t;
+
             return true;
         } else {
-            float3 const wn = mu_n / (mt * pn);
-
-            SOFT_ASSERT(all_finite(wn));
-
-            lw *= wn;
+            lw *= mu_n / (mt * p_n);
         }
     }
 }
@@ -276,11 +280,11 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
         return false;
     }
 
-    //    static bool constexpr decomposition = false;
+    static bool constexpr decomposition = true;
 
-    //    if (decomposition && cm.minorant_mu_t() > 0.f) {
-    //        return decomposition_tracking(ray, cm, material, filter, rng, worker, t_out, w);
-    //    }
+    if (decomposition /*&& cm.minorant_mu_t() > 0.f*/) {
+        return decomposition_tracking(ray, cm, material, filter, rng, worker, t_out, w);
+    }
 
     float3 lw = w;
 
