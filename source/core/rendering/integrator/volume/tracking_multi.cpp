@@ -243,6 +243,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
             } else {
+                /*
                 auto const mu = material.collision_coefficients();
 
                 if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
@@ -253,6 +254,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                 li = float3(0.f);
                 tr = w;
                 return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
+                */
 
                 // Tracking as reference
                 /*
@@ -280,7 +282,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                     float3 const weight = scattering_albedo * extinction / pdf;
 
-                    tr = w * weight;
+                    tr = w * weight; // This should cancel out to 1.f
                     li = float3(0.f);
                 } else {
                     tr    = float3(1.f);  // exp(-(td) * extinction);
@@ -290,6 +292,91 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 return event;
                 */
+
+                // Decomposition tracking
+                li = float3(0.f);
+
+                auto const mu = material.collision_coefficients();
+
+                scene::material::CC const cm{0.5f * mu.a, 0.5f * mu.s};
+                scene::material::CC const rm{mu.a - cm.a, mu.s - cm.s};
+
+                float3 const mu_t = mu.a + mu.s;
+
+                float const mt  = max_component(mu_t);
+                float const imt = 1.f / mt;
+
+          //      float3 const mu_n = float3(mt) - mu_t;
+
+                float lw = 1.f;
+
+
+                float const pc_a = cm.a[0] * imt;
+                float const pc_s = cm.s[0] * imt;
+
+                float const cm_t = cm.a[0] + cm.s[0];
+                float const rm_t = rm.a[0] + rm.s[0];
+                float const factor = 1.f - cm_t * imt;
+
+                float const mu_n = std::max(mt - cm_t - rm_t, 0.f);
+
+                float const pr_a = factor * (rm.a[0] / (rm.a[0] + rm.s[0] + mu_n));
+                float const pr_s = factor * (rm.s[0] / (rm.a[0] + rm.s[0] + mu_n));
+                float const p_n  = factor * (mu_n    / (rm.a[0] + rm.s[0] + mu_n));
+
+                for (float t = ray.min_t;;) {
+                    float const r0 = rng_.random_float();
+                    t -= std::log(1.f - r0) * imt;
+                    if (t > d) {
+                        tr = float3(1.f);
+                        return Event::Pass;
+                    }
+
+                    float f = 0.f;
+
+                    float const r1 = rng_.random_float();
+
+
+                    if (r1 < (f += pc_a)) {
+                        return Event::Absorb;
+                    } else if (r1 < (f += pc_s)) {
+                        lw *= cm.s[0] / (mt * pc_s);
+                        tr = float3(lw);
+
+                        float3 const p = ray.point(t);
+                        set_scattering(intersection, interface, p);
+
+                        return Event::Scatter;
+                    } else if (r1 < (f += pr_a)) {
+                        return Event::Absorb;
+                    } else if (r1 < (f += pr_s)) {
+                        lw *= rm.s[0] / (mt * pr_s);
+                        tr = float3(lw);
+
+                        float3 const p = ray.point(t);
+                        set_scattering(intersection, interface, p);
+
+                        return Event::Scatter;
+                    } else {
+                        lw *= mu_n / (mt * p_n);
+                    }
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
         }
     }
