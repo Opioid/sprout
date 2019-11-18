@@ -52,16 +52,16 @@ void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
         case Type::Null:
             break;
         case Type::Prop:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, threads);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, false, threads);
             break;
         case Type::Prop_image:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, threads);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, false, threads);
             break;
         case Type::Volume:
-            scene.prop_prepare_sampling_volume(prop_, part_, light_id, time, false, threads);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, true, threads);
             break;
         case Type::Volume_image:
-            scene.prop_prepare_sampling_volume(prop_, part_, light_id, time, true, threads);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, true, threads);
             break;
     }
 }

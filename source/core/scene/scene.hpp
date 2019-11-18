@@ -205,11 +205,8 @@ class Scene {
                              bool in_shadow) noexcept;
 
     void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
-                               bool material_importance_sampling, thread::Pool& threads) noexcept;
-
-    void prop_prepare_sampling_volume(uint32_t entity, uint32_t part, uint32_t light_id,
-                                      uint64_t time, bool material_importance_sampling,
-                                      thread::Pool& threads) noexcept;
+                               bool material_importance_sampling, bool volume,
+                               thread::Pool& threads) noexcept;
 
     AABB const& prop_aabb(uint32_t entity) const noexcept;
 

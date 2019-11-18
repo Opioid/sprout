@@ -144,7 +144,7 @@ bool Material::is_scattering_volume() const noexcept {
 }
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
-                                Transformation const& /*transformation*/, float /*area*/,
+                                Transformation const& /*transformation*/, float /*extent*/,
                                 bool /*importance_sampling*/, thread::Pool& /*threads*/,
                                 Scene const& /*scene*/) noexcept {}
 
