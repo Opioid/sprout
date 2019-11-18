@@ -332,9 +332,8 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
     Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t, history.depth, history.time,
                    history.wavelength);
 
-    float3 tv;
-    if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
-                                       tv)) {
+    float3 tr;
+    if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
         return float3(0.f);
     }
 
@@ -348,7 +347,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 
     float const weight = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
 
-    return (weight / light_pdf) * (tv * radiance * bxdf.reflection);
+    return (weight / light_pdf) * (tr * radiance * bxdf.reflection);
 }
 
 float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& intersection,

@@ -98,12 +98,11 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
     }
 }
 
-bool Worker::transmitted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                                    Filter filter, float3& v) noexcept {
-    float3 tv;
-    if (tinted_visibility(ray, wo, intersection, filter, tv)) {
-        if (float3 tr; transmittance(ray, tr)) {
-            v = tv * tr;
+bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& intersection,
+                         Filter filter, float3& tr) noexcept {
+    if (float3 a; tinted_visibility(ray, wo, intersection, filter, a)) {
+        if (float3 b; transmittance(ray, b)) {
+            tr = a * b;
             return true;
         }
     }

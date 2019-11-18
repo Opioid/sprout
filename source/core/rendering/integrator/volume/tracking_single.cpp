@@ -283,31 +283,7 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
                                      Intersection const& intersection, Worker& worker) noexcept {
     auto const light = worker.scene().random_light(rng_.random_float());
 
-    shape::Sample_to light_sample;
-    if (!light.ref.sample(position, ray.time, sampler_, 0, worker, light_sample)) {
-        return float3(0.f);
-    }
-
-    Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t, ray.depth, ray.time,
-                   ray.wavelength);
-
-    float3 tv;
-    if (!worker.transmitted_visibility(shadow_ray, float3(0.f), intersection, Filter::Nearest,
-                                       tv)) {
-        return float3(0.f);
-    }
-
-    SOFT_ASSERT(all_finite(tv));
-
-    //    auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
-
-    float const phase = 1.f / (4.f * Pi);
-
-    float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
-
-    float const light_pdf = light_sample.pdf * light.pdf;
-
-    return (phase * tv * radiance) / (light_pdf);
+    return direct_light(light.ref, light.pdf, ray, position, intersection, worker);
 }
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
@@ -321,9 +297,8 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
     Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t, ray.depth, ray.time,
                    ray.wavelength);
 
-    float3 tv;
-    if (!worker.transmitted_visibility(shadow_ray, float3(0.f), intersection, Filter::Nearest,
-                                       tv)) {
+    float3 tr;
+    if (!worker.transmitted(shadow_ray, float3(0.f), intersection, Filter::Nearest, tr)) {
         return float3(0.f);
     }
 
@@ -335,7 +310,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
-    return (phase * tv * radiance) / (light_sample.pdf * light_pdf);
+    return (phase * tr * radiance) / (light_sample.pdf * light_pdf);
 }
 
 Tracking_single_factory::Tracking_single_factory(uint32_t num_integrators) noexcept

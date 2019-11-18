@@ -201,9 +201,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         shadow_ray.set_direction(light_sample.wi);
         shadow_ray.max_t = light_sample.t;
 
-        float3 tv;
-        if (!worker.transmitted_visibility(shadow_ray, material_sample.wo(), intersection, filter,
-                                           tv)) {
+        float3 tr;
+        if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
             continue;
         }
 
@@ -213,7 +212,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
         float const weight = 1.f / (light.pdf * light_sample.pdf);
 
-        result += weight * (tv * radiance * bxdf.reflection);
+        result += weight * (tr * radiance * bxdf.reflection);
     }
 
     return result / float(settings_.num_light_samples);

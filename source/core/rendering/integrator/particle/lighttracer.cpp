@@ -229,8 +229,8 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
     Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.time,
             history.wavelength);
 
-    float3 tv;
-    if (!worker.transmitted_visibility(ray, material_sample.wo(), intersection, filter, tv)) {
+    float3 tr;
+    if (!worker.transmitted(ray, material_sample.wo(), intersection, filter, tr)) {
         return false;
     }
 
@@ -245,7 +245,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
 
     float const nsc = non_symmetry_compensation(wo, wi, intersection.geo.geo_n, n);
 
-    float3 const result = camera_sample.pdf * nsc * tv * radiance * bxdf.reflection;
+    float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
 
     sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
 
