@@ -94,7 +94,7 @@ void Scene::clear() noexcept {
 void Scene::finish() noexcept {
     if (lights_.empty()) {
         uint32_t const dummy = create_dummy();
-        lights_.emplace_back(light::Light::Type::Null, dummy, prop::Null, true);
+        lights_.emplace_back(light::Light::Type::Null, dummy, prop::Null);
     }
 
     light_powers_.resize(uint32_t(lights_.size()));
@@ -275,20 +275,19 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials,
 }
 
 void Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Prop, prop, part, prop_shape(prop)->is_finite());
+    lights_.emplace_back(light::Light::Type::Prop, prop, part);
 }
 
 void Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Prop_image, prop, part, prop_shape(prop)->is_finite());
+    lights_.emplace_back(light::Light::Type::Prop_image, prop, part);
 }
 
 void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Volume, prop, part, prop_shape(prop)->is_finite());
+    lights_.emplace_back(light::Light::Type::Volume, prop, part);
 }
 
 void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Volume_image, prop, part,
-                         prop_shape(prop)->is_finite());
+    lights_.emplace_back(light::Light::Type::Volume_image, prop, part);
 }
 
 uint32_t Scene::create_extension(Extension* extension) noexcept {
