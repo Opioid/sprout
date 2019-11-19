@@ -331,10 +331,10 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     float const pc_s = cm.s[0] * imt ;
 
                     float const cm_t   = cm.a[0] + cm.s[0];
-               //     float const rm_t   = max_component(rm.a + rm.s);
+                    float const rm_t   = max_component(lw * (rm.a + rm.s));
                     float const factor = 1.f - cm_t * imt;
 
-            //        float const mu_n = std::max(mt - cm_t - rm_t, 0.f);
+                    float const mu_n = std::max(mt - cm_t - rm_t, 0.f);
 
                     float const ma = average(rm.a * lw);
                     float const ms = average(rm.s * lw);
@@ -352,6 +352,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                     float const pr_s = div > 0.f ? factor * (ms / div) : 0.f;
                     float const p_n  = div > 0.f ? factor * (mn / div) : 0.f;
+
+               //     float const p_n = 1.f - (pc_s + pr_s);
 
 //                    float const mc = ma + ms + mn;
 //                    if (mc < 1e-10f) {
@@ -374,8 +376,10 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 //                        return Event::Absorb;
 //                    } else
 
+                    float const tp = pc_s + pr_s + p_n;
 
-                    if (r1 < (f += (1.f - (pr_s + p_n))/*pc_s*/)) {
+
+                    if (r1 < (f += pc_s)) {
                         lw *= cm.s[0] / (mt * (pc_s));
                         tr = lw;
 
