@@ -18,6 +18,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace rendering::integrator::volume {
 
 using namespace scene::prop;
@@ -315,21 +317,15 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                 float3 lw(1.f);
 
-
-
-
-
-
                 for (float t = ray.min_t;;) {
                     float const r0 = rng_.random_float();
                     t -= std::log(1.f - r0) * imt;
                     if (t > d) {
                         tr = lw;
+
+
                         return Event::Pass;
                     }
-
-
-
 
                     float const pc_a = cm.a[0] * imt ;
                     float const pc_s = cm.s[0] * imt ;
@@ -343,9 +339,6 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     float const ma = average(rm.a * lw);
                     float const ms = average(rm.s * lw);
                     float const mn = average(mu_n0 * lw);
-
-
-
 
     //                float const pr_a = factor * (rm.a[0] / (rm.a[0] + rm.s[0] + mu_n));
     //                float const pr_s = factor * (rm.s[0] / (rm.a[0] + rm.s[0] + mu_n));
@@ -373,11 +366,6 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 //                    float const ps = ms * c;
 //                    float const pn = mn * c;
 
-
-
-
-
-
                     float f = 0.f;
 
                     float const r1 = rng_.random_float();
@@ -387,7 +375,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 //                    } else
 
 
-                    if (r1 < (f += pc_s)) {
+                    if (r1 < (f += (1.f - (pr_s + p_n))/*pc_s*/)) {
                         lw *= cm.s[0] / (mt * (pc_s));
                         tr = lw;
 
@@ -405,10 +393,72 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                         set_scattering(intersection, interface, p);
 
                         return Event::Scatter;
-                    } else {
+                    } else if (p_n > 0.f) {
                         lw *= mu_n0 / (mt * p_n);
                     }
                 }
+
+/*
+                li = float3(0.f);
+
+                auto const mu = material.collision_coefficients();
+
+                float3 const mu_t = mu.a + mu.s;
+
+                float const mt  = max_component(mu_t);
+                float const imt = 1.f / mt;
+
+                float3 const mu_n = float3(mt) - mu_t;
+
+                float3 lw(1.f);
+
+                for (float t = ray.min_t, d = ray.max_t;;) {
+                    float const r0 = rng_.random_float();
+                    t -= std::log(1.f - r0) * imt;
+                    if (t > d) {
+                        tr = lw;
+                        return Event::Pass;
+                    }
+
+                    float const ms = average(mu.s * lw);
+                    float const mn = average(mu_n * lw);
+
+                    float const mc = ms + mn;
+                    if (mc < 1e-10f) {
+                        tr = lw;
+                        return Event::Pass;
+                    }
+
+                    float const c = 1.f / mc;
+
+                    float const ps = ms * c;
+                    float const pn = mn * c;
+
+                    if (float const r1 = rng_.random_float(); (r1 <= 1.f - pn) & (ps > 0.f)) {
+                        float3 const ws = mu.s / (mt * ps);
+
+
+                        tr     = lw * ws;
+
+
+                        float3 const p = ray.point(t);
+                        set_scattering(intersection, interface, p);
+
+                        return Event::Scatter;
+
+                    } else {
+                        float3 const wn = mu_n / (mt * pn);
+
+                        SOFT_ASSERT(all_finite(wn));
+
+                        lw *= wn;
+                    }
+                }
+*/
+
+
+
+
 
             }
         }
