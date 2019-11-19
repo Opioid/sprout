@@ -197,7 +197,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 }
 
 static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm,
-                                          Tracking::Material const& material,
+                                          Tracking::Material const& material, float srs,
                                           Tracking::Filter filter, rnd::Generator& rng,
                                           Worker& worker, float& t_out, float3& w) noexcept {
     float const d = ray.max_t;
@@ -225,19 +225,7 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
             return false;
         }
 
-        float3 const uvw = ray.point(t);
 
-        auto mu = material.collision_coefficients(uvw, filter, worker);
-
-        scene::material::CC const rm{float3(mu.a - cm.minorant_mu_a),
-                                     float3(mu.s - cm.minorant_mu_s)};
-
-        float const rm_t = rm.a[0] + rm.s[0];
-        float const mu_n = std::max(mt - cm_t - rm_t, 0.f);
-
-        float const pr_a = factor * (rm.a[0] / (rm.a[0] + rm.s[0] + mu_n));
-        float const pr_s = factor * (rm.s[0] / (rm.a[0] + rm.s[0] + mu_n));
-        float const p_n  = factor * (mu_n / (rm.a[0] + rm.s[0] + mu_n));
 
         float f = 0.f;
 
@@ -252,9 +240,26 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
             w = float3(lw);
 
             t_out = t;
-
             return true;
-        } else if (r1 < (f += pr_a)) {
+        }
+
+        float3 const uvw = ray.point(t);
+
+        auto mu = material.collision_coefficients(uvw, filter, worker);
+
+        scene::material::CC const rm{float3(mu.a - cm.minorant_mu_a),
+                                     float3((srs * mu.s) - cm.minorant_mu_s)};
+
+        float const rm_t = rm.a[0] + rm.s[0];
+        float const mu_n = std::max(mt - cm_t - rm_t, 0.f);
+
+        float const divisor = factor / (rm.a[0] + rm.s[0] + mu_n);
+
+        float const pr_a = divisor * rm.a[0];
+        float const pr_s = divisor * rm.s[0];
+        float const p_n  = divisor * mu_n;
+
+        if (r1 < (f += pr_a)) {
             w     = float3(lw);
             t_out = t;
             return false;
@@ -283,7 +288,7 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
     static bool constexpr decomposition = true;
 
     if (decomposition /*&& cm.minorant_mu_t() > 0.f*/) {
-        return decomposition_tracking(ray, cm, material, filter, rng, worker, t_out, w);
+        return decomposition_tracking(ray, cm, material, srs, filter, rng, worker, t_out, w);
     }
 
     float3 lw = w;
