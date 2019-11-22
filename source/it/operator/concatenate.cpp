@@ -1,10 +1,12 @@
 #include "concatenate.hpp"
-#include <fstream>
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/image/typed_image.hpp"
 #include "core/logging/logging.hpp"
 #include "item.hpp"
+#include "rendering/postprocessor/postprocessor_pipeline.hpp"
+
+#include <fstream>
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -18,7 +20,7 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
 void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) noexcept;
 
 uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row, float2 clip,
-                     thread::Pool& threads) noexcept {
+                     Pipeline& pipeline, thread::Pool& threads) noexcept {
     bool const alpha = any_has_alpha_channel(items);
 
     if (0 == num_per_row) {

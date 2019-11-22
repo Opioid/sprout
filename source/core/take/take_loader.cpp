@@ -65,18 +65,19 @@
 
 namespace take {
 
-using Scene                = scene::Scene;
-using Sensor_filter        = rendering::sensor::filter::Filter;
-using Sensor_ptr           = rendering::sensor::Sensor*;
-using Surface_factory_ptr  = rendering::integrator::surface::Factory*;
-using Volume_factory_ptr   = rendering::integrator::volume::Factory*;
-using Particle_factory_ptr = rendering::integrator::particle::Lighttracer_factory*;
-using Postprocessor_ptr    = rendering::postprocessor::Postprocessor*;
-using Light_sampling       = rendering::integrator::Light_sampling;
+using Scene            = scene::Scene;
+using Camera           = scene::camera::Camera;
+using Sensor_filter    = rendering::sensor::filter::Filter;
+using Sensor           = rendering::sensor::Sensor;
+using Surface_factory  = rendering::integrator::surface::Factory;
+using Volume_factory   = rendering::integrator::volume::Factory;
+using Particle_factory = rendering::integrator::particle::Lighttracer_factory;
+using Postprocessor    = rendering::postprocessor::Postprocessor;
+using Light_sampling   = rendering::integrator::Light_sampling;
 
-static bool load_camera(json::Value const& camera_value, Take& take, Scene& scene) noexcept;
+static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept;
 
-static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept;
+static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept;
 
 static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
                                               uint32_t           num_workers,
@@ -85,27 +86,23 @@ static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
 static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
                                       Take& take) noexcept;
 
-static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
+static Surface_factory* load_surface_integrator_factory(json::Value const& integrator_value,
 
-                                                           uint32_t num_workers,
-                                                           bool     lighttracer) noexcept;
+                                                        uint32_t num_workers,
+                                                        bool     lighttracer) noexcept;
 
-static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
+static Volume_factory* load_volume_integrator_factory(json::Value const& integrator_value,
 
-                                                         uint32_t num_workers) noexcept;
+                                                      uint32_t num_workers) noexcept;
 
-static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
+static Particle_factory* load_particle_integrator_factory(json::Value const& integrator_value,
 
-                                                             uint32_t  num_workers,
-                                                             uint64_t& num_particles) noexcept;
+                                                          uint32_t  num_workers,
+                                                          uint64_t& num_particles) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
-static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
-                                rendering::postprocessor::Pipeline& pipeline,
-                                scene::camera::Camera const*        camera) noexcept;
-
-static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) noexcept;
+static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexcept;
 
 static bool peek_stereoscopic(json::Value const& parameters_value) noexcept;
 
@@ -130,7 +127,9 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
     for (auto& n : root->GetObject()) {
         if ("camera" == n.name) {
-            if (!load_camera(n.value, take, scene)) {
+            if (Camera* camera = load_camera(n.value, scene); camera) {
+                take.view.camera = camera;
+            } else {
                 return false;
             }
         } else if ("export" == n.name) {
@@ -165,7 +164,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
             filesystem.push_mount(take_mount_folder);
 
             load_postprocessors(*postprocessors_value, manager, take.view.pipeline,
-                                take.view.camera);
+                                take.view.camera->sensor_dimensions());
 
             filesystem.pop_mount();
         }
@@ -224,7 +223,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     return true;
 }
 
-static bool load_camera(json::Value const& camera_value, Take& take, Scene& scene) noexcept {
+static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept {
     using namespace scene::camera;
 
     std::string type_name;
@@ -243,7 +242,7 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
     if (!type_value) {
         // Can this happen at all!
         logging::error("Empty camera object");
-        return false;
+        return nullptr;
     }
 
     math::Transformation transformation{float3(0.f), float3(1.f), math::quaternion::identity()};
@@ -276,11 +275,11 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
         resolution = json::read_int2(*sensor_value, "resolution", int2::identity());
         if (int2::identity() == resolution) {
             logging::error("Sensor resolution must be greater than zero");
-            return false;
+            return nullptr;
         }
     } else {
         logging::error("No sensor configuration included");
-        return false;
+        return nullptr;
     }
 
     Camera* camera;
@@ -320,7 +319,7 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
         camera = new Hemispherical(resolution);
     } else {
         logging::error("Camera type \"" + type_name + "\" not recognized");
-        return false;
+        return nullptr;
     }
 
     if (parameters_value) {
@@ -346,9 +345,7 @@ static bool load_camera(json::Value const& camera_value, Take& take, Scene& scen
         scene.prop_set_world_transformation(prop_id, transformation);
     }
 
-    take.view.camera = camera;
-
-    return true;
+    return camera;
 }
 
 template <typename Filter>
@@ -391,8 +388,8 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value)
 }
 
 template <typename Base, typename Filter>
-static Sensor_ptr make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
-                                       json::Value const& filter_value) noexcept {
+static Sensor* make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
+                                    json::Value const& filter_value) noexcept {
     using namespace rendering::sensor;
 
     bool const clamp = !math::any_negative(clamp_max);
@@ -446,7 +443,7 @@ static Sensor_filter_type read_filter_type(json::Value const& filter_value) noex
     return Sensor_filter_type::Undefined;
 }
 
-static Sensor_ptr load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept {
+static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept {
     using namespace rendering::sensor;
     using namespace rendering::sensor::filter;
 
@@ -558,10 +555,10 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
     }
 }
 
-static Surface_factory_ptr load_surface_integrator_factory(json::Value const& integrator_value,
+static Surface_factory* load_surface_integrator_factory(json::Value const& integrator_value,
 
-                                                           uint32_t num_workers,
-                                                           bool     lighttracer) noexcept {
+                                                        uint32_t num_workers,
+                                                        bool     lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -664,9 +661,9 @@ static Surface_factory_ptr load_surface_integrator_factory(json::Value const& in
     return nullptr;
 }
 
-static Volume_factory_ptr load_volume_integrator_factory(json::Value const& integrator_value,
+static Volume_factory* load_volume_integrator_factory(json::Value const& integrator_value,
 
-                                                         uint32_t num_workers) noexcept {
+                                                      uint32_t num_workers) noexcept {
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
@@ -694,10 +691,10 @@ static Volume_factory_ptr load_volume_integrator_factory(json::Value const& inte
     return nullptr;
 }
 
-static Particle_factory_ptr load_particle_integrator_factory(json::Value const& integrator_value,
+static Particle_factory* load_particle_integrator_factory(json::Value const& integrator_value,
 
-                                                             uint32_t  num_workers,
-                                                             uint64_t& num_particles) noexcept {
+                                                          uint32_t  num_workers,
+                                                          uint64_t& num_particles) noexcept {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
@@ -721,9 +718,8 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
     settings.full_light_path     = json::read_bool(value, "full_light_path", false);
 }
 
-static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
-                                rendering::postprocessor::Pipeline& pipeline,
-                                scene::camera::Camera const*        camera) noexcept {
+void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
+                                 Pipeline& pipeline, int2 dimensions) noexcept {
     if (!pp_value.IsArray()) {
         return;
     }
@@ -747,7 +743,7 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
 
             auto backplate = backplate_res.ptr;
 
-            if (camera && backplate->dimensions_2() != camera->sensor_dimensions()) {
+            if (backplate->dimensions_2() != dimensions) {
                 logging::warning(
                     "Not using backplate %S, "
                     "because resolution does not match sensor resolution.",
@@ -785,7 +781,7 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
     }
 }
 
-static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) noexcept {
+static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexcept {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : tonemapper_value.GetObject()) {

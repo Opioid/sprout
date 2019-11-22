@@ -1,4 +1,5 @@
 #include "base/chrono/chrono.hpp"
+#include "base/json/json.hpp"
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -8,7 +9,9 @@
 #include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/logging.hpp"
+#include "core/rendering/postprocessor/postprocessor_pipeline.hpp"
 #include "core/resource/resource_manager.inl"
+#include "core/take/take_loader.hpp"
 #include "item.hpp"
 #include "operator/average.hpp"
 #include "operator/concatenate.hpp"
@@ -16,6 +19,11 @@
 #include "options/options.hpp"
 
 using namespace it::options;
+
+using Pipeline = rendering::postprocessor::Pipeline;
+
+void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
+                   resource::Manager& manager) noexcept;
 
 void comparison(std::vector<Item> const& items) noexcept;
 
@@ -61,6 +69,8 @@ int main(int argc, char* argv[]) noexcept {
     texture::Provider texture_provider(false);
     resource_manager.register_provider(texture_provider);
 
+    Pipeline pipeline;
+
     if (!args.take.empty()) {
         std::string take_name;
 
@@ -68,6 +78,8 @@ int main(int argc, char* argv[]) noexcept {
 
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
                               : file_system.read_stream(args.take, take_name);
+
+        load_pipeline(*stream, take_name, pipeline, resource_manager);
     }
 
     std::vector<Item> items;
@@ -103,7 +115,7 @@ int main(int argc, char* argv[]) noexcept {
         }
     } else if (Options::Operator::Cat == args.op) {
         if (uint32_t const num = op::concatenate(items, args.concat_num_per_row, args.clip,
-                                                 resource_manager.threads());
+                                                 pipeline, resource_manager.threads());
             num) {
             logging::verbose("cat " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");
@@ -113,6 +125,38 @@ int main(int argc, char* argv[]) noexcept {
     //   comparison(items);
 
     return 0;
+}
+
+void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
+                   resource::Manager& manager) noexcept {
+    std::string error;
+    auto const  root = json::parse(stream, error);
+    if (!root) {
+        logging::push_error(error);
+        return;
+    }
+
+    json::Value const* postprocessors_value = nullptr;
+
+    for (auto& n : root->GetObject()) {
+        if ("post" == n.name || "postprocessors" == n.name) {
+            postprocessors_value = &n.value;
+        }
+    }
+
+    if (postprocessors_value) {
+        std::string_view const take_mount_folder = string::parent_directory(take_name);
+
+        auto& filesystem = manager.filesystem();
+
+        filesystem.push_mount(take_mount_folder);
+
+        take::Loader::load_postprocessors(*postprocessors_value, manager, pipeline, int2(0));
+
+        filesystem.pop_mount();
+
+        //     pipeline.init(manager.threads());
+    }
 }
 
 void comparison(std::vector<Item> const& items) noexcept {
