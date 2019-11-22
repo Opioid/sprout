@@ -72,6 +72,8 @@ class alignas(16) Typed_image {
 
     T* data() const noexcept;
 
+    void copy(Typed_image& destination) const noexcept;
+
     size_t num_bytes() const noexcept;
 
   private:

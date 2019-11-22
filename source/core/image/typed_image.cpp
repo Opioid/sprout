@@ -188,6 +188,11 @@ T* Typed_image<T>::data() const noexcept {
 }
 
 template <typename T>
+void Typed_image<T>::copy(Typed_image& destination) const noexcept {
+    std::copy(&data_[0], &data_[description_.num_pixels() - 1], destination.data_);
+}
+
+template <typename T>
 size_t Typed_image<T>::num_bytes() const noexcept {
     return sizeof(*this) + size_t(description_.dimensions[0]) * size_t(description_.dimensions[1]) *
                                size_t(description_.dimensions[2]) *

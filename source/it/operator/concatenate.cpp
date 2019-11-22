@@ -3,6 +3,7 @@
 #include "core/image/texture/texture.inl"
 #include "core/image/typed_image.hpp"
 #include "core/logging/logging.hpp"
+#include "core/scene/camera/camera_perspective.hpp"
 #include "item.hpp"
 #include "rendering/postprocessor/postprocessor_pipeline.hpp"
 
@@ -54,6 +55,14 @@ uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row, float
             column     = 0;
             row_height = 0;
         }
+    }
+
+    if (!pipeline.empty()) {
+        scene::camera::Perspective camera(dimensions);
+
+        pipeline.init(camera, threads);
+
+        pipeline.apply(target, threads);
     }
 
     std::string const name = items[0].name_out.empty() ? "concat.png" : items[0].name_out;

@@ -29,6 +29,8 @@ class Pipeline {
 
     ~Pipeline() noexcept;
 
+    bool empty() const noexcept;
+
     void clear() noexcept;
 
     void reserve(uint32_t num_pps) noexcept;
@@ -40,6 +42,8 @@ class Pipeline {
     bool has_alpha_transparency(bool alpha_in) const noexcept;
 
     void seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) noexcept;
+
+    void apply(image::Float4& target, thread::Pool& threads) noexcept;
 
     void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) noexcept;
 

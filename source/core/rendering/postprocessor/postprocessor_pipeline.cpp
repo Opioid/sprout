@@ -15,6 +15,10 @@ Pipeline::~Pipeline() noexcept {
     }
 }
 
+bool Pipeline::empty() const noexcept {
+    return postprocessors_.empty();
+}
+
 void Pipeline::clear() noexcept {
     for (auto pp : postprocessors_) {
         delete pp;
@@ -63,6 +67,21 @@ void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target,
         } else {
             sensor.resolve(threads, scratch_);
         }
+    }
+}
+
+void Pipeline::apply(image::Float4& target, thread::Pool& threads) noexcept {
+    image::Float4* targets[2] = {&scratch_, &target};
+
+    target.copy(scratch_);
+
+    for (auto pp : postprocessors_) {
+        pp->apply(*targets[0], *targets[1], threads);
+        std::swap(targets[0], targets[1]);
+    }
+
+    if (0 == postprocessors_.size() % 2) {
+        scratch_.copy(target);
     }
 }
 
