@@ -87,6 +87,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.no_export = true;
     } else if ("report" == command || "r" == command) {
         result.report = parameter.empty() ? "." : parameter;
+    } else if ("take" == command) {
+        result.take = parameter;
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
     } else if ("verbose" == command || "v" == command) {
@@ -124,40 +126,42 @@ void help() noexcept {
 Usage:
   it [OPTION...]
 
-  -h, --help            Print help.
-  -a, --average         Calculate the average of an image.
-  -c, --cat      int?   Concatenate multiple images and save as
-                        a single image.
-                        Optionally specify after how many images
-                        a new row should be started.
-      --clamp    float  Clamp to the given value.
-      --clip-lo  float  Clip below the given value.
-      --clip-hi  float  Clip above the given value.
-  -d, --diff            Compute the difference between the first
-                        and subsequent images.
-                        This is the default behavior.
-	  --max-dif  float  Override the calculated max difference
-						for coloring the difference images.
-  -i, --image    file+  File name of an image.
-                        For the diff operator, the first image is
-                        considered the reference, if multiple
-                        images are specified.
-  -o, --out      file+  File name of an output image.
-                        In case of diff, as many outputs as
-                        images minus 1 can be specified.
-                        WARNING:
-                        In case of missing file names, it will pick
-                        defaults that could overwrite existing files!
-  -n, --no-export       Disables export of images.
-  -r, --report   file?  Generate report.
-                        Optionally the report can be written to a file,
-                        instead of being displayed in the terminal.
-  -t, --threads  int    Specifies the number of threads used by it.
-                        0 creates one thread for each logical CPU.
-                        -x creates as many threads as the number of
-                        logical CPUs minus x.
-                        The default value is 0.
-  -v, --verbose         Enables verbose logging.)";
+  -h, --help                  Print help.
+  -a, --average               Calculate the average of an image.
+  -c, --cat      int?         Concatenate multiple images and save as
+                              a single image.
+                              Optionally specify after how many images
+                              a new row should be started.
+      --clamp    float        Clamp to the given value.
+      --clip-lo  float        Clip below the given value.
+      --clip-hi  float        Clip above the given value.
+  -d, --diff                  Compute the difference between the first
+                              and subsequent images.
+                              This is the default behavior.
+      --max-dif  float        Override the calculated max difference
+                              for coloring the difference images.
+  -i, --image    file+        File name of an image.
+                              For the diff operator, the first image is
+                              considered the reference, if multiple
+                              images are specified.
+  -o, --out      file+        File name of an output image.
+                              In case of diff, as many outputs as
+                              images minus 1 can be specified.
+                              WARNING:
+                              In case of missing file names, it will pick
+                              defaults that could overwrite existing files!
+  -n, --no-export             Disables export of images.
+  -r, --report   file?        Generate report.
+                              Optionally the report can be written to a file,
+                              instead of being displayed in the terminal.
+      --take     file/string  Path of the take file to render,
+                              or json-string describing the take.
+  -t, --threads  int          Specifies the number of threads used by it.
+                              0 creates one thread for each logical CPU.
+                              -x creates as many threads as the number of
+                              logical CPUs minus x.
+                              The default value is 0.
+  -v, --verbose               Enables verbose logging.)";
 
     logging::info(text);
 }

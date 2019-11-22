@@ -146,8 +146,10 @@ int main(int argc, char* argv[]) noexcept {
         bool success = true;
 
         {
-            auto stream = is_json(args.take) ? file::Stream_ptr(new std::stringstream(args.take))
-                                             : file_system.read_stream(args.take, take_name);
+            bool const is_json = string::is_json(args.take);
+
+            auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
+                                  : file_system.read_stream(args.take, take_name);
 
             if (!stream || !take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
                 logging::error("Loading take %S: ", args.take);
@@ -238,14 +240,4 @@ void log_memory_consumption(resource::Manager const& manager, scene::Loader cons
     size_t const total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes +
                                    scene_num_bytes;
     logging::verbose("\tTotal: " + string::print_bytes(total_num_bytes));
-}
-
-bool is_json(std::string const& text) noexcept {
-    auto const it = text.find_first_not_of(" \t");
-
-    if (std::string::npos != it) {
-        return '{' == text[it];
-    }
-
-    return false;
 }

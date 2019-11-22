@@ -102,7 +102,8 @@ static Particle_factory_ptr load_particle_integrator_factory(json::Value const& 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
 static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
-                                Take& take) noexcept;
+                                rendering::postprocessor::Pipeline& pipeline,
+                                scene::camera::Camera const*        camera) noexcept;
 
 static Postprocessor_ptr load_tonemapper(json::Value const& tonemapper_value) noexcept;
 
@@ -140,7 +141,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
             take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
             load_integrator_factories(n.value, num_threads, take);
-        } else if ("postprocessors" == n.name) {
+        } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
             take.sampler_factory = load_sampler_factory(n.value, num_threads,
@@ -163,7 +164,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
             filesystem.push_mount(take_mount_folder);
 
-            load_postprocessors(*postprocessors_value, manager, take);
+            load_postprocessors(*postprocessors_value, manager, take.view.pipeline,
+                                take.view.camera);
 
             filesystem.pop_mount();
         }
@@ -720,14 +722,13 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
 }
 
 static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
-                                Take& take) noexcept {
+                                rendering::postprocessor::Pipeline& pipeline,
+                                scene::camera::Camera const*        camera) noexcept {
     if (!pp_value.IsArray()) {
         return;
     }
 
     using namespace rendering::postprocessor;
-
-    auto& pipeline = take.view.pipeline;
 
     pipeline.reserve(pp_value.Size());
 
@@ -746,11 +747,10 @@ static void load_postprocessors(json::Value const& pp_value, resource::Manager& 
 
             auto backplate = backplate_res.ptr;
 
-            if (take.view.camera &&
-                backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {
+            if (camera && backplate->dimensions_2() != camera->sensor_dimensions()) {
                 logging::warning(
                     "Not using backplate %S, "
-                    "because resolution doesn't match sensor resolution.",
+                    "because resolution does not match sensor resolution.",
                     name);
                 continue;
             }

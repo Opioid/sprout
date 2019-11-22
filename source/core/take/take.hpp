@@ -39,7 +39,7 @@ struct Take {
 
     std::string scene_filename;
 
-    take::View view;
+    View view;
 
     rendering::integrator::surface::Factory*              surface_integrator_factory = nullptr;
     rendering::integrator::volume::Factory*               volume_integrator_factory  = nullptr;

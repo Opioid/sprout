@@ -1,9 +1,10 @@
 #ifndef SU_IT_OPTIONS_OPTIONS_HPP
 #define SU_IT_OPTIONS_OPTIONS_HPP
 
+#include "base/math/vector2.hpp"
+
 #include <string>
 #include <vector>
-#include "base/math/vector2.hpp"
 
 namespace it::options {
 
@@ -25,6 +26,8 @@ struct Options {
     std::vector<std::string> outputs;
 
     std::string report;
+
+    std::string take;
 
     int threads = 0;
 

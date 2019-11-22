@@ -61,6 +61,15 @@ int main(int argc, char* argv[]) noexcept {
     texture::Provider texture_provider(false);
     resource_manager.register_provider(texture_provider);
 
+    if (!args.take.empty()) {
+        std::string take_name;
+
+        bool const is_json = string::is_json(args.take);
+
+        auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
+                              : file_system.read_stream(args.take, take_name);
+    }
+
     std::vector<Item> items;
     items.reserve(args.images.size());
 

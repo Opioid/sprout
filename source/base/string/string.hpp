@@ -23,6 +23,8 @@ static std::string to_string(T value, int num_padded_zeros = 0) noexcept {
 
 bool is_space(char c) noexcept;
 
+bool is_json(std::string_view text) noexcept;
+
 void trim(std::string& text) noexcept;
 
 std::string_view parent_directory(std::string_view filename) noexcept;

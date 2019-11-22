@@ -225,8 +225,6 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
             return false;
         }
 
-
-
         float f = 0.f;
 
         float const r1 = rng.random_float();

@@ -9,6 +9,16 @@ bool is_space(char c) noexcept {
     return std::isspace(int32_t(c)) != 0;
 }
 
+bool is_json(std::string_view text) noexcept {
+    auto const it = text.find_first_not_of(" \t");
+
+    if (std::string::npos != it) {
+        return '{' == text[it];
+    }
+
+    return false;
+}
+
 void trim(std::string& text) noexcept {
     auto const begin = std::find_if_not(text.begin(), text.end(), is_space);
     auto const end   = std::find_if_not(text.rbegin(), text.rend(), is_space).base();
