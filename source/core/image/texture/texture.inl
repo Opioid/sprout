@@ -12,11 +12,11 @@ inline char const* Texture::identifier() noexcept {
     return "Texture";
 }
 
-#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                              \
-    inline Texture::Texture(TYPE const& texture) noexcept              \
-        : type_(Type::TYPE),                                           \
-          back_(texture.image().description().dimensions - 1),         \
-          dimensions_float_(texture.image().description().dimensions), \
+#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                                  \
+    inline Texture::Texture(TYPE const& texture) noexcept                  \
+        : type_(Type::TYPE),                                               \
+          back_(texture.image().description().dimensions_3() - 1),         \
+          dimensions_float_(texture.image().description().dimensions_3()), \
           MEMBER(texture) {}
 
 TEXTURE_CONSTRUCTOR(Byte1_unorm, byte1_unorm_)
@@ -84,21 +84,27 @@ inline int32_t Texture::num_channels() const noexcept {
 }
 
 inline int32_t Texture::num_elements() const noexcept {
-    TEXTURE_DELEGATE(num_elements)
+    TEXTURE_DELEGATE(image().description().num_elements)
+
+    return 0;
+}
+
+inline int32_t Texture::volume() const noexcept {
+    TEXTURE_DELEGATE(image().description().volume)
 
     return 0;
 }
 
 inline int2 Texture::dimensions_2() const noexcept {
-    TEXTURE_DELEGATE(dimensions_2)
+    TEXTURE_DELEGATE(image().description().dimensions_2)
 
     return int2(0);
 }
 
 inline int3 const& Texture::dimensions_3() const noexcept {
-    TEXTURE_DELEGATE(dimensions_3)
+    TEXTURE_DELEGATE(image().description().dimensions_3)
 
-    return byte1_unorm_.dimensions_3();
+    return byte1_unorm_.image().description().dimensions_3();
 }
 
 inline int2 Texture::back_2() const noexcept {

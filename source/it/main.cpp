@@ -16,6 +16,7 @@
 #include "operator/average.hpp"
 #include "operator/concatenate.hpp"
 #include "operator/difference.hpp"
+#include "operator/statistics.hpp"
 #include "options/options.hpp"
 
 using namespace it::options;
@@ -61,13 +62,13 @@ int main(int argc, char* argv[]) noexcept {
 
     thread::Pool threads(num_workers);
 
-    resource::Manager resource_manager(file_system, threads);
+    resource::Manager resources(file_system, threads);
 
     image::Provider image_provider;
-    resource_manager.register_provider(image_provider);
+    resources.register_provider(image_provider);
 
     texture::Provider texture_provider(false);
-    resource_manager.register_provider(texture_provider);
+    resources.register_provider(texture_provider);
 
     Pipeline pipeline;
 
@@ -79,7 +80,7 @@ int main(int argc, char* argv[]) noexcept {
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
                               : file_system.read_stream(args.take, take_name);
 
-        load_pipeline(*stream, take_name, pipeline, resource_manager);
+        load_pipeline(*stream, take_name, pipeline, resources);
     }
 
     std::vector<Item> items;
@@ -90,7 +91,7 @@ int main(int argc, char* argv[]) noexcept {
 
     uint32_t slot = Options::Operator::Diff == args.op ? 0xFFFFFFFF : 0;
     for (auto& i : args.images) {
-        if (Texture const* image = resource_manager.load<Texture>(i, options).ptr; image) {
+        if (Texture const* image = resources.load<Texture>(i, options).ptr; image) {
             std::string const name_out = slot < args.outputs.size() ? args.outputs[slot] : "";
 
             items.emplace_back(Item{i, name_out, image});
@@ -103,19 +104,27 @@ int main(int argc, char* argv[]) noexcept {
         return 1;
     }
 
+    if (!args.statistics.empty()) {
+        op::statistics(items, args, resources.threads());
+    }
+
     if (Options::Operator::Average == args.op) {
-        if (uint32_t const num = op::average(items, args, resource_manager.threads()); num) {
+        if (uint32_t const num = op::average(items, args, resources.threads()); num) {
             logging::verbose("average " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
-        if (uint32_t const num = op::difference(items, args, resource_manager.threads()); num) {
-            logging::verbose("diff " + string::to_string(num) + " images in " +
-                             string::to_string(chrono::seconds_since(total_start)) + " s");
+        if (1 == items.size()) {
+            op::statistics(items, args, resources.threads());
+        } else {
+            if (uint32_t const num = op::difference(items, args, resources.threads()); num) {
+                logging::verbose("diff " + string::to_string(num) + " images in " +
+                                 string::to_string(chrono::seconds_since(total_start)) + " s");
+            }
         }
     } else if (Options::Operator::Cat == args.op) {
         if (uint32_t const num = op::concatenate(items, args.concat_num_per_row, args.clip,
-                                                 pipeline, resource_manager.threads());
+                                                 pipeline, resources.threads());
             num) {
             logging::verbose("cat " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");
@@ -128,7 +137,7 @@ int main(int argc, char* argv[]) noexcept {
 }
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   resource::Manager& manager) noexcept {
+                   resource::Manager& resources) noexcept {
     std::string error;
     auto const  root = json::parse(stream, error);
     if (!root) {
@@ -147,11 +156,11 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
     if (postprocessors_value) {
         std::string_view const take_mount_folder = string::parent_directory(take_name);
 
-        auto& filesystem = manager.filesystem();
+        auto& filesystem = resources.filesystem();
 
         filesystem.push_mount(take_mount_folder);
 
-        take::Loader::load_postprocessors(*postprocessors_value, manager, pipeline, int2(0));
+        take::Loader::load_postprocessors(*postprocessors_value, resources, pipeline, int2(0));
 
         filesystem.pop_mount();
 

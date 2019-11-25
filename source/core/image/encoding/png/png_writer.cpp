@@ -19,7 +19,7 @@ std::string Writer::file_extension() const {
 }
 
 bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
-    auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions_3();
 
     threads.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
@@ -80,7 +80,7 @@ bool Writer::write(std::string_view name, Byte3 const& image) {
         return false;
     }
 
-    auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions_3();
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 3,
@@ -103,7 +103,7 @@ bool Writer::write(std::string_view name, Byte1 const& image) {
         return false;
     }
 
-    auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions_3();
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 1,
@@ -316,7 +316,7 @@ std::string Writer_alpha::file_extension() const {
 }
 
 bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
-    auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions_3();
 
     threads.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },

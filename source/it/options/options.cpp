@@ -87,6 +87,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.no_export = true;
     } else if ("report" == command || "r" == command) {
         result.report = parameter.empty() ? "." : parameter;
+    } else if ("stats" == command || "s" == command) {
+        result.statistics = parameter.empty() ? "." : parameter;
     } else if ("take" == command) {
         result.take = parameter;
     } else if ("threads" == command || "t" == command) {
@@ -152,8 +154,9 @@ Usage:
                               defaults that could overwrite existing files!
   -n, --no-export             Disables export of images.
   -r, --report   file?        Generate report.
-                              Optionally the report can be written to a file,
-                              instead of being displayed in the terminal.
+                              Optionally the report can be written to a file.
+  -s, --stats    file?        Generate image statistics, including histogram.
+                              Optionally the statistics can be written to a file.
       --take     file/string  Path of the take file to render,
                               or json-string describing the take.
   -t, --threads  int          Specifies the number of threads used by it.

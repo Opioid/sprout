@@ -10,18 +10,6 @@ image::Float3 const& Float3::image() const noexcept {
     return image_;
 }
 
-int32_t Float3::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-int2 Float3::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-int3 const& Float3::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
-
 float Float3::at_1(int32_t i) const noexcept {
     return image_.load(i)[0];
 }

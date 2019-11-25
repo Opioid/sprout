@@ -13,4 +13,6 @@ target_sources(it
   "difference.cpp"
   "difference.hpp"
   "operator_helper.inl"
-)
+  "statistics.cpp"
+  "statistics.hpp"
+  )

@@ -11,18 +11,6 @@ Byte2 const& Byte2_unorm::image() const noexcept {
     return image_;
 }
 
-int32_t Byte2_unorm::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-int2 Byte2_unorm::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-int3 const& Byte2_unorm::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
-
 float Byte2_unorm::at_1(int32_t i) const noexcept {
     auto value = image_.load(i);
     return encoding::cached_unorm_to_float(value[0]);

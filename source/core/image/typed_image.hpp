@@ -13,15 +13,19 @@ struct Description {
 
     uint64_t num_pixels() const noexcept;
 
-    int2 dimensions2() const noexcept;
+    int2 dimensions_2() const noexcept;
+
+    int3 const& dimensions_3() const noexcept;
 
     int32_t area() const noexcept;
 
     int32_t volume() const noexcept;
 
-    int3 dimensions;
+    int32_t num_elements() const noexcept;
 
-    int32_t num_elements;
+    int3 dimensions_;
+
+    int32_t num_elements_;
 };
 
 template <typename T>

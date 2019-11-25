@@ -37,6 +37,8 @@ class alignas(64) Texture {
 
     int32_t num_elements() const noexcept;
 
+    int32_t volume() const noexcept;
+
     int2 dimensions_2() const noexcept;
 
     int3 const& dimensions_3() const noexcept;

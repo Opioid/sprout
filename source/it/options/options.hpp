@@ -27,6 +27,8 @@ struct Options {
 
     std::string report;
 
+    std::string statistics;
+
     std::string take;
 
     int threads = 0;

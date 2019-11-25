@@ -112,8 +112,8 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
 static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) noexcept;
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
-                  resource::Manager& manager) noexcept {
-    uint32_t const num_threads = manager.threads().num_threads();
+                  resource::Manager& resources) noexcept {
+    uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
     auto const  root = json::parse(stream, error);
@@ -159,11 +159,11 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         if (postprocessors_value) {
             std::string_view const take_mount_folder = string::parent_directory(take_name);
 
-            auto& filesystem = manager.filesystem();
+            auto& filesystem = resources.filesystem();
 
             filesystem.push_mount(take_mount_folder);
 
-            load_postprocessors(*postprocessors_value, manager, take.view.pipeline,
+            load_postprocessors(*postprocessors_value, resources, take.view.pipeline,
                                 take.view.camera->sensor_dimensions());
 
             filesystem.pop_mount();
@@ -218,7 +218,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
     }
 
-    take.view.init(manager.threads());
+    take.view.init(resources.threads());
 
     return true;
 }
@@ -718,7 +718,7 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
     settings.full_light_path     = json::read_bool(value, "full_light_path", false);
 }
 
-void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
+void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& resources,
                                  Pipeline& pipeline, int2 dimensions) noexcept {
     if (!pp_value.IsArray()) {
         return;
@@ -736,7 +736,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager&
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto backplate_res = manager.load<image::texture::Texture>(name);
+            auto backplate_res = resources.load<image::texture::Texture>(name);
             if (!backplate_res.ptr) {
                 continue;
             }
@@ -877,7 +877,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
                                                       error_diffusion, framerate));
         } else if ("Null" == n.name) {
             exporters.push_back(new exporting::Null);
-        } else if ("Statistics" == n.name) {
+        } else if ("Stats" == n.name || "Statistics" == n.name) {
             exporters.push_back(new exporting::Statistics);
         }
     }

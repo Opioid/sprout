@@ -22,7 +22,7 @@ static inline float golden_ratio(int32_t n) noexcept {
 }
 
 void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
-    int2 const d = image.description().dimensions2();
+    int2 const d = image.description().dimensions_2();
 
     if (error_diffusion_) {
         for (int32_t y = begin, i = begin * d[0]; y < end; ++y) {
@@ -62,7 +62,7 @@ const byte4* Srgb_alpha::data() const {
 }
 
 void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
-    int2 const d = image.description().dimensions2();
+    int2 const d = image.description().dimensions_2();
 
     if (error_diffusion_) {
         for (int32_t y = begin, i = begin * d[0]; y < end; ++y) {

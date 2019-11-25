@@ -11,7 +11,7 @@ namespace math {
 static inline float2 sample_disk_concentric(float2 uv) noexcept {
     float2 const s = 2.f * uv - 1.f;
 
-    if (0.f == s[0] && 0.f == s[1]) {
+    if ((0.f == s[0]) & (0.f == s[1])) {
         return float2(0.f);
     }
 

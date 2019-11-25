@@ -45,7 +45,7 @@ void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool&
         return;
     }
 
-    auto const d = image.description().dimensions;
+    auto const d = image.description().dimensions_3();
     threads.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
         0, d[1]);

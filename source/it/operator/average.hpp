@@ -1,7 +1,6 @@
 #ifndef SU_IT_OPERATOR_AVERAGE_HPP
 #define SU_IT_OPERATOR_AVERAGE_HPP
 
-#include <cstdint>
 #include <vector>
 
 namespace thread {

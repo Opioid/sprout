@@ -11,18 +11,6 @@ Byte3 const& Byte3_snorm::image() const noexcept {
     return image_;
 }
 
-int32_t Byte3_snorm::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-int2 Byte3_snorm::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-int3 const& Byte3_snorm::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
-
 float Byte3_snorm::at_1(int32_t i) const noexcept {
     auto value = image_.load(i);
     return encoding::cached_snorm_to_float(value[0]);

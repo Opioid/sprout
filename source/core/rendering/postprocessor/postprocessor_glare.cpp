@@ -209,7 +209,7 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
     } else {
         Simd3f const intensity(intensity_);
 
-        int32_t const d0 = destination.description().dimensions.xy()[0];
+        int32_t const d0 = destination.description().dimensions_2()[0];
 
         for (int32_t i = begin; i < end; ++i) {
             int2 const kb = -destination.coordinates_2(i);

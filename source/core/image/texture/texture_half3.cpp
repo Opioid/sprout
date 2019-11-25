@@ -12,15 +12,15 @@ image::Short3 const& Half3::image() const noexcept {
 }
 
 int32_t Half3::num_elements() const noexcept {
-    return image_.description().num_elements;
+    return image_.description().num_elements_;
 }
 
 int2 Half3::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
+    return image_.description().dimensions_.xy();
 }
 
 int3 const& Half3::dimensions_3() const noexcept {
-    return image_.description().dimensions;
+    return image_.description().dimensions_;
 }
 
 float Half3::at_1(int32_t i) const noexcept {

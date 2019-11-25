@@ -13,21 +13,6 @@ T const& Float1_t<T>::image() const noexcept {
 }
 
 template <typename T>
-int32_t Float1_t<T>::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-template <typename T>
-int2 Float1_t<T>::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-template <typename T>
-int3 const& Float1_t<T>::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
-
-template <typename T>
 float Float1_t<T>::at_1(int32_t i) const noexcept {
     return image_.load(i);
 }

@@ -11,11 +11,6 @@ class Byte3_unorm {
 
     Byte3 const& image() const noexcept;
 
-    int32_t num_elements() const noexcept;
-
-    int2        dimensions_2() const noexcept;
-    int3 const& dimensions_3() const noexcept;
-
     float  at_1(int32_t i) const noexcept;
     float3 at_3(int32_t i) const noexcept;
 

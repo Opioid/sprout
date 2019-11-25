@@ -148,7 +148,7 @@ void Renderer::resolve_sRGB(Byte3& image) const {
 
         float const n = 1.f / float(num_samples);
 
-        auto const i_d = image.description().dimensions;
+        auto const i_d = image.description().dimensions_3();
 
         for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
             int32_t const b_y = sqrt_num_samples_ * i_y;
@@ -185,7 +185,7 @@ void Renderer::resolve(Byte3& image) const {
 
         float const n = 1.f / float(num_samples);
 
-        auto const i_d = image.description().dimensions;
+        auto const i_d = image.description().dimensions_3();
 
         for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
             int32_t const b_y = sqrt_num_samples_ * i_y;
@@ -220,7 +220,7 @@ void Renderer::resolve(Byte1& image) const {
 
         float const n = 1.f / float(num_samples);
 
-        auto const i_d = image.description().dimensions;
+        auto const i_d = image.description().dimensions_3();
 
         for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
             int32_t b_y = sqrt_num_samples_ * i_y;

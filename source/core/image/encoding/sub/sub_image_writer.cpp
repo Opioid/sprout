@@ -83,13 +83,13 @@ void Writer::write(std::string const& filename, Image const& image) {
     newline(jstream, 3);
     jstream << "\"type\":\"" << image_type_string(image.type()) << "\",";
 
-    int3 const& d = description.dimensions;
+    int3 const& d = description.dimensions_;
     newline(jstream, 3);
     jstream << "\"dimensions\":[";
     jstream << d[0] << "," << d[1] << "," << d[2] << "],";
 
     newline(jstream, 3);
-    jstream << "\"num_elements\":" << description.num_elements;
+    jstream << "\"num_elements\":" << description.num_elements_;
 
     // close description
     newline(jstream, 2);

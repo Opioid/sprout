@@ -11,18 +11,6 @@ Byte4 const& Byte4_sRGB::image() const noexcept {
     return image_;
 }
 
-int32_t Byte4_sRGB::num_elements() const noexcept {
-    return image_.description().num_elements;
-}
-
-int2 Byte4_sRGB::dimensions_2() const noexcept {
-    return image_.description().dimensions.xy();
-}
-
-int3 const& Byte4_sRGB::dimensions_3() const noexcept {
-    return image_.description().dimensions;
-}
-
 float Byte4_sRGB::at_1(int32_t i) const noexcept {
     auto const value = image_.load(i);
     return encoding::cached_srgb_to_float(value[0]);
