@@ -129,13 +129,16 @@ std::string print_histogram(Item const& item) noexcept {
             continue;
         }
 
-        float const bar = float(Num_rows - r) / float(Num_rows);
+        float const bar      = float(Num_rows - r) / float(Num_rows);
+        float const half_bar = (float(Num_rows - r) - 0.5f) / (Num_rows);
 
         for (uint32_t i = 0; i < Histogram::Num_buckets; ++i) {
             float const percent = float(hist.buckets[i]) / hist_max;
 
             if (percent > bar) {
-                stream << "*";
+                stream << ':';//  char(219);
+            } else if (percent > half_bar) {
+                stream << '.';// char(220);
             } else {
                 stream << " ";
             }
