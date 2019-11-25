@@ -19,12 +19,11 @@ float2 average_and_max_luminance(Texture const* image);
 
 std::string print_histogram(Item const& item) noexcept;
 
-struct Histogram {
+class Histogram {
+  public:
     static uint32_t constexpr Num_buckets = 64;
 
-    uint32_t buckets[Num_buckets];
-
-    float max_value;
+    static uint32_t constexpr Num_buckets_internal = 256;
 
     Histogram(float max_value) : max_value(max_value) {
         for (uint32_t& b : buckets) {
@@ -33,12 +32,24 @@ struct Histogram {
     }
 
     void insert(float value) noexcept {
-        uint32_t const i = uint32_t((value / max_value) * float(Num_buckets - 1));
+        uint32_t const i = uint32_t((value / max_value) * float(Num_buckets_internal - 1) + 0.5f);
 
         ++buckets[i];
     }
 
-    uint32_t max() {
+    uint32_t count(uint32_t id) const noexcept {
+        static uint32_t constexpr factor = Num_buckets_internal / Num_buckets;
+
+        uint32_t b = 0;
+
+        for (uint32_t i = id * factor, len = (id + 1) * factor; i < len; ++i) {
+            b = std::max(buckets[i], b);
+        }
+
+        return b;
+    }
+
+    uint32_t max() const noexcept {
         uint32_t m = 0;
 
         for (uint32_t b : buckets) {
@@ -47,14 +58,23 @@ struct Histogram {
 
         return m;
     }
+
+  private:
+    uint32_t buckets[Num_buckets_internal];
+
+    float max_value;
 };
 
 uint32_t statistics(std::vector<Item> const& items, it::options::Options const& options,
                     thread::Pool& threads) noexcept {
     for (auto const& i : items) {
-    //    float2 const aml = average_and_max_luminance(i.image);
+        //    float2 const aml = average_and_max_luminance(i.image);
 
-    //    std::cout << aml << std::endl;
+        //    std::cout << aml << std::endl;
+
+        if (items.size() > 1) {
+            logging::info(i.name);
+        }
 
         std::string const hist = print_histogram(i);
 
@@ -102,7 +122,7 @@ std::string print_histogram(Item const& item) noexcept {
 
     std::stringstream stream;
 
-    static uint32_t Num_rows = 20;
+    static uint32_t Num_rows = 16;
 
     float const nl = hist_max / float(len);
 
@@ -119,34 +139,52 @@ std::string print_histogram(Item const& item) noexcept {
 
             stream << (float(pp) / 10.f) << "% +";
         } else {
-            stream << "      |";
+            //   stream << "      |";
+            stream << "       ";
         }
 
         if (0 == r) {
-            for (uint32_t i = 0; i < Histogram::Num_buckets; ++i) {
-                stream << "-";
+            for (uint32_t i = 1; i < Histogram::Num_buckets; ++i) {
+                if (i > 1 && 0 == (i - 1) % 16) {
+                    stream << "+";
+                } else {
+                    stream << " ";
+                }
             }
 
             stream << "+\n";
             continue;
         }
 
-        float const bar      = float(Num_rows - r) / float(Num_rows);
-        float const half_bar = (float(Num_rows - r) - 0.5f) / (Num_rows);
+        float const full_bar          = float(Num_rows - r + 1) / float(Num_rows);
+        float const three_quarter_bar = (float(Num_rows - r + 1) - 0.25f) / float(Num_rows);
+        float const half_bar          = (float(Num_rows - r + 1) - 0.5f) / float(Num_rows);
+        float const one_quarter_bar   = (float(Num_rows - r + 1) - 0.75f) / float(Num_rows);
 
         for (uint32_t i = 0; i < Histogram::Num_buckets; ++i) {
-            float const percent = float(hist.buckets[i]) / hist_max;
+            float const percent = float(hist.count(i)) / hist_max;
 
-            if (percent > bar) {
-                stream << ':';//  char(219);
-            } else if (percent > half_bar) {
-                stream << '.';// char(220);
+            if (percent >= full_bar) {
+                stream << '|';
+            } else if (percent >= three_quarter_bar) {
+                stream << 'i';
+            } else if (percent >= half_bar) {
+                stream << ':';
+            } else if (percent >= one_quarter_bar) {
+                stream << '.';
             } else {
                 stream << " ";
             }
         }
 
-        stream << "|\n";
+        if (0 == r % 6) {
+            stream << "+";
+        } else {
+            //    stream << "|";
+            stream << " ";
+        }
+
+        stream << "\n";
     }
 
     stream << "      ";
@@ -155,7 +193,7 @@ std::string print_histogram(Item const& item) noexcept {
         if (0 == i || (i > 1 && 0 == (i - 1) % 16)) {
             stream << "+";
         } else {
-            stream << "-";
+            stream << " ";
         }
     }
 
@@ -183,6 +221,7 @@ std::string print_histogram(Item const& item) noexcept {
 }
 
 float luminance_sRGB(float3 const& linear) noexcept {
+    //  return spectrum::luminance((linear));
     return spectrum::linear_to_gamma_sRGB(spectrum::luminance(linear));
 }
 
