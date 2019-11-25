@@ -13,6 +13,8 @@
 
 namespace op {
 
+float luminance_sRGB(float3 const& linear) noexcept;
+
 float2 average_and_max_luminance(Texture const* image);
 
 std::string print_histogram(Item const& item) noexcept;
@@ -50,9 +52,9 @@ struct Histogram {
 uint32_t statistics(std::vector<Item> const& items, it::options::Options const& options,
                     thread::Pool& threads) noexcept {
     for (auto const& i : items) {
-        float2 const aml = average_and_max_luminance(i.image);
+    //    float2 const aml = average_and_max_luminance(i.image);
 
-        std::cout << aml << std::endl;
+    //    std::cout << aml << std::endl;
 
         std::string const hist = print_histogram(i);
 
@@ -71,7 +73,7 @@ float2 average_and_max_luminance(Texture const* image) {
     float max     = 0.f;
 
     for (int32_t i = 0; i < len; ++i) {
-        float const luminance = spectrum::luminance(image->at_3(i));
+        float const luminance = luminance_sRGB(image->at_3(i));
 
         average += ilen * luminance;
 
@@ -91,7 +93,7 @@ std::string print_histogram(Item const& item) noexcept {
     int32_t const len = image->volume();
 
     for (int32_t i = 0; i < len; ++i) {
-        float const luminance = spectrum::luminance(image->at_3(i));
+        float const luminance = luminance_sRGB(image->at_3(i));
 
         hist.insert(luminance);
     }
@@ -178,6 +180,10 @@ std::string print_histogram(Item const& item) noexcept {
     }
 
     return stream.str();
+}
+
+float luminance_sRGB(float3 const& linear) noexcept {
+    return spectrum::linear_to_gamma_sRGB(spectrum::luminance(linear));
 }
 
 }  // namespace op

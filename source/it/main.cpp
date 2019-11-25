@@ -115,7 +115,9 @@ int main(int argc, char* argv[]) noexcept {
         }
     } else if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
         if (1 == items.size()) {
-            op::statistics(items, args, resources.threads());
+            if (args.statistics.empty()) {
+                op::statistics(items, args, resources.threads());
+            }
         } else {
             if (uint32_t const num = op::difference(items, args, resources.threads()); num) {
                 logging::verbose("diff " + string::to_string(num) + " images in " +
