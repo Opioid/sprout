@@ -1,6 +1,7 @@
 #ifndef SU_IT_OPERATOR_STATISTICS_HPP
 #define SU_IT_OPERATOR_STATISTICS_HPP
 
+#include <cstdint>
 #include <vector>
 
 namespace thread {
