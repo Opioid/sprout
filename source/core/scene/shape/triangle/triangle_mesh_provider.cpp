@@ -37,8 +37,8 @@ Provider::Provider() noexcept {}
 Provider::~Provider() noexcept {}
 
 Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
-                      resource::Manager& manager, std::string& resolved_name) noexcept {
-    auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
+                      resource::Manager& resources, std::string& resolved_name) noexcept {
+    auto stream_pointer = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         logging::error("Loading mesh %S: ", filename);
         return nullptr;
@@ -46,7 +46,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
     file::Type const type = file::query_type(*stream_pointer);
     if (file::Type::SUB == type) {
-        Shape* mesh = load_binary(*stream_pointer, manager.threads());
+        Shape* mesh = load_binary(*stream_pointer, resources.threads());
         if (!mesh) {
             logging::error("Loading mesh %S: ", filename);
         }
@@ -67,7 +67,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
     }
 
     if (!handler->morph_targets().empty()) {
-        return load_morphable_mesh(filename, handler->morph_targets(), manager);
+        return load_morphable_mesh(filename, handler->morph_targets(), resources);
     }
 
     if (handler->vertices().empty()) {
@@ -119,7 +119,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         mesh->set_material_for_part(p, handler->parts()[p].material_index);
     }
 
-    manager.threads().run_async([mesh, handler_raw{handler.release()}, &manager]() {
+    resources.threads().run_async([mesh, handler_raw{handler.release()}, &resources]() {
         logging::verbose("Started asynchronously building triangle mesh BVH.");
 
         auto& triangles = handler_raw->triangles();
@@ -141,7 +141,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
 
         build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream,
-                  manager.threads());
+                  resources.threads());
 
         delete handler_raw;
 
@@ -194,13 +194,13 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
 }
 
 Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
-                                     resource::Manager& manager) noexcept {
+                                     resource::Manager& resources) noexcept {
     auto collection = new Morph_target_collection;
 
     Json_handler handler;
 
     for (auto& targets : morph_targets) {
-        auto stream_pointer = manager.filesystem().read_stream(targets);
+        auto stream_pointer = resources.filesystem().read_stream(targets);
         if (!stream_pointer) {
             continue;
         }

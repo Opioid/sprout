@@ -23,7 +23,7 @@ class Extension_provider {
     virtual ~Extension_provider() noexcept {}
 
     virtual uint32_t create_extension(json::Value const& extension_value, std::string const& name,
-                                      Scene& scene, resource::Manager& manager) noexcept = 0;
+                                      Scene& scene, resource::Manager& resources) noexcept = 0;
 };
 
 }  // namespace scene

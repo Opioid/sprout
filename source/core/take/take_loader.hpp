@@ -29,9 +29,9 @@ class Loader {
     using Pipeline = rendering::postprocessor::Pipeline;
 
     static bool load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
-                     resource::Manager& manager) noexcept;
+                     resource::Manager& resources) noexcept;
 
-    static void load_postprocessors(json::Value const& pp_value, resource::Manager& manager,
+    static void load_postprocessors(json::Value const& pp_value, resource::Manager& resources,
                                     Pipeline& pipeline, int2 dimensions) noexcept;
 };
 

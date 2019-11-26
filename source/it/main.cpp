@@ -24,7 +24,7 @@ using namespace it::options;
 using Pipeline = rendering::postprocessor::Pipeline;
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   resource::Manager& manager) noexcept;
+                   resource::Manager& resources) noexcept;
 
 void comparison(std::vector<Item> const& items) noexcept;
 
@@ -158,7 +158,7 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
 
         filesystem.pop_mount();
 
-        //     pipeline.init(manager.threads());
+        //     pipeline.init(resources.threads());
     }
 }
 

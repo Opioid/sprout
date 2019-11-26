@@ -23,10 +23,11 @@ class Provider final : public resource::Provider<Material> {
     ~Provider() noexcept override final;
 
     Material* load(std::string const& filename, Variant_map const& options,
-                   resource::Manager& manager, std::string& resolved_name) noexcept override final;
+                   resource::Manager& resources,
+                   std::string&       resolved_name) noexcept override final;
 
     Material* load(void const* data, std::string const& source_name, Variant_map const& options,
-                   resource::Manager& manager) noexcept override final;
+                   resource::Manager& resources) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 
@@ -36,31 +37,31 @@ class Provider final : public resource::Provider<Material> {
 
   private:
     Material* load(json::Value const& value, std::string_view mount_folder,
-                   resource::Manager& manager) noexcept;
+                   resource::Manager& resources) noexcept;
 
-    Material* load_cloth(json::Value const& cloth_value, resource::Manager& manager) noexcept;
+    Material* load_cloth(json::Value const& cloth_value, resource::Manager& resources) noexcept;
 
-    Material* load_debug(json::Value const& debug_value, resource::Manager& manager) noexcept;
+    Material* load_debug(json::Value const& debug_value, resource::Manager& resources) noexcept;
 
-    Material* load_display(json::Value const& display_value, resource::Manager& manager) noexcept;
+    Material* load_display(json::Value const& display_value, resource::Manager& resources) noexcept;
 
-    Material* load_glass(json::Value const& glass_value, resource::Manager& manager) noexcept;
+    Material* load_glass(json::Value const& glass_value, resource::Manager& resources) noexcept;
 
-    Material* load_light(json::Value const& light_value, resource::Manager& manager) noexcept;
+    Material* load_light(json::Value const& light_value, resource::Manager& resources) noexcept;
 
-    Material* load_matte(json::Value const& matte_value, resource::Manager& manager) noexcept;
+    Material* load_matte(json::Value const& matte_value, resource::Manager& resources) noexcept;
 
-    Material* load_metal(json::Value const& metal_value, resource::Manager& manager) noexcept;
+    Material* load_metal(json::Value const& metal_value, resource::Manager& resources) noexcept;
 
     Material* load_metallic_paint(json::Value const& paint_value,
-                                  resource::Manager& manager) noexcept;
+                                  resource::Manager& resources) noexcept;
 
-    Material* load_mix(json::Value const& mix_value, resource::Manager& manager) noexcept;
+    Material* load_mix(json::Value const& mix_value, resource::Manager& resources) noexcept;
 
-    Material* load_sky(json::Value const& sky_value, resource::Manager& manager) noexcept;
+    Material* load_sky(json::Value const& sky_value, resource::Manager& resources) noexcept;
 
     Material* load_volumetric(json::Value const& volumetric_value,
-                              resource::Manager& manager) noexcept;
+                              resource::Manager& resources) noexcept;
 
     bool force_debug_material_;
 

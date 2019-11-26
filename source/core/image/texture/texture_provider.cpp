@@ -29,7 +29,7 @@ Provider::Provider(bool no_textures) noexcept : no_textures_(no_textures) {
 }
 
 Texture* Provider::load(std::string const& filename, Variant_map const& options,
-                        resource::Manager& manager, std::string& resolved_name) noexcept {
+                        resource::Manager& resources, std::string& resolved_name) noexcept {
     if (no_textures_) {
         return nullptr;
     }
@@ -69,7 +69,7 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         image_options.set("invert", invert);
     }
 
-    auto const image_res = manager.load<Image>(filename, image_options, resolved_name);
+    auto const image_res = resources.load<Image>(filename, image_options, resolved_name);
     if (!image_res.ptr) {
         logging::error("Loading texture %S: ", filename);
         return nullptr;

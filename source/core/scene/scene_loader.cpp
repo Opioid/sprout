@@ -31,18 +31,18 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, Material* fallback_material) noexcept
-    : resource_manager_(manager),
-      canopy_(manager.store<Shape>(new shape::Canopy())),
-      celestial_disk_(manager.store<Shape>(new shape::Celestial_disk())),
-      cube_(manager.store<Shape>(new shape::Cube())),
-      disk_(manager.store<Shape>(new shape::Disk())),
-      infinite_sphere_(manager.store<Shape>(new shape::Infinite_sphere())),
-      plane_(manager.store<Shape>(new shape::Plane())),
-      rectangle_(manager.store<Shape>(new shape::Rectangle())),
-      sphere_(manager.store<Shape>(new shape::Sphere())),
-      null_shape_(manager.store<Shape>(new shape::Null())),
-      fallback_material_(manager.store<Material>(fallback_material)) {}
+Loader::Loader(resource::Manager& resources, Material* fallback_material) noexcept
+    : resource_manager_(resources),
+      canopy_(resources.store<Shape>(new shape::Canopy())),
+      celestial_disk_(resources.store<Shape>(new shape::Celestial_disk())),
+      cube_(resources.store<Shape>(new shape::Cube())),
+      disk_(resources.store<Shape>(new shape::Disk())),
+      infinite_sphere_(resources.store<Shape>(new shape::Infinite_sphere())),
+      plane_(resources.store<Shape>(new shape::Plane())),
+      rectangle_(resources.store<Shape>(new shape::Rectangle())),
+      sphere_(resources.store<Shape>(new shape::Sphere())),
+      null_shape_(resources.store<Shape>(new shape::Null())),
+      fallback_material_(resources.store<Material>(fallback_material)) {}
 
 Loader::~Loader() noexcept {}
 

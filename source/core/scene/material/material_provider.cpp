@@ -47,7 +47,7 @@ using Texture       = image::texture::Texture;
 using Texture_usage = image::texture::Provider::Usage;
 
 static Material* load_substitute(json::Value const& substitute_value,
-                                 resource::Manager& manager) noexcept;
+                                 resource::Manager& resources) noexcept;
 
 struct Texture_description {
     std::string filename;
@@ -67,7 +67,7 @@ static Texture_description read_texture_description(json::Value const& texture_v
 
 static Texture_adapter create_texture(Texture_description const& description,
                                       memory::Variant_map&       options,
-                                      resource::Manager&         manager) noexcept;
+                                      resource::Manager&         resources) noexcept;
 
 struct Coating_description {
     float3 color = float3(1.f);
@@ -100,8 +100,8 @@ Provider::Provider(bool force_debug_material) noexcept
 Provider::~Provider() noexcept {}
 
 Material* Provider::load(std::string const& filename, Variant_map const& /*options*/,
-                         resource::Manager& manager, std::string& resolved_name) noexcept {
-    auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
+                         resource::Manager& resources, std::string& resolved_name) noexcept {
+    auto stream_pointer = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         return nullptr;
     }
@@ -113,14 +113,14 @@ Material* Provider::load(std::string const& filename, Variant_map const& /*optio
         return nullptr;
     }
 
-    return load(*root, string::parent_directory(resolved_name), manager);
+    return load(*root, string::parent_directory(resolved_name), resources);
 }
 
 Material* Provider::load(void const* data, std::string const&               source_name,
-                         Variant_map const& /*options*/, resource::Manager& manager) noexcept {
+                         Variant_map const& /*options*/, resource::Manager& resources) noexcept {
     json::Value const* value = reinterpret_cast<json::Value const*>(data);
 
-    return load(*value, string::parent_directory(source_name), manager);
+    return load(*value, string::parent_directory(source_name), resources);
 }
 
 size_t Provider::num_bytes() const noexcept {
@@ -136,14 +136,14 @@ Material* Provider::create_fallback_material() noexcept {
 }
 
 Material* Provider::load(json::Value const& value, std::string_view mount_folder,
-                         resource::Manager& manager) noexcept {
+                         resource::Manager& resources) noexcept {
     json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
     if (value.MemberEnd() == rendering_node) {
         logging::push_error("Material has no render node.");
         return nullptr;
     }
 
-    manager.filesystem().push_mount(mount_folder);
+    resources.filesystem().push_mount(mount_folder);
 
     Material* material = nullptr;
 
@@ -152,35 +152,35 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
     for (auto const& n : rendering_value.GetObject()) {
         if (force_debug_material_) {
             if ("Light" == n.name) {
-                material = load_light(n.value, manager);
+                material = load_light(n.value, resources);
             } else {
                 material = new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
             }
         } else {
             if ("Cloth" == n.name) {
-                material = load_cloth(n.value, manager);
+                material = load_cloth(n.value, resources);
             } else if ("Debug" == n.name) {
-                material = load_debug(n.value, manager);
+                material = load_debug(n.value, resources);
             } else if ("Display" == n.name) {
-                material = load_display(n.value, manager);
+                material = load_display(n.value, resources);
             } else if ("Glass" == n.name) {
-                material = load_glass(n.value, manager);
+                material = load_glass(n.value, resources);
             } else if ("Light" == n.name) {
-                material = load_light(n.value, manager);
+                material = load_light(n.value, resources);
             } else if ("Matte" == n.name) {
-                material = load_matte(n.value, manager);
+                material = load_matte(n.value, resources);
             } else if ("Metal" == n.name) {
-                material = load_metal(n.value, manager);
+                material = load_metal(n.value, resources);
             } else if ("Metallic_paint" == n.name) {
-                material = load_metallic_paint(n.value, manager);
+                material = load_metallic_paint(n.value, resources);
             } else if ("Mix" == n.name) {
-                material = load_mix(n.value, manager);
+                material = load_mix(n.value, resources);
             } else if ("Sky" == n.name) {
-                material = load_sky(n.value, manager);
+                material = load_sky(n.value, resources);
             } else if ("Substitute" == n.name) {
-                material = load_substitute(n.value, manager);
+                material = load_substitute(n.value, resources);
             } else if ("Volumetric" == n.name) {
-                material = load_volumetric(n.value, manager);
+                material = load_volumetric(n.value, resources);
             }
         }
 
@@ -189,7 +189,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
         }
     }
 
-    manager.filesystem().pop_mount();
+    resources.filesystem().pop_mount();
 
     if (!material) {
         logging::push_error("Material is of unknown type.");
@@ -200,7 +200,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
 }
 
 Material* Provider::load_cloth(json::Value const& cloth_value,
-                               resource::Manager& manager) noexcept {
+                               resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
@@ -226,13 +226,13 @@ Material* Provider::load_cloth(json::Value const& cloth_value,
                 memory::Variant_map options;
                 if ("Color" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    color_map = create_texture(texture_description, options, manager);
+                    color_map = create_texture(texture_description, options, resources);
                 } else if ("Normal" == texture_description.usage) {
                     options.set("usage", Texture_usage::Normal);
-                    normal_map = create_texture(texture_description, options, manager);
+                    normal_map = create_texture(texture_description, options, resources);
                 } else if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -252,7 +252,7 @@ Material* Provider::load_cloth(json::Value const& cloth_value,
 }
 
 Material* Provider::load_debug(json::Value const& debug_value,
-                               resource::Manager& manager) noexcept {
+                               resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -269,7 +269,7 @@ Material* Provider::load_debug(json::Value const& debug_value,
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -285,7 +285,7 @@ Material* Provider::load_debug(json::Value const& debug_value,
 }
 
 Material* Provider::load_display(json::Value const& display_value,
-                                 resource::Manager& manager) noexcept {
+                                 resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -325,10 +325,10 @@ Material* Provider::load_display(json::Value const& display_value,
 
                 if ("Emission" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    emission_map = create_texture(texture_description, options, manager);
+                    emission_map = create_texture(texture_description, options, resources);
                 } else if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -365,7 +365,7 @@ Material* Provider::load_display(json::Value const& display_value,
 }
 
 Material* Provider::load_glass(json::Value const& glass_value,
-                               resource::Manager& manager) noexcept {
+                               resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -408,13 +408,13 @@ Material* Provider::load_glass(json::Value const& glass_value,
 
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 } else if ("Normal" == texture_description.usage) {
                     options.set("usage", Texture_usage::Normal);
-                    normal_map = create_texture(texture_description, options, manager);
+                    normal_map = create_texture(texture_description, options, resources);
                 } else if ("Roughness" == texture_description.usage) {
                     options.set("usage", Texture_usage::Roughness);
-                    roughness_map = create_texture(texture_description, options, manager);
+                    roughness_map = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -461,7 +461,7 @@ Material* Provider::load_glass(json::Value const& glass_value,
 }
 
 Material* Provider::load_light(json::Value const& light_value,
-                               resource::Manager& manager) noexcept {
+                               resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     std::string quantity;
@@ -507,10 +507,10 @@ Material* Provider::load_light(json::Value const& light_value,
 
                 if ("Emission" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    emission_map = create_texture(texture_description, options, manager);
+                    emission_map = create_texture(texture_description, options, resources);
                 } else if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -555,7 +555,7 @@ Material* Provider::load_light(json::Value const& light_value,
 }
 
 Material* Provider::load_matte(json::Value const& matte_value,
-                               resource::Manager& manager) noexcept {
+                               resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     //	Texture_ptr normal_map;
@@ -580,12 +580,12 @@ Material* Provider::load_matte(json::Value const& matte_value,
                 memory::Variant_map options;
                 /*if ("Normal" == texture_description.usage) {
                         options.insert("usage", Texture_usage::Normal);
-                        normal_map = manager.load<image::texture::Texture(
+                        normal_map = resources.load<image::texture::Texture(
                                                 texture_description.filename, options);
                 } else*/
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -603,7 +603,7 @@ Material* Provider::load_matte(json::Value const& matte_value,
 }
 
 Material* Provider::load_metal(json::Value const& metal_value,
-                               resource::Manager& manager) noexcept {
+                               resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter normal_map;
@@ -643,13 +643,13 @@ Material* Provider::load_metal(json::Value const& metal_value,
                 memory::Variant_map options;
                 if ("Normal" == texture_description.usage) {
                     options.set("usage", Texture_usage::Normal);
-                    normal_map = create_texture(texture_description, options, manager);
+                    normal_map = create_texture(texture_description, options, resources);
                 } else if ("Anisotropy" == texture_description.usage) {
                     options.set("usage", Texture_usage::Anisotropy);
-                    direction_map = create_texture(texture_description, options, manager);
+                    direction_map = create_texture(texture_description, options, resources);
                 } else if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -686,7 +686,7 @@ Material* Provider::load_metal(json::Value const& metal_value,
 }
 
 Material* Provider::load_metallic_paint(json::Value const& paint_value,
-                                        resource::Manager& manager) noexcept {
+                                        resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -743,7 +743,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -760,11 +760,11 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
 
     texture_description.filename = "proc:flakes";
     options.set("usage", Texture_usage::Normal);
-    flakes_normal_map = create_texture(texture_description, options, manager);
+    flakes_normal_map = create_texture(texture_description, options, resources);
 
     texture_description.filename = "proc:flakes_mask";
     options.set("usage", Texture_usage::Mask);
-    flakes_mask = create_texture(texture_description, options, manager);
+    flakes_mask = create_texture(texture_description, options, resources);
 
     auto material = new metallic_paint::Material(sampler_settings, two_sided);
 
@@ -787,7 +787,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
     return material;
 }
 
-Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& manager) noexcept {
+Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -807,9 +807,9 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
                 std::string const filename = json::read_string(m, "file");
 
                 if (!filename.empty()) {
-                    materials.push_back(manager.load<Material>(filename).ptr);
+                    materials.push_back(resources.load<Material>(filename).ptr);
                 } else {
-                    materials.push_back(load(m, "", manager));
+                    materials.push_back(load(m, "", resources));
                 }
             }
         } else if ("textures" == n.name) {
@@ -823,7 +823,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -849,7 +849,7 @@ Material* Provider::load_mix(json::Value const& mix_value, resource::Manager& ma
     return material;
 }
 
-Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& manager) noexcept {
+Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -874,7 +874,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
                 memory::Variant_map options;
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -891,7 +891,7 @@ Material* Provider::load_sky(json::Value const& sky_value, resource::Manager& ma
 }
 
 Material* load_substitute(json::Value const& substitute_value,
-                          resource::Manager& manager) noexcept {
+                          resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
@@ -967,31 +967,31 @@ Material* load_substitute(json::Value const& substitute_value,
                 memory::Variant_map options;
                 if ("Color" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    color_map = create_texture(texture_description, options, manager);
+                    color_map = create_texture(texture_description, options, resources);
                 } else if ("Normal" == texture_description.usage) {
                     options.set("usage", Texture_usage::Normal);
-                    normal_map = create_texture(texture_description, options, manager);
+                    normal_map = create_texture(texture_description, options, resources);
                 } else if ("Surface" == texture_description.usage) {
                     options.set("usage", Texture_usage::Surface);
-                    surface_map = create_texture(texture_description, options, manager);
+                    surface_map = create_texture(texture_description, options, resources);
                 } else if ("Roughness" == texture_description.usage) {
                     options.set("usage", Texture_usage::Roughness);
-                    surface_map = create_texture(texture_description, options, manager);
+                    surface_map = create_texture(texture_description, options, resources);
                 } else if ("Gloss" == texture_description.usage) {
                     options.set("usage", Texture_usage::Gloss);
-                    surface_map = create_texture(texture_description, options, manager);
+                    surface_map = create_texture(texture_description, options, resources);
                 } else if ("Gloss_in_alpha" == texture_description.usage) {
                     options.set("usage", Texture_usage::Gloss_in_alpha);
-                    surface_map = create_texture(texture_description, options, manager);
+                    surface_map = create_texture(texture_description, options, resources);
                 } else if ("Emission" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    emission_map = create_texture(texture_description, options, manager);
+                    emission_map = create_texture(texture_description, options, resources);
                 } else if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, manager);
+                    mask = create_texture(texture_description, options, resources);
                 } else if ("Density" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    density_map = create_texture(texture_description, options, manager);
+                    density_map = create_texture(texture_description, options, resources);
                 }
             }
         } else if ("sampler" == n.name) {
@@ -1025,13 +1025,13 @@ Material* load_substitute(json::Value const& substitute_value,
             memory::Variant_map options;
             options.set("usage", Texture_usage::Mask);
             coating_thickness_map = create_texture(coating.thickness_map_description, options,
-                                                   manager);
+                                                   resources);
         }
 
         if (!coating.normal_map_description.filename.empty()) {
             memory::Variant_map options;
             options.set("usage", Texture_usage::Normal);
-            coating_normal_map = create_texture(coating.normal_map_description, options, manager);
+            coating_normal_map = create_texture(coating.normal_map_description, options, resources);
         }
 
         if (coating.in_nm) {
@@ -1149,7 +1149,7 @@ Material* load_substitute(json::Value const& substitute_value,
 }
 
 Material* Provider::load_volumetric(json::Value const& volumetric_value,
-                                    resource::Manager& manager) noexcept {
+                                    resource::Manager& resources) noexcept {
     Sampler_settings sampler_settings(Sampler_settings::Filter::Linear,
                                       Sampler_settings::Address::Clamp,
                                       Sampler_settings::Address::Clamp);
@@ -1201,15 +1201,15 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
                 memory::Variant_map options;
                 if ("Density" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
-                    density_map = create_texture(texture_description, options, manager);
+                    density_map = create_texture(texture_description, options, resources);
                 } else if ("Color" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    color_map = create_texture(texture_description, options, manager);
+                    color_map = create_texture(texture_description, options, resources);
                 }
 
                 /*else if ("Emission" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    emission_map = create_texture(texture_description, options, manager);
+                    emission_map = create_texture(texture_description, options, resources);
                 }*/
             }
         } else if ("sampler" == n.name) {
@@ -1329,7 +1329,7 @@ Texture_description read_texture_description(json::Value const& texture_value) n
 }
 
 Texture_adapter create_texture(Texture_description const& description, memory::Variant_map& options,
-                               resource::Manager& manager) noexcept {
+                               resource::Manager& resources) noexcept {
     if (description.num_elements > 1) {
         options.set("num_elements", description.num_elements);
     }
@@ -1338,7 +1338,7 @@ Texture_adapter create_texture(Texture_description const& description, memory::V
         options.set("swizzle", description.swizzle);
     }
 
-    return Texture_adapter(manager.load<Texture>(description.filename, options).id,
+    return Texture_adapter(resources.load<Texture>(description.filename, options).id,
                            description.scale);
 }
 

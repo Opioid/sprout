@@ -18,7 +18,7 @@ using namespace scene::shape;
 using namespace scene::shape::triangle;
 
 Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
-                                    resource::Manager& manager) noexcept {
+                                    resource::Manager& resources) noexcept {
     std::vector<Index_triangle> triangles;
     std::vector<Vertex>         vertices;
 
@@ -78,9 +78,10 @@ Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
 
     calculate_normals(triangles, vertices);
 
-    auto mesh = triangle::Provider::create_mesh(triangles, vertices, num_parts, manager.threads());
+    auto mesh = triangle::Provider::create_mesh(triangles, vertices, num_parts,
+                                                resources.threads());
 
-    return manager.store<Shape>(mesh);
+    return resources.store<Shape>(mesh);
 }
 
 void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,

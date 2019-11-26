@@ -38,7 +38,7 @@ void Provider::set_material_provider(material::Provider& material_provider) noex
 }
 
 uint32_t Provider::create_extension(json::Value const& extension_value, std::string const& name,
-                                    Scene& scene, resource::Manager& manager) noexcept {
+                                    Scene& scene, resource::Manager& resources) noexcept {
     Sky* sky = new Sky;
 
     uint32_t const sky_entity = scene.create_extension(sky, name);
@@ -56,9 +56,9 @@ uint32_t Provider::create_extension(json::Value const& extension_value, std::str
         sun_material = new Sun_material(*sky);
     }
 
-    auto const sky_material_ptr = manager.store<material::Material>(sky_material);
+    auto const sky_material_ptr = resources.store<material::Material>(sky_material);
 
-    auto const sun_material_ptr = manager.store<material::Material>(sun_material);
+    auto const sun_material_ptr = resources.store<material::Material>(sun_material);
 
     uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), {sky_material_ptr});
 
