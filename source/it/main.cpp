@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) noexcept {
         return 1;
     }
 
-    if (!args.statistics.empty()) {
+    if (Options::Operator::Undefined == args.op || !args.statistics.empty()) {
         op::statistics(items, args, resources.threads());
     }
 
@@ -113,21 +113,13 @@ int main(int argc, char* argv[]) noexcept {
             logging::verbose("average " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");
         }
-    } else if (Options::Operator::Diff == args.op || Options::Operator::Undefined == args.op) {
-        if (1 == items.size()) {
-            if (args.statistics.empty()) {
-                op::statistics(items, args, resources.threads());
-            }
-        } else {
-            if (uint32_t const num = op::difference(items, args, resources.threads()); num) {
-                logging::verbose("diff " + string::to_string(num) + " images in " +
-                                 string::to_string(chrono::seconds_since(total_start)) + " s");
-            }
+    } else if (Options::Operator::Diff == args.op) {
+        if (uint32_t const num = op::difference(items, args, resources.threads()); num) {
+            logging::verbose("diff " + string::to_string(num) + " images in " +
+                             string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Cat == args.op) {
-        if (uint32_t const num = op::concatenate(items, args.concat_num_per_row, args.clip,
-                                                 pipeline, resources.threads());
-            num) {
+        if (uint32_t const num = op::concatenate(items, args, pipeline, resources.threads()); num) {
             logging::verbose("cat " + string::to_string(num) + " images in " +
                              string::to_string(chrono::seconds_since(total_start)) + " s");
         }

@@ -1,4 +1,5 @@
 #include "platform.hpp"
+
 #include <sstream>
 
 namespace platform {

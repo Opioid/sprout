@@ -5,12 +5,10 @@
 #include "core/logging/logging.hpp"
 #include "core/scene/camera/camera_perspective.hpp"
 #include "item.hpp"
+#include "options/options.hpp"
 #include "rendering/postprocessor/postprocessor_pipeline.hpp"
 
 #include <fstream>
-
-#include <iostream>
-#include "base/math/print.hpp"
 
 namespace op {
 
@@ -20,8 +18,12 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
 
 void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) noexcept;
 
-uint32_t concatenate(std::vector<Item> const& items, uint32_t num_per_row, float2 clip,
+uint32_t concatenate(std::vector<Item> const& items, it::options::Options const& options,
                      Pipeline& pipeline, thread::Pool& threads) noexcept {
+    uint32_t num_per_row = options.concat_num_per_row;
+
+    float2 const clip = options.clip;
+
     bool const alpha = any_has_alpha_channel(items);
 
     if (0 == num_per_row) {

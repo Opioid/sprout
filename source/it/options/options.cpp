@@ -139,7 +139,6 @@ Usage:
       --clip-hi  float        Clip above the given value.
   -d, --diff                  Compute the difference between the first
                               and subsequent images.
-                              This is the default behavior.
       --max-dif  float        Override the calculated max difference
                               for coloring the difference images.
   -i, --image    file+        File name of an image.
@@ -156,7 +155,8 @@ Usage:
   -r, --report   file?        Generate report.
                               Optionally the report can be written to a file.
   -s, --stats    file?        Generate image statistics, including histogram.
-                              Optionally the statistics can be written to a file.
+                              Optionally the stats can be written to a file.
+                              If no operator is specified, it defaults to stats.
       --take     file/string  Path of the take file to render,
                               or json-string describing the take.
   -t, --threads  int          Specifies the number of threads used by it.
