@@ -74,8 +74,11 @@ static inline float3 gamma_to_linear(float3 const& c, float gamma) {
     return float3(std::pow(c[0], gamma), std::pow(c[1], gamma), std::pow(c[2], gamma));
 }
 
+// XYZ <-> RGB conversion matrices
+// http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+
 static inline float constexpr luminance(float3 const& c) {
-    return 0.2126f * c[0] + 0.7152f * c[1] + 0.0722f * c[2];
+    return 0.2126729f * c[0] + 0.7151522f * c[1] + 0.0721750f * c[2];
 }
 
 float constexpr CIE_constant = 683.002f;
