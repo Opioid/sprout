@@ -63,10 +63,9 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     } else if (!options.report.empty()) {
         std::ofstream stream(options.report);
 
-        std::string_view suffix = string::suffix(options.report);
+        std::string_view const suffix = string::suffix(options.report);
 
-        if ((3 == suffix.length() && "htm" == suffix) ||
-            (4 == suffix.length() && "html" == suffix)) {
+        if ("htm" == suffix || "html" == suffix) {
             write_difference_report_html(items, candidates, max_dif, stream);
         } else {
             write_difference_report_org(items, candidates, max_dif, stream);

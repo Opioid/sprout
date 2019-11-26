@@ -31,6 +31,8 @@ std::string_view parent_directory(std::string_view filename) noexcept;
 
 std::string_view suffix(std::string_view filename) noexcept;
 
+std::string copy_suffix(std::string const& filename) noexcept;
+
 std::string_view presuffix(std::string_view filename) noexcept;
 
 std::string extract_filename(std::string const& filename) noexcept;

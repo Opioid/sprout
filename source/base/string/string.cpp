@@ -36,6 +36,11 @@ std::string_view suffix(std::string_view filename) noexcept {
     return filename.substr(i + 1, std::string::npos);
 }
 
+std::string copy_suffix(std::string const& filename) noexcept {
+    size_t const i = filename.find_last_of('.');
+    return filename.substr(i + 1, std::string::npos);
+}
+
 std::string_view presuffix(std::string_view filename) noexcept {
     size_t const i = filename.find_last_of('.');
     size_t const j = filename.substr(0, i).find_last_of('.') + 1;

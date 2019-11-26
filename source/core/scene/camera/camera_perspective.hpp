@@ -63,9 +63,9 @@ class Perspective final : public Camera {
     float3 d_x_;
     float3 d_y_;
 
-    float3x3 lens_tilt_   = float3x3::identity();
-    float2   lens_shift_  = float2(0.f, 0.f);
-    float    lens_radius_ = 0.f;
+    float3x3 lens_tilt_;
+    float2   lens_shift_;
+    float    lens_radius_;
 
     float fov_;
 

@@ -20,7 +20,11 @@
 namespace scene::camera {
 
 Perspective::Perspective(int2 resolution) noexcept
-    : Camera(resolution), fov_(degrees_to_radians(60.f)) {}
+    : Camera(resolution),
+      lens_tilt_(float3x3::identity()),
+      lens_shift_(float2(0.f)),
+      lens_radius_(0.f),
+      fov_(degrees_to_radians(60.f)) {}
 
 uint32_t Perspective::num_views() const noexcept {
     return 1;

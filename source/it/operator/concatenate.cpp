@@ -1,4 +1,6 @@
 #include "concatenate.hpp"
+#include "base/string/string.hpp"
+#include "core/image/encoding/exr/exr_writer.hpp"
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/image/typed_image.hpp"
@@ -67,16 +69,25 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
         pipeline.apply(target, threads);
     }
 
-    std::string const name = items[0].name_out.empty() ? "concat.png" : items[0].name_out;
+    std::string const name = items[0].name_out.empty()
+                                 ? ("concat." + string::copy_suffix(items[0].name))
+                                 : items[0].name_out;
+
+    bool const exr = "exr" == string::suffix(name);
 
     std::ofstream stream(name, std::ios::binary);
 
-    if (alpha) {
-        encoding::png::Writer_alpha writer(dimensions, false, false);
+    if (exr) {
+        encoding::exr::Writer writer(alpha);
         writer.write(stream, target, threads);
     } else {
-        encoding::png::Writer writer(dimensions, false);
-        writer.write(stream, target, threads);
+        if (alpha) {
+            encoding::png::Writer_alpha writer(dimensions, false, false);
+            writer.write(stream, target, threads);
+        } else {
+            encoding::png::Writer writer(dimensions, false);
+            writer.write(stream, target, threads);
+        }
     }
 
     return uint32_t(items.size());
