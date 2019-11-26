@@ -75,7 +75,7 @@ static inline float3 gamma_to_linear(float3 const& c, float gamma) {
 }
 
 static inline float constexpr luminance(float3 const& c) {
-    return 0.212671f * c[0] + 0.715160f * c[1] + 0.072169f * c[2];
+    return 0.2126f * c[0] + 0.7152f * c[1] + 0.0722f * c[2];
 }
 
 float constexpr CIE_constant = 683.002f;
