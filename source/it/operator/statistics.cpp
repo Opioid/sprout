@@ -27,27 +27,35 @@ class Histogram {
   public:
     static uint32_t constexpr Num_buckets = 64;
 
-    static uint32_t constexpr Num_buckets_internal = 256;
+    Histogram(float max_value) noexcept
+        : max_value_(max_value), num_buckets_(uint32_t(std::ceil(max_value * 4.f)) * Num_buckets) {
+        buckets_ = new uint32_t[num_buckets_];
 
-    Histogram(float max_value) : max_value(max_value) {
-        for (uint32_t& b : buckets) {
-            b = 0;
+        for (uint32_t i = 0, len = num_buckets_; i < len; ++i) {
+            buckets_[i] = 0;
         }
     }
 
-    void insert(float value) noexcept {
-        uint32_t const i = uint32_t((value / max_value) * float(Num_buckets_internal - 1) + 0.5f);
+    ~Histogram() noexcept {
+        delete[] buckets_;
+    }
 
-        ++buckets[i];
+    void insert(float value) noexcept {
+        uint32_t const i = uint32_t((value / max_value_) * float(num_buckets_ - 1) + 0.5f);
+
+        ++buckets_[i];
     }
 
     uint32_t count(uint32_t id) const noexcept {
-        static uint32_t constexpr factor = Num_buckets_internal / Num_buckets;
+        uint32_t const factor = num_buckets_ / Num_buckets;
 
         uint32_t b = 0;
 
-        for (uint32_t i = id * factor, len = (id + 1) * factor; i < len; ++i) {
-            b = std::max(buckets[i], b);
+        uint32_t const begin = id * factor;
+        uint32_t const end   = (id + 1) * factor;
+
+        for (uint32_t i = begin; i < end; ++i) {
+            b = std::max(buckets_[i], b);
         }
 
         return b;
@@ -56,17 +64,19 @@ class Histogram {
     uint32_t max() const noexcept {
         uint32_t m = 0;
 
-        for (uint32_t b : buckets) {
-            m = std::max(b, m);
+        for (uint32_t i = 0, len = num_buckets_; i < len; ++i) {
+            m = std::max(buckets_[i], m);
         }
 
         return m;
     }
 
   private:
-    uint32_t buckets[Num_buckets_internal];
+    float max_value_;
 
-    float max_value;
+    uint32_t num_buckets_;
+
+    uint32_t* buckets_;
 };
 
 uint32_t statistics(std::vector<Item> const& items, it::options::Options const& options,
@@ -132,15 +142,17 @@ void write_histogram(Item const& item, std::ostream& stream) noexcept {
 
     float const hist_max = float(hist.max());
 
+    stream << std::fixed;
     stream << std::setprecision(3);
 
-    stream << "Luminance: avg " << avg_l << "; max " << max_l << "\n\n";
+    stream << "Luminance: avg " << avg_l << "; max " << max_l;
+
+    stream << "                           sRGB gamma space\n\n";
 
     static uint32_t Num_rows = 16;
 
     float const nl = hist_max / float(len);
 
-    stream << std::fixed;
     stream << std::setprecision(1);
 
     for (uint32_t r = 0; r <= Num_rows; ++r) {
@@ -226,7 +238,7 @@ void write_histogram(Item const& item, std::ostream& stream) noexcept {
             stream << float(0.f);
             grace = 3;
         } else if (i > 1 && 0 == (i) % 16) {
-            stream << float(i) / Histogram::Num_buckets;
+            stream << max_l * float(i) / float(Histogram::Num_buckets);
             grace = 4;
         } else if (grace <= 0) {
             stream << " ";
@@ -236,8 +248,20 @@ void write_histogram(Item const& item, std::ostream& stream) noexcept {
     }
 }
 
+static inline float linear_to_gamma_sRGB_unbounded(float c) {
+    if (c <= 0.f) {
+        return 0.f;
+    } else if (c < 0.0031308f) {
+        return 12.92f * c;
+    } else if (c < 1.f) {
+        return 1.055f * std::pow(c, 0.41666f) - 0.055f;
+    }
+
+    return std::pow(c, 0.41666f);
+}
+
 float luminance_gamma_sRGB(float3 const& linear) noexcept {
-    return spectrum::linear_to_gamma_sRGB(spectrum::luminance(linear));
+    return /*linear_to_gamma_sRGB_unbounded*/ (spectrum::luminance(linear));
 }
 
 }  // namespace op
