@@ -168,25 +168,35 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     newline(jstream, 2);
     jstream << "\"indices\":{";
 
-    int64_t max_index_delta = 0;
+    int64_t max_index       = 0;
+    int64_t max_delta_index = 0;
 
     {
         int64_t previous_index = 0;
         for (auto const& t : handler.triangles()) {
             int64_t const a = int64_t(t.i[0]);
 
+            max_index = std::max(max_index, a);
+
             int64_t delta_index = a - previous_index;
-            max_index_delta     = std::max(delta_index, max_index_delta);
+
+            max_delta_index = std::max(std::abs(delta_index), max_delta_index);
 
             int64_t const b = int64_t(t.i[1]);
 
-            delta_index     = b - a;
-            max_index_delta = std::max(delta_index, max_index_delta);
+            max_index = std::max(max_index, b);
+
+            delta_index = b - a;
+
+            max_delta_index = std::max(std::abs(delta_index), max_delta_index);
 
             int64_t const c = int64_t(t.i[2]);
 
-            delta_index     = c - b;
-            max_index_delta = std::max(delta_index, max_index_delta);
+            max_index = std::max(max_index, c);
+
+            delta_index = c - b;
+
+            max_delta_index = std::max(std::abs(delta_index), max_delta_index);
 
             previous_index = c;
         }
@@ -195,13 +205,13 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     bool   delta_indices = false;
     size_t index_bytes   = 4;
 
-    if (max_index_delta <= 0x000000000000FFFF) {
-        if (max_index_delta <= 0x0000000000008000) {
-            delta_indices = true;
-        }
-
+    if (max_delta_index < 0x0000000000008000) {
+        delta_indices = true;
+        index_bytes   = 2;
+    } else if (max_index <= 0x000000000000FFFF) {
         index_bytes = 2;
-    } else if (max_index_delta <= 0x0000000080000000) {
+
+    } else if (max_delta_index < 0x0000000080000000) {
         delta_indices = true;
     }
 
