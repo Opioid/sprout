@@ -164,7 +164,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
     auto const interface = worker.interface_stack().top();
 
-    auto const& material = *intersection.material(worker);
+    auto const& material = *interface->material(worker);
 
     if (!material.is_scattering_volume()) {
         // Basically the "glass" case
@@ -226,7 +226,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         auto const light = worker.scene().random_light(rng_.random_float());
 
-        if (light.ref.is_finite(worker.scene())) {
+        if (/*light.ref.is_finite(worker.scene())*/false) {
             // Equi-angular sampling
             float3 const position = light.ref.center(worker.scene());
 
