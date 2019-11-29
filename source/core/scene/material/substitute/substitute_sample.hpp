@@ -14,6 +14,8 @@ class alignas(64) Sample : public Sample_base {
 
     void sample(Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
+    float3 radiance() const noexcept override final;
+
     Base_closure<disney::Isotropic> base_;
 
   private:

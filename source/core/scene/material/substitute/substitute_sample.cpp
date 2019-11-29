@@ -36,6 +36,10 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
     result.wavelength = 0.f;
 }
 
+float3 Sample::radiance() const noexcept {
+    return base_.emission_;
+}
+
 template <bool Forward>
 bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
     if (!same_hemisphere(wo_)) {
