@@ -22,9 +22,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
@@ -199,8 +196,6 @@ void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
         auto& l = lights_[i];
         l.prepare_sampling(i, time, *this, threads);
         light_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
-
-        std::cout << light_center(i) << std::endl;
     }
 
     light_distribution_.init(light_powers_.data(), uint32_t(light_powers_.size()));
