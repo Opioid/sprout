@@ -69,6 +69,8 @@ class Indexed_data {
 
     float area(uint32_t index, float3 const& scale) const noexcept;
 
+    float3 center(uint32_t index) const noexcept;
+
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
 
     void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) noexcept;

@@ -236,6 +236,17 @@ float Indexed_data<SV>::area(uint32_t index, float3 const& scale) const noexcept
 }
 
 template <typename SV>
+float3 Indexed_data<SV>::center(uint32_t index) const noexcept {
+    auto const tri = triangles_[index];
+
+    float3 const a = intersection_vertices_[tri.a];
+    float3 const b = intersection_vertices_[tri.b];
+    float3 const c = intersection_vertices_[tri.c];
+
+    return (a + b + c) / 3.f;
+}
+
+template <typename SV>
 void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept {
     SOFT_ASSERT(index < num_triangles_);
 

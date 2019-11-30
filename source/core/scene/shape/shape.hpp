@@ -138,6 +138,8 @@ class Shape {
 
     virtual void prepare_sampling(uint32_t part) noexcept;
 
+    virtual float3 center(uint32_t part) const noexcept;
+
     virtual Morphable_shape* morphable_shape() noexcept;
 
     virtual size_t num_bytes() const noexcept = 0;

@@ -15,10 +15,11 @@
 
 namespace scene::light {
 
-using Filter      = material::Sampler_settings::Filter;
-using Sample_to   = shape::Sample_to;
-using Sample_from = shape::Sample_from;
-using Sampler     = sampler::Sampler;
+using Transformation = entity::Composed_transformation;
+using Filter         = material::Sampler_settings::Filter;
+using Sample_to      = shape::Sample_to;
+using Sample_from    = shape::Sample_from;
+using Sampler        = sampler::Sampler;
 
 inline Light::Light(Type type, uint32_t prop, uint32_t part)
     : type_(type), prop_(prop), part_(part) {}
@@ -31,13 +32,9 @@ inline void Light::set_extent(float extent) noexcept {
     extent_ = extent;
 }
 
-inline entity::Composed_transformation const& Light::transformation_at(
-    uint64_t time, Transformation& transformation, Scene const& scene) const noexcept {
+inline Transformation const& Light::transformation_at(uint64_t time, Transformation& transformation,
+                                                      Scene const& scene) const noexcept {
     return scene.prop_transformation_at(prop_, time, transformation);
-}
-
-inline float3 Light::center(Scene const& scene) const noexcept {
-    return scene.prop_aabb(prop_).position();
 }
 
 inline bool Light::is_finite(Scene const& scene) const noexcept {
@@ -45,8 +42,7 @@ inline bool Light::is_finite(Scene const& scene) const noexcept {
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
-                               float3 const&                          n,
-                               entity::Composed_transformation const& transformation,
+                               float3 const& n, Transformation const& transformation,
                                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
                                Worker const& worker, Sample_to& result) noexcept {
     shape::Shape const* shape = worker.scene().prop_shape(prop);

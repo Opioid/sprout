@@ -139,6 +139,10 @@ inline float Scene::light_area(uint32_t entity, uint32_t part) const noexcept {
     return lights_[light_id].area();
 }
 
+inline float3 Scene::light_center(uint32_t light) const noexcept {
+    return light_centers_[light];
+}
+
 inline prop::Prop const* Scene::prop(uint32_t index) const noexcept {
     SOFT_ASSERT(index < props_.size());
 

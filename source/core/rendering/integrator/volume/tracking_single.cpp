@@ -226,9 +226,9 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         auto const light = worker.scene().random_light(rng_.random_float());
 
-        if (/*light.ref.is_finite(worker.scene())*/false) {
+        if (light.ref.is_finite(worker.scene())) {
             // Equi-angular sampling
-            float3 const position = light.ref.center(worker.scene());
+            float3 const position = worker.scene().light_center(light.id);
 
             float const delta = dot(position - ray.origin, ray.direction);
 

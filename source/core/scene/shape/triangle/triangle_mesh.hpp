@@ -94,6 +94,8 @@ class alignas(64) Mesh : public Shape {
 
     void prepare_sampling(uint32_t part) noexcept override final;
 
+    float3 center(uint32_t part) const noexcept override final;
+
     size_t num_bytes() const noexcept override final;
 
   private:
@@ -116,6 +118,8 @@ class alignas(64) Mesh : public Shape {
         uint32_t* triangle_mapping = nullptr;
 
         Distribution_1D distribution;
+
+        float3 center;
     };
 
     Distribution* distributions_;

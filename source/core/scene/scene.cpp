@@ -22,6 +22,9 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
@@ -196,6 +199,8 @@ void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
         auto& l = lights_[i];
         l.prepare_sampling(i, time, *this, threads);
         light_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
+
+        std::cout << light_center(i) << std::endl;
     }
 
     light_distribution_.init(light_powers_.data(), uint32_t(light_powers_.size()));
@@ -275,19 +280,19 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials,
 }
 
 void Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Prop, prop, part);
+    allocate_light(light::Light::Type::Prop, prop, part);
 }
 
 void Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Prop_image, prop, part);
+    allocate_light(light::Light::Type::Prop_image, prop, part);
 }
 
 void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Volume, prop, part);
+    allocate_light(light::Light::Type::Volume, prop, part);
 }
 
 void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
-    lights_.emplace_back(light::Light::Type::Volume_image, prop, part);
+    allocate_light(light::Light::Type::Volume_image, prop, part);
 }
 
 uint32_t Scene::create_extension(Extension* extension) noexcept {
@@ -496,7 +501,7 @@ void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflect
     props_[entity].set_visibility(in_camera, in_reflection, in_shadow);
 }
 
-void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
+void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light, uint64_t time,
                                   bool material_importance_sampling, bool volume,
                                   thread::Pool& threads) noexcept {
     auto shape = prop_shape(entity);
@@ -510,11 +515,13 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     float const extent = volume ? shape->volume(part, scale) : shape->area(part, scale);
 
-    lights_[light_id].set_extent(extent);
+    lights_[light].set_extent(extent);
+
+    light_centers_[light] = transformation.object_to_world_point(shape->center(part));
 
     uint32_t const p = prop_parts_[entity] + part;
 
-    light_ids_[p] = volume ? (light::Light::Volume_light_mask | light_id) : light_id;
+    light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
     material_resources_[materials_[p]]->prepare_sampling(
         *shape, part, time, transformation, extent, material_importance_sampling, threads, *this);
@@ -577,6 +584,12 @@ Scene::Prop_ptr Scene::allocate_prop() noexcept {
     prop::Prop* prop = &props_[prop_id];
 
     return {prop, prop_id};
+}
+
+void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) noexcept {
+    lights_.emplace_back(type, entity, part);
+
+    light_centers_.emplace_back(0.f);
 }
 
 bool Scene::prop_is_instance(Shape_ptr shape, Materials const& materials, uint32_t num_parts) const

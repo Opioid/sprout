@@ -453,8 +453,26 @@ bool Mesh::is_analytical() const noexcept {
 
 void Mesh::prepare_sampling(uint32_t part) noexcept {
     if (distributions_[part].empty()) {
-        distributions_[part].init(part, tree_);
+        auto& d = distributions_[part];
+
+        d.init(part, tree_);
+
+        float3 center(0.f);
+
+        float const n = 1.f / float(d.num_triangles);
+
+        for (uint32_t i = 0, len = d.num_triangles; i < len; ++i) {
+            uint32_t const t = d.triangle_mapping[i];
+
+            center += n * tree_.triangle_center(t);
+        }
+
+        d.center = center;
     }
+}
+
+float3 Mesh::center(uint32_t part) const noexcept {
+    return distributions_[part].center;
 }
 
 size_t Mesh::num_bytes() const noexcept {

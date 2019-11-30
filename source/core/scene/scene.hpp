@@ -4,6 +4,7 @@
 #include "base/math/distribution/distribution_1d.hpp"
 #include "base/memory/array.hpp"
 #include "bvh/scene_bvh_builder.hpp"
+#include "light/light.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
 #include "resource/resource.hpp"
@@ -51,12 +52,6 @@ struct Morphing;
 struct Keyframe;
 
 }  // namespace entity
-
-namespace light {
-
-class Light;
-
-}  // namespace light
 
 namespace prop {
 
@@ -224,6 +219,8 @@ class Scene {
 
     float light_area(uint32_t entity, uint32_t part) const noexcept;
 
+    float3 light_center(uint32_t light) const noexcept;
+
     animation::Animation* create_animation(uint32_t count) noexcept;
 
     void create_animation_stage(uint32_t entity, animation::Animation* animation) noexcept;
@@ -235,6 +232,8 @@ class Scene {
                                          Transformation& transformation) const noexcept;
 
     Prop_ptr allocate_prop() noexcept;
+
+    void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) noexcept;
 
     bool prop_is_instance(Shape_ptr shape, Materials const& materials, uint32_t num_parts) const
         noexcept;
@@ -270,6 +269,7 @@ class Scene {
     std::vector<AABB> prop_aabbs_;
 
     std::vector<light::Light> lights_;
+    std::vector<float3>       light_centers_;
 
     std::vector<uint32_t> materials_;
     std::vector<uint32_t> light_ids_;

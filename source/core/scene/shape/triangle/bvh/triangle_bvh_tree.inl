@@ -578,6 +578,11 @@ float Tree<Data>::triangle_area(uint32_t index, float3 const& scale) const noexc
     return data_.area(index, scale);
 }
 
+template <typename Data>
+float3 Tree<Data>::triangle_center(uint32_t index) const noexcept {
+    return data_.center(index);
+}
+
 // template <typename Data>
 // void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const
 //    noexcept {

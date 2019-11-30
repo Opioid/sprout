@@ -118,6 +118,8 @@ class Tree {
 
     float triangle_area(uint32_t index, float3 const& scale) const noexcept;
 
+    float3 triangle_center(uint32_t index) const noexcept;
+
     //    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const noexcept;
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
     //    void sample(uint32_t index, float2 r2, float3& p) const noexcept;
