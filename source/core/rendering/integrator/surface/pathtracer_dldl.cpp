@@ -17,34 +17,41 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-#define DLDL_BAKING 1
+#include <iostream>
+#include "base/math/print.hpp"
+
+//#define DLDL_BAKING 1
 
 namespace rendering::integrator::surface {
 
 using namespace scene;
 
 Pathtracer_DLDL::Pathtracer_DLDL(rnd::Generator& rng, Settings const& settings) noexcept
-    : Integrator(rng), settings_(settings), sampler_(rng) {}
+    : Integrator(rng), settings_(settings), sampler_(rng), volume_positions_(nullptr) {}
+
+Pathtracer_DLDL::~Pathtracer_DLDL() {
+    delete[] volume_positions_;
+}
 
 void Pathtracer_DLDL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+
+    volume_positions_ = new float3[num_samples_per_pixel * settings_.num_samples];
 }
 
 void Pathtracer_DLDL::start_pixel() noexcept {
     sampler_.start_pixel();
+
+    iteration_ = 0;
 }
 
 float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
                            Interface_stack const& initial_stack) noexcept {
+#ifdef DLDL_BAKING
     float3 const wi = ray.direction;
-
-    //  ray.direction = float3(1.f, 0.f, 0.f);
-
-    // float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
-
-    //    float2 const uv(rng_.random_float(), rng_.random_float());
-
-    //    float3 const wi = sample_sphere_uniform(uv);
+#else
+    float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
+#endif
 
     float4 li(0.f);
 
@@ -79,6 +86,8 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
 #endif
 
         ++i;
+
+        ++iteration_;
     }
 
 #ifdef DLDL_BAKING
@@ -151,6 +160,8 @@ float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 c
             sample_result.reflection = float3(1.f);
             sample_result.pdf        = 1.f / (4 * Pi);
             sample_result.type.clear(Bxdf_type::Diffuse_reflection);
+
+            volume_positions_[iteration_] = intersection.geo.p;
         }
 #else
         material_sample.sample(material_sampler(ray.depth), sample_result);

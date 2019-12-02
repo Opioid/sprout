@@ -19,6 +19,8 @@ class alignas(64) Pathtracer_DLDL final : public Integrator {
 
     Pathtracer_DLDL(rnd::Generator& rng, Settings const& settings) noexcept;
 
+    ~Pathtracer_DLDL();
+
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
     void start_pixel() noexcept override final;
@@ -42,6 +44,10 @@ class alignas(64) Pathtracer_DLDL final : public Integrator {
     sampler::Random sampler_;
 
     float3 wi_;
+
+    uint32_t iteration_;
+
+    float3* volume_positions_;
 };
 
 class Pathtracer_DLDL_factory final : public Factory {

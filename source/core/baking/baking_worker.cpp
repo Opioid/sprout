@@ -10,8 +10,9 @@
 
 namespace baking {
 
-void Baking_worker::baking_init(Item* items) noexcept {
+void Baking_worker::baking_init(Item* items, int32_t slice_width) noexcept {
     items_ = items;
+    slice_width_ = slice_width;
 }
 
 void Baking_worker::bake(int32_t begin, int32_t end) noexcept {
@@ -47,6 +48,13 @@ void Baking_worker::bake(int32_t begin, int32_t end) noexcept {
 
         ++i;
     }
+}
+
+int2 Baking_worker::coordinates(int32_t index) const noexcept {
+    int2 c;
+    c[1] = index / slice_width_;
+    c[0] = index - c[1] * slice_width_;
+    return c;
 }
 
 }  // namespace baking
