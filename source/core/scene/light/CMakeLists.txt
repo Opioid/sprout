@@ -5,4 +5,6 @@ target_sources(core
     "light.cpp"
     "light.hpp"
     "light.inl"
-    ) 
+    "light_tree.cpp"
+    "light_tree.hpp"
+    )

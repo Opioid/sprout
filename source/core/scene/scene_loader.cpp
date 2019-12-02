@@ -29,8 +29,6 @@
 #include "shape/triangle/triangle_mesh_generator.hpp"
 #include "take/take.hpp"
 
-#include <iostream>
-
 namespace scene {
 
 Loader::Loader(resource::Manager& resources, Material* fallback_material) noexcept
@@ -69,8 +67,6 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
     if (success) {
         scene.finish();
     }
-
-    std::cout << "#Lights: " << scene.lights().size() << std::endl;
 
     resource_manager_.threads().wait_async();
 
@@ -434,16 +430,6 @@ void Loader::load_materials(json::Value const&     materials_value,
                             Materials& materials) const noexcept {
     if (!materials_value.IsArray()) {
         return;
-    }
-
-    auto const& a = materials_value.GetArray();
-
-    for (size_t i = 0, len = a.Size(); i < len; ++i) {
-        std::string const name = a[i].GetString();
-
-        if ("Paris_StringLights" == name.substr(0, 18)) {
-            std::cout << name << ": " << i << std::endl;
-        }
     }
 
     for (auto const& m : materials_value.GetArray()) {
