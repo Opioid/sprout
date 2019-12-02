@@ -34,7 +34,7 @@ public:
 class Tree_builder {
 public:
 
-    void build(Tree& tree, Scene& const scene) const noexcept;
+    void build(Tree& tree, Scene const& scene) const noexcept;
 
 };
 
