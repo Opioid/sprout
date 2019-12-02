@@ -3,9 +3,9 @@
 
 #include "math/vector3.inl"
 
-// XYZ <-> RGB conversion matrices
-// http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+// XYZ <-> RGB conversion matrix
 
+// http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
 // This function uses CIE-RGB with illuminant E
 
 namespace spectrum {
@@ -16,12 +16,13 @@ static inline float3 constexpr XYZ_to_linear_RGB(float3 const& xyz) noexcept {
                   0.0052982f * xyz[0] - 0.0146949f * xyz[1] + 1.0093968f * xyz[2]);
 }
 
+// http://terathon.com/blog/rgb-xyz-conversion-matrix-accuracy/
 // This function uses sRGB with illuminant D65
 
 static inline float3 constexpr XYZ_to_linear_sRGB_D65(float3 const& xyz) noexcept {
-    return float3(3.2404542f * xyz[0] - 1.5371385f * xyz[1] - 0.4985314f * xyz[2],
-                  -0.9692660f * xyz[0] + 1.8760108f * xyz[1] + 0.0415560f * xyz[2],
-                  0.0556434f * xyz[0] - 0.2040259f * xyz[1] + 1.0572252f * xyz[2]);
+    return float3(3.240970f * xyz[0] - 1.537383f * xyz[1] - 0.498611f * xyz[2],
+                  -0.969244f * xyz[0] + 1.875968f * xyz[1] + 0.041555f * xyz[2],
+                  0.055630f * xyz[0] - 0.203977f * xyz[1] + 1.056972f * xyz[2]);
 }
 
 uint32_t constexpr CIE_XYZ_Num = (830 - 360) + 1;  // 471
