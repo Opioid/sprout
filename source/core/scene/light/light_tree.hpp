@@ -27,11 +27,17 @@ class Tree {
 
         ~Node() noexcept;
 
+        void gather() noexcept;
+
+        float weight(float3 const& p) const noexcept;
+
         float3 center;
 
         float power;
 
         bool finite;
+
+        uint32_t light;
 
         Node* children[2];
     };

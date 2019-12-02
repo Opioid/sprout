@@ -133,7 +133,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
                     split_candidates_[uint32_t(i)].evaluate(references, aabb_surface_area);
                 }
             },
-            0, static_cast<int32_t>(split_candidates_.size()));
+            0, int32_t(split_candidates_.size()));
     }
 
     size_t sc       = 0;

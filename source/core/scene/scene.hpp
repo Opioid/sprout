@@ -5,6 +5,7 @@
 #include "base/memory/array.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "light/light.hpp"
+#include "light/light_tree.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
 #include "resource/resource.hpp"
@@ -134,6 +135,8 @@ class Scene {
     Light light(uint32_t id, bool calculate_pdf = true) const noexcept;
 
     Light random_light(float random) const noexcept;
+
+    Light random_light(float3 const& p, float random) const noexcept;
 
     void simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept;
 
@@ -284,6 +287,8 @@ class Scene {
     memory::Array<float> light_powers_;
 
     math::Distribution_implicit_pdf_lut_lin_1D light_distribution_;
+
+    light::Tree light_tree_;
 
     std::vector<Shape*> const& shape_resources_;
 

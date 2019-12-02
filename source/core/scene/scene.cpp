@@ -94,7 +94,7 @@ void Scene::clear() noexcept {
 void Scene::finish() noexcept {
     if (lights_.empty()) {
         uint32_t const dummy = create_dummy();
-        lights_.emplace_back(light::Light::Type::Null, dummy, prop::Null);
+        allocate_light(light::Light::Type::Null, dummy, 0);
     }
 
     light_powers_.resize(uint32_t(lights_.size()));
@@ -140,6 +140,12 @@ Scene::Light Scene::random_light(float random) const noexcept {
     SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
 
     return {lights_[l.offset], l.pdf, l.offset};
+}
+
+Scene::Light Scene::random_light(float3 const& p, float random) const noexcept {
+    auto const l = light_tree_.random_light(p, random);
+
+    return {lights_[l.id], l.pdf, l.id};
 }
 
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept {
@@ -199,6 +205,9 @@ void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
     }
 
     light_distribution_.init(light_powers_.data(), uint32_t(light_powers_.size()));
+
+    light::Tree_builder light_tree_builder;
+    light_tree_builder.build(light_tree_, *this);
 
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }
