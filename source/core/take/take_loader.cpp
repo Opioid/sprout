@@ -87,15 +87,15 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
                                       Take& take) noexcept;
 
 static Surface_factory* load_surface_integrator_factory(json::Value const& integrator_value,
-                                                        uint32_t num_workers,
-                                                        bool     lighttracer) noexcept;
+                                                        uint32_t           num_workers,
+                                                        bool               lighttracer) noexcept;
 
 static Volume_factory* load_volume_integrator_factory(json::Value const& integrator_value,
 
                                                       uint32_t num_workers) noexcept;
 
 static Particle_factory* load_particle_integrator_factory(json::Value const& integrator_value,
-                                                          uint32_t  num_workers,
+                                                          uint32_t           num_workers,
                                                           uint64_t& num_particles) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
@@ -554,8 +554,8 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
 }
 
 static Surface_factory* load_surface_integrator_factory(json::Value const& integrator_value,
-                                                        uint32_t num_workers,
-                                                        bool     lighttracer) noexcept {
+                                                        uint32_t           num_workers,
+                                                        bool               lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
