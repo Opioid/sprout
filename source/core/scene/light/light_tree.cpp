@@ -34,6 +34,14 @@ float Tree::Node::weight(float3 const& p) const noexcept {
     }
 }
 
+bool Tree::Node::contains(uint32_t id) const noexcept {
+    if (!children[0]) {
+        return light == id;
+    }
+
+    return children[0]->contains(id) || children[1]->contains(id);
+}
+
 Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
     Node const* node = &root_;
 
@@ -59,7 +67,35 @@ Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
                 random = (random - p0) / p1;
             }
         } else {
-            return {pdf, node->light};
+            return {node->light, pdf};
+        }
+    }
+}
+
+float Tree::pdf(float3 const& p, uint32_t id) const noexcept {
+    Node const* node = &root_;
+
+    float pdf = 1.f;
+
+    for (;;) {
+        if (node->children[0]) {
+            float p0 = node->children[0]->weight(p);
+            float p1 = node->children[1]->weight(p);
+
+            float const pt = p0 + p1;
+
+            p0 /= pt;
+            p1 /= pt;
+
+            if (node->children[0]->contains(id)) {
+                node = node->children[0];
+                pdf *= p0;
+            } else {
+                node = node->children[1];
+                pdf *= p1;
+            }
+        } else {
+            return pdf;
         }
     }
 }

@@ -397,7 +397,7 @@ float Sphere::pdf(Ray const&            ray, Intersection const& /*intersection*
     float const cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
                                          0.99999995f);
 
-    return math::cone_pdf_uniform(cos_theta_max);
+    return cone_pdf_uniform(cos_theta_max);
 }
 
 float Sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,

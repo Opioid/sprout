@@ -16,11 +16,13 @@ class Light;
 class Tree {
   public:
     struct Result {
-        float    pdf;
         uint32_t id;
+        float    pdf;
     };
 
     Result random_light(float3 const& p, float random) const noexcept;
+
+    float pdf(float3 const& p, uint32_t id) const noexcept;
 
     struct Node {
         Node() noexcept;
@@ -30,6 +32,8 @@ class Tree {
         void gather() noexcept;
 
         float weight(float3 const& p) const noexcept;
+
+        bool contains(uint32_t id) const noexcept;
 
         float3 center;
 

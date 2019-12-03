@@ -129,10 +129,12 @@ class Scene {
     struct Light {
         light::Light const& ref;
 
-        float    pdf;
         uint32_t id;
+        float    pdf;
     };
     Light light(uint32_t id, bool calculate_pdf = true) const noexcept;
+
+    Light light(uint32_t id, float3 const& p, bool calculate_pdf = true) const noexcept;
 
     Light random_light(float random) const noexcept;
 
