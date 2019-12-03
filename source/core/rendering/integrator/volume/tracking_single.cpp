@@ -224,9 +224,10 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         tr = exp(-(d - ray.min_t) * extinction);
 
-        auto const light = worker.scene().random_light(rng_.random_float());
+   //     auto const light = worker.scene().random_light(rng_.random_float());
 
-        if (light.ref.is_finite(worker.scene())) {
+        if (/*light.ref.is_finite(worker.scene())*/false) {
+            /*
             // Equi-angular sampling
             float3 const position = worker.scene().light_center(light.id);
 
@@ -253,12 +254,15 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             float3 const w = exp(-(sample_t - ray.min_t) * extinction);
 
             li = (l * extinction) * (scattering_albedo * w) / pdf;
+            */
         } else {
             // Distance sampling
             float const r = rng_.random_float();
             float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
             float3 const p = ray.point(ray.min_t + t);
+
+            auto const light = worker.scene().random_light(p, rng_.random_float());
 
             float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 
