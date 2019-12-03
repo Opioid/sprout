@@ -16,9 +16,13 @@ void Tree::Node::gather() noexcept {
         children[0]->gather();
         children[1]->gather();
 
-        center = 0.5f * (children[0]->center + children[1]->center);
+        float const total_power = children[0]->power + children[1]->power;
 
-        power = 0.5f * (children[0]->power + children[1]->power);
+        center = (children[0]->power * children[0]->center +
+                  children[1]->power * children[1]->center) /
+                 total_power;
+
+        power = total_power;
     }
 }
 
@@ -103,7 +107,7 @@ void Tree_builder::split(Tree::Node* node, uint32_t begin, uint32_t end, Lights 
         auto const& light = scene.lights()[l];
 
         node->center = scene.light_center(l);
-        node->power  = spectrum::luminance(light.power(scene.aabb(), scene));
+        node->power  = spectrum::luminance(light.power(AABB(float3(-1.f), float3(1.f)), scene));
         node->finite = light.is_finite(scene);
         node->light  = l;
     } else {
