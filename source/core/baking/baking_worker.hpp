@@ -4,13 +4,15 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/prop/interface_stack.hpp"
 
+#define BAKE_IMAGE
+
 namespace baking {
 
 struct Item;
 
 class Baking_worker : public rendering::Worker {
   public:
-    void baking_init(Item* items, int32_t slize_width = 0) noexcept;
+    void baking_init(Item* items, int32_t slize_width) noexcept;
 
     void bake(int32_t begin, int32_t end) noexcept;
 

@@ -5,6 +5,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/thread/thread_pool.hpp"
+#include "image/encoding/png/png_writer.hpp"
 #include "image/typed_image.hpp"
 #include "logging/logging.hpp"
 #include "progress/progress_sink.hpp"
@@ -15,16 +16,20 @@
 #include "take/take.hpp"
 #include "take/take_view.hpp"
 
-#include "base/math/print.hpp"
-
 #include <fstream>
 #include <string>
 
 namespace baking {
 
+static uint32_t constexpr Slice_width = 256;
+
 // static uint32_t constexpr Num_items = 1 * 1024 * 1024;
 
+#ifdef BAKE_IMAGE
+static uint32_t constexpr Num_items = Slice_width * Slice_width;
+#else
 static uint32_t constexpr Num_items = 16 * 1024 * 1024;
+#endif
 
 Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads, uint32_t max_sample_size,
                progress::Sink& progressor) noexcept
@@ -41,7 +46,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads, uint32_t m
                          *take.volume_integrator_factory, *take.sampler_factory, nullptr,
                          take.view.photon_settings, take.lighttracer_factory, 0, nullptr);
 
-        workers_[i].baking_init(items_);
+        workers_[i].baking_init(items_, Slice_width);
     }
 }
 
@@ -73,17 +78,24 @@ void Driver::render() noexcept {
 
     logging::info("Exporting...");
 
+#ifdef BAKE_IMAGE
+    export_image();
+#else
     std::ofstream stream("radbak_v0_" + std::to_string(Num_items) + ".raw", std::ios::binary);
 
     stream.write(reinterpret_cast<char const*>(items_), Num_items * sizeof(Item));
+#endif
+}
 
-    /*
-    std::ofstream txtstream("radbak.txt");
+void Driver::export_image() const noexcept {
+    memory::Buffer<float> buffer(Num_items);
 
     for (uint32_t i = 0; i < Num_items; ++i) {
-        txtstream << items_[i].pos << items_[i].wi << items_[i].radiance << "\n";
+        buffer[i] = items_[i].radiance;
     }
-    */
+
+    image::encoding::png::Writer::write("slice.png", buffer.data(), int2(Slice_width),
+                                        1.f / (4.f * Pi), false);
 }
 
 }  // namespace baking

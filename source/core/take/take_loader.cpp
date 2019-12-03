@@ -551,7 +551,7 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
             particle_node->value, num_workers, take.view.num_particles);
     }
 
-    uint32_t const num_samples = 1024;// 16 * 1024;
+    uint32_t const num_samples = 1 * 1024;
     uint32_t const num_bounces = 10 * 1024;
 
     take.surface_integrator_factory = new rendering::integrator::surface::Pathtracer_DLDL_factory(

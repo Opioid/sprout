@@ -121,7 +121,7 @@ bool Writer::write(std::string_view name, Byte1 const& image) {
 }
 
 bool Writer::write(std::string_view name, float const* data, int2 dimensions, float scale,
-                   bool srgb) {
+                   bool gamma) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -133,7 +133,7 @@ bool Writer::write(std::string_view name, float const* data, int2 dimensions, fl
     for (uint32_t i = 0; i < area; ++i) {
         float scaled = scale * data[i];
 
-        if (srgb) {
+        if (gamma) {
             scaled = spectrum::linear_to_gamma_sRGB(scaled);
         }
 

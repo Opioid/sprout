@@ -36,7 +36,7 @@ Pathtracer_DLDL::~Pathtracer_DLDL() {
 void Pathtracer_DLDL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
-    volume_positions_ = new float3[num_samples_per_pixel * settings_.num_samples];
+    //    volume_positions_ = new float3[num_samples_per_pixel * settings_.num_samples];
 }
 
 void Pathtracer_DLDL::start_pixel() noexcept {
@@ -161,7 +161,7 @@ float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 c
             sample_result.pdf        = 1.f / (4 * Pi);
             sample_result.type.clear(Bxdf_type::Diffuse_reflection);
 
-            volume_positions_[iteration_] = intersection.geo.p;
+            //    volume_positions_[iteration_] = intersection.geo.p;
         }
 #else
         material_sample.sample(material_sampler(ray.depth), sample_result);

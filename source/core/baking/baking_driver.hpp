@@ -63,6 +63,8 @@ class Driver {
     void render() noexcept;
 
   private:
+    void export_image() const noexcept;
+
     Scene& scene_;
 
     take::View& view_;

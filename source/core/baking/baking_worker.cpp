@@ -11,7 +11,7 @@
 namespace baking {
 
 void Baking_worker::baking_init(Item* items, int32_t slice_width) noexcept {
-    items_ = items;
+    items_       = items;
     slice_width_ = slice_width;
 }
 
@@ -21,8 +21,18 @@ void Baking_worker::bake(int32_t begin, int32_t end) noexcept {
 
         float3 const wi = sample_sphere_uniform(uv);
 
+#ifdef BAKE_IMAGE
+        int2 const c = coordinates(i);
+
+        float const z = 0.f;
+
+        float3 const p((float(c[0]) + 0.5f) / float(slice_width_) * 2.f - 1.f,
+                       (float(c[1]) + 0.5f) / float(slice_width_) * -2.f + 1.f, z);
+#else
+
         float3 const p(rng_.random_float() * 2.f - 1.f, rng_.random_float() * 2.f - 1.f,
                        rng_.random_float() * 2.f - 1.f);
+#endif
 
         Intersection intersection;
 
