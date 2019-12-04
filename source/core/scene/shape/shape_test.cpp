@@ -1,5 +1,4 @@
 #include "shape_test.hpp"
-#include <iostream>
 #include "base/math/matrix4x4.inl"
 #include "base/math/print.hpp"
 #include "base/math/quaternion.inl"
@@ -13,6 +12,8 @@
 #include "shape_sample.hpp"
 #include "sphere.hpp"
 
+#include <iostream>
+
 namespace scene::shape::testing {
 
 void print(Intersection const& intersection);
@@ -21,7 +22,8 @@ void print_vector(float3 const& v);
 
 bool check(Intersection const& intersection, const entity::Composed_transformation& transformation,
            Ray const& /*ray*/) {
-    if (!std::isfinite(length(intersection.b))) {
+    if (!std::isfinite(length(intersection.b)) || !all_finite(intersection.t) ||
+        !all_finite(intersection.b) || !all_finite(intersection.n)) {
         print(intersection);
 
         std::cout << "t.rotation: " << transformation.rotation << std::endl;
@@ -103,6 +105,8 @@ void print(Intersection const& intersection) {
     std::cout << "b: ";
     print_vector(intersection.b);
     std::cout << "uv: " << intersection.uv << std::endl;
+    std::cout << "geo_n: ";
+    print_vector(intersection.geo_n);
 }
 
 void print_vector(float3 const& v) {

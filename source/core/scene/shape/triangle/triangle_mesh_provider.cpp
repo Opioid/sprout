@@ -567,21 +567,21 @@ bool check_and_fix(std::vector<Vertex>& vertices, std::string const& /*filename*
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {
         auto& v = vertices[i];
 
-        if (squared_length(v.n) < 0.1f) {
+        if (float const sl = squared_length(v.n); sl < 0.9f || sl > 1.1f || !all_finite(v.n)) {
             //		std::cout << filename << " vertex " << i << std::endl;
 
-            std::cout << "n: " << v.n << " converted to ";
+            std::cout << "n: " << v.n << " | " << std::sqrt(sl) << " | converted to ";
             v.n = packed_float3(0.f, 1.f, 0.f);
             std::cout << v.n << std::endl;
 
             success = false;
         }
 
-        if (squared_length(v.t) < 0.1f) {
+        if (float const sl = squared_length(v.t); sl < 0.9f || sl > 1.1f || !all_finite(v.t)) {
             //	std::cout << filename << " vertex " << i << std::endl;
 
-            std::cout << "t: " << v.t << " converted to ";
-            v.t = packed_float3(math::tangent(float3(v.n)));
+            std::cout << "t: " << v.t << " | " << std::sqrt(sl) << " | converted to ";
+            v.t = packed_float3(tangent(float3(v.n)));
             std::cout << v.t << std::endl;
 
             success = false;

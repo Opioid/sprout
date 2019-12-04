@@ -302,6 +302,11 @@ static bool any_inf(Vector3<T> const& v) noexcept {
     return std::isinf(v[0]) || std::isinf(v[1]) || std::isinf(v[2]);
 }
 
+template <typename T>
+static bool all_finite(Vector3<T> const& v) noexcept {
+    return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
+}
+
 //==============================================================================
 // Aligned 3D float vector
 //==============================================================================

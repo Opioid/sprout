@@ -1,14 +1,15 @@
 #ifndef SU_SCENE_MATERIAL_SAMPLE_INL
 #define SU_SCENE_MATERIAL_SAMPLE_INL
 
-#include <cmath>
-#include <cstring>
 #include "base/math/vector3.inl"
 #include "material_sample.hpp"
 #include "material_sample_helper.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
+
+#include <cmath>
+#include <cstring>
 
 namespace scene::material {
 

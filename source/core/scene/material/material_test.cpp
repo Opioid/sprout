@@ -1,8 +1,9 @@
 #include "material_test.hpp"
-#include <iostream>
 #include "base/math/print.hpp"
 #include "base/math/vector3.inl"
 #include "bxdf.hpp"
+
+#include <iostream>
 
 namespace scene::material::testing {
 

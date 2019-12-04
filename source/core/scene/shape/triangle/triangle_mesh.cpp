@@ -14,6 +14,11 @@
 #include "scene/shape/shape_sample.hpp"
 #include "triangle_intersection.hpp"
 
+#ifdef SU_DEBUG
+#include "scene/shape/shape_test.hpp"
+#endif
+#include "base/debug/assert.hpp"
+
 namespace scene::shape::triangle {
 
 Mesh::Mesh() noexcept : distributions_(nullptr), part_materials_(nullptr) {}
@@ -171,6 +176,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         intersection.uv   = uv;
         intersection.part = material_index;
+
+        SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
         return true;
     }

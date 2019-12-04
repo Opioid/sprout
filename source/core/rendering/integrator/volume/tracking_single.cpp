@@ -224,9 +224,9 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         tr = exp(-(d - ray.min_t) * extinction);
 
-   //     auto const light = worker.scene().random_light(rng_.random_float());
+        //     auto const light = worker.scene().random_light(rng_.random_float());
 
-        if (/*light.ref.is_finite(worker.scene())*/false) {
+        if (/*light.ref.is_finite(worker.scene())*/ false) {
             /*
             // Equi-angular sampling
             float3 const position = worker.scene().light_center(light.id);
@@ -306,7 +306,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
         return float3(0.f);
     }
 
-    SOFT_ASSERT(all_finite(tv));
+    SOFT_ASSERT(all_finite(tr));
 
     //    auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
 
