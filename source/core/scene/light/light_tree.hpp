@@ -13,8 +13,34 @@ namespace light {
 
 class Light;
 
+struct Build_node {
+    Build_node() noexcept;
+
+    ~Build_node() noexcept;
+
+    void gather(uint32_t const* orders) noexcept;
+
+    float weight(float3 const& p) const noexcept;
+
+    float3 center;
+
+    float power;
+
+    bool finite;
+
+    uint32_t back;
+
+    uint32_t light;
+
+    Build_node* children[2];
+};
+
 class Tree {
   public:
+    Tree() noexcept;
+
+    ~Tree() noexcept;
+
     struct Result {
         uint32_t id;
         float    pdf;
@@ -24,40 +50,22 @@ class Tree {
 
     float pdf(float3 const& p, uint32_t id) const noexcept;
 
-    struct Node {
-        Node() noexcept;
+    Build_node root_;
 
-        ~Node() noexcept;
-
-        void gather() noexcept;
-
-        float weight(float3 const& p) const noexcept;
-
-        bool contains(uint32_t id) const noexcept;
-
-        float3 center;
-
-        float power;
-
-        bool finite;
-
-        uint32_t light;
-
-        Node* children[2];
-    };
-
-    Node root_;
+    uint32_t* light_orders_;
 };
 
 class Tree_builder {
   public:
-    void build(Tree& tree, Scene const& scene) const noexcept;
+    void build(Tree& tree, Scene const& scene) noexcept;
 
   private:
     using Lights = std::vector<uint32_t>;
 
-    void split(Tree::Node* node, uint32_t begin, uint32_t end, Lights const& lights,
-               Scene const& scene) const noexcept;
+    void split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights const& lights,
+               Scene const& scene) noexcept;
+
+    uint32_t light_order_;
 };
 
 }  // namespace light

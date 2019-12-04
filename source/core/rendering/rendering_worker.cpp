@@ -158,7 +158,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
     for (;;) {
         bool const hit = scene_->intersect_volume(tray, *this, intersection);
 
-        SOFT_ASSERT(tray.max_t > tray.min_t);
+        SOFT_ASSERT(tray.max_t >= tray.min_t);
 
         if (!interface_stack_.empty()) {
             if (float3 tr; volume_integrator_->transmittance(tray, *this, tr)) {

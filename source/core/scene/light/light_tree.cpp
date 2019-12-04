@@ -1,20 +1,23 @@
 #include "light_tree.hpp"
+#include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "scene/scene.inl"
 
+#include "base/debug/assert.hpp"
+
 namespace scene::light {
 
-Tree::Node::Node() noexcept : children{nullptr, nullptr} {}
+Build_node::Build_node() noexcept : children{nullptr, nullptr} {}
 
-Tree::Node::~Node() {
+Build_node::~Build_node() {
     delete children[0];
     delete children[1];
 }
 
-void Tree::Node::gather() noexcept {
+void Build_node::gather(uint32_t const* orders) noexcept {
     if (children[0]) {
-        children[0]->gather();
-        children[1]->gather();
+        children[0]->gather(orders);
+        children[1]->gather(orders);
 
         float const total_power = children[0]->power + children[1]->power;
 
@@ -23,10 +26,14 @@ void Tree::Node::gather() noexcept {
                  total_power;
 
         power = total_power;
+
+        back = children[1]->back;
+    } else {
+        back = orders[light];
     }
 }
 
-float Tree::Node::weight(float3 const& p) const noexcept {
+float Build_node::weight(float3 const& p) const noexcept {
     if (finite) {
         return power / squared_distance(center, p);
     } else {
@@ -34,16 +41,14 @@ float Tree::Node::weight(float3 const& p) const noexcept {
     }
 }
 
-bool Tree::Node::contains(uint32_t id) const noexcept {
-    if (!children[0]) {
-        return light == id;
-    }
+Tree::Tree() noexcept : light_orders_(nullptr) {}
 
-    return children[0]->contains(id) || children[1]->contains(id);
+Tree::~Tree() noexcept {
+    memory::free_aligned(light_orders_);
 }
 
 Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
-    Node const* node = &root_;
+    Build_node const* node = &root_;
 
     float pdf = 1.f;
 
@@ -53,6 +58,8 @@ Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
             float p1 = node->children[1]->weight(p);
 
             float const pt = p0 + p1;
+
+            SOFT_ASSERT(pt > 0.f);
 
             p0 /= pt;
             p1 /= pt;
@@ -67,13 +74,17 @@ Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
                 random = (random - p0) / p1;
             }
         } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+
             return {node->light, pdf};
         }
     }
 }
 
 float Tree::pdf(float3 const& p, uint32_t id) const noexcept {
-    Node const* node = &root_;
+    Build_node const* node = &root_;
+
+    uint32_t const lo = light_orders_[id];
 
     float pdf = 1.f;
 
@@ -87,7 +98,9 @@ float Tree::pdf(float3 const& p, uint32_t id) const noexcept {
             p0 /= pt;
             p1 /= pt;
 
-            if (node->children[0]->contains(id)) {
+            SOFT_ASSERT(pt > 0.f);
+
+            if (lo <= node->children[0]->back) {
                 node = node->children[0];
                 pdf *= p0;
             } else {
@@ -95,12 +108,16 @@ float Tree::pdf(float3 const& p, uint32_t id) const noexcept {
                 pdf *= p1;
             }
         } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+
             return pdf;
         }
     }
 }
 
-void Tree_builder::build(Tree& tree, Scene const& scene) const noexcept {
+void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
+    memory::free_aligned(tree.light_orders_);
+
     delete tree.root_.children[0];
     delete tree.root_.children[1];
 
@@ -110,7 +127,13 @@ void Tree_builder::build(Tree& tree, Scene const& scene) const noexcept {
     Lights finite_lights;
     Lights infinite_lights;
 
-    for (uint32_t l = 0, len = uint32_t(scene.lights().size()); l < len; ++l) {
+    uint32_t const num_lights = uint32_t(scene.lights().size());
+
+    tree.light_orders_ = memory::allocate_aligned<uint32_t>(num_lights);
+
+    light_order_ = 0;
+
+    for (uint32_t l = 0; l < num_lights; ++l) {
         auto const& light = scene.lights()[l];
 
         if (light.is_finite(scene)) {
@@ -120,23 +143,25 @@ void Tree_builder::build(Tree& tree, Scene const& scene) const noexcept {
         }
     }
 
-    if (infinite_lights.empty()) {
-        split(&tree.root_, 0, uint32_t(finite_lights.size()), finite_lights, scene);
-    } else if (finite_lights.empty()) {
-        split(&tree.root_, 0, uint32_t(infinite_lights.size()), infinite_lights, scene);
-    } else {
-        tree.root_.children[0] = new Tree::Node;
-        tree.root_.children[1] = new Tree::Node;
+    Build_node& root = tree.root_;
 
-        split(tree.root_.children[0], 0, uint32_t(finite_lights.size()), finite_lights, scene);
-        split(tree.root_.children[1], 0, uint32_t(infinite_lights.size()), infinite_lights, scene);
+    if (infinite_lights.empty()) {
+        split(tree, &root, 0, uint32_t(finite_lights.size()), finite_lights, scene);
+    } else if (finite_lights.empty()) {
+        split(tree, &root, 0, uint32_t(infinite_lights.size()), infinite_lights, scene);
+    } else {
+        root.children[0] = new Build_node;
+        root.children[1] = new Build_node;
+
+        split(tree, root.children[0], 0, uint32_t(finite_lights.size()), finite_lights, scene);
+        split(tree, root.children[1], 0, uint32_t(infinite_lights.size()), infinite_lights, scene);
     }
 
-    tree.root_.gather();
+    root.gather(tree.light_orders_);
 }
 
-void Tree_builder::split(Tree::Node* node, uint32_t begin, uint32_t end, Lights const& lights,
-                         Scene const& scene) const noexcept {
+void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end,
+                         Lights const& lights, Scene const& scene) noexcept {
     if (1 == end - begin) {
         uint32_t const l = lights[begin];
 
@@ -146,9 +171,11 @@ void Tree_builder::split(Tree::Node* node, uint32_t begin, uint32_t end, Lights 
         node->power  = spectrum::luminance(light.power(AABB(float3(-1.f), float3(1.f)), scene));
         node->finite = light.is_finite(scene);
         node->light  = l;
+
+        tree.light_orders_[l] = light_order_++;
     } else {
-        node->children[0] = new Tree::Node;
-        node->children[1] = new Tree::Node;
+        node->children[0] = new Build_node;
+        node->children[1] = new Build_node;
 
         if (scene.lights()[lights[begin]].is_finite(scene)) {
             AABB bb = AABB::empty();
@@ -176,13 +203,13 @@ void Tree_builder::split(Tree::Node* node, uint32_t begin, uint32_t end, Lights 
                 }
             }
 
-            split(node->children[0], 0, uint32_t(a.size()), a, scene);
-            split(node->children[1], 0, uint32_t(b.size()), b, scene);
+            split(tree, node->children[0], 0, uint32_t(a.size()), a, scene);
+            split(tree, node->children[1], 0, uint32_t(b.size()), b, scene);
         } else {
             uint32_t const middle = (end - begin) / 2;
 
-            split(node->children[0], begin, middle, lights, scene);
-            split(node->children[1], middle, end, lights, scene);
+            split(tree, node->children[0], begin, middle, lights, scene);
+            split(tree, node->children[1], middle, end, lights, scene);
         }
     }
 }
