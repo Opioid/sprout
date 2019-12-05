@@ -2,6 +2,8 @@
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "scene/scene.inl"
+#include "base/memory/array.inl"
+#include "base/math/distribution/distribution_1d.inl"
 
 #include "base/debug/assert.hpp"
 
@@ -41,11 +43,9 @@ float Build_node::weight(float3 const& p) const noexcept {
     }
 }
 
-Tree::Tree() noexcept : light_orders_(nullptr) {}
+Tree::Tree() noexcept {}
 
-Tree::~Tree() noexcept {
-    memory::free_aligned(light_orders_);
-}
+Tree::~Tree() noexcept {}
 
 Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
     Build_node const* node = &root_;
@@ -116,8 +116,6 @@ float Tree::pdf(float3 const& p, uint32_t id) const noexcept {
 }
 
 void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
-    memory::free_aligned(tree.light_orders_);
-
     delete tree.root_.children[0];
     delete tree.root_.children[1];
 
@@ -129,7 +127,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
 
     uint32_t const num_lights = uint32_t(scene.lights().size());
 
-    tree.light_orders_ = memory::allocate_aligned<uint32_t>(num_lights);
+    tree.light_orders_.resize(num_lights);
 
     light_order_ = 0;
 
@@ -145,6 +143,15 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
 
     Build_node& root = tree.root_;
 
+    tree.light_powers_.resize(uint32_t(infinite_lights.size()));
+
+    for (uint32_t i = 0, len = uint32_t(infinite_lights.size()); i < len; ++i) {
+        auto const& l = scene.lights()[i];
+        tree.light_powers_[i] = spectrum::luminance(l.power(AABB(float3(-1.f), float3(1.f)), scene));
+
+   //     tree.light_orders_[i] = light_order_++;
+    }
+
     if (infinite_lights.empty()) {
         split(tree, &root, 0, uint32_t(finite_lights.size()), finite_lights, scene);
     } else if (finite_lights.empty()) {
@@ -157,7 +164,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
         split(tree, root.children[1], 0, uint32_t(infinite_lights.size()), infinite_lights, scene);
     }
 
-    root.gather(tree.light_orders_);
+    root.gather(tree.light_orders_.data());
 }
 
 void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end,

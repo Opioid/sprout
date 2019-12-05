@@ -288,7 +288,7 @@ class Scene {
 
     memory::Array<float> light_powers_;
 
-    math::Distribution_implicit_pdf_lut_lin_1D light_distribution_;
+    Distribution_implicit_pdf_lut_lin_1D light_distribution_;
 
     light::Tree light_tree_;
 

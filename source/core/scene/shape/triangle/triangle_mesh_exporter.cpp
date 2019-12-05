@@ -354,4 +354,325 @@ void Exporter::write(std::string const& filename, Json_handler& handler) noexcep
     }
 }
 
+struct Cluster {
+    Cluster() = default;
+
+    Cluster(uint32_t part, uint32_t mat, Index_triangle const& triangle, uint32_t index_id,
+            std::vector<Vertex> const& vertices) {
+        original_part = part;
+
+        material = mat;
+
+        triangles.push_back(triangle);
+        index_ids.push_back(index_id);
+
+        float3 const a = float3(vertices[triangle.i[0]].p);
+        float3 const b = float3(vertices[triangle.i[1]].p);
+        float3 const c = float3(vertices[triangle.i[2]].p);
+
+        center = (a + b + c) / 3.f;
+    }
+
+    bool insert_if_fits(uint32_t mat, Index_triangle const& triangle, uint32_t index_id,
+                        std::vector<Vertex> const& vertices) noexcept {
+        if (mat != material) {
+            return false;
+        }
+
+        static float constexpr cr = 0.5f;
+
+        float3 const a = float3(vertices[triangle.i[0]].p);
+        float3 const b = float3(vertices[triangle.i[1]].p);
+        float3 const c = float3(vertices[triangle.i[2]].p);
+
+        if (distance(a, center) < cr && distance(b, center) < cr && distance(c, center) < cr) {
+            triangles.push_back(triangle);
+            index_ids.push_back(index_id);
+
+            center = 0.5f * (center + ((a + b + c) / 3.f));
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool in_range(uint32_t start, uint32_t num_indices) const noexcept {
+        uint32_t const end = start + num_indices;
+
+        for (uint32_t const i : index_ids) {
+            if (i < start || i >= end) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    uint32_t original_part = 0xFFFFFFFF;
+
+    uint32_t material = 0xFFFFFFFF;
+
+    std::vector<Index_triangle> triangles;
+
+    std::vector<uint32_t> index_ids;
+
+    float3 center = float3(0.f);
+};
+
+void Exporter::write_json(std::string const& filename, Json_handler& handler) noexcept {
+    // 80, 99, 100, 101, 102, 103
+
+    std::vector<uint32_t> lms = {80, 99, 100, 101, 102, 103};
+
+    std::string const out_name = string::extract_filename(filename) + ".json";
+
+    std::cout << "Export " << out_name << std::endl;
+
+    std::ofstream stream(out_name, std::ios::binary);
+
+    if (!stream) {
+        return;
+    }
+
+    stream << "{\n";
+
+    stream << "\t\"geometry\": {\n";
+
+    // Parts
+    stream << "\t\t\"parts\": [\n";
+
+    std::vector<Cluster> clusters;
+
+    for (uint32_t pi = 0, plen = uint32_t(handler.parts().size()); pi < plen; ++pi) {
+        auto const& p = handler.parts()[pi];
+
+        bool fit = false;
+
+        for (auto const lm : lms) {
+            if (lm == p.material_index) {
+                fit = true;
+                continue;
+            }
+        }
+
+        if (!fit) {
+            continue;
+        }
+
+        for (size_t i = p.start_index, end = p.start_index + p.num_indices; i < end; i += 3) {
+            Index_triangle const& tri = handler.triangles()[i / 3];
+
+            bool hit = false;
+
+            for (auto& c : clusters) {
+                if (c.insert_if_fits(p.material_index, tri, uint32_t(i), handler.vertices())) {
+                    hit = true;
+                    break;
+                }
+            }
+
+            if (!hit) {
+                clusters.emplace_back(pi, p.material_index, tri, uint32_t(i), handler.vertices());
+            }
+        }
+    }
+
+    std::cout << "#Clusters: " << clusters.size() << std::endl;
+
+    for (auto const& c : clusters) {
+        auto const& p = handler.parts()[c.original_part];
+
+        bool const in_range = c.in_range(p.start_index, /*p.num_indices*/ c.triangles.size() * 3);
+        std::cout << c.material << ": " << c.triangles.size() << " " << in_range << std::endl;
+    }
+
+    auto const& parts = handler.parts();
+
+    for (size_t i = 0, len = parts.size(); i < len; ++i) {
+        if (80 == parts[i].material_index || 99 == parts[i].material_index ||
+            100 == parts[i].material_index || 101 == parts[i].material_index ||
+            102 == parts[i].material_index || 103 == parts[i].material_index) {
+            uint32_t start = parts[i].start_index;
+
+            for (auto const& c : clusters) {
+                if (parts[i].material_index == c.material) {
+                    uint32_t const num_indices = c.triangles.size() * 3;
+
+                    stream << "\t\t\t{" << std::endl;
+
+                    stream << "\t\t\t\t\"material_index\": ";
+                    stream << (num_indices > 300 ? c.material : 0);
+                    stream << ",\n";
+
+                    stream << "\t\t\t\t\"start_index\": ";
+                    stream << start;
+                    stream << ",\n";
+
+                    if (num_indices < 600) {
+                        std::cout << num_indices << std::endl;
+                    }
+
+                    stream << "\t\t\t\t\"num_indices\": ";
+                    stream << num_indices;
+
+                    stream << "\n\t\t\t}";
+
+                    start += num_indices;
+
+                    stream << ",\n";
+                }
+            }
+        } else {
+            stream << "\t\t\t{" << std::endl;
+
+            stream << "\t\t\t\t\"material_index\": ";
+            stream << parts[i].material_index;
+            stream << ",\n";
+
+            stream << "\t\t\t\t\"start_index\": ";
+            stream << parts[i].start_index;
+            stream << ",\n";
+
+            stream << "\t\t\t\t\"num_indices\": ";
+            stream << parts[i].num_indices;
+
+            stream << "\n\t\t\t}";
+
+            if (i < len - 1) {
+                stream << ",\n";
+            }
+        }
+    }
+
+    stream << "\n\t\t],\n\n";
+
+    // Primitive Topology
+    stream << "\t\t\"primitive_topology\": \"triangle_list\",\n\n";
+
+    stream << "\t\t\"vertices\": {\n";
+
+    // Positions
+
+    auto const& vertices = handler.vertices();
+
+    if (handler.has_positions()) {
+        stream << "\t\t\t\"positions\": [\n";
+
+        stream << "\t\t\t\t";
+
+        for (size_t i = 0, len = vertices.size(); i < len; ++i) {
+            stream << vertices[i].p[0] << "," << vertices[i].p[1] << "," << vertices[i].p[2];
+
+            if (i < len - 1) {
+                stream << ",";
+            }
+
+            if ((i + 1) % 8 == 0) {
+                stream << "\n\t\t\t\t";
+            }
+        }
+
+        stream << "\n\t\t\t],\n\n";
+    }
+
+    // Texture_2D Coordinates
+    if (handler.has_texture_coordinates()) {
+        stream << "\t\t\t\"texture_coordinates_0\": [\n";
+
+        stream << "\t\t\t\t";
+
+        for (size_t i = 0, len = vertices.size(); i < len; ++i) {
+            stream << vertices[i].uv[0] << "," << vertices[i].uv[1];
+
+            if (i < len - 1) {
+                stream << ",";
+            }
+
+            if ((i + 1) % 8 == 0) {
+                stream << "\n\t\t\t\t";
+            }
+        }
+
+        stream << "\n\t\t\t],\n\n";
+    }
+
+    // Normals
+    if (handler.has_normals()) {
+        stream << "\t\t\t\"normals\": [\n";
+
+        stream << "\t\t\t\t";
+
+        for (size_t i = 0, len = vertices.size(); i < len; ++i) {
+            stream << vertices[i].n[0] << "," << vertices[i].n[1] << "," << vertices[i].n[2];
+
+            if (i < len - 1) {
+                stream << ",";
+            }
+
+            if ((i + 1) % 8 == 0) {
+                stream << "\n\t\t\t\t";
+            }
+        }
+
+        stream << "\n\t\t\t]";
+
+        if (handler.has_tangents()) {
+            stream << ",";
+        }
+
+        stream << "\n\n";
+    }
+
+    // Tangent Space
+    if (handler.has_tangents()) {
+        // Tangents
+        stream << "\t\t\t\"tangents_and_bitangent_signs\": [\n";
+
+        stream << "\t\t\t\t";
+
+        for (size_t i = 0, len = vertices.size(); i < len; ++i) {
+            stream << vertices[i].t[0] << "," << vertices[i].t[1] << "," << vertices[i].t[2] << ","
+                   << (vertices[i].bitangent_sign ? -1.f : 1.f);
+
+            if (i < len - 1) {
+                stream << ",";
+            }
+
+            if ((i + 1) % 8 == 0) {
+                stream << "\n\t\t\t\t";
+            }
+        }
+
+        stream << "\n\t\t\t]\n\n";
+    }
+
+    stream << "\t\t},\n\n";
+
+    // Indices
+    stream << "\t\t\"indices\": [\n";
+
+    stream << "\t\t\t";
+
+    auto const& indices = handler.triangles();
+
+    for (size_t i = 0, len = handler.triangles().size(); i < len; ++i) {
+        stream << indices[i].i[0] << "," << indices[i].i[1] << "," << indices[i].i[2];
+
+        if (i < len - 1) {
+            stream << ",";
+        }
+
+        if ((i + 1) % 8 == 0) {
+            stream << "\n\t\t\t";
+        }
+    }
+
+    stream << "\n\t\t]\n";
+
+    stream << "\t}\n";
+
+    stream << "}";
+}
+
 }  // namespace scene::shape::triangle

@@ -2,6 +2,8 @@
 #define SU_CORE_SCENE_LIGHT_TREE_HPP
 
 #include "base/math/vector3.hpp"
+#include "base/math/distribution/distribution_1d.hpp"
+#include "base/memory/array.hpp"
 
 #include <vector>
 
@@ -52,7 +54,11 @@ class Tree {
 
     Build_node root_;
 
-    uint32_t* light_orders_;
+    memory::Array<uint32_t> light_orders_;
+
+    memory::Array<float> light_powers_;
+
+    Distribution_implicit_pdf_lut_lin_1D light_distribution_;
 };
 
 class Tree_builder {
