@@ -30,6 +30,8 @@ void Build_node::gather(uint32_t const* orders) noexcept {
         power = total_power;
 
         back = children[1]->back;
+
+        finite = true;
     } else {
         back = orders[light];
     }
