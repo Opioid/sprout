@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_GLASS_THIN_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_GLASS_THIN_SAMPLE_HPP
 
 #include "scene/material/material_sample.hpp"
 
@@ -35,3 +36,5 @@ class Sample_thin : public material::Sample {
 };
 
 }  // namespace scene::material::glass
+
+#endif

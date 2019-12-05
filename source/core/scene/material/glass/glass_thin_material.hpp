@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_GLASS_THIN_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_GLASS_THIN_MATERIAL_HPP
 
 #include "scene/material/material.hpp"
 
@@ -40,3 +41,5 @@ class Glass_thin : public Material {
 };
 
 }  // namespace scene::material::glass
+
+#endif
