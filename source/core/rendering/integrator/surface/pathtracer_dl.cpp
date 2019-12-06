@@ -180,6 +180,10 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
     float3 const p = material_sample.offset_p(intersection.geo.p);
 
+    float3 const n = material_sample.geometric_normal();
+
+    bool const is_translucent = material_sample.is_translucent();
+
     Ray shadow_ray;
     shadow_ray.origin     = p;
     shadow_ray.min_t      = 0.f;
@@ -192,12 +196,11 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
         float const select = sampler.generate_sample_1D(1);
 
-        //auto const light = worker.scene().random_light(select);
-            auto const light = worker.scene().random_light(p, material_sample.geometric_normal(), select);
+        // auto const light = worker.scene().random_light(select);
+        auto const light = worker.scene().random_light(p, n, is_translucent, select);
 
         shape::Sample_to light_sample;
-        if (!light.ref.sample(p, material_sample.geometric_normal(), ray.time,
-                              material_sample.is_translucent(), sampler, 0, worker, light_sample)) {
+        if (!light.ref.sample(p, n, ray.time, is_translucent, sampler, 0, worker, light_sample)) {
             continue;
         }
 

@@ -132,12 +132,13 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
     return {lights_[id], id, pdf};
 }
 
-Scene::Light Scene::light(uint32_t id, float3 const& p, bool calculate_pdf) const noexcept {
+Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
+                          bool calculate_pdf) const noexcept {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
 
-    float const pdf = calculate_pdf ? light_tree_.pdf(p, id) : 1.f;
+    float const pdf = calculate_pdf ? light_tree_.pdf(p, n, total_sphere, id) : 1.f;
 
     return {lights_[id], id, pdf};
 }
@@ -152,14 +153,9 @@ Scene::Light Scene::random_light(float random) const noexcept {
     return {lights_[l.offset], l.offset, l.pdf};
 }
 
-Scene::Light Scene::random_light(float3 const& p, float random) const noexcept {
-    auto const l = light_tree_.random_light(p, random);
-
-    return {lights_[l.id], l.id, l.pdf};
-}
-
-Scene::Light Scene::random_light(float3 const& p, float3 const& n, float random) const noexcept {
-    auto const l = light_tree_.random_light(p, n, random);
+Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sphere,
+                                 float random) const noexcept {
+    auto const l = light_tree_.random_light(p, n, total_sphere, random);
 
     return {lights_[l.id], l.id, l.pdf};
 }

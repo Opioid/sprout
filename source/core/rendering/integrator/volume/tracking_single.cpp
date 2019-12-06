@@ -262,7 +262,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
             float3 const p = ray.point(ray.min_t + t);
 
-            auto const light = worker.scene().random_light(p, rng_.random_float());
+            auto const light = worker.scene().random_light(p, float3(0.f), true,
+                                                           rng_.random_float());
 
             float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 

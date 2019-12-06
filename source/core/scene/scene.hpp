@@ -134,13 +134,13 @@ class Scene {
     };
     Light light(uint32_t id, bool calculate_pdf = true) const noexcept;
 
-    Light light(uint32_t id, float3 const& p, bool calculate_pdf = true) const noexcept;
+    Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
+                bool calculate_pdf = true) const noexcept;
 
     Light random_light(float random) const noexcept;
 
-    Light random_light(float3 const& p, float random) const noexcept;
-
-    Light random_light(float3 const& p, float3 const& n, float random) const noexcept;
+    Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const
+        noexcept;
 
     void simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept;
 

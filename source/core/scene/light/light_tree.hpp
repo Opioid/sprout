@@ -22,9 +22,7 @@ struct Build_node {
 
     void gather(uint32_t const* orders) noexcept;
 
-    float weight(float3 const& p) const noexcept;
-
-    float weight(float3 const& p, float3 const& n) const noexcept;
+    float weight(float3 const& p, float3 const& n, bool total_sphere) const noexcept;
 
     float3 center;
 
@@ -48,11 +46,10 @@ class Tree {
         float    pdf;
     };
 
-    Result random_light(float3 const& p, float random) const noexcept;
+    Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const
+        noexcept;
 
-    Result random_light(float3 const& p, float3 const& n, float random) const noexcept;
-
-    float pdf(float3 const& p, uint32_t id) const noexcept;
+    float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id) const noexcept;
 
     memory::Array<uint32_t> light_orders_;
 

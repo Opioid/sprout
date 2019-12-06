@@ -118,6 +118,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
     float3 throughput(1.f);
     float3 result_li(0.f);
     float3 photon_li(0.f);
+    float3 geo_n(0.f);
 
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
@@ -247,11 +248,12 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             sample_result.pdf = previous_bxdf_pdf;
         } else {
             is_translucent = material_sample.is_translucent();
+            geo_n          = material_sample.geometric_normal();
         }
 
         if (evaluate_back | treat_as_singular) {
             bool         pure_emissive;
-            float3 const radiance = evaluate_light(ray, intersection, sample_result,
+            float3 const radiance = evaluate_light(ray, geo_n, intersection, sample_result,
                                                    treat_as_singular, is_translucent, filter,
                                                    worker, pure_emissive);
 
@@ -293,12 +295,16 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     float3 const p = material_sample.offset_p(intersection.geo.p);
 
+    float3 const n = material_sample.geometric_normal();
+
+    bool const is_translucent = material_sample.is_translucent();
+
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         for (uint32_t i = num_samples; i > 0; --i) {
             float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
             //  auto const light = worker.scene().random_light(select);
-            auto const light = worker.scene().random_light(p, select);
+            auto const light = worker.scene().random_light(p, n, is_translucent, select);
 
             float3 const el = evaluate_light(light.ref, light.pdf, ray, p, 0, evaluate_back,
                                              intersection, material_sample, filter, worker);
@@ -355,10 +361,10 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
     return (weight / light_pdf) * (tr * radiance * bxdf.reflection);
 }
 
-float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& intersection,
-                                      Bxdf_sample sample_result, bool treat_as_singular,
-                                      bool is_translucent, Filter filter, Worker& worker,
-                                      bool& pure_emissive) noexcept {
+float3 Pathtracer_MIS::evaluate_light(Ray const& ray, float3 const& geo_n,
+                                      Intersection const& intersection, Bxdf_sample sample_result,
+                                      bool treat_as_singular, bool is_translucent, Filter filter,
+                                      Worker& worker, bool& pure_emissive) noexcept {
     uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_area_light(light_id)) {
         pure_emissive = false;
@@ -371,7 +377,8 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, Intersection const& inters
         bool const calculate_pdf = Light_sampling::Strategy::Single ==
                                    settings_.light_sampling.strategy;
 
-        auto const light = worker.scene().light(light_id, ray.origin, calculate_pdf);
+        auto const light = worker.scene().light(light_id, ray.origin, geo_n, is_translucent,
+                                                calculate_pdf);
 
         float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent, Filter::Nearest,
                                            worker);
