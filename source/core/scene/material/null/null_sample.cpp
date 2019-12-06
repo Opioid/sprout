@@ -29,7 +29,7 @@ bool Sample::ior_greater_one() const noexcept {
     return false;
 }
 
-bool Sample::do_evaluate_back(bool previously, bool /*same_side*/) const noexcept {
+bool Sample::evaluates_back(bool previously, bool /*same_side*/) const noexcept {
     return previously;
 }
 

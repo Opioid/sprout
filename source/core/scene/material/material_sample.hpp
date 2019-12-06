@@ -65,7 +65,7 @@ class Sample {
 
     virtual bool ior_greater_one() const noexcept;
 
-    virtual bool do_evaluate_back(bool previously, bool same_side) const noexcept;
+    virtual bool evaluates_back(bool previously, bool same_side) const noexcept;
 
     float3 offset_p(float3 const& p) const noexcept;
     float3 offset_p(float3 const& p, float3 const& wi) const noexcept;

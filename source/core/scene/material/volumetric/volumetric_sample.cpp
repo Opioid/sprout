@@ -45,7 +45,7 @@ bool Sample::is_translucent() const noexcept {
     return true;
 }
 
-bool Sample::do_evaluate_back(bool previously, bool /*same_side*/) const noexcept {
+bool Sample::evaluates_back(bool previously, bool /*same_side*/) const noexcept {
     return previously;
 }
 

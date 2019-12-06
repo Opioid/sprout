@@ -15,7 +15,7 @@ class Sample_subsurface final : public Sample_base {
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
 
     void set_volumetric(float anisotropy, float ior, float ior_outside) noexcept;
 
@@ -34,7 +34,7 @@ class Sample_subsurface final : public Sample_base {
 
 class Sample_subsurface_volumetric final : public volumetric::Sample {
   public:
-    bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
 };
 
 }  // namespace scene::material::substitute

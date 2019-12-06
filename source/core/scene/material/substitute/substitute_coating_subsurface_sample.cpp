@@ -116,8 +116,8 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
     result.wavelength = 0.f;
 }
 
-bool Sample_coating_subsurface::do_evaluate_back(bool previously, bool same_side) const noexcept {
-    return previously || same_side;
+bool Sample_coating_subsurface::evaluates_back(bool previously, bool same_side) const noexcept {
+    return previously | same_side;
 }
 
 void Sample_coating_subsurface::set_volumetric(float anisotropy, float ior,
@@ -244,8 +244,8 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
     return result;
 }
 
-bool Sample_coating_subsurface_volumetric::do_evaluate_back(bool /*previously*/,
-                                                            bool /*same_side*/) const noexcept {
+bool Sample_coating_subsurface_volumetric::evaluates_back(bool /*previously*/,
+                                                          bool /*same_side*/) const noexcept {
     return false;
 }
 

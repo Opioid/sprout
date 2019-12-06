@@ -102,7 +102,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-bool Sample_subsurface::do_evaluate_back(bool previously, bool same_side) const noexcept {
+bool Sample_subsurface::evaluates_back(bool previously, bool same_side) const noexcept {
     return previously || same_side;
 }
 
@@ -197,7 +197,7 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
     result.type.set(bxdf::Type::Caustic);
 }
 
-bool Sample_subsurface_volumetric::do_evaluate_back(bool /*previously*/, bool /*same_side*/) const
+bool Sample_subsurface_volumetric::evaluates_back(bool /*previously*/, bool /*same_side*/) const
     noexcept {
     return false;
 }

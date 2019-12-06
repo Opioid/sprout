@@ -89,7 +89,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
+        evaluate_back = material_sample.evaluates_back(evaluate_back, same_side);
 
         result += throughput *
                   direct_light(ray, intersection, material_sample, evaluate_back, filter, worker);

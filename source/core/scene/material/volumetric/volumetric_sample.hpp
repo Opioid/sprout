@@ -17,7 +17,7 @@ class Sample : public material::Sample {
 
     bool is_translucent() const noexcept override final;
 
-    bool do_evaluate_back(bool previously, bool same_side) const noexcept override;
+    bool evaluates_back(bool previously, bool same_side) const noexcept override;
 
     void set(float anisotropy);
 

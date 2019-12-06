@@ -16,7 +16,7 @@ class Sample_coating_subsurface final
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
 
-    bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
 
     void set_volumetric(float anisotropy, float ior, float ior_outside) noexcept;
 
@@ -39,7 +39,7 @@ class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
 
-    bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
 
   private:
     float3 attenuation(float3 const& wi) const noexcept;

@@ -143,7 +143,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (ray.depth < max_bounces) {
-            evaluate_back = material_sample.do_evaluate_back(evaluate_back, same_side);
+            evaluate_back = material_sample.evaluates_back(evaluate_back, same_side);
 
             result_li += throughput * sample_lights(ray, intersection, material_sample,
                                                     evaluate_back, filter, worker);

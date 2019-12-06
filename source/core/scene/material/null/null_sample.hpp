@@ -17,7 +17,7 @@ class Sample final : public material::Sample {
 
     bool ior_greater_one() const noexcept override final;
 
-    bool do_evaluate_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
 };
 
 }  // namespace scene::material::null

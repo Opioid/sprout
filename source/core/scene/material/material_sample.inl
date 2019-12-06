@@ -91,7 +91,7 @@ inline bool Sample::ior_greater_one() const noexcept {
     return true;
 }
 
-inline bool Sample::do_evaluate_back(bool /*previously*/, bool /*same_side*/) const noexcept {
+inline bool Sample::evaluates_back(bool /*previously*/, bool /*same_side*/) const noexcept {
     return true;
 }
 
