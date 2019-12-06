@@ -326,7 +326,7 @@ float Cube::uv_weight(float2 uv) const noexcept {
 
 float Cube::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     float3 const d = 2.f * scale;
-    return 2.f * (d[0] * d[1]) + 2.f * (d[0] * d[2]) + 2.f * (d[1] * d[2]);
+    return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);
 }
 
 float Cube::volume(uint32_t /*part*/, float3 const& scale) const noexcept {
