@@ -55,7 +55,7 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
                                 float random) const noexcept {
     float const ip = infinite_weight_;
 
-    if (random < ip) {
+    if (random <= ip) {
         auto const l = infinite_light_distribution_.sample_discrete(random);
         return {l.offset, l.pdf * ip};
     } else {
@@ -134,6 +134,8 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
     delete tree.root_.children[0];
     delete tree.root_.children[1];
 
+    tree.root_.power = 0.f;
+
     tree.root_.children[0] = nullptr;
     tree.root_.children[1] = nullptr;
 
@@ -182,9 +184,11 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
 
     tree.infinite_light_distribution_.init(tree.infinite_light_powers_.data(), num_infinite_lights);
 
-    split(tree, &root, 0, uint32_t(finite_lights.size()), finite_lights, scene);
+    if (!finite_lights.empty()) {
+        split(tree, &root, 0, uint32_t(finite_lights.size()), finite_lights, scene);
 
-    root.gather(tree.light_orders_.data());
+        root.gather(tree.light_orders_.data());
+    }
 
     float const p0 = infinite_total_power;
     float const p1 = root.power;

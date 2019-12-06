@@ -45,8 +45,6 @@
 static void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
                                    scene::Scene const& scene) noexcept;
 
-static bool is_json(std::string const& text) noexcept;
-
 int main(int argc, char* argv[]) noexcept {
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
