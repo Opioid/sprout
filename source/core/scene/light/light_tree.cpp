@@ -1,9 +1,9 @@
 #include "light_tree.hpp"
+#include "base/math/distribution/distribution_1d.inl"
 #include "base/memory/align.hpp"
+#include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
 #include "scene/scene.inl"
-#include "base/memory/array.inl"
-#include "base/math/distribution/distribution_1d.inl"
 
 #include "base/debug/assert.hpp"
 
@@ -29,20 +29,14 @@ void Build_node::gather(uint32_t const* orders) noexcept {
 
         power = total_power;
 
-        back = children[1]->back;
-
-        finite = true;
+        end = children[1]->end;
     } else {
-        back = orders[light];
+        end = orders[light] + 1;
     }
 }
 
 float Build_node::weight(float3 const& p) const noexcept {
-    if (finite) {
-        return power / squared_distance(center, p);
-    } else {
-        return power;
-    }
+    return power / squared_distance(center, p);
 }
 
 Tree::Tree() noexcept {}
@@ -50,69 +44,79 @@ Tree::Tree() noexcept {}
 Tree::~Tree() noexcept {}
 
 Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
-    Build_node const* node = &root_;
+    float const ip = infinite_weight_;
 
-    float pdf = 1.f;
+    if (random < ip) {
+        auto const l = infinite_light_distribution_.sample_discrete(random);
+        return {l.offset, l.pdf * ip};
+    } else {
+        float pdf = 1.f - ip;
 
-    for (;;) {
-        if (node->children[0]) {
-            float p0 = node->children[0]->weight(p);
-            float p1 = node->children[1]->weight(p);
+        Build_node const* node = &root_;
 
-            float const pt = p0 + p1;
+        for (;;) {
+            if (node->children[0]) {
+                float p0 = node->children[0]->weight(p);
+                float p1 = node->children[1]->weight(p);
 
-            SOFT_ASSERT(pt > 0.f);
+                float const pt = p0 + p1;
 
-            p0 /= pt;
-            p1 /= pt;
+                SOFT_ASSERT(pt > 0.f);
 
-            if (random < p0) {
-                node = node->children[0];
-                pdf *= p0;
-                random /= p0;
+                p0 /= pt;
+                p1 /= pt;
+
+                if (random < p0) {
+                    node = node->children[0];
+                    pdf *= p0;
+                    random /= p0;
+                } else {
+                    node = node->children[1];
+                    pdf *= p1;
+                    random = (random - p0) / p1;
+                }
             } else {
-                node = node->children[1];
-                pdf *= p1;
-                random = (random - p0) / p1;
-            }
-        } else {
-            SOFT_ASSERT(std::isfinite(pdf));
+                SOFT_ASSERT(std::isfinite(pdf));
 
-            return {node->light, pdf};
+                return {node->light, pdf};
+            }
         }
     }
 }
 
 float Tree::pdf(float3 const& p, uint32_t id) const noexcept {
-    Build_node const* node = &root_;
+    float const ip = infinite_weight_;
 
     uint32_t const lo = light_orders_[id];
 
-    float pdf = 1.f;
+    if (lo < infinite_end_) {
+        return ip * infinite_light_distribution_.pdf(lo);
+    } else {
+        Build_node const* node = &root_;
 
-    for (;;) {
-        if (node->children[0]) {
-            float p0 = node->children[0]->weight(p);
-            float p1 = node->children[1]->weight(p);
+        float pdf = 1.f - ip;
 
-            float const pt = p0 + p1;
+        for (;;) {
+            if (node->children[0]) {
+                float const p0 = node->children[0]->weight(p);
+                float const p1 = node->children[1]->weight(p);
 
-            p0 /= pt;
-            p1 /= pt;
+                float const pt = p0 + p1;
 
-            SOFT_ASSERT(pt > 0.f);
+                SOFT_ASSERT(pt > 0.f);
 
-            if (lo <= node->children[0]->back) {
-                node = node->children[0];
-                pdf *= p0;
+                if (lo < node->children[0]->end) {
+                    node = node->children[0];
+                    pdf *= p0 / pt;
+                } else {
+                    node = node->children[1];
+                    pdf *= p1 / pt;
+                }
             } else {
-                node = node->children[1];
-                pdf *= p1;
-            }
-        } else {
-            SOFT_ASSERT(std::isfinite(pdf));
+                SOFT_ASSERT(std::isfinite(pdf));
 
-            return pdf;
+                return pdf;
+            }
         }
     }
 }
@@ -145,28 +149,40 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
 
     Build_node& root = tree.root_;
 
-    tree.light_powers_.resize(uint32_t(infinite_lights.size()));
+    uint32_t const num_infinite_lights = uint32_t(infinite_lights.size());
 
-    for (uint32_t i = 0, len = uint32_t(infinite_lights.size()); i < len; ++i) {
-        auto const& l = scene.lights()[i];
-        tree.light_powers_[i] = spectrum::luminance(l.power(AABB(float3(-1.f), float3(1.f)), scene));
+    tree.infinite_light_powers_.resize(num_infinite_lights);
 
-   //     tree.light_orders_[i] = light_order_++;
+    float infinite_total_power = 0.f;
+
+    for (uint32_t i = 0; i < num_infinite_lights; ++i) {
+        uint32_t const l = infinite_lights[i];
+
+        auto const& light = scene.lights()[l];
+
+        float const power = std::sqrt(spectrum::luminance(light.power(scene.aabb(), scene)));
+
+        tree.infinite_light_powers_[i] = power;
+
+        tree.light_orders_[l] = light_order_++;
+
+        infinite_total_power += power;
     }
 
-    if (infinite_lights.empty()) {
-        split(tree, &root, 0, uint32_t(finite_lights.size()), finite_lights, scene);
-    } else if (finite_lights.empty()) {
-        split(tree, &root, 0, uint32_t(infinite_lights.size()), infinite_lights, scene);
-    } else {
-        root.children[0] = new Build_node;
-        root.children[1] = new Build_node;
+    tree.infinite_end_ = light_order_;
 
-        split(tree, root.children[0], 0, uint32_t(finite_lights.size()), finite_lights, scene);
-        split(tree, root.children[1], 0, uint32_t(infinite_lights.size()), infinite_lights, scene);
-    }
+    tree.infinite_light_distribution_.init(tree.infinite_light_powers_.data(), num_infinite_lights);
+
+    split(tree, &root, 0, uint32_t(finite_lights.size()), finite_lights, scene);
 
     root.gather(tree.light_orders_.data());
+
+    float const p0 = infinite_total_power;
+    float const p1 = root.power;
+
+    float const pt = p0 + p1;
+
+    tree.infinite_weight_ = p0 / pt;
 }
 
 void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end,
@@ -178,7 +194,6 @@ void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t 
 
         node->center = scene.light_center(l);
         node->power  = spectrum::luminance(light.power(AABB(float3(-1.f), float3(1.f)), scene));
-        node->finite = light.is_finite(scene);
         node->light  = l;
 
         tree.light_orders_[l] = light_order_++;
