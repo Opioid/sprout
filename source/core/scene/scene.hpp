@@ -140,6 +140,8 @@ class Scene {
 
     Light random_light(float3 const& p, float random) const noexcept;
 
+    Light random_light(float3 const& p, float3 const& n, float random) const noexcept;
+
     void simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept;
 
     void compile(uint64_t time, thread::Pool& threads) noexcept;

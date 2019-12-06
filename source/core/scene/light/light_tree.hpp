@@ -24,6 +24,8 @@ struct Build_node {
 
     float weight(float3 const& p) const noexcept;
 
+    float weight(float3 const& p, float3 const& n) const noexcept;
+
     float3 center;
 
     float power;
@@ -47,6 +49,8 @@ class Tree {
     };
 
     Result random_light(float3 const& p, float random) const noexcept;
+
+    Result random_light(float3 const& p, float3 const& n, float random) const noexcept;
 
     float pdf(float3 const& p, uint32_t id) const noexcept;
 

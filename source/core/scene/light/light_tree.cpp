@@ -39,6 +39,12 @@ float Build_node::weight(float3 const& p) const noexcept {
     return power / squared_distance(center, p);
 }
 
+float Build_node::weight(float3 const& p, float3 const& n) const noexcept {
+    float3 const na = normalize(center - p);
+
+    return std::max(dot(n, na), 0.01f) * power / squared_distance(center, p);
+}
+
 Tree::Tree() noexcept {}
 
 Tree::~Tree() noexcept {}
@@ -58,6 +64,47 @@ Tree::Result Tree::random_light(float3 const& p, float random) const noexcept {
             if (node->children[0]) {
                 float p0 = node->children[0]->weight(p);
                 float p1 = node->children[1]->weight(p);
+
+                float const pt = p0 + p1;
+
+                SOFT_ASSERT(pt > 0.f);
+
+                p0 /= pt;
+                p1 /= pt;
+
+                if (random < p0) {
+                    node = node->children[0];
+                    pdf *= p0;
+                    random /= p0;
+                } else {
+                    node = node->children[1];
+                    pdf *= p1;
+                    random = (random - p0) / p1;
+                }
+            } else {
+                SOFT_ASSERT(std::isfinite(pdf));
+
+                return {node->light, pdf};
+            }
+        }
+    }
+}
+
+Tree::Result Tree::random_light(float3 const& p, float3 const& n, float random) const noexcept {
+    float const ip = infinite_weight_;
+
+    if (random < ip) {
+        auto const l = infinite_light_distribution_.sample_discrete(random);
+        return {l.offset, l.pdf * ip};
+    } else {
+        float pdf = 1.f - ip;
+
+        Build_node const* node = &root_;
+
+        for (uint32_t i = 0;; ++i) {
+            if (node->children[0]) {
+                float p0 = i > 2 ? node->children[0]->weight(p, n) : node->children[0]->weight(p);
+                float p1 = i > 2 ? node->children[1]->weight(p, n) : node->children[1]->weight(p);
 
                 float const pt = p0 + p1;
 

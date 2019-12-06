@@ -158,6 +158,12 @@ Scene::Light Scene::random_light(float3 const& p, float random) const noexcept {
     return {lights_[l.id], l.id, l.pdf};
 }
 
+Scene::Light Scene::random_light(float3 const& p, float3 const& n, float random) const noexcept {
+    auto const l = light_tree_.random_light(p, n, random);
+
+    return {lights_[l.id], l.id, l.pdf};
+}
+
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;
