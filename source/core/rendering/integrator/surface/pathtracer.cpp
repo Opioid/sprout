@@ -162,6 +162,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             result += throughput * vli;
+
             throughput *= vtr;
 
             if (Event::Abort == hit || Event::Absorb == hit) {
