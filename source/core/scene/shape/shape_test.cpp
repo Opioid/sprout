@@ -5,7 +5,7 @@
 #include "base/math/vector3.inl"
 #include "infinite_sphere.hpp"
 #include "node_stack.inl"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/entity/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "shape_intersection.hpp"
