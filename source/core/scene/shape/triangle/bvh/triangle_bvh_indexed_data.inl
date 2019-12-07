@@ -196,6 +196,7 @@ float3 Indexed_data<SV>::normal(uint32_t index) const noexcept {
 
     float3 const e1 = b - a;
     float3 const e2 = c - a;
+
     return normalize(cross(e1, e2));
 }
 
