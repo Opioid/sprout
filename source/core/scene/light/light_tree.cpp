@@ -55,8 +55,9 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
                                 float random) const noexcept {
     float const ip = infinite_weight_;
 
-    if (random <= ip) {
+    if (random < infinite_guard_) {
         auto const l = infinite_light_distribution_.sample_discrete(random);
+
         return {l.offset, l.pdf * ip};
     } else {
         float pdf = 1.f - ip;
@@ -85,7 +86,7 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
                     random = (random - p0) / p1;
                 }
             } else {
-                SOFT_ASSERT(std::isfinite(pdf));
+                SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
 
                 return {node->light, pdf};
             }
@@ -122,7 +123,7 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
                     pdf *= p1 / pt;
                 }
             } else {
-                SOFT_ASSERT(std::isfinite(pdf));
+                SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
 
                 return pdf;
             }
@@ -195,7 +196,12 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
 
     float const pt = p0 + p1;
 
-    tree.infinite_weight_ = p0 / pt;
+    float const infinite_weight = p0 / pt;
+
+    tree.infinite_weight_ = infinite_weight;
+
+    // This is because I'm afraid of the 1.f == random case
+    tree.infinite_guard_ = finite_lights.empty() ? 1.1f : infinite_weight;
 }
 
 void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end,

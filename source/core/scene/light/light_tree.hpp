@@ -54,6 +54,7 @@ class Tree {
     memory::Array<uint32_t> light_orders_;
 
     float infinite_weight_;
+    float infinite_guard_;
 
     uint32_t infinite_end_;
 
