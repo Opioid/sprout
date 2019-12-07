@@ -234,7 +234,7 @@ std::vector<Part>& Json_handler::parts() {
     return parts_;
 }
 
-const std::vector<Index_triangle>& Json_handler::triangles() const {
+std::vector<Index_triangle> const& Json_handler::triangles() const {
     return triangles_;
 }
 

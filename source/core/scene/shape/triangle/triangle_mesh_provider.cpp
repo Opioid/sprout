@@ -28,8 +28,10 @@
 namespace scene::shape::triangle {
 
 #ifdef SU_DEBUG
-bool check(const std::vector<Vertex>& vertices, std::string const& filename);
-bool check_and_fix(std::vector<Vertex>& vertices, std::string const& filename);
+bool check(std::vector<Vertex> const& vertices, std::string const& filename);
+
+bool check_and_fix(std::vector<Index_triangle> const& triangles, std::vector<Vertex>& vertices,
+                   std::string const& filename);
 #endif
 
 Provider::Provider() noexcept {}
@@ -107,7 +109,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         }
     }
 
-    SOFT_ASSERT(check_and_fix(handler->vertices(), filename));
+    SOFT_ASSERT(check_and_fix(handler->triangles(), handler->vertices(), filename));
 
     // Exporter::write(filename, *handler);
 
@@ -545,7 +547,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) noexce
 }
 
 #ifdef SU_DEBUG
-bool check(const std::vector<Vertex>& vertices, std::string const& filename) {
+bool check(std::vector<Vertex> const& vertices, std::string const& filename) {
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {
         auto const& v = vertices[i];
         if (squared_length(v.n) < 0.1f || squared_length(v.t) < 0.1f) {
@@ -561,8 +563,40 @@ bool check(const std::vector<Vertex>& vertices, std::string const& filename) {
     return true;
 }
 
-bool check_and_fix(std::vector<Vertex>& vertices, std::string const& /*filename*/) {
+bool check_and_fix(std::vector<Index_triangle> const& triangles, std::vector<Vertex>& vertices,
+                   std::string const& /*filename*/) {
     bool success = true;
+
+    uint32_t num_degenerate_triangles = 0;
+
+    for (size_t i = 0, len = triangles.size(); i < len; ++i) {
+        auto const& tri = triangles[i];
+
+        packed_float3& a = vertices[tri.i[0]].p;
+        packed_float3& b = vertices[tri.i[1]].p;
+        packed_float3& c = vertices[tri.i[2]].p;
+
+        if (a == b) {
+            a[0] *= 2.f;
+
+            ++num_degenerate_triangles;
+            success = false;
+        } else if (b == c) {
+            b[1] *= 2.f;
+
+            ++num_degenerate_triangles;
+            success = false;
+        } else if (c == a) {
+            c[2] *= 2.f;
+
+            ++num_degenerate_triangles;
+            success = false;
+        }
+    }
+
+    if (num_degenerate_triangles > 0) {
+        std::cout << "Found and tried to fix degenerate triangles" << std::endl;
+    }
 
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {
         auto& v = vertices[i];

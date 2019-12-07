@@ -20,10 +20,11 @@ void print(Intersection const& intersection);
 
 void print_vector(float3 const& v);
 
-bool check(Intersection const& intersection, const entity::Composed_transformation& transformation,
+bool check(Intersection const& intersection, entity::Composed_transformation const& transformation,
            Ray const& /*ray*/) {
     if (!std::isfinite(length(intersection.b)) || !all_finite(intersection.t) ||
-        !all_finite(intersection.b) || !all_finite(intersection.n)) {
+        !all_finite(intersection.b) || !all_finite(intersection.n) ||
+        !all_finite(intersection.geo_n)) {
         print(intersection);
 
         std::cout << "t.rotation: " << transformation.rotation << std::endl;
