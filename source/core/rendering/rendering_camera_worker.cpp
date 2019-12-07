@@ -48,6 +48,7 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
             sampler_->start_pixel();
             surface_integrator_->start_pixel();
+            volume_integrator_->start_pixel();
 
             int2 const pixel(x, y);
 

@@ -36,7 +36,7 @@ void Build_node::gather(uint32_t const* orders) noexcept {
 }
 
 float Build_node::weight(float3 const& p, float3 const& n, bool total_sphere) const noexcept {
-    const float base = power / squared_distance(center, p);
+    const float base = power / std::max(squared_distance(center, p), 0.0001f);
 
     if ((nullptr != children[0]) | total_sphere) {
         return 0.5f * base;
