@@ -569,20 +569,80 @@ bool check_and_fix(std::vector<Index_triangle> const& triangles, std::vector<Ver
 
     uint32_t num_degenerate_triangles = 0;
 
+    uint32_t num_unfixable_triangles = 0;
+
+    uint32_t num_fixed = 0;
+
+    static float constexpr comparison = 0.00001f;
+    static float constexpr epsilon = 1.f;
+
     for (size_t i = 0, len = triangles.size(); i < len; ++i) {
         auto const& tri = triangles[i];
 
-        packed_float3 const a = vertices[tri.i[0]].p;
-        packed_float3 const b = vertices[tri.i[1]].p;
-        packed_float3 const c = vertices[tri.i[2]].p;
+        packed_float3& a = vertices[tri.i[0]].p;
+        packed_float3& b = vertices[tri.i[1]].p;
+        packed_float3& c = vertices[tri.i[2]].p;
 
-        if (a == b || b == c || c == a) {
+        if (tri.i[0] == tri.i[1] || tri.i[1] == tri.i[2] || tri.i[2] == tri.i[0]) {
+            ++num_unfixable_triangles;
+            continue;
+        }
+
+        bool detected = false;
+
+        if (all_less(abs(a - b), comparison)) {
+            a[0] += epsilon;
+         //   b[1] += epsilon;
+
             ++num_degenerate_triangles;
+
+            detected = true;
+        }
+         if (all_less(abs(b - c), comparison)) {
+            b[1] += epsilon;
+        //    c[2] += epsilon;
+
+            ++num_degenerate_triangles;
+
+            detected = true;
+        }
+         if (all_less(abs(c - a), comparison)) {
+            c[2] += epsilon;
+         //   a[0] += epsilon;
+
+            ++num_degenerate_triangles;
+
+            detected = true;
+        }
+
+        packed_float3 const e1 = b - a;
+        packed_float3 const e2 = c - a;
+
+        packed_float3 n = normalize(cross(e1, e2));
+
+        if (!all_finite(n)) {
+
+            std::cout << "detected " << detected << std::endl;
+            std::cout << tri.i[0] << " " << tri.i[1] << " " << tri.i[2] << std::endl;
+            std::cout << e1 << " " << e2 << std::endl;
+            std::cout << a << " " << b << " " << c << std::endl;
+
+            std::cout << n << std::endl;
+        } else if (detected) {
+            num_fixed++;
         }
     }
 
+    if (num_unfixable_triangles > 0) {
+        std::cout << "Found " << num_unfixable_triangles << " \"unfixable\" triangles" << std::endl;
+    }
+
+    if (num_fixed > 0) {
+        std::cout << "Fixed " << num_fixed << std::endl;
+    }
+
     if (num_degenerate_triangles > 0) {
-        std::cout << "Found degenerate triangles!" << std::endl;
+        std::cout << "Found and tried to fix degenerate triangles!" << std::endl;
     }
 
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {

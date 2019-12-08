@@ -1,6 +1,7 @@
 #ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_TRACKING_SINGLE_HPP
 #define SU_CORE_RENDERING_INTEGRATOR_VOLUME_TRACKING_SINGLE_HPP
 
+#include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "volume_integrator.hpp"
 
@@ -26,7 +27,17 @@ class alignas(64) Tracking_single final : public Integrator {
     float3 direct_light(Light const& light, float light_pdf, Ray const& ray, float3 const& position,
                         Intersection const& intersection, Worker& worker) noexcept;
 
+    sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
+
+    sampler::Sampler& light_sampler(uint32_t bounce) noexcept;
+
     sampler::Random sampler_;
+
+    static uint32_t constexpr Num_material_samplers = 1;
+    sampler::Golden_ratio material_samplers_[Num_material_samplers];
+
+    static uint32_t constexpr Num_light_samplers = 1;
+    sampler::Golden_ratio light_samplers_[Num_light_samplers];
 };
 
 class Tracking_single_factory final : public Factory {
