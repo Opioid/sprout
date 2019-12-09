@@ -29,7 +29,6 @@ void Baking_worker::bake(int32_t begin, int32_t end) noexcept {
         float3 const p((float(c[0]) + 0.5f) / float(slice_width_) * 2.f - 1.f,
                        (float(c[1]) + 0.5f) / float(slice_width_) * -2.f + 1.f, z);
 #else
-
         float3 const p(rng_.random_float() * 2.f - 1.f, rng_.random_float() * 2.f - 1.f,
                        rng_.random_float() * 2.f - 1.f);
 #endif
