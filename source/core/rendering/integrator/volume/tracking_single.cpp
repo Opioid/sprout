@@ -276,13 +276,14 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             */
         } else {
             // Distance sampling
-            float const r = rng_.random_float();
+            float const r = material_sampler(ray.depth).generate_sample_1D(0);
             float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
             float3 const p = ray.point(ray.min_t + t);
 
-            auto const light = worker.scene().random_light(p, float3(0.f), true,
-                                                           rng_.random_float());
+            float const select = light_sampler(ray.depth).generate_sample_1D(1);
+
+            auto const light = worker.scene().random_light(p, float3(0.f), true, select);
 
             float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 
