@@ -243,12 +243,10 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         tr = exp(-(d - ray.min_t) * extinction);
 
-//         float const select = light_sampler(ray.depth).generate_sample_1D(1);
+        //     auto const light = worker.scene().random_light(rng_.random_float());
 
-//         auto const light = worker.scene().random_light(select);
-
-        if (/*light.ref.is_finite(worker.scene())*/false) {
-/*
+        if (/*light.ref.is_finite(worker.scene())*/ false) {
+            /*
             // Equi-angular sampling
             float3 const position = worker.scene().light_center(light.id);
 
@@ -261,7 +259,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             float const theta_a = std::atan2(ray.min_t - delta, D);
             float const theta_b = std::atan2(d - delta, D);
 
-            float const r = material_sampler(ray.depth).generate_sample_1D(0);//rng_.random_float();
+            float const r = rng_.random_float();
             float const t = D * std::tan(lerp(theta_a, theta_b, r));
 
             float const sample_t = delta + t;
@@ -275,52 +273,21 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             float3 const w = exp(-(sample_t - ray.min_t) * extinction);
 
             li = (l * extinction) * (scattering_albedo * w) / pdf;
-*/
+            */
         } else {
             // Distance sampling
-            float const rs = material_sampler(ray.depth).generate_sample_1D(
-                0);  // rng_.random_float();
-            float const ts = -std::log(1.f - rs * (1.f - average(tr))) / average(extinction);
+            float const r = rng_.random_float();
+            float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
-            float3 const ps = ray.point(ray.min_t + ts);
+            float3 const p = ray.point(ray.min_t + t);
 
-            float const select = light_sampler(ray.depth).generate_sample_1D(1);
-
-            auto const light = worker.scene().random_light(ps, float3(0.f), true, select);
-
-
-            float3 const position = worker.scene().light_center(light.id);
-
-            float const delta = dot(position - ray.origin, ray.direction);
-
-            float3 const closest_point = ray.point(delta);
-
-            float const D = distance(closest_point, position);
-
-            float const theta_a = std::atan2(ray.min_t - delta, D);
-            float const theta_b = std::atan2(d - delta, D);
-
-            float const r = material_sampler(ray.depth).generate_sample_1D(1);//rng_.random_float();
-            float const t = D * std::tan(lerp(theta_a, theta_b, r));
-
-            float const sample_t = delta + t;
-
-            float3 const p = ray.point(sample_t);
+            auto const light = worker.scene().random_light(p, float3(0.f), true,
+                                                           rng_.random_float());
 
             float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 
-            float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
-
-            float3 const w = exp(-(sample_t - ray.min_t) * extinction);
-
-            li = (l * extinction) * (scattering_albedo * w) / pdf;
-
-
-
-         //   float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
-
             // Short version
-          //  li = l * (1.f - tr) * scattering_albedo;
+            li = l * (1.f - tr) * scattering_albedo;
 
             // Instructive version
             /*
@@ -371,17 +338,17 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
 }
 
 sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) noexcept {
-        if (Num_material_samplers > bounce) {
-            return material_samplers_[bounce];
-        }
+    if (Num_material_samplers > bounce) {
+        return material_samplers_[bounce];
+    }
 
     return sampler_;
 }
 
 sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) noexcept {
-        if (Num_light_samplers > bounce) {
-            return light_samplers_[bounce];
-        }
+    if (Num_light_samplers > bounce) {
+        return light_samplers_[bounce];
+    }
 
     return sampler_;
 }

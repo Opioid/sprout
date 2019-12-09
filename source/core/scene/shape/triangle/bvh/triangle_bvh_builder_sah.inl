@@ -94,7 +94,7 @@ void Builder_SAH::serialize(Build_node* node, Triangles triangles, Vertices vert
         uint32_t i = current_triangle;
         for (auto const p : node->primitives) {
             auto const& t = triangles[p];
-            tree.add_triangle(t.i[0], t.i[1], t.i[2], t.material_index, vertices, i);
+            tree.add_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
             ++i;
         }
 

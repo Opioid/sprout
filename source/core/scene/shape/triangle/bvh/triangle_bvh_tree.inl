@@ -619,11 +619,11 @@ void Tree<Data>::allocate_triangles(uint32_t             num_triangles,
 }
 
 template <typename Data>
-void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
                               Vertex_stream const& vertices, uint32_t current_triangle) noexcept {
-    ++num_part_triangles_[material_index];
+    ++num_part_triangles_[part];
 
-    data_.add_triangle(a, b, c, material_index, vertices, current_triangle);
+    data_.add_triangle(a, b, c, part, vertices, current_triangle);
 }
 
 template <typename Data>

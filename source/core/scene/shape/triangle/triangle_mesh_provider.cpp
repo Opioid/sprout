@@ -30,8 +30,8 @@ namespace scene::shape::triangle {
 #ifdef SU_DEBUG
 bool check(std::vector<Vertex> const& vertices, std::string const& filename);
 
-bool check_and_fix(std::vector<Index_triangle> const& triangles, std::vector<Vertex>& vertices,
-                   std::string const& filename);
+bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triangles,
+                   std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
 Provider::Provider() noexcept {}
@@ -109,7 +109,8 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
         }
     }
 
-    SOFT_ASSERT(check_and_fix(handler->triangles(), handler->vertices(), filename));
+    SOFT_ASSERT(
+        check_and_fix(handler->parts(), handler->triangles(), handler->vertices(), filename));
 
     // Exporter::write(filename, *handler);
 
@@ -132,7 +133,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
             uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
 
             for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-                triangles[i].material_index = part;
+                triangles[i].part = part;
             }
 
             ++part;
@@ -305,7 +306,7 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
 
             previous_index = c;
 
-            t.material_index = i;
+            t.part = i;
         }
     }
 }
@@ -326,7 +327,7 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
             t.i[1] = uint32_t(indices[j * 3 + 1]);
             t.i[2] = uint32_t(indices[j * 3 + 2]);
 
-            t.material_index = i;
+            t.part = i;
         }
     }
 }
@@ -563,57 +564,18 @@ bool check(std::vector<Vertex> const& vertices, std::string const& filename) {
     return true;
 }
 
-bool check_and_fix(std::vector<Index_triangle> const& triangles, std::vector<Vertex>& vertices,
-                   std::string const& /*filename*/) {
+bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triangles,
+                   std::vector<Vertex>& vertices, std::string const& /*filename*/) {
     bool success = true;
 
-    uint32_t num_degenerate_triangles = 0;
+    std::vector<uint32_t> bad_triangles;
 
-    uint32_t num_unfixable_triangles = 0;
-
-    uint32_t num_fixed = 0;
-
-    static float constexpr comparison = 0.00001f;
-    static float constexpr epsilon = 1.f;
-
-    for (size_t i = 0, len = triangles.size(); i < len; ++i) {
+    for (uint32_t i = 0, len = uint32_t(triangles.size()); i < len; ++i) {
         auto const& tri = triangles[i];
 
-        packed_float3& a = vertices[tri.i[0]].p;
-        packed_float3& b = vertices[tri.i[1]].p;
-        packed_float3& c = vertices[tri.i[2]].p;
-
-        if (tri.i[0] == tri.i[1] || tri.i[1] == tri.i[2] || tri.i[2] == tri.i[0]) {
-            ++num_unfixable_triangles;
-            continue;
-        }
-
-        bool detected = false;
-
-        if (all_less(abs(a - b), comparison)) {
-            a[0] += epsilon;
-         //   b[1] += epsilon;
-
-            ++num_degenerate_triangles;
-
-            detected = true;
-        }
-         if (all_less(abs(b - c), comparison)) {
-            b[1] += epsilon;
-        //    c[2] += epsilon;
-
-            ++num_degenerate_triangles;
-
-            detected = true;
-        }
-         if (all_less(abs(c - a), comparison)) {
-            c[2] += epsilon;
-         //   a[0] += epsilon;
-
-            ++num_degenerate_triangles;
-
-            detected = true;
-        }
+        packed_float3 const a = vertices[tri.i[0]].p;
+        packed_float3 const b = vertices[tri.i[1]].p;
+        packed_float3 const c = vertices[tri.i[2]].p;
 
         packed_float3 const e1 = b - a;
         packed_float3 const e2 = c - a;
@@ -621,28 +583,55 @@ bool check_and_fix(std::vector<Index_triangle> const& triangles, std::vector<Ver
         packed_float3 n = normalize(cross(e1, e2));
 
         if (!all_finite(n)) {
-
-            std::cout << "detected " << detected << std::endl;
-            std::cout << tri.i[0] << " " << tri.i[1] << " " << tri.i[2] << std::endl;
-            std::cout << e1 << " " << e2 << std::endl;
-            std::cout << a << " " << b << " " << c << std::endl;
-
-            std::cout << n << std::endl;
-        } else if (detected) {
-            num_fixed++;
+            bad_triangles.push_back(i);
         }
     }
 
-    if (num_unfixable_triangles > 0) {
-        std::cout << "Found " << num_unfixable_triangles << " \"unfixable\" triangles" << std::endl;
-    }
+    if (!bad_triangles.empty()) {
+        std::cout << "Found " << bad_triangles.size() << " degenerate triangles!" << std::endl;
 
-    if (num_fixed > 0) {
-        std::cout << "Fixed " << num_fixed << std::endl;
-    }
+        std::vector<Index_triangle> good_triangles(triangles.size() - bad_triangles.size());
 
-    if (num_degenerate_triangles > 0) {
-        std::cout << "Found and tried to fix degenerate triangles!" << std::endl;
+        uint32_t const blen = uint32_t(bad_triangles.size());
+
+        for (uint32_t i = 0, b = 0, g = 0, len = uint32_t(good_triangles.size()); g < len; ++i) {
+            if (b >= blen || i != bad_triangles[b]) {
+                good_triangles[g] = triangles[i];
+                ++g;
+            } else {
+                ++b;
+            }
+        }
+
+        std::swap(triangles, good_triangles);
+
+        uint32_t remove_start = 0;
+
+        uint32_t b = 0;
+
+        for (auto& p : parts) {
+            uint32_t const triangles_start = p.start_index / 3;
+            uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
+
+            if (b < blen && triangles_start == bad_triangles[b]) {
+                p.start_index -= 3;
+            }
+
+            uint32_t remove_num = 0;
+
+            for (; b < blen; ++b) {
+                if (triangles_end > bad_triangles[b]) {
+                    remove_num += 3;
+                } else {
+                    break;
+                }
+            }
+
+            p.start_index -= remove_start;
+            p.num_indices -= remove_num;
+
+            remove_start += remove_num;
+        }
     }
 
     for (size_t i = 0, len = vertices.size(); i < len; ++i) {

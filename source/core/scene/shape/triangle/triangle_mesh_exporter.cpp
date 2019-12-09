@@ -490,14 +490,14 @@ void Exporter::write_json(std::string const& filename, Json_handler& handler) no
     auto const& parts = handler.parts();
 
     for (size_t i = 0, len = parts.size(); i < len; ++i) {
-        if (80 == parts[i].material_index || 99 == parts[i].material_index ||
+        /*if (80 == parts[i].material_index || 99 == parts[i].material_index ||
             100 == parts[i].material_index || 101 == parts[i].material_index ||
             102 == parts[i].material_index || 103 == parts[i].material_index) {
             uint32_t start = parts[i].start_index;
 
             for (auto const& c : clusters) {
                 if (parts[i].material_index == c.material) {
-                    uint32_t const num_indices = c.triangles.size() * 3;
+                    uint32_t const num_indices = uint32_t(c.triangles.size()) * 3;
 
                     stream << "\t\t\t{" << std::endl;
 
@@ -523,7 +523,8 @@ void Exporter::write_json(std::string const& filename, Json_handler& handler) no
                     stream << ",\n";
                 }
             }
-        } else {
+        } else*/
+        {
             stream << "\t\t\t{" << std::endl;
 
             stream << "\t\t\t\t\"material_index\": ";
