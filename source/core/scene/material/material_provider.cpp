@@ -41,6 +41,8 @@
 #include "volumetric/volumetric_height.hpp"
 #include "volumetric/volumetric_homogeneous.hpp"
 
+#define FROZEN 1
+
 namespace scene::material {
 
 using Texture       = image::texture::Texture;
@@ -1131,6 +1133,26 @@ Material* load_substitute(json::Value const& substitute_value,
         return material;
     }
 
+#ifdef FROZEN
+    if (!emission_map.is_valid()) {
+        auto material = new substitute::Frozen(sampler_settings, two_sided);
+
+        material->set_mask(mask);
+        material->set_color_map(color_map);
+        material->set_normal_map(normal_map);
+        material->set_surface_map(surface_map);
+        material->set_emission_map(emission_map);
+
+        material->set_color(color);
+        material->set_ior(ior);
+        material->set_roughness(roughness);
+        material->set_metallic(metallic);
+        material->set_emission_factor(emission_factor);
+
+        return material;
+    }
+#endif
+
     auto material = new substitute::Material(sampler_settings, two_sided);
 
     material->set_mask(mask);
@@ -1146,6 +1168,7 @@ Material* load_substitute(json::Value const& substitute_value,
     material->set_emission_factor(emission_factor);
 
     return material;
+
 }
 
 Material* Provider::load_volumetric(json::Value const& volumetric_value,
