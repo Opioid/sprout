@@ -95,7 +95,12 @@ void Driver::export_image() const noexcept {
     }
 
     image::encoding::png::Writer::write("slice.png", buffer.data(), int2(Slice_width),
-                                        1.f / (4.f * Pi), false);
+                                        1.f, true);
+
+
+    std::ofstream stream("slice_" + std::to_string(Slice_width) + "x" + std::to_string(Slice_width)  + ".raw", std::ios::binary);
+
+    stream.write(reinterpret_cast<char const*>(buffer.data()), Num_items * sizeof(float));
 }
 
 }  // namespace baking

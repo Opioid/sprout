@@ -20,34 +20,36 @@
 #include <iostream>
 #include "base/math/print.hpp"
 
-//#define DLDL_BAKING 1
+#define DLDL_BAKING 1
+//#define DLDL_BAKING_RANDOM_LIGHT 1
 
 namespace rendering::integrator::surface {
 
 using namespace scene;
 
 Pathtracer_DLDL::Pathtracer_DLDL(rnd::Generator& rng, Settings const& settings) noexcept
-    : Integrator(rng), settings_(settings), sampler_(rng), volume_positions_(nullptr) {}
+    : Integrator(rng), settings_(settings), sampler_(rng) {}
 
-Pathtracer_DLDL::~Pathtracer_DLDL() {
-    delete[] volume_positions_;
-}
+Pathtracer_DLDL::~Pathtracer_DLDL() {}
 
 void Pathtracer_DLDL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
-
-    //    volume_positions_ = new float3[num_samples_per_pixel * settings_.num_samples];
 }
 
 void Pathtracer_DLDL::start_pixel() noexcept {
     sampler_.start_pixel();
-
-    iteration_ = 0;
 }
 
 float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
                            Interface_stack const& initial_stack) noexcept {
 #ifdef DLDL_BAKING
+    float const weight = 1.f / (float(settings_.num_samples) * (4.f * Pi));
+#else
+    float const weight = 1.f / float(settings_.num_samples);
+#endif
+
+
+#ifdef DLDL_BAKING_RANDOM_LIGHT
     float3 const wi = ray.direction;
 #else
     float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
@@ -57,7 +59,7 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     uint32_t i = 0;
 
-    for (uint32_t len = settings_.num_samples; i < len;) {
+    for (uint32_t len = settings_.num_samples; i < len; ++i) {
         worker.reset_interface_stack(initial_stack);
 
         Ray split_ray = ray;
@@ -78,25 +80,15 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         float4 result = integrate(split_ray, split_intersection, wi, worker);
 
-        li += float4(vtr * result.xyz(), result[3]);
+        li += weight * float4(vtr * result.xyz(), result[3]);
 #else
         float4 result = integrate(split_ray, split_intersection, wi, worker);
 
-        li += result;
+        li += weight * result;
 #endif
-
-        ++i;
-
-        ++iteration_;
     }
 
-#ifdef DLDL_BAKING
-    float const weight = 1.f / (float(i) * (4.f * Pi));
-#else
-    float const weight = 1.f / float(i);
-#endif
-
-    return weight * li;
+    return li;
 }
 
 float4 Pathtracer_DLDL::integrate(Ray& ray, Intersection& intersection, float3 const& wi,
