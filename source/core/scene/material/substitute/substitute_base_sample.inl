@@ -13,14 +13,14 @@
 namespace scene::material::substitute {
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::set(float3 const& color, float3 const& radiance, float f0, float alpha,
+void Base_closure<Diffuse>::set(float3 const& color, float3 const& emission, float f0, float alpha,
                                 float metallic, bool avoid_caustics) noexcept {
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
     a_  = float3(0.f);  // f0_to_a_b(color);
 
-    emission_ = radiance;
+    emission_ = emission;
 
     metallic_ = metallic;
 

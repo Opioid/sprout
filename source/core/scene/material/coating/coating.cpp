@@ -59,7 +59,9 @@ Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 schlick);
 
-    return {weight_ * n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
+    float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
+
+    return {ep * weight_ * n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
 }
 
 Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
@@ -80,7 +82,9 @@ Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 schlick);
 
-    return {weight_ * ggx.reflection, attenuation, ggx.pdf};
+    float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
+
+    return {ep * weight_ * ggx.reflection, attenuation, ggx.pdf};
 }
 
 void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
@@ -96,7 +100,9 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, f
 
     attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
 
-    result.reflection *= weight_ * n_dot_wi;
+    float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
+
+    result.reflection *= ep * weight_ * n_dot_wi;
 }
 
 void Thinfilm::set(float ior, float ior_internal, float alpha, float thickness) noexcept {

@@ -9,7 +9,7 @@ template <typename Diffuse>
 struct Base_closure {
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& color, float3 const& radiance, float f0, float alpha, float metallic,
+    void set(float3 const& color, float3 const& emission, float f0, float alpha, float metallic,
              bool avoid_caustics) noexcept;
 
     template <bool Forward>
