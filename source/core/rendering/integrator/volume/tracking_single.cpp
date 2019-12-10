@@ -35,7 +35,7 @@ void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_p
     }
 
     for (auto& s : light_samplers_) {
-        s.resize(num_samples_per_pixel, 1, 1, 2);
+        s.resize(num_samples_per_pixel, 2, 1, 2);
     }
 }
 
@@ -234,7 +234,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         float3 const l = direct_light(ray, p, intersection, worker);
 
         li = l * (1.f - tr) * scattering_albedo;
-    } else {
+    } else if (false) {
         auto const mu = material.collision_coefficients();
 
         float3 const extinction = mu.a + mu.s;
@@ -299,6 +299,74 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             li = l * extinction * scattering_albedo * ltr * weight;
             */
         }
+    } else {
+        auto const mu = material.collision_coefficients();
+
+        float3 const extinction = mu.a + mu.s;
+
+        float3 const scattering_albedo = mu.s / extinction;
+
+        tr = exp(-(d - ray.min_t) * extinction);
+
+        float const rs = material_sampler(ray.depth).generate_sample_1D(0);
+        float const ts = -std::log(1.f - rs * (1.f - average(tr))) / average(extinction);
+
+        float3 const ps = ray.point(ray.min_t + ts);
+
+        float const select = light_sampler(ray.depth).generate_sample_1D(1);
+
+        auto const light = worker.scene().random_light(ps, float3(0.f), true, select);
+
+        // Equi-angular sampling
+        float3 const position = worker.scene().light_center(light.id);
+
+        float const delta = dot(position - ray.origin, ray.direction);
+
+        float3 const closest_point = ray.point(delta);
+
+        float const D = distance(closest_point, position);
+
+        float const theta_a = std::atan2(ray.min_t - delta, D);
+        float const theta_b = std::atan2(d - delta, D);
+
+        float const r = material_sampler(ray.depth).generate_sample_1D(1);//rng_.random_float();
+        float const t = D * std::tan(lerp(theta_a, theta_b, r));
+
+        float const sample_t = delta + t;
+
+        float3 const p = ray.point(sample_t);
+
+        float3 const eq_l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
+
+        float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
+
+        float3 const w = exp(-(sample_t - ray.min_t) * extinction);
+
+
+
+
+
+
+        float3 const ds_l = direct_light(light.ref, light.pdf, ray, ps, intersection, worker);
+
+        float3 const ltr = exp(-ts * extinction);
+
+        float3 const weight = (1.f - tr) / (ltr * extinction);
+
+
+   //     float const ds_pdf = /*1.f /*/ weight[0];
+
+  //      float const a = power_heuristic(pdf, ds_pdf);
+
+
+        float3 const eq_li = /*a **/ (eq_l * extinction) * (scattering_albedo * w) / pdf;
+
+    //    float const b = power_heuristic(ds_pdf, pdf);
+
+
+        float3 const ds_li = /*b **/ ds_l * extinction * scattering_albedo * ltr * weight;
+
+        li = 0.5f * (eq_li + ds_li);
     }
 
     return Event::Pass;
