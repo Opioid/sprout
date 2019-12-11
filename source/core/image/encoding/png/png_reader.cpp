@@ -54,10 +54,10 @@ struct Info {
     uint8_t* buffer = nullptr;
 
     // parsing state
-    Filter   current_filter;
-    bool     filter_byte;
-    uint32_t current_byte;
-    uint32_t current_byte_total;
+    Filter  current_filter;
+    bool    filter_byte;
+    int32_t current_byte;
+    int32_t current_byte_total;
 
     uint8_t* current_row_data  = nullptr;
     uint8_t* previous_row_data = nullptr;
@@ -304,8 +304,8 @@ static bool header_error(std::string const& text, Info& info) noexcept {
 }
 
 bool parse_header(const Chunk& chunk, Info& info) noexcept {
-    info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
-    info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
+    info.width  = int32_t(byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]));
+    info.height = int32_t(byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]));
 
     uint32_t const depth = uint32_t(chunk.data[8]);
     if (8 != depth) {
@@ -340,14 +340,15 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
         return header_error("Interlaced PNG image not supported.", info);
     }
 
-    info.buffer = memory::allocate_aligned<uint8_t>(info.width * info.height * info.num_channels);
+    info.buffer = memory::allocate_aligned<uint8_t>(
+        uint32_t(info.width * info.height * info.num_channels));
 
     info.current_filter     = Filter::None;
     info.filter_byte        = true;
     info.current_byte       = 0;
     info.current_byte_total = 0;
 
-    uint32_t const row_size = info.width * info.num_channels;
+    uint32_t const row_size = uint32_t(info.width * info.num_channels);
     info.current_row_data   = memory::allocate_aligned<uint8_t>(row_size);
     info.previous_row_data  = memory::allocate_aligned<uint8_t>(row_size);
 
@@ -369,7 +370,7 @@ bool parse_data(const Chunk& chunk, Info& info) noexcept {
     info.stream.next_in  = chunk.data;
     info.stream.avail_in = chunk.length;
 
-    uint32_t const row_size = info.width * info.num_channels;
+    int32_t const row_size = info.width * info.num_channels;
 
     do {
         info.stream.next_out  = buffer;

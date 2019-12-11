@@ -52,6 +52,8 @@ static Material* load_substitute(json::Value const& substitute_value,
                                  resource::Manager& resources) noexcept;
 
 struct Texture_description {
+    Texture_description() noexcept;
+
     std::string filename;
     std::string usage;
 
@@ -1135,6 +1137,25 @@ Material* load_substitute(json::Value const& substitute_value,
 
 #ifdef FROZEN
     if (!emission_map.is_valid()) {
+        Texture_description texture_description;
+        texture_description.scale = 2.f;
+
+        //        memory::Variant_map options;
+        //        options.set("usage", Texture_usage::Normal);
+
+        //        texture_description.filename = "textures/snow_noise.png";
+        //        options.set("usage", Texture_usage::Normal);
+        //        Texture_adapter snow_normal_map = create_texture(texture_description, options,
+        //        resources);
+
+        memory::Variant_map options;
+        options.set("size", 0.006f);
+        options.set("density", 0.5f);
+
+        texture_description.filename = "proc:flakes";
+        options.set("usage", Texture_usage::Normal);
+        Texture_adapter snow_normal_map = create_texture(texture_description, options, resources);
+
         auto material = new substitute::Frozen(sampler_settings, two_sided);
 
         material->set_mask(mask);
@@ -1148,6 +1169,8 @@ Material* load_substitute(json::Value const& substitute_value,
         material->set_roughness(roughness);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
+
+        material->set_snow_normal_map(snow_normal_map);
 
         return material;
     }
@@ -1321,14 +1344,11 @@ void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& s
     }
 }
 
+Texture_description::Texture_description() noexcept
+    : usage("Color"), swizzle(image::Swizzle::XYZW), scale(1.f), num_elements(1) {}
+
 Texture_description read_texture_description(json::Value const& texture_value) noexcept {
     Texture_description description;
-
-    description.filename     = "";
-    description.usage        = "Color";
-    description.swizzle      = image::Swizzle::XYZW;
-    description.scale        = 1.f;
-    description.num_elements = 1;
 
     for (auto& n : texture_value.GetObject()) {
         if ("file" == n.name) {

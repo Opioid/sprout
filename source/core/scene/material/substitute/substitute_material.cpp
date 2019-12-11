@@ -1,6 +1,7 @@
 #include "substitute_material.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
+#include "scene/scene_ray.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "substitute_base_material.inl"
@@ -58,6 +59,14 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
     Ray const snow_ray(rs.p, normalize(float3(dir[0], 10.f * dir[2], dir[1])), 0.1f, 4.f);
 
     if (worker.visibility(snow_ray)) {
+        if (snow_normal_map_.is_valid()) {
+            auto& repeating_sampler = worker.sampler_2D(3, filter);
+
+            float2 const uv(rs.p[0], rs.p[2]);
+            float3 const n = sample_normal(wo, rs, uv, snow_normal_map_, repeating_sampler, worker);
+            sample.layer_.set_tangent_frame(n);
+        }
+
         float angle = std::max(sample.layer_.n_[1], 0.f);
 
         angle *= angle;
@@ -72,6 +81,10 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
     }
 
     return sample;
+}
+
+void Frozen::set_snow_normal_map(Texture_adapter const& normal_map) noexcept {
+    snow_normal_map_ = normal_map;
 }
 
 size_t Frozen::num_bytes() const noexcept {

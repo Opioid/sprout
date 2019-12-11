@@ -13,6 +13,7 @@ class Material_coating : public Material_base {
     size_t num_bytes() const noexcept override;
 
     void set_coating_thickness_map(Texture_adapter const& thickness_map) noexcept;
+
     void set_coating_normal_map(Texture_adapter const& normal_map) noexcept;
 
     void set_coating_thickness(float thickness) noexcept;

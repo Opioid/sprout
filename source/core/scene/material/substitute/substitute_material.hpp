@@ -26,9 +26,14 @@ class alignas(32) Frozen : public Material_base {
                                    Filter filter, Sampler& sampler, Worker const& worker) const
         noexcept override final;
 
+    void set_snow_normal_map(Texture_adapter const& normal_map) noexcept;
+
     size_t num_bytes() const noexcept override final;
 
     static size_t sample_size() noexcept;
+
+  private:
+    Texture_adapter snow_normal_map_;
 };
 
 }  // namespace scene::material::substitute
