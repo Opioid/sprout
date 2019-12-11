@@ -61,6 +61,10 @@ inline prop::Interface_stack& Worker::interface_stack() noexcept {
     return interface_stack_;
 }
 
+inline rnd::Generator& Worker::rng() const noexcept {
+    return rng_;
+}
+
 template <typename T>
 T& Worker::sample() const noexcept {
     return sample_cache_.get<T>();

@@ -204,8 +204,8 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
     tree.infinite_guard_ = finite_lights.empty() ? 1.1f : infinite_weight;
 }
 
-void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end,
-                         Lights const& lights, Scene const& scene) noexcept {
+void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights& lights,
+                         Scene const& scene) noexcept {
     uint32_t const len = end - begin;
 
     if (1 == len) {
@@ -236,23 +236,19 @@ void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t 
 
         uint32_t const axis = index_max_component(bb.extent());
 
-        Lights c(len);
+        std::sort(
+            lights.begin() + begin, lights.begin() + end,
+            [&scene, axis](uint32_t a, uint32_t b) noexcept {
+                float3 const ac = scene.light_center(a);
+                float3 const bc = scene.light_center(b);
 
-        for (uint32_t i = begin, j = 0; i < end; ++i, ++j) {
-            c[j] = lights[i];
-        }
+                return ac[axis] < bc[axis];
+            });
 
-        std::sort(c.begin(), c.end(), [&scene, axis](uint32_t a, uint32_t b) noexcept {
-            float3 const ac = scene.light_center(a);
-            float3 const bc = scene.light_center(b);
+        uint32_t const middle = begin + (len / 2);
 
-            return ac[axis] < bc[axis];
-        });
-
-        uint32_t const middle = len / 2;
-
-        split(tree, node->children[0], 0, middle, c, scene);
-        split(tree, node->children[1], middle, len, c, scene);
+        split(tree, node->children[0], begin, middle, lights, scene);
+        split(tree, node->children[1], middle, end, lights, scene);
     }
 }
 

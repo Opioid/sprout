@@ -329,7 +329,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         float const theta_a = std::atan2(ray.min_t - delta, D);
         float const theta_b = std::atan2(d - delta, D);
 
-        float const r = material_sampler(ray.depth).generate_sample_1D(1);//rng_.random_float();
+        float const r = material_sampler(ray.depth).generate_sample_1D(1);  // rng_.random_float();
         float const t = D * std::tan(lerp(theta_a, theta_b, r));
 
         float const sample_t = delta + t;
@@ -342,27 +342,19 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const w = exp(-(sample_t - ray.min_t) * extinction);
 
-
-
-
-
-
         float3 const ds_l = direct_light(light.ref, light.pdf, ray, ps, intersection, worker);
 
         float3 const ltr = exp(-ts * extinction);
 
         float3 const weight = (1.f - tr) / (ltr * extinction);
 
+        //     float const ds_pdf = /*1.f /*/ weight[0];
 
-   //     float const ds_pdf = /*1.f /*/ weight[0];
-
-  //      float const a = power_heuristic(pdf, ds_pdf);
-
+        //      float const a = power_heuristic(pdf, ds_pdf);
 
         float3 const eq_li = /*a **/ (eq_l * extinction) * (scattering_albedo * w) / pdf;
 
-    //    float const b = power_heuristic(ds_pdf, pdf);
-
+        //    float const b = power_heuristic(ds_pdf, pdf);
 
         float3 const ds_li = /*b **/ ds_l * extinction * scattering_albedo * ltr * weight;
 

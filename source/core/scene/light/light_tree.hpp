@@ -72,7 +72,7 @@ class Tree_builder {
   private:
     using Lights = std::vector<uint32_t>;
 
-    void split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights const& lights,
+    void split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights& lights,
                Scene const& scene) noexcept;
 
     uint32_t light_order_;

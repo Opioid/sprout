@@ -1168,7 +1168,6 @@ Material* load_substitute(json::Value const& substitute_value,
     material->set_emission_factor(emission_factor);
 
     return material;
-
 }
 
 Material* Provider::load_volumetric(json::Value const& volumetric_value,

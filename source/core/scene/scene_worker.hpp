@@ -87,6 +87,8 @@ class Worker {
 
     Interface_stack& interface_stack() noexcept;
 
+    rnd::Generator& rng() const noexcept;
+
     void reset_interface_stack(Interface_stack const& stack) noexcept;
 
     float ior_outside(float3 const& wo, Intersection const& intersection) const noexcept;
@@ -97,7 +99,7 @@ class Worker {
                                        Intersection const& intersection) noexcept;
 
   protected:
-    rnd::Generator rng_;
+    mutable rnd::Generator rng_;
 
     Scene const* scene_;
 

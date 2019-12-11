@@ -39,10 +39,9 @@ size_t Material::sample_size() noexcept {
 Frozen::Frozen(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : Material_base(sampler_settings, two_sided) {}
 
-material::Sample const& Frozen::sample(float3 const&      wo, Ray const& /*ray*/,
-                                         Renderstate const& rs, Filter                filter,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker) const
-    noexcept {
+material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
+                                       Filter        filter, sampler::Sampler& /*sampler*/,
+                                       Worker const& worker) const noexcept {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>();
@@ -51,17 +50,25 @@ material::Sample const& Frozen::sample(float3 const&      wo, Ray const& /*ray*/
 
     set_sample(wo, rs, rs.ior, sampler, worker, sample);
 
-    float angle = std::max(sample.layer_.n_[1], 0.f);
+    float2 const r2(worker.rng().random_float(), worker.rng().random_float());
 
-    angle *= angle;
+    float3 const dir = sample_hemisphere_cosine(r2);
 
-    sample.base_.diffuse_color_ = lerp(sample.base_.diffuse_color_, float3(1.f), angle);
+    Ray const snow_ray(rs.p, normalize(float3(dir[0], 10.f * dir[2], dir[1])), 0.1f, 4.f);
 
-    sample.base_.f0_ = lerp(sample.base_.f0_, float3(fresnel::schlick_f0(ior_, rs.ior)), angle);
+    if (worker.visibility(snow_ray)) {
+        float angle = std::max(sample.layer_.n_[1], 0.f);
 
-    sample.base_.alpha_ = lerp(sample.base_.alpha_, 0.9f * 0.9f, angle);
+        angle *= angle;
 
-    sample.base_.metallic_  = lerp(sample.base_.metallic_, 0.f, angle);
+        sample.base_.diffuse_color_ = lerp(sample.base_.diffuse_color_, float3(1.f), angle);
+
+        sample.base_.f0_ = lerp(sample.base_.f0_, float3(fresnel::schlick_f0(ior_, rs.ior)), angle);
+
+        sample.base_.alpha_ = lerp(sample.base_.alpha_, 0.9f * 0.9f, angle);
+
+        sample.base_.metallic_ = lerp(sample.base_.metallic_, 0.f, angle);
+    }
 
     return sample;
 }
