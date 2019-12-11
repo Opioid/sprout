@@ -238,7 +238,7 @@ void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t 
 
         std::sort(
             lights.begin() + begin, lights.begin() + end,
-            [&scene, axis](uint32_t a, uint32_t b) noexcept {
+            [&scene, axis ](uint32_t a, uint32_t b) noexcept {
                 float3 const ac = scene.light_center(a);
                 float3 const bc = scene.light_center(b);
 

@@ -1,5 +1,6 @@
 #include "substitute_material.hpp"
 #include "base/math/vector4.inl"
+#include "base/random/generator.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "substitute_base_material.inl"
