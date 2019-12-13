@@ -236,14 +236,13 @@ void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t 
 
         uint32_t const axis = index_max_component(bb.extent());
 
-        std::sort(
-            lights.begin() + begin, lights.begin() + end,
-            [&scene, axis ](uint32_t a, uint32_t b) noexcept {
-                float3 const ac = scene.light_center(a);
-                float3 const bc = scene.light_center(b);
+        std::sort(lights.begin() + begin, lights.begin() + end,
+                  [&scene, axis](uint32_t a, uint32_t b) noexcept {
+                      float3 const ac = scene.light_center(a);
+                      float3 const bc = scene.light_center(b);
 
-                return ac[axis] < bc[axis];
-            });
+                      return ac[axis] < bc[axis];
+                  });
 
         uint32_t const middle = begin + (len / 2);
 
