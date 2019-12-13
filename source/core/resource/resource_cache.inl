@@ -57,8 +57,8 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
         return Resource_ptr<T>::Null();
     }
 
-    // TODO catch error
-    auto const last_write = std::filesystem::last_write_time(resolved_name);
+    std::error_code ec;
+    auto const last_write = std::filesystem::last_write_time(resolved_name, ec);
 
     resources_.push_back(resource);
 
