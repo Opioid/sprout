@@ -1138,7 +1138,7 @@ Material* load_substitute(json::Value const& substitute_value,
 #ifdef FROZEN
     if (!emission_map.is_valid()) {
         Texture_description texture_description;
-        texture_description.scale = 2.f;
+        texture_description.scale = 1.f;
 
         //        memory::Variant_map options;
         //        options.set("usage", Texture_usage::Normal);
@@ -1149,12 +1149,16 @@ Material* load_substitute(json::Value const& substitute_value,
         //        resources);
 
         memory::Variant_map options;
-        options.set("size", 0.006f);
-        options.set("density", 0.5f);
+        options.set("size", 0.01f);
+        options.set("density", 0.001f);
 
         texture_description.filename = "proc:flakes";
         options.set("usage", Texture_usage::Normal);
         Texture_adapter snow_normal_map = create_texture(texture_description, options, resources);
+
+        texture_description.filename = "proc:flakes_mask";
+        options.set("usage", Texture_usage::Mask);
+        Texture_adapter snow_mask = create_texture(texture_description, options, resources);
 
         auto material = new substitute::Frozen(sampler_settings, two_sided);
 
@@ -1171,6 +1175,7 @@ Material* load_substitute(json::Value const& substitute_value,
         material->set_emission_factor(emission_factor);
 
         material->set_snow_normal_map(snow_normal_map);
+        material->set_snow_mask(snow_mask);
 
         return material;
     }

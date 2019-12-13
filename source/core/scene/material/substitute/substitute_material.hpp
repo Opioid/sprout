@@ -28,12 +28,16 @@ class alignas(32) Frozen : public Material_base {
 
     void set_snow_normal_map(Texture_adapter const& normal_map) noexcept;
 
+    void set_snow_mask(Texture_adapter const& mask) noexcept;
+
     size_t num_bytes() const noexcept override final;
 
     static size_t sample_size() noexcept;
 
   private:
     Texture_adapter snow_normal_map_;
+
+    Texture_adapter snow_mask_;
 };
 
 }  // namespace scene::material::substitute
