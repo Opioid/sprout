@@ -41,7 +41,7 @@
 #include "volumetric/volumetric_height.hpp"
 #include "volumetric/volumetric_homogeneous.hpp"
 
-#define FROZEN 1
+// #define FROZEN 1
 
 namespace scene::material {
 

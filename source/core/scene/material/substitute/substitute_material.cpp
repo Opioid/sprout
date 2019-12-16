@@ -63,14 +63,14 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
 
         float const weight = angle * angle;
 
-
-
         float2 const uv(rs.p[0], rs.p[2]);
 
         if (snow_normal_map_.is_valid()) {
             auto const& repeating_sampler = worker.sampler_2D(3, Filter::Nearest);
 
-            float3 const n = lerp(sample.layer_.n_, sample_normal(wo, rs, uv, snow_normal_map_, repeating_sampler, worker), weight);
+            float3 const n = lerp(
+                sample.layer_.n_,
+                sample_normal(wo, rs, uv, snow_normal_map_, repeating_sampler, worker), weight);
             auto const [t, b] = orthonormal_basis(n);
 
             sample.layer_.set_tangent_frame(t, b, n);
@@ -86,12 +86,12 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
             roughness = lerp(roughness, 0.1f, snow_weight);
         }
 
-
         float const alpha = roughness * roughness;
 
         sample.base_.diffuse_color_ = lerp(sample.base_.diffuse_color_, float3(1.f), weight);
 
-        sample.base_.f0_ = lerp(sample.base_.f0_, float3(fresnel::schlick_f0(1.31f, rs.ior)), weight);
+        sample.base_.f0_ = lerp(sample.base_.f0_, float3(fresnel::schlick_f0(1.31f, rs.ior)),
+                                weight);
 
         sample.base_.alpha_ = lerp(sample.base_.alpha_, alpha, weight);
 
@@ -106,7 +106,7 @@ void Frozen::set_snow_normal_map(Texture_adapter const& normal_map) noexcept {
 }
 
 void Frozen::set_snow_mask(Texture_adapter const& mask) noexcept {
-     snow_mask_ = mask;
+    snow_mask_ = mask;
 }
 
 size_t Frozen::num_bytes() const noexcept {

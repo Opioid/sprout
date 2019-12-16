@@ -58,7 +58,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
     }
 
     std::error_code ec;
-    auto const last_write = std::filesystem::last_write_time(resolved_name, ec);
+    auto const      last_write = std::filesystem::last_write_time(resolved_name, ec);
 
     resources_.push_back(resource);
 

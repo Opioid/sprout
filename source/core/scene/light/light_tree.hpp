@@ -3,7 +3,6 @@
 
 #include "base/math/distribution/distribution_1d.hpp"
 #include "base/math/vector3.hpp"
-#include "base/memory/array.hpp"
 
 #include <vector>
 
@@ -28,6 +27,7 @@ struct Build_node {
 
     float power;
 
+    uint32_t middle;
     uint32_t end;
 
     uint32_t light;
@@ -46,21 +46,40 @@ class Tree {
         float    pdf;
     };
 
+    struct Node {
+        float weight(float3 const& p, float3 const& n, bool total_sphere) const noexcept;
+
+        float3 center;
+
+        float power;
+
+        bool children;
+
+        uint32_t middle;
+
+        uint32_t next_or_light;
+    };
+
     Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const
         noexcept;
 
     float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id) const noexcept;
 
-    memory::Array<uint32_t> light_orders_;
+    void allocate(uint32_t num_finite_lights, uint32_t num_infinite_lights) noexcept;
 
     float infinite_weight_;
     float infinite_guard_;
 
     uint32_t infinite_end_;
 
-    Build_node root_;
+    uint32_t num_finite_lights_;
+    uint32_t num_infinite_lights_;
 
-    memory::Array<float> infinite_light_powers_;
+    Node* nodes_;
+
+    uint32_t* light_orders_;
+
+    float* infinite_light_powers_;
 
     Distribution_implicit_pdf_lut_lin_1D infinite_light_distribution_;
 };
@@ -74,6 +93,12 @@ class Tree_builder {
 
     void split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights& lights,
                Scene const& scene) noexcept;
+
+    void serialize(Build_node* node) noexcept;
+
+    Tree::Node* nodes_;
+
+    uint32_t current_;
 
     uint32_t light_order_;
 };
