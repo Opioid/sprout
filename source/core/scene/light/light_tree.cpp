@@ -234,11 +234,12 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
         split(tree, &root, 0, num_finite_lights, finite_lights, scene);
 
         root.gather(tree.light_orders_);
-    }
 
-    nodes_   = tree.nodes_;
-    current_ = 0;
-    serialize(&root);
+        nodes_   = tree.nodes_;
+        current_ = 0;
+
+        serialize(&root);
+    }
 
     float const p0 = infinite_total_power;
     float const p1 = root.power;

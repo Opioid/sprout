@@ -1,10 +1,11 @@
 #ifndef SU_CORE_FILE_SYSTEM_HPP
 #define SU_CORE_FILE_SYSTEM_HPP
 
+#include "base/memory/unique.hpp"
+
 #include <iosfwd>
 #include <string>
 #include <vector>
-#include "base/memory/unique.hpp"
 
 namespace file {
 

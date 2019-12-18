@@ -103,23 +103,23 @@ int main(int argc, char* argv[]) noexcept {
 
     logging::info("#Threads " + string::to_string(num_workers));
 
-    thread::Pool thread_pool(num_workers);
+    thread::Pool threads(num_workers);
 
-    resource::Manager resource_manager(file_system, thread_pool);
+    resource::Manager resources(file_system, threads);
 
     image::Provider image_provider;
-    resource_manager.register_provider(image_provider);
+    resources.register_provider(image_provider);
 
     image::texture::Provider texture_provider(args.no_textures);
-    auto const& texture_resources = resource_manager.register_provider(texture_provider);
+    auto const&              texture_resources = resources.register_provider(texture_provider);
 
     scene::shape::triangle::Provider mesh_provider;
-    auto const& shape_resources = resource_manager.register_provider(mesh_provider);
+    auto const&                      shape_resources = resources.register_provider(mesh_provider);
 
     scene::material::Provider material_provider(args.debug_material);
-    auto const& material_resources = resource_manager.register_provider(material_provider);
+    auto const&               material_resources = resources.register_provider(material_provider);
 
-    scene::Loader scene_loader(resource_manager, material_provider.create_fallback_material());
+    scene::Loader scene_loader(resources, material_provider.create_fallback_material());
 
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) noexcept {
             auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
                                   : file_system.read_stream(args.take, take_name);
 
-            if (!stream || !take::Loader::load(take, *stream, take_name, scene, resource_manager)) {
+            if (!stream || !take::Loader::load(take, *stream, take_name, scene, resources)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }
@@ -166,15 +166,14 @@ int main(int argc, char* argv[]) noexcept {
             logging::info("Rendering...");
 
             if (args.progressive) {
-                controller::progressive(take, scene, resource_manager, thread_pool,
-                                        max_sample_size);
+                controller::progressive(take, scene, resources, threads, max_sample_size);
             } else {
                 progress::Std_out progressor;
 
                 auto const rendering_start = std::chrono::high_resolution_clock::now();
 
                 if (take.view.camera) {
-                    rendering::Driver_finalframe driver(take, scene, thread_pool, max_sample_size,
+                    rendering::Driver_finalframe driver(take, scene, threads, max_sample_size,
                                                         progressor);
 
                     driver.render(take.exporters);
@@ -194,7 +193,7 @@ int main(int argc, char* argv[]) noexcept {
                 logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
             }
 
-            log_memory_consumption(resource_manager, scene_loader, scene);
+            log_memory_consumption(resources, scene_loader, scene);
         }
 
         if (args.quit) {
@@ -209,7 +208,7 @@ int main(int argc, char* argv[]) noexcept {
             break;
         }
 
-        resource_manager.increment_generation();
+        resources.increment_generation();
     }
 
     return 0;
