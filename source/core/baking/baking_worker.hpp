@@ -4,7 +4,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/prop/interface_stack.hpp"
 
-#define BAKE_IMAGE
+//#define BAKE_IMAGE
 
 namespace baking {
 

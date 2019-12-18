@@ -45,14 +45,13 @@ float4 Pathtracer_DLDL::li(Ray& ray, Intersection& intersection, Worker& worker,
 #ifdef DLDL_BAKING
     float const weight = 1.f / (float(settings_.num_samples) * (4.f * Pi));
 #else
-    float const weight = 1.f / float(settings_.num_samples);
+    float const  weight = 1.f / float(settings_.num_samples);
 #endif
-
 
 #ifdef DLDL_BAKING_RANDOM_LIGHT
     float3 const wi = ray.direction;
 #else
-    float3 const wi = normalize(float3(0.0001f, 0.9998f, 0.0001f));
+    float3 const wi     = normalize(float3(0.0001f, 0.9998f, 0.0001f));
 #endif
 
     float4 li(0.f);

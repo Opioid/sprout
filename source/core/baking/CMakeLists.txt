@@ -3,6 +3,8 @@ target_sources(core
     "baking_driver.cpp"
     "baking_driver.hpp"
     "baking_item.hpp"
+    "baking_stencil.cpp"
+    "baking_stencil.hpp"
     "baking_worker.cpp"
     "baking_worker.hpp"
 ) 

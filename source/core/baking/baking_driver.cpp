@@ -1,5 +1,6 @@
 #include "baking_driver.hpp"
 #include "baking_item.hpp"
+#include "baking_stencil.hpp"
 #include "baking_worker.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
@@ -18,6 +19,8 @@
 
 #include <fstream>
 #include <string>
+
+#include <iostream>
 
 namespace baking {
 
@@ -56,9 +59,34 @@ Driver::~Driver() noexcept {
 }
 
 void Driver::render() noexcept {
+    {
+        std::ifstream item_stream("radbak_v0_" + std::to_string(Num_items) + ".raw",
+                                  std::ios::binary);
+
+        item_stream.read(reinterpret_cast<char*>(items_), Num_items * sizeof(Item));
+
+        std::ofstream stream("radbak_stencil_v0_" + std::to_string(Num_items) + ".raw",
+                             std::ios::binary);
+
+        float const scale = 0.5f;
+
+        for (uint32_t i = 0; i < Num_items; ++i) {
+            auto const& item = items_[i];
+
+            Stencil stencil(float3(item.pos), float3(item.wi), scale);
+
+            stream.write(reinterpret_cast<char const*>(stencil.data_),
+                         Stencil::Num_data * sizeof(float));
+        }
+
+        return;
+    }
+
     scene_.simulate(0, 0, threads_);
 
     progressor_.start(Num_items / 100);
+
+    Stencil stencil(float3(0.f), float3(0.f, 1.f, 0.f), 0.1f);
 
     threads_.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {
@@ -94,11 +122,11 @@ void Driver::export_image() const noexcept {
         buffer[i] = items_[i].radiance;
     }
 
-    image::encoding::png::Writer::write("slice.png", buffer.data(), int2(Slice_width),
-                                        1.f, true);
+    image::encoding::png::Writer::write("slice.png", buffer.data(), int2(Slice_width), 1.f, true);
 
-
-    std::ofstream stream("slice_" + std::to_string(Slice_width) + "x" + std::to_string(Slice_width)  + ".raw", std::ios::binary);
+    std::ofstream stream(
+        "slice_" + std::to_string(Slice_width) + "x" + std::to_string(Slice_width) + ".raw",
+        std::ios::binary);
 
     stream.write(reinterpret_cast<char const*>(buffer.data()), Num_items * sizeof(float));
 }
