@@ -2,14 +2,11 @@
 #define SU_CORE_RESOURCE_MANAGER_HPP
 
 #include "base/memory/variant_map.hpp"
+#include "file/file_system.hpp"
 
 #include <map>
 #include <string>
 #include <vector>
-
-namespace file {
-class System;
-}
 
 namespace thread {
 class Pool;
@@ -32,7 +29,7 @@ class Manager {
   public:
     using Variant_map = memory::Variant_map;
 
-    Manager(file::System& filesystem, thread::Pool& threads) noexcept;
+    Manager(thread::Pool& threads) noexcept;
 
     ~Manager() noexcept;
 
@@ -78,7 +75,7 @@ class Manager {
     template <typename T>
     Typed_cache<T>* typed_cache() noexcept;
 
-    file::System& filesystem_;
+    file::System filesystem_;
 
     thread::Pool& threads_;
 

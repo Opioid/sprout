@@ -84,7 +84,7 @@ class Scene {
     using Material       = material::Material;
     using Shape          = shape::Shape;
     using Shape_ptr      = resource::Resource_ptr<Shape>;
-    using Materials      = memory::Array<resource::Resource_ptr<Material>>;
+    using Material_ptr   = resource::Resource_ptr<Material>;
     using Texture        = image::texture::Texture;
 
     Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
@@ -151,9 +151,9 @@ class Scene {
     uint32_t create_dummy() noexcept;
     uint32_t create_dummy(std::string const& name) noexcept;
 
-    uint32_t create_prop(Shape_ptr shape, Materials const& materials) noexcept;
+    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials) noexcept;
 
-    uint32_t create_prop(Shape_ptr shape, Materials const& materials,
+    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials,
                          std::string const& name) noexcept;
 
     void create_prop_light(uint32_t prop, uint32_t part) noexcept;
@@ -242,7 +242,7 @@ class Scene {
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) noexcept;
 
-    bool prop_is_instance(Shape_ptr shape, Materials const& materials, uint32_t num_parts) const
+    bool prop_is_instance(Shape_ptr shape, Material_ptr const* materials, uint32_t num_parts) const
         noexcept;
 
     bool prop_has_caustic_material(uint32_t entity) const noexcept;

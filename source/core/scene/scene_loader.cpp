@@ -355,7 +355,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
         }
     }
 
-    uint32_t const prop = scene.create_prop(shape, materials, name);
+    uint32_t const prop = scene.create_prop(shape, materials.data(), name);
 
     // It is a annoying that this is done again in load_entities(),
     // but visibility information is already used when creating lights.

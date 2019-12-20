@@ -3,8 +3,7 @@
 
 namespace resource {
 
-Manager::Manager(file::System& filesystem, thread::Pool& threads) noexcept
-    : filesystem_(filesystem), threads_(threads) {}
+Manager::Manager(thread::Pool& threads) noexcept : threads_(threads) {}
 
 Manager::~Manager() noexcept {
     for (auto c : caches_) {

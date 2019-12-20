@@ -80,16 +80,6 @@ int main(int argc, char* argv[]) noexcept {
         return 1;
     }
 
-    file::System file_system;
-
-    if (args.mounts.empty()) {
-        file_system.push_mount("../data/");
-    } else {
-        for (auto& m : args.mounts) {
-            file_system.push_mount(m);
-        }
-    }
-
     uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 
     uint32_t num_workers;
@@ -105,7 +95,17 @@ int main(int argc, char* argv[]) noexcept {
 
     thread::Pool threads(num_workers);
 
-    resource::Manager resources(file_system, threads);
+    resource::Manager resources(threads);
+
+    file::System& filesystem = resources.filesystem();
+
+    if (args.mounts.empty()) {
+        filesystem.push_mount("../data/");
+    } else {
+        for (auto& m : args.mounts) {
+            filesystem.push_mount(m);
+        }
+    }
 
     image::Provider image_provider;
     resources.register_provider(image_provider);
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) noexcept {
             bool const is_json = string::is_json(args.take);
 
             auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
-                                  : file_system.read_stream(args.take, take_name);
+                                  : filesystem.read_stream(args.take, take_name);
 
             if (!stream || !take::Loader::load(take, *stream, take_name, scene, resources)) {
                 logging::error("Loading take %S: ", args.take);

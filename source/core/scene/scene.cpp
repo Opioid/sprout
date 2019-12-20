@@ -245,10 +245,10 @@ uint32_t Scene::create_dummy(std::string const& name) noexcept {
     return dummy;
 }
 
-uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcept {
+uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) noexcept {
     auto const prop = allocate_prop();
 
-    prop.ptr->configure(shape, materials.data());
+    prop.ptr->configure(shape, materials);
 
     uint32_t const num_parts = shape.ptr->num_parts();
 
@@ -286,7 +286,7 @@ uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials) noexcep
     return prop.id;
 }
 
-uint32_t Scene::create_prop(Shape_ptr shape, Materials const& materials,
+uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials,
                             std::string const& name) noexcept {
     uint32_t const prop = create_prop(shape, materials);
 
@@ -608,8 +608,8 @@ void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t pa
     light_centers_.emplace_back(0.f);
 }
 
-bool Scene::prop_is_instance(Shape_ptr shape, Materials const& materials, uint32_t num_parts) const
-    noexcept {
+bool Scene::prop_is_instance(Shape_ptr shape, Material_ptr const* materials,
+                             uint32_t num_parts) const noexcept {
     if (props_.size() < 2 || props_[props_.size() - 2].shape() != shape.id) {
         return false;
     }
