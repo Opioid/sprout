@@ -17,11 +17,9 @@
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/take/take.hpp"
 #include "core/take/take_loader.hpp"
-#include "visibility.h"
+#include "sprout.h"
 
 #include <iostream>
-
-extern "C" {
 
 using namespace scene;
 
@@ -29,7 +27,7 @@ using Shape_ptr = resource::Resource_ptr<shape::Shape>;
 
 struct Context {
     Context() noexcept
-        : threads(0),
+        : threads(1),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
           texture_provider(true),
@@ -70,22 +68,22 @@ struct Context {
 
 static Context* context = nullptr;
 
-DLL_PUBLIC char const* su_platform_revision(void) noexcept {
+char const* su_platform_revision(void) noexcept {
     return platform::revision().c_str();
 }
 
-DLL_PUBLIC void su_init(void) noexcept {
+void su_init(void) noexcept {
     context = new Context;
 
     logging::init(logging::Type::Std_out);
 }
 
-DLL_PUBLIC void su_release(void) noexcept {
+void su_release(void) noexcept {
     delete context;
     context = nullptr;
 }
 
-DLL_PUBLIC int32_t su_load_take(/*char *const take*/ void) noexcept {
+int32_t su_load_take(char *const string) noexcept {
     if (!context) {
         return 0;
     }
@@ -94,7 +92,7 @@ DLL_PUBLIC int32_t su_load_take(/*char *const take*/ void) noexcept {
 
     std::string take_name;
 
-    std::string take = "takes/imrod.take";
+    std::string take(string);
 
     {
         bool const is_json = string::is_json(take);
@@ -105,25 +103,23 @@ DLL_PUBLIC int32_t su_load_take(/*char *const take*/ void) noexcept {
 
         if (!stream || !take::Loader::load(context->take, *stream, take_name, context->scene,
                                            context->resources)) {
-            //     logging::error("Loading take %S: ", args.take);
+            logging::error("Loading take %S: ", string);
             success = false;
         }
 
-        logging::error("3");
     }
 
     if (success && !context->scene_loader.load(context->take.scene_filename, take_name,
                                                context->take, context->scene)) {
-        //    logging::error("Loading scene %S: ", take.scene_filename);
+        logging::error("Loading scene %S: ", context->take.scene_filename);
         success = false;
     }
 
-    logging::error("4");
 
     return success ? 1 : 0;
 }
 
-DLL_PUBLIC int32_t su_render() noexcept {
+int32_t su_render() noexcept {
     if (!context) {
         return 0;
     }
@@ -136,9 +132,10 @@ DLL_PUBLIC int32_t su_render() noexcept {
 
         driver.render(context->take.exporters);
     }
+
+	return 1;
 }
 
-DLL_PUBLIC int square(int i) noexcept {
+int square(int i) noexcept {
     return i * i;
-}
 }

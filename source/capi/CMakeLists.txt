@@ -1,6 +1,8 @@
-add_library(capi SHARED "main.cpp")
+add_library(capi SHARED "capi.cpp" "sprout.h" "visibility.h")
 
 set_target_properties(capi PROPERTIES OUTPUT_NAME "sprout")
+
+add_definitions(-DSU_LIBRARY_EXPORTS)
 
 target_include_directories(capi PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_include_directories(capi PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../>)

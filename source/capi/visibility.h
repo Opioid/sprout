@@ -2,11 +2,13 @@
 #define SU_CAPI_VISIBILITY_H
 
 #if defined _WIN32
-  #define DLL_PUBLIC __declspec(dllexport)
-  #define DLL_LOCAL
+#ifdef SU_LIBRARY_EXPORTS
+#define SU_LIBRARY_API __declspec(dllexport)
 #else
-  #define DLL_PUBLIC __attribute__ ((visibility ("default")))
-  #define DLL_LOCAL  __attribute__ ((visibility ("hidden")))
+#define SU_LIBRARY_API __declspec(dllimport)
+#endif
+#else
+#define SU_LIBRARY_API __attribute__ ((visibility ("default")))
 #endif
 
 #endif
