@@ -27,6 +27,10 @@ void trim(std::string& text) noexcept {
 }
 
 std::string_view parent_directory(std::string_view filename) noexcept {
+    if (filename.empty()) {
+        return filename;    
+	}
+
     size_t const i = filename.find_last_of('/');
     return filename.substr(0, i + 1);
 }

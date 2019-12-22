@@ -80,20 +80,22 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
                                      std::string const&         source_name,
                                      memory::Variant_map const& options,
                                      Manager&                   manager) noexcept {
-    auto const key = std::make_pair(name, options);
-
     auto resource = provider_.load(data, source_name, options, manager);
     if (!resource) {
         return Resource_ptr<T>::Null();
     }
 
-    auto const last_write = std::filesystem::last_write_time(source_name);
-
     resources_.push_back(resource);
 
     uint32_t const id = uint32_t(resources_.size()) - 1;
 
-    entries_.insert_or_assign(key, Entry{id, generation_, source_name, last_write});
+    if (!name.empty()) {
+        auto const key = std::make_pair(name, options);
+
+        auto const last_write = std::filesystem::last_write_time(source_name);
+
+        entries_.insert_or_assign(key, Entry{id, generation_, source_name, last_write});
+    }
 
     return {resource, id};
 }

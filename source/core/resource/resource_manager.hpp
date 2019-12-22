@@ -51,7 +51,7 @@ class Manager {
                          std::string& resolved_name) noexcept;
 
     template <typename T>
-    Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
+    Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name = "",
                          Variant_map const& options = Variant_map()) noexcept;
 
     template <typename T>

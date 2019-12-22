@@ -1,4 +1,5 @@
 #include "base/platform/platform.hpp"
+#include "base/json/json.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/file/file_system.hpp"
@@ -87,7 +88,7 @@ int32_t su_release() noexcept {
     return 1;
 }
 
-int32_t su_load_take(char* const string) noexcept {
+int32_t su_load_take(char const* string) noexcept {
     if (!engine) {
         return 0;
     }
@@ -118,6 +119,30 @@ int32_t su_load_take(char* const string) noexcept {
     }
 
     return success ? 1 : 0;
+}
+
+uint32_t su_create_material(char const* string) noexcept {
+    if (!engine) {
+        return resource::Null;
+    }
+
+	std::string error;
+    auto        root = json::parse(string, error);
+    if (!root) {
+        logging::error(error);
+        return resource::Null;
+    }
+
+	void const* data = reinterpret_cast<void const*>(&(*root));
+
+	auto const material = engine->resources.load<material::Material>("", data);
+
+	if (!material) {
+		logging::error("");
+        return resource::Null;
+	}
+
+	return material.id;
 }
 
 uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
@@ -203,8 +228,4 @@ int32_t su_render() noexcept {
     }
 
     return 1;
-}
-
-int square(int i) noexcept {
-    return i * i;
 }

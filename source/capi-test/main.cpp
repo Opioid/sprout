@@ -9,7 +9,19 @@ int main(int /*argc*/, char* /*argv*/[]) noexcept {
 
 	su_load_take("takes/imrod.take");
 
-	uint32_t const materials[] = {4};
+	std::string const material_source = R"({
+	"rendering": {
+		"Substitute": {
+			"color": [0, 1, 0.5],
+			"roughness": 0.0,
+			"metallic": 1
+		}
+	}
+})";
+
+	uint32_t const material = su_create_material(material_source.c_str());
+
+	uint32_t const materials[] = {material};
 
 	uint32_t const prop = su_create_prop(7, 1, materials);
 

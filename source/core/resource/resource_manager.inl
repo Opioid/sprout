@@ -59,10 +59,6 @@ Resource_ptr<T> Manager::load(std::string const& filename, Variant_map const& op
 template <typename T>
 Resource_ptr<T> Manager::load(std::string const& name, void const* data,
                               std::string const& source_name, Variant_map const& options) noexcept {
-    if (name.empty()) {
-        return Resource_ptr<T>::Null();
-    }
-
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered

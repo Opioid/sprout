@@ -5,6 +5,8 @@
 
 namespace resource {
 
+static uint32_t Null = 0xFFFFFFFF;
+
 template <typename T>
 struct Resource_ptr {
     T*       ptr;
