@@ -1,56 +1,18 @@
 #include "tile_queue.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 
 namespace rendering {
 
-Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius) noexcept
-    : tile_dimensions_(tile_dimensions),
-      tiles_per_row_(
-          static_cast<int32_t>(std::ceil(float(resolution[0]) / float(tile_dimensions[0])))),
-      num_tiles_(uint32_t(std::ceil(float(resolution[0]) / float(tile_dimensions[0]))) *
-                 uint32_t(std::ceil(float(resolution[1]) / float(tile_dimensions[1])))),
-      tiles_(memory::allocate_aligned<int4>(num_tiles_)),
-      current_consume_(num_tiles_) {
-    int2 current_pixel(0, 0);
-    for (;;) {
-        int2 start = current_pixel;
-        int2 end   = min(current_pixel + tile_dimensions, resolution);
+Tile_queue::Tile_queue(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) noexcept
+    : resolution_(resolution),
+      tile_dimensions_(tile_dimensions),
+      filter_radius_(filter_radius),
+      tiles_per_row_(int32_t(std::ceil(float(resolution[0]) / float(tile_dimensions)))),
+      num_tiles_(uint32_t(tiles_per_row_) *
+                 uint32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)))),
+      current_consume_(0) {}
 
-        if (0 == start[1]) {
-            start[1] -= filter_radius;
-        }
-
-        if (resolution[1] == end[1]) {
-            end[1] += filter_radius;
-        }
-
-        if (0 == start[0]) {
-            start[0] -= filter_radius;
-        }
-
-        if (resolution[0] == end[0]) {
-            end[0] += filter_radius;
-        }
-
-        push(int4(start, end - int2(1)));
-
-        current_pixel[0] += tile_dimensions[0];
-
-        if (current_pixel[0] >= resolution[0]) {
-            current_pixel[0] = 0;
-            current_pixel[1] += tile_dimensions[1];
-        }
-
-        if (current_pixel[1] >= resolution[1]) {
-            break;
-        }
-    }
-}
-
-Tile_queue::~Tile_queue() noexcept {
-    memory::free_aligned(tiles_);
-}
+Tile_queue::~Tile_queue() noexcept {}
 
 uint32_t Tile_queue::size() const noexcept {
     return num_tiles_;
@@ -65,7 +27,38 @@ bool Tile_queue::pop(int4& tile) noexcept {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
     if (current < num_tiles_) {
-        tile = tiles_[current];
+		int2 const resolution = resolution_;
+
+		int32_t const tile_dimensions = tile_dimensions_;
+
+		int32_t const filter_radius = filter_radius_;
+
+		int2 start;
+        start[1] = current / tiles_per_row_;
+        start[0] = current - start[1] * tiles_per_row_;
+
+		start *= tile_dimensions;
+
+		int2 end = min(start + tile_dimensions, resolution);
+
+        if (0 == start[1]) {
+			start[1] -= filter_radius;
+        }
+
+        if (resolution[1] == end[1]) {
+			end[1] += filter_radius;
+        }
+
+        if (0 == start[0]) {
+			start[0] -= filter_radius;
+		}
+
+		if (resolution[0] == end[0]) {
+			end[0] += filter_radius;
+		}
+
+		tile = int4(start, end - 1);
+
         return true;
     }
 
@@ -73,16 +66,10 @@ bool Tile_queue::pop(int4& tile) noexcept {
 }
 
 uint32_t Tile_queue::index(int4 const& tile) const noexcept {
-    int32_t const x = std::max(tile[0], 0) / tile_dimensions_[0];
-    int32_t const y = std::max(tile[1], 0) / tile_dimensions_[1];
+    int32_t const x = std::max(tile[0], 0) / tile_dimensions_;
+    int32_t const y = std::max(tile[1], 0) / tile_dimensions_;
 
     return uint32_t(y * tiles_per_row_ + x);
-}
-
-void Tile_queue::push(int4 const& tile) noexcept {
-    uint32_t const current = num_tiles_ - current_consume_--;
-
-    tiles_[current] = tile;
 }
 
 Range_queue::Range_queue(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept

@@ -483,7 +483,7 @@ void Exporter::write_json(std::string const& filename, Json_handler& handler) no
     for (auto const& c : clusters) {
         auto const& p = handler.parts()[c.original_part];
 
-        bool const in_range = c.in_range(p.start_index, /*p.num_indices*/ c.triangles.size() * 3);
+        bool const in_range = c.in_range(p.start_index, uint32_t(c.triangles.size()) * 3);
         std::cout << c.material << ": " << c.triangles.size() << " " << in_range << std::endl;
     }
 

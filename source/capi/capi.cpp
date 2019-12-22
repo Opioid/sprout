@@ -75,7 +75,7 @@ int32_t su_init() noexcept {
 
     logging::init(logging::Type::Std_out);
 
-	procedural::sky::init(engine->scene_loader, engine->material_provider);
+    procedural::sky::init(engine->scene_loader, engine->material_provider);
 
     return 1;
 }
@@ -158,24 +158,34 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
     return engine->scene.create_prop(shape_ptr, materials_buffer.data());
 }
 
+int32_t su_create_light(uint32_t prop) noexcept {
+    if (!engine || engine->scene.num_props() <= prop) {
+        return 0;
+    }
+
+	engine->scene_loader.create_light(prop, engine->scene);
+
+	return 1;
+}
+
 int32_t su_prop_set_transformation(uint32_t prop, float const* transformation) noexcept {
     if (!engine || engine->scene.num_props() <= prop) {
-		return 0;
-	}
+        return 0;
+    }
 
-	float4x4 const m(transformation);
+    float4x4 const m(transformation);
 
     float3x3 r;
 
-	math::Transformation t;
+    math::Transformation t;
 
     decompose(m, r, t.scale, t.position);
 
     t.rotation = quaternion::create(r);
 
-	engine->scene.prop_set_world_transformation(prop, t);
+    engine->scene.prop_set_world_transformation(prop, t);
 
-	return 1;
+    return 1;
 }
 
 int32_t su_render() noexcept {

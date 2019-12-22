@@ -89,7 +89,7 @@ static constexpr Vector2<T>& operator+=(Vector2<T>& a, Vector2<T> b) noexcept {
 }
 
 template <typename T>
-static constexpr Vector2<T>& operator*=(Vector2<T>& a, float s) noexcept {
+static constexpr Vector2<T>& operator*=(Vector2<T>& a, T s) noexcept {
     a[0] *= s;
     a[1] *= s;
     return a;

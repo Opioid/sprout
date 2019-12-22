@@ -3,7 +3,6 @@
 
 #include "base/math/vector2.hpp"
 #include "base/math/vector4.hpp"
-#include "base/random/generator.hpp"
 
 #include <atomic>
 
@@ -11,7 +10,7 @@ namespace rendering {
 
 class Tile_queue {
   public:
-    Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius) noexcept;
+    Tile_queue(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) noexcept;
 
     ~Tile_queue() noexcept;
 
@@ -24,15 +23,15 @@ class Tile_queue {
     uint32_t index(int4 const& tile) const noexcept;
 
   private:
-    void push(int4 const& tile) noexcept;
+	int2 const resolution_;
 
-    int2 const tile_dimensions_;
+    int32_t const tile_dimensions_;
+
+	int32_t const filter_radius_;
 
     int32_t const tiles_per_row_;
 
     uint32_t const num_tiles_;
-
-    int4* tiles_;
 
     std::atomic<uint32_t> current_consume_;
 };
