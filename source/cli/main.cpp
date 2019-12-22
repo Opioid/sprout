@@ -80,16 +80,7 @@ int main(int argc, char* argv[]) noexcept {
         return 1;
     }
 
-    uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
-
-    uint32_t num_workers;
-    if (args.threads <= 0) {
-        int32_t const num_threads = static_cast<int32_t>(available_threads) + args.threads;
-
-        num_workers = uint32_t(std::max(num_threads, 1));
-    } else {
-        num_workers = std::min(available_threads, uint32_t(std::max(args.threads, 1)));
-    }
+    uint32_t const num_workers = thread::Pool::num_threads(args.threads);
 
     logging::info("#Threads " + string::to_string(num_workers));
 

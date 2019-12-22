@@ -118,6 +118,15 @@ Resource_ptr<T> Typed_cache<T>::get(std::string const&         filename,
 }
 
 template <typename T>
+Resource_ptr<T> Typed_cache<T>::get(uint32_t id) const noexcept {
+    if (id >= uint32_t(resources_.size())) {
+        return Resource_ptr<T>::Null();
+    }
+
+    return {resources_[id], id};
+}
+
+template <typename T>
 Resource_ptr<T> Typed_cache<T>::store(T* resource) noexcept {
     resources_.push_back(resource);
 

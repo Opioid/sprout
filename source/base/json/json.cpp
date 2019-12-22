@@ -265,7 +265,7 @@ std::string read_string(rapidjson::Value const& value, std::string_view name,
 void read_transformation(rapidjson::Value const& value,
                          math::Transformation&   transformation) noexcept {
     if (value.IsArray()) {
-        float4x4 m(
+        float4x4 const m(
             value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat(), value[3].GetFloat(),
             value[4].GetFloat(), value[5].GetFloat(), value[6].GetFloat(), value[7].GetFloat(),
             value[8].GetFloat(), value[9].GetFloat(), value[10].GetFloat(), value[11].GetFloat(),
@@ -303,7 +303,7 @@ void read_transformation(rapidjson::Value const& value,
             float3 const dir   = normalize(look_at - transformation.position);
             float3 const right = -cross(dir, up);
 
-            float3x3 r(right, up, dir);
+            float3x3 const r(right, up, dir);
 
             transformation.rotation = quaternion::create(r);
         }

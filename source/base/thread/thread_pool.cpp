@@ -81,6 +81,18 @@ void Pool::wait_async() noexcept {
     async_.done_signal.wait(lock, [this]() noexcept { return !async_.wake; });
 }
 
+uint32_t Pool::num_threads(int32_t request) noexcept {
+    uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
+
+    if (request <= 0) {
+        int32_t const num_threads = static_cast<int32_t>(available_threads) + request;
+
+        return uint32_t(std::max(num_threads, 1));
+    }
+
+	return std::min(available_threads, uint32_t(std::max(request, 1)));
+}
+
 void Pool::wake_all() noexcept {
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
         auto& u = uniques_[i];

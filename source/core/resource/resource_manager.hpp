@@ -58,6 +58,9 @@ class Manager {
     Resource_ptr<T> get(std::string const& filename,
                         Variant_map const& options = Variant_map()) noexcept;
 
+	template <typename T>
+    Resource_ptr<T> get(uint32_t id) const noexcept;
+
     template <typename T>
     Resource_ptr<T> store(T* resource) noexcept;
 

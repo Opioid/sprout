@@ -90,6 +90,18 @@ Resource_ptr<T> Manager::get(std::string const& filename, Variant_map const& opt
 }
 
 template <typename T>
+Resource_ptr<T> Manager::get(uint32_t id) const noexcept {
+    Typed_cache<T> const* cache = typed_cache<T>();
+
+    // a provider for this resource type was never registered
+    if (!cache) {
+        return Resource_ptr<T>::Null();
+    }
+
+    return cache->get(id);
+}
+
+template <typename T>
 Resource_ptr<T> Manager::store(T* resource) noexcept {
     if (!resource) {
         return Resource_ptr<T>::Null();

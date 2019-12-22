@@ -143,6 +143,10 @@ inline float3 Scene::light_center(uint32_t light) const noexcept {
     return light_centers_[light];
 }
 
+inline uint32_t Scene::num_props() const noexcept {
+    return uint32_t(props_.size());
+}
+
 inline prop::Prop const* Scene::prop(uint32_t index) const noexcept {
     SOFT_ASSERT(index < props_.size());
 

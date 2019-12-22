@@ -431,6 +431,12 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03, fl
                                   float m30, float m31, float m32, float m33) noexcept
     : r{{m00, m01, m02, m03}, {m10, m11, m12, m13}, {m20, m21, m22, m23}, {m30, m31, m32, m33}} {}
 
+inline Matrix4x4f_a::Matrix4x4f_a(float const* a) noexcept
+    : r{{a[0], a[1], a[2], a[3]},
+        {a[4], a[5], a[6], a[7]},
+        {a[8], a[9], a[10], a[11]},
+        {a[12], a[13], a[14], a[15]}} {}
+
 inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m) noexcept
     : r{Vector4f_a(m.r[0]), Vector4f_a(m.r[1]), Vector4f_a(m.r[2]), {0.f, 0.f, 0.f, 1.f}} {}
 

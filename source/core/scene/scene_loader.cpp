@@ -121,6 +121,14 @@ void Loader::create_light(uint32_t prop_id, Scene& scene) noexcept {
     }
 }
 
+Loader::Materials& Loader::materials_buffer() noexcept {
+    return materials_;
+}
+
+Loader::Material_ptr Loader::fallback_material() const noexcept {
+    return fallback_material_;
+}
+
 size_t Loader::num_bytes() const noexcept {
     return 0;
 }
@@ -328,7 +336,6 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
         if ("shape" == n.name) {
             shape = load_shape(n.value);
         } else if ("materials" == n.name) {
-            //   load_materials(n.value, mount_folder, local_materials, scene, materials);
             materials_value = &n.value;
         } else if ("visibility" == n.name) {
             visibility = &n.value;
@@ -336,26 +343,25 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
     }
 
     if (!shape.ptr) {
-        return 0xFFFFFFFF;
+        return prop::Null;
     }
 
     uint32_t const num_materials = shape.ptr->num_materials();
 
-    Materials materials;
-    materials.reserve(num_materials);
+    materials_.reserve(num_materials);
 
     if (materials_value) {
-        load_materials(*materials_value, local_materials, scene, materials);
+        load_materials(*materials_value, local_materials, scene, materials_);
     }
 
-    if (1 == materials.size() && 1.f == materials[0].ptr->ior()) {
+    if (1 == materials_.size() && 1.f == materials_[0].ptr->ior()) {
     } else {
-        while (materials.size() < num_materials) {
-            materials.push_back(fallback_material_);
+        while (materials_.size() < num_materials) {
+            materials_.push_back(fallback_material_);
         }
     }
 
-    uint32_t const prop = scene.create_prop(shape, materials.data(), name);
+    uint32_t const prop = scene.create_prop(shape, materials_.data(), name);
 
     // It is a annoying that this is done again in load_entities(),
     // but visibility information is already used when creating lights.
