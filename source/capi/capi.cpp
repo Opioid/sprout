@@ -122,6 +122,47 @@ int32_t su_load_take(char const* string) noexcept {
     return success ? 1 : 0;
 }
 
+uint32_t su_create_camera(char const* string) noexcept {
+    if (!engine) {
+        return prop::Null;
+    }
+
+	std::string error;
+    auto        root = json::parse(string, error);
+    if (!root) {
+        logging::error(error);
+        return prop::Null;
+    }
+
+	if (auto camera = take::Loader::load_camera(*root, engine->scene); camera) {
+        engine->take.view.clear();
+
+		engine->take.view.camera = camera;
+
+        return camera->entity();
+	}
+
+	return prop::Null;
+}
+
+int32_t su_create_integrators(char const* string) noexcept {
+    if (!engine) {
+        return 0;
+    }
+
+	std::string error;
+    auto        root = json::parse(string, error);
+    if (!root) {
+        logging::error(error);
+        return 0;
+    }
+
+	take::Loader::load_integrator_factories(*root, engine->resources.threads().num_threads(),
+                                            engine->take);
+
+    return 1;
+}
+
 uint32_t su_create_material(char const* string) noexcept {
     if (!engine) {
         return resource::Null;

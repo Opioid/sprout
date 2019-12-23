@@ -64,10 +64,6 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
 
     bool const success = load(filename, take_mount_folder, parent_id, parent_transformation, scene);
 
-    if (success) {
-        scene.finish();
-    }
-
     resource_manager_.threads().wait_async();
 
     return success;

@@ -75,16 +75,11 @@ using Particle_factory = rendering::integrator::particle::Lighttracer_factory;
 using Postprocessor    = rendering::postprocessor::Postprocessor;
 using Light_sampling   = rendering::integrator::Light_sampling;
 
-static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept;
-
 static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept;
 
 static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
                                               uint32_t           num_workers,
                                               uint32_t&          num_samples_per_pixel) noexcept;
-
-static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
-                                      Take& take) noexcept;
 
 static Surface_factory* load_surface_integrator_factory(json::Value const& integrator_value,
                                                         uint32_t           num_workers,
@@ -221,7 +216,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     return true;
 }
 
-static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept {
+Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) noexcept {
     using namespace scene::camera;
 
     std::string type_name;
@@ -532,7 +527,16 @@ static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
     return nullptr;
 }
 
-static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
+template<class T>
+static inline void replace(T*& former, T* newer) noexcept {
+    if (newer) {
+        delete former;
+
+		former = newer;
+	}
+}
+
+void Loader::load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
                                       Take& take) noexcept {
     json::Value::ConstMemberIterator const particle_node = integrator_value.FindMember("particle");
 
@@ -543,10 +547,10 @@ static void load_integrator_factories(json::Value const& integrator_value, uint3
 
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
-            take.surface_integrator_factory = load_surface_integrator_factory(
-                n.value, num_workers, nullptr != take.lighttracer_factory);
+            replace(take.surface_integrator_factory, load_surface_integrator_factory(
+                n.value, num_workers, nullptr != take.lighttracer_factory));
         } else if ("volume" == n.name) {
-            take.volume_integrator_factory = load_volume_integrator_factory(n.value, num_workers);
+            replace(take.volume_integrator_factory, load_volume_integrator_factory(n.value, num_workers));
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.view.photon_settings);
         }

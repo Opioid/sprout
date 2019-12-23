@@ -27,6 +27,7 @@ void Driver_progressive::render(exporting::Sink& exporter) {
     }
 
     //    scene_.tick(threads_);
+    scene_.finish();
 
     restart();
 
