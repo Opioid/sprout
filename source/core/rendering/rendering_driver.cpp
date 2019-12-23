@@ -11,7 +11,6 @@
 #include "scene/prop/interface_stack.inl"
 #include "scene/scene.hpp"
 #include "take/take.hpp"
-#include "take/take_view.hpp"
 
 namespace rendering {
 

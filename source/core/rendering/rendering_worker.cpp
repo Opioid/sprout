@@ -18,7 +18,7 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
-#include "take/take_view.hpp"
+#include "take/take.hpp"
 
 #include "base/debug/assert.hpp"
 

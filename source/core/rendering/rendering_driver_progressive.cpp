@@ -9,7 +9,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/scene.hpp"
-#include "take/take_view.hpp"
+#include "take/take.hpp"
 
 namespace rendering {
 

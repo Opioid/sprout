@@ -2,8 +2,6 @@ target_sources(core
     PRIVATE
     "take_loader.cpp"
     "take_loader.hpp"
-    "take_view.cpp"
-    "take_view.hpp"
     "take.cpp"
     "take.hpp"
     )

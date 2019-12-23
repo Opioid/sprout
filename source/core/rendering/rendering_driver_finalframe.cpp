@@ -14,7 +14,7 @@
 #include "scene/camera/camera.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/scene.inl"
-#include "take/take_view.hpp"
+#include "take/take.hpp"
 
 namespace rendering {
 

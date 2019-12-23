@@ -1,5 +1,5 @@
-#include "base/platform/platform.hpp"
 #include "base/json/json.hpp"
+#include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/file/file_system.hpp"
@@ -11,6 +11,7 @@
 #include "core/progress/progress_sink_std_out.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
 #include "core/resource/resource_manager.inl"
+#include "core/scene/camera/camera.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.inl"
@@ -126,23 +127,53 @@ uint32_t su_create_material(char const* string) noexcept {
         return resource::Null;
     }
 
-	std::string error;
+    std::string error;
     auto        root = json::parse(string, error);
     if (!root) {
         logging::error(error);
         return resource::Null;
     }
 
-	void const* data = reinterpret_cast<void const*>(&(*root));
+    void const* data = reinterpret_cast<void const*>(&(*root));
 
-	auto const material = engine->resources.load<material::Material>("", data);
+    auto const material = engine->resources.load<material::Material>("", data);
 
-	if (!material) {
-		logging::error("");
+    if (!material) {
+        logging::error("");
         return resource::Null;
-	}
+    }
 
-	return material.id;
+    return material.id;
+}
+
+uint32_t su_create_material_from_file(char const* filename) noexcept {
+    if (!engine) {
+        return resource::Null;
+    }
+
+    auto const material = engine->resources.load<material::Material>(filename);
+
+    if (!material) {
+        logging::error("");
+        return resource::Null;
+    }
+
+    return material.id;
+}
+
+uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept {
+    if (!engine) {
+        return resource::Null;
+    }
+
+    auto const mesh = engine->resources.load<shape::Shape>(filename);
+
+    if (!mesh) {
+        logging::error("");
+        return resource::Null;
+    }
+
+    return mesh.id;
 }
 
 uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
@@ -183,18 +214,26 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
     return engine->scene.create_prop(shape_ptr, materials_buffer.data());
 }
 
-int32_t su_create_light(uint32_t prop) noexcept {
-    if (!engine || engine->scene.num_props() <= prop) {
+int32_t su_create_light(uint32_t entity) noexcept {
+    if (!engine || engine->scene.num_props() <= entity) {
         return 0;
     }
 
-	engine->scene_loader.create_light(prop, engine->scene);
+    engine->scene_loader.create_light(entity, engine->scene);
 
-	return 1;
+    return 1;
 }
 
-int32_t su_prop_set_transformation(uint32_t prop, float const* transformation) noexcept {
-    if (!engine || engine->scene.num_props() <= prop) {
+uint32_t su_camera_entity() noexcept {
+    if (!engine || !engine->take.view.camera) {
+        return prop::Null;
+    }
+
+    return engine->take.view.camera->entity();
+}
+
+int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) noexcept {
+    if (!engine || engine->scene.num_props() <= entity) {
         return 0;
     }
 
@@ -208,7 +247,7 @@ int32_t su_prop_set_transformation(uint32_t prop, float const* transformation) n
 
     t.rotation = quaternion::create(r);
 
-    engine->scene.prop_set_world_transformation(prop, t);
+    engine->scene.prop_set_world_transformation(entity, t);
 
     return 1;
 }
