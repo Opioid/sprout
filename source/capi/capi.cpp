@@ -11,6 +11,7 @@
 #include "core/progress/progress_sink_std_out.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
 #include "core/resource/resource_manager.inl"
+#include "core/sampler/sampler_golden_ratio.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/prop/prop.hpp"
@@ -68,11 +69,26 @@ struct Engine {
 
 static Engine* engine = nullptr;
 
+#define ASSERT_ENGINE(RESULT) \
+    if (!engine) { return RESULT; }
+
+#define ASSERT_PARSE(STRING, RESULT)               \
+	std::string error;                             \
+	auto        root = json::parse(STRING, error); \
+    if (!root) {                                   \
+		logging::error(error);                     \
+        return RESULT;                             \
+	}
+
 char const* su_platform_revision() noexcept {
     return platform::revision().c_str();
 }
 
 int32_t su_init() noexcept {
+    if (engine) {
+        return 0;
+	}
+
     engine = new Engine;
 
     logging::init(logging::Type::Std_out);
@@ -90,15 +106,13 @@ int32_t su_release() noexcept {
 }
 
 int32_t su_load_take(char const* string) noexcept {
-    if (!engine) {
-        return 0;
-    }
+    ASSERT_ENGINE(0)
 
     bool success = true;
 
     std::string take_name;
 
-    std::string take(string);
+    std::string const take(string);
 
     {
         bool const is_json = string::is_json(take);
@@ -123,16 +137,9 @@ int32_t su_load_take(char const* string) noexcept {
 }
 
 uint32_t su_create_camera(char const* string) noexcept {
-    if (!engine) {
-        return prop::Null;
-    }
+    ASSERT_ENGINE(prop::Null)
 
-	std::string error;
-    auto        root = json::parse(string, error);
-    if (!root) {
-        logging::error(error);
-        return prop::Null;
-    }
+	ASSERT_PARSE(string, prop::Null)
 
 	if (auto camera = take::Loader::load_camera(*root, engine->scene); camera) {
         engine->take.view.clear();
@@ -145,35 +152,36 @@ uint32_t su_create_camera(char const* string) noexcept {
 	return prop::Null;
 }
 
+int32_t su_create_sampler(uint32_t num_samples) noexcept {
+    ASSERT_ENGINE(0)
+
+	engine->take.view.num_samples_per_pixel = num_samples;
+
+	if (!engine->take.sampler_factory) {
+        uint32_t const num_workers = engine->resources.threads().num_threads();
+
+		engine->take.sampler_factory = new sampler::Golden_ratio_factory(num_workers);
+    }
+
+	return 1;
+}
+
 int32_t su_create_integrators(char const* string) noexcept {
-    if (!engine) {
-        return 0;
-    }
+    ASSERT_ENGINE(0)
 
-	std::string error;
-    auto        root = json::parse(string, error);
-    if (!root) {
-        logging::error(error);
-        return 0;
-    }
+    ASSERT_PARSE(string, 0)
 
-	take::Loader::load_integrator_factories(*root, engine->resources.threads().num_threads(),
-                                            engine->take);
+	uint32_t const num_workers = engine->resources.threads().num_threads();
+
+	take::Loader::load_integrator_factories(*root, num_workers, engine->take);
 
     return 1;
 }
 
 uint32_t su_create_material(char const* string) noexcept {
-    if (!engine) {
-        return resource::Null;
-    }
+    ASSERT_ENGINE(resource::Null)
 
-    std::string error;
-    auto        root = json::parse(string, error);
-    if (!root) {
-        logging::error(error);
-        return resource::Null;
-    }
+    ASSERT_PARSE(string, resource::Null)
 
     void const* data = reinterpret_cast<void const*>(&(*root));
 
@@ -188,9 +196,7 @@ uint32_t su_create_material(char const* string) noexcept {
 }
 
 uint32_t su_create_material_from_file(char const* filename) noexcept {
-    if (!engine) {
-        return resource::Null;
-    }
+    ASSERT_ENGINE(resource::Null)
 
     auto const material = engine->resources.load<material::Material>(filename);
 
@@ -203,9 +209,7 @@ uint32_t su_create_material_from_file(char const* filename) noexcept {
 }
 
 uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept {
-    if (!engine) {
-        return resource::Null;
-    }
+    ASSERT_ENGINE(resource::Null)
 
     auto const mesh = engine->resources.load<shape::Shape>(filename);
 
@@ -219,9 +223,7 @@ uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept {
 
 uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
                         uint32_t const* materials) noexcept {
-    if (!engine) {
-        return prop::Null;
-    }
+    ASSERT_ENGINE(prop::Null)
 
     auto const shape_ptr = engine->resources.get<shape::Shape>(shape);
 
@@ -256,7 +258,9 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
 }
 
 int32_t su_create_light(uint32_t entity) noexcept {
-    if (!engine || engine->scene.num_props() <= entity) {
+    ASSERT_ENGINE(0)
+
+    if (engine->scene.num_props() <= entity) {
         return 0;
     }
 
@@ -266,7 +270,9 @@ int32_t su_create_light(uint32_t entity) noexcept {
 }
 
 uint32_t su_camera_entity() noexcept {
-    if (!engine || !engine->take.view.camera) {
+    ASSERT_ENGINE(prop::Null)
+
+    if (!engine->take.view.camera) {
         return prop::Null;
     }
 
@@ -274,7 +280,9 @@ uint32_t su_camera_entity() noexcept {
 }
 
 int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) noexcept {
-    if (!engine || engine->scene.num_props() <= entity) {
+    ASSERT_ENGINE(0)
+
+    if (engine->scene.num_props() <= entity) {
         return 0;
     }
 
@@ -294,9 +302,7 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
 }
 
 int32_t su_render() noexcept {
-    if (!engine) {
-        return 0;
-    }
+    ASSERT_ENGINE(0)
 
     progress::Std_out progressor;
 

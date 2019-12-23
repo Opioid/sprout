@@ -26,6 +26,8 @@ SU_LIBRARY_API int32_t su_load_take(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_camera(char const* string) noexcept;
 
+SU_LIBRARY_API int32_t su_create_sampler(uint32_t num_samples) noexcept;
+
 SU_LIBRARY_API int32_t su_create_integrators(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_material(char const* string) noexcept;
