@@ -1,5 +1,4 @@
 #include "image_provider.hpp"
-#include <istream>
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.inl"
 #include "encoding/exr/exr_reader.hpp"
@@ -15,6 +14,8 @@
 #include "resource/resource_manager.hpp"
 #include "resource/resource_provider.inl"
 #include "string/string.hpp"
+
+#include <istream>
 
 namespace image {
 
@@ -72,9 +73,75 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
     return nullptr;
 }
 
-Image* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
+Image* Provider::load(void const* data, std::string const& /*source_name*/,
                       Variant_map const& /*options*/, resource::Manager& /*manager*/) noexcept {
-    return nullptr;
+    Data const& desc = *reinterpret_cast<Data const*>(data);
+
+    Image* image = nullptr;
+
+	uint32_t pixel_width = 0;
+
+    if (Data::Pixel_type::Byte == desc.pixel_type) {
+        switch (desc.num_channels) {
+            case 1:
+                image = new Image(Byte1(Description(desc.dimensions, desc.num_elements)));
+                break;
+            case 2:
+                image = new Image(Byte2(Description(desc.dimensions, desc.num_elements)));
+                break;
+            case 3:
+                image = new Image(Byte3(Description(desc.dimensions, desc.num_elements)));
+                break;
+            case 4:
+                image = new Image(Byte4(Description(desc.dimensions, desc.num_elements)));
+                break;
+            default:
+                break;
+        }
+
+		pixel_width = desc.num_channels * uint32_t(sizeof(uint8_t));
+    } else if (Data::Pixel_type::Float == desc.pixel_type) {
+        switch (desc.num_channels) {
+            case 1:
+                image = new Image(Float1(Description(desc.dimensions, desc.num_elements)));
+                break;
+            case 2:
+                image = new Image(Float2(Description(desc.dimensions, desc.num_elements)));
+                break;
+            case 3:
+                image = new Image(Float3(Description(desc.dimensions, desc.num_elements)));
+                break;
+            case 4:
+                image = new Image(Float4(Description(desc.dimensions, desc.num_elements)));
+                break;
+            default:
+                break;
+        }
+
+		pixel_width = desc.num_channels * uint32_t(sizeof(float));
+    }
+
+	if (!image) {
+        return nullptr;
+	}
+
+	char* image_data = image->data();
+
+	char const* source_data = desc.data;
+
+	uint64_t const num_pixels = image->description().num_pixels();
+
+	uint32_t const stride = desc.stride;
+
+	if (stride == pixel_width) {
+        std::copy(source_data, source_data + num_pixels * uint64_t(pixel_width), image_data);
+	} else {
+		for (uint64_t i = 0; i < num_pixels; ++i, source_data += stride, image_data += pixel_width) {
+			std::copy(source_data, source_data + pixel_width, image_data);
+		}
+	}
+
+	return image;
 }
 
 size_t Provider::num_bytes() const noexcept {

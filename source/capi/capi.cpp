@@ -1,4 +1,5 @@
 #include "base/json/json.hpp"
+#include "base/memory/array.inl"
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -176,6 +177,21 @@ int32_t su_create_integrators(char const* string) noexcept {
 	take::Loader::load_integrator_factories(*root, num_workers, engine->take);
 
     return 1;
+}
+
+uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
+	                     uint32_t height, uint32_t depth, uint32_t num_elements, 
+						 char const* data, uint32_t stride) noexcept {
+    ASSERT_ENGINE(resource::Null)
+
+	int3 const dimensions(width, height, std::max(depth, 1u));
+
+	image::Provider::Data desc{image::Provider::Data::Pixel_type(pixel_type), num_channels, 
+		dimensions, std::max(int32_t(num_elements), 0), stride, data};
+
+	void const* desc_data = reinterpret_cast<void const*>(&desc);
+
+	return engine->resources.load<material::Material>("", desc_data).id;
 }
 
 uint32_t su_create_material(char const* string) noexcept {

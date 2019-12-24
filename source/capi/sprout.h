@@ -30,6 +30,10 @@ SU_LIBRARY_API int32_t su_create_sampler(uint32_t num_samples) noexcept;
 
 SU_LIBRARY_API int32_t su_create_integrators(char const* string) noexcept;
 
+SU_LIBRARY_API uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
+                                        uint32_t height, uint32_t depth, uint32_t num_elements, 
+										char const* data, uint32_t stride) noexcept;
+
 SU_LIBRARY_API uint32_t su_create_material(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_material_from_file(char const* filename) noexcept;

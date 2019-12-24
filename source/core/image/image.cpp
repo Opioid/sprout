@@ -93,6 +93,33 @@ Description const& Image::description() const noexcept {
     return byte1_.description();
 }
 
+char* Image::data() const noexcept {
+    switch (type_) {
+        case Type::Byte1:
+            return reinterpret_cast<char*>(byte1_.data());
+        case Type::Byte2:
+            return reinterpret_cast<char*>(byte2_.data());
+        case Type::Byte3:
+            return reinterpret_cast<char*>(byte3_.data());
+        case Type::Byte4:
+            return reinterpret_cast<char*>(byte4_.data());
+        case Type::Short3:
+            return reinterpret_cast<char*>(short3_.data());
+        case Type::Float1:
+            return reinterpret_cast<char*>(float1_.data());
+     //   case Type::Float1_sparse:
+     //       return reinterpret_cast<char*>(float1_sparse_.data());
+        case Type::Float2:
+            return reinterpret_cast<char*>(float2_.data());
+        case Type::Float3:
+            return reinterpret_cast<char*>(float3_.data());
+        case Type::Float4:
+            return reinterpret_cast<char*>(float4_.data());
+    }
+
+	return reinterpret_cast<char*>(byte1_.data());
+}
+
 Byte1 const& Image::byte1() const noexcept {
     return byte1_;
 }

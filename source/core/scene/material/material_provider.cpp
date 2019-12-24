@@ -52,9 +52,14 @@ static Material* load_substitute(json::Value const& substitute_value,
                                  resource::Manager& resources) noexcept;
 
 struct Texture_description {
-    Texture_description() noexcept;
+    Texture_description() noexcept
+        : usage("Color"),
+          swizzle(image::Swizzle::XYZW),
+          scale(1.f),
+          num_elements(1) {}
 
     std::string filename;
+
     std::string usage;
 
     image::Swizzle swizzle;
@@ -1349,19 +1354,18 @@ void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& s
     }
 }
 
-Texture_description::Texture_description() noexcept
-    : usage("Color"), swizzle(image::Swizzle::XYZW), scale(1.f), num_elements(1) {}
-
 Texture_description read_texture_description(json::Value const& texture_value) noexcept {
     Texture_description description;
 
     for (auto& n : texture_value.GetObject()) {
         if ("file" == n.name) {
             description.filename = json::read_string(n.value);
+        } else if ("id" == n.name) {
+            description.filename = image::texture::Provider::encode_name(json::read_uint(n.value));
         } else if ("usage" == n.name) {
             description.usage = json::read_string(n.value);
         } else if ("swizzle" == n.name) {
-            std::string swizzle = json::read_string(n.value);
+            std::string const swizzle = json::read_string(n.value);
             if ("YXZW" == swizzle) {
                 description.swizzle = image::Swizzle::YXZW;
             }
@@ -1384,6 +1388,8 @@ Texture_adapter create_texture(Texture_description const& description, memory::V
     if (image::Swizzle::XYZW != description.swizzle) {
         options.set("swizzle", description.swizzle);
     }
+
+	uint32_t texture_id = resource::Null;
 
     return Texture_adapter(resources.load<Texture>(description.filename, options).id,
                            description.scale);

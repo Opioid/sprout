@@ -69,13 +69,17 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
         image_options.set("invert", invert);
     }
 
-    auto const image_res = resources.load<Image>(filename, image_options, resolved_name);
-    if (!image_res.ptr) {
-        logging::error("Loading texture %S: ", filename);
-        return nullptr;
-    }
+	uint32_t const image_id = decode_name(filename);
 
-    auto const image = image_res.ptr;
+    auto const image_res = resource::Null != image_id ? resources.get<Image>(image_id) :
+                      resources.load<Image>(filename, image_options, resolved_name);
+
+	if (!image_res.ptr) {
+		logging::error("Loading texture %S: ", filename);
+		return nullptr;
+	}
+
+	auto const image = image_res.ptr;
 
     if (Image::Type::Byte1 == image->type()) {
         return new Texture(Byte1_unorm(image->byte1()));
@@ -121,6 +125,18 @@ size_t Provider::num_bytes() const noexcept {
 
 size_t Provider::num_bytes(Texture const* /*resource*/) const noexcept {
     return 0;
+}
+
+std::string Provider::encode_name(uint32_t image_id) noexcept {
+    return "tex:" + std::to_string(image_id);
+}
+
+uint32_t Provider::decode_name(std::string const& name) noexcept {
+    if ("tex:" == name.substr(0, 4)) {
+        return atoi(name.substr(4).c_str());
+    }
+
+    return resource::Null;
 }
 
 }  // namespace image::texture
