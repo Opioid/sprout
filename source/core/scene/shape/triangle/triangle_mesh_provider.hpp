@@ -33,9 +33,27 @@ class Provider : public resource::Provider<Shape> {
     Shape* load(std::string const& filename, memory::Variant_map const& options,
                 resource::Manager& resources, std::string& resolved_name) noexcept override final;
 
+    struct Description {
+        uint32_t num_vertices;
+        uint32_t positions_stride;
+        uint32_t normals_stride;
+        uint32_t tangents_stride;
+        uint32_t texture_coordinates_stride;
+        uint32_t num_indices;
+        uint32_t num_parts;
+
+        float const* positions;
+        float const* normals;
+        float const* tangents;
+        float const* texture_coordinates;
+
+        uint32_t const* indices;
+        uint32_t const* parts;
+    };
+
     Shape* load(void const* data, std::string const& source_name,
                 memory::Variant_map const& options,
-                resource::Manager&         manager) noexcept override final;
+                resource::Manager&         resources) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

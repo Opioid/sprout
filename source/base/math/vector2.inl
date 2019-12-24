@@ -1,9 +1,10 @@
 #ifndef SU_BASE_MATH_VECTOR2_INL
 #define SU_BASE_MATH_VECTOR2_INL
 
+#include "vector2.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include "vector2.hpp"
 
 namespace math {
 
@@ -12,6 +13,9 @@ Vector2<T>::Vector2() noexcept = default;
 
 template <typename T>
 constexpr Vector2<T>::Vector2(T s) noexcept : v{s, s} {}
+
+template <typename T>
+constexpr Vector2<T>::Vector2(T const* a) noexcept : v{a[0], a[1]} {}
 
 template <typename T>
 template <typename U>

@@ -141,7 +141,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 
         auto const& vertices = handler_raw->vertices();
 
-        Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
+        Vertex_stream_interleaved const vertex_stream(uint32_t(vertices.size()), vertices.data());
 
         build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream,
                   resources.threads());
@@ -154,10 +154,55 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
     return mesh;
 }
 
-Shape* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
+Shape* Provider::load(void const* data, std::string const& /*source_name*/,
                       memory::Variant_map const& /*options*/,
-                      resource::Manager& /*manager*/) noexcept {
-    return nullptr;
+                      resource::Manager& resources) noexcept {
+    Description const& desc = *reinterpret_cast<Description const*>(data);
+
+    auto mesh = new Mesh;
+
+    uint32_t const num_parts = desc.num_parts;
+
+    mesh->allocate_parts(num_parts);
+
+    for (uint32_t p = 0; p < num_parts; ++p) {
+        mesh->set_material_for_part(p, desc.parts[p * 3 + 2]);
+    }
+
+    resources.threads().run_async([mesh, &desc, &resources]() {
+        logging::verbose("Started asynchronously building triangle mesh BVH.");
+
+        uint32_t const num_triangles = desc.num_indices / 3;
+
+        memory::Buffer<Index_triangle> triangles(num_triangles);
+
+        for (uint32_t p = 0, len = desc.num_parts; p < len; ++p) {
+            uint32_t const start_index = desc.parts[p * 3 + 0];
+            uint32_t const num_indices = desc.parts[p * 3 + 1];
+
+            uint32_t const triangles_start = start_index / 3;
+            uint32_t const triangles_end   = (start_index + num_indices) / 3;
+
+			for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+                triangles[i].i[0] = desc.indices[i * 3 + 0];
+                triangles[i].i[1] = desc.indices[i * 3 + 1];
+                triangles[i].i[2] = desc.indices[i * 3 + 2];
+
+                triangles[i].part = p;
+            }
+		}
+
+        Vertex_stream_CAPI const vertex_stream(desc.num_vertices, desc.positions_stride,
+                                         desc.normals_stride, desc.tangents_stride,
+                                         desc.texture_coordinates_stride, desc.positions,
+                                         desc.normals, desc.tangents, desc.texture_coordinates);
+
+        build_bvh(*mesh, num_triangles, triangles, vertex_stream, resources.threads());
+
+        logging::verbose("Finished asynchronously building triangle mesh BVH.");
+    });
+
+    return mesh;
 }
 
 size_t Provider::num_bytes() const noexcept {

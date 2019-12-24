@@ -106,4 +106,40 @@ uint8_t Vertex_stream_separate_compact::bitangent_sign(uint32_t /*i*/) const noe
     return 0;
 }
 
+Vertex_stream_CAPI::Vertex_stream_CAPI(uint32_t num_vertices, uint32_t positions_stride,
+                                       uint32_t normals_stride,
+                                       uint32_t tangents_stride,
+                                       uint32_t texture_coordinates_stride, float const* positions,
+                                       float const* normals, float const* tangents,
+                                       float const* texture_coordinates) noexcept
+    : Vertex_stream(num_vertices), positions_stride_(positions_stride),
+	  normals_stride_(normals_stride), tangents_stride_(tangents_stride),
+	  texture_coordinates_stride_(texture_coordinates_stride),
+      positions_(positions), normals_(normals), tangents_(tangents),
+	  texture_coordinates_(texture_coordinates) {}
+
+void Vertex_stream_CAPI::release() noexcept {}
+
+float3 Vertex_stream_CAPI::p(uint32_t i) const noexcept {
+	return float3(positions_ + i * positions_stride_);
+}
+
+float3 Vertex_stream_CAPI::n(uint32_t i) const noexcept {
+    return float3(normals_ + i * normals_stride_);
+}
+
+float3 Vertex_stream_CAPI::t(uint32_t i) const noexcept {
+    return float3(tangents_ + i * tangents_stride_);
+}
+
+float2 Vertex_stream_CAPI::uv(uint32_t i) const noexcept {
+    return float2(texture_coordinates_ + i * texture_coordinates_stride_);
+}
+
+uint8_t Vertex_stream_CAPI::bitangent_sign(uint32_t i) const noexcept {
+    float const sign = (tangents_ + i * tangents_stride_)[3];
+
+    return sign > 0.f ? 1 : 0;
+}
+
 }  // namespace scene::shape

@@ -1389,8 +1389,6 @@ Texture_adapter create_texture(Texture_description const& description, memory::V
         options.set("swizzle", description.swizzle);
     }
 
-	uint32_t texture_id = resource::Null;
-
     return Texture_adapter(resources.load<Texture>(description.filename, options).id,
                            description.scale);
 }

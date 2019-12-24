@@ -28,8 +28,8 @@ class Interpolated_function_2D {
 
     float2 inverse_interval_;
 
-    uint2 num_samples_ = uint2(0);
-    uint2 back_        = uint2(0);
+    uint2 num_samples_ = uint2(0u);
+    uint2 back_        = uint2(0u);
 
     T* samples_ = nullptr;
 };

@@ -111,6 +111,38 @@ class Vertex_stream_separate_compact final : public Vertex_stream {
     packed_float3 const* n_;
 };
 
+class Vertex_stream_CAPI final : public Vertex_stream {
+  public:
+    Vertex_stream_CAPI(uint32_t num_vertices, uint32_t positions_stride, uint32_t normals_stride,
+                       uint32_t tangents_stride,
+                       uint32_t texture_coordinates_stride,
+                       float const* positions, float const* normals, float const* tangents,
+                       float const* texture_coordinates) noexcept;
+
+    void release() noexcept override final;
+
+    float3 p(uint32_t i) const noexcept override final;
+
+    float3 n(uint32_t i) const noexcept override final;
+
+    float3 t(uint32_t i) const noexcept override final;
+
+    float2 uv(uint32_t i) const noexcept override final;
+
+    uint8_t bitangent_sign(uint32_t i) const noexcept override final;
+
+  private:
+    uint32_t positions_stride_;
+    uint32_t normals_stride_;
+    uint32_t tangents_stride_;
+    uint32_t texture_coordinates_stride_;
+
+    float const* positions_;
+    float const* normals_;
+    float const* tangents_;
+    float const* texture_coordinates_;
+};
+
 }  // namespace scene::shape
 
 #endif

@@ -17,7 +17,7 @@ class Provider final : public resource::Provider<Image> {
     Image* load(std::string const& filename, Variant_map const& options,
                 resource::Manager& resources, std::string& resolved_name) noexcept override final;
 
-	struct Data {
+	struct Description {
 		enum class Pixel_type {
 			Byte = 0,
 			Short,

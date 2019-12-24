@@ -75,44 +75,44 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
 
 Image* Provider::load(void const* data, std::string const& /*source_name*/,
                       Variant_map const& /*options*/, resource::Manager& /*manager*/) noexcept {
-    Data const& desc = *reinterpret_cast<Data const*>(data);
+    Description const& desc = *reinterpret_cast<Description const*>(data);
 
     Image* image = nullptr;
 
 	uint32_t pixel_width = 0;
 
-    if (Data::Pixel_type::Byte == desc.pixel_type) {
+    if (Description::Pixel_type::Byte == desc.pixel_type) {
         switch (desc.num_channels) {
             case 1:
-                image = new Image(Byte1(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte1(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             case 2:
-                image = new Image(Byte2(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte2(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             case 3:
-                image = new Image(Byte3(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte3(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             case 4:
-                image = new Image(Byte4(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte4(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             default:
                 break;
         }
 
 		pixel_width = desc.num_channels * uint32_t(sizeof(uint8_t));
-    } else if (Data::Pixel_type::Float == desc.pixel_type) {
+    } else if (Description::Pixel_type::Float == desc.pixel_type) {
         switch (desc.num_channels) {
             case 1:
-                image = new Image(Float1(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float1(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             case 2:
-                image = new Image(Float2(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float2(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             case 3:
-                image = new Image(Float3(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float3(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             case 4:
-                image = new Image(Float4(Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float4(image::Description(desc.dimensions, desc.num_elements)));
                 break;
             default:
                 break;

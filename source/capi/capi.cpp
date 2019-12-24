@@ -186,7 +186,9 @@ uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t wi
 
 	int3 const dimensions(width, height, std::max(depth, 1u));
 
-	image::Provider::Data desc{image::Provider::Data::Pixel_type(pixel_type), num_channels, 
+	using Description = image::Provider::Description;
+
+	Description desc{Description::Pixel_type(pixel_type), num_channels, 
 		dimensions, std::max(int32_t(num_elements), 0), stride, data};
 
 	void const* desc_data = reinterpret_cast<void const*>(&desc);
@@ -222,6 +224,26 @@ uint32_t su_create_material_from_file(char const* filename) noexcept {
     }
 
     return material.id;
+}
+
+uint32_t su_create_triangle_mesh(uint32_t num_vertices, float const* positions,
+								 uint32_t positions_stride, float const* normals,
+								 uint32_t normals_stride, float const* tangents,
+								 uint32_t tangents_stride, float const* texture_coordinates,
+								 uint32_t texture_coordinates_stride, uint32_t num_indices,
+								 uint32_t const* indices, uint32_t num_parts,
+								 uint32_t const* parts) noexcept {
+    ASSERT_ENGINE(resource::Null)
+
+    using Description = shape::triangle::Provider::Description;
+
+	Description const desc{num_vertices, positions_stride, normals_stride, tangents_stride, 
+		texture_coordinates_stride, num_indices, num_parts, positions, normals, tangents, 
+		texture_coordinates, indices, parts};
+
+	void const* desc_data = reinterpret_cast<void const*>(&desc);
+
+    return engine->resources.load<shape::Shape>("", desc_data).id;
 }
 
 uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept {
@@ -319,6 +341,8 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
 
 int32_t su_render() noexcept {
     ASSERT_ENGINE(0)
+
+    engine->threads.wait_async();
 
     progress::Std_out progressor;
 
