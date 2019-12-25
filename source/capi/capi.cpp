@@ -10,8 +10,7 @@
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/log.hpp"
 #include "core/logging/logging.hpp"
-#include "core/progress/progress_sink_null.hpp"
-#include "core/progress/progress_sink_std_out.hpp"
+#include "core/progress/progress_sink.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/sampler/sampler_golden_ratio.hpp"
@@ -71,6 +70,31 @@ struct Engine {
 };
 
 static Engine* engine = nullptr;
+
+namespace progress {
+
+class C : public Sink {
+  public:
+
+	void start(uint32_t resolution) noexcept override final {
+        if (start_) {
+			start_(resolution);
+		}
+	}
+
+	void tick() noexcept override final {
+		if (tick_) {;
+			tick_();
+		}
+	}
+
+	Progress_start start_ = nullptr;
+    Progress_tick  tick_  = nullptr;
+};
+
+}
+
+static progress::C progressor;
 
 #define ASSERT_ENGINE(RESULT) \
     if (!engine) { return RESULT; }
@@ -344,8 +368,6 @@ int32_t su_render() noexcept {
 
     engine->threads.wait_async();
 
-    progress::Std_out progressor;
-
     if (engine->take.view.camera) {
         rendering::Driver_finalframe driver(engine->take, engine->scene, engine->threads,
                                             engine->max_sample_size, progressor);
@@ -382,6 +404,13 @@ int32_t su_register_log(Post post, bool verbose) noexcept {
     logging::init(new logging::C(post));
 
 	logging::set_verbose(verbose);
+
+	return 1;
+}
+
+int32_t su_register_progress(Progress_start start, Progress_tick tick) noexcept {
+    progressor.start_ = start;
+    progressor.tick_  = tick;
 
 	return 1;
 }

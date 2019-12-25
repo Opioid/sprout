@@ -3,15 +3,31 @@
 
 #include "progress_sink.hpp"
 
+#include <iostream>
+
 namespace progress {
 
 class Std_out : public Sink {
   public:
-    Std_out();
+	void start(uint32_t resolution) noexcept override final {
+        resolution_ = resolution;
+        progress_   = 0;
+        threshold_  = Step;
+	}
 
-    void start(uint32_t resolution) override final;
-    void end() override final;
-    void tick() override final;
+	void tick() noexcept override final {
+		if (progress_ >= resolution_) {
+			return;
+		}
+
+		++progress_;
+
+		if (float const p = float(progress_) / float(resolution_) * 100.f; p >= threshold_) {
+			threshold_ += Step;
+
+			std::cout << uint32_t(p) << "%\r" << std::flush;
+		}
+	}
 
   private:
     uint32_t resolution_;
@@ -19,7 +35,7 @@ class Std_out : public Sink {
 
     float threshold_;
 
-    float const step_;
+    static float constexpr Step = 1.f;
 };
 
 }  // namespace progress

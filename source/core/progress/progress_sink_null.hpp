@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_PROGRESS_SINK_NULL_HPP
+#define SU_PROGRESS_SINK_NULL_HPP
 
 #include "progress_sink.hpp"
 
@@ -6,9 +7,11 @@ namespace progress {
 
 class Null : public Sink {
   public:
-    virtual void start(uint32_t resolution) override final;
-    virtual void end() override final;
-    virtual void tick() override final;
+    void start(uint32_t /*resolution*/) noexcept override final {}
+
+    void tick() noexcept override final {}
 };
 
 }  // namespace progress
+
+#endif

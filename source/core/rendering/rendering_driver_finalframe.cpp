@@ -54,13 +54,9 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         render_frame_backward(current_frame);
 
-        progressor_.end();
-
         progressor_.start(forward_progress_range);
 
         render_frame_forward(current_frame);
-
-        progressor_.end();
 
         auto const render_duration = chrono::seconds_since(render_start);
         logging::info("Render time %f s", render_duration);

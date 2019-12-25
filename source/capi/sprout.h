@@ -66,6 +66,13 @@ SU_LIBRARY_API int32_t su_render() noexcept;
 typedef void (*Post)(uint32_t type, char const* text);
 
 SU_LIBRARY_API int32_t su_register_log(Post post, bool verbose) noexcept;
+
+typedef void (*Progress_start)(uint32_t resolution);
+
+typedef void (*Progress_tick)();
+
+SU_LIBRARY_API int32_t su_register_progress(Progress_start start, Progress_tick tick) noexcept;
+
 }
 
 #endif

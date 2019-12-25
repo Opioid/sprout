@@ -1,8 +1,10 @@
 #include "capi/sprout.h"
-
-#include <iostream>
+#include "core/progress/progress_sink_std_out.hpp"
 
 void logging_post(uint32_t type, char const* text);
+
+void progress_start(uint32_t resolution);
+void progress_tick();
 
 int main(int /*argc*/, char* /*argv*/[]) noexcept {
 	std::cout << "sprout capi test" << std::endl;
@@ -10,6 +12,8 @@ int main(int /*argc*/, char* /*argv*/[]) noexcept {
 	su_init();
 
 	su_register_log(&logging_post, false);
+
+	su_register_progress(&progress_start, &progress_tick);
 
 	su_load_take("takes/imrod.take");
 
@@ -49,4 +53,14 @@ void logging_post(uint32_t type, char const* text) {
 	}
 
     std::cout << text << std::endl;
+}
+
+progress::Std_out progressor;
+
+void progress_start(uint32_t resolution) {
+    progressor.start(resolution);
+}
+
+void progress_tick() {
+    progressor.tick();
 }
