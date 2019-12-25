@@ -8,6 +8,8 @@
 #include "core/image/image_provider.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
+#include "core/logging/log.hpp"
+#include "core/logging/logging.hpp"
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_std_out.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
@@ -91,8 +93,6 @@ int32_t su_init() noexcept {
 	}
 
     engine = new Engine;
-
-    logging::init(logging::Type::Std_out);
 
     procedural::sky::init(engine->scene_loader, engine->material_provider);
 
@@ -354,4 +354,34 @@ int32_t su_render() noexcept {
     }
 
     return 1;
+}
+
+namespace logging {
+
+class C : public Log {
+  public:
+    typedef void (*Post)(uint32_t type, char const* text);
+
+    C(Post post) noexcept : post_(post) {}
+
+  private:
+	void internal_post(Type type, std::string const& text) noexcept override final {
+        post_(uint32_t(type), text.c_str());
+	}
+
+    Post post_;
+};
+
+}  // namespace logging
+
+int32_t su_register_log(Post post, bool verbose) noexcept {
+    if (!post) {
+        return 0;
+	}
+
+    logging::init(new logging::C(post));
+
+	logging::set_verbose(verbose);
+
+	return 1;
 }

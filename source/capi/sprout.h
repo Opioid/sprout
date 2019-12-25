@@ -16,6 +16,11 @@ extern "C" {
 #define SU_SHAPE_RECTANGLE 6
 #define SU_SHAPE_SPHERE 7
 
+#define SU_LOG_INFO 0
+#define SU_LOG_WARNING 1
+#define SU_LOG_ERROR 2
+#define SU_LOG_VERBOSE 3
+
 SU_LIBRARY_API char const* su_platform_revision() noexcept;
 
 SU_LIBRARY_API int32_t su_init() noexcept;
@@ -31,19 +36,18 @@ SU_LIBRARY_API int32_t su_create_sampler(uint32_t num_samples) noexcept;
 SU_LIBRARY_API int32_t su_create_integrators(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
-                                        uint32_t height, uint32_t depth, uint32_t num_elements, 
-										char const* data, uint32_t stride) noexcept;
+                                        uint32_t height, uint32_t depth, uint32_t num_elements,
+                                        char const* data, uint32_t stride) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_material(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_material_from_file(char const* filename) noexcept;
 
-SU_LIBRARY_API uint32_t su_create_triangle_mesh(uint32_t num_vertices, float const* positions, 
-												uint32_t positions_stride, float const* normals, 
-												uint32_t normals_stride, float const* tangents, 
-												uint32_t tangents_stride, float const* texture_coordinates,
-												uint32_t texture_coordinates_stride, uint32_t num_indices,
-												uint32_t const* indices, uint32_t num_parts, uint32_t const* parts) noexcept;
+SU_LIBRARY_API uint32_t su_create_triangle_mesh(
+    uint32_t num_vertices, float const* positions, uint32_t positions_stride, float const* normals,
+    uint32_t normals_stride, float const* tangents, uint32_t tangents_stride,
+    float const* texture_coordinates, uint32_t texture_coordinates_stride, uint32_t num_indices,
+    uint32_t const* indices, uint32_t num_parts, uint32_t const* parts) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept;
 
@@ -58,6 +62,10 @@ SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t     entity,
                                                     float const* transformation) noexcept;
 
 SU_LIBRARY_API int32_t su_render() noexcept;
+
+typedef void (*Post)(uint32_t type, char const* text);
+
+SU_LIBRARY_API int32_t su_register_log(Post post, bool verbose) noexcept;
 }
 
 #endif

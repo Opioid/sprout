@@ -11,6 +11,7 @@
 #include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/logging.hpp"
+#include "core/logging/log_std_out.hpp"
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_std_out.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
@@ -67,7 +68,7 @@ int main(int argc, char* argv[]) noexcept {
 
     //  return 1;
 
-    logging::init(logging::Type::Std_out);
+    logging::init(new logging::Std_out);
 
     logging::info("Welcome to sprout (" + platform::build() + " - " + platform::revision() + ")!");
 

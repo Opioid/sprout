@@ -107,8 +107,7 @@ uint8_t Vertex_stream_separate_compact::bitangent_sign(uint32_t /*i*/) const noe
 }
 
 Vertex_stream_CAPI::Vertex_stream_CAPI(uint32_t num_vertices, uint32_t positions_stride,
-                                       uint32_t normals_stride,
-                                       uint32_t tangents_stride,
+                                       uint32_t normals_stride, uint32_t tangents_stride,
                                        uint32_t texture_coordinates_stride, float const* positions,
                                        float const* normals, float const* tangents,
                                        float const* texture_coordinates) noexcept

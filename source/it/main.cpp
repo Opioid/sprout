@@ -9,6 +9,7 @@
 #include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/logging.hpp"
+#include "core/logging/log_std_out.hpp"
 #include "core/rendering/postprocessor/postprocessor_pipeline.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/take/take_loader.hpp"
@@ -31,7 +32,7 @@ void comparison(std::vector<Item> const& items) noexcept;
 int main(int argc, char* argv[]) noexcept {
     auto const total_start = std::chrono::high_resolution_clock::now();
 
-    logging::init(logging::Type::Std_out);
+    logging::init(new logging::Std_out);
 
     //    logging::info("Welcome to di (" + platform::build() + " - " + platform::revision() +
     //    ")!");

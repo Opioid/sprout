@@ -23,6 +23,11 @@ Unique_ptr<T>::~Unique_ptr() noexcept {
 }
 
 template <class T>
+Unique_ptr<T>::operator bool() const noexcept {
+    return nullptr != value_;
+}
+
+template <class T>
 bool Unique_ptr<T>::operator!() const noexcept {
     return nullptr == value_;
 }

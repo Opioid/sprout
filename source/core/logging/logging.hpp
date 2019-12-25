@@ -5,9 +5,9 @@
 
 namespace logging {
 
-enum class Type { Null, Std_out };
+class Log;
 
-void init(Type type, bool verbose = false) noexcept;
+void init(Log* l) noexcept;
 
 void info(std::string const& text) noexcept;
 void info(std::string const& text, float a) noexcept;
@@ -26,6 +26,7 @@ void verbose(std::string const& text) noexcept;
 void verbose(std::string const& text, std::string const& a) noexcept;
 
 void set_verbose(bool verbose) noexcept;
+
 bool is_verbose() noexcept;
 
 }  // namespace logging

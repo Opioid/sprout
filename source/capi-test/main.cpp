@@ -2,10 +2,14 @@
 
 #include <iostream>
 
+void logging_post(uint32_t type, char const* text);
+
 int main(int /*argc*/, char* /*argv*/[]) noexcept {
 	std::cout << "sprout capi test" << std::endl;
 
 	su_init();
+
+	su_register_log(&logging_post, false);
 
 	su_load_take("takes/imrod.take");
 
@@ -35,4 +39,14 @@ int main(int /*argc*/, char* /*argv*/[]) noexcept {
 	su_release();
 
 	return 0;
+}
+
+void logging_post(uint32_t type, char const* text) {
+    if (SU_LOG_WARNING == type) {
+        std::cout << "Warning: ";
+    } else if (SU_LOG_ERROR == type) {
+        std::cout << "Error: ";
+	}
+
+    std::cout << text << std::endl;
 }
