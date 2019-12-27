@@ -82,10 +82,10 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
         writer.write(stream, target, threads);
     } else {
         if (alpha) {
-            encoding::png::Writer_alpha writer(dimensions, false, false);
+            encoding::png::Writer_alpha writer(false, false);
             writer.write(stream, target, threads);
         } else {
-            encoding::png::Writer writer(dimensions, false);
+            encoding::png::Writer writer(false);
             writer.write(stream, target, threads);
         }
     }

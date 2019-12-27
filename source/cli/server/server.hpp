@@ -1,11 +1,12 @@
 #ifndef SU_SERVER_SERVER_HPP
 #define SU_SERVER_SERVER_HPP
 
-#include <list>
-#include <thread>
 #include "base/net/socket.hpp"
 #include "core/exporting/exporting_sink.hpp"
 #include "image/encoding/encoding_srgb.hpp"
+
+#include <list>
+#include <thread>
 
 namespace server {
 
@@ -14,7 +15,7 @@ class Message_handler;
 
 class Server : public exporting::Sink {
   public:
-    Server(int2 dimensions, Message_handler& message_handler) noexcept;
+    Server(Message_handler& message_handler) noexcept;
 
     ~Server() noexcept override final;
 

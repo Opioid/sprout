@@ -6,14 +6,24 @@
 
 namespace image::encoding {
 
-Srgb::Srgb(int2 dimensions, bool error_diffusion)
-    : rgb_(new byte3[size_t(dimensions[0] * dimensions[1])]), error_diffusion_(error_diffusion) {}
+Srgb::Srgb(bool error_diffusion) noexcept
+    : rgb_(nullptr), num_pixels_(0), error_diffusion_(error_diffusion) {}
 
-Srgb::~Srgb() {
+Srgb::~Srgb() noexcept {
     delete[] rgb_;
 }
 
-byte3 const* Srgb::data() const {
+void Srgb::resize(uint32_t num_pixels) noexcept {
+    if (num_pixels > num_pixels_) {
+        delete[] rgb_;
+
+        rgb_ = new byte3[num_pixels];
+
+        num_pixels_ = num_pixels;
+    }
+}
+
+byte3 const* Srgb::data() const noexcept {
     return rgb_;
 }
 
@@ -21,7 +31,7 @@ static inline float golden_ratio(int32_t n) noexcept {
     return frac(float(n) * 0.618033988749894f);
 }
 
-void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
+void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) noexcept {
     int2 const d = image.description().dimensions_2();
 
     if (error_diffusion_) {
@@ -48,20 +58,31 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
     }
 }
 
-Srgb_alpha::Srgb_alpha(int2 dimensions, bool error_diffusion, bool pre_multiplied_alpha)
-    : rgba_(new byte4[size_t(dimensions[0] * dimensions[1])]),
+Srgb_alpha::Srgb_alpha(bool error_diffusion, bool pre_multiplied_alpha) noexcept
+    : rgba_(nullptr),
+      num_pixels_(0),
       error_diffusion_(error_diffusion),
       pre_multiplied_alpha_(pre_multiplied_alpha) {}
 
-Srgb_alpha::~Srgb_alpha() {
+Srgb_alpha::~Srgb_alpha() noexcept {
     delete[] rgba_;
 }
 
-const byte4* Srgb_alpha::data() const {
+void Srgb_alpha::resize(uint32_t num_pixels) noexcept {
+    if (num_pixels > num_pixels_) {
+        delete[] rgba_;
+
+        rgba_ = new byte4[num_pixels];
+
+        num_pixels_ = num_pixels;
+    }
+}
+
+const byte4* Srgb_alpha::data() const noexcept {
     return rgba_;
 }
 
-void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
+void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) noexcept {
     int2 const d = image.description().dimensions_2();
 
     if (error_diffusion_) {

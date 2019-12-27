@@ -12,7 +12,7 @@ namespace exporting {
 
 Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion,
                uint32_t framerate) noexcept
-    : Srgb(dimensions, error_diffusion) {
+    : Srgb(error_diffusion) {
     // -i - tells it to read frames from stdin
     std::ostringstream cmd;
 
@@ -45,7 +45,12 @@ void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool&
         return;
     }
 
-    auto const d = image.description().dimensions_3();
+    auto const d = image.description().dimensions_2();
+
+    uint32_t const num_pixels = uint32_t(d[0] * d[1]);
+
+    resize(num_pixels);
+
     threads.run_range(
         [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
         0, d[1]);

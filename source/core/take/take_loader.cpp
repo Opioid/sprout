@@ -167,13 +167,11 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         }
 
         if (take.exporters.empty()) {
-            auto const d = take.view.camera->sensor().dimensions();
-
             bool const error_diffusion = false;
 
             using namespace image;
 
-            Writer* writer = new encoding::png::Writer(d, error_diffusion);
+            Writer* writer = new encoding::png::Writer(error_diffusion);
 
             take.exporters.push_back(new exporting::Image_sequence("output_", writer));
 
@@ -857,10 +855,9 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
                                                                   true);
 
                 if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
-                    writer = new png::Writer_alpha(camera.sensor().dimensions(), error_diffusion,
-                                                   pre_multiplied_alpha);
+                    writer = new png::Writer_alpha(error_diffusion, pre_multiplied_alpha);
                 } else {
-                    writer = new png::Writer(camera.sensor().dimensions(), error_diffusion);
+                    writer = new png::Writer(error_diffusion);
                 }
             }
 

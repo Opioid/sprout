@@ -8,8 +8,8 @@
 
 namespace server {
 
-Server::Server(int2 dimensions, Message_handler& message_handler) noexcept
-    : srgb_(dimensions, false, true), message_handler_(message_handler) {}
+Server::Server(Message_handler& message_handler) noexcept
+    : srgb_(false, true), message_handler_(message_handler) {}
 
 Server::~Server() noexcept {
     for (Client* c : clients_) {
@@ -52,7 +52,12 @@ void Server::shutdown() noexcept {
 }
 
 void Server::write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) noexcept {
-    auto const d = image.description().dimensions_3();
+    auto const d = image.description().dimensions_2();
+
+    uint32_t const num_pixels = uint32_t(d[0] * d[1]);
+
+    srgb_.resize(num_pixels);
+
     threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
                                      int32_t end) { srgb_.to_sRGB(image, begin, end); },
                       0, d[0] * d[1]);
