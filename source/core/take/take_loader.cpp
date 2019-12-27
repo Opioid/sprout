@@ -323,7 +323,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) noexc
         camera->set_sensor(sensor);
     }
 
-    uint32_t const prop_id = scene.create_dummy();
+    uint32_t const prop_id = scene.create_entity();
 
     camera->init(prop_id);
 

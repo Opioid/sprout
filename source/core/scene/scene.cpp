@@ -93,7 +93,7 @@ void Scene::clear() noexcept {
 
 void Scene::finish() noexcept {
     if (lights_.empty()) {
-        uint32_t const dummy = create_dummy();
+        uint32_t const dummy = create_entity();
         allocate_light(light::Light::Type::Null, dummy, 0);
     }
 
@@ -229,7 +229,7 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
     num_interpolation_frames_ = count_frames(frame_step, frame_duration) + 1;
 }
 
-uint32_t Scene::create_dummy() noexcept {
+uint32_t Scene::create_entity() noexcept {
     auto const prop = allocate_prop();
 
     prop.ptr->configure(null_shape_, nullptr);
@@ -237,8 +237,8 @@ uint32_t Scene::create_dummy() noexcept {
     return prop.id;
 }
 
-uint32_t Scene::create_dummy(std::string const& name) noexcept {
-    uint32_t const dummy = create_dummy();
+uint32_t Scene::create_entity(std::string const& name) noexcept {
+    uint32_t const dummy = create_entity();
 
     add_named_prop(dummy, name);
 
@@ -314,7 +314,7 @@ void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcep
 uint32_t Scene::create_extension(Extension* extension) noexcept {
     extensions_.push_back(extension);
 
-    uint32_t const dummy = create_dummy();
+    uint32_t const dummy = create_entity();
 
     extension->init(dummy);
 
@@ -324,7 +324,7 @@ uint32_t Scene::create_extension(Extension* extension) noexcept {
 uint32_t Scene::create_extension(Extension* extension, std::string const& name) noexcept {
     extensions_.push_back(extension);
 
-    uint32_t const dummy = create_dummy(name);
+    uint32_t const dummy = create_entity(name);
 
     extension->init(dummy);
 

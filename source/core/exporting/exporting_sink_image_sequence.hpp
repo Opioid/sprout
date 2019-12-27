@@ -1,8 +1,9 @@
 #ifndef SU_CORE_EXPORTING_SINK_IMAGE_SEQUENCE_HPP
 #define SU_CORE_EXPORTING_SINK_IMAGE_SEQUENCE_HPP
 
-#include <string>
 #include "exporting_sink.hpp"
+
+#include <string>
 
 namespace image {
 class Writer;

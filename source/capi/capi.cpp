@@ -208,7 +208,7 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
 
     camera->set_sensor(sensor);
 
-    uint32_t const prop_id = engine->scene.create_dummy();
+    uint32_t const prop_id = engine->scene.create_entity();
 
     camera->init(prop_id);
 

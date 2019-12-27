@@ -106,7 +106,6 @@ class Scene {
     bool has_volumes() const noexcept;
 
     bool intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const noexcept;
-
     bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const noexcept;
 
     bool intersect_volume(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
@@ -123,8 +122,7 @@ class Scene {
 
     Prop const* prop(uint32_t index) const noexcept;
     Prop*       prop(uint32_t index) noexcept;
-
-    Prop* prop(std::string_view name) noexcept;
+    Prop*       prop(std::string_view name) noexcept;
 
     std::vector<light::Light> const& lights() const noexcept;
 
@@ -135,12 +133,10 @@ class Scene {
         float    pdf;
     };
     Light light(uint32_t id, bool calculate_pdf = true) const noexcept;
-
     Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
                 bool calculate_pdf = true) const noexcept;
 
     Light random_light(float random) const noexcept;
-
     Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const
         noexcept;
 
@@ -150,11 +146,10 @@ class Scene {
 
     void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) noexcept;
 
-    uint32_t create_dummy() noexcept;
-    uint32_t create_dummy(std::string const& name) noexcept;
+    uint32_t create_entity() noexcept;
+    uint32_t create_entity(std::string const& name) noexcept;
 
     uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials) noexcept;
-
     uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials,
                          std::string const& name) noexcept;
 
@@ -180,7 +175,6 @@ class Scene {
     // while keeping the animated state out of the interface.
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time,
                                                  Transformation& transformation) const noexcept;
-
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time, bool is_static,
                                                  Transformation& transformation) const noexcept;
 

@@ -236,7 +236,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
             entity_id = prop_id;
         } else if ("Dummy" == type_name) {
-            entity_id = scene.create_dummy();
+            entity_id = scene.create_entity();
         } else {
             entity_id = load_extension(type_name, e, name, scene);
         }
