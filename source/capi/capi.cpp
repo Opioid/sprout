@@ -113,25 +113,25 @@ char const* su_platform_revision() noexcept {
 
 int32_t su_init() noexcept {
     if (engine) {
-        return 0;
+        return -1;
 	}
 
     engine = new Engine;
 
     procedural::sky::init(engine->scene_loader, engine->material_provider);
 
-    return 1;
+    return 0;
 }
 
 int32_t su_release() noexcept {
     delete engine;
     engine = nullptr;
 
-    return 1;
+    return 0;
 }
 
 int32_t su_load_take(char const* string) noexcept {
-    ASSERT_ENGINE(0)
+    ASSERT_ENGINE(-1)
 
     bool success = true;
 
@@ -158,7 +158,7 @@ int32_t su_load_take(char const* string) noexcept {
         success = false;
     }
 
-    return success ? 1 : 0;
+    return success ? 0 : -2;
 }
 
 uint32_t su_create_camera(char const* string) noexcept {
@@ -178,7 +178,7 @@ uint32_t su_create_camera(char const* string) noexcept {
 }
 
 int32_t su_create_sampler(uint32_t num_samples) noexcept {
-    ASSERT_ENGINE(0)
+    ASSERT_ENGINE(-1)
 
 	engine->take.view.num_samples_per_pixel = num_samples;
 
@@ -188,11 +188,11 @@ int32_t su_create_sampler(uint32_t num_samples) noexcept {
 		engine->take.sampler_factory = new sampler::Golden_ratio_factory(num_workers);
     }
 
-	return 1;
+    return 0;
 }
 
 int32_t su_create_integrators(char const* string) noexcept {
-    ASSERT_ENGINE(0)
+    ASSERT_ENGINE(-1)
 
     ASSERT_PARSE(string, 0)
 
@@ -200,7 +200,7 @@ int32_t su_create_integrators(char const* string) noexcept {
 
 	take::Loader::load_integrator_factories(*root, num_workers, engine->take);
 
-    return 1;
+    return 0;
 }
 
 uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
@@ -320,7 +320,7 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
 }
 
 int32_t su_create_light(uint32_t entity) noexcept {
-    ASSERT_ENGINE(0)
+    ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
         return 0;
@@ -342,10 +342,10 @@ uint32_t su_camera_entity() noexcept {
 }
 
 int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) noexcept {
-    ASSERT_ENGINE(0)
+    ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
-        return 0;
+        return -1;
     }
 
     float4x4 const m(transformation);
@@ -360,11 +360,11 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
 
     engine->scene.prop_set_world_transformation(entity, t);
 
-    return 1;
+    return 0;
 }
 
 int32_t su_render() noexcept {
-    ASSERT_ENGINE(0)
+    ASSERT_ENGINE(-1)
 
     engine->threads.wait_async();
 
@@ -375,7 +375,7 @@ int32_t su_render() noexcept {
         driver.render(engine->take.exporters);
     }
 
-    return 1;
+    return 0;
 }
 
 namespace logging {
@@ -398,19 +398,19 @@ class C : public Log {
 
 int32_t su_register_log(Post post, bool verbose) noexcept {
     if (!post) {
-        return 0;
+        return -1;
 	}
 
     logging::init(new logging::C(post));
 
 	logging::set_verbose(verbose);
 
-	return 1;
+    return 0;
 }
 
 int32_t su_register_progress(Progress_start start, Progress_tick tick) noexcept {
     progressor.start_ = start;
     progressor.tick_  = tick;
 
-	return 1;
+    return 0;
 }

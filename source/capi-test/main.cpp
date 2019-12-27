@@ -15,7 +15,9 @@ int main(int /*argc*/, char* /*argv*/[]) noexcept {
 
 	su_register_progress(&progress_start, &progress_tick);
 
-	su_load_take("takes/imrod.take");
+    if (su_load_take("takes/imrod.take")) {
+        return 1;
+    }
 
 	std::string const material_source = R"({
 	"rendering": {
@@ -55,7 +57,7 @@ void logging_post(uint32_t type, char const* text) {
     std::cout << text << std::endl;
 }
 
-progress::Std_out progressor;
+ progress::Std_out progressor;
 
 void progress_start(uint32_t resolution) {
     progressor.start(resolution);
