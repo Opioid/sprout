@@ -53,7 +53,7 @@ class Typed_cache : public Cache {
 
     Resource_ptr<T> get(std::string const& filename, memory::Variant_map const& options) noexcept;
 
-	Resource_ptr<T> get(uint32_t id) const noexcept;
+    Resource_ptr<T> get(uint32_t id) const noexcept;
 
     Resource_ptr<T> store(T* resource) noexcept;
 

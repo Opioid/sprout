@@ -33,7 +33,7 @@ class Pool {
 
     void wait_async() noexcept;
 
-	static uint32_t num_threads(int32_t request) noexcept;
+    static uint32_t num_threads(int32_t request) noexcept;
 
   private:
     void wake_all() noexcept;

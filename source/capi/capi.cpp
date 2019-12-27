@@ -75,37 +75,39 @@ namespace progress {
 
 class C : public Sink {
   public:
-
-	void start(uint32_t resolution) noexcept override final {
+    void start(uint32_t resolution) noexcept override final {
         if (start_) {
-			start_(resolution);
-		}
-	}
+            start_(resolution);
+        }
+    }
 
-	void tick() noexcept override final {
-		if (tick_) {;
-			tick_();
-		}
-	}
+    void tick() noexcept override final {
+        if (tick_) {
+            ;
+            tick_();
+        }
+    }
 
-	Progress_start start_ = nullptr;
+    Progress_start start_ = nullptr;
     Progress_tick  tick_  = nullptr;
 };
 
-}
+}  // namespace progress
 
 static progress::C progressor;
 
 #define ASSERT_ENGINE(RESULT) \
-    if (!engine) { return RESULT; }
+    if (!engine) {            \
+        return RESULT;        \
+    }
 
 #define ASSERT_PARSE(STRING, RESULT)               \
-	std::string error;                             \
-	auto        root = json::parse(STRING, error); \
+    std::string error;                             \
+    auto        root = json::parse(STRING, error); \
     if (!root) {                                   \
-		logging::error(error);                     \
+        logging::error(error);                     \
         return RESULT;                             \
-	}
+    }
 
 char const* su_platform_revision() noexcept {
     return platform::revision().c_str();
@@ -114,7 +116,7 @@ char const* su_platform_revision() noexcept {
 int32_t su_init() noexcept {
     if (engine) {
         return -1;
-	}
+    }
 
     engine = new Engine;
 
@@ -164,28 +166,28 @@ int32_t su_load_take(char const* string) noexcept {
 uint32_t su_create_camera(char const* string) noexcept {
     ASSERT_ENGINE(prop::Null)
 
-	ASSERT_PARSE(string, prop::Null)
+    ASSERT_PARSE(string, prop::Null)
 
-	if (auto camera = take::Loader::load_camera(*root, engine->scene); camera) {
+    if (auto camera = take::Loader::load_camera(*root, engine->scene); camera) {
         engine->take.view.clear();
 
-		engine->take.view.camera = camera;
+        engine->take.view.camera = camera;
 
         return camera->entity();
-	}
+    }
 
-	return prop::Null;
+    return prop::Null;
 }
 
 int32_t su_create_sampler(uint32_t num_samples) noexcept {
     ASSERT_ENGINE(-1)
 
-	engine->take.view.num_samples_per_pixel = num_samples;
+    engine->take.view.num_samples_per_pixel = num_samples;
 
-	if (!engine->take.sampler_factory) {
+    if (!engine->take.sampler_factory) {
         uint32_t const num_workers = engine->resources.threads().num_threads();
 
-		engine->take.sampler_factory = new sampler::Golden_ratio_factory(num_workers);
+        engine->take.sampler_factory = new sampler::Golden_ratio_factory(num_workers);
     }
 
     return 0;
@@ -196,28 +198,28 @@ int32_t su_create_integrators(char const* string) noexcept {
 
     ASSERT_PARSE(string, 0)
 
-	uint32_t const num_workers = engine->resources.threads().num_threads();
+    uint32_t const num_workers = engine->resources.threads().num_threads();
 
-	take::Loader::load_integrator_factories(*root, num_workers, engine->take);
+    take::Loader::load_integrator_factories(*root, num_workers, engine->take);
 
     return 0;
 }
 
 uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
-	                     uint32_t height, uint32_t depth, uint32_t num_elements, 
-						 char const* data, uint32_t stride) noexcept {
+                         uint32_t height, uint32_t depth, uint32_t num_elements, char const* data,
+                         uint32_t stride) noexcept {
     ASSERT_ENGINE(resource::Null)
 
-	int3 const dimensions(width, height, std::max(depth, 1u));
+    int3 const dimensions(width, height, std::max(depth, 1u));
 
-	using Description = image::Provider::Description;
+    using Description = image::Provider::Description;
 
-	Description desc{Description::Pixel_type(pixel_type), num_channels, 
-		dimensions, std::max(int32_t(num_elements), 0), stride, data};
+    Description desc{Description::Pixel_type(pixel_type), num_channels, dimensions,
+                     std::max(int32_t(num_elements), 0),  stride,       data};
 
-	void const* desc_data = reinterpret_cast<void const*>(&desc);
+    void const* desc_data = reinterpret_cast<void const*>(&desc);
 
-	return engine->resources.load<material::Material>("", desc_data).id;
+    return engine->resources.load<material::Material>("", desc_data).id;
 }
 
 uint32_t su_create_material(char const* string) noexcept {
@@ -251,21 +253,31 @@ uint32_t su_create_material_from_file(char const* filename) noexcept {
 }
 
 uint32_t su_create_triangle_mesh(uint32_t num_vertices, float const* positions,
-								 uint32_t positions_stride, float const* normals,
-								 uint32_t normals_stride, float const* tangents,
-								 uint32_t tangents_stride, float const* texture_coordinates,
-								 uint32_t texture_coordinates_stride, uint32_t num_indices,
-								 uint32_t const* indices, uint32_t num_parts,
-								 uint32_t const* parts) noexcept {
+                                 uint32_t positions_stride, float const* normals,
+                                 uint32_t normals_stride, float const* tangents,
+                                 uint32_t tangents_stride, float const* texture_coordinates,
+                                 uint32_t texture_coordinates_stride, uint32_t num_indices,
+                                 uint32_t const* indices, uint32_t num_parts,
+                                 uint32_t const* parts) noexcept {
     ASSERT_ENGINE(resource::Null)
 
     using Description = shape::triangle::Provider::Description;
 
-	Description const desc{num_vertices, positions_stride, normals_stride, tangents_stride, 
-		texture_coordinates_stride, num_indices, num_parts, positions, normals, tangents, 
-		texture_coordinates, indices, parts};
+    Description const desc{num_vertices,
+                           positions_stride,
+                           normals_stride,
+                           tangents_stride,
+                           texture_coordinates_stride,
+                           num_indices,
+                           num_parts,
+                           positions,
+                           normals,
+                           tangents,
+                           texture_coordinates,
+                           indices,
+                           parts};
 
-	void const* desc_data = reinterpret_cast<void const*>(&desc);
+    void const* desc_data = reinterpret_cast<void const*>(&desc);
 
     return engine->resources.load<shape::Shape>("", desc_data).id;
 }
@@ -387,9 +399,9 @@ class C : public Log {
     C(Post post) noexcept : post_(post) {}
 
   private:
-	void internal_post(Type type, std::string const& text) noexcept override final {
+    void internal_post(Type type, std::string const& text) noexcept override final {
         post_(uint32_t(type), text.c_str());
-	}
+    }
 
     Post post_;
 };
@@ -399,11 +411,11 @@ class C : public Log {
 int32_t su_register_log(Post post, bool verbose) noexcept {
     if (!post) {
         return -1;
-	}
+    }
 
     logging::init(new logging::C(post));
 
-	logging::set_verbose(verbose);
+    logging::set_verbose(verbose);
 
     return 0;
 }

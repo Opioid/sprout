@@ -90,7 +90,7 @@ uint32_t Pool::num_threads(int32_t request) noexcept {
         return uint32_t(std::max(num_threads, 1));
     }
 
-	return std::min(available_threads, uint32_t(std::max(request, 1)));
+    return std::min(available_threads, uint32_t(std::max(request, 1)));
 }
 
 void Pool::wake_all() noexcept {

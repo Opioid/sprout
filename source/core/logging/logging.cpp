@@ -1,6 +1,6 @@
 #include "logging.hpp"
-#include "log.hpp"
 #include "base/memory/unique.inl"
+#include "log.hpp"
 
 namespace logging {
 
@@ -14,56 +14,56 @@ void init(Log* l) noexcept {
 
 void info(std::string const& text) noexcept {
     if (log) {
-		log->post(Log::Type::Info, text);
-	}
+        log->post(Log::Type::Info, text);
+    }
 }
 
 void info(std::string const& text, float a) noexcept {
     if (log) {
-		log->post(Log::Type::Info, text, a);
-	}
+        log->post(Log::Type::Info, text, a);
+    }
 }
 
 void info(std::string const& text, std::string const& a) noexcept {
     if (log) {
-		log->post(Log::Type::Info, text, a);
-	}
+        log->post(Log::Type::Info, text, a);
+    }
 }
 
 void warning(std::string const& text) noexcept {
     if (log) {
-		log->post(Log::Type::Warning, text);
-	}
+        log->post(Log::Type::Warning, text);
+    }
 }
 
 void warning(std::string const& text, std::string const& a) noexcept {
     if (log) {
-		log->post(Log::Type::Warning, text, a);
-	}
+        log->post(Log::Type::Warning, text, a);
+    }
 }
 
 void error(std::string const& text) noexcept {
     if (log) {
-		log->post(Log::Type::Error, text);
-	}
+        log->post(Log::Type::Error, text);
+    }
 }
 
 void error(std::string const& text, std::string const& a) noexcept {
     if (log) {
-		log->post(Log::Type::Error, text, a);
-	}
+        log->post(Log::Type::Error, text, a);
+    }
 }
 
 void push_error(std::string const& text) noexcept {
     if (log) {
-		log->push(Log::Type::Error, text);
-	}
+        log->push(Log::Type::Error, text);
+    }
 }
 
 void push_error(std::string const& text, std::string const& a) noexcept {
     if (log) {
-		log->push(Log::Type::Error, text, a);
-	}
+        log->push(Log::Type::Error, text, a);
+    }
 }
 
 void verbose(std::string const& text) noexcept {

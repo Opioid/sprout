@@ -135,9 +135,9 @@ bool Writer::write(std::string_view name, float const* data, int2 dimensions, fl
         return false;
     }
 
-    uint32_t const area  = uint32_t(dimensions[0] * dimensions[1]);
+    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
-    uint8_t*       bytes = memory::allocate_aligned<uint8_t>(area);
+    uint8_t* bytes = memory::allocate_aligned<uint8_t>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
         float scaled = scale * data[i];
@@ -166,15 +166,16 @@ bool Writer::write(std::string_view name, float const* data, int2 dimensions, fl
     return true;
 }
 
-bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, float scale) noexcept {
+bool Writer::write(std::string_view name, float2 const* data, int2 dimensions,
+                   float scale) noexcept {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
     }
 
-    uint32_t const area  = uint32_t(dimensions[0] * dimensions[1]);
+    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
-    byte3*         bytes = memory::allocate_aligned<byte3>(area);
+    byte3* bytes = memory::allocate_aligned<byte3>(area);
 
     for (uint32_t i = 0; i < area; ++i) {
         bytes[i] = byte3(uint8_t(scale * data[i][0]), uint8_t(scale * data[i][1]), 0);
@@ -197,7 +198,8 @@ bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, f
     return true;
 }
 
-bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimensions, float scale) noexcept {
+bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimensions,
+                   float scale) noexcept {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -325,7 +327,8 @@ std::string Writer_alpha::file_extension() const noexcept {
     return "png";
 }
 
-bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept {
+bool Writer_alpha::write(std::ostream& stream, Float4 const& image,
+                         thread::Pool& threads) noexcept {
     auto const d = image.description().dimensions_2();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);

@@ -23,11 +23,11 @@ class Tile_queue {
     uint32_t index(int4 const& tile) const noexcept;
 
   private:
-	int2 const resolution_;
+    int2 const resolution_;
 
     int32_t const tile_dimensions_;
 
-	int32_t const filter_radius_;
+    int32_t const filter_radius_;
 
     int32_t const tiles_per_row_;
 

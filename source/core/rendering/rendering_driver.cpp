@@ -37,8 +37,7 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads,
       threads_(threads),
       workers_(
           memory::construct_array_aligned<Camera_worker>(threads.num_threads(), tiles_, ranges_)),
-      tiles_(take.view.camera->resolution(), 32,
-             take.view.camera->sensor().filter_radius_int()),
+      tiles_(take.view.camera->resolution(), 32, take.view.camera->sensor().filter_radius_int()),
 #ifdef PARTICLE_TRAINING
       ranges_(take.lighttracer_factory ? head(take.view.num_particles) : 0,
               take.lighttracer_factory ? tail(take.view.num_particles) : 0,

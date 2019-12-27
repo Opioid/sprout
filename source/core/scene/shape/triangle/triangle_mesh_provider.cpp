@@ -183,19 +183,19 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
             uint32_t const triangles_start = start_index / 3;
             uint32_t const triangles_end   = (start_index + num_indices) / 3;
 
-			for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+            for (uint32_t i = triangles_start; i < triangles_end; ++i) {
                 triangles[i].i[0] = desc.indices[i * 3 + 0];
                 triangles[i].i[1] = desc.indices[i * 3 + 1];
                 triangles[i].i[2] = desc.indices[i * 3 + 2];
 
                 triangles[i].part = p;
             }
-		}
+        }
 
-        Vertex_stream_CAPI const vertex_stream(desc.num_vertices, desc.positions_stride,
-                                         desc.normals_stride, desc.tangents_stride,
-                                         desc.texture_coordinates_stride, desc.positions,
-                                         desc.normals, desc.tangents, desc.texture_coordinates);
+        Vertex_stream_CAPI const vertex_stream(
+            desc.num_vertices, desc.positions_stride, desc.normals_stride, desc.tangents_stride,
+            desc.texture_coordinates_stride, desc.positions, desc.normals, desc.tangents,
+            desc.texture_coordinates);
 
         build_bvh(*mesh, num_triangles, triangles, vertex_stream, resources.threads());
 

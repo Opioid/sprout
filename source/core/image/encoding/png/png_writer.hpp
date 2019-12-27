@@ -12,7 +12,8 @@ class Writer : public image::Writer, Srgb {
 
     std::string file_extension() const noexcept override final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept override final;
+    bool write(std::ostream& stream, Float4 const& image,
+               thread::Pool& threads) noexcept override final;
 
     bool write_heatmap(std::string_view name, float const* data, int2 dimensions, float max_value,
                        thread::Pool& threads) noexcept;
@@ -30,7 +31,8 @@ class Writer : public image::Writer, Srgb {
     static bool write(std::string_view name, packed_float3 const* data, int2 dimensions,
                       float scale = 1.f) noexcept;
 
-    static bool write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions) noexcept;
+    static bool write_heatmap(std::string_view name, uint32_t const* data,
+                              int2 dimensions) noexcept;
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions) noexcept;
 
@@ -44,7 +46,8 @@ class Writer_alpha : public image::Writer, Srgb_alpha {
 
     std::string file_extension() const noexcept override final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept override final;
+    bool write(std::ostream& stream, Float4 const& image,
+               thread::Pool& threads) noexcept override final;
 };
 
 }  // namespace image::encoding::png

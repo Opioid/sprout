@@ -92,9 +92,9 @@ class Loader {
 
     void create_light(uint32_t prop_id, Scene& scene) noexcept;
 
-	Materials& materials_buffer() noexcept;
+    Materials& materials_buffer() noexcept;
 
-	Material_ptr fallback_material() const noexcept;
+    Material_ptr fallback_material() const noexcept;
 
     size_t num_bytes() const noexcept;
 
@@ -152,7 +152,7 @@ class Loader {
 
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 
-	Materials materials_;
+    Materials materials_;
 };
 
 }  // namespace scene

@@ -27,37 +27,37 @@ bool Tile_queue::pop(int4& tile) noexcept {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
     if (current < num_tiles_) {
-		int2 const resolution = resolution_;
+        int2 const resolution = resolution_;
 
-		int32_t const tile_dimensions = tile_dimensions_;
+        int32_t const tile_dimensions = tile_dimensions_;
 
-		int32_t const filter_radius = filter_radius_;
+        int32_t const filter_radius = filter_radius_;
 
-		int2 start;
+        int2 start;
         start[1] = current / tiles_per_row_;
         start[0] = current - start[1] * tiles_per_row_;
 
-		start *= tile_dimensions;
+        start *= tile_dimensions;
 
-		int2 end = min(start + tile_dimensions, resolution);
+        int2 end = min(start + tile_dimensions, resolution);
 
         if (0 == start[1]) {
-			start[1] -= filter_radius;
+            start[1] -= filter_radius;
         }
 
         if (resolution[1] == end[1]) {
-			end[1] += filter_radius;
+            end[1] += filter_radius;
         }
 
         if (0 == start[0]) {
-			start[0] -= filter_radius;
-		}
+            start[0] -= filter_radius;
+        }
 
-		if (resolution[0] == end[0]) {
-			end[0] += filter_radius;
-		}
+        if (resolution[0] == end[0]) {
+            end[0] += filter_radius;
+        }
 
-		tile = int4(start, end - 1);
+        tile = int4(start, end - 1);
 
         return true;
     }

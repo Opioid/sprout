@@ -119,7 +119,7 @@ class Scene {
     bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
         noexcept;
 
-	uint32_t num_props() const noexcept;
+    uint32_t num_props() const noexcept;
 
     Prop const* prop(uint32_t index) const noexcept;
     Prop*       prop(uint32_t index) noexcept;

@@ -17,25 +17,21 @@ class Provider final : public resource::Provider<Image> {
     Image* load(std::string const& filename, Variant_map const& options,
                 resource::Manager& resources, std::string& resolved_name) noexcept override final;
 
-	struct Description {
-		enum class Pixel_type {
-			Byte = 0,
-			Short,
-			Float
-		};
+    struct Description {
+        enum class Pixel_type { Byte = 0, Short, Float };
 
-		Pixel_type pixel_type;
+        Pixel_type pixel_type;
 
-		uint32_t num_channels;
+        uint32_t num_channels;
 
-		int3 dimensions;
+        int3 dimensions;
 
-		int32_t num_elements;
+        int32_t num_elements;
 
-		uint32_t stride;
+        uint32_t stride;
 
-		char const* data;
-	};
+        char const* data;
+    };
 
     Image* load(void const* data, std::string const& source_name, Variant_map const& options,
                 resource::Manager& resources) noexcept override final;

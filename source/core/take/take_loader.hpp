@@ -36,9 +36,9 @@ class Loader {
     static bool load(Take& take, std::istream& stream, std::string_view take_name, Scene& scene,
                      resource::Manager& resources) noexcept;
 
-	static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept;
+    static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept;
 
-	static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
+    static void load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
                                           Take& take) noexcept;
 
     static void load_postprocessors(json::Value const& pp_value, resource::Manager& resources,

@@ -29,7 +29,7 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
     uint32_t const forward_progress_range  = tiles_.size() * camera.num_views();
     uint32_t const backward_progress_range = ranges_.size() * camera.num_views();
 
-	scene_.finish();
+    scene_.finish();
 
     for (uint32_t f = 0; f < view_.num_frames; ++f) {
         uint32_t const current_frame = view_.start_frame + f;

@@ -17,7 +17,7 @@ struct Vector2 {
 
     constexpr Vector2(T x, T y) noexcept : v{x, y} {}
 
-	explicit constexpr Vector2(T const* a) noexcept;
+    explicit constexpr Vector2(T const* a) noexcept;
 
     template <typename U>
     explicit constexpr Vector2(U x, U y) noexcept;

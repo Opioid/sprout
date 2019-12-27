@@ -38,9 +38,9 @@ class Provider final : public resource::Provider<Texture> {
 
     size_t num_bytes(Texture const* resource) const noexcept override final;
 
-	static std::string encode_name(uint32_t image_id) noexcept;
+    static std::string encode_name(uint32_t image_id) noexcept;
 
-	static uint32_t decode_name(std::string const& name) noexcept;
+    static uint32_t decode_name(std::string const& name) noexcept;
 
   private:
     bool no_textures_;

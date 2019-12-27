@@ -39,7 +39,7 @@ class alignas(64) Image {
 
     Description const& description() const noexcept;
 
-	char* data() const noexcept;
+    char* data() const noexcept;
 
     Byte1 const&         byte1() const noexcept;
     Byte2 const&         byte2() const noexcept;

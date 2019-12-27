@@ -79,7 +79,7 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
 
     Image* image = nullptr;
 
-	uint32_t pixel_width = 0;
+    uint32_t pixel_width = 0;
 
     if (Description::Pixel_type::Byte == desc.pixel_type) {
         switch (desc.num_channels) {
@@ -99,7 +99,7 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
                 break;
         }
 
-		pixel_width = desc.num_channels * uint32_t(sizeof(uint8_t));
+        pixel_width = desc.num_channels * uint32_t(sizeof(uint8_t));
     } else if (Description::Pixel_type::Float == desc.pixel_type) {
         switch (desc.num_channels) {
             case 1:
@@ -118,30 +118,31 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
                 break;
         }
 
-		pixel_width = desc.num_channels * uint32_t(sizeof(float));
+        pixel_width = desc.num_channels * uint32_t(sizeof(float));
     }
 
-	if (!image) {
+    if (!image) {
         return nullptr;
-	}
+    }
 
-	char* image_data = image->data();
+    char* image_data = image->data();
 
-	char const* source_data = desc.data;
+    char const* source_data = desc.data;
 
-	uint64_t const num_pixels = image->description().num_pixels();
+    uint64_t const num_pixels = image->description().num_pixels();
 
-	uint32_t const stride = desc.stride;
+    uint32_t const stride = desc.stride;
 
-	if (stride == pixel_width) {
+    if (stride == pixel_width) {
         std::copy(source_data, source_data + num_pixels * uint64_t(pixel_width), image_data);
-	} else {
-		for (uint64_t i = 0; i < num_pixels; ++i, source_data += stride, image_data += pixel_width) {
-			std::copy(source_data, source_data + pixel_width, image_data);
-		}
-	}
+    } else {
+        for (uint64_t i = 0; i < num_pixels;
+             ++i, source_data += stride, image_data += pixel_width) {
+            std::copy(source_data, source_data + pixel_width, image_data);
+        }
+    }
 
-	return image;
+    return image;
 }
 
 size_t Provider::num_bytes() const noexcept {

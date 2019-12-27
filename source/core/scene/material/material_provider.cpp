@@ -53,10 +53,7 @@ static Material* load_substitute(json::Value const& substitute_value,
 
 struct Texture_description {
     Texture_description() noexcept
-        : usage("Color"),
-          swizzle(image::Swizzle::XYZW),
-          scale(1.f),
-          num_elements(1) {}
+        : usage("Color"), swizzle(image::Swizzle::XYZW), scale(1.f), num_elements(1) {}
 
     std::string filename;
 

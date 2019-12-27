@@ -9,7 +9,7 @@ namespace logging {
 
 class Std_out : public Log {
   private:
-	void internal_post(Type type, std::string const& text) noexcept override final {
+    void internal_post(Type type, std::string const& text) noexcept override final {
         switch (type) {
             case Type::Info:
             case Type::Verbose:
@@ -24,7 +24,7 @@ class Std_out : public Log {
         }
 
         std::cout << text << std::endl;
-	}
+    }
 };
 
 }  // namespace logging
