@@ -236,7 +236,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) noexc
         return nullptr;
     }
 
-    math::Transformation transformation{float3(0.f), float3(1.f), math::quaternion::identity()};
+    math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
 
     json::Value const* parameters_value = nullptr;
     json::Value const* animation_value  = nullptr;

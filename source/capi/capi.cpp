@@ -1,4 +1,5 @@
 #include "base/json/json.hpp"
+#include "base/math/interpolated_function_1d.inl"
 #include "base/memory/array.inl"
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
@@ -15,6 +16,7 @@
 #include "core/resource/resource_manager.inl"
 #include "core/sampler/sampler_golden_ratio.hpp"
 #include "core/scene/camera/camera.hpp"
+#include "core/scene/camera/camera_perspective.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.inl"
@@ -24,6 +26,10 @@
 #include "core/take/take.hpp"
 #include "core/take/take_loader.hpp"
 #include "extension/procedural/sky/sky_provider.hpp"
+#include "rendering/sensor/clamp.inl"
+#include "rendering/sensor/filter/sensor_gaussian.hpp"
+#include "rendering/sensor/filtered.inl"
+#include "rendering/sensor/opaque.hpp"
 #include "sprout.h"
 
 using namespace scene;
@@ -177,6 +183,38 @@ uint32_t su_create_camera(char const* string) noexcept {
     }
 
     return prop::Null;
+}
+
+uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov) noexcept {
+    ASSERT_ENGINE(prop::Null)
+
+    engine->take.view.clear();
+
+    int2 const resolution(width, height);
+
+    camera::Perspective* camera = new camera::Perspective(resolution);
+
+    camera->set_fov(fov);
+
+    float const radius = 1.f;
+    float const alpha  = 1.8f;
+
+    using namespace rendering::sensor;
+
+    filter::Gaussian filter(radius, alpha);
+
+    Sensor* sensor = new Filtered_1p0<Opaque, clamp::Identity, filter::Gaussian>(
+        camera->sensor_dimensions(), 0.f, clamp::Identity(), std::move(filter));
+
+    camera->set_sensor(sensor);
+
+    uint32_t const prop_id = engine->scene.create_dummy();
+
+    camera->init(prop_id);
+
+    engine->take.view.camera = camera;
+
+    return prop_id;
 }
 
 int32_t su_create_sampler(uint32_t num_samples) noexcept {
