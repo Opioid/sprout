@@ -177,6 +177,18 @@ int32_t su_load_take(char const* string) noexcept {
     return success ? 0 : -2;
 }
 
+int32_t su_create_defaults() noexcept {
+    ASSERT_ENGINE(-1)
+
+    uint32_t const num_workers = engine->resources.threads().num_threads();
+
+    take::Loader::set_default_integrators(num_workers, engine->take);
+
+    take::Loader::set_default_exporter(engine->take);
+
+    return 0;
+}
+
 uint32_t su_create_camera(char const* string) noexcept {
     ASSERT_ENGINE(prop::Null)
 
@@ -246,7 +258,7 @@ int32_t su_create_integrators(char const* string) noexcept {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::load_integrator_factories(*root, num_workers, engine->take);
+    take::Loader::load_integrators(*root, num_workers, engine->take);
 
     return 0;
 }
@@ -278,9 +290,11 @@ uint32_t su_create_material(char const* string) noexcept {
     auto const material = engine->resources.load<material::Material>("", data);
 
     if (!material) {
-        logging::error("");
+        logging::error(string);
         return resource::Null;
     }
+
+    material.ptr->compile(engine->threads, engine->scene);
 
     return material.id;
 }
@@ -426,12 +440,15 @@ int32_t su_render() noexcept {
 
     engine->threads.wait_async();
 
-    if (engine->take.view.camera) {
-        rendering::Driver_finalframe driver(engine->take, engine->scene, engine->threads,
-                                            engine->max_sample_size, progressor);
-
-        driver.render(engine->take.exporters);
+    if (!engine->take.view.camera || !engine->take.surface_integrator_factory) {
+        return -2;
     }
+
+    rendering::Driver_finalframe driver(engine->take, engine->scene, engine->threads,
+                                        engine->max_sample_size, progressor);
+
+    driver.render(engine->take.exporters);
+
 
     return 0;
 }

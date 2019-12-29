@@ -81,15 +81,15 @@ static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
                                               uint32_t           num_workers,
                                               uint32_t&          num_samples_per_pixel) noexcept;
 
-static Surface_factory* load_surface_integrator_factory(json::Value const& integrator_value,
+static Surface_factory* load_surface_integrator(json::Value const& integrator_value,
                                                         uint32_t           num_workers,
                                                         bool               lighttracer) noexcept;
 
-static Volume_factory* load_volume_integrator_factory(json::Value const& integrator_value,
+static Volume_factory* load_volume_integrator(json::Value const& integrator_value,
 
                                                       uint32_t num_workers) noexcept;
 
-static Particle_factory* load_particle_integrator_factory(json::Value const& integrator_value,
+static Particle_factory* load_particle_integrator(json::Value const& integrator_value,
                                                           uint32_t           num_workers,
                                                           uint64_t& num_particles) noexcept;
 
@@ -132,7 +132,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         } else if ("num_frames" == n.name) {
             take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
-            load_integrator_factories(n.value, num_threads, take);
+            load_integrators(n.value, num_threads, take);
         } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
@@ -166,17 +166,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
             take.exporters = load_exporters(*exporter_value, take.view);
         }
 
-        if (take.exporters.empty()) {
-            bool const error_diffusion = false;
-
-            using namespace image;
-
-            Writer* writer = new encoding::png::Writer(error_diffusion);
-
-            take.exporters.push_back(new exporting::Image_sequence("output_", writer));
-
-            logging::warning("No valid exporter was specified, defaulting to PNG writer.");
-        }
+        set_default_exporter(take);
     }
 
     if (!take.sampler_factory) {
@@ -185,29 +175,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         logging::warning("No valid sampler was specified, defaulting to Random sampler.");
     }
 
-    using namespace rendering::integrator;
-
-    if (!take.surface_integrator_factory) {
-        Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
-
-        uint32_t const num_samples = 1;
-        uint32_t const min_bounces = 4;
-        uint32_t const max_bounces = 8;
-
-        bool const enable_caustics = false;
-
-        take.surface_integrator_factory = new surface::Pathtracer_MIS_factory(
-            num_threads, num_samples, min_bounces, max_bounces, light_sampling, enable_caustics,
-            false);
-
-        logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
-    }
-
-    if (!take.volume_integrator_factory) {
-        take.volume_integrator_factory = new volume::Tracking_multi_factory(num_threads);
-
-        logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
-    }
+    set_default_integrators(num_threads, take);
 
     take.view.init(resources.threads());
 
@@ -534,30 +502,30 @@ static inline void replace(T*& former, T* newer) noexcept {
     }
 }
 
-void Loader::load_integrator_factories(json::Value const& integrator_value, uint32_t num_workers,
+void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
                                        Take& take) noexcept {
     json::Value::ConstMemberIterator const particle_node = integrator_value.FindMember("particle");
 
     if (integrator_value.MemberEnd() != particle_node) {
-        take.lighttracer_factory = load_particle_integrator_factory(
+        take.lighttracer_factory = load_particle_integrator(
             particle_node->value, num_workers, take.view.num_particles);
     }
 
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
             replace(take.surface_integrator_factory,
-                    load_surface_integrator_factory(n.value, num_workers,
+                    load_surface_integrator(n.value, num_workers,
                                                     nullptr != take.lighttracer_factory));
         } else if ("volume" == n.name) {
             replace(take.volume_integrator_factory,
-                    load_volume_integrator_factory(n.value, num_workers));
+                    load_volume_integrator(n.value, num_workers));
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.view.photon_settings);
         }
     }
 }
 
-static Surface_factory* load_surface_integrator_factory(json::Value const& integrator_value,
+static Surface_factory* load_surface_integrator(json::Value const& integrator_value,
                                                         uint32_t           num_workers,
                                                         bool               lighttracer) noexcept {
     using namespace rendering::integrator::surface;
@@ -662,7 +630,7 @@ static Surface_factory* load_surface_integrator_factory(json::Value const& integ
     return nullptr;
 }
 
-static Volume_factory* load_volume_integrator_factory(json::Value const& integrator_value,
+static Volume_factory* load_volume_integrator(json::Value const& integrator_value,
 
                                                       uint32_t num_workers) noexcept {
     using namespace rendering::integrator::volume;
@@ -692,7 +660,7 @@ static Volume_factory* load_volume_integrator_factory(json::Value const& integra
     return nullptr;
 }
 
-static Particle_factory* load_particle_integrator_factory(json::Value const& integrator_value,
+static Particle_factory* load_particle_integrator(json::Value const& integrator_value,
 
                                                           uint32_t  num_workers,
                                                           uint64_t& num_particles) noexcept {
@@ -707,6 +675,32 @@ static Particle_factory* load_particle_integrator_factory(json::Value const& int
 
     return new Lighttracer_factory(num_workers, 1, max_bounces, num_particles, indirect_caustics,
                                    full_light_path);
+}
+
+void Loader::set_default_integrators(uint32_t num_workers, Take& take) noexcept {
+    using namespace rendering::integrator;
+
+    if (!take.surface_integrator_factory) {
+        Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
+
+        uint32_t const num_samples = 1;
+        uint32_t const min_bounces = 4;
+        uint32_t const max_bounces = 8;
+
+        bool const enable_caustics = false;
+
+        take.surface_integrator_factory = new surface::Pathtracer_MIS_factory(
+            num_workers, num_samples, min_bounces, max_bounces, light_sampling, enable_caustics,
+            false);
+
+        logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
+    }
+
+    if (!take.volume_integrator_factory) {
+        take.volume_integrator_factory = new volume::Tracking_multi_factory(num_workers);
+
+        logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
+    }
 }
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {
@@ -883,6 +877,21 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
     }
 
     return exporters;
+}
+
+void Loader::set_default_exporter(Take& take) noexcept {
+    if (take.exporters.empty()) {
+        bool const error_diffusion = false;
+
+        using namespace image;
+
+        Writer* writer = new encoding::png::Writer(error_diffusion);
+
+        take.exporters.reserve(1);
+        take.exporters.push_back(new exporting::Image_sequence("output_", writer));
+
+        logging::warning("No valid exporter was specified, defaulting to PNG writer.");
+    }
 }
 
 static void load_light_sampling(json::Value const& parent_value,

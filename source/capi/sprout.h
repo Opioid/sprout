@@ -31,6 +31,8 @@ SU_LIBRARY_API int32_t su_mount(char const* folder) noexcept;
 
 SU_LIBRARY_API int32_t su_load_take(char const* string) noexcept;
 
+SU_LIBRARY_API int32_t su_create_defaults() noexcept;
+
 SU_LIBRARY_API uint32_t su_create_camera(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov) noexcept;
@@ -38,6 +40,7 @@ SU_LIBRARY_API uint32_t su_create_camera_perspective(uint32_t width, uint32_t he
 SU_LIBRARY_API int32_t su_create_sampler(uint32_t num_samples) noexcept;
 
 SU_LIBRARY_API int32_t su_create_integrators(char const* string) noexcept;
+
 
 SU_LIBRARY_API uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
                                         uint32_t height, uint32_t depth, uint32_t num_elements,
