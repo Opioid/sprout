@@ -138,6 +138,14 @@ int32_t su_release() noexcept {
     return 0;
 }
 
+int32_t su_mount(char const* folder) noexcept {
+    ASSERT_ENGINE(-1)
+
+    engine->resources.filesystem().push_mount(folder);
+
+    return 0;
+}
+
 int32_t su_load_take(char const* string) noexcept {
     ASSERT_ENGINE(-1)
 
@@ -432,8 +440,6 @@ namespace logging {
 
 class C : public Log {
   public:
-    typedef void (*Post)(uint32_t type, char const* text);
-
     C(Post post) noexcept : post_(post) {}
 
   private:

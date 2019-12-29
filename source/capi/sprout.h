@@ -27,6 +27,8 @@ SU_LIBRARY_API int32_t su_init() noexcept;
 
 SU_LIBRARY_API int32_t su_release() noexcept;
 
+SU_LIBRARY_API int32_t su_mount(char const* folder) noexcept;
+
 SU_LIBRARY_API int32_t su_load_take(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_camera(char const* string) noexcept;
