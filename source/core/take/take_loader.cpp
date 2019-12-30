@@ -82,16 +82,15 @@ static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
                                               uint32_t&          num_samples_per_pixel) noexcept;
 
 static Surface_factory* load_surface_integrator(json::Value const& integrator_value,
-                                                        uint32_t           num_workers,
-                                                        bool               lighttracer) noexcept;
+                                                uint32_t num_workers, bool lighttracer) noexcept;
 
 static Volume_factory* load_volume_integrator(json::Value const& integrator_value,
 
-                                                      uint32_t num_workers) noexcept;
+                                              uint32_t num_workers) noexcept;
 
 static Particle_factory* load_particle_integrator(json::Value const& integrator_value,
-                                                          uint32_t           num_workers,
-                                                          uint64_t& num_particles) noexcept;
+                                                  uint32_t           num_workers,
+                                                  uint64_t&          num_particles) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
@@ -503,22 +502,21 @@ static inline void replace(T*& former, T* newer) noexcept {
 }
 
 void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
-                                       Take& take) noexcept {
+                              Take& take) noexcept {
     json::Value::ConstMemberIterator const particle_node = integrator_value.FindMember("particle");
 
     if (integrator_value.MemberEnd() != particle_node) {
-        take.lighttracer_factory = load_particle_integrator(
-            particle_node->value, num_workers, take.view.num_particles);
+        take.lighttracer_factory = load_particle_integrator(particle_node->value, num_workers,
+                                                            take.view.num_particles);
     }
 
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
-            replace(take.surface_integrator_factory,
-                    load_surface_integrator(n.value, num_workers,
-                                                    nullptr != take.lighttracer_factory));
+            replace(
+                take.surface_integrator_factory,
+                load_surface_integrator(n.value, num_workers, nullptr != take.lighttracer_factory));
         } else if ("volume" == n.name) {
-            replace(take.volume_integrator_factory,
-                    load_volume_integrator(n.value, num_workers));
+            replace(take.volume_integrator_factory, load_volume_integrator(n.value, num_workers));
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.view.photon_settings);
         }
@@ -526,8 +524,7 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
 }
 
 static Surface_factory* load_surface_integrator(json::Value const& integrator_value,
-                                                        uint32_t           num_workers,
-                                                        bool               lighttracer) noexcept {
+                                                uint32_t num_workers, bool lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -632,7 +629,7 @@ static Surface_factory* load_surface_integrator(json::Value const& integrator_va
 
 static Volume_factory* load_volume_integrator(json::Value const& integrator_value,
 
-                                                      uint32_t num_workers) noexcept {
+                                              uint32_t num_workers) noexcept {
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
@@ -662,8 +659,8 @@ static Volume_factory* load_volume_integrator(json::Value const& integrator_valu
 
 static Particle_factory* load_particle_integrator(json::Value const& integrator_value,
 
-                                                          uint32_t  num_workers,
-                                                          uint64_t& num_particles) noexcept {
+                                                  uint32_t  num_workers,
+                                                  uint64_t& num_particles) noexcept {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);

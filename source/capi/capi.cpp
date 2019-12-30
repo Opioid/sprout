@@ -277,7 +277,7 @@ uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t wi
 
     void const* desc_data = reinterpret_cast<void const*>(&desc);
 
-    return engine->resources.load<material::Material>("", desc_data).id;
+    return engine->resources.load<image::Image>("", desc_data).id;
 }
 
 uint32_t su_create_material(char const* string) noexcept {
@@ -448,7 +448,6 @@ int32_t su_render() noexcept {
                                         engine->max_sample_size, progressor);
 
     driver.render(engine->take.exporters);
-
 
     return 0;
 }

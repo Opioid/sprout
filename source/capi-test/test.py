@@ -43,9 +43,15 @@ sprout.su_mount(c_char_p(b"../../data/"))
 
 camera = sprout.su_create_camera_perspective(640, 360, c_float(math.radians(70)))
 
+# integrators_desc = """{
+# "surface": {
+# "AO": {}
+# }
+# }"""
+
 integrators_desc = """{
 "surface": {
-"AO": {}
+"PTMIS": {}
 }
 }"""
 
@@ -60,7 +66,7 @@ material_a_desc = """{
 "rendering": {
     "Substitute": {
         "color": [0, 1, 0.5],
-        "roughness": 0.1,
+        "roughness": 0.2,
         "metallic": 0
     }
 }
@@ -68,9 +74,50 @@ material_a_desc = """{
 
 material_a = c_uint(sprout.su_create_material(c_char_p(material_a_desc.encode('utf-8'))));
 
+Buffer = c_float * 12
+
+image_buffer = Buffer(1.0, 0.0, 0.0,
+                      0.0, 1.0, 0.0,
+                      0.0, 0.0, 1.0,
+                      1.0, 1.0, 0.0)
+
+image_a = sprout.su_create_image(2, 3, 2, 2, 1, 1, image_buffer, 12)
+
+material_b_desc = """{{
+"rendering": {{
+    "Substitute": {{
+        "textures": [
+            {{
+                "usage": "Color",
+                "id": {}
+            }}
+        ],
+        "color": [1, 1, 1],
+        "roughness": 0.5,
+        "metallic": 0
+    }}
+}}
+}}""".format(image_a)
+
+material_b = c_uint(sprout.su_create_material(c_char_p(material_b_desc.encode('utf-8'))));
+
+material_light_desc = """{
+"rendering": {
+    "Light": {
+        "emission": [10000, 10000, 10000]
+    }
+}
+}"""
+
+material_light = c_uint(sprout.su_create_material(c_char_p(material_light_desc.encode('utf-8'))));
+
 sphere_a = sprout.su_create_prop(7, 1, byref(material_a))
 
-plane_a = sprout.su_create_prop(5, 1, byref(material_a))
+plane_a = sprout.su_create_prop(5, 1, byref(material_b))
+
+celestial_disk = sprout.su_create_prop(1, 1, byref(material_light))
+
+sprout.su_create_light(celestial_disk)
 
 Transformation = c_float * 16
 
@@ -94,5 +141,12 @@ transformation = Transformation(1.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 1.0)
 
 sprout.su_entity_set_transformation(plane_a, transformation)
+
+transformation = Transformation(0.01, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.01, 0.0,
+                                0.0, -0.01, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 1.0)
+
+sprout.su_entity_set_transformation(celestial_disk, transformation)
 
 sprout.su_render()
