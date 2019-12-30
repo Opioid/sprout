@@ -10,6 +10,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # On Linux this should give -fPIC/fPIE
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 option(NAN "Soft assert on NaN" OFF)
 option(Valgrind "Valgrind compatible build" OFF)
 

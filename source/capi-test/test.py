@@ -9,14 +9,40 @@ PROGRESS_START_FUNC = CFUNCTYPE(None, c_uint)
 PROGRESS_TICK_FUNC = CFUNCTYPE(None)
 
 def py_log_callback(msg_type, msg):
-    print(msg)
+    if 1 == msg_type:
+        print("Warning: " + str(msg, "utf-8"))
+    elif 2 == msg_type:
+        print("Error: " + str(msg, "utf-8"))
+    else:
+        print(str(msg, "utf-8"))
+
+class Progressor:
+    def start(self, resolution):
+        self.resolution = resolution
+        self.progress = 0
+        self.threshold = 1.0
+
+    def tick(self):
+        if self.progress >= self.resolution:
+            pass
+
+        self.progress += 1
+
+        p = float(self.progress) / float(self.resolution) * 100.0
+
+        if p >= self.threshold:
+            self.threshold += 1.0
+            print("{}%".format(int(p)), end = "\r")
+
+progress = Progressor()
 
 def py_progress_start(resolution):
-    print("start")
+    global progress
+    progress.start(resolution)
 
 def py_progress_tick():
-    pass
-   # print("tick")
+    global progress
+    progress.tick()
 
 if platform.system() == "Windows":
     sprout = CDLL("./sprout.dll")
