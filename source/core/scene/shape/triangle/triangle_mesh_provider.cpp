@@ -169,7 +169,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
         mesh->set_material_for_part(p, desc.parts[p * 3 + 2]);
     }
 
-    resources.threads().run_async([mesh, &desc, &resources]() {
+    resources.threads().run_async([mesh, desc, &resources]() {
         logging::verbose("Started asynchronously building triangle mesh BVH.");
 
         uint32_t const num_triangles = desc.num_indices / 3;

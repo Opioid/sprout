@@ -155,6 +155,58 @@ celestial_disk = sprout.su_create_prop(1, 1, byref(material_light))
 
 sprout.su_create_light(celestial_disk)
 
+Vertices = c_float * 9
+
+positions = Vertices(-1.0, -1.0, 0.0,
+                      0.0,  1.0, 0.0,
+                      1.0, -1.0, 0.0)
+
+normals = Vertices(0.0, 0.0, -1.0,
+                   0.0, 0.0, -1.0,
+                   0.0, 0.0, -1.0)
+
+Tangents = c_float * 12
+
+tangents = Tangents(1.0, 0.0, 0.0, 1.0,
+                    1.0, 0.0, 0.0, 1.0,
+                    1.0, 0.0, 0.0, 1.0)
+
+UVs = c_float * 6
+
+uvs = UVs(0.0, 0.0,
+          0.5, 1.0,
+          1.0, 0.0)
+
+Indices = c_uint * 3
+
+indices = Indices(0, 2, 1)
+
+Parts = c_uint * 3
+parts = Parts(0, 3, 0)
+
+num_vertices = 3
+num_indices = 3
+num_parts = 1
+
+vertices_stride = 12
+tangents_stride = 16
+uvs_stride = 8
+
+
+triangle = sprout.su_create_triangle_mesh(num_vertices,
+                                          positions, vertices_stride,
+                                          normals, vertices_stride,
+                                          tangents, tangents_stride,
+                                          uvs, uvs_stride,
+                                          num_indices, indices,
+                                          num_parts, parts)
+
+print(triangle)
+
+triangle_a = sprout.su_create_prop(triangle, 1, byref(material_a))
+
+print(triangle_a)
+
 Transformation = c_float * 16
 
 transformation = Transformation(1.0, 0.0, 0.0, 0.0,
@@ -167,7 +219,7 @@ sprout.su_entity_set_transformation(camera, transformation)
 transformation = Transformation(1.0, 0.0, 0.0, 0.0,
                                 0.0, 1.0, 0.0, 0.0,
                                 0.0, 0.0, 1.0, 0.0,
-                                0.0, 1.0, 5.0, 1.0)
+                                1.0, 1.0, 5.0, 1.0)
 
 sprout.su_entity_set_transformation(sphere_a, transformation)
 
@@ -184,5 +236,12 @@ transformation = Transformation(0.01, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 1.0)
 
 sprout.su_entity_set_transformation(celestial_disk, transformation)
+
+transformation = Transformation(1.0, 0.0, 0.0, 0.0,
+                                0.0, 1.0, 0.0, 0.0,
+                                0.0, 0.0, 1.0, 0.0,
+                                -1.0, 1.0, 5.0, 1.0)
+
+sprout.su_entity_set_transformation(triangle_a, transformation)
 
 sprout.su_render()
