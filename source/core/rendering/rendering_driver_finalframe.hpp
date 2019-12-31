@@ -20,8 +20,8 @@ namespace rendering {
 
 class Driver_finalframe : public Driver {
   public:
-    Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& threads,
-                      uint32_t max_sample_size, progress::Sink& progressor) noexcept;
+    Driver_finalframe(thread::Pool& threads, uint32_t max_sample_size,
+                      progress::Sink& progressor) noexcept;
 
     using Exporters = memory::Array<exporting::Sink*>;
 

@@ -165,8 +165,9 @@ int main(int argc, char* argv[]) noexcept {
                 auto const rendering_start = std::chrono::high_resolution_clock::now();
 
                 if (take.view.camera) {
-                    rendering::Driver_finalframe driver(take, scene, threads, max_sample_size,
-                                                        progressor);
+                    rendering::Driver_finalframe driver(threads, max_sample_size, progressor);
+
+                    driver.init(take, scene);
 
                     driver.render(take.exporters);
                 } else {

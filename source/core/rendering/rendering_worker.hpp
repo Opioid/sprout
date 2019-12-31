@@ -69,12 +69,14 @@ class Worker : public scene::Worker {
     using Photon_mapper       = integrator::particle::photon::Mapper;
     using Particle_importance = integrator::particle::Importance_cache;
 
+    Worker(uint32_t max_sample_size) noexcept;
+
     ~Worker() noexcept;
 
-    void init(uint32_t id, Scene const& scene, Camera const& camera, uint32_t max_sample_size,
-              uint32_t num_samples_per_pixel, Surface_factory& surface_factory,
-              Volume_factory& volume_factory, sampler::Factory& sampler_factory,
-              Photon_map* photon_map, take::Photon_settings const& photon_settings_,
+    void init(uint32_t id, Scene const& scene, Camera const& camera, uint32_t num_samples_per_pixel,
+              Surface_factory& surface_factory, Volume_factory& volume_factory,
+              sampler::Factory& sampler_factory, Photon_map* photon_map,
+              take::Photon_settings const& photon_settings_,
               Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk,
               Particle_importance* particle_importance) noexcept;
 

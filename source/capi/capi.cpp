@@ -36,6 +36,28 @@ using namespace scene;
 
 using Shape_ptr = resource::Resource_ptr<shape::Shape>;
 
+namespace progress {
+
+class C : public Sink {
+  public:
+    void start(uint32_t resolution) noexcept override final {
+        if (start_) {
+            start_(resolution);
+        }
+    }
+
+    void tick() noexcept override final {
+        if (tick_) {
+            tick_();
+        }
+    }
+
+    Progress_start start_ = nullptr;
+    Progress_tick  tick_  = nullptr;
+};
+
+}  // namespace progress
+
 struct Engine {
     Engine() noexcept
         : threads(thread::Pool::num_threads(0)),
@@ -48,7 +70,7 @@ struct Engine {
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),
           scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources),
-          max_sample_size(material_provider.max_sample_size()) {}
+          driver(threads, material_provider.max_sample_size(), progressor) {}
 
     thread::Pool threads;
 
@@ -72,35 +94,12 @@ struct Engine {
 
     take::Take take;
 
-    uint32_t const max_sample_size;
+    progress::C progressor;
+
+    rendering::Driver_finalframe driver;
 };
 
 static Engine* engine = nullptr;
-
-namespace progress {
-
-class C : public Sink {
-  public:
-    void start(uint32_t resolution) noexcept override final {
-        if (start_) {
-            start_(resolution);
-        }
-    }
-
-    void tick() noexcept override final {
-        if (tick_) {
-            ;
-            tick_();
-        }
-    }
-
-    Progress_start start_ = nullptr;
-    Progress_tick  tick_  = nullptr;
-};
-
-}  // namespace progress
-
-static progress::C progressor;
 
 #define ASSERT_ENGINE(RESULT) \
     if (!engine) {            \
@@ -444,10 +443,9 @@ int32_t su_render() noexcept {
         return -2;
     }
 
-    rendering::Driver_finalframe driver(engine->take, engine->scene, engine->threads,
-                                        engine->max_sample_size, progressor);
+    engine->driver.init(engine->take, engine->scene);
 
-    driver.render(engine->take.exporters);
+    engine->driver.render(engine->take.exporters);
 
     return 0;
 }
@@ -481,8 +479,10 @@ int32_t su_register_log(Post post, bool verbose) noexcept {
 }
 
 int32_t su_register_progress(Progress_start start, Progress_tick tick) noexcept {
-    progressor.start_ = start;
-    progressor.tick_  = tick;
+    ASSERT_ENGINE(-1)
+
+    engine->progressor.start_ = start;
+    engine->progressor.tick_  = tick;
 
     return 0;
 }

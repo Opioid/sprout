@@ -15,8 +15,9 @@
 
 namespace rendering {
 
-Camera_worker::Camera_worker(Tile_queue const& tiles, Range_queue const& ranges)
-    : tiles_(tiles), ranges_(ranges) {}
+Camera_worker::Camera_worker(uint32_t max_sample_size, Tile_queue const& tiles,
+                             Range_queue const& ranges)
+    : Worker(max_sample_size), tiles_(tiles), ranges_(ranges) {}
 
 void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
                            uint32_t num_samples) noexcept {

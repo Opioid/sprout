@@ -3,16 +3,22 @@
 
 namespace rendering {
 
-Tile_queue::Tile_queue(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) noexcept
-    : resolution_(resolution),
-      tile_dimensions_(tile_dimensions),
-      filter_radius_(filter_radius),
-      tiles_per_row_(int32_t(std::ceil(float(resolution[0]) / float(tile_dimensions)))),
-      num_tiles_(uint32_t(tiles_per_row_) *
-                 uint32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)))),
-      current_consume_(0) {}
-
 Tile_queue::~Tile_queue() noexcept {}
+
+void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) noexcept {
+    resolution_      = resolution;
+    tile_dimensions_ = tile_dimensions;
+    filter_radius_   = filter_radius;
+
+    int32_t const tiles_per_row = int32_t(std::ceil(float(resolution[0]) / float(tile_dimensions)));
+
+    tiles_per_row_ = tiles_per_row;
+
+    num_tiles_ = uint32_t(tiles_per_row_) *
+                 uint32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)));
+
+    current_consume_ = 0;
+}
 
 uint32_t Tile_queue::size() const noexcept {
     return num_tiles_;
@@ -72,16 +78,17 @@ uint32_t Tile_queue::index(int4 const& tile) const noexcept {
     return uint32_t(y * tiles_per_row_ + x);
 }
 
-Range_queue::Range_queue(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept
-    : total0_(total0),
-      total1_(total1),
-      range_size_(range_size),
-      num_ranges0_(uint32_t(std::ceil(float(total0) / float(range_size)))),
-      num_ranges1_(uint32_t(std::ceil(float(total1) / float(range_size))))
-
-{}
-
 Range_queue::~Range_queue() noexcept {}
+
+void Range_queue::init(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept {
+    total0_ = total0;
+    total1_ = total1;
+
+    range_size_ = range_size;
+
+    num_ranges0_ = uint32_t(std::ceil(float(total0) / float(range_size)));
+    num_ranges1_ = uint32_t(std::ceil(float(total1) / float(range_size)));
+}
 
 uint32_t Range_queue::size() const noexcept {
     return num_ranges0_ + num_ranges1_;

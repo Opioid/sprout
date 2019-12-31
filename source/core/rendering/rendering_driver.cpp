@@ -1,4 +1,5 @@
 #include "rendering_driver.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
@@ -18,50 +19,50 @@ using namespace image;
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
 
-#ifdef PARTICLE_TRAINING
+Driver::Driver(thread::Pool& threads, uint32_t max_sample_size) noexcept
+    : threads_(threads),
+      workers_(memory::construct_array_aligned<Camera_worker>(threads.num_threads(),
+                                                              max_sample_size, tiles_, ranges_)),
 
-static uint64_t head(uint64_t total) noexcept {
-    return uint64_t(0.1f * float(total));
+      photon_infos_(new Photon_info[threads.num_threads()]) {}
+
+Driver::~Driver() noexcept {
+    delete[] photon_infos_;
+    memory::destroy_aligned(workers_, threads_.num_threads());
 }
 
-static uint64_t tail(uint64_t total) noexcept {
-    return total - head(total);
-}
+void Driver::init(take::Take& take, Scene& scene) noexcept {
+    view_ = &take.view;
 
-#endif
+    scene_ = &scene;
 
-Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads,
-               uint32_t max_sample_size) noexcept
-    : scene_(scene),
-      view_(take.view),
-      threads_(threads),
-      workers_(
-          memory::construct_array_aligned<Camera_worker>(threads.num_threads(), tiles_, ranges_)),
-      tiles_(take.view.camera->resolution(), 32, take.view.camera->sensor().filter_radius_int()),
+    tiles_.init(take.view.camera->resolution(), 32, take.view.camera->sensor().filter_radius_int());
+
 #ifdef PARTICLE_TRAINING
-      ranges_(take.lighttracer_factory ? head(take.view.num_particles) : 0,
-              take.lighttracer_factory ? tail(take.view.num_particles) : 0,
-              Num_particles_per_chunk),
+    uint64_t const head = uint64_t(0.1f * float(take.view.num_particles));
+    uint64_t const tail = take.view.num_particles - head;
+
+    ranges_.init(take.lighttracer_factory ? head : 0, take.lighttracer_factory ? tail : 0,
+                 Num_particles_per_chunk);
 #else
-      ranges_(take.lighttracer_factory ? take.view.num_particles : 0, 0, Num_particles_per_chunk),
+    ranges_.init(take.lighttracer_factory ? take.view.num_particles : 0, 0,
+                 Num_particles_per_chunk),
 #endif
 
-      target_(Description(take.view.camera->sensor_dimensions())),
-      photon_map_(take.view.photon_settings.num_photons, take.view.photon_settings.search_radius,
-                  take.view.photon_settings.merge_radius),
-      photon_infos_(nullptr) {
+    target_.resize(take.view.camera->sensor_dimensions());
+
     uint32_t const num_photons = take.view.photon_settings.num_photons;
     if (num_photons) {
-        uint32_t const num_workers = threads.num_threads();
+        uint32_t const num_workers = threads_.num_threads();
 
-        photon_map_.init(num_workers);
+        photon_map_.init(num_workers, take.view.photon_settings.num_photons,
+                         take.view.photon_settings.search_radius,
+                         take.view.photon_settings.merge_radius);
 
         uint32_t range = num_photons / num_workers;
         if (num_photons % num_workers) {
             ++range;
         }
-
-        photon_infos_ = new Photon_info[num_workers];
     }
 
     integrator::particle::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
@@ -70,29 +71,23 @@ Driver::Driver(take::Take& take, Scene& scene, thread::Pool& threads,
         particle_importance_.init(scene);
     }
 
-    for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
-        workers_[i].init(i, scene, *take.view.camera, max_sample_size,
-                         take.view.num_samples_per_pixel, *take.surface_integrator_factory,
-                         *take.volume_integrator_factory, *take.sampler_factory, photon_map,
-                         take.view.photon_settings, take.lighttracer_factory,
-                         Num_particles_per_chunk, &particle_importance_);
+    for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
+        workers_[i].init(i, scene, *take.view.camera, take.view.num_samples_per_pixel,
+                         *take.surface_integrator_factory, *take.volume_integrator_factory,
+                         *take.sampler_factory, photon_map, take.view.photon_settings,
+                         take.lighttracer_factory, Num_particles_per_chunk, &particle_importance_);
     }
 }
 
-Driver::~Driver() noexcept {
-    delete[] photon_infos_;
-    memory::destroy_aligned(workers_, threads_.num_threads());
-}
-
 scene::camera::Camera& Driver::camera() noexcept {
-    return *view_.camera;
+    return *view_->camera;
 }
 
 scene::Scene const& Driver::scene() const noexcept {
-    return scene_;
+    return *scene_;
 }
 
 scene::Scene& Driver::scene() noexcept {
-    return scene_;
+    return *scene_;
 }
 }  // namespace rendering

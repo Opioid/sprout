@@ -19,16 +19,15 @@ static material::Sampler_cache const Sampler_cache;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 using Texture_sampler_3D = image::texture::Sampler_3D;
 
-Worker::Worker() noexcept : node_stack_(128 + 16) {}
+Worker::Worker(uint32_t max_sample_size) noexcept
+    : node_stack_(128 + 16), sample_cache_(max_sample_size) {}
 
 Worker::~Worker() noexcept {}
 
-void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
-                  uint32_t max_sample_size) noexcept {
+void Worker::init(uint32_t id, Scene const& scene, Camera const& camera) noexcept {
     rng_.start(0, id);
     scene_  = &scene;
     camera_ = &camera;
-    sample_cache_.init(max_sample_size);
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept {

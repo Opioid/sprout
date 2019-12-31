@@ -17,11 +17,10 @@ class Map {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Map(uint32_t num_photons, float search_radius, float merge_radius) noexcept;
-
     ~Map() noexcept;
 
-    void init(uint32_t num_workers) noexcept;
+    void init(uint32_t num_workers, uint32_t num_photons, float search_radius,
+              float merge_radius) noexcept;
 
     void start() noexcept;
 

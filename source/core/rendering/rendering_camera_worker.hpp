@@ -10,7 +10,7 @@ class Range_queue;
 
 class alignas(64) Camera_worker : public Worker {
   public:
-    Camera_worker(Tile_queue const& tiles, Range_queue const& ranges_);
+    Camera_worker(uint32_t max_sample_size, Tile_queue const& tiles, Range_queue const& ranges_);
 
     void render(uint32_t frame, uint32_t view, int4 const& tile, uint32_t num_samples) noexcept;
 

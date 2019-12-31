@@ -39,18 +39,18 @@ static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
 static float3 scattering_coefficient(prop::Intersection const& intersection,
                                      Worker const&             worker) noexcept;
 
-Grid::Grid(float search_radius, float grid_cell_factor, bool check_disk) noexcept
-    : num_photons_(0),
-      photons_(nullptr),
-      search_radius_(search_radius),
-      grid_cell_factor_(grid_cell_factor),
-      cell_bound_(0.5f / grid_cell_factor, 1.f - (0.5f / grid_cell_factor)),
-      dimensions_(0),
-      grid_(nullptr),
-      check_disk_(check_disk) {}
-
 Grid::~Grid() noexcept {
     memory::free_aligned(grid_);
+}
+
+void Grid::init(float search_radius, float grid_cell_factor, bool check_disk) noexcept {
+    search_radius_ = search_radius;
+
+    grid_cell_factor_ = grid_cell_factor;
+
+    cell_bound_ = float2(0.5f / grid_cell_factor, 1.f - (0.5f / grid_cell_factor));
+
+    check_disk_ = check_disk;
 }
 
 void Grid::resize(AABB const& aabb) noexcept {

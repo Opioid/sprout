@@ -32,9 +32,9 @@ class Grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Grid(float search_radius, float grid_radius_factor, bool check_disk) noexcept;
-
     ~Grid() noexcept;
+
+    void init(float search_radius, float grid_radius_factor, bool check_disk) noexcept;
 
     void resize(AABB const& aabb) noexcept;
 

@@ -31,6 +31,8 @@ struct Description {
 template <typename T>
 class alignas(16) Typed_image {
   public:
+    Typed_image() noexcept;
+
     Typed_image(Description const& description) noexcept;
 
     Typed_image(Typed_image&& other) noexcept;
@@ -41,8 +43,7 @@ class alignas(16) Typed_image {
 
     int2 coordinates_2(int32_t index) const noexcept;
 
-    void resize(int2 dimensions, int32_t num_elements = 1) noexcept;
-    void resize(int3 const& dimensions, int32_t num_elements = 1) noexcept;
+    void resize(Description const& description) noexcept;
 
     void clear(T v) noexcept;
 

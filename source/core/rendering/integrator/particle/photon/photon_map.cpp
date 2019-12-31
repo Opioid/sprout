@@ -15,21 +15,20 @@
 
 namespace rendering::integrator::particle::photon {
 
-Map::Map(uint32_t num_photons, float search_radius, float merge_radius) noexcept
-    : num_photons_(num_photons),
-      photons_(nullptr),
-      merge_radius_(merge_radius),
-      aabbs_(nullptr),
-      num_reduced_(nullptr),
-      grid_(search_radius, 1.5f, false) {}
-
 Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);
     memory::free_aligned(aabbs_);
     memory::free_aligned(photons_);
 }
 
-void Map::init(uint32_t num_workers) noexcept {
+void Map::init(uint32_t num_workers, uint32_t num_photons, float search_radius,
+               float merge_radius) noexcept {
+    num_photons_ = num_photons;
+
+    merge_radius_ = merge_radius;
+
+    grid_.init(search_radius, 1.5f, false);
+
     photons_     = memory::allocate_aligned<Photon>(num_photons_);
     aabbs_       = memory::allocate_aligned<AABB>(num_workers);
     num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);

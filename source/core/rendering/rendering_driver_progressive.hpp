@@ -23,8 +23,7 @@ namespace rendering {
 
 class Driver_progressive : public Driver {
   public:
-    Driver_progressive(take::Take& take, scene::Scene& scene, thread::Pool& threads,
-                       uint32_t max_sample_size);
+    Driver_progressive(thread::Pool& threads, uint32_t max_sample_size) noexcept;
 
     void render(exporting::Sink& exporter);
 

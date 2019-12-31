@@ -57,9 +57,10 @@ progstartfunc = PROGRESS_START_FUNC(py_progress_start)
 progtickfunc = PROGRESS_TICK_FUNC(py_progress_tick)
 
 sprout.su_register_log(logfunc, False)
-sprout.su_register_progress(progstartfunc, progtickfunc)
 
 sprout.su_init()
+
+sprout.su_register_progress(progstartfunc, progtickfunc)
 
 sprout.su_mount(c_char_p(b"../../data/"))
 
@@ -107,7 +108,16 @@ image_buffer = Buffer(1.0, 0.0, 0.0,
                       0.0, 0.0, 1.0,
                       1.0, 1.0, 0.0)
 
-image_a = sprout.su_create_image(2, 3, 2, 2, 1, 1, image_buffer, 12)
+pixel_type = 2
+num_channels = 3
+width = 2
+height = 2
+depth = 1
+num_elements = 1
+stride = 12
+
+image_a = sprout.su_create_image(pixel_type, num_channels, width, height, depth,
+                                 num_elements, image_buffer, stride)
 
 material_b_desc = """{{
 "rendering": {{

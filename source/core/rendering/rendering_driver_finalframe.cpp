@@ -18,32 +18,32 @@
 
 namespace rendering {
 
-Driver_finalframe::Driver_finalframe(take::Take& take, Scene& scene, thread::Pool& threads,
-                                     uint32_t max_sample_size, progress::Sink& progressor) noexcept
-    : Driver(take, scene, threads, max_sample_size), progressor_(progressor) {}
+Driver_finalframe::Driver_finalframe(thread::Pool& threads, uint32_t max_sample_size,
+                                     progress::Sink& progressor) noexcept
+    : Driver(threads, max_sample_size), progressor_(progressor) {}
 
 void Driver_finalframe::render(Exporters& exporters) noexcept {
-    auto& camera = *view_.camera;
+    auto& camera = *view_->camera;
     auto& sensor = camera.sensor();
 
     uint32_t const forward_progress_range  = tiles_.size() * camera.num_views();
     uint32_t const backward_progress_range = ranges_.size() * camera.num_views();
 
-    scene_.finish();
+    scene_->finish();
 
-    for (uint32_t f = 0; f < view_.num_frames; ++f) {
-        uint32_t const current_frame = view_.start_frame + f;
+    for (uint32_t f = 0; f < view_->num_frames; ++f) {
+        uint32_t const current_frame = view_->start_frame + f;
         logging::info("Frame " + string::to_string(current_frame));
 
         auto const render_start = std::chrono::high_resolution_clock::now();
 
         uint64_t const start = current_frame * camera.frame_step();
-        scene_.simulate(start, start + camera.frame_duration(), threads_);
+        scene_->simulate(start, start + camera.frame_duration(), threads_);
 
-        camera.update(scene_, start, workers_[0]);
+        camera.update(*scene_, start, workers_[0]);
 
         particle_importance_.set_eye_position(
-            scene_.prop_world_transformation(camera.entity()).position);
+            scene_->prop_world_transformation(camera.entity()).position);
 
         auto const preparation_duration = chrono::seconds_since(render_start);
         logging::info("Preparation time %f s", preparation_duration);
@@ -63,10 +63,10 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
 
         auto const pp_start = std::chrono::high_resolution_clock::now();
 
-        if (ranges_.size() > 0 && view_.num_samples_per_pixel > 0) {
-            view_.pipeline.apply_accumulate(sensor, target_, threads_);
+        if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
+            view_->pipeline.apply_accumulate(sensor, target_, threads_);
         } else {
-            view_.pipeline.apply(sensor, target_, threads_);
+            view_->pipeline.apply(sensor, target_, threads_);
         }
 
         auto const pp_duration = chrono::seconds_since(pp_start);
@@ -94,7 +94,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    view_.camera->sensor().clear(1.f);
+    view_->camera->sensor().clear(1.f);
 
 #ifdef PARTICLE_TRAINING
     particle_importance_.set_training(true);
@@ -102,7 +102,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     particle_importance_.set_training(false);
 #endif
 
-    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+    for (uint32_t v = 0, len = view_->camera->num_views(); v < len; ++v) {
         iteration_ = v;
 
         ranges_.restart();
@@ -123,7 +123,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
 
-    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+    for (uint32_t v = 0, len = view_->camera->num_views(); v < len; ++v) {
         iteration_ = v;
 
         ranges_.restart();
@@ -142,8 +142,8 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 #endif
 
     // If there will be a forward pass later...
-    if (view_.num_samples_per_pixel > 0) {
-        view_.pipeline.seed(view_.camera->sensor(), target_, threads_);
+    if (view_->num_samples_per_pixel > 0) {
+        view_->pipeline.seed(view_->camera->sensor(), target_, threads_);
     }
 
     auto const duration = chrono::seconds_since(start);
@@ -155,7 +155,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 }
 
 void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
-    if (0 == view_.num_samples_per_pixel) {
+    if (0 == view_->num_samples_per_pixel) {
         return;
     }
 
@@ -163,11 +163,11 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    view_.camera->sensor().clear(0.f);
+    view_->camera->sensor().clear(0.f);
 
     frame_ = frame;
 
-    for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
+    for (uint32_t v = 0, len = view_->camera->num_views(); v < len; ++v) {
         iteration_ = v;
 
         tiles_.restart();
@@ -175,7 +175,7 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
         threads_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
-            uint32_t const num_samples = view_.num_samples_per_pixel;
+            uint32_t const num_samples = view_->num_samples_per_pixel;
 
             for (int4 tile; tiles_.pop(tile);) {
                 worker.render(frame_, iteration_, tile, num_samples);
@@ -190,7 +190,9 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
 }
 
 void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
-    if (/*photons_baked_ || */ !photon_infos_) {
+    uint32_t const settings_num_photons = view_->photon_settings.num_photons;
+
+    if (/*photons_baked_ || */ 0 == settings_num_photons) {
         return;
     }
 
@@ -201,9 +203,7 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     uint64_t num_paths = 0;
     uint32_t begin     = 0;
 
-    float const iteration_threshold = view_.photon_settings.iteration_threshold;
-
-    uint32_t const settings_num_photons = view_.photon_settings.num_photons;
+    float const iteration_threshold = view_->photon_settings.iteration_threshold;
 
     photon_map_.start();
 

@@ -40,6 +40,9 @@ int32_t Description::num_elements() const noexcept {
 }
 
 template <typename T>
+Typed_image<T>::Typed_image() noexcept : data_(nullptr) {}
+
+template <typename T>
 Typed_image<T>::Typed_image(Description const& description) noexcept
     : description_(description), data_(memory::allocate_aligned<T>(description.num_pixels())) {}
 
@@ -68,16 +71,11 @@ int2 Typed_image<T>::coordinates_2(int32_t index) const noexcept {
 }
 
 template <typename T>
-void Typed_image<T>::resize(int2 const dimensions, int32_t num_elements) noexcept {
-    resize(int3(dimensions, 1), num_elements);
-}
-
-template <typename T>
-void Typed_image<T>::resize(int3 const& dimensions, int32_t num_elements) noexcept {
+void Typed_image<T>::resize(Description const& description) noexcept {
     memory::free_aligned(data_);
 
-    description_.dimensions_   = dimensions;
-    description_.num_elements_ = num_elements;
+    description_.dimensions_   = description.dimensions_;
+    description_.num_elements_ = description.num_elements_;
 
     data_ = memory::allocate_aligned<T>(description_.num_pixels());
 }

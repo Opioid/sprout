@@ -47,12 +47,11 @@ class Worker {
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
 
-    Worker() noexcept;
+    Worker(uint32_t max_sample_size) noexcept;
 
     ~Worker() noexcept;
 
-    void init(uint32_t id, Scene const& scene, Camera const& camera,
-              uint32_t max_sample_size) noexcept;
+    void init(uint32_t id, Scene const& scene, Camera const& camera) noexcept;
 
     bool intersect(Ray& ray, Intersection& intersection) const noexcept;
 
@@ -101,16 +100,16 @@ class Worker {
   protected:
     mutable rnd::Generator rng_;
 
-    Scene const* scene_;
-
-    Camera const* camera_;
-
     mutable shape::Node_stack node_stack_;
 
     mutable material::Sample_cache sample_cache_;
 
     Interface_stack interface_stack_;
     Interface_stack interface_stack_temp_;
+
+    Scene const* scene_;
+
+    Camera const* camera_;
 };
 
 }  // namespace scene
