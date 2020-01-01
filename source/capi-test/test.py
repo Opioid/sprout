@@ -173,13 +173,13 @@ tangents = Tangents(1.0, 0.0, 0.0, 1.0,
 
 UVs = c_float * 6
 
-uvs = UVs(0.0, 0.0,
-          0.5, 1.0,
-          1.0, 0.0)
+uvs = UVs(0.0, 1.0,
+          0.5, 0.0,
+          1.0, 1.0)
 
 Indices = c_uint * 3
 
-indices = Indices(0, 2, 1)
+indices = Indices(0, 1, 2)
 
 Parts = c_uint * 3
 parts = Parts(0, 3, 0)
@@ -188,9 +188,9 @@ num_vertices = 3
 num_indices = 3
 num_parts = 1
 
-vertices_stride = 12
-tangents_stride = 16
-uvs_stride = 8
+vertices_stride = 3
+tangents_stride = 4
+uvs_stride = 2
 
 
 triangle = sprout.su_create_triangle_mesh(num_vertices,
@@ -201,11 +201,7 @@ triangle = sprout.su_create_triangle_mesh(num_vertices,
                                           num_indices, indices,
                                           num_parts, parts)
 
-print(triangle)
-
 triangle_a = sprout.su_create_prop(triangle, 1, byref(material_a))
-
-print(triangle_a)
 
 Transformation = c_float * 16
 

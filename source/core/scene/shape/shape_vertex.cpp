@@ -142,7 +142,7 @@ float2 Vertex_stream_CAPI::uv(uint32_t i) const noexcept {
 uint8_t Vertex_stream_CAPI::bitangent_sign(uint32_t i) const noexcept {
     float const sign = (tangents_ + i * tangents_stride_)[3];
 
-    return sign > 0.f ? 1 : 0;
+    return sign > 0.f ? 0 : 1;
 }
 
 }  // namespace scene::shape
