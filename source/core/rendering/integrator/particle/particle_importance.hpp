@@ -1,9 +1,11 @@
 #ifndef SU_RENDERING_INTEGRATOR_PARTICLE_IMPORTANCE_HPP
 #define SU_RENDERING_INTEGRATOR_PARTICLE_IMPORTANCE_HPP
 
-#include <string_view>
 #include "base/math/distribution/distribution_2d.hpp"
 #include "base/math/vector3.hpp"
+#include "base/memory/array.hpp"
+
+#include <string_view>
 
 namespace scene {
 class Scene;
@@ -67,8 +69,7 @@ class Importance_cache {
 
     bool training_;
 
-    uint32_t    num_importances_;
-    Importance* importances_;
+    memory::Array<Importance> importances_;
 };
 
 }  // namespace rendering::integrator::particle

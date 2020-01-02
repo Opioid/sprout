@@ -1,8 +1,8 @@
 #include "photon_map.hpp"
-#include <string>
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "photon.hpp"
 #include "rendering/integrator/particle/particle_importance.hpp"
@@ -10,28 +10,32 @@
 #include "scene/scene.hpp"
 #include "scene/scene_worker.hpp"
 
+#include <string>
+
 #include <iostream>
 #include "base/math/print.hpp"
 
 namespace rendering::integrator::particle::photon {
 
+Map::Map() noexcept : aabbs_(nullptr), num_reduced_(nullptr) {}
+
 Map::~Map() noexcept {
     memory::free_aligned(num_reduced_);
     memory::free_aligned(aabbs_);
-    memory::free_aligned(photons_);
 }
 
 void Map::init(uint32_t num_workers, uint32_t num_photons, float search_radius,
                float merge_radius) noexcept {
-    num_photons_ = num_photons;
-
     merge_radius_ = merge_radius;
 
     grid_.init(search_radius, 1.5f, false);
 
-    photons_     = memory::allocate_aligned<Photon>(num_photons_);
-    aabbs_       = memory::allocate_aligned<AABB>(num_workers);
-    num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
+    photons_.resize(num_photons);
+
+    if (!aabbs_) {
+        aabbs_       = memory::allocate_aligned<AABB>(num_workers);
+        num_reduced_ = memory::allocate_aligned<uint32_t>(num_workers);
+    }
 }
 
 void Map::start() noexcept {
@@ -51,16 +55,18 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
 
     num_paths_ = num_paths;
 
-    grid_.init_cells(num_photons, photons_);
+    grid_.init_cells(num_photons, photons_.data());
 
-    uint32_t const reduced_num = num_photons == num_photons_
-                                     ? grid_.reduce_and_move(photons_, merge_radius_, num_reduced_,
-                                                             pool)
+    uint32_t const total_num_photons = photons_.size();
+
+    uint32_t const reduced_num = num_photons == total_num_photons
+                                     ? grid_.reduce_and_move(photons_.data(), merge_radius_,
+                                                             num_reduced_, pool)
                                      : num_photons;
 
-    float const percentage_caustics = float(reduced_num) / float(num_photons_);
+    float const percentage_caustics = float(reduced_num) / float(total_num_photons);
 
-    std::cout << reduced_num << " total left of " << num_photons_ << " ("
+    std::cout << reduced_num << " total left of " << total_num_photons << " ("
               << uint32_t(100.f * percentage_caustics) << "%)" << std::endl;
 
     reduced_num_ = reduced_num;
@@ -69,7 +75,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
 }
 
 void Map::compile_finalize() noexcept {
-    grid_.init_cells(reduced_num_, photons_);
+    grid_.init_cells(reduced_num_, photons_.data());
     grid_.set_num_paths(num_paths_);
 }
 

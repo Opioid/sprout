@@ -3,6 +3,7 @@
 
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
+#include "base/memory/array.hpp"
 #include "photon_grid.hpp"
 #include "photon_sparse_grid.hpp"
 
@@ -16,6 +17,8 @@ class Map {
   public:
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
+
+    Map() noexcept;
 
     ~Map() noexcept;
 
@@ -41,11 +44,9 @@ class Map {
 
     uint64_t num_paths_;
 
-    uint32_t num_photons_;
-
     uint32_t reduced_num_;
 
-    Photon* photons_;
+    memory::Array<Photon> photons_;
 
     bool caustic_only_;
 

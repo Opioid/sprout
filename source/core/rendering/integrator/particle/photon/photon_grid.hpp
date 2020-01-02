@@ -32,6 +32,8 @@ class Grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
+    Grid() noexcept;
+
     ~Grid() noexcept;
 
     void init(float search_radius, float grid_radius_factor, bool check_disk) noexcept;

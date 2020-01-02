@@ -39,7 +39,7 @@ class Array {
 
     void release() noexcept;
 
-    void resize(uint32_t capacity) noexcept;
+    void resize(uint32_t size) noexcept;
 
     void reserve(uint32_t capacity) noexcept;
 

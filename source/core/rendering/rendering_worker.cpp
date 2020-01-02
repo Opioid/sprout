@@ -34,35 +34,37 @@ Worker::~Worker() noexcept {
 }
 
 void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
-                  uint32_t num_samples_per_pixel, Surface_factory& surface_factory,
-                  Volume_factory& volume_factory, sampler::Factory& sampler_factory,
-                  Photon_map* photon_map, take::Photon_settings const& photon_settings,
-                  Lighttracer_factory* lighttracer_factory, uint32_t num_particles_per_chunk,
+                  uint32_t num_samples_per_pixel, Surface_factory& surfaces,
+                  Volume_factory& volumes, sampler::Factory& samplers, Photon_map* photon_map,
+                  take::Photon_settings const& photon_settings, Lighttracer_factory* lighttracers,
+                  uint32_t             num_particles_per_chunk,
                   Particle_importance* particle_importance) noexcept {
     scene::Worker::init(id, scene, camera);
 
-    surface_integrator_ = surface_factory.create(id, rng_);
+    surface_integrator_ = surfaces.create(id, rng_);
     surface_integrator_->prepare(scene, num_samples_per_pixel);
 
-    volume_integrator_ = volume_factory.create(id, rng_);
+    volume_integrator_ = volumes.create(id, rng_);
     volume_integrator_->prepare(scene, num_samples_per_pixel);
 
-    sampler_ = sampler_factory.create(id, rng_);
+    sampler_ = samplers.create(id, rng_);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
     if (photon_settings.num_photons) {
+        delete photon_mapper_;
+
         Photon_mapper::Settings const ps{photon_settings.max_bounces,
                                          photon_settings.indirect_photons,
                                          photon_settings.full_light_path};
 
         photon_mapper_ = new Photon_mapper(rng_, ps);
         photon_mapper_->prepare(scene, 0);
-
-        photon_map_ = photon_map;
     }
 
-    if (lighttracer_factory) {
-        lighttracer_ = lighttracer_factory->create(id, rng_);
+    photon_map_ = photon_map;
+
+    if (lighttracers) {
+        lighttracer_ = lighttracers->create(id, rng_);
         lighttracer_->prepare(scene, num_particles_per_chunk);
     }
 

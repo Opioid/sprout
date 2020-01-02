@@ -39,6 +39,8 @@ static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
 static float3 scattering_coefficient(prop::Intersection const& intersection,
                                      Worker const&             worker) noexcept;
 
+Grid::Grid() noexcept : grid_(nullptr) {}
+
 Grid::~Grid() noexcept {
     memory::free_aligned(grid_);
 }

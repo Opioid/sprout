@@ -3,6 +3,7 @@
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/vector2.inl"
 #include "base/memory/align.hpp"
+#include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "scene/light/light.hpp"
@@ -84,16 +85,12 @@ void Importance::prepare_sampling(thread::Pool& threads) noexcept {
     distribution_.init();
 }
 
-Importance_cache::Importance_cache() noexcept : num_importances_(0), importances_(nullptr) {}
+Importance_cache::Importance_cache() noexcept {}
 
-Importance_cache::~Importance_cache() noexcept {
-    memory::destroy_aligned(importances_, num_importances_);
-}
+Importance_cache::~Importance_cache() noexcept {}
 
 void Importance_cache::init(scene::Scene const& scene) noexcept {
-    num_importances_ = uint32_t(scene.lights().size());
-
-    importances_ = memory::construct_array_aligned<Importance>(scene.lights().size());
+    importances_.resize(uint32_t(scene.lights().size()));
 }
 
 void Importance_cache::set_eye_position(float3 const& eye) noexcept {
@@ -107,7 +104,7 @@ void Importance_cache::set_training(bool training) noexcept {
 void Importance_cache::prepare_sampling(thread::Pool& threads) noexcept {
     // This entire ordeal is very hacky!
     // We need a proper way to select which light should have importances and which not.
-    uint32_t const light = std::min(1u, num_importances_ - 1);
+    uint32_t const light = std::min(1u, importances_.size() - 1);
 
     importances_[light].prepare_sampling(threads);
 
@@ -136,7 +133,7 @@ Importance const& Importance_cache::importance(uint32_t light_id) const noexcept
 }
 
 void Importance_cache::export_importances() const noexcept {
-    for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
+    for (uint32_t i = 0, len = importances_.size(); i < len; ++i) {
         importances_[i].export_heatmap("particle_importance_" + std::to_string(i) + ".png");
     }
 }
