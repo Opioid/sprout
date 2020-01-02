@@ -2,6 +2,7 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
@@ -55,16 +56,12 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(0.5f * (vector + float3(1.f)), 1.f);
 }
 
-Debug_factory::Debug_factory(uint32_t num_integrators, Debug::Settings::Vector vector) noexcept
-    : integrators_(memory::allocate_aligned<Debug>(num_integrators)) {
+Debug_pool::Debug_pool(uint32_t num_integrators, Debug::Settings::Vector vector) noexcept
+    : Typed_pool<Debug>(num_integrators) {
     settings_.vector = vector;
 }
 
-Debug_factory::~Debug_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Debug_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Debug_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Debug(rng, settings_);
 }
 

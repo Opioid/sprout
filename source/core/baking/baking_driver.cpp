@@ -14,12 +14,11 @@
 
 namespace baking {
 
-Driver::Driver(Surface_integrator_factory* surface_integrator_factory,
-               Volume_integrator_factory*  volume_integrator_factory,
-               sampler::Factory*           sampler_factory)
-    : surface_integrator_factory_(surface_integrator_factory),
-      volume_integrator_factory_(volume_integrator_factory),
-      sampler_factory_(sampler_factory) {}
+Driver::Driver(Surface_integrator_pool* surface_integrator_pool,
+               Volume_integrator_pool* volume_integrator_pool, sampler::Pool* sampler_pool)
+    : surface_integrator_pool_(surface_integrator_pool),
+      volume_integrator_pool_(volume_integrator_pool),
+      sampler_pool_(sampler_pool) {}
 
 void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
                     thread::Pool& /*thread_pool*/, uint32_t /*max_sample_size*/,
@@ -31,8 +30,8 @@ void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
             image::Float4 target(image::Image::Description(image::Image::Type::Float4, dimensions));
 
             baking::Baking_worker worker;
-            worker.init(0,  scene, max_sample_size, *surface_integrator_factory_,
-                                    *volume_integrator_factory_, *sampler_factory_);
+            worker.init(0,  scene, max_sample_size, *surface_integrator_pool_,
+                                    *volume_integrator_pool_, *sampler_pool_);
 
             scene::Ray ray;
             ray.time = 0.f;

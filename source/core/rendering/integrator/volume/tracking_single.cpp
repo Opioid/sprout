@@ -4,6 +4,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "rendering/integrator/volume/volume_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/light/light.inl"
@@ -414,14 +415,10 @@ sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Tracking_single_factory::Tracking_single_factory(uint32_t num_integrators) noexcept
-    : integrators_(memory::allocate_aligned<Tracking_single>(num_integrators)) {}
+Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators) noexcept
+    : Typed_pool<Tracking_single>(num_integrators) {}
 
-Tracking_single_factory::~Tracking_single_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Tracking_single_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Tracking_single_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Tracking_single(rng);
 }
 

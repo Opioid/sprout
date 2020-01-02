@@ -172,9 +172,9 @@ int main(int argc, char* argv[]) noexcept {
                     driver.render(take.exporters);
                 } else {
                     //			baking::Driver
-                    // driver(take->surface_integrator_factory,
-                    //								  take->volume_integrator_factory,
-                    //								  take->sampler_factory);
+                    // driver(take->surface_integrator_pool,
+                    //								  take->volume_integrator_pool,
+                    //								  take->sampler_pool);
 
                     //			driver.render(scene, take->view, thread_pool,
                     //*take->exporter, progressor);

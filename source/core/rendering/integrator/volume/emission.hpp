@@ -27,17 +27,13 @@ class alignas(64) Emission final : public Integrator {
     Settings const settings_;
 };
 
-class Emission_factory final : public Factory {
+class Emission_pool final : public Typed_pool<Emission> {
   public:
-    Emission_factory(uint32_t num_integrators, float step_size) noexcept;
+    Emission_pool(uint32_t num_integrators, float step_size) noexcept;
 
-    virtual ~Emission_factory() noexcept override final;
-
-    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
-    Emission* integrators_;
-
     const Emission::Settings settings_;
 };
 

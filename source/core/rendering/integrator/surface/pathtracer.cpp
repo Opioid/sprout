@@ -4,6 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "scene/light/light.hpp"
 #include "scene/material/bxdf.hpp"
@@ -184,17 +185,13 @@ sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Pathtracer_factory::Pathtracer_factory(uint32_t num_integrators, uint32_t num_samples,
-                                       uint32_t min_bounces, uint32_t max_bounces,
-                                       bool enable_caustics) noexcept
-    : integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
+Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, uint32_t num_samples,
+                                 uint32_t min_bounces, uint32_t max_bounces,
+                                 bool enable_caustics) noexcept
+    : Typed_pool<Pathtracer>(num_integrators),
       settings_{num_samples, min_bounces, max_bounces, !enable_caustics} {}
 
-Pathtracer_factory::~Pathtracer_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Pathtracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Pathtracer_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Pathtracer(rng, settings_);
 }
 

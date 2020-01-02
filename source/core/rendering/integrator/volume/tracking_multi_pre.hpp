@@ -30,16 +30,11 @@ class alignas(64) Tracking_multi_pre final : public Integrator {
                                float3 const& p) noexcept;
 };
 
-class Tracking_multi_pre_factory final : public Factory {
+class Tracking_multi_pre_pool final : public Typed_pool<Tracking_multi_pre> {
   public:
-    Tracking_multi_pre_factory(uint32_t num_integrators) noexcept;
-
-    ~Tracking_multi_pre_factory() noexcept override final;
+    Tracking_multi_pre_pool(uint32_t num_integrators) noexcept;
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
-
-  private:
-    Tracking_multi_pre* integrators_;
 };
 
 }  // namespace rendering::integrator::volume

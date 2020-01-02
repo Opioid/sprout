@@ -66,32 +66,31 @@
 
 namespace take {
 
-using Scene            = scene::Scene;
-using Camera           = scene::camera::Camera;
-using Sensor_filter    = rendering::sensor::filter::Filter;
-using Sensor           = rendering::sensor::Sensor;
-using Surface_factory  = rendering::integrator::surface::Factory;
-using Volume_factory   = rendering::integrator::volume::Factory;
-using Particle_factory = rendering::integrator::particle::Lighttracer_factory;
-using Postprocessor    = rendering::postprocessor::Postprocessor;
-using Light_sampling   = rendering::integrator::Light_sampling;
+using Scene          = scene::Scene;
+using Camera         = scene::camera::Camera;
+using Sensor_filter  = rendering::sensor::filter::Filter;
+using Sensor         = rendering::sensor::Sensor;
+using Surface_pool   = rendering::integrator::surface::Pool;
+using Volume_pool    = rendering::integrator::volume::Pool;
+using Particle_pool  = rendering::integrator::particle::Lighttracer_pool;
+using Postprocessor  = rendering::postprocessor::Postprocessor;
+using Light_sampling = rendering::integrator::Light_sampling;
 
 static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept;
 
-static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
-                                              uint32_t           num_workers,
-                                              uint32_t&          num_samples_per_pixel) noexcept;
+static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
+                                        uint32_t& num_samples_per_pixel) noexcept;
 
-static Surface_factory* load_surface_integrator(json::Value const& integrator_value,
-                                                uint32_t num_workers, bool lighttracer) noexcept;
+static Surface_pool* load_surface_integrator(json::Value const& integrator_value,
+                                             uint32_t num_workers, bool lighttracer) noexcept;
 
-static Volume_factory* load_volume_integrator(json::Value const& integrator_value,
+static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
 
-                                              uint32_t num_workers) noexcept;
+                                           uint32_t num_workers) noexcept;
 
-static Particle_factory* load_particle_integrator(json::Value const& integrator_value,
-                                                  uint32_t           num_workers,
-                                                  uint64_t&          num_particles) noexcept;
+static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
+                                               uint32_t           num_workers,
+                                               uint64_t&          num_particles) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
@@ -136,8 +135,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
-            take.samplers = load_sampler_factory(n.value, num_threads,
-                                                 take.view.num_samples_per_pixel);
+            take.samplers = load_sampler_pool(n.value, num_threads,
+                                              take.view.num_samples_per_pixel);
         } else if ("scene" == n.name) {
             take.scene_filename = n.value.GetString();
         }
@@ -468,9 +467,8 @@ static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noe
     return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
 }
 
-static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
-                                              uint32_t           num_workers,
-                                              uint32_t&          num_samples_per_pixel) noexcept {
+static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
+                                        uint32_t& num_samples_per_pixel) noexcept {
     for (auto& n : sampler_value.GetObject()) {
         num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 
@@ -523,8 +521,8 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
     }
 }
 
-static Surface_factory* load_surface_integrator(json::Value const& integrator_value,
-                                                uint32_t num_workers, bool lighttracer) noexcept {
+static Surface_pool* load_surface_integrator(json::Value const& integrator_value,
+                                             uint32_t num_workers, bool lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -540,12 +538,12 @@ static Surface_factory* load_surface_integrator(json::Value const& integrator_va
 
             float const radius = json::read_float(n.value, "radius", 1.f);
 
-            return new AO_factory(num_workers, num_samples, radius);
+            return new AO_pool(num_workers, num_samples, radius);
         } else if ("Whitted" == n.name) {
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
                                                                light_sampling.num_samples);
 
-            return new Whitted_factory(num_workers, num_light_samples);
+            return new Whitted_pool(num_workers, num_light_samples);
         } else if ("PM" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -555,8 +553,8 @@ static Surface_factory* load_surface_integrator(json::Value const& integrator_va
 
             bool const photons_only_through_specular = /*true;  //*/ lighttracer;
 
-            return new PM_factory(num_workers, min_bounces, max_bounces,
-                                  photons_only_through_specular);
+            return new PM_pool(num_workers, min_bounces, max_bounces,
+                               photons_only_through_specular);
         } else if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -568,8 +566,8 @@ static Surface_factory* load_surface_integrator(json::Value const& integrator_va
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return new Pathtracer_factory(num_workers, num_samples, min_bounces, max_bounces,
-                                          enable_caustics);
+            return new Pathtracer_pool(num_workers, num_samples, min_bounces, max_bounces,
+                                       enable_caustics);
         } else if ("PTDL" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -582,8 +580,8 @@ static Surface_factory* load_surface_integrator(json::Value const& integrator_va
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return new Pathtracer_DL_factory(num_workers, min_bounces, max_bounces,
-                                             num_light_samples, enable_caustics);
+            return new Pathtracer_DL_pool(num_workers, min_bounces, max_bounces, num_light_samples,
+                                          enable_caustics);
         } else if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -600,9 +598,9 @@ static Surface_factory* load_surface_integrator(json::Value const& integrator_va
 
             bool const photons_only_through_specular = lighttracer;
 
-            return new Pathtracer_MIS_factory(num_workers, num_samples, min_bounces, max_bounces,
-                                              light_sampling, enable_caustics,
-                                              photons_only_through_specular);
+            return new Pathtracer_MIS_pool(num_workers, num_samples, min_bounces, max_bounces,
+                                           light_sampling, enable_caustics,
+                                           photons_only_through_specular);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 
@@ -620,23 +618,23 @@ static Surface_factory* load_surface_integrator(json::Value const& integrator_va
                 vector = Debug::Settings::Vector::UV;
             }
 
-            return new Debug_factory(num_workers, vector);
+            return new Debug_pool(num_workers, vector);
         }
     }
 
     return nullptr;
 }
 
-static Volume_factory* load_volume_integrator(json::Value const& integrator_value,
+static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
 
-                                              uint32_t num_workers) noexcept {
+                                           uint32_t num_workers) noexcept {
     using namespace rendering::integrator::volume;
 
     for (auto& n : integrator_value.GetObject()) {
         if ("Emission" == n.name) {
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
-            return new Emission_factory(num_workers, step_size);
+            return new Emission_pool(num_workers, step_size);
         } else if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
@@ -647,9 +645,9 @@ static Volume_factory* load_volume_integrator(json::Value const& integrator_valu
             Volumetric_material::set_similarity_relation_range(sr_range[0], sr_range[1]);
 
             if (multiple_scattering) {
-                return new Tracking_multi_factory(num_workers);
+                return new Tracking_multi_pool(num_workers);
             } else {
-                return new Tracking_single_factory(num_workers);
+                return new Tracking_single_pool(num_workers);
             }
         }
     }
@@ -657,10 +655,10 @@ static Volume_factory* load_volume_integrator(json::Value const& integrator_valu
     return nullptr;
 }
 
-static Particle_factory* load_particle_integrator(json::Value const& integrator_value,
+static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
 
-                                                  uint32_t  num_workers,
-                                                  uint64_t& num_particles) noexcept {
+                                               uint32_t  num_workers,
+                                               uint64_t& num_particles) noexcept {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
@@ -670,8 +668,8 @@ static Particle_factory* load_particle_integrator(json::Value const& integrator_
 
     num_particles = json::read_uint64(integrator_value, "num_particles", 1280000);
 
-    return new Lighttracer_factory(num_workers, 1, max_bounces, num_particles, indirect_caustics,
-                                   full_light_path);
+    return new Lighttracer_pool(num_workers, 1, max_bounces, num_particles, indirect_caustics,
+                                full_light_path);
 }
 
 void Loader::set_default_integrators(uint32_t num_workers, Take& take) noexcept {
@@ -686,7 +684,7 @@ void Loader::set_default_integrators(uint32_t num_workers, Take& take) noexcept 
 
         bool const enable_caustics = false;
 
-        take.surface_integrators = new surface::Pathtracer_MIS_factory(
+        take.surface_integrators = new surface::Pathtracer_MIS_pool(
             num_workers, num_samples, min_bounces, max_bounces, light_sampling, enable_caustics,
             false);
 
@@ -694,7 +692,7 @@ void Loader::set_default_integrators(uint32_t num_workers, Take& take) noexcept 
     }
 
     if (!take.volume_integrators) {
-        take.volume_integrators = new volume::Tracking_multi_factory(num_workers);
+        take.volume_integrators = new volume::Tracking_multi_pool(num_workers);
 
         logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
     }

@@ -84,13 +84,13 @@ class alignas(64) Lighttracer final : public Integrator {
     sampler::Random material_samplers_[Num_material_samplers];
 };
 
-class Lighttracer_factory final {
+class Lighttracer_pool final {
   public:
-    Lighttracer_factory(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
-                        uint64_t num_light_paths, bool indirect_caustics,
-                        bool full_light_path) noexcept;
+    Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
+                     uint64_t num_light_paths, bool indirect_caustics,
+                     bool full_light_path) noexcept;
 
-    ~Lighttracer_factory() noexcept;
+    ~Lighttracer_pool() noexcept;
 
     Lighttracer* create(uint32_t id, rnd::Generator& rng) const noexcept;
 

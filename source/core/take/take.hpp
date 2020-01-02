@@ -17,19 +17,19 @@ class Sink;
 namespace rendering::integrator {
 
 namespace particle {
-class Lighttracer_factory;
+class Lighttracer_pool;
 }
 namespace surface {
-class Factory;
+class Pool;
 }
 namespace volume {
-class Factory;
+class Pool;
 }
 
 }  // namespace rendering::integrator
 
 namespace sampler {
-class Factory;
+class Pool;
 }
 
 namespace take {
@@ -82,11 +82,11 @@ struct Take {
 
     View view;
 
-    rendering::integrator::surface::Factory*              surface_integrators = nullptr;
-    rendering::integrator::volume::Factory*               volume_integrators  = nullptr;
-    rendering::integrator::particle::Lighttracer_factory* lighttracers        = nullptr;
+    rendering::integrator::surface::Pool*              surface_integrators = nullptr;
+    rendering::integrator::volume::Pool*               volume_integrators  = nullptr;
+    rendering::integrator::particle::Lighttracer_pool* lighttracers        = nullptr;
 
-    sampler::Factory* samplers = nullptr;
+    sampler::Pool* samplers = nullptr;
 
     memory::Array<exporting::Sink*> exporters;
 };

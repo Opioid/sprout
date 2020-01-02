@@ -38,18 +38,14 @@ class alignas(64) PM final : public Integrator {
     sampler::Golden_ratio material_samplers_[Num_material_samplers];
 };
 
-class PM_factory final : public Factory {
+class PM_pool final : public Typed_pool<PM> {
   public:
-    PM_factory(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
-               bool photons_only_through_specular) noexcept;
-
-    ~PM_factory() noexcept override final;
+    PM_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
+            bool photons_only_through_specular) noexcept;
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
-    PM* integrators_;
-
     PM::Settings settings_;
 };
 

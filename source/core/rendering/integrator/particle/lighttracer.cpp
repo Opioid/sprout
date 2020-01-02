@@ -260,22 +260,22 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Lighttracer_factory::Lighttracer_factory(uint32_t num_integrators, uint32_t min_bounces,
-                                         uint32_t max_bounces, uint64_t num_light_paths,
-                                         bool indirect_caustics, bool full_light_path) noexcept
+Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces,
+                                   uint32_t max_bounces, uint64_t num_light_paths,
+                                   bool indirect_caustics, bool full_light_path) noexcept
     : integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces, float(num_light_paths), indirect_caustics,
                 full_light_path} {}
 
-Lighttracer_factory::~Lighttracer_factory() noexcept {
+Lighttracer_pool::~Lighttracer_pool() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Lighttracer* Lighttracer_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Lighttracer* Lighttracer_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Lighttracer(rng, settings_);
 }
 
-uint32_t Lighttracer_factory::max_sample_depth() const noexcept {
+uint32_t Lighttracer_pool::max_sample_depth() const noexcept {
     return 1;
 }
 

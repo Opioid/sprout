@@ -4,6 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -137,16 +138,12 @@ sampler::Sampler& PM::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-PM_factory::PM_factory(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
-                       bool photons_only_through_specular) noexcept
-    : integrators_(memory::allocate_aligned<PM>(num_integrators)),
+PM_pool::PM_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
+                 bool photons_only_through_specular) noexcept
+    : Typed_pool<PM>(num_integrators),
       settings_{min_bounces, max_bounces, !photons_only_through_specular} {}
 
-PM_factory::~PM_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* PM_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* PM_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) PM(rng, settings_);
 }
 

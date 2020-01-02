@@ -3,6 +3,7 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
@@ -62,17 +63,13 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, result, result, 1.f);
 }
 
-AO_factory::AO_factory(uint32_t num_integrators, uint32_t num_samples, float radius) noexcept
-    : integrators_(memory::allocate_aligned<AO>(num_integrators)) {
+AO_pool::AO_pool(uint32_t num_integrators, uint32_t num_samples, float radius) noexcept
+    : Typed_pool<AO>(num_integrators) {
     settings_.num_samples = num_samples;
     settings_.radius      = radius;
 }
 
-AO_factory::~AO_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* AO_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* AO_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) AO(rng, settings_);
 }
 

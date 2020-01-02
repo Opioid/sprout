@@ -40,16 +40,11 @@ class alignas(64) Tracking_single final : public Integrator {
     sampler::Golden_ratio light_samplers_[Num_light_samplers];
 };
 
-class Tracking_single_factory final : public Factory {
+class Tracking_single_pool final : public Typed_pool<Tracking_single> {
   public:
-    Tracking_single_factory(uint32_t num_integrators) noexcept;
-
-    ~Tracking_single_factory() noexcept override final;
+    Tracking_single_pool(uint32_t num_integrators) noexcept;
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
-
-  private:
-    Tracking_single* integrators_;
 };
 
 }  // namespace rendering::integrator::volume

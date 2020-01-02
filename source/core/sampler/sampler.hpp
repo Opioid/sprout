@@ -49,11 +49,11 @@ class Sampler {
     uint32_t* current_sample_1D_;
 };
 
-class Factory {
+class Pool {
   public:
-    Factory(uint32_t num_samplers) noexcept;
+    Pool(uint32_t num_samplers) noexcept;
 
-    virtual ~Factory() noexcept;
+    virtual ~Pool() noexcept;
 
     virtual Sampler* get(uint32_t id, rnd::Generator& rng) const noexcept = 0;
 
@@ -62,7 +62,7 @@ class Factory {
 };
 
 template <typename T>
-class Typed_pool : public Factory {
+class Typed_pool : public Pool {
   public:
     Typed_pool(uint32_t num_samplers) noexcept;
 

@@ -33,17 +33,13 @@ class alignas(64) AO final : public Integrator {
     sampler::Golden_ratio sampler_;
 };
 
-class AO_factory final : public Factory {
+class AO_pool final : public Typed_pool<AO> {
   public:
-    AO_factory(uint32_t num_integrators, uint32_t num_samples, float radius) noexcept;
-
-    ~AO_factory() noexcept override final;
+    AO_pool(uint32_t num_integrators, uint32_t num_samples, float radius) noexcept;
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
-    AO* integrators_;
-
     AO::Settings settings_;
 };
 

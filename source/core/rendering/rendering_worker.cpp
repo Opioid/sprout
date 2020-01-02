@@ -28,15 +28,12 @@ Worker::Worker(uint32_t max_sample_size) noexcept : scene::Worker(max_sample_siz
 
 Worker::~Worker() noexcept {
     delete photon_mapper_;
-
-    memory::destroy(volume_integrator_);
-    memory::destroy(surface_integrator_);
 }
 
 void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
-                  uint32_t num_samples_per_pixel, Surface_factory& surfaces,
-                  Volume_factory& volumes, sampler::Factory& samplers, Photon_map* photon_map,
-                  take::Photon_settings const& photon_settings, Lighttracer_factory* lighttracers,
+                  uint32_t num_samples_per_pixel, Surface_pool& surfaces, Volume_pool& volumes,
+                  sampler::Pool& samplers, Photon_map* photon_map,
+                  take::Photon_settings const& photon_settings, Lighttracer_pool* lighttracers,
                   uint32_t             num_particles_per_chunk,
                   Particle_importance* particle_importance) noexcept {
     scene::Worker::init(id, scene, camera);

@@ -4,6 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -462,19 +463,18 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Pathtracer_MIS_factory::Pathtracer_MIS_factory(uint32_t num_integrators, uint32_t num_samples,
-                                               uint32_t min_bounces, uint32_t max_bounces,
-                                               Light_sampling light_sampling, bool enable_caustics,
-                                               bool photons_only_through_specular) noexcept
-    : integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
-      settings_{num_samples,    min_bounces,      max_bounces,
-                light_sampling, !enable_caustics, !photons_only_through_specular} {}
+Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, uint32_t num_samples,
+                                         uint32_t min_bounces, uint32_t max_bounces,
+                                         Light_sampling light_sampling, bool enable_caustics,
+                                         bool photons_only_through_specular) noexcept
+    : Typed_pool<Pathtracer_MIS>(num_integrators), settings_{num_samples,
+                                                             min_bounces,
+                                                             max_bounces,
+                                                             light_sampling,
+                                                             !enable_caustics,
+                                                             !photons_only_through_specular} {}
 
-Pathtracer_MIS_factory::~Pathtracer_MIS_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Pathtracer_MIS_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Pathtracer_MIS_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Pathtracer_MIS(rng, settings_);
 }
 

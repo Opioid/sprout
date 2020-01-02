@@ -11,7 +11,7 @@ class Scene;
 }
 
 namespace sampler {
-class Factory;
+class Pool;
 }
 
 namespace thread {
@@ -29,10 +29,10 @@ class Sink;
 namespace rendering::integrator {
 
 namespace surface {
-class Factory;
+class Pool;
 }
 namespace volume {
-class Factory;
+class Pool;
 }
 
 }  // namespace rendering::integrator
@@ -41,19 +41,19 @@ namespace baking {
 
 class Driver {
   public:
-    using Surface_integrator_factory = rendering::integrator::surface::Factory;
-    using Volume_integrator_factory  = rendering::integrator::volume::Factory;
+    using Surface_integrator_pool = rendering::integrator::surface::Pool;
+    using Volume_integrator_pool  = rendering::integrator::volume::Pool;
 
-    Driver(Surface_integrator_factory* surface_integrator_factory,
-           Volume_integrator_factory* volume_integrator_factory, sampler::Factory* sampler_factory);
+    Driver(Surface_integrator_pool* surface_integrator_pool,
+           Volume_integrator_pool* volume_integrator_pool, sampler::Pool* sampler_pool);
 
     void render(scene::Scene& scene, const take::View& view, thread::Pool& thread_pool,
                 uint32_t max_sample_size, exporting::Sink& exporter, progress::Sink& progressor);
 
   private:
-    Surface_integrator_factory* surface_integrator_factory_;
-    Volume_integrator_factory*  volume_integrator_factory_;
-    sampler::Factory*           sampler_factory_;
+    Surface_integrator_pool* surface_integrator_pool_;
+    Volume_integrator_pool*  volume_integrator_pool_;
+    sampler::Pool*           sampler_pool_;
 };
 
 }  // namespace baking

@@ -3,6 +3,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "rendering/integrator/volume/volume_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene.hpp"
@@ -29,14 +30,10 @@ Event Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /
     return Event::Pass;
 }
 
-Emission_factory::Emission_factory(uint32_t num_integrators, float step_size) noexcept
-    : integrators_(memory::allocate_aligned<Emission>(num_integrators)), settings_{step_size} {}
+Emission_pool::Emission_pool(uint32_t num_integrators, float step_size) noexcept
+    : Typed_pool<Emission>(num_integrators), settings_{step_size} {}
 
-Emission_factory::~Emission_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Emission_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Emission_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Emission(rng, settings_);
 }
 

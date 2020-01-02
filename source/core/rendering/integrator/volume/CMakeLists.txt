@@ -12,5 +12,6 @@ target_sources(core
     "tracking.inl"
     "tracking.hpp"
     "volume_integrator.cpp"
+    "volume_integrator.inl"
     "volume_integrator.hpp"
     )

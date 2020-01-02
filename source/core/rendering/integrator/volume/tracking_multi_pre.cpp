@@ -272,14 +272,10 @@ void Tracking_multi_pre::set_scattering(Intersection& intersection, Interface co
     intersection.subsurface = true;
 }
 
-Tracking_multi_pre_factory::Tracking_multi_pre_factory(uint32_t num_integrators) noexcept
-    : integrators_(memory::allocate_aligned<Tracking_multi_pre>(num_integrators)) {}
+Tracking_multi_pre_pool::Tracking_multi_pre_pool(uint32_t num_integrators) noexcept
+    : Typed_pool<Tracking_multi_pre>(num_integrators) {}
 
-Tracking_multi_pre_factory::~Tracking_multi_pre_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Tracking_multi_pre_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Tracking_multi_pre_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Tracking_multi_pre(rng);
 }
 

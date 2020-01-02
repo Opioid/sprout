@@ -6,8 +6,8 @@ Integrator::Integrator(rnd::Generator& rng) noexcept : integrator::Integrator(rn
 
 Integrator::~Integrator() noexcept {}
 
-Factory::Factory() noexcept {}
+Pool::Pool(uint32_t num_integrators) noexcept : num_integrators_(num_integrators) {}
 
-Factory::~Factory() noexcept {}
+Pool::~Pool() noexcept {}
 
 }  // namespace rendering::integrator::surface

@@ -4,6 +4,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
+#include "rendering/integrator/volume/volume_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/collision_coefficients.inl"
@@ -466,14 +467,10 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
     }
 }
 
-Tracking_multi_factory::Tracking_multi_factory(uint32_t num_integrators) noexcept
-    : integrators_(memory::allocate_aligned<Tracking_multi>(num_integrators)) {}
+Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators) noexcept
+    : Typed_pool<Tracking_multi>(num_integrators) {}
 
-Tracking_multi_factory::~Tracking_multi_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Tracking_multi_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Tracking_multi_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Tracking_multi(rng);
 }
 

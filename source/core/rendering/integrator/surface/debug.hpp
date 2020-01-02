@@ -28,17 +28,13 @@ class alignas(64) Debug final : public Integrator {
     sampler::Random sampler_;
 };
 
-class Debug_factory final : public Factory {
+class Debug_pool final : public Typed_pool<Debug> {
   public:
-    Debug_factory(uint32_t num_integrators, Debug::Settings::Vector vector) noexcept;
-
-    ~Debug_factory() noexcept override final;
+    Debug_pool(uint32_t num_integrators, Debug::Settings::Vector vector) noexcept;
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
-    Debug* integrators_;
-
     Debug::Settings settings_;
 };
 

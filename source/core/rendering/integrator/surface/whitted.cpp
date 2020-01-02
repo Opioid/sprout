@@ -2,6 +2,7 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -122,17 +123,13 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     return settings_.num_light_samples_reciprocal * result;
 }
 
-Whitted_factory::Whitted_factory(uint32_t num_integrators, uint32_t num_light_samples) noexcept
-    : integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {
+Whitted_pool::Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples) noexcept
+    : Typed_pool<Whitted>(num_integrators) {
     settings_.num_light_samples            = num_light_samples;
     settings_.num_light_samples_reciprocal = 1.f / float(num_light_samples);
 }
 
-Whitted_factory::~Whitted_factory() noexcept {
-    memory::free_aligned(integrators_);
-}
-
-Integrator* Whitted_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Whitted_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
     return new (&integrators_[id]) Whitted(rng, settings_);
 }
 

@@ -26,13 +26,27 @@ class Integrator : public integrator::Integrator {
                       Interface_stack const& initial_stack) noexcept = 0;
 };
 
-class Factory {
+class Pool {
   public:
-    Factory() noexcept;
+    Pool(uint32_t num_integrators) noexcept;
 
-    virtual ~Factory() noexcept;
+    virtual ~Pool() noexcept;
 
     virtual Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept = 0;
+
+  protected:
+    uint32_t num_integrators_;
+};
+
+template <typename T>
+class Typed_pool : public Pool {
+  public:
+    Typed_pool(uint32_t num_integrators) noexcept;
+
+    ~Typed_pool() noexcept override;
+
+  protected:
+    T* integrators_;
 };
 
 }  // namespace integrator::surface

@@ -26,7 +26,7 @@ class Scene;
 }  // namespace scene
 
 namespace sampler {
-class Factory;
+class Pool;
 }
 
 namespace thread {
@@ -38,10 +38,10 @@ namespace rendering {
 namespace integrator {
 
 namespace surface {
-class Factory;
+class Pool;
 }
 namespace volume {
-class Factory;
+class Pool;
 }
 
 }  // namespace integrator

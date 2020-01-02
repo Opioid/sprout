@@ -6,7 +6,7 @@
 namespace sampler {
 
 class Sampler;
-class Factory;
+class Pool;
 
 }  // namespace sampler
 
@@ -31,7 +31,7 @@ namespace integrator {
 namespace particle {
 
 class Lighttracer;
-class Lighttracer_factory;
+class Lighttracer_pool;
 class Importance_cache;
 
 namespace photon {
@@ -45,14 +45,14 @@ class Mapper;
 namespace surface {
 
 class Integrator;
-class Factory;
+class Pool;
 
 }  // namespace surface
 
 namespace volume {
 
 class Integrator;
-class Factory;
+class Pool;
 
 }  // namespace volume
 }  // namespace integrator
@@ -62,9 +62,9 @@ class Worker : public scene::Worker {
     using Ray                 = scene::Ray;
     using Scene               = scene::Scene;
     using Material_sample     = scene::material::Sample;
-    using Surface_factory     = integrator::surface::Factory;
-    using Volume_factory      = integrator::volume::Factory;
-    using Lighttracer_factory = integrator::particle::Lighttracer_factory;
+    using Surface_pool        = integrator::surface::Pool;
+    using Volume_pool         = integrator::volume::Pool;
+    using Lighttracer_pool    = integrator::particle::Lighttracer_pool;
     using Photon_map          = integrator::particle::photon::Map;
     using Photon_mapper       = integrator::particle::photon::Mapper;
     using Particle_importance = integrator::particle::Importance_cache;
@@ -74,9 +74,9 @@ class Worker : public scene::Worker {
     ~Worker() noexcept;
 
     void init(uint32_t id, Scene const& scene, Camera const& camera, uint32_t num_samples_per_pixel,
-              Surface_factory& surfaces, Volume_factory& volumes, sampler::Factory& samplers,
+              Surface_pool& surfaces, Volume_pool& volumes, sampler::Pool& samplers,
               Photon_map* photon_map, take::Photon_settings const& photon_settings_,
-              Lighttracer_factory* lighttracers, uint32_t num_particles_per_chunk,
+              Lighttracer_pool* lighttracers, uint32_t num_particles_per_chunk,
               Particle_importance* particle_importance) noexcept;
 
     float4 li(Ray& ray, Interface_stack const& interface_stack) noexcept;

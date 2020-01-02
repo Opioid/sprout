@@ -77,19 +77,15 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     sampler::Golden_ratio light_samplers_[Num_light_samplers];
 };
 
-class Pathtracer_MIS_factory final : public Factory {
+class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
   public:
-    Pathtracer_MIS_factory(uint32_t num_integrators, uint32_t num_samples, uint32_t min_bounces,
-                           uint32_t max_bounces, Light_sampling light_sampling,
-                           bool enable_caustics, bool photons_only_through_specular) noexcept;
-
-    ~Pathtracer_MIS_factory() noexcept override final;
+    Pathtracer_MIS_pool(uint32_t num_integrators, uint32_t num_samples, uint32_t min_bounces,
+                        uint32_t max_bounces, Light_sampling light_sampling, bool enable_caustics,
+                        bool photons_only_through_specular) noexcept;
 
     Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
-    Pathtracer_MIS* integrators_;
-
     Pathtracer_MIS::Settings settings_;
 };
 
