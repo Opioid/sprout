@@ -135,8 +135,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
-            take.sampler_factory = load_sampler_factory(n.value, num_threads,
-                                                        take.view.num_samples_per_pixel);
+            take.samplers = load_sampler_factory(n.value, num_threads,
+                                                 take.view.num_samples_per_pixel);
         } else if ("scene" == n.name) {
             take.scene_filename = n.value.GetString();
         }
@@ -168,8 +168,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         set_default_exporter(take);
     }
 
-    if (!take.sampler_factory) {
-        take.sampler_factory = new sampler::Random_factory(num_threads);
+    if (!take.samplers) {
+        take.samplers = new sampler::Random_factory(num_threads);
 
         logging::warning("No valid sampler was specified, defaulting to Random sampler.");
     }
@@ -506,17 +506,16 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
     json::Value::ConstMemberIterator const particle_node = integrator_value.FindMember("particle");
 
     if (integrator_value.MemberEnd() != particle_node) {
-        take.lighttracer_factory = load_particle_integrator(particle_node->value, num_workers,
-                                                            take.view.num_particles);
+        take.lighttracers = load_particle_integrator(particle_node->value, num_workers,
+                                                     take.view.num_particles);
     }
 
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
-            replace(
-                take.surface_integrator_factory,
-                load_surface_integrator(n.value, num_workers, nullptr != take.lighttracer_factory));
+            replace(take.surface_integrators,
+                    load_surface_integrator(n.value, num_workers, nullptr != take.lighttracers));
         } else if ("volume" == n.name) {
-            replace(take.volume_integrator_factory, load_volume_integrator(n.value, num_workers));
+            replace(take.volume_integrators, load_volume_integrator(n.value, num_workers));
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.view.photon_settings);
         }
@@ -677,7 +676,7 @@ static Particle_factory* load_particle_integrator(json::Value const& integrator_
 void Loader::set_default_integrators(uint32_t num_workers, Take& take) noexcept {
     using namespace rendering::integrator;
 
-    if (!take.surface_integrator_factory) {
+    if (!take.surface_integrators) {
         Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
 
         uint32_t const num_samples = 1;
@@ -686,15 +685,15 @@ void Loader::set_default_integrators(uint32_t num_workers, Take& take) noexcept 
 
         bool const enable_caustics = false;
 
-        take.surface_integrator_factory = new surface::Pathtracer_MIS_factory(
+        take.surface_integrators = new surface::Pathtracer_MIS_factory(
             num_workers, num_samples, min_bounces, max_bounces, light_sampling, enable_caustics,
             false);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }
 
-    if (!take.volume_integrator_factory) {
-        take.volume_integrator_factory = new volume::Tracking_multi_factory(num_workers);
+    if (!take.volume_integrators) {
+        take.volume_integrators = new volume::Tracking_multi_factory(num_workers);
 
         logging::warning("No valid volume integrator specified, defaulting to Tracking MS.");
     }

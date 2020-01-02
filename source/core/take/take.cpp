@@ -42,13 +42,17 @@ void Take::clear() noexcept {
 
     exporters.clear();
 
-    delete sampler_factory;
+    delete samplers;
+    samplers = nullptr;
 
-    delete lighttracer_factory;
+    delete lighttracers;
+    lighttracers = nullptr;
 
-    delete volume_integrator_factory;
+    delete volume_integrators;
+    volume_integrators = nullptr;
 
-    delete surface_integrator_factory;
+    delete surface_integrators;
+    surface_integrators = nullptr;
 
     view.clear();
 }

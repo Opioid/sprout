@@ -28,6 +28,7 @@ Driver::Driver(thread::Pool& threads, uint32_t max_sample_size) noexcept
 
 Driver::~Driver() noexcept {
     delete[] photon_infos_;
+
     memory::destroy_aligned(workers_, threads_.num_threads());
 }
 
@@ -42,7 +43,7 @@ void Driver::init(take::Take& take, Scene& scene) noexcept {
     uint64_t const head = uint64_t(0.1f * float(take.view.num_particles));
     uint64_t const tail = take.view.num_particles - head;
 
-    ranges_.init(take.lighttracer_factory ? head : 0, take.lighttracer_factory ? tail : 0,
+    ranges_.init(take.lighttracers ? head : 0, take.lighttracers ? tail : 0,
                  Num_particles_per_chunk);
 #else
     ranges_.init(take.lighttracer_factory ? take.view.num_particles : 0, 0,
@@ -50,6 +51,8 @@ void Driver::init(take::Take& take, Scene& scene) noexcept {
 #endif
 
     target_.resize(take.view.camera->sensor_dimensions());
+
+    integrator::particle::photon::Map* photon_map = nullptr;
 
     uint32_t const num_photons = take.view.photon_settings.num_photons;
     if (num_photons) {
@@ -63,19 +66,19 @@ void Driver::init(take::Take& take, Scene& scene) noexcept {
         if (num_photons % num_workers) {
             ++range;
         }
+
+        photon_map = &photon_map_;
     }
 
-    integrator::particle::photon::Map* photon_map = num_photons ? &photon_map_ : nullptr;
-
-    if (num_photons > 0 || take.lighttracer_factory) {
+    if (num_photons > 0 || take.lighttracers) {
         particle_importance_.init(scene);
     }
 
     for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
         workers_[i].init(i, scene, *take.view.camera, take.view.num_samples_per_pixel,
-                         *take.surface_integrator_factory, *take.volume_integrator_factory,
-                         *take.sampler_factory, photon_map, take.view.photon_settings,
-                         take.lighttracer_factory, Num_particles_per_chunk, &particle_importance_);
+                         *take.surface_integrators, *take.volume_integrators, *take.samplers,
+                         photon_map, take.view.photon_settings, take.lighttracers,
+                         Num_particles_per_chunk, &particle_importance_);
     }
 }
 

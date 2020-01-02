@@ -27,6 +27,8 @@ class Driver_finalframe : public Driver {
 
     void render(Exporters& exporters) noexcept;
 
+    void render(uint32_t frame, Exporters& exporters) noexcept;
+
   private:
     void render_frame_backward(uint32_t frame) noexcept;
 

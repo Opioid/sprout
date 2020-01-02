@@ -241,10 +241,10 @@ int32_t su_create_sampler(uint32_t num_samples) noexcept {
 
     engine->take.view.num_samples_per_pixel = num_samples;
 
-    if (!engine->take.sampler_factory) {
+    if (!engine->take.samplers) {
         uint32_t const num_workers = engine->resources.threads().num_threads();
 
-        engine->take.sampler_factory = new sampler::Golden_ratio_factory(num_workers);
+        engine->take.samplers = new sampler::Golden_ratio_factory(num_workers);
     }
 
     return 0;
@@ -439,13 +439,29 @@ int32_t su_render() noexcept {
 
     engine->threads.wait_async();
 
-    if (!engine->take.view.camera || !engine->take.surface_integrator_factory) {
+    if (!engine->take.view.camera || !engine->take.surface_integrators) {
         return -2;
     }
 
     engine->driver.init(engine->take, engine->scene);
 
     engine->driver.render(engine->take.exporters);
+
+    return 0;
+}
+
+int32_t su_render_frame(uint32_t frame) noexcept {
+    ASSERT_ENGINE(-1)
+
+    engine->threads.wait_async();
+
+    if (!engine->take.view.camera || !engine->take.surface_integrators) {
+        return -2;
+    }
+
+    engine->driver.init(engine->take, engine->scene);
+
+    engine->driver.render(frame, engine->take.exporters);
 
     return 0;
 }

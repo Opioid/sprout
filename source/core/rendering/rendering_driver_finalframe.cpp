@@ -23,64 +23,61 @@ Driver_finalframe::Driver_finalframe(thread::Pool& threads, uint32_t max_sample_
     : Driver(threads, max_sample_size), progressor_(progressor) {}
 
 void Driver_finalframe::render(Exporters& exporters) noexcept {
-    auto& camera = *view_->camera;
-    auto& sensor = camera.sensor();
+    for (uint32_t f = 0; f < view_->num_frames; ++f) {
+        uint32_t const frame = view_->start_frame + f;
 
-    uint32_t const forward_progress_range  = tiles_.size() * camera.num_views();
-    uint32_t const backward_progress_range = ranges_.size() * camera.num_views();
+        render(frame, exporters);
+    }
+}
+
+void Driver_finalframe::render(uint32_t frame, Exporters& exporters) noexcept {
+    auto& camera = *view_->camera;
 
     scene_->finish();
 
-    for (uint32_t f = 0; f < view_->num_frames; ++f) {
-        uint32_t const current_frame = view_->start_frame + f;
-        logging::info("Frame " + string::to_string(current_frame));
+    logging::info("Frame " + string::to_string(frame));
 
-        auto const render_start = std::chrono::high_resolution_clock::now();
+    auto const render_start = std::chrono::high_resolution_clock::now();
 
-        uint64_t const start = current_frame * camera.frame_step();
-        scene_->simulate(start, start + camera.frame_duration(), threads_);
+    uint64_t const start = frame * camera.frame_step();
+    scene_->simulate(start, start + camera.frame_duration(), threads_);
 
-        camera.update(*scene_, start, workers_[0]);
+    camera.update(*scene_, start, workers_[0]);
 
-        particle_importance_.set_eye_position(
-            scene_->prop_world_transformation(camera.entity()).position);
+    particle_importance_.set_eye_position(
+        scene_->prop_world_transformation(camera.entity()).position);
 
-        auto const preparation_duration = chrono::seconds_since(render_start);
-        logging::info("Preparation time %f s", preparation_duration);
+    auto const preparation_duration = chrono::seconds_since(render_start);
+    logging::info("Preparation time %f s", preparation_duration);
 
-        bake_photons(current_frame);
+    bake_photons(frame);
 
-        progressor_.start(backward_progress_range);
+    render_frame_backward(frame);
 
-        render_frame_backward(current_frame);
+    render_frame_forward(frame);
 
-        progressor_.start(forward_progress_range);
+    auto const render_duration = chrono::seconds_since(render_start);
+    logging::info("Render time %f s", render_duration);
 
-        render_frame_forward(current_frame);
+    auto const pp_start = std::chrono::high_resolution_clock::now();
 
-        auto const render_duration = chrono::seconds_since(render_start);
-        logging::info("Render time %f s", render_duration);
-
-        auto const pp_start = std::chrono::high_resolution_clock::now();
-
-        if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
-            view_->pipeline.apply_accumulate(sensor, target_, threads_);
-        } else {
-            view_->pipeline.apply(sensor, target_, threads_);
-        }
-
-        auto const pp_duration = chrono::seconds_since(pp_start);
-        logging::info("Post-process time %f s", pp_duration);
-
-        auto const export_start = std::chrono::high_resolution_clock::now();
-
-        for (auto& e : exporters) {
-            e->write(target_, current_frame, threads_);
-        }
-
-        auto const export_duration = chrono::seconds_since(export_start);
-        logging::info("Export time %f s", export_duration);
+    if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
+        view_->pipeline.apply_accumulate(camera.sensor(), target_, threads_);
+    } else {
+        view_->pipeline.apply(camera.sensor(), target_, threads_);
     }
+
+    auto const pp_duration = chrono::seconds_since(pp_start);
+    logging::info("Post-process time %f s", pp_duration);
+
+    auto const export_start = std::chrono::high_resolution_clock::now();
+
+    for (auto& e : exporters) {
+        e->write(target_, frame, threads_);
+    }
+
+    auto const export_duration = chrono::seconds_since(export_start);
+    logging::info("Export time %f s", export_duration);
 }
 
 void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
@@ -88,13 +85,17 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
         return;
     }
 
-    frame_ = frame;
-
     logging::info("Tracing light rays...");
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    view_->camera->sensor().clear(1.f);
+    frame_ = frame;
+
+    auto& camera = *view_->camera;
+
+    progressor_.start(ranges_.size() * camera.num_views());
+
+    camera.sensor().clear(1.f);
 
 #ifdef PARTICLE_TRAINING
     particle_importance_.set_training(true);
@@ -102,7 +103,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     particle_importance_.set_training(false);
 #endif
 
-    for (uint32_t v = 0, len = view_->camera->num_views(); v < len; ++v) {
+    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
         iteration_ = v;
 
         ranges_.restart();
@@ -123,7 +124,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
 
-    for (uint32_t v = 0, len = view_->camera->num_views(); v < len; ++v) {
+    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
         iteration_ = v;
 
         ranges_.restart();
@@ -143,7 +144,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
     // If there will be a forward pass later...
     if (view_->num_samples_per_pixel > 0) {
-        view_->pipeline.seed(view_->camera->sensor(), target_, threads_);
+        view_->pipeline.seed(camera.sensor(), target_, threads_);
     }
 
     auto const duration = chrono::seconds_since(start);
@@ -163,11 +164,15 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    view_->camera->sensor().clear(0.f);
+    auto& camera = *view_->camera;
+
+    camera.sensor().clear(0.f);
 
     frame_ = frame;
 
-    for (uint32_t v = 0, len = view_->camera->num_views(); v < len; ++v) {
+    progressor_.start(tiles_.size() * camera.num_views());
+
+    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
         iteration_ = v;
 
         tiles_.restart();

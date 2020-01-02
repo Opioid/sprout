@@ -82,11 +82,11 @@ struct Take {
 
     View view;
 
-    rendering::integrator::surface::Factory*              surface_integrator_factory = nullptr;
-    rendering::integrator::volume::Factory*               volume_integrator_factory  = nullptr;
-    rendering::integrator::particle::Lighttracer_factory* lighttracer_factory        = nullptr;
+    rendering::integrator::surface::Factory*              surface_integrators = nullptr;
+    rendering::integrator::volume::Factory*               volume_integrators  = nullptr;
+    rendering::integrator::particle::Lighttracer_factory* lighttracers        = nullptr;
 
-    sampler::Factory* sampler_factory = nullptr;
+    sampler::Factory* samplers = nullptr;
 
     memory::Array<exporting::Sink*> exporters;
 };

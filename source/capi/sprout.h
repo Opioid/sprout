@@ -70,6 +70,8 @@ SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t     entity,
 
 SU_LIBRARY_API int32_t su_render() noexcept;
 
+SU_LIBRARY_API int32_t su_render_frame(uint32_t frame) noexcept;
+
 typedef void (*Post)(uint32_t type, char const* text);
 
 SU_LIBRARY_API int32_t su_register_log(Post post, bool verbose) noexcept;
