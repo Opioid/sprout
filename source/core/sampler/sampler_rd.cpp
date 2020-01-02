@@ -86,15 +86,4 @@ void RD::on_start_pixel() noexcept {
     }
 }
 
-RD_factory::RD_factory(uint32_t num_samplers) noexcept
-    : Factory(num_samplers), samplers_(memory::allocate_aligned<RD>(num_samplers)) {}
-
-RD_factory::~RD_factory() noexcept {
-    memory::free_aligned(samplers_);
-}
-
-Sampler* RD_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&samplers_[id]) RD(rng);
-}
-
 }  // namespace sampler

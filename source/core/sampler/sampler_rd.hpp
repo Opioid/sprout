@@ -26,17 +26,7 @@ class alignas(64) RD : public Sampler {
     float*  seeds_1D_;
 };
 
-class RD_factory : public Factory {
-  public:
-    RD_factory(uint32_t num_samplers) noexcept;
-
-    ~RD_factory() noexcept override final;
-
-    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
-
-  private:
-    RD* samplers_;
-};
+using RD_pool = Typed_pool<RD>;
 
 }  // namespace sampler
 

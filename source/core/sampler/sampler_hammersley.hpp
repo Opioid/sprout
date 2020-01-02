@@ -22,16 +22,6 @@ class alignas(64) Hammersley : public Sampler {
     uint32_t scramble_;
 };
 
-class Hammersley_factory : public Factory {
-  public:
-    Hammersley_factory(uint32_t num_samplers) noexcept;
-
-    ~Hammersley_factory() noexcept override final;
-
-    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
-
-  private:
-    Hammersley* samplers_;
-};
+using Hammersley_pool = Typed_pool<Hammersley>;
 
 }  // namespace sampler

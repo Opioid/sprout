@@ -23,16 +23,6 @@ class alignas(64) LD : public Sampler {
     uint2 scramble_;
 };
 
-class LD_factory : public Factory {
-  public:
-    LD_factory(uint32_t num_samplers) noexcept;
-
-    ~LD_factory() noexcept override final;
-
-    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
-
-  private:
-    LD* samplers_;
-};
+using LD_pool = Typed_pool<LD>;
 
 }  // namespace sampler

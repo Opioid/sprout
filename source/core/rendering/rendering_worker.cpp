@@ -28,7 +28,7 @@ Worker::Worker(uint32_t max_sample_size) noexcept : scene::Worker(max_sample_siz
 
 Worker::~Worker() noexcept {
     delete photon_mapper_;
-    memory::destroy(sampler_);
+
     memory::destroy(volume_integrator_);
     memory::destroy(surface_integrator_);
 }
@@ -47,7 +47,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     volume_integrator_ = volumes.create(id, rng_);
     volume_integrator_->prepare(scene, num_samples_per_pixel);
 
-    sampler_ = samplers.create(id, rng_);
+    sampler_ = samplers.get(id, rng_);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
     if (photon_settings.num_photons) {

@@ -21,17 +21,7 @@ class alignas(64) Random : public Sampler {
     void on_start_pixel() noexcept override final;
 };
 
-class Random_factory : public Factory {
-  public:
-    Random_factory(uint32_t num_samplers) noexcept;
-
-    ~Random_factory() noexcept override final;
-
-    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
-
-  private:
-    Random* samplers_;
-};
+using Random_pool = Typed_pool<Random>;
 
 }  // namespace sampler
 

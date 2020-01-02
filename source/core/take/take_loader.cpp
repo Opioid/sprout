@@ -44,6 +44,7 @@
 #include "rendering/sensor/transparent.hpp"
 #include "rendering/sensor/unfiltered.inl"
 #include "resource/resource_manager.inl"
+#include "sampler/sampler.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_hammersley.hpp"
 #include "sampler/sampler_ld.hpp"
@@ -169,7 +170,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     }
 
     if (!take.samplers) {
-        take.samplers = new sampler::Random_factory(num_threads);
+        take.samplers = new sampler::Random_pool(num_threads);
 
         logging::warning("No valid sampler was specified, defaulting to Random sampler.");
     }
@@ -475,17 +476,17 @@ static sampler::Factory* load_sampler_factory(json::Value const& sampler_value,
 
         if ("Uniform" == n.name) {
             num_samples_per_pixel = 1;
-            return new sampler::Uniform_factory(num_workers);
+            return new sampler::Uniform_pool(num_workers);
         } else if ("Random" == n.name) {
-            return new sampler::Random_factory(num_workers);
+            return new sampler::Random_pool(num_workers);
         } else if ("RD" == n.name) {
-            return new sampler::RD_factory(num_workers);
+            return new sampler::RD_pool(num_workers);
         } else if ("Hammersley" == n.name) {
-            return new sampler::Hammersley_factory(num_workers);
+            return new sampler::Hammersley_pool(num_workers);
         } else if ("Golden_ratio" == n.name) {
-            return new sampler::Golden_ratio_factory(num_workers);
+            return new sampler::Golden_ratio_pool(num_workers);
         } else if ("LD" == n.name) {
-            return new sampler::LD_factory(num_workers);
+            return new sampler::LD_pool(num_workers);
         }
     }
 

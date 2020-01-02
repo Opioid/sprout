@@ -33,15 +33,4 @@ void LD::on_start_pixel() noexcept {
     scramble_ = uint2(rng_.random_uint(), rng_.random_uint());
 }
 
-LD_factory::LD_factory(uint32_t num_samplers) noexcept
-    : Factory(num_samplers), samplers_(memory::allocate_aligned<LD>(num_samplers)) {}
-
-LD_factory::~LD_factory() noexcept {
-    memory::free_aligned(samplers_);
-}
-
-Sampler* LD_factory::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&samplers_[id]) LD(rng);
-}
-
 }  // namespace sampler

@@ -55,10 +55,23 @@ class Factory {
 
     virtual ~Factory() noexcept;
 
-    virtual Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept = 0;
+    virtual Sampler* get(uint32_t id, rnd::Generator& rng) const noexcept = 0;
 
   protected:
     uint32_t const num_samplers_;
+};
+
+template <typename T>
+class Typed_pool : public Factory {
+  public:
+    Typed_pool(uint32_t num_samplers) noexcept;
+
+    ~Typed_pool() noexcept override;
+
+    Sampler* get(uint32_t id, rnd::Generator& rng) const noexcept override;
+
+  protected:
+    T* samplers_;
 };
 
 }  // namespace sampler

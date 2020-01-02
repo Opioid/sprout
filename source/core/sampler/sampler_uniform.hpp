@@ -20,16 +20,6 @@ class alignas(64) Uniform : public Sampler {
     void on_start_pixel() noexcept override final;
 };
 
-class Uniform_factory : public Factory {
-  public:
-    Uniform_factory(uint32_t num_samplers) noexcept;
-
-    ~Uniform_factory() noexcept override final;
-
-    Sampler* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
-
-  private:
-    Uniform* samplers_;
-};
+using Uniform_pool = Typed_pool<Uniform>;
 
 }  // namespace sampler

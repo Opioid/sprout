@@ -16,5 +16,6 @@ target_sources(core
     "sampler_uniform.cpp"
     "sampler_uniform.hpp"
     "sampler.cpp"
+    "sampler.inl"
     "sampler.hpp"
 ) 

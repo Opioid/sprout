@@ -14,6 +14,7 @@
 #include "core/progress/progress_sink.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
 #include "core/resource/resource_manager.inl"
+#include "core/sampler/sampler.inl"
 #include "core/sampler/sampler_golden_ratio.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "core/scene/camera/camera_perspective.hpp"
@@ -244,7 +245,7 @@ int32_t su_create_sampler(uint32_t num_samples) noexcept {
     if (!engine->take.samplers) {
         uint32_t const num_workers = engine->resources.threads().num_threads();
 
-        engine->take.samplers = new sampler::Golden_ratio_factory(num_workers);
+        engine->take.samplers = new sampler::Golden_ratio_pool(num_workers);
     }
 
     return 0;
