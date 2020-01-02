@@ -92,11 +92,13 @@ class Lighttracer_pool final {
 
     ~Lighttracer_pool() noexcept;
 
-    Lighttracer* create(uint32_t id, rnd::Generator& rng) const noexcept;
+    Lighttracer* get(uint32_t id, rnd::Generator& rng) const noexcept;
 
     uint32_t max_sample_depth() const noexcept;
 
   private:
+    uint32_t num_integrators_;
+
     Lighttracer* integrators_;
 
     Lighttracer::Settings settings_;

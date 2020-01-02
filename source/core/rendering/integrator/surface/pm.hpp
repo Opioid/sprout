@@ -43,7 +43,7 @@ class PM_pool final : public Typed_pool<PM> {
     PM_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
             bool photons_only_through_specular) noexcept;
 
-    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     PM::Settings settings_;

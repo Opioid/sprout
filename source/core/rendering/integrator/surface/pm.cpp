@@ -143,8 +143,13 @@ PM_pool::PM_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bo
     : Typed_pool<PM>(num_integrators),
       settings_{min_bounces, max_bounces, !photons_only_through_specular} {}
 
-Integrator* PM_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) PM(rng, settings_);
+Integrator* PM_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+    if (uint32_t const zero = 0;
+        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        return new (&integrators_[id]) PM(rng, settings_);
+    }
+
+    return &integrators_[id];
 }
 
 }  // namespace rendering::integrator::surface

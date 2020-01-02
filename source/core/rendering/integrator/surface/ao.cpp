@@ -69,8 +69,13 @@ AO_pool::AO_pool(uint32_t num_integrators, uint32_t num_samples, float radius) n
     settings_.radius      = radius;
 }
 
-Integrator* AO_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) AO(rng, settings_);
+Integrator* AO_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+    if (uint32_t const zero = 0;
+        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        return new (&integrators_[id]) AO(rng, settings_);
+    }
+
+    return &integrators_[id];
 }
 
 }  // namespace rendering::integrator::surface

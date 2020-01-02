@@ -33,8 +33,13 @@ Event Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /
 Emission_pool::Emission_pool(uint32_t num_integrators, float step_size) noexcept
     : Typed_pool<Emission>(num_integrators), settings_{step_size} {}
 
-Integrator* Emission_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Emission(rng, settings_);
+Integrator* Emission_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+    if (uint32_t const zero = 0;
+        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        return new (&integrators_[id]) Emission(rng, settings_);
+    }
+
+    return &integrators_[id];
 }
 
 }  // namespace rendering::integrator::volume

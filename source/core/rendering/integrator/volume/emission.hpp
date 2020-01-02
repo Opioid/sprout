@@ -31,7 +31,7 @@ class Emission_pool final : public Typed_pool<Emission> {
   public:
     Emission_pool(uint32_t num_integrators, float step_size) noexcept;
 
-    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     const Emission::Settings settings_;

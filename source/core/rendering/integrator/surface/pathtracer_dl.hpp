@@ -52,7 +52,7 @@ class Pathtracer_DL_pool final : public Typed_pool<Pathtracer_DL> {
     Pathtracer_DL_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
                        uint32_t num_light_samples, bool enable_caustics) noexcept;
 
-    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     Pathtracer_DL::Settings settings_;

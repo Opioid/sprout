@@ -263,16 +263,28 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
 Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces,
                                    uint32_t max_bounces, uint64_t num_light_paths,
                                    bool indirect_caustics, bool full_light_path) noexcept
-    : integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
+    : num_integrators_(num_integrators),
+      integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces, float(num_light_paths), indirect_caustics,
-                full_light_path} {}
+                full_light_path} {
+    std::memset(reinterpret_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
+}
 
 Lighttracer_pool::~Lighttracer_pool() noexcept {
+    for (uint32_t i = 0, len = num_integrators_; i < len; ++i) {
+        memory::destroy(&integrators_[i]);
+    }
+
     memory::free_aligned(integrators_);
 }
 
-Lighttracer* Lighttracer_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Lighttracer(rng, settings_);
+Lighttracer* Lighttracer_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+    if (uint32_t const zero = 0;
+        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        return new (&integrators_[id]) Lighttracer(rng, settings_);
+    }
+
+    return &integrators_[id];
 }
 
 uint32_t Lighttracer_pool::max_sample_depth() const noexcept {

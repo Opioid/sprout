@@ -275,8 +275,13 @@ void Tracking_multi_pre::set_scattering(Intersection& intersection, Interface co
 Tracking_multi_pre_pool::Tracking_multi_pre_pool(uint32_t num_integrators) noexcept
     : Typed_pool<Tracking_multi_pre>(num_integrators) {}
 
-Integrator* Tracking_multi_pre_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Tracking_multi_pre(rng);
+Integrator* Tracking_multi_pre_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+    if (uint32_t const zero = 0;
+        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        return new (&integrators_[id]) Tracking_multi_pre(rng);
+    }
+
+    return &integrators_[id];
 }
 
 }  // namespace rendering::integrator::volume

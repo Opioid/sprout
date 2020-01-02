@@ -470,8 +470,13 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators) noexcept
     : Typed_pool<Tracking_multi>(num_integrators) {}
 
-Integrator* Tracking_multi_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Tracking_multi(rng);
+Integrator* Tracking_multi_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+    if (uint32_t const zero = 0;
+        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        return new (&integrators_[id]) Tracking_multi(rng);
+    }
+
+    return &integrators_[id];
 }
 
 }  // namespace rendering::integrator::volume

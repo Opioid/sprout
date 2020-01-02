@@ -251,8 +251,13 @@ Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, uint32_t min_bo
     settings_.avoid_caustics    = !enable_caustics;
 }
 
-Integrator* Pathtracer_DL_pool::create(uint32_t id, rnd::Generator& rng) const noexcept {
-    return new (&integrators_[id]) Pathtracer_DL(rng, settings_);
+Integrator* Pathtracer_DL_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+    if (uint32_t const zero = 0;
+        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        return new (&integrators_[id]) Pathtracer_DL(rng, settings_);
+    }
+
+    return &integrators_[id];
 }
 
 }  // namespace rendering::integrator::surface

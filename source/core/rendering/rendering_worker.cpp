@@ -38,10 +38,10 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
                   Particle_importance* particle_importance) noexcept {
     scene::Worker::init(id, scene, camera);
 
-    surface_integrator_ = surfaces.create(id, rng_);
+    surface_integrator_ = surfaces.get(id, rng_);
     surface_integrator_->prepare(scene, num_samples_per_pixel);
 
-    volume_integrator_ = volumes.create(id, rng_);
+    volume_integrator_ = volumes.get(id, rng_);
     volume_integrator_->prepare(scene, num_samples_per_pixel);
 
     sampler_ = samplers.get(id, rng_);
@@ -61,7 +61,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     photon_map_ = photon_map;
 
     if (lighttracers) {
-        lighttracer_ = lighttracers->create(id, rng_);
+        lighttracer_ = lighttracers->get(id, rng_);
         lighttracer_->prepare(scene, num_particles_per_chunk);
     }
 

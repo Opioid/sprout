@@ -29,7 +29,7 @@ class Pool {
 
     virtual ~Pool() noexcept;
 
-    virtual Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept = 0;
+    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept = 0;
 
   protected:
     uint32_t num_integrators_;

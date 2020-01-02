@@ -4,11 +4,15 @@
 #include "base/memory/align.hpp"
 #include "surface_integrator.hpp"
 
+#include <cstring>
+
 namespace rendering::integrator::surface {
 
 template <typename T>
 Typed_pool<T>::Typed_pool(uint32_t num_integrators) noexcept
-    : Pool(num_integrators), integrators_(memory::allocate_aligned<T>(num_integrators)) {}
+    : Pool(num_integrators), integrators_(memory::allocate_aligned<T>(num_integrators)) {
+    std::memset(reinterpret_cast<void*>(integrators_), 0, sizeof(T) * num_integrators);
+}
 
 template <typename T>
 Typed_pool<T>::~Typed_pool() noexcept {

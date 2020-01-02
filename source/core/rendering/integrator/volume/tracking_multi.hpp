@@ -27,7 +27,7 @@ class Tracking_multi_pool final : public Typed_pool<Tracking_multi> {
   public:
     Tracking_multi_pool(uint32_t num_integrators) noexcept;
 
-    Integrator* create(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 };
 
 }  // namespace rendering::integrator::volume
