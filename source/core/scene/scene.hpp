@@ -168,6 +168,8 @@ class Scene {
 
     void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
+    void prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept;
+
     // Only the returned reference is guaranteed to contain the actual transformation data.
     // This might or might not be the same reference which is passed as a parameter,
     // depending on whether the entity is animated or not.
@@ -181,8 +183,6 @@ class Scene {
     Transformation const& prop_world_transformation(uint32_t entity) const noexcept;
 
     math::Transformation const& prop_local_frame_0(uint32_t entity) const noexcept;
-
-    void prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept;
 
     void prop_allocate_frames(uint32_t entity, bool local_animation) noexcept;
 
@@ -231,9 +231,6 @@ class Scene {
     size_t num_bytes() const noexcept;
 
   private:
-    void prop_animated_transformation_at(uint32_t entity, uint64_t time,
-                                         Transformation& transformation) const noexcept;
-
     Prop_ptr allocate_prop() noexcept;
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) noexcept;

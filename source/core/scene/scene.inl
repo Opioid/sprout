@@ -74,6 +74,16 @@ inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t en
     return prop_world_transformations_[entity];
 }
 
+inline void Scene::prop_set_transformation(uint32_t                    entity,
+                                           math::Transformation const& t) noexcept {
+    uint32_t const f = prop_frames_[entity];
+
+    entity::Keyframe& local_frame = keyframes_[f + num_interpolation_frames_];
+
+    local_frame.transformation = t;
+    local_frame.time           = scene::Static_time;
+}
+
 inline void Scene::prop_set_world_transformation(uint32_t                    entity,
                                                  math::Transformation const& t) noexcept {
     prop_world_transformations_[entity].set(t);
@@ -85,7 +95,23 @@ inline Scene::Transformation const& Scene::prop_transformation_at(
         return prop_world_transformation(entity);
     }
 
-    prop_animated_transformation_at(entity, time, transformation);
+    entity::Keyframe const* frames = &keyframes_[prop_frames_[entity]];
+
+    for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
+        auto const& a = frames[i];
+        auto const& b = frames[i + 1];
+
+        if ((time >= a.time) & (time < b.time)) {
+            uint64_t const range = b.time - a.time;
+            uint64_t const delta = time - a.time;
+
+            float const t = float(delta) / float(range);
+
+            transformation.set(lerp(a.transformation, b.transformation, t));
+
+            break;
+        }
+    }
 
     return transformation;
 }

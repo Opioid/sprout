@@ -348,15 +348,6 @@ void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept
     }
 }
 
-void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept {
-    uint32_t const f = prop_frames_[entity];
-
-    entity::Keyframe& local_frame = keyframes_[f + num_interpolation_frames_];
-
-    local_frame.transformation = t;
-    local_frame.time           = scene::Static_time;
-}
-
 Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint64_t time,
                                                            Transformation& transformation) const
     noexcept {
@@ -564,27 +555,6 @@ size_t Scene::num_bytes() const noexcept {
     }
 
     return num_bytes + sizeof(*this);
-}
-
-void Scene::prop_animated_transformation_at(uint32_t entity, uint64_t time,
-                                            Transformation& transformation) const noexcept {
-    entity::Keyframe const* frames = &keyframes_[prop_frames_[entity]];
-
-    for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
-        auto const& a = frames[i];
-        auto const& b = frames[i + 1];
-
-        if (time >= a.time && time < b.time) {
-            uint64_t const range = b.time - a.time;
-            uint64_t const delta = time - a.time;
-
-            float const t = float(delta) / float(range);
-
-            transformation.set(lerp(a.transformation, b.transformation, t));
-
-            break;
-        }
-    }
 }
 
 Scene::Prop_ptr Scene::allocate_prop() noexcept {
