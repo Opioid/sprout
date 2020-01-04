@@ -10,19 +10,19 @@
 
 namespace scene::animation {
 
-Animation* load_keyframes(json::Value const&          keyframes_value,
-                          math::Transformation const& default_transformation, Scene& scene);
+Animation* load_keyframes(json::Value const&    keyframes_value,
+                          Transformation const& default_transformation, Scene& scene);
 
-Animation* load_sequence(json::Value const&          keyframes_value,
-                         math::Transformation const& default_transformation, Scene& scene);
+Animation* load_sequence(json::Value const&    keyframes_value,
+                         Transformation const& default_transformation, Scene& scene);
 
 void read_morphing(json::Value const& value, entity::Morphing& morphing);
 
-Animation* load(json::Value const&          animation_value,
-                math::Transformation const& default_transformation, Scene& scene) {
-    for (auto n = animation_value.MemberBegin(); n != animation_value.MemberEnd(); ++n) {
-        std::string const       node_name  = n->name.GetString();
-        rapidjson::Value const& node_value = n->value;
+Animation* load(json::Value const& animation_value, Transformation const& default_transformation,
+                Scene& scene) {
+    for (auto& n : animation_value.GetObject()) {
+        std::string const       node_name  = n.name.GetString();
+        rapidjson::Value const& node_value = n.value;
 
         if ("keyframes" == node_name) {
             return load_keyframes(node_value, default_transformation, scene);
@@ -34,8 +34,8 @@ Animation* load(json::Value const&          animation_value,
     return nullptr;
 }
 
-Animation* load_keyframes(json::Value const&          keyframes_value,
-                          math::Transformation const& default_transformation, Scene& scene) {
+Animation* load_keyframes(json::Value const&    keyframes_value,
+                          Transformation const& default_transformation, Scene& scene) {
     if (!keyframes_value.IsArray()) {
         return nullptr;
     }
@@ -67,8 +67,8 @@ Animation* load_keyframes(json::Value const&          keyframes_value,
     return animation;
 }
 
-Animation* load_sequence(json::Value const&          sequence_value,
-                         math::Transformation const& default_transformation, Scene& scene) {
+Animation* load_sequence(json::Value const&    sequence_value,
+                         Transformation const& default_transformation, Scene& scene) {
     uint32_t start_frame       = 0;
     uint32_t num_frames        = 0;
     uint32_t frames_per_second = 0;

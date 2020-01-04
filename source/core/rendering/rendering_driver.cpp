@@ -46,7 +46,7 @@ void Driver::init(take::Take& take, Scene& scene) noexcept {
     ranges_.init(take.lighttracers ? head : 0, take.lighttracers ? tail : 0,
                  Num_particles_per_chunk);
 #else
-    ranges_.init(take.lighttracer_pool ? take.view.num_particles : 0, 0, Num_particles_per_chunk),
+    ranges_.init(take.lighttracers ? take.view.num_particles : 0, 0, Num_particles_per_chunk),
 #endif
 
     target_.resize(take.view.camera->sensor_dimensions());

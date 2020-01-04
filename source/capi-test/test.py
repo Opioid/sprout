@@ -241,4 +241,14 @@ transformation = Transformation(1.0, 0.0, 0.0, 0.0,
 sprout.su_entity_set_transformation(triangle_a, transformation)
 
 sprout.su_render_frame(0)
+
+
+transformation = Transformation(1.0, 0.0, 0.0, 0.0,
+                                0.0, 1.0, 0.0, 0.0,
+                                0.0, 0.0, 1.0, 0.0,
+                                -1.0, 1.1, 5.0, 1.0)
+
+sprout.su_entity_set_transformation(triangle_a, transformation)
+
+
 sprout.su_render_frame(1)

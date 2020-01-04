@@ -173,7 +173,9 @@ void Tree::allocate(uint32_t num_finite_lights, uint32_t num_infinite_lights) no
     if (num_finite_lights_ != num_finite_lights) {
         memory::free_aligned(nodes_);
 
-        nodes_ = memory::allocate_aligned<Node>(num_finite_lights);
+        uint32_t const num_nodes = 2 * num_finite_lights - 1;
+
+        nodes_ = memory::allocate_aligned<Node>(num_nodes);
     }
 
     if (num_infinite_lights_ != num_infinite_lights) {
@@ -318,7 +320,7 @@ void Tree_builder::serialize(Build_node* node) noexcept {
         n.center        = node->center;
         n.power         = node->power;
         n.children      = false;
-        n.middle        = node->middle;
+        n.middle        = 0;
         n.next_or_light = node->light;
     }
 }

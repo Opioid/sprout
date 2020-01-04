@@ -68,7 +68,7 @@ struct View {
 
     Photon_settings photon_settings;
 
-    uint64_t num_particles;
+    uint64_t num_particles = 0;
 };
 
 struct Take {
