@@ -372,7 +372,7 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
         auto const& a = frames[i];
         auto const& b = frames[i + 1];
 
-        if (time >= a.time && time < b.time) {
+        if ((time >= a.time) & (time < b.time)) {
             uint64_t const range = b.time - a.time;
             uint64_t const delta = time - a.time;
 
