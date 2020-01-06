@@ -231,6 +231,10 @@ class Scene {
     size_t num_bytes() const noexcept;
 
   private:
+    Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
+                                                          Transformation& transformation) const
+        noexcept;
+
     Prop_ptr allocate_prop() noexcept;
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) noexcept;
@@ -249,7 +253,6 @@ class Scene {
     uint32_t num_interpolation_frames_ = 0;
 
     uint64_t current_time_start_;
-    uint64_t current_time_end_;
 
     bvh::Builder bvh_builder_;
 

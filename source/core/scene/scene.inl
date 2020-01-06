@@ -81,7 +81,6 @@ inline void Scene::prop_set_transformation(uint32_t                    entity,
     entity::Keyframe& local_frame = keyframes_[f + num_interpolation_frames_];
 
     local_frame.transformation = t;
-    local_frame.time           = scene::Static_time;
 }
 
 inline void Scene::prop_set_world_transformation(uint32_t                    entity,
@@ -90,30 +89,23 @@ inline void Scene::prop_set_world_transformation(uint32_t                    ent
 }
 
 inline Scene::Transformation const& Scene::prop_transformation_at(
+    uint32_t entity, uint64_t time, Transformation& transformation) const noexcept {
+    uint32_t const f = prop_frames_[entity];
+
+    if (prop::Null == f) {
+        return prop_world_transformation(entity);
+    }
+
+    return prop_animated_transformation_at(f, time, transformation);
+}
+
+inline Scene::Transformation const& Scene::prop_transformation_at(
     uint32_t entity, uint64_t time, bool is_static, Transformation& transformation) const noexcept {
     if (is_static) {
         return prop_world_transformation(entity);
     }
 
-    entity::Keyframe const* frames = &keyframes_[prop_frames_[entity]];
-
-    for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
-        auto const& a = frames[i];
-        auto const& b = frames[i + 1];
-
-        if ((time >= a.time) & (time < b.time)) {
-            uint64_t const range = b.time - a.time;
-            uint64_t const delta = time - a.time;
-
-            float const t = float(delta) / float(range);
-
-            transformation.set(lerp(a.transformation, b.transformation, t));
-
-            break;
-        }
-    }
-
-    return transformation;
+    return prop_animated_transformation_at(prop_frames_[entity], time, transformation);
 }
 
 inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const noexcept {

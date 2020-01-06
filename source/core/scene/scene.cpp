@@ -167,6 +167,8 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexce
     uint64_t const end_rem      = end % tick_duration_;
     uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
 
+    current_time_start_ = frames_start;
+
     for (auto a : animations_) {
         a->resample(frames_start, frames_end, tick_duration_);
     }
@@ -180,9 +182,6 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexce
     }
 
     compile(start, threads);
-
-    current_time_start_ = frames_start;
-    current_time_end_   = frames_end;
 }
 
 void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
@@ -351,42 +350,6 @@ void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept
     } else {
         prop_topology_[prop_topology_.size() - 2].next = child_id;
     }
-}
-
-Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint64_t time,
-                                                           Transformation& transformation) const
-    noexcept {
-    uint32_t const f = prop_frames_[entity];
-
-    if (prop::Null == f) {
-        return prop_world_transformation(entity);
-    }
-
-    entity::Keyframe const* frames = &keyframes_[f];
-
-    uint32_t const predicted_frame = uint32_t((time - current_time_start_) / tick_duration_);
-
-    for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
-        auto const& a = frames[i];
-        auto const& b = frames[i + 1];
-
-        if ((time >= a.time) & (time < b.time)) {
-            if (predicted_frame != i) {
-                std::cout << "fail" << std::endl;
-            }
-
-            uint64_t const range = b.time - a.time;
-            uint64_t const delta = time - a.time;
-
-            float const t = float(delta) / float(range);
-
-            transformation.set(lerp(a.transformation, b.transformation, t));
-
-            break;
-        }
-    }
-
-    return transformation;
 }
 
 void Scene::prop_allocate_frames(uint32_t entity, bool local_animation) noexcept {
@@ -566,6 +529,26 @@ size_t Scene::num_bytes() const noexcept {
     }
 
     return num_bytes + sizeof(*this);
+}
+
+Scene::Transformation const& Scene::prop_animated_transformation_at(
+    uint32_t frames_id, uint64_t time, Transformation& transformation) const noexcept {
+    entity::Keyframe const* frames = &keyframes_[frames_id];
+
+    uint64_t const i = (time - current_time_start_) / tick_duration_;
+
+    auto const& a = frames[i];
+    auto const& b = frames[i + 1];
+
+    uint64_t const a_time = current_time_start_ + i * tick_duration_;
+
+    uint64_t const delta = time - a_time;
+
+    float const t = float(delta) / float(tick_duration_);
+
+    transformation.set(lerp(a.transformation, b.transformation, t));
+
+    return transformation;
 }
 
 Scene::Prop_ptr Scene::allocate_prop() noexcept {

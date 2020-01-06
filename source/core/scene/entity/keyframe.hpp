@@ -26,8 +26,6 @@ struct alignas(16) Keyframe {
     void transform(Keyframe& __restrict result, Keyframe const& __restrict from) const noexcept;
 
     math::Transformation transformation;
-
-    uint64_t time;
 };
 
 }  // namespace scene::entity

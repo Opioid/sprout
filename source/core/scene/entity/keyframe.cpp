@@ -34,8 +34,6 @@ void Keyframe::transform(Keyframe& result, Transformation const& from) const noe
 
     result.transformation.rotation = quaternion::mul(quaternion::create(from.rotation),
                                                      transformation.rotation);
-
-    result.time = time;
 }
 
 void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict from) const
@@ -47,8 +45,6 @@ void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict
 
     result.transformation.rotation = quaternion::mul(from.transformation.rotation,
                                                      transformation.rotation);
-
-    result.time = scene::Static_time == from.time ? time : from.time;
 }
 
 }  // namespace scene::entity

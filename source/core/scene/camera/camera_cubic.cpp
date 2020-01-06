@@ -7,7 +7,7 @@
 #include "sampler/camera_sample.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/prop/prop.hpp"
-#include "scene/scene.hpp"
+#include "scene/scene.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 

@@ -18,6 +18,8 @@ namespace animation {
 struct Keyframe {
     entity::Keyframe k;
     entity::Morphing m;
+
+    uint64_t time;
 };
 
 class Animation {

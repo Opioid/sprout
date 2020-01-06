@@ -36,21 +36,18 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) no
             auto const& a = keyframes_[j];
             auto const& b = keyframes_[j + 1];
 
-            if (time >= a.k.time && time < b.k.time) {
-                uint64_t const range = b.k.time - a.k.time;
-                uint64_t const delta = time - a.k.time;
+            if (time >= a.time && time < b.time) {
+                uint64_t const range = b.time - a.time;
+                uint64_t const delta = time - a.time;
 
                 float const t = float(delta) / float(range);
 
                 a.k.interpolate(interpolated_frames[i].k, b.k, t);
                 a.m.interpolate(interpolated_frames[i].m, b.m, t);
 
-                interpolated_frames[i].k.time = time;
-
                 break;
             } else if (j + 1 == keyframes_back) {
-                interpolated_frames[i]        = b;
-                interpolated_frames[i].k.time = time;
+                interpolated_frames[i] = b;
 
                 break;
             } else {
