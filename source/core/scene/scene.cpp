@@ -22,6 +22,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
@@ -178,6 +180,9 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexce
     }
 
     compile(start, threads);
+
+    current_time_start_ = frames_start;
+    current_time_end_   = frames_end;
 }
 
 void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
@@ -359,11 +364,17 @@ Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint
 
     entity::Keyframe const* frames = &keyframes_[f];
 
+    uint32_t const predicted_frame = uint32_t((time - current_time_start_) / tick_duration_);
+
     for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
         auto const& a = frames[i];
         auto const& b = frames[i + 1];
 
         if ((time >= a.time) & (time < b.time)) {
+            if (predicted_frame != i) {
+                std::cout << "fail" << std::endl;
+            }
+
             uint64_t const range = b.time - a.time;
             uint64_t const delta = time - a.time;
 

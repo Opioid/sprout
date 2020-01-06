@@ -248,6 +248,9 @@ class Scene {
 
     uint32_t num_interpolation_frames_ = 0;
 
+    uint64_t current_time_start_;
+    uint64_t current_time_end_;
+
     bvh::Builder bvh_builder_;
 
     prop::BVH_wrapper prop_bvh_;
