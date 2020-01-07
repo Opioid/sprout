@@ -26,11 +26,13 @@ void Driver_finalframe::render(Exporters& exporters) noexcept {
     for (uint32_t f = 0; f < view_->num_frames; ++f) {
         uint32_t const frame = view_->start_frame + f;
 
-        render(frame, exporters);
+        render(frame);
+
+        export_frame(frame, exporters);
     }
 }
 
-void Driver_finalframe::render(uint32_t frame, Exporters& exporters) noexcept {
+void Driver_finalframe::render(uint32_t frame) noexcept {
     auto& camera = *view_->camera;
 
     scene_->finish();
@@ -69,7 +71,9 @@ void Driver_finalframe::render(uint32_t frame, Exporters& exporters) noexcept {
 
     auto const pp_duration = chrono::seconds_since(pp_start);
     logging::info("Post-process time %f s", pp_duration);
+}
 
+void Driver_finalframe::export_frame(uint32_t frame, Exporters& exporters) const noexcept {
     auto const export_start = std::chrono::high_resolution_clock::now();
 
     for (auto& e : exporters) {

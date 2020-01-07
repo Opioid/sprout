@@ -10,6 +10,8 @@ int32_t Channel::byte_size() const noexcept {
         case Type::Float:
             return 4;
     }
+
+    return 0;
 }
 
 int32_t num_scanlines_per_block(Compression compression) noexcept {
@@ -28,6 +30,8 @@ int32_t num_scanlines_per_block(Compression compression) noexcept {
         case Compression::B44A:
             return 32;
     }
+
+    return 0;
 }
 
 int32_t num_scanline_blocks(int32_t num_scanlines, Compression compression) noexcept {

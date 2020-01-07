@@ -462,7 +462,15 @@ int32_t su_render_frame(uint32_t frame) noexcept {
 
     engine->driver.init(engine->take, engine->scene);
 
-    engine->driver.render(frame, engine->take.exporters);
+    engine->driver.render(frame);
+
+    return 0;
+}
+
+int32_t su_export_frame(uint32_t frame) noexcept {
+    ASSERT_ENGINE(-1)
+
+    engine->driver.export_frame(frame, engine->take.exporters);
 
     return 0;
 }
