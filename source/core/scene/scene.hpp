@@ -144,6 +144,8 @@ class Scene {
 
     void compile(uint64_t time, thread::Pool& threads) noexcept;
 
+    uint32_t num_interpolation_frames() const noexcept;
+
     void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) noexcept;
 
     uint32_t create_entity() noexcept;
@@ -190,6 +192,8 @@ class Scene {
 
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames) noexcept;
 
+    void prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k) noexcept;
+
     void prop_calculate_world_transformation(uint32_t entity) noexcept;
 
     void prop_propagate_transformation(uint32_t entity) noexcept;
@@ -197,7 +201,7 @@ class Scene {
     void prop_inherit_transformation(uint32_t              entity,
                                      const Transformation& transformation) noexcept;
 
-    void prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames) noexcept;
+    void prop_inherit_transformation(uint32_t entity, Keyframe const* frames) noexcept;
 
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
                              bool in_shadow) noexcept;

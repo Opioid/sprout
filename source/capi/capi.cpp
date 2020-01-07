@@ -186,6 +186,11 @@ int32_t su_create_defaults() noexcept {
 
     take::Loader::set_default_exporter(engine->take);
 
+    scene::camera::Camera const* camera = engine->take.view.camera;
+
+    engine->scene.calculate_num_interpolation_frames(camera->frame_step(),
+                                                     camera->frame_duration());
+
     return 0;
 }
 
@@ -395,12 +400,12 @@ int32_t su_create_light(uint32_t entity) noexcept {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
-        return 0;
+        return -2;
     }
 
     engine->scene_loader.create_light(entity, engine->scene);
 
-    return 1;
+    return 0;
 }
 
 uint32_t su_camera_entity() noexcept {
@@ -413,11 +418,23 @@ uint32_t su_camera_entity() noexcept {
     return engine->take.view.camera->entity();
 }
 
+int32_t su_entity_allocate_frames(uint32_t entity) noexcept {
+    ASSERT_ENGINE(-1)
+
+    if (engine->scene.num_props() <= entity) {
+        return -2;
+    }
+
+    engine->scene.prop_allocate_frames(entity, true);
+
+    return 0;
+}
+
 int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) noexcept {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
-        return -1;
+        return -2;
     }
 
     float4x4 const m(transformation);
@@ -431,6 +448,29 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
     t.rotation = quaternion::create(r);
 
     engine->scene.prop_set_world_transformation(entity, t);
+
+    return 0;
+}
+
+int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame,
+                                           float const* transformation) noexcept {
+    ASSERT_ENGINE(-1)
+
+    if (engine->scene.num_props() <= entity || engine->scene.num_interpolation_frames() <= frame) {
+        return -2;
+    }
+
+    float4x4 const m(transformation);
+
+    float3x3 r;
+
+    math::Transformation t;
+
+    decompose(m, r, t.scale, t.position);
+
+    t.rotation = quaternion::create(r);
+
+    engine->scene.prop_set_frame(entity, frame, entity::Keyframe{t});
 
     return 0;
 }

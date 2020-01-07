@@ -35,7 +35,8 @@ SU_LIBRARY_API int32_t su_create_defaults() noexcept;
 
 SU_LIBRARY_API uint32_t su_create_camera(char const* string) noexcept;
 
-SU_LIBRARY_API uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov) noexcept;
+SU_LIBRARY_API uint32_t su_create_camera_perspective(uint32_t width, uint32_t height,
+                                                     float fov) noexcept;
 
 SU_LIBRARY_API int32_t su_create_sampler(uint32_t num_samples) noexcept;
 
@@ -65,8 +66,13 @@ SU_LIBRARY_API int32_t su_create_light(uint32_t entity) noexcept;
 
 SU_LIBRARY_API uint32_t su_camera_entity() noexcept;
 
+SU_LIBRARY_API int32_t su_entity_allocate_frames(uint32_t entity) noexcept;
+
 SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t     entity,
                                                     float const* transformation) noexcept;
+
+SU_LIBRARY_API int32_t su_entity_set_transformation_frame(uint32_t     entity, uint32_t frame,
+                                                          float const* transformation) noexcept;
 
 SU_LIBRARY_API int32_t su_render() noexcept;
 

@@ -66,10 +66,6 @@ Keyframe const* Animation::interpolated_frames() const noexcept {
 Stage::Stage(uint32_t entity, Animation* animation) noexcept
     : entity_(entity), animation_(animation) {}
 
-void Stage::allocate_enitity_frames(Scene& scene) const noexcept {
-    scene.prop_allocate_frames(entity_, true);
-}
-
 void Stage::update(Scene& scene, thread::Pool& threads) const noexcept {
     scene.prop_set_frames(entity_, animation_->interpolated_frames());
 

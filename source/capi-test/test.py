@@ -203,6 +203,8 @@ triangle = sprout.su_create_triangle_mesh(num_vertices,
 
 triangle_a = sprout.su_create_prop(triangle, 1, byref(material_a))
 
+sprout.su_entity_allocate_frames(triangle_a)
+
 Transformation = c_float * 16
 
 transformation = Transformation(1.0, 0.0, 0.0, 0.0,
@@ -238,17 +240,28 @@ transformation = Transformation(1.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 1.0, 0.0,
                                 -1.0, 1.0, 5.0, 1.0)
 
-sprout.su_entity_set_transformation(triangle_a, transformation)
-
-sprout.su_render_frame(0)
-
+#sprout.su_entity_set_transformation(triangle_a, transformation)
+sprout.su_entity_set_transformation_frame(triangle_a, 0, transformation)
 
 transformation = Transformation(1.0, 0.0, 0.0, 0.0,
                                 0.0, 1.0, 0.0, 0.0,
                                 0.0, 0.0, 1.0, 0.0,
-                                -1.0, 1.1, 5.0, 1.0)
+                                -1.0, 1.5, 5.0, 1.0)
 
-sprout.su_entity_set_transformation(triangle_a, transformation)
+sprout.su_entity_set_transformation_frame(triangle_a, 1, transformation)
 
+sprout.su_render_frame(0)
+sprout.su_export_frame(0)
+
+
+sprout.su_entity_set_transformation_frame(triangle_a, 0, transformation)
+
+transformation = Transformation(1.0, 0.0, 0.0, 0.0,
+                                0.0, 1.0, 0.0, 0.0,
+                                0.0, 0.0, 1.0, 0.0,
+                                -1.0, 2.0, 5.0, 1.0)
+
+sprout.su_entity_set_transformation_frame(triangle_a, 0, transformation)
 
 sprout.su_render_frame(1)
+sprout.su_export_frame(1)

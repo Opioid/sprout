@@ -69,6 +69,10 @@ inline std::vector<light::Light> const& Scene::lights() const noexcept {
     return lights_;
 }
 
+inline uint32_t Scene::num_interpolation_frames() const noexcept {
+    return num_interpolation_frames_;
+}
+
 inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const
     noexcept {
     return prop_world_transformations_[entity];

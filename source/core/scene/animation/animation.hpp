@@ -45,8 +45,6 @@ class Stage {
   public:
     Stage(uint32_t entity, Animation* animation) noexcept;
 
-    void allocate_enitity_frames(Scene& scene) const noexcept;
-
     void update(Scene& scene, thread::Pool& threads) const noexcept;
 
   private:

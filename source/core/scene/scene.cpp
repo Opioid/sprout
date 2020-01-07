@@ -22,8 +22,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
@@ -382,6 +380,16 @@ void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames) 
     }
 }
 
+void Scene::prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k) noexcept {
+    uint32_t const num_frames = num_interpolation_frames_;
+
+    uint32_t const f = prop_frames_[entity];
+
+    entity::Keyframe* local_frames = &keyframes_[f + num_frames];
+
+    local_frames[frame] = k;
+}
+
 void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
     auto const& p = props_[entity];
 
@@ -518,7 +526,8 @@ animation::Animation* Scene::create_animation(uint32_t count) noexcept {
 
 void Scene::create_animation_stage(uint32_t entity, animation::Animation* animation) noexcept {
     animation_stages_.emplace_back(entity, animation);
-    animation_stages_.back().allocate_enitity_frames(*this);
+
+    prop_allocate_frames(entity, true);
 }
 
 size_t Scene::num_bytes() const noexcept {
