@@ -515,6 +515,22 @@ int32_t su_export_frame(uint32_t frame) noexcept {
     return 0;
 }
 
+int32_t su_copy_framebuffer(uint32_t width, uint32_t height, float* destination) noexcept {
+    ASSERT_ENGINE(-1)
+
+    image::Float4 const& buffer = engine->driver.target();
+
+    int2 const d = buffer.description().dimensions_2();
+
+    uint32_t const len = std::min(width * height, uint32_t(d[0] * d[1]));
+
+    float const* raw = reinterpret_cast<float const*>(buffer.data());
+
+    std::copy(raw, raw + 4 * len, destination);
+
+    return 0;
+}
+
 namespace logging {
 
 class C : public Log {

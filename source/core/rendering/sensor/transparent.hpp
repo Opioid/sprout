@@ -12,7 +12,7 @@ class Transparent : public Sensor {
 
     ~Transparent() noexcept override;
 
-    void clear(float weigth) noexcept override final;
+    void clear(float weight) noexcept override final;
 
     bool has_alpha_transparency() const noexcept override final;
 
@@ -27,6 +27,8 @@ class Transparent : public Sensor {
 
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
         noexcept override final;
+
+    void on_resize(int2 dimensions) noexcept override;
 
     struct Pixel {
         float4 color;

@@ -92,4 +92,9 @@ scene::Scene const& Driver::scene() const noexcept {
 scene::Scene& Driver::scene() noexcept {
     return *scene_;
 }
+
+image::Float4 const& Driver::target() const noexcept {
+    return target_;
+}
+
 }  // namespace rendering

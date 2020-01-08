@@ -102,6 +102,14 @@ void Camera::set_sensor(Sensor* sensor) noexcept {
     sensor_ = sensor;
 }
 
+void Camera::resize(int2 resolution) noexcept {
+    resolution_ = resolution;
+
+    if (sensor_) {
+        sensor_->resize(sensor_dimensions());
+    }
+}
+
 prop::Interface_stack const& Camera::interface_stack() const noexcept {
     return interface_stack_;
 }

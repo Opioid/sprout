@@ -8,17 +8,17 @@ namespace rendering::sensor {
 
 Transparent::Transparent(int2 dimensions, float exposure) noexcept
     : Sensor(dimensions, exposure),
-      pixels_(memory::allocate_aligned<Pixel>(dimensions[0] * dimensions[1])) {}
+      pixels_(memory::allocate_aligned<Pixel>(uint32_t(dimensions[0] * dimensions[1]))) {}
 
 Transparent::~Transparent() noexcept {
     memory::free_aligned(pixels_);
 }
 
-void Transparent::clear(float weigth) noexcept {
+void Transparent::clear(float weight) noexcept {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
         pixels_[i].color  = float4(0.f);
-        pixels_[i].weight = weigth;
+        pixels_[i].weight = weight;
     }
 }
 
@@ -77,6 +77,18 @@ void Transparent::resolve_accumulate(int32_t begin, int32_t end, image::Float4& 
         float4 const color = value.color / value.weight;
 
         target.store(i, float4(exposure_factor * color.xyz(), std::min(color[3], 1.f)));
+    }
+}
+
+void Transparent::on_resize(int2 dimensions) noexcept {
+    int32_t const current_len = dimensions_[0] * dimensions_[1];
+
+    int32_t const len = dimensions[0] * dimensions[1];
+
+    if (len != current_len) {
+        memory::free_aligned(pixels_);
+
+        pixels_ = memory::allocate_aligned<Pixel>(uint32_t(len));
     }
 }
 

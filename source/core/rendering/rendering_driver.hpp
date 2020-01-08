@@ -64,6 +64,8 @@ class Driver {
     Scene const& scene() const noexcept;
     Scene&       scene() noexcept;
 
+    image::Float4 const& target() const noexcept;
+
   protected:
     thread::Pool& threads_;
 

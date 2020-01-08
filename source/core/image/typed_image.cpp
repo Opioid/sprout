@@ -72,6 +72,10 @@ int2 Typed_image<T>::coordinates_2(int32_t index) const noexcept {
 
 template <typename T>
 void Typed_image<T>::resize(Description const& description) noexcept {
+    if (description.num_pixels() == description_.num_pixels()) {
+        return;
+    }
+
     memory::free_aligned(data_);
 
     description_.dimensions_   = description.dimensions_;

@@ -28,4 +28,10 @@ void Sensor::resolve_accumulate(thread::Pool& threads, image::Float4& target) co
         0, target.description().area());
 }
 
+void Sensor::resize(int2 dimensions) noexcept {
+    on_resize(dimensions);
+
+    dimensions_ = dimensions;
+}
+
 }  // namespace rendering::sensor

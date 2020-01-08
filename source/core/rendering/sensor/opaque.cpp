@@ -8,7 +8,7 @@ namespace rendering::sensor {
 
 Opaque::Opaque(int2 dimensions, float exposure) noexcept
     : Sensor(dimensions, exposure),
-      pixels_(memory::allocate_aligned<float4>(dimensions[0] * dimensions[1])) {}
+      pixels_(memory::allocate_aligned<float4>(uint32_t(dimensions[0] * dimensions[1]))) {}
 
 Opaque::~Opaque() noexcept {
     memory::free_aligned(pixels_);
@@ -74,6 +74,18 @@ void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& targe
         float3 const old = target.load(i).xyz();
 
         target.store(i, float4(old + exposure_factor * color, 1.f));
+    }
+}
+
+void Opaque::on_resize(int2 dimensions) noexcept {
+    int32_t const current_len = dimensions_[0] * dimensions_[1];
+
+    int32_t const len = dimensions[0] * dimensions[1];
+
+    if (len != current_len) {
+        memory::free_aligned(pixels_);
+
+        pixels_ = memory::allocate_aligned<float4>(uint32_t(len));
     }
 }
 

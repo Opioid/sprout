@@ -27,6 +27,8 @@ class Opaque : public Sensor {
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
         noexcept override final;
 
+    void on_resize(int2 dimensions) noexcept override;
+
     // weight_sum is saved in pixel.w
     float4* pixels_;
 };
