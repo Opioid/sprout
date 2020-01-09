@@ -6,6 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
@@ -23,33 +24,49 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, Settings const& settings) noexcept
+Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
-      material_samplers_{rng, rng, rng},
-      light_samplers_{rng, rng, rng} {}
+      sampler_pool_(progressive ? nullptr : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
+    if (sampler_pool_) {
+        for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+            material_samplers_[i] = sampler_pool_->get(2 * i + 0, rng);
+            light_samplers_[i] = sampler_pool_->get(2 * i + 1, rng);
+        }
+    } else {
+        for (auto& s : material_samplers_) {
+            s = &sampler_;
+        }
 
-Pathtracer_MIS::~Pathtracer_MIS() {}
+        for (auto& s : light_samplers_) {
+            s = &sampler_;
+        }
+    }
+}
+
+Pathtracer_MIS::~Pathtracer_MIS() {
+    delete sampler_pool_;
+}
 
 void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
     uint32_t const num_lights = uint32_t(scene.lights().size());
 
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
-    for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
+    for (auto s : material_samplers_) {
+        s->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
     }
 
     uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
 
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
-        for (auto& s : light_samplers_) {
-            s.resize(num_samples_per_pixel, num_light_samples, 1, 2);
+        for (auto s : light_samplers_) {
+            s->resize(num_samples_per_pixel, num_light_samples, 1, 2);
         }
     } else {
-        for (auto& s : light_samplers_) {
-            s.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
+        for (auto s : light_samplers_) {
+            s->resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
         }
     }
 }
@@ -57,12 +74,12 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 void Pathtracer_MIS::start_pixel() noexcept {
     sampler_.start_pixel();
 
-    for (auto& s : material_samplers_) {
-        s.start_pixel();
+    for (auto s : material_samplers_) {
+        s->start_pixel();
     }
 
-    for (auto& s : light_samplers_) {
-        s.start_pixel();
+    for (auto s : light_samplers_) {
+        s->start_pixel();
     }
 }
 
@@ -448,22 +465,22 @@ float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
 }
 
 sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) noexcept {
-    if (Num_material_samplers > bounce) {
-        return material_samplers_[bounce];
+    if (Num_dedicated_samplers > bounce) {
+        return *material_samplers_[bounce];
     }
 
     return sampler_;
 }
 
 sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
-    if (Num_light_samplers > bounce) {
-        return light_samplers_[bounce];
+    if (Num_dedicated_samplers > bounce) {
+        return *light_samplers_[bounce];
     }
 
     return sampler_;
 }
 
-Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, uint32_t num_samples,
+Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
                                          uint32_t min_bounces, uint32_t max_bounces,
                                          Light_sampling light_sampling, bool enable_caustics,
                                          bool photons_only_through_specular) noexcept
@@ -472,12 +489,12 @@ Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, uint32_t num_
                                                              max_bounces,
                                                              light_sampling,
                                                              !enable_caustics,
-                                                             !photons_only_through_specular} {}
+                                                             !photons_only_through_specular}, progressive_(progressive) {}
 
 Integrator* Pathtracer_MIS_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer_MIS(rng, settings_);
+        return new (&integrators_[id]) Pathtracer_MIS(rng, settings_, progressive_);
     }
 
     return &integrators_[id];

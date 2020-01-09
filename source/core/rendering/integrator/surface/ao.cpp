@@ -5,6 +5,8 @@
 #include "base/random/generator.inl"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
+#include "sampler/sampler_random.hpp"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
@@ -12,15 +14,27 @@
 
 namespace rendering::integrator::surface {
 
-AO::AO(rnd::Generator& rng, Settings const& settings) noexcept
-    : Integrator(rng), settings_(settings), sampler_(rng) {}
+static sampler::Sampler* create_sampler(rnd::Generator& rng, bool progressive) noexcept {
+    if (progressive) {
+        return new sampler::Random(rng);
+    } else {
+        return new sampler::Golden_ratio(rng);
+    }
+}
+
+AO::AO(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
+    : Integrator(rng), settings_(settings), sampler_(create_sampler(rng, progressive)) {}
+
+AO::~AO() noexcept {
+    delete sampler_;
+}
 
 void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
-    sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
+    sampler_->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 
 void AO::start_pixel() noexcept {
-    sampler_.start_pixel();
+    sampler_->start_pixel();
 }
 
 float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
@@ -33,7 +47,7 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     float3 const wo = -ray.direction;
 
-    auto const& material_sample = intersection.sample(wo, ray, Filter::Undefined, false, sampler_,
+    auto const& material_sample = intersection.sample(wo, ray, Filter::Undefined, false, *sampler_,
                                                       worker);
 
     Ray occlusion_ray;
@@ -43,7 +57,7 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
     occlusion_ray.time   = ray.time;
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
-        float2 const sample = sampler_.generate_sample_2D();
+        float2 const sample = sampler_->generate_sample_2D();
 
         //		float3 ws = intersection.geo.tangent_to_world(hs);
 
@@ -63,8 +77,8 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, result, result, 1.f);
 }
 
-AO_pool::AO_pool(uint32_t num_integrators, uint32_t num_samples, float radius) noexcept
-    : Typed_pool<AO>(num_integrators) {
+AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius) noexcept
+    : Typed_pool<AO>(num_integrators), progressive_(progressive) {
     settings_.num_samples = num_samples;
     settings_.radius      = radius;
 }
@@ -72,7 +86,7 @@ AO_pool::AO_pool(uint32_t num_integrators, uint32_t num_samples, float radius) n
 Integrator* AO_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) AO(rng, settings_);
+        return new (&integrators_[id]) AO(rng, settings_, progressive_);
     }
 
     return &integrators_[id];

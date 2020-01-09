@@ -6,6 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
@@ -21,34 +22,52 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, Settings const& settings) noexcept
+Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
-      material_samplers_{rng, rng, rng},
-      light_samplers_{rng, rng, rng} {}
+      sampler_pool_(progressive ? nullptr : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
+    if (sampler_pool_) {
+        for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+            material_samplers_[i] = sampler_pool_->get(2 * i + 0, rng);
+            light_samplers_[i] = sampler_pool_->get(2 * i + 1, rng);
+        }
+    } else {
+        for (auto& s : material_samplers_) {
+            s = &sampler_;
+        }
+
+        for (auto& s : light_samplers_) {
+            s = &sampler_;
+        }
+    }
+}
+
+Pathtracer_DL::~Pathtracer_DL() noexcept {
+    delete sampler_pool_;
+}
 
 void Pathtracer_DL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
-    for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, 1, 1, 1);
+    for (auto s : material_samplers_) {
+        s->resize(num_samples_per_pixel, 1, 1, 1);
     }
 
-    for (auto& s : light_samplers_) {
-        s.resize(num_samples_per_pixel, settings_.num_light_samples, 1, 2);
+    for (auto s : light_samplers_) {
+        s->resize(num_samples_per_pixel, settings_.num_light_samples, 1, 2);
     }
 }
 
 void Pathtracer_DL::start_pixel() noexcept {
     sampler_.start_pixel();
 
-    for (auto& s : material_samplers_) {
-        s.start_pixel();
+    for (auto s : material_samplers_) {
+        s->start_pixel();
     }
 
-    for (auto& s : light_samplers_) {
-        s.start_pixel();
+    for (auto s : light_samplers_) {
+        s->start_pixel();
     }
 }
 
@@ -226,25 +245,25 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 }
 
 sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) noexcept {
-    if (Num_material_samplers > bounce) {
-        return material_samplers_[bounce];
+    if (Num_dedicated_samplers > bounce) {
+        return *material_samplers_[bounce];
     }
 
     return sampler_;
 }
 
 sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) noexcept {
-    if (Num_light_samplers > bounce) {
-        return light_samplers_[bounce];
+    if (Num_dedicated_samplers > bounce) {
+        return *light_samplers_[bounce];
     }
 
     return sampler_;
 }
 
-Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, uint32_t min_bounces,
+Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces,
                                        uint32_t max_bounces, uint32_t num_light_samples,
                                        bool enable_caustics) noexcept
-    : Typed_pool<Pathtracer_DL>(num_integrators) {
+    : Typed_pool<Pathtracer_DL>(num_integrators), progressive_(progressive) {
     settings_.min_bounces       = min_bounces;
     settings_.max_bounces       = max_bounces;
     settings_.num_light_samples = num_light_samples;
@@ -254,7 +273,7 @@ Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, uint32_t min_bo
 Integrator* Pathtracer_DL_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer_DL(rng, settings_);
+        return new (&integrators_[id]) Pathtracer_DL(rng, settings_, progressive_);
     }
 
     return &integrators_[id];

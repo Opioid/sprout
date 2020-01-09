@@ -161,7 +161,7 @@ int32_t su_load_take(char const* string) noexcept {
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(take))
                               : engine->resources.filesystem().read_stream(take, take_name);
 
-        if (!stream || !take::Loader::load(engine->take, *stream, take_name, engine->scene,
+        if (!stream || !take::Loader::load(engine->take, *stream, take_name, false, engine->scene,
                                            engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
@@ -182,7 +182,7 @@ int32_t su_create_defaults() noexcept {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::set_default_integrators(num_workers, engine->take);
+    take::Loader::set_default_integrators(num_workers, false, engine->take);
 
     take::Loader::set_default_exporter(engine->take);
 
@@ -263,7 +263,7 @@ int32_t su_create_integrators(char const* string) noexcept {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::load_integrators(*root, num_workers, engine->take);
+    take::Loader::load_integrators(*root, num_workers, false, engine->take);
 
     return 0;
 }

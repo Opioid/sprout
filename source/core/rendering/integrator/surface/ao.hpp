@@ -1,13 +1,11 @@
 #ifndef SU_CORE_RENDERING_INTEGRATRO_SURFACE_AO_HPP
 #define SU_CORE_RENDERING_INTEGRATRO_SURFACE_AO_HPP
 
-#include "sampler/sampler_golden_ratio.hpp"
 #include "surface_integrator.hpp"
-// #include "sampler/sampler_halton.hpp"
-// #include "sampler/sampler_ld.hpp"
-// #include "sampler/sampler_scrambled_hammersley.hpp"
-// #include "sampler/sampler_sobol.hpp"
-#include "sampler/sampler_random.hpp"
+
+namespace sampler {
+    class Sampler;
+}
 
 namespace rendering::integrator::surface {
 
@@ -18,7 +16,9 @@ class alignas(64) AO final : public Integrator {
         float    radius;
     };
 
-    AO(rnd::Generator& rng, Settings const& settings) noexcept;
+    AO(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept;
+
+    ~AO() noexcept override final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -30,17 +30,19 @@ class alignas(64) AO final : public Integrator {
   private:
     Settings const settings_;
 
-    sampler::Golden_ratio sampler_;
+    sampler::Sampler* sampler_;
 };
 
 class AO_pool final : public Typed_pool<AO> {
   public:
-    AO_pool(uint32_t num_integrators, uint32_t num_samples, float radius) noexcept;
+    AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius) noexcept;
 
     Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
   private:
     AO::Settings settings_;
+
+    bool progressive_;
 };
 
 }  // namespace rendering::integrator::surface

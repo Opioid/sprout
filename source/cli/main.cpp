@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) noexcept {
             auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
                                   : filesystem.read_stream(args.take, take_name);
 
-            if (!stream || !take::Loader::load(take, *stream, take_name, scene, resources)) {
+            if (!stream || !take::Loader::load(take, *stream, take_name, args.progressive, scene, resources)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }

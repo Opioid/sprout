@@ -3,7 +3,6 @@
 
 #include "base/math/vector3.hpp"
 #include "base/math/vector4.hpp"
-#include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "surface_integrator.hpp"
 
@@ -22,7 +21,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool photons_not_only_through_specular;
     };
 
-    Pathtracer_MIS(rnd::Generator& rng, Settings const& settings) noexcept;
+    Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept;
 
     ~Pathtracer_MIS() override final;
 
@@ -70,16 +69,18 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     sampler::Random sampler_;
 
-    static uint32_t constexpr Num_material_samplers = 3;
-    sampler::Golden_ratio material_samplers_[Num_material_samplers];
+    sampler::Pool* sampler_pool_;
 
-    static uint32_t constexpr Num_light_samplers = 3;
-    sampler::Golden_ratio light_samplers_[Num_light_samplers];
+    static uint32_t constexpr Num_dedicated_samplers = 3;
+
+    sampler::Sampler* material_samplers_[Num_dedicated_samplers];
+
+    sampler::Sampler* light_samplers_[Num_dedicated_samplers];
 };
 
 class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
   public:
-    Pathtracer_MIS_pool(uint32_t num_integrators, uint32_t num_samples, uint32_t min_bounces,
+    Pathtracer_MIS_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, uint32_t min_bounces,
                         uint32_t max_bounces, Light_sampling light_sampling, bool enable_caustics,
                         bool photons_only_through_specular) noexcept;
 
@@ -87,6 +88,8 @@ class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
 
   private:
     Pathtracer_MIS::Settings settings_;
+
+    bool progressive_;
 };
 
 }  // namespace rendering::integrator::surface

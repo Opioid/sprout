@@ -6,6 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
@@ -21,16 +22,28 @@
 
 namespace rendering::integrator::surface {
 
-Pathtracer::Pathtracer(rnd::Generator& rng, Settings const& settings) noexcept
-    : Integrator(rng), settings_(settings), sampler_(rng), material_samplers_{rng, rng, rng} {}
+Pathtracer::Pathtracer(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
+    : Integrator(rng), settings_(settings), sampler_(rng), sampler_pool_(progressive ? nullptr : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
+    if (sampler_pool_) {
+        for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+            material_samplers_[i] = sampler_pool_->get(i, rng);
+        }
+    } else {
+        for (auto& s : material_samplers_) {
+            s = &sampler_;
+        }
+    }
+}
 
-Pathtracer::~Pathtracer() noexcept {}
+Pathtracer::~Pathtracer() noexcept {
+    delete sampler_pool_;
+}
 
 void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
-    for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
+    for (auto s : material_samplers_) {
+        s->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
     }
 }
 
@@ -38,7 +51,7 @@ void Pathtracer::start_pixel() noexcept {
     sampler_.start_pixel();
 
     for (auto& s : material_samplers_) {
-        s.start_pixel();
+        s->start_pixel();
     }
 }
 
@@ -178,23 +191,23 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 }
 
 sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {
-    if (Num_material_samplers > bounce) {
-        return material_samplers_[bounce];
+    if (Num_dedicated_samplers > bounce) {
+        return *material_samplers_[bounce];
     }
 
     return sampler_;
 }
 
-Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, uint32_t num_samples,
+Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
                                  uint32_t min_bounces, uint32_t max_bounces,
                                  bool enable_caustics) noexcept
     : Typed_pool<Pathtracer>(num_integrators),
-      settings_{num_samples, min_bounces, max_bounces, !enable_caustics} {}
+      settings_{num_samples, min_bounces, max_bounces, !enable_caustics}, progressive_(progressive) {}
 
 Integrator* Pathtracer_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer(rng, settings_);
+        return new (&integrators_[id]) Pathtracer(rng, settings_, progressive_);
     }
 
     return &integrators_[id];
