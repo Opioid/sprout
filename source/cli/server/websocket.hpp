@@ -9,6 +9,7 @@ namespace server {
 class Websocket {
   public:
     Websocket(net::Socket socket);
+
     ~Websocket();
 
     void shutdown();
@@ -30,6 +31,7 @@ class Websocket {
     static std::string sec_websocket_key(char const* header);
 
     static bool is_pong(char const* buffer, size_t size);
+
     static bool is_text(char const* buffer, size_t size);
 
     static void decode_text(char const* buffer, size_t size, std::string& text);
