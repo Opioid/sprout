@@ -23,14 +23,14 @@ void Websocket::shutdown() {
 bool Websocket::handshake() {
     buffer_.resize(1024);
 
-    int read_bytes = socket_.receive(buffer_.data(), uint32_t(buffer_.size() - 1));
+    int const read_bytes = socket_.receive(buffer_.data(), uint32_t(buffer_.size() - 1));
     if (read_bytes < 0) {
         return false;
     }
 
     buffer_[read_bytes] = '\0';
 
-    std::string response = handshake_response(buffer_.data());
+    std::string const response = handshake_response(buffer_.data());
     send(response);
 
     return true;
@@ -65,7 +65,7 @@ bool Websocket::send(char const* data, size_t size) {
 }
 
 std::string Websocket::handshake_response(char const* header) {
-    std::string key_accept = Websocket::sec_websocket_accept(header);
+    std::string const key_accept = Websocket::sec_websocket_accept(header);
 
     return "HTTP/1.0 101 Switching Protocols\r\n"
            "Content-Type: application/json; charset=utf-8\r\n"
@@ -76,9 +76,9 @@ std::string Websocket::handshake_response(char const* header) {
 }
 
 std::string Websocket::sec_websocket_accept(char const* header) {
-    std::string key = sec_websocket_key(header);
+    std::string const key = sec_websocket_key(header);
 
-    std::string global_uid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+    static std::string const global_uid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
     std::vector<uint8_t> hash = crypto::sha1::encode(key + global_uid);
 
@@ -86,9 +86,10 @@ std::string Websocket::sec_websocket_accept(char const* header) {
 }
 
 std::string Websocket::sec_websocket_key(char const* header) {
-    std::string string = header;
+    std::string const string = header;
 
-    std::string key_label      = "Sec-WebSocket-Key: ";
+    std::string const key_label      = "Sec-WebSocket-Key: ";
+
     auto        key_iter       = string.find(key_label);
     auto        key_end_iter   = string.find("\r\n", key_iter);
     auto        key_start_iter = key_iter + key_label.size();
