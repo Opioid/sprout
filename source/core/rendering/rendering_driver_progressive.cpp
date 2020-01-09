@@ -99,13 +99,14 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
 
 void Driver_progressive::restart() {
     if (schedule_.recompile) {
-        scene_->compile(0, threads_);
+        scene_->simulate(0, view_->camera->frame_duration(), threads_);
     }
 
     schedule_.restart = false;
 
     view_->camera->update(*scene_, 0, workers_[0]);
     view_->camera->sensor().clear(0.f);
+
     iteration_ = 0;
 }
 

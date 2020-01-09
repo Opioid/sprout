@@ -60,7 +60,7 @@ void Server::write(image::Float4 const& image, uint32_t frame, thread::Pool& thr
 
     threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
                                      int32_t end) { srgb_.to_sRGB(image, begin, end); },
-                      0, d[0] * d[1]);
+                      0, d[1]);
 
     size_t const buffer_len = size_t(d[0] * d[1]) * sizeof(byte4);
 

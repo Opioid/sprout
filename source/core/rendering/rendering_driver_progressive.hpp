@@ -51,7 +51,7 @@ class Driver_progressive : public Driver {
 
     struct Schedule {
         bool restart    = false;
-        bool recompile  = false;
+        bool recompile  = true;
         bool statistics = false;
     };
 
