@@ -4,7 +4,7 @@
 #include "surface_integrator.hpp"
 
 namespace sampler {
-    class Sampler;
+class Sampler;
 }
 
 namespace rendering::integrator::surface {
@@ -35,7 +35,8 @@ class alignas(64) AO final : public Integrator {
 
 class AO_pool final : public Typed_pool<AO> {
   public:
-    AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius) noexcept;
+    AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
+            float radius) noexcept;
 
     Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 

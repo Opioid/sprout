@@ -49,7 +49,7 @@ class Tracking_single_pool final : public Typed_pool<Tracking_single> {
 
     Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 
-private:
+  private:
     bool progressive_;
 };
 

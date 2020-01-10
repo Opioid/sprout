@@ -27,11 +27,14 @@ namespace rendering::integrator::volume {
 using namespace scene;
 
 Tracking_single::Tracking_single(rnd::Generator& rng, bool progressive) noexcept
-    : Integrator(rng), sampler_(rng), sampler_pool_(progressive ? nullptr : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
+    : Integrator(rng),
+      sampler_(rng),
+      sampler_pool_(progressive ? nullptr
+                                : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
             material_samplers_[i] = sampler_pool_->get(2 * i + 0, rng);
-            light_samplers_[i] = sampler_pool_->get(2 * i + 1, rng);
+            light_samplers_[i]    = sampler_pool_->get(2 * i + 1, rng);
         }
     } else {
         for (auto& s : material_samplers_) {

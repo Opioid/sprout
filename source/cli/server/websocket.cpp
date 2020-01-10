@@ -88,11 +88,11 @@ std::string Websocket::sec_websocket_accept(char const* header) {
 std::string Websocket::sec_websocket_key(char const* header) {
     std::string const string = header;
 
-    std::string const key_label      = "Sec-WebSocket-Key: ";
+    std::string const key_label = "Sec-WebSocket-Key: ";
 
-    auto        key_iter       = string.find(key_label);
-    auto        key_end_iter   = string.find("\r\n", key_iter);
-    auto        key_start_iter = key_iter + key_label.size();
+    auto key_iter       = string.find(key_label);
+    auto key_end_iter   = string.find("\r\n", key_iter);
+    auto key_start_iter = key_iter + key_label.size();
 
     return string.substr(key_start_iter, key_end_iter - key_start_iter);
 }

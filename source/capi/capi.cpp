@@ -16,6 +16,7 @@
 #include "core/resource/resource_manager.inl"
 #include "core/sampler/sampler.inl"
 #include "core/sampler/sampler_golden_ratio.hpp"
+#include "core/sampler/sampler_random.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "core/scene/camera/camera_perspective.hpp"
 #include "core/scene/material/material_provider.hpp"
@@ -98,6 +99,8 @@ struct Engine {
     progress::C progressor;
 
     rendering::Driver_finalframe driver;
+
+    bool progressive;
 };
 
 static Engine* engine = nullptr;
@@ -119,7 +122,7 @@ char const* su_platform_revision() noexcept {
     return platform::revision().c_str();
 }
 
-int32_t su_init() noexcept {
+int32_t su_init(bool progressive) noexcept {
     if (engine) {
         return -1;
     }
@@ -127,6 +130,8 @@ int32_t su_init() noexcept {
     engine = new Engine;
 
     procedural::sky::init(engine->scene_loader, engine->material_provider);
+
+    engine->progressive = progressive;
 
     return 0;
 }
@@ -161,8 +166,8 @@ int32_t su_load_take(char const* string) noexcept {
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(take))
                               : engine->resources.filesystem().read_stream(take, take_name);
 
-        if (!stream || !take::Loader::load(engine->take, *stream, take_name, false, engine->scene,
-                                           engine->resources)) {
+        if (!stream || !take::Loader::load(engine->take, *stream, take_name, engine->progressive,
+                                           engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
         }
@@ -182,7 +187,7 @@ int32_t su_create_defaults() noexcept {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::set_default_integrators(num_workers, false, engine->take);
+    take::Loader::set_default_integrators(num_workers, engine->progressive, engine->take);
 
     take::Loader::set_default_exporter(engine->take);
 
@@ -250,7 +255,11 @@ int32_t su_create_sampler(uint32_t num_samples) noexcept {
     if (!engine->take.samplers) {
         uint32_t const num_workers = engine->resources.threads().num_threads();
 
-        engine->take.samplers = new sampler::Golden_ratio_pool(num_workers);
+        if (engine->progressive) {
+            engine->take.samplers = new sampler::Random_pool(num_workers);
+        } else {
+            engine->take.samplers = new sampler::Golden_ratio_pool(num_workers);
+        }
     }
 
     return 0;

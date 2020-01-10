@@ -23,7 +23,11 @@
 namespace rendering::integrator::surface {
 
 PM::PM(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
-    : Integrator(rng), settings_(settings), sampler_(rng), sampler_pool_(progressive ? nullptr : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
+    : Integrator(rng),
+      settings_(settings),
+      sampler_(rng),
+      sampler_pool_(progressive ? nullptr
+                                : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
             material_samplers_[i] = sampler_pool_->get(i, rng);
@@ -151,10 +155,11 @@ sampler::Sampler& PM::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces, uint32_t max_bounces,
-                 bool photons_only_through_specular) noexcept
+PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces,
+                 uint32_t max_bounces, bool photons_only_through_specular) noexcept
     : Typed_pool<PM>(num_integrators),
-      settings_{min_bounces, max_bounces, !photons_only_through_specular}, progressive_(progressive) {}
+      settings_{min_bounces, max_bounces, !photons_only_through_specular},
+      progressive_(progressive) {}
 
 Integrator* PM_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
     if (uint32_t const zero = 0;

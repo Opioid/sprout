@@ -45,8 +45,8 @@ class alignas(64) Pathtracer final : public Integrator {
 
 class Pathtracer_pool final : public Typed_pool<Pathtracer> {
   public:
-    Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, uint32_t min_bounces,
-                    uint32_t max_bounces, bool enable_caustics) noexcept;
+    Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
+                    uint32_t min_bounces, uint32_t max_bounces, bool enable_caustics) noexcept;
 
     Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
 

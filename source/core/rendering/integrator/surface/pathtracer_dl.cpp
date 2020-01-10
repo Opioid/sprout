@@ -22,15 +22,17 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
+Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, Settings const& settings,
+                             bool progressive) noexcept
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
-      sampler_pool_(progressive ? nullptr : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
+      sampler_pool_(progressive ? nullptr
+                                : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
             material_samplers_[i] = sampler_pool_->get(2 * i + 0, rng);
-            light_samplers_[i] = sampler_pool_->get(2 * i + 1, rng);
+            light_samplers_[i]    = sampler_pool_->get(2 * i + 1, rng);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -260,9 +262,9 @@ sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces,
-                                       uint32_t max_bounces, uint32_t num_light_samples,
-                                       bool enable_caustics) noexcept
+Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, bool progressive,
+                                       uint32_t min_bounces, uint32_t max_bounces,
+                                       uint32_t num_light_samples, bool enable_caustics) noexcept
     : Typed_pool<Pathtracer_DL>(num_integrators), progressive_(progressive) {
     settings_.min_bounces       = min_bounces;
     settings_.max_bounces       = max_bounces;

@@ -5,11 +5,12 @@
 
 namespace resource {
 
-static uint32_t Null = 0xFFFFFFFF;
+static uint32_t constexpr Null = 0xFFFFFFFF;
 
 template <typename T>
 struct Resource_ptr {
-    T*       ptr;
+    T* ptr;
+
     uint32_t id;
 
     bool operator!() const noexcept {
@@ -17,7 +18,7 @@ struct Resource_ptr {
     }
 
     static Resource_ptr constexpr Null() noexcept {
-        return {nullptr, 0xFFFFFFFF};
+        return {nullptr, resource::Null};
     }
 };
 

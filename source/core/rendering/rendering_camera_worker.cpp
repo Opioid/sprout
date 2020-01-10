@@ -19,15 +19,8 @@ Camera_worker::Camera_worker(uint32_t max_sample_size, Tile_queue const& tiles,
                              Range_queue const& ranges)
     : Worker(max_sample_size), tiles_(tiles), ranges_(ranges) {}
 
-void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
+void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                            uint32_t num_samples) noexcept {
-    //    int2 const error_pixel(972, 966);
-
-    //    if (error_pixel[0] < tile[0] || error_pixel[0] > tile[2] || error_pixel[1] < tile[1] ||
-    //        error_pixel[1] > tile[3]) {
-    //        return;
-    //    }
-
     scene::camera::Camera const& camera = *camera_;
 
     int4 bounds = camera.view_bounds(view);
@@ -43,7 +36,7 @@ void Camera_worker::render(uint32_t frame, uint32_t view, int4 const& tile,
 
     uint32_t const tile_index = tiles_.index(tile);
 
-    rng_.start(0, tile_index);
+    rng_.start(0, tile_index + iteration * tiles_.size());
 
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {

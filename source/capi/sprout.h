@@ -23,7 +23,7 @@ extern "C" {
 
 SU_LIBRARY_API char const* su_platform_revision() noexcept;
 
-SU_LIBRARY_API int32_t su_init() noexcept;
+SU_LIBRARY_API int32_t su_init(bool progressive) noexcept;
 
 SU_LIBRARY_API int32_t su_release() noexcept;
 

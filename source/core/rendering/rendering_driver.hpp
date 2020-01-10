@@ -76,7 +76,8 @@ class Driver {
     Camera_worker* workers_;
 
     uint32_t frame_;
-    uint32_t iteration_;
+    uint32_t frame_view_;
+    uint32_t frame_iteration_;
 
     Tile_queue tiles_;
 

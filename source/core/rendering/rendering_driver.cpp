@@ -23,7 +23,9 @@ Driver::Driver(thread::Pool& threads, uint32_t max_sample_size) noexcept
     : threads_(threads),
       workers_(memory::construct_array_aligned<Camera_worker>(threads.num_threads(),
                                                               max_sample_size, tiles_, ranges_)),
-
+      frame_(0),
+      frame_view_(0),
+      frame_iteration_(0),
       photon_infos_(new Photon_info[threads.num_threads()]) {}
 
 Driver::~Driver() noexcept {

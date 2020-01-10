@@ -108,7 +108,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 #endif
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
-        iteration_ = v;
+        frame_view_ = v;
 
         ranges_.restart();
 
@@ -116,7 +116,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
             auto& worker = workers_[index];
 
             for (ulong2 range; ranges_.pop(0, range);) {
-                worker.particles(frame_, iteration_, 0, range);
+                worker.particles(frame_, frame_view_, 0, range);
 
                 progressor_.tick();
             }
@@ -129,7 +129,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
     particle_importance_.set_training(false);
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
-        iteration_ = v;
+        frame_view_ = v;
 
         ranges_.restart();
 
@@ -137,7 +137,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
             auto& worker = workers_[index];
 
             for (ulong2 range; ranges_.pop(1, range);) {
-                worker.particles(frame_, iteration_, 1, range);
+                worker.particles(frame_, frame_view_, 1, range);
 
                 progressor_.tick();
             }
@@ -177,7 +177,7 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
     progressor_.start(tiles_.size() * camera.num_views());
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
-        iteration_ = v;
+        frame_view_ = v;
 
         tiles_.restart();
 
@@ -187,7 +187,7 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
             uint32_t const num_samples = view_->num_samples_per_pixel;
 
             for (int4 tile; tiles_.pop(tile);) {
-                worker.render(frame_, iteration_, tile, num_samples);
+                worker.render(frame_, frame_view_, 0, tile, num_samples);
 
                 progressor_.tick();
             }
@@ -227,13 +227,14 @@ void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
     frame_ = frame;
 
     for (uint32_t iteration = 0;; ++iteration) {
-        iteration_ = iteration;
+        frame_iteration_ = iteration;
 
         threads_.run_range(
             [this](uint32_t id, int32_t begin, int32_t end) noexcept {
                 auto& worker = workers_[id];
 
-                photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame_, iteration_);
+                photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame_,
+                                                                  frame_iteration_);
             },
             static_cast<int32_t>(begin), static_cast<int32_t>(num_photons));
 

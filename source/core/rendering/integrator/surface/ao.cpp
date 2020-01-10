@@ -5,8 +5,8 @@
 #include "base/random/generator.inl"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
-#include "sampler/sampler_random.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
+#include "sampler/sampler_random.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
@@ -77,7 +77,8 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, result, result, 1.f);
 }
 
-AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius) noexcept
+AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
+                 float radius) noexcept
     : Typed_pool<AO>(num_integrators), progressive_(progressive) {
     settings_.num_samples = num_samples;
     settings_.radius      = radius;

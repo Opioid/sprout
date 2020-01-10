@@ -15,7 +15,6 @@ namespace rendering {
 
 Driver_progressive::Driver_progressive(thread::Pool& threads, uint32_t max_sample_size) noexcept
     : Driver(threads, max_sample_size),
-      iteration_(0),
       samples_per_iteration_(1),
       rendering_(false),
       force_statistics_(false) {}
@@ -34,7 +33,7 @@ void Driver_progressive::render(exporting::Sink& exporter) {
     render_thread_ = std::thread([this, &exporter]() {
         for (; rendering_;) {
             if (render_loop(exporter)) {
-                ++iteration_;
+                ++frame_iteration_;
             }
         }
     });
@@ -60,12 +59,14 @@ void Driver_progressive::set_force_statistics(bool force) {
 }
 
 uint32_t Driver_progressive::iteration() const {
-    return iteration_;
+    return frame_iteration_;
 }
 
 bool Driver_progressive::render_loop(exporting::Sink& exporter) {
     for (uint32_t v = 0, len = view_->camera->num_views(); v < len; ++v) {
         tiles_.restart();
+
+        frame_view_ = v;
 
         threads_.run_parallel([this, v](uint32_t index) {
             auto& worker = workers_[index];
@@ -76,16 +77,16 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
                     break;
                 }
 
-                worker.render(0, v, tile, samples_per_iteration_);
+                worker.render(frame_, frame_view_, frame_iteration_, tile, samples_per_iteration_);
             }
         });
     }
 
     view_->pipeline.apply(view_->camera->sensor(), target_, threads_);
-    exporter.write(target_, iteration_, threads_);
+    exporter.write(target_, frame_iteration_, threads_);
 
     if (schedule_.statistics || force_statistics_) {
-        statistics_.write(target_, iteration_, threads_);
+        statistics_.write(target_, frame_iteration_, threads_);
         schedule_.statistics = false;
     }
 
@@ -107,7 +108,7 @@ void Driver_progressive::restart() {
     view_->camera->update(*scene_, 0, workers_[0]);
     view_->camera->sensor().clear(0.f);
 
-    iteration_ = 0;
+    frame_iteration_ = 0;
 }
 
 }  // namespace rendering

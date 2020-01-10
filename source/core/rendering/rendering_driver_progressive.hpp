@@ -43,8 +43,6 @@ class Driver_progressive : public Driver {
 
     std::thread render_thread_;
 
-    uint32_t iteration_;
-
     uint32_t samples_per_iteration_;
 
     bool rendering_;

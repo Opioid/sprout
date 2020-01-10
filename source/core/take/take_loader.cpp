@@ -78,11 +78,12 @@ using Light_sampling = rendering::integrator::Light_sampling;
 
 static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept;
 
-static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers, bool progressive,
-                                        uint32_t& num_samples_per_pixel) noexcept;
+static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
+                                        bool progressive, uint32_t& num_samples_per_pixel) noexcept;
 
 static Surface_pool* load_surface_integrator(json::Value const& integrator_value,
-                                             uint32_t num_workers, bool progressive, bool lighttracer) noexcept;
+                                             uint32_t num_workers, bool progressive,
+                                             bool lighttracer) noexcept;
 
 static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
                                            uint32_t num_workers, bool progressive) noexcept;
@@ -102,8 +103,8 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
 
 static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) noexcept;
 
-bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, bool progressive, Scene& scene,
-                  resource::Manager& resources) noexcept {
+bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
+                  Scene& scene, resource::Manager& resources) noexcept {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -466,7 +467,8 @@ static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noe
     return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
 }
 
-static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers, bool progressive,
+static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
+                                        bool      progressive,
                                         uint32_t& num_samples_per_pixel) noexcept {
     if (progressive) {
         num_samples_per_pixel = 1;
@@ -504,8 +506,8 @@ static inline void replace(T*& former, T* newer) noexcept {
     }
 }
 
-void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers, bool progressive,
-                              Take& take) noexcept {
+void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
+                              bool progressive, Take& take) noexcept {
     json::Value::ConstMemberIterator const particle_node = integrator_value.FindMember("particle");
 
     if (integrator_value.MemberEnd() != particle_node) {
@@ -516,9 +518,11 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
             replace(take.surface_integrators,
-                    load_surface_integrator(n.value, num_workers, progressive, nullptr != take.lighttracers));
+                    load_surface_integrator(n.value, num_workers, progressive,
+                                            nullptr != take.lighttracers));
         } else if ("volume" == n.name) {
-            replace(take.volume_integrators, load_volume_integrator(n.value, num_workers, progressive));
+            replace(take.volume_integrators,
+                    load_volume_integrator(n.value, num_workers, progressive));
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.view.photon_settings);
         }
@@ -526,7 +530,8 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
 }
 
 static Surface_pool* load_surface_integrator(json::Value const& integrator_value,
-                                             uint32_t num_workers, bool progressive, bool lighttracer) noexcept {
+                                             uint32_t num_workers, bool progressive,
+                                             bool lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -570,8 +575,8 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return new Pathtracer_pool(num_workers, progressive, num_samples, min_bounces, max_bounces,
-                                       enable_caustics);
+            return new Pathtracer_pool(num_workers, progressive, num_samples, min_bounces,
+                                       max_bounces, enable_caustics);
         } else if ("PTDL" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
@@ -584,8 +589,8 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return new Pathtracer_DL_pool(num_workers, progressive, min_bounces, max_bounces, num_light_samples,
-                                          enable_caustics);
+            return new Pathtracer_DL_pool(num_workers, progressive, min_bounces, max_bounces,
+                                          num_light_samples, enable_caustics);
         } else if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -602,8 +607,8 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
 
             bool const photons_only_through_specular = lighttracer;
 
-            return new Pathtracer_MIS_pool(num_workers, progressive, num_samples, min_bounces, max_bounces,
-                                           light_sampling, enable_caustics,
+            return new Pathtracer_MIS_pool(num_workers, progressive, num_samples, min_bounces,
+                                           max_bounces, light_sampling, enable_caustics,
                                            photons_only_through_specular);
         } else if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
@@ -659,8 +664,8 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
 }
 
 static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
-                                               uint32_t  num_workers,
-                                               uint64_t& num_particles) noexcept {
+                                               uint32_t           num_workers,
+                                               uint64_t&          num_particles) noexcept {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
@@ -687,8 +692,8 @@ void Loader::set_default_integrators(uint32_t num_workers, bool progressive, Tak
         bool const enable_caustics = false;
 
         take.surface_integrators = new surface::Pathtracer_MIS_pool(
-            num_workers, progressive, num_samples, min_bounces, max_bounces, light_sampling, enable_caustics,
-            false);
+            num_workers, progressive, num_samples, min_bounces, max_bounces, light_sampling,
+            enable_caustics, false);
 
         logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
     }

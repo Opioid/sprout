@@ -9,7 +9,7 @@ void progress_tick();
 int main(int /*argc*/, char* /*argv*/[]) noexcept {
     std::cout << "sprout capi test" << std::endl;
 
-    su_init();
+    su_init(false);
 
     su_register_log(&logging_post, false);
 
