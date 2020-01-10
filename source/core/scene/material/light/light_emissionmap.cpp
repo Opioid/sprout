@@ -96,9 +96,9 @@ size_t Emissionmap::num_bytes() const noexcept {
 void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                                             bool importance_sampling, thread::Pool& threads,
                                             Scene const& scene) noexcept {
-    if (importance_sampling) {
-        auto const& texture = emission_map_.texture(scene);
+    auto const& texture = emission_map_.texture(scene);
 
+    if (importance_sampling) {
         auto const d = texture.dimensions_2();
 
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(uint32_t(d[1]));
@@ -151,7 +151,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         distribution_.init();
     } else {
-        average_emission_ = emission_factor_ * emission_map_.texture(scene).average_3();
+        average_emission_ = emission_factor_ * texture.average_3();
     }
 
     if (is_two_sided()) {
