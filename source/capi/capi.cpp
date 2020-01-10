@@ -61,7 +61,7 @@ class C : public Sink {
 }  // namespace progress
 
 struct Engine {
-    Engine() noexcept
+    Engine(bool progressive) noexcept
         : threads(thread::Pool::num_threads(0)),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
@@ -72,7 +72,8 @@ struct Engine {
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),
           scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources),
-          driver(threads, material_provider.max_sample_size(), progressor) {}
+          driver(threads, material_provider.max_sample_size(), progressor),
+          progressive(progressive) {}
 
     thread::Pool threads;
 
@@ -100,7 +101,10 @@ struct Engine {
 
     rendering::Driver_finalframe driver;
 
-    bool progressive;
+    uint32_t frame;
+    uint32_t frame_iteration;
+
+    bool const progressive;
 };
 
 static Engine* engine = nullptr;
@@ -127,11 +131,9 @@ int32_t su_init(bool progressive) noexcept {
         return -1;
     }
 
-    engine = new Engine;
+    engine = new Engine(progressive);
 
     procedural::sky::init(engine->scene_loader, engine->material_provider);
-
-    engine->progressive = progressive;
 
     return 0;
 }
@@ -147,6 +149,15 @@ int32_t su_mount(char const* folder) noexcept {
     ASSERT_ENGINE(-1)
 
     engine->resources.filesystem().push_mount(folder);
+
+    return 0;
+}
+
+int32_t su_clear() noexcept {
+    ASSERT_ENGINE(-1)
+
+    engine->take.clear();
+    engine->scene.clear();
 
     return 0;
 }
@@ -520,6 +531,29 @@ int32_t su_export_frame(uint32_t frame) noexcept {
     ASSERT_ENGINE(-1)
 
     engine->driver.export_frame(frame, engine->take.exporters);
+
+    return 0;
+}
+
+int32_t su_start_render_frame(uint32_t frame) noexcept {
+    ASSERT_ENGINE(-1)
+
+    engine->frame           = frame;
+    engine->frame_iteration = 0;
+
+    engine->driver.init(engine->take, engine->scene);
+
+    engine->driver.start_frame(frame);
+
+    return 0;
+}
+
+int32_t su_render_iteration() noexcept {
+    ASSERT_ENGINE(-1)
+
+    engine->driver.render(engine->frame, engine->frame_iteration);
+
+    ++engine->frame_iteration;
 
     return 0;
 }

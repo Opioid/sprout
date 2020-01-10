@@ -77,8 +77,8 @@ Image* Reader::read(std::istream& stream) noexcept {
 
     Compression compression = Compression::Undefined;
 
-    int4 data_window;
-    int4 display_window;
+    int4 data_window(0);
+    int4 display_window(0);
 
     for (;;) {
         std::getline(stream, attribute_name, '\0');

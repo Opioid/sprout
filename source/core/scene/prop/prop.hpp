@@ -3,17 +3,13 @@
 
 #include "base/flags/flags.hpp"
 #include "base/math/vector.hpp"
+#include "resource/resource.hpp"
 #include "scene/material/sampler_settings.hpp"
 
 #include <cstddef>
 
 namespace thread {
 class Pool;
-}
-
-namespace resource {
-template <typename T>
-struct Resource_ptr;
 }
 
 namespace scene {
@@ -112,7 +108,7 @@ class Prop {
 
     flags::Flags<Property> properties_;
 
-    uint32_t shape_ = 0xFFFFFFFF;
+    uint32_t shape_ = resource::Null;
 };
 
 struct Prop_ptr {

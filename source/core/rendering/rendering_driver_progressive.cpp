@@ -68,15 +68,10 @@ bool Driver_progressive::render_loop(exporting::Sink& exporter) {
 
         frame_view_ = v;
 
-        threads_.run_parallel([this, v](uint32_t index) {
+        threads_.run_parallel([this](uint32_t index) {
             auto& worker = workers_[index];
 
-            for (;;) {
-                int4 tile;
-                if (!tiles_.pop(tile)) {
-                    break;
-                }
-
+            for (int4 tile; tiles_.pop(tile);) {
                 worker.render(frame_, frame_view_, frame_iteration_, tile, samples_per_iteration_);
             }
         });

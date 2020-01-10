@@ -1,5 +1,6 @@
 #include "capi/sprout.h"
 #include "core/progress/progress_sink_std_out.hpp"
+#include "core/sampler/sampler.inl"
 
 void logging_post(uint32_t type, char const* text);
 

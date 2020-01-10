@@ -29,6 +29,8 @@ SU_LIBRARY_API int32_t su_release() noexcept;
 
 SU_LIBRARY_API int32_t su_mount(char const* folder) noexcept;
 
+SU_LIBRARY_API int32_t su_clear() noexcept;
+
 SU_LIBRARY_API int32_t su_load_take(char const* string) noexcept;
 
 SU_LIBRARY_API int32_t su_create_defaults() noexcept;
@@ -79,6 +81,10 @@ SU_LIBRARY_API int32_t su_render() noexcept;
 SU_LIBRARY_API int32_t su_render_frame(uint32_t frame) noexcept;
 
 SU_LIBRARY_API int32_t su_export_frame(uint32_t frame) noexcept;
+
+SU_LIBRARY_API int32_t su_start_render_frame(uint32_t frame) noexcept;
+
+SU_LIBRARY_API int32_t su_render_iteration() noexcept;
 
 SU_LIBRARY_API int32_t su_copy_framebuffer(uint32_t width, uint32_t height, float* destination) noexcept;
 

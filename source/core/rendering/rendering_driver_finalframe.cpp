@@ -73,6 +73,27 @@ void Driver_finalframe::render(uint32_t frame) noexcept {
     logging::info("Post-process time %f s", pp_duration);
 }
 
+void Driver_finalframe::start_frame(uint32_t frame) noexcept {
+    auto& camera = *view_->camera;
+
+    scene_->finish();
+
+    uint64_t const start = frame * camera.frame_step();
+    scene_->simulate(start, start + camera.frame_duration(), threads_);
+
+    camera.update(*scene_, start, workers_[0]);
+
+    camera.sensor().clear(0.f);
+}
+
+void Driver_finalframe::render(uint32_t frame, uint32_t iteration) noexcept {
+    render_frame_forward(frame, iteration);
+
+    auto& camera = *view_->camera;
+
+    view_->pipeline.apply(camera.sensor(), target_, threads_);
+}
+
 void Driver_finalframe::export_frame(uint32_t frame, Exporters& exporters) const noexcept {
     auto const export_start = std::chrono::high_resolution_clock::now();
 
@@ -196,6 +217,34 @@ void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Camera ray time " + string::to_string(duration) + " s");
+}
+
+void Driver_finalframe::render_frame_forward(uint32_t frame, uint32_t iteration) noexcept {
+    if (0 == view_->num_samples_per_pixel) {
+        return;
+    }
+
+    auto& camera = *view_->camera;
+
+    frame_ = frame;
+
+    frame_iteration_ = iteration;
+
+    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
+        frame_view_ = v;
+
+        tiles_.restart();
+
+        threads_.run_parallel([this](uint32_t index) noexcept {
+            auto& worker = workers_[index];
+
+            uint32_t const num_samples = view_->num_samples_per_pixel;
+
+            for (int4 tile; tiles_.pop(tile);) {
+                worker.render(frame_, frame_view_, frame_iteration_, tile, num_samples);
+            }
+        });
+    }
 }
 
 void Driver_finalframe::bake_photons(uint32_t frame) noexcept {
