@@ -4,6 +4,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "camera_sample.hpp"
+#include "sampler.inl"
 
 namespace sampler {
 
@@ -28,5 +29,7 @@ void Hammersley::on_resize() noexcept {}
 void Hammersley::on_start_pixel() noexcept {
     scramble_ = rng_.random_uint();
 }
+
+template class Typed_pool<Hammersley>;
 
 }  // namespace sampler

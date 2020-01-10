@@ -26,6 +26,8 @@ class alignas(64) RD : public Sampler {
     float*  seeds_1D_;
 };
 
+extern template class Typed_pool<RD>;
+
 using RD_pool = Typed_pool<RD>;
 
 }  // namespace sampler

@@ -5,6 +5,7 @@
 #include "base/random/generator.inl"
 #include "base/random/shuffle.hpp"
 #include "camera_sample.hpp"
+#include "sampler.inl"
 
 #include "base/debug/assert.hpp"
 
@@ -81,5 +82,7 @@ void Golden_ratio::generate_1D(uint32_t dimension) noexcept {
     math::golden_ratio(begin, num_samples_, r);
     rnd::biased_shuffle(begin, num_samples_, rng_);
 }
+
+template class Typed_pool<Golden_ratio>;
 
 }  // namespace sampler

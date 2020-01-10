@@ -44,7 +44,6 @@
 #include "rendering/sensor/transparent.hpp"
 #include "rendering/sensor/unfiltered.inl"
 #include "resource/resource_manager.inl"
-#include "sampler/sampler.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_hammersley.hpp"
 #include "sampler/sampler_ld.hpp"

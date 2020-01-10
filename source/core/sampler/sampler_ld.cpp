@@ -4,6 +4,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "camera_sample.hpp"
+#include "sampler.inl"
 
 namespace sampler {
 
@@ -32,5 +33,7 @@ void LD::on_resize() noexcept {}
 void LD::on_start_pixel() noexcept {
     scramble_ = uint2(rng_.random_uint(), rng_.random_uint());
 }
+
+template class Typed_pool<LD>;
 
 }  // namespace sampler

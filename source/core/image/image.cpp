@@ -107,8 +107,8 @@ char* Image::data() const noexcept {
             return reinterpret_cast<char*>(short3_.data());
         case Type::Float1:
             return reinterpret_cast<char*>(float1_.data());
-            //   case Type::Float1_sparse:
-            //       return reinterpret_cast<char*>(float1_sparse_.data());
+        case Type::Float1_sparse:
+            return nullptr;
         case Type::Float2:
             return reinterpret_cast<char*>(float2_.data());
         case Type::Float3:

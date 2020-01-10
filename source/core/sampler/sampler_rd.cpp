@@ -4,6 +4,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "camera_sample.hpp"
+#include "sampler.inl"
 
 // http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
 
@@ -85,5 +86,7 @@ void RD::on_start_pixel() noexcept {
         seeds_1D_[i] = rng_.random_float();
     }
 }
+
+template class Typed_pool<RD>;
 
 }  // namespace sampler

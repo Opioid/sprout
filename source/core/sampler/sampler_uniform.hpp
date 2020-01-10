@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_UNIFORM_HPP
+#define SU_CORE_SAMPLER_UNIFORM_HPP
 
 #include "sampler.hpp"
 
@@ -20,6 +21,10 @@ class alignas(64) Uniform : public Sampler {
     void on_start_pixel() noexcept override final;
 };
 
+extern template class Typed_pool<Uniform>;
+
 using Uniform_pool = Typed_pool<Uniform>;
 
 }  // namespace sampler
+
+#endif

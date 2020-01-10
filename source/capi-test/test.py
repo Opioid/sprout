@@ -58,7 +58,7 @@ progtickfunc = PROGRESS_TICK_FUNC(py_progress_tick)
 
 sprout.su_register_log(logfunc, False)
 
-sprout.su_init()
+sprout.su_init(False)
 
 sprout.su_register_progress(progstartfunc, progtickfunc)
 

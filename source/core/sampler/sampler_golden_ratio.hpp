@@ -29,6 +29,8 @@ class alignas(64) Golden_ratio final : public Sampler {
     float*  samples_1D_;
 };
 
+extern template class Typed_pool<Golden_ratio>;
+
 using Golden_ratio_pool = Typed_pool<Golden_ratio>;
 
 }  // namespace sampler

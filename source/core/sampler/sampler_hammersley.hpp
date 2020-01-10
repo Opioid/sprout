@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_HAMMERSLEY_HPP
+#define SU_CORE_SAMPLER_HAMMERSLEY_HPP
 
 #include "sampler.hpp"
 
@@ -22,6 +23,10 @@ class alignas(64) Hammersley : public Sampler {
     uint32_t scramble_;
 };
 
+extern template class Typed_pool<Hammersley>;
+
 using Hammersley_pool = Typed_pool<Hammersley>;
 
 }  // namespace sampler
+
+#endif

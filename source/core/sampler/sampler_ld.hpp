@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SAMPLER_LD_HPP
+#define SU_CORE_SAMPLER_LD_HPP
 
 #include "base/math/vector2.hpp"
 #include "sampler.hpp"
@@ -23,6 +24,10 @@ class alignas(64) LD : public Sampler {
     uint2 scramble_;
 };
 
+extern template class Typed_pool<LD>;
+
 using LD_pool = Typed_pool<LD>;
 
 }  // namespace sampler
+
+#endif

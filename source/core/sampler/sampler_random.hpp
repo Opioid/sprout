@@ -21,6 +21,8 @@ class alignas(64) Random : public Sampler {
     void on_start_pixel() noexcept override final;
 };
 
+extern template class Typed_pool<Random>;
+
 using Random_pool = Typed_pool<Random>;
 
 }  // namespace sampler

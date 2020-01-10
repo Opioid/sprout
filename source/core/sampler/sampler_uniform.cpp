@@ -3,6 +3,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "camera_sample.hpp"
+#include "sampler.inl"
 
 namespace sampler {
 
@@ -25,5 +26,7 @@ float Uniform::generate_sample_1D(uint32_t /*dimension*/) noexcept {
 void Uniform::on_resize() noexcept {}
 
 void Uniform::on_start_pixel() noexcept {}
+
+template class Typed_pool<Uniform>;
 
 }  // namespace sampler
