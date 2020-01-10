@@ -496,32 +496,26 @@ static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32
     return nullptr;
 }
 
-template <class T>
-static inline void replace(T*& former, T* newer) noexcept {
-    if (newer) {
-        delete former;
-
-        former = newer;
-    }
-}
-
 void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
                               bool progressive, Take& take) noexcept {
-    json::Value::ConstMemberIterator const particle_node = integrator_value.FindMember("particle");
+    if (auto const particle_node = integrator_value.FindMember("particle");
+        integrator_value.MemberEnd() != particle_node) {
+        delete take.lighttracers;
 
-    if (integrator_value.MemberEnd() != particle_node) {
         take.lighttracers = load_particle_integrator(particle_node->value, num_workers,
                                                      take.view.num_particles);
     }
 
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
-            replace(take.surface_integrators,
-                    load_surface_integrator(n.value, num_workers, progressive,
-                                            nullptr != take.lighttracers));
+            delete take.surface_integrators;
+
+            take.surface_integrators = load_surface_integrator(n.value, num_workers, progressive,
+                                                               nullptr != take.lighttracers);
         } else if ("volume" == n.name) {
-            replace(take.volume_integrators,
-                    load_volume_integrator(n.value, num_workers, progressive));
+            delete take.volume_integrators;
+
+            take.volume_integrators = load_volume_integrator(n.value, num_workers, progressive);
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, take.view.photon_settings);
         }
