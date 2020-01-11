@@ -45,11 +45,8 @@
 #include "rendering/sensor/unfiltered.inl"
 #include "resource/resource_manager.inl"
 #include "sampler/sampler_golden_ratio.hpp"
-#include "sampler/sampler_hammersley.hpp"
-#include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
 #include "sampler/sampler_rd.hpp"
-#include "sampler/sampler_uniform.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/camera_cubic.hpp"
 #include "scene/camera/camera_cubic_stereoscopic.hpp"
@@ -477,19 +474,12 @@ static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32
     for (auto& n : sampler_value.GetObject()) {
         num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 
-        if ("Uniform" == n.name) {
-            num_samples_per_pixel = 1;
-            return new sampler::Uniform_pool(num_workers);
-        } else if ("Random" == n.name) {
+        if ("Random" == n.name) {
             return new sampler::Random_pool(num_workers);
         } else if ("RD" == n.name) {
             return new sampler::RD_pool(num_workers);
-        } else if ("Hammersley" == n.name) {
-            return new sampler::Hammersley_pool(num_workers);
         } else if ("Golden_ratio" == n.name) {
             return new sampler::Golden_ratio_pool(num_workers);
-        } else if ("LD" == n.name) {
-            return new sampler::LD_pool(num_workers);
         }
     }
 

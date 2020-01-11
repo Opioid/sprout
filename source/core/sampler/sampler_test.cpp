@@ -7,7 +7,6 @@
 #include "image/image.hpp"
 #include "image/procedural/image_renderer.hpp"
 #include "sampler_golden_ratio.hpp"
-#include "sampler_hammersley.hpp"
 #include "sampler_random.hpp"
 #include "sampler_rd.hpp"
 
@@ -109,13 +108,15 @@ void test() {
     uint32_t constexpr num_samples = 512;
 
     {
-        //        rnd::Generator rng(0, 0);
+        rnd::Generator rng(0, 0);
 
-        //        Golden_ratio sampler(rng);
+        Golden_ratio sampler(rng);
 
-        //        sampler.resize(num_samples, 1, 1, 1);
-        //        render_set("golden_ratio", sampler, renderer, target);
-    } {
+        sampler.resize(num_samples, 1, 1, 1);
+        render_set("golden_ratio", sampler, renderer, target);
+    }
+
+    {
         rnd::Generator rng(0, 0);
 
         RD sampler(rng);
@@ -123,20 +124,14 @@ void test() {
         sampler.resize(num_samples, 1, 1, 1);
         render_set("rd", sampler, renderer, target);
     }
+
     {
-        //        rnd::Generator rng(0, 0);
+        rnd::Generator rng(0, 0);
 
-        //        Random sampler(rng);
+        Random sampler(rng);
 
-        //        sampler.resize(num_samples, 1, 1, 1);
-        //        render_set("random", sampler, renderer, target);
-    } {
-        //        rnd::Generator rng(0, 0);
-
-        //        Hammersley sampler(rng);
-
-        //        sampler.resize(num_samples, 1, 1, 1);
-        //        render_set("hammersley", sampler, renderer, target);
+        sampler.resize(num_samples, 1, 1, 1);
+        render_set("random", sampler, renderer, target);
     }
 }
 
