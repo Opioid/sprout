@@ -22,8 +22,19 @@ class alignas(64) RD : public Sampler {
 
     void on_start_pixel() noexcept override final;
 
+    void generate_2D(uint32_t dimension) noexcept;
+    void generate_1D(uint32_t dimension) noexcept;
+
+    static uint32_t constexpr Num_batch = 16;
+
     float2* seeds_2D_;
     float*  seeds_1D_;
+
+    float2* samples_2D_;
+    float*  samples_1D_;
+
+    uint32_t* consumed_2D_;
+    uint32_t* consumed_1D_;
 };
 
 extern template class Typed_pool<RD>;

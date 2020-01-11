@@ -109,56 +109,52 @@ void test() {
     uint32_t constexpr num_samples = 512;
 
     {
+        //        rnd::Generator rng(0, 0);
+
+        //        Golden_ratio sampler(rng);
+
+        //        sampler.resize(num_samples, 1, 1, 1);
+        //        render_set("golden_ratio", sampler, renderer, target);
+    } {
         rnd::Generator rng(0, 0);
 
-        Golden_ratio sampler(rng);
+        RD sampler(rng);
 
         sampler.resize(num_samples, 1, 1, 1);
-        render_set("golden_ratio", sampler, renderer, target);
-    }
-        {
-            rnd::Generator rng(0, 0);
-
-            RD sampler(rng);
-
-            sampler.resize(num_samples, 1, 1, 1);
-            render_set("rd", sampler, renderer, target);
-        }
-    {
-        rnd::Generator rng(0, 0);
-
-        Random sampler(rng);
-
-        sampler.resize(num_samples, 1, 1, 1);
-        render_set("random", sampler, renderer, target);
+        render_set("rd", sampler, renderer, target);
     }
     {
-        rnd::Generator rng(0, 0);
+        //        rnd::Generator rng(0, 0);
 
-        Hammersley sampler(rng);
+        //        Random sampler(rng);
 
-        sampler.resize(num_samples, 1, 1, 1);
-        render_set("hammersley", sampler, renderer, target);
+        //        sampler.resize(num_samples, 1, 1, 1);
+        //        render_set("random", sampler, renderer, target);
+    } {
+        //        rnd::Generator rng(0, 0);
+
+        //        Hammersley sampler(rng);
+
+        //        sampler.resize(num_samples, 1, 1, 1);
+        //        render_set("hammersley", sampler, renderer, target);
     }
 }
 
 void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
-    // rnd::Generator rng(0, 1);
-
     //    render_disk(name + "_disk_0.png", sampler, renderer, target);
     //    render_disk(name + "_disk_1.png", sampler, renderer, target);
 
-//    render_triangle(name + "_triangle_0.png", sampler, renderer, target);
-//    render_triangle(name + "_triangle_1.png", sampler, renderer, target);
+    //    render_triangle(name + "_triangle_0.png", sampler, renderer, target);
+    //    render_triangle(name + "_triangle_1.png", sampler, renderer, target);
 
-//    render_triangle_heitz(name + "_triangle_heitz_0.png", sampler, renderer, target);
-//    render_triangle_heitz(name + "_triangle_heitz_1.png", sampler, renderer, target);
+    //    render_triangle_heitz(name + "_triangle_heitz_0.png", sampler, renderer, target);
+    //    render_triangle_heitz(name + "_triangle_heitz_1.png", sampler, renderer, target);
 
-//    render_triangle_one(name + "_triangle_one_0.png", sampler, renderer, target);
-//    render_triangle_one(name + "_triangle_one_1.png", sampler, renderer, target);
+    //    render_triangle_one(name + "_triangle_one_0.png", sampler, renderer, target);
+    //    render_triangle_one(name + "_triangle_one_1.png", sampler, renderer, target);
 
-      render_quad(name + "_quad_0.png", sampler, renderer, target);
-      render_quad(name + "_quad_1.png", sampler, renderer, target);
+    render_quad(name + "_quad_0.png", sampler, renderer, target);
+    render_quad(name + "_quad_1.png", sampler, renderer, target);
 }
 
 void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
@@ -392,6 +388,8 @@ void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& re
 }
 
 void render_quad(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
+    std::cout << name << std::endl;
+
     renderer.set_brush(float3(0.18f));
     renderer.clear();
 
@@ -404,24 +402,28 @@ void render_quad(std::string const& name, Sampler& sampler, Renderer& renderer, 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
         float2 const s = sampler.generate_sample_2D();
+        //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 
     renderer.set_brush(float3(0.f, 0.7f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
         float2 const s = sampler.generate_sample_2D();
+        //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 
     renderer.set_brush(float3(0.f, 0.f, 1.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
         float2 const s = sampler.generate_sample_2D();
+        //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 
     renderer.set_brush(float3(0.7f, 0.7f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
         float2 const s = sampler.generate_sample_2D();
+        //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 

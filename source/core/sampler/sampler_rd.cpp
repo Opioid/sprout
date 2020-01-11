@@ -3,6 +3,7 @@
 #include "base/math/vector2.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "base/random/shuffle.hpp"
 #include "camera_sample.hpp"
 #include "sampler.inl"
 
@@ -32,40 +33,54 @@ static inline float2 r2i(float2 seed, uint32_t n) noexcept {
 
     static float const e = std::exp2(24.f);
 
-    return float2(frac(seed[0] + float(n * 12664745) / e),
-                  frac(seed[1] + float(n * 9560333) / e));
+    return float2(frac(seed[0] + float(n * 12664745) / e), frac(seed[1] + float(n * 9560333) / e));
 }
 
-RD::RD(rnd::Generator& rng) noexcept : Sampler(rng), seeds_2D_(nullptr), seeds_1D_(nullptr) {}
+RD::RD(rnd::Generator& rng) noexcept
+    : Sampler(rng),
+      seeds_2D_(nullptr),
+      seeds_1D_(nullptr),
+      samples_2D_(nullptr),
+      samples_1D_(nullptr),
+      consumed_2D_(nullptr),
+      consumed_1D_(nullptr) {}
 
 RD::~RD() noexcept {
+    memory::free_aligned(consumed_2D_);
+    memory::free_aligned(samples_2D_);
     memory::free_aligned(seeds_2D_);
 }
 
 Camera_sample RD::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
-    float2 const seed0 = seeds_2D_[0];
-    float2 const seed1 = seeds_2D_[1];
-    float const  seed2 = seeds_1D_[0];
+    uint32_t const m = index % Num_batch;
 
-    float const n = float(index + 1);
+    if (0 == m) {
+        generate_2D(0);
+        generate_2D(1);
+        generate_1D(0);
+    }
 
-    return Camera_sample{pixel, r2(seed0, n), r2(seed1, n), r1(seed2, n)};
+    return Camera_sample{pixel, samples_2D_[m], samples_2D_[Num_batch + m], samples_1D_[m]};
 }
 
 float2 RD::generate_sample_2D(uint32_t dimension) noexcept {
-    float2 const seed = seeds_2D_[dimension];
+    if (Num_batch == consumed_2D_[dimension]) {
+        generate_2D(dimension);
+    }
 
-    float const n = float(++current_sample_2D_[dimension]);
+    uint32_t const current = consumed_2D_[dimension]++;
 
-    return r2(seed, n);
+    return samples_2D_[dimension * Num_batch + current];
 }
 
 float RD::generate_sample_1D(uint32_t dimension) noexcept {
-    float const seed = seeds_1D_[dimension];
+    if (Num_batch == consumed_1D_[dimension]) {
+        generate_1D(dimension);
+    }
 
-    float const n = float(++current_sample_1D_[dimension]);
+    uint32_t const current = consumed_1D_[dimension]++;
 
-    return r1(seed, n);
+    return samples_1D_[dimension * Num_batch + current];
 }
 
 void RD::on_resize() noexcept {
@@ -75,6 +90,20 @@ void RD::on_resize() noexcept {
 
     seeds_2D_ = reinterpret_cast<float2*>(seeds);
     seeds_1D_ = seeds + 2 * num_dimensions_2D_;
+
+    memory::free_aligned(samples_2D_);
+
+    float* buffer = memory::allocate_aligned<float>(Num_batch * 2 * num_dimensions_2D_ +
+                                                    Num_batch * num_dimensions_1D_);
+
+    samples_2D_ = reinterpret_cast<float2*>(buffer);
+    samples_1D_ = buffer + Num_batch * 2 * num_dimensions_2D_;
+
+    memory::free_aligned(consumed_2D_);
+
+    consumed_2D_ = memory::allocate_aligned<uint32_t>(num_dimensions_2D_ + num_dimensions_1D_);
+
+    consumed_1D_ = consumed_2D_ + num_dimensions_2D_;
 }
 
 void RD::on_start_pixel() noexcept {
@@ -85,6 +114,42 @@ void RD::on_start_pixel() noexcept {
     for (uint32_t i = 0, len = num_dimensions_1D_; i < len; ++i) {
         seeds_1D_[i] = rng_.random_float();
     }
+
+    for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
+        consumed_2D_[i] = Num_batch;
+    }
+}
+
+void RD::generate_2D(uint32_t dimension) noexcept {
+    float2* begin = samples_2D_ + dimension * Num_batch;
+
+    float2 const seed = seeds_2D_[dimension];
+
+    for (uint32_t i = 0; i < Num_batch; ++i) {
+        float const n = float(++current_sample_2D_[dimension]);
+
+        begin[i] = r2i(seed, n);
+    }
+
+    rnd::biased_shuffle(begin, Num_batch, rng_);
+
+    consumed_2D_[dimension] = 0;
+}
+
+void RD::generate_1D(uint32_t dimension) noexcept {
+    float* begin = samples_1D_ + dimension * Num_batch;
+
+    float const seed = seeds_1D_[dimension];
+
+    for (uint32_t i = 0; i < Num_batch; ++i) {
+        float const n = float(++current_sample_1D_[dimension]);
+
+        begin[i] = r1(seed, n);
+    }
+
+    rnd::biased_shuffle(begin, Num_batch, rng_);
+
+    consumed_1D_[dimension] = 0;
 }
 
 template class Typed_pool<RD>;
