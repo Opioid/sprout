@@ -116,14 +116,14 @@ void test() {
         sampler.resize(num_samples, 1, 1, 1);
         render_set("golden_ratio", sampler, renderer, target);
     }
-    //    {
-    //        rnd::Generator rng(0, 0);
+        {
+            rnd::Generator rng(0, 0);
 
-    //        RD sampler(rng);
+            RD sampler(rng);
 
-    //        sampler.resize(num_samples, 1, 1, 1);
-    //        render_set("rd", sampler, renderer, target);
-    //    }
+            sampler.resize(num_samples, 1, 1, 1);
+            render_set("rd", sampler, renderer, target);
+        }
     {
         rnd::Generator rng(0, 0);
 
@@ -148,17 +148,17 @@ void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, B
     //    render_disk(name + "_disk_0.png", sampler, renderer, target);
     //    render_disk(name + "_disk_1.png", sampler, renderer, target);
 
-    render_triangle(name + "_triangle_0.png", sampler, renderer, target);
-    render_triangle(name + "_triangle_1.png", sampler, renderer, target);
+//    render_triangle(name + "_triangle_0.png", sampler, renderer, target);
+//    render_triangle(name + "_triangle_1.png", sampler, renderer, target);
 
-    render_triangle_heitz(name + "_triangle_heitz_0.png", sampler, renderer, target);
-    render_triangle_heitz(name + "_triangle_heitz_1.png", sampler, renderer, target);
+//    render_triangle_heitz(name + "_triangle_heitz_0.png", sampler, renderer, target);
+//    render_triangle_heitz(name + "_triangle_heitz_1.png", sampler, renderer, target);
 
-    render_triangle_one(name + "_triangle_one_0.png", sampler, renderer, target);
-    render_triangle_one(name + "_triangle_one_1.png", sampler, renderer, target);
+//    render_triangle_one(name + "_triangle_one_0.png", sampler, renderer, target);
+//    render_triangle_one(name + "_triangle_one_1.png", sampler, renderer, target);
 
-    //    render_quad(name + "_quad_0.png", sampler, renderer, target);
-    //   render_quad(name + "_quad_1.png", sampler, renderer, target);
+      render_quad(name + "_quad_0.png", sampler, renderer, target);
+      render_quad(name + "_quad_1.png", sampler, renderer, target);
 }
 
 void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {

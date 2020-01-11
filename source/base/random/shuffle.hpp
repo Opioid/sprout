@@ -1,8 +1,9 @@
 #ifndef SU_BASE_RANDOM_SHUFFLE_HPP
 #define SU_BASE_RANDOM_SHUFFLE_HPP
 
-#include <utility>
 #include "generator.inl"
+
+#include <utility>
 
 namespace rnd {
 

@@ -71,7 +71,9 @@ void Golden_ratio::generate_2D(uint32_t dimension) noexcept {
     float2 const r(rng_.random_float(), rng_.random_float());
 
     float2* begin = samples_2D_ + dimension * num_samples_;
-    math::golden_ratio(begin, num_samples_, r);
+
+    golden_ratio(begin, num_samples_, r);
+
     rnd::biased_shuffle(begin, num_samples_, rng_);
 }
 
@@ -79,7 +81,9 @@ void Golden_ratio::generate_1D(uint32_t dimension) noexcept {
     float const r = rng_.random_float();
 
     float* begin = samples_1D_ + dimension * num_samples_;
-    math::golden_ratio(begin, num_samples_, r);
+
+    golden_ratio(begin, num_samples_, r);
+
     rnd::biased_shuffle(begin, num_samples_, rng_);
 }
 

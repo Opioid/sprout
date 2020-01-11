@@ -15,7 +15,7 @@ static inline float r1(float seed, float n) noexcept {
 
     static float constexpr a1 = 1.f / g;
 
-    return math::frac(seed + a1 * n);
+    return frac(seed + a1 * n);
 }
 
 static inline float2 r2(float2 seed, float n) noexcept {
@@ -24,7 +24,7 @@ static inline float2 r2(float2 seed, float n) noexcept {
     static float constexpr a1 = 1.f / g;
     static float constexpr a2 = 1.f / (g * g);
 
-    return float2(math::frac(seed[0] + a1 * n), math::frac(seed[1] + a2 * n));
+    return float2(frac(seed[0] + a1 * n), frac(seed[1] + a2 * n));
 }
 
 static inline float2 r2i(float2 seed, uint32_t n) noexcept {
@@ -32,8 +32,8 @@ static inline float2 r2i(float2 seed, uint32_t n) noexcept {
 
     static float const e = std::exp2(24.f);
 
-    return float2(math::frac(seed[0] + float(n * 12664745) / e),
-                  math::frac(seed[1] + float(n * 9560333) / e));
+    return float2(frac(seed[0] + float(n * 12664745) / e),
+                  frac(seed[1] + float(n * 9560333) / e));
 }
 
 RD::RD(rnd::Generator& rng) noexcept : Sampler(rng), seeds_2D_(nullptr), seeds_1D_(nullptr) {}

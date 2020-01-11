@@ -157,7 +157,7 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
             init_z_stream();
         }
 
-        for (; z_stream_.total_out < pos;) {
+        for (mz_ulong const len(pos); z_stream_.total_out < len;) {
             underflow();
         }
 
