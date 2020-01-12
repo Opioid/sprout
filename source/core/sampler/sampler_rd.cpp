@@ -4,7 +4,6 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/random/shuffle.hpp"
-#include "camera_sample.hpp"
 #include "sampler.inl"
 
 // http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
@@ -49,18 +48,6 @@ RD::~RD() noexcept {
     memory::free_aligned(consumed_2D_);
     memory::free_aligned(samples_2D_);
     memory::free_aligned(seeds_2D_);
-}
-
-Camera_sample RD::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
-    uint32_t const m = index % Num_batch;
-
-    if (0 == m) {
-        generate_2D(0);
-        generate_2D(1);
-        generate_1D(0);
-    }
-
-    return Camera_sample{pixel, samples_2D_[m], samples_2D_[Num_batch + m], samples_1D_[m]};
 }
 
 float2 RD::generate_sample_2D(uint32_t dimension) noexcept {

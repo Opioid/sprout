@@ -1,6 +1,7 @@
 #include "sampler.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "camera_sample.hpp"
 
 namespace sampler {
 
@@ -53,6 +54,14 @@ rnd::Generator& Sampler::rng() noexcept {
 
 uint32_t Sampler::num_samples() const noexcept {
     return num_samples_;
+}
+
+Camera_sample Sampler::generate_camera_sample(int2 pixel) noexcept {
+    float2 const image_sample = generate_sample_2D(0);
+    float2 const lens_sample  = generate_sample_2D(1);
+    float const  time_sample  = generate_sample_1D(0);
+
+    return Camera_sample{pixel, image_sample, lens_sample, time_sample};
 }
 
 Pool::Pool(uint32_t num_samplers) noexcept : num_samplers_(num_samplers) {}

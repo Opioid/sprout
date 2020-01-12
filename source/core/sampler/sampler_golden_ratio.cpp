@@ -4,7 +4,6 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/random/shuffle.hpp"
-#include "camera_sample.hpp"
 #include "sampler.inl"
 
 #include "base/debug/assert.hpp"
@@ -16,19 +15,6 @@ Golden_ratio::Golden_ratio(rnd::Generator& rng) noexcept
 
 Golden_ratio::~Golden_ratio() noexcept {
     memory::free_aligned(samples_2D_);
-}
-
-Camera_sample Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index) noexcept {
-    SOFT_ASSERT(index < num_samples_);
-
-    if (0 == index) {
-        generate_2D(0);
-        generate_2D(1);
-        generate_1D(0);
-    }
-
-    return Camera_sample{pixel, samples_2D_[index], samples_2D_[num_samples_ + index],
-                         samples_1D_[index]};
 }
 
 float2 Golden_ratio::generate_sample_2D(uint32_t dimension) noexcept {

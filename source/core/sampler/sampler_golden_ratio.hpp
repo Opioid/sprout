@@ -11,8 +11,6 @@ class alignas(64) Golden_ratio final : public Sampler {
 
     ~Golden_ratio() noexcept override final;
 
-    Camera_sample generate_camera_sample(int2 pixel, uint32_t index) noexcept override final;
-
     float2 generate_sample_2D(uint32_t dimension = 0) noexcept override final;
 
     float generate_sample_1D(uint32_t dimension = 0) noexcept override final;

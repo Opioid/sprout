@@ -26,7 +26,7 @@ class Sampler {
 
     uint32_t num_samples() const noexcept;
 
-    virtual Camera_sample generate_camera_sample(int2 pixel, uint32_t index) noexcept = 0;
+    Camera_sample generate_camera_sample(int2 pixel) noexcept;
 
     virtual float2 generate_sample_2D(uint32_t dimension = 0) noexcept = 0;
 
