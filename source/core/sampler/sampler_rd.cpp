@@ -108,12 +108,14 @@ void RD::on_start_pixel() noexcept {
 }
 
 void RD::generate_2D(uint32_t dimension) noexcept {
-    float2* begin = samples_2D_ + dimension * Num_batch;
-
     float2 const seed = seeds_2D_[dimension];
 
+    float2* begin = samples_2D_ + dimension * Num_batch;
+
+    uint32_t& current_sample = current_sample_2D_[dimension];
+
     for (uint32_t i = 0; i < Num_batch; ++i) {
-        float const n = float(++current_sample_2D_[dimension]);
+        float const n = float(++current_sample);
 
         begin[i] = r2i(seed, n);
     }
@@ -124,12 +126,14 @@ void RD::generate_2D(uint32_t dimension) noexcept {
 }
 
 void RD::generate_1D(uint32_t dimension) noexcept {
-    float* begin = samples_1D_ + dimension * Num_batch;
-
     float const seed = seeds_1D_[dimension];
 
+    float* begin = samples_1D_ + dimension * Num_batch;
+
+    uint32_t& current_sample = current_sample_1D_[dimension];
+
     for (uint32_t i = 0; i < Num_batch; ++i) {
-        float const n = float(++current_sample_1D_[dimension]);
+        float const n = float(++current_sample);
 
         begin[i] = r1(seed, n);
     }
