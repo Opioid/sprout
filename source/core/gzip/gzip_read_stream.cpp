@@ -45,7 +45,7 @@ Filebuffer* Filebuffer::open(std::istream* stream) {
         // FEXTRA
         uint8_t n[2];
         stream_->read(reinterpret_cast<char*>(n), sizeof(n));
-        size_t len = n[0] << 0 | n[1] << 8;
+        int64_t const len = n[0] << 0 | n[1] << 8;
         stream_->ignore(len);
     }
 
@@ -157,7 +157,7 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
             init_z_stream();
         }
 
-        for (mz_ulong const len(pos); z_stream_.total_out < len;) {
+        for (mz_ulong const len = mz_ulong(pos); z_stream_.total_out < len;) {
             underflow();
         }
 

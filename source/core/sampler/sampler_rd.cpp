@@ -115,7 +115,7 @@ void RD::generate_2D(uint32_t dimension) noexcept {
     uint32_t& current_sample = current_sample_2D_[dimension];
 
     for (uint32_t i = 0; i < Num_batch; ++i) {
-        float const n = float(++current_sample);
+        uint32_t const n = ++current_sample;
 
         begin[i] = r2i(seed, n);
     }

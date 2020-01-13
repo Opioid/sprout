@@ -25,7 +25,11 @@ endif ()
 
 if (LINUX) 
 	# linux stuff here
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti -fno-exceptions -ffast-math")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti -fno-exceptions")
+
+    if (NOT ${NAN})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math")
+    endif ()
 
 	if (${Valgrind})
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -mf16c")
@@ -46,8 +50,9 @@ if (LINUX)
 	# add_compile_options(-Wuseless-cast)
 	# add_compile_options(-Wshadow)
 elseif (MSVC)
-	# set(CMAKE_CXX_STANDARD 17) doesn't seem to work for visual studio target at the moment
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    if (NOT ${NAN})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast")
+    endif ()
 
 	if (CMAKE_CXX_FLAGS MATCHES "/GR")
 		string(REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
