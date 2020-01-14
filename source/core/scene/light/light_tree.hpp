@@ -21,8 +21,6 @@ struct Build_node {
 
     void gather(uint32_t const* orders) noexcept;
 
-    float weight(float3 const& p, float3 const& n, bool total_sphere) const noexcept;
-
     float3 center;
 
     float power;

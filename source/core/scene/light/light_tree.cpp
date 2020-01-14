@@ -36,18 +36,6 @@ void Build_node::gather(uint32_t const* orders) noexcept {
     }
 }
 
-float Build_node::weight(float3 const& p, float3 const& n, bool total_sphere) const noexcept {
-    const float base = power / std::max(squared_distance(center, p), 0.0001f);
-
-    if ((nullptr != children[0]) | total_sphere) {
-        return 0.5f * base;
-    } else {
-        float3 const na = normalize(center - p);
-
-        return std::max(dot(n, na), 0.01f) * base;
-    }
-}
-
 Tree::Tree() noexcept
     : num_finite_lights_(0),
       num_infinite_lights_(0),
@@ -62,12 +50,14 @@ Tree::~Tree() noexcept {
 }
 
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const noexcept {
-    const float base = power / std::max(squared_distance(center, p), 0.0001f);
+    float3 const axis = center - p;
+
+    float const base = power / std::max(squared_length(axis), 0.0001f);
 
     if (children | total_sphere) {
         return 0.5f * base;
     } else {
-        float3 const na = normalize(center - p);
+        float3 const na = normalize(axis);
 
         return std::max(dot(n, na), 0.01f) * base;
     }
