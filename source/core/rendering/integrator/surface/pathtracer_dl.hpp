@@ -10,17 +10,18 @@ namespace rendering::integrator::surface {
 class alignas(64) Pathtracer_DL final : public Integrator {
   public:
     struct Settings {
+        uint32_t num_samples;
         uint32_t min_bounces;
         uint32_t max_bounces;
 
-        uint32_t num_light_samples;
+        Light_sampling light_sampling;
 
         bool avoid_caustics;
     };
 
     Pathtracer_DL(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept;
 
-    ~Pathtracer_DL() noexcept;
+    ~Pathtracer_DL() noexcept override final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
 
@@ -53,8 +54,8 @@ class alignas(64) Pathtracer_DL final : public Integrator {
 
 class Pathtracer_DL_pool final : public Typed_pool<Pathtracer_DL> {
   public:
-    Pathtracer_DL_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces,
-                       uint32_t max_bounces, uint32_t num_light_samples,
+    Pathtracer_DL_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
+                       uint32_t min_bounces, uint32_t max_bounces, Light_sampling light_sampling,
                        bool enable_caustics) noexcept;
 
     Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;

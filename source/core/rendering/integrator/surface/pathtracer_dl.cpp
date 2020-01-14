@@ -49,15 +49,25 @@ Pathtracer_DL::~Pathtracer_DL() noexcept {
     delete sampler_pool_;
 }
 
-void Pathtracer_DL::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     for (auto s : material_samplers_) {
         s->resize(num_samples_per_pixel, 1, 1, 1);
     }
 
-    for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, settings_.num_light_samples, 1, 2);
+    uint32_t const num_lights = scene.num_lights();
+
+    uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
+
+    if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
+        for (auto s : light_samplers_) {
+            s->resize(num_samples_per_pixel, num_light_samples, 1, 2);
+        }
+    } else {
+        for (auto s : light_samplers_) {
+            s->resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
+        }
     }
 }
 
@@ -200,6 +210,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         return result;
     }
 
+    uint32_t const num_samples = settings_.light_sampling.num_samples;
+
     float3 const p = material_sample.offset_p(intersection.geo.p);
 
     float3 const n = material_sample.geometric_normal();
@@ -215,35 +227,65 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
     auto& sampler = light_sampler(ray.depth);
 
-    for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
-        float const select = sampler.generate_sample_1D(1);
+    if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
+        for (uint32_t i = num_samples; i > 0; --i) {
+            float const select = sampler.generate_sample_1D(1);
 
-        // auto const light = worker.scene().random_light(select);
-        auto const light = worker.scene().random_light(p, n, is_translucent, select);
+            //auto const light = worker.scene().random_light(select);
+            auto const light = worker.scene().random_light(p, n, is_translucent, select);
 
-        shape::Sample_to light_sample;
-        if (!light.ref.sample(p, n, ray.time, is_translucent, sampler, 0, worker, light_sample)) {
-            continue;
+            shape::Sample_to light_sample;
+            if (!light.ref.sample(p, n, ray.time, is_translucent, sampler, 0, worker,
+                                  light_sample)) {
+                continue;
+            }
+
+            shadow_ray.set_direction(light_sample.wi);
+            shadow_ray.max_t = light_sample.t;
+
+            float3 tr;
+            if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
+                continue;
+            }
+
+            auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+
+            float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
+
+            float const weight = 1.f / (light.pdf * light_sample.pdf);
+
+            result += weight * (tr * radiance * bxdf.reflection);
         }
 
-        shadow_ray.set_direction(light_sample.wi);
-        shadow_ray.max_t = light_sample.t;
+        return result / float(num_samples);
+    } else {
+        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
+            auto const& light = worker.scene().light(l);
 
-        float3 tr;
-        if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
-            continue;
+            shape::Sample_to light_sample;
+            if (!light.sample(p, n, ray.time, is_translucent, sampler, l, worker, light_sample)) {
+                continue;
+            }
+
+            shadow_ray.set_direction(light_sample.wi);
+            shadow_ray.max_t = light_sample.t;
+
+            float3 tr;
+            if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
+                continue;
+            }
+
+            auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+
+            float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
+
+            float const weight = 1.f / (light_sample.pdf);
+
+            result += weight * (tr * radiance * bxdf.reflection);
         }
 
-        auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
-
-        float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
-
-        float const weight = 1.f / (light.pdf * light_sample.pdf);
-
-        result += weight * (tr * radiance * bxdf.reflection);
+        return result / float(num_samples);
     }
-
-    return result / float(settings_.num_light_samples);
 }
 
 sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) noexcept {
@@ -263,14 +305,14 @@ sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) noexcept {
 }
 
 Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, bool progressive,
-                                       uint32_t min_bounces, uint32_t max_bounces,
-                                       uint32_t num_light_samples, bool enable_caustics) noexcept
-    : Typed_pool<Pathtracer_DL>(num_integrators), progressive_(progressive) {
-    settings_.min_bounces       = min_bounces;
-    settings_.max_bounces       = max_bounces;
-    settings_.num_light_samples = num_light_samples;
-    settings_.avoid_caustics    = !enable_caustics;
-}
+                                       uint32_t num_samples, uint32_t min_bounces,
+                                       uint32_t max_bounces, Light_sampling light_sampling,
+                                       bool enable_caustics) noexcept
+    : Typed_pool<Pathtracer_DL>(num_integrators),
+      settings_{
+          num_samples, min_bounces, max_bounces, light_sampling, !enable_caustics,
+      },
+      progressive_(progressive) {}
 
 Integrator* Pathtracer_DL_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
     if (uint32_t const zero = 0;

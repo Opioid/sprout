@@ -65,10 +65,6 @@ inline bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& 
     return false;
 }
 
-inline std::vector<light::Light> const& Scene::lights() const noexcept {
-    return lights_;
-}
-
 inline uint32_t Scene::num_interpolation_frames() const noexcept {
     return num_interpolation_frames_;
 }
@@ -188,6 +184,14 @@ inline prop::Prop* Scene::prop(std::string_view name) noexcept {
     }
 
     return &props_[e->second];
+}
+
+inline uint32_t Scene::num_lights() const noexcept {
+    return uint32_t(lights_.size());
+}
+
+inline light::Light const& Scene::light(uint32_t id) const noexcept {
+    return lights_[id];
 }
 
 }  // namespace scene

@@ -194,8 +194,8 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
 
     light_order_ = 0;
 
-    for (uint32_t l = 0, len = uint32_t(scene.lights().size()); l < len; ++l) {
-        auto const& light = scene.lights()[l];
+    for (uint32_t l = 0, len = scene.num_lights(); l < len; ++l) {
+        auto const& light = scene.light(l);
 
         if (light.is_finite(scene)) {
             finite_lights.push_back(l);
@@ -217,7 +217,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
     for (uint32_t i = 0; i < num_infinite_lights; ++i) {
         uint32_t const l = infinite_lights[i];
 
-        auto const& light = scene.lights()[l];
+        auto const& light = scene.light(l);
 
         float const power = std::sqrt(spectrum::luminance(light.power(scene.aabb(), scene)));
 
@@ -263,7 +263,7 @@ void Tree_builder::split(Tree& tree, Build_node* node, uint32_t begin, uint32_t 
     if (1 == len) {
         uint32_t const l = lights[begin];
 
-        auto const& light = scene.lights()[l];
+        auto const& light = scene.light(l);
 
         node->center = scene.light_center(l);
         node->power  = spectrum::luminance(light.power(AABB(float3(-1.f), float3(1.f)), scene));

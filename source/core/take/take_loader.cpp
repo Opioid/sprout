@@ -561,19 +561,20 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
             return new Pathtracer_pool(num_workers, progressive, num_samples, min_bounces,
                                        max_bounces, enable_caustics);
         } else if ("PTDL" == n.name) {
+            uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
+
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
 
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
                                                          default_max_bounces);
 
-            uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
-                                                               light_sampling.num_samples);
+            load_light_sampling(n.value, light_sampling);
 
             bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-            return new Pathtracer_DL_pool(num_workers, progressive, min_bounces, max_bounces,
-                                          num_light_samples, enable_caustics);
+            return new Pathtracer_DL_pool(num_workers, progressive, num_samples, min_bounces,
+                                          max_bounces, light_sampling, enable_caustics);
         } else if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 

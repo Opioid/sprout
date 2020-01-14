@@ -52,13 +52,13 @@ Pathtracer_MIS::~Pathtracer_MIS() {
 }
 
 void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
-    uint32_t const num_lights = uint32_t(scene.lights().size());
-
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
     for (auto s : material_samplers_) {
         s->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
     }
+
+    uint32_t const num_lights = scene.num_lights();
 
     uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
 
@@ -311,7 +311,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     uint32_t const num_samples = settings_.light_sampling.num_samples;
 
-    float const num_light_samples_reciprocal = 1.f / float(num_samples);
+    float const num_samples_reciprocal = 1.f / float(num_samples);
 
     float3 const p = material_sample.offset_p(intersection.geo.p);
 
@@ -329,17 +329,16 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
             float3 const el = evaluate_light(light.ref, light.pdf, ray, p, 0, evaluate_back,
                                              intersection, material_sample, filter, worker);
 
-            result += num_light_samples_reciprocal * el;
+            result += num_samples_reciprocal * el;
         }
     } else {
-        auto const& lights = worker.scene().lights();
-        for (uint32_t l = 0, len = uint32_t(lights.size()); l < len; ++l) {
-            auto const& light = lights[l];
+        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
+            auto const& light = worker.scene().light(l);
             for (uint32_t i = num_samples; i > 0; --i) {
                 float3 const el = evaluate_light(light, 1.f, ray, p, l, evaluate_back, intersection,
                                                  material_sample, filter, worker);
 
-                result += num_light_samples_reciprocal * el;
+                result += num_samples_reciprocal * el;
             }
         }
     }

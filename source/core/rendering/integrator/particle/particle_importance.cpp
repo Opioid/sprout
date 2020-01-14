@@ -90,7 +90,7 @@ Importance_cache::Importance_cache() noexcept {}
 Importance_cache::~Importance_cache() noexcept {}
 
 void Importance_cache::init(scene::Scene const& scene) noexcept {
-    importances_.resize(uint32_t(scene.lights().size()));
+    importances_.resize(scene.num_lights());
 }
 
 void Importance_cache::set_eye_position(float3 const& eye) noexcept {

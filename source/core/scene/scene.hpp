@@ -124,7 +124,9 @@ class Scene {
     Prop*       prop(uint32_t index) noexcept;
     Prop*       prop(std::string_view name) noexcept;
 
-    std::vector<light::Light> const& lights() const noexcept;
+    uint32_t num_lights() const noexcept;
+
+    light::Light const& light(uint32_t id) const noexcept;
 
     struct Light {
         light::Light const& ref;
@@ -132,11 +134,14 @@ class Scene {
         uint32_t id;
         float    pdf;
     };
-    Light light(uint32_t id, bool calculate_pdf = true) const noexcept;
+
+    Light light(uint32_t id, bool calculate_pdf) const noexcept;
+
     Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
-                bool calculate_pdf = true) const noexcept;
+                bool calculate_pdf) const noexcept;
 
     Light random_light(float random) const noexcept;
+
     Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const
         noexcept;
 
