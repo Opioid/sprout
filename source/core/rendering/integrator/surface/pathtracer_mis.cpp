@@ -323,7 +323,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
         for (uint32_t i = num_samples; i > 0; --i) {
             float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
-            //  auto const light = worker.scene().random_light(select);
+            //auto const light = worker.scene().random_light(select);
             auto const light = worker.scene().random_light(p, n, is_translucent, select);
 
             float3 const el = evaluate_light(light.ref, light.pdf, ray, p, 0, evaluate_back,

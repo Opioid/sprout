@@ -74,6 +74,8 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
     } else {
         float pdf = 1.f - ip;
 
+        random = (random - ip) / pdf;
+
         for (uint32_t nid = 0;;) {
             Node const& node = nodes_[nid];
 
@@ -209,7 +211,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) noexcept {
 
         auto const& light = scene.light(l);
 
-        float const power = std::sqrt(spectrum::luminance(light.power(scene.aabb(), scene)));
+        float const power = spectrum::luminance(light.power(scene.aabb(), scene));
 
         tree.infinite_light_powers_[i] = power;
 
