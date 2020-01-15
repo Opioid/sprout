@@ -159,44 +159,73 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
                       resource::Manager& resources) noexcept {
     Description const& desc = *reinterpret_cast<Description const*>(data);
 
+    if (!desc.positions || !desc.normals) {
+        logging::error("Mesh does not contain vertex positions or normals.");
+        return nullptr;
+    }
+
     auto mesh = new Mesh;
 
-    uint32_t const num_parts = desc.num_parts;
+    uint32_t const num_parts = desc.parts ? desc.num_parts : 1;
 
     mesh->allocate_parts(num_parts);
 
     for (uint32_t p = 0; p < num_parts; ++p) {
-        mesh->set_material_for_part(p, desc.parts[p * 3 + 2]);
+        mesh->set_material_for_part(p, desc.parts ? desc.parts[p * 3 + 2] : 0);
     }
 
     resources.threads().run_async([mesh, desc, &resources]() {
         logging::verbose("Started asynchronously building triangle mesh BVH.");
 
-        uint32_t const num_triangles = desc.num_indices / 3;
+        uint32_t const num_triangles = desc.num_triangles;
 
         memory::Buffer<Index_triangle> triangles(num_triangles);
 
-        for (uint32_t p = 0, len = desc.num_parts; p < len; ++p) {
-            uint32_t const start_index = desc.parts[p * 3 + 0];
-            uint32_t const num_indices = desc.parts[p * 3 + 1];
+        for (uint32_t p = 0, len = desc.parts ? desc.num_parts : 1; p < len; ++p) {
+            uint32_t const start_index = desc.parts ? desc.parts[p * 3 + 0] : 0;
+            uint32_t const num_indices = desc.parts ? desc.parts[p * 3 + 1] : num_triangles * 3;
 
             uint32_t const triangles_start = start_index / 3;
             uint32_t const triangles_end   = (start_index + num_indices) / 3;
 
             for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-                triangles[i].i[0] = desc.indices[i * 3 + 0];
-                triangles[i].i[1] = desc.indices[i * 3 + 1];
-                triangles[i].i[2] = desc.indices[i * 3 + 2];
+                if (!desc.indices) {
+                    triangles[i].i[0] = i * 3 + 0;
+                    triangles[i].i[1] = i * 3 + 1;
+                    triangles[i].i[2] = i * 3 + 2;
+                } else {
+                    triangles[i].i[0] = desc.indices[i * 3 + 0];
+                    triangles[i].i[1] = desc.indices[i * 3 + 1];
+                    triangles[i].i[2] = desc.indices[i * 3 + 2];
+                }
 
                 triangles[i].part = p;
             }
         }
 
+        packed_float3* tangents = nullptr;
+
+        if (!desc.tangents) {
+            tangents = memory::allocate_aligned<packed_float3>(desc.num_vertices);
+
+            packed_float3 const* normals = reinterpret_cast<packed_float3 const*>(desc.normals);
+
+            for (uint32_t i = 0, len = desc.num_vertices; i < len; ++i) {
+                tangents[i] = tangent(normals[i]);
+            }
+        }
+
+        float2 const empty_uv(0.f);
+
         Vertex_stream_CAPI const vertex_stream(
-            desc.num_vertices, desc.positions_stride, desc.normals_stride, desc.tangents_stride,
-            desc.uvs_stride, desc.positions, desc.normals, desc.tangents, desc.uvs);
+            desc.num_vertices, desc.positions_stride, desc.normals_stride,
+            tangents ? 3 : desc.tangents_stride, desc.uvs ? desc.uvs_stride : 0, desc.positions,
+            desc.normals, tangents ? tangents[0].v : desc.tangents,
+            desc.uvs ? desc.uvs : empty_uv.v);
 
         build_bvh(*mesh, num_triangles, triangles, vertex_stream, resources.threads());
+
+        memory::free_aligned(tangents);
 
         logging::verbose("Finished asynchronously building triangle mesh BVH.");
     });

@@ -53,13 +53,13 @@ SU_LIBRARY_API uint32_t su_create_material(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_material_from_file(char const* filename) noexcept;
 
-SU_LIBRARY_API uint32_t su_create_triangle_mesh(uint32_t num_vertices,
-                                                uint32_t positions_stride, float const* positions,
-                                                uint32_t normals_stride, float const* normals,
-                                                uint32_t tangents_stride, float const* tangents,
-                                                uint32_t uvs_stride, float const* uvs,
-                                                uint32_t num_indices, uint32_t const* indices,
-                                                uint32_t num_parts, uint32_t const* parts) noexcept;
+SU_LIBRARY_API uint32_t su_create_triangle_mesh_async(
+    uint32_t num_triangles, uint32_t num_vertices,
+    uint32_t positions_stride, float const* positions,
+    uint32_t normals_stride, float const* normals,
+    uint32_t tangents_stride, float const* tangents,
+    uint32_t uvs_stride, float const* uvs, uint32_t const* indices,
+    uint32_t num_parts, uint32_t const* parts) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept;
 

@@ -34,12 +34,12 @@ class Provider : public resource::Provider<Shape> {
                 resource::Manager& resources, std::string& resolved_name) noexcept override final;
 
     struct Description {
+        uint32_t num_triangles;
         uint32_t num_vertices;
         uint32_t positions_stride;
         uint32_t normals_stride;
         uint32_t tangents_stride;
         uint32_t uvs_stride;
-        uint32_t num_indices;
         uint32_t num_parts;
 
         float const* positions;

@@ -230,11 +230,21 @@ static Vector3<T> reflect(Vector3<T> const& normal, Vector3<T> const& v) noexcep
 
 template <typename T>
 static void orthonormal_basis(Vector3<T> const& n, Vector3<T>& t, Vector3<T>& b) noexcept {
-    const T sign = std::copysign(T(1), n[2]);
-    const T c    = -T(1) / (sign + n[2]);
-    const T d    = n[0] * n[1] * c;
-    t            = Vector3<T>(T(1) + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
-    b            = Vector3<T>(d, sign + n[1] * n[1] * c, -n[1]);
+    T const sign = std::copysign(1.f, n[2]);
+    T const c    = -T(1) / (sign + n[2]);
+    T const d    = n[0] * n[1] * c;
+
+    t = Vector3<T>(T(1) + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
+    b = Vector3<T>(d, sign + n[1] * n[1] * c, -n[1]);
+}
+
+template <typename T>
+static inline Vector3<T> tangent(Vector3<T> const& n) noexcept {
+    T const sign = std::copysign(1.f, n[2]);
+    T const c    = -T(1) / (sign + n[2]);
+    T const d    = n[0] * n[1] * c;
+
+    return Vector3<T>(T(1) + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 }
 
 template <typename T>
@@ -567,6 +577,7 @@ static inline Vector3f_a tangent(Vector3f_a const& n) noexcept {
     float const sign = std::copysign(1.f, n[2]);
     float const c    = -1.f / (sign + n[2]);
     float const d    = n[0] * n[1] * c;
+
     return Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 }
 

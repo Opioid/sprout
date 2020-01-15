@@ -336,20 +336,30 @@ uint32_t su_create_material_from_file(char const* filename) noexcept {
     return material.id;
 }
 
-uint32_t su_create_triangle_mesh(uint32_t num_vertices, uint32_t positions_stride,
-                                 float const* positions, uint32_t normals_stride,
-                                 float const* normals, uint32_t tangents_stride,
-                                 float const* tangents, uint32_t uvs_stride, float const* uvs,
-                                 uint32_t num_indices, uint32_t const* indices, uint32_t num_parts,
-                                 uint32_t const* parts) noexcept {
+uint32_t su_create_triangle_mesh_async(uint32_t num_triangles, uint32_t num_vertices,
+                                       uint32_t positions_stride, float const* positions,
+                                       uint32_t normals_stride, float const* normals,
+                                       uint32_t tangents_stride, float const* tangents,
+                                       uint32_t uvs_stride, float const* uvs,
+                                       uint32_t const* indices, uint32_t num_parts,
+                                       uint32_t const* parts) noexcept {
     ASSERT_ENGINE(resource::Null)
 
     using Description = shape::triangle::Provider::Description;
 
-    Description const desc{
-        num_vertices, positions_stride, normals_stride, tangents_stride, uvs_stride,
-        num_indices,  num_parts,        positions,      normals,         tangents,
-        uvs,          indices,          parts};
+    Description const desc{num_triangles,
+                           num_vertices,
+                           positions_stride,
+                           normals_stride,
+                           tangents_stride,
+                           uvs_stride,
+                           num_parts,
+                           positions,
+                           normals,
+                           tangents,
+                           uvs,
+                           indices,
+                           parts};
 
     void const* desc_data = reinterpret_cast<void const*>(&desc);
 
