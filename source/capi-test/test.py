@@ -117,7 +117,7 @@ num_elements = 1
 stride = 12
 
 image_a = sprout.su_create_image(pixel_type, num_channels, width, height, depth,
-                                 num_elements, image_buffer, stride)
+                                 num_elements, stride, image_buffer)
 
 material_b_desc = """{{
 "rendering": {{
@@ -194,10 +194,10 @@ uvs_stride = 2
 
 
 triangle = sprout.su_create_triangle_mesh(num_vertices,
-                                          positions, vertices_stride,
-                                          normals, vertices_stride,
-                                          tangents, tangents_stride,
-                                          uvs, uvs_stride,
+                                          vertices_stride, positions,
+                                          vertices_stride, normals,
+                                          tangents_stride, tangents,
+                                          uvs_stride, uvs,
                                           num_indices, indices,
                                           num_parts, parts)
 

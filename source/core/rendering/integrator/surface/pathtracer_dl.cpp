@@ -231,7 +231,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         for (uint32_t i = num_samples; i > 0; --i) {
             float const select = sampler.generate_sample_1D(1);
 
-            //auto const light = worker.scene().random_light(select);
+            // auto const light = worker.scene().random_light(select);
             auto const light = worker.scene().random_light(p, n, is_translucent, select);
 
             shape::Sample_to light_sample;

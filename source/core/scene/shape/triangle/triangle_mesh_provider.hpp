@@ -38,14 +38,14 @@ class Provider : public resource::Provider<Shape> {
         uint32_t positions_stride;
         uint32_t normals_stride;
         uint32_t tangents_stride;
-        uint32_t texture_coordinates_stride;
+        uint32_t uvs_stride;
         uint32_t num_indices;
         uint32_t num_parts;
 
         float const* positions;
         float const* normals;
         float const* tangents;
-        float const* texture_coordinates;
+        float const* uvs;
 
         uint32_t const* indices;
         uint32_t const* parts;

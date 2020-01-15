@@ -47,17 +47,19 @@ SU_LIBRARY_API int32_t su_create_integrators(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
                                         uint32_t height, uint32_t depth, uint32_t num_elements,
-                                        char const* data, uint32_t stride) noexcept;
+                                        uint32_t stride, char const* data) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_material(char const* string) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_material_from_file(char const* filename) noexcept;
 
-SU_LIBRARY_API uint32_t su_create_triangle_mesh(
-    uint32_t num_vertices, float const* positions, uint32_t positions_stride, float const* normals,
-    uint32_t normals_stride, float const* tangents, uint32_t tangents_stride,
-    float const* texture_coordinates, uint32_t texture_coordinates_stride, uint32_t num_indices,
-    uint32_t const* indices, uint32_t num_parts, uint32_t const* parts) noexcept;
+SU_LIBRARY_API uint32_t su_create_triangle_mesh(uint32_t num_vertices,
+                                                uint32_t positions_stride, float const* positions,
+                                                uint32_t normals_stride, float const* normals,
+                                                uint32_t tangents_stride, float const* tangents,
+                                                uint32_t uvs_stride, float const* uvs,
+                                                uint32_t num_indices, uint32_t const* indices,
+                                                uint32_t num_parts, uint32_t const* parts) noexcept;
 
 SU_LIBRARY_API uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept;
 

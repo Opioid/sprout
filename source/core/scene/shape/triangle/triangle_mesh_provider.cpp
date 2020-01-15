@@ -194,8 +194,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
 
         Vertex_stream_CAPI const vertex_stream(
             desc.num_vertices, desc.positions_stride, desc.normals_stride, desc.tangents_stride,
-            desc.texture_coordinates_stride, desc.positions, desc.normals, desc.tangents,
-            desc.texture_coordinates);
+            desc.uvs_stride, desc.positions, desc.normals, desc.tangents, desc.uvs);
 
         build_bvh(*mesh, num_triangles, triangles, vertex_stream, resources.threads());
 

@@ -288,8 +288,8 @@ int32_t su_create_integrators(char const* string) noexcept {
 }
 
 uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
-                         uint32_t height, uint32_t depth, uint32_t num_elements, char const* data,
-                         uint32_t stride) noexcept {
+                         uint32_t height, uint32_t depth, uint32_t num_elements, uint32_t stride,
+                         char const* data) noexcept {
     ASSERT_ENGINE(resource::Null)
 
     int3 const dimensions(width, height, std::max(depth, 1u));
@@ -336,30 +336,20 @@ uint32_t su_create_material_from_file(char const* filename) noexcept {
     return material.id;
 }
 
-uint32_t su_create_triangle_mesh(uint32_t num_vertices, float const* positions,
-                                 uint32_t positions_stride, float const* normals,
-                                 uint32_t normals_stride, float const* tangents,
-                                 uint32_t tangents_stride, float const* texture_coordinates,
-                                 uint32_t texture_coordinates_stride, uint32_t num_indices,
-                                 uint32_t const* indices, uint32_t num_parts,
+uint32_t su_create_triangle_mesh(uint32_t num_vertices, uint32_t positions_stride,
+                                 float const* positions, uint32_t normals_stride,
+                                 float const* normals, uint32_t tangents_stride,
+                                 float const* tangents, uint32_t uvs_stride, float const* uvs,
+                                 uint32_t num_indices, uint32_t const* indices, uint32_t num_parts,
                                  uint32_t const* parts) noexcept {
     ASSERT_ENGINE(resource::Null)
 
     using Description = shape::triangle::Provider::Description;
 
-    Description const desc{num_vertices,
-                           positions_stride,
-                           normals_stride,
-                           tangents_stride,
-                           texture_coordinates_stride,
-                           num_indices,
-                           num_parts,
-                           positions,
-                           normals,
-                           tangents,
-                           texture_coordinates,
-                           indices,
-                           parts};
+    Description const desc{
+        num_vertices, positions_stride, normals_stride, tangents_stride, uvs_stride,
+        num_indices,  num_parts,        positions,      normals,         tangents,
+        uvs,          indices,          parts};
 
     void const* desc_data = reinterpret_cast<void const*>(&desc);
 

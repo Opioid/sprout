@@ -140,6 +140,10 @@ float2 Vertex_stream_CAPI::uv(uint32_t i) const noexcept {
 }
 
 uint8_t Vertex_stream_CAPI::bitangent_sign(uint32_t i) const noexcept {
+    if (3 == tangents_stride_) {
+        return 0;
+    }
+
     float const sign = (tangents_ + i * tangents_stride_)[3];
 
     return sign > 0.f ? 0 : 1;
