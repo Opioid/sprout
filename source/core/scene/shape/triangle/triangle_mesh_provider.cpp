@@ -170,8 +170,12 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
 
     mesh->allocate_parts(num_parts);
 
-    for (uint32_t p = 0; p < num_parts; ++p) {
-        mesh->set_material_for_part(p, desc.parts ? desc.parts[p * 3 + 2] : 0);
+    if (desc.parts) {
+        for (uint32_t p = 0; p < num_parts; ++p) {
+            mesh->set_material_for_part(p, desc.parts[p * 3 + 2]);
+        }
+    } else {
+        mesh->set_material_for_part(0, 0);
     }
 
     resources.threads().run_async([mesh, desc, &resources]() {
@@ -181,25 +185,33 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
 
         memory::Buffer<Index_triangle> triangles(num_triangles);
 
+        uint32_t const empty_part[] = {0, num_triangles * 3, 0};
+
+        uint32_t const* parts = desc.parts ? desc.parts : empty_part;
+
         for (uint32_t p = 0, len = desc.parts ? desc.num_parts : 1; p < len; ++p) {
-            uint32_t const start_index = desc.parts ? desc.parts[p * 3 + 0] : 0;
-            uint32_t const num_indices = desc.parts ? desc.parts[p * 3 + 1] : num_triangles * 3;
+            uint32_t const start_index = parts[p * 3 + 0];
+            uint32_t const num_indices = parts[p * 3 + 1];
 
             uint32_t const triangles_start = start_index / 3;
             uint32_t const triangles_end   = (start_index + num_indices) / 3;
 
-            for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-                if (!desc.indices) {
+            if (!desc.indices) {
+                for (uint32_t i = triangles_start; i < triangles_end; ++i) {
                     triangles[i].i[0] = i * 3 + 0;
                     triangles[i].i[1] = i * 3 + 1;
                     triangles[i].i[2] = i * 3 + 2;
-                } else {
+
+                    triangles[i].part = p;
+                }
+            } else {
+                for (uint32_t i = triangles_start; i < triangles_end; ++i) {
                     triangles[i].i[0] = desc.indices[i * 3 + 0];
                     triangles[i].i[1] = desc.indices[i * 3 + 1];
                     triangles[i].i[2] = desc.indices[i * 3 + 2];
-                }
 
-                triangles[i].part = p;
+                    triangles[i].part = p;
+                }
             }
         }
 

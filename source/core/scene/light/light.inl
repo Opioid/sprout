@@ -188,11 +188,9 @@ inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker con
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Prop_image:
             return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume:
-            return volume_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume_image:
             return volume_evaluate(prop_, part_, extent_, sample, filter, worker);
     }
@@ -367,11 +365,9 @@ inline float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker c
         case Type::Null:
             return float3(0.f);
         case Type::Prop:
-            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Prop_image:
             return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume:
-            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
         case Type::Volume_image:
             return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
     }
