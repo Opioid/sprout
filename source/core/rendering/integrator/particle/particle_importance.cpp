@@ -104,7 +104,7 @@ void Importance_cache::set_training(bool training) noexcept {
 void Importance_cache::prepare_sampling(thread::Pool& threads) noexcept {
     // This entire ordeal is very hacky!
     // We need a proper way to select which light should have importances and which not.
-    uint32_t const light = std::min(1u, importances_.size() - 1);
+    uint32_t const light = std::min(1u, uint32_t(importances_.size()) - 1);
 
     importances_[light].prepare_sampling(threads);
 

@@ -3,9 +3,9 @@
 
 #include "base/math/distribution/distribution_2d.hpp"
 #include "base/math/vector3.hpp"
-#include "base/memory/array.hpp"
 
 #include <string_view>
+#include <vector>
 
 namespace scene {
 class Scene;
@@ -69,7 +69,7 @@ class Importance_cache {
 
     bool training_;
 
-    memory::Array<Importance> importances_;
+    std::vector<Importance> importances_;
 };
 
 }  // namespace rendering::integrator::particle
