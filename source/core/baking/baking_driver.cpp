@@ -60,7 +60,9 @@ Driver::~Driver() noexcept {
 
 void Driver::render() noexcept {
     {
-        std::ifstream item_stream("radbak_v0_" + std::to_string(Num_items) + ".raw",
+        std::cout << "Baking stencil..." << std::endl;
+
+        std::ifstream item_stream("radbak_v1_" + std::to_string(Num_items) + ".raw",
                                   std::ios::binary);
 
         item_stream.read(reinterpret_cast<char*>(items_), Num_items * sizeof(Item));
