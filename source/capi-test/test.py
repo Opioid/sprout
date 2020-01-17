@@ -151,9 +151,9 @@ sphere_a = sprout.su_create_prop(7, 1, byref(material_a))
 
 plane_a = sprout.su_create_prop(5, 1, byref(material_b))
 
-celestial_disk = sprout.su_create_prop(1, 1, byref(material_light))
+distant_sphere = sprout.su_create_prop(3, 1, byref(material_light))
 
-sprout.su_create_light(celestial_disk)
+sprout.su_create_light(distant_sphere)
 
 Vertices = c_float * 9
 
@@ -232,7 +232,7 @@ transformation = Transformation(0.01, 0.0, 0.0, 0.0,
                                 0.0, -0.01, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 1.0)
 
-sprout.su_entity_set_transformation(celestial_disk, transformation)
+sprout.su_entity_set_transformation(distant_sphere, transformation)
 
 transformation = Transformation(1.0, 0.0, 0.0, 0.0,
                                 0.0, 1.0, 0.0, 0.0,

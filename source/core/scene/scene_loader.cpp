@@ -18,7 +18,7 @@
 #include "resource/resource_manager.inl"
 #include "scene.inl"
 #include "shape/canopy.hpp"
-#include "shape/celestial_disk.hpp"
+#include "shape/distant_sphere.hpp"
 #include "shape/cube.hpp"
 #include "shape/disk.hpp"
 #include "shape/infinite_sphere.hpp"
@@ -34,9 +34,9 @@ namespace scene {
 Loader::Loader(resource::Manager& resources, Material* fallback_material) noexcept
     : resource_manager_(resources),
       canopy_(resources.store<Shape>(new shape::Canopy())),
-      celestial_disk_(resources.store<Shape>(new shape::Celestial_disk())),
       cube_(resources.store<Shape>(new shape::Cube())),
       disk_(resources.store<Shape>(new shape::Disk())),
+      distant_sphere_(resources.store<Shape>(new shape::Distant_sphere())),
       infinite_sphere_(resources.store<Shape>(new shape::Infinite_sphere())),
       plane_(resources.store<Shape>(new shape::Plane())),
       rectangle_(resources.store<Shape>(new shape::Rectangle())),
@@ -83,8 +83,8 @@ Loader::Shape_ptr Loader::canopy() noexcept {
     return canopy_;
 }
 
-Loader::Shape_ptr Loader::celestial_disk() noexcept {
-    return celestial_disk_;
+Loader::Shape_ptr Loader::distant_sphere() noexcept {
+    return distant_sphere_;
 }
 
 Loader::Shape_ptr Loader::cube() noexcept {
@@ -396,12 +396,12 @@ Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shap
     noexcept {
     if ("Canopy" == type) {
         return canopy_;
-    } else if ("Celestial_disk" == type) {
-        return celestial_disk_;
     } else if ("Cube" == type) {
         return cube_;
     } else if ("Disk" == type) {
         return disk_;
+    } else if ("Distant_sphere" == type) {
+        return distant_sphere_;
     } else if ("Infinite_sphere" == type) {
         return infinite_sphere_;
     } else if ("Plane" == type) {
@@ -418,7 +418,6 @@ Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shap
             }
 
             return shape;
-
         } else {
             logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
         }

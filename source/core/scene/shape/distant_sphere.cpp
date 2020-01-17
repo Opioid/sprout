@@ -1,4 +1,4 @@
-#include "celestial_disk.hpp"
+#include "distant_sphere.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/sampling.inl"
@@ -12,21 +12,21 @@
 
 namespace scene::shape {
 
-Celestial_disk::Celestial_disk() noexcept {}
+Distant_sphere::Distant_sphere() noexcept {}
 
-float3 Celestial_disk::object_to_texture_point(float3 const& p) const noexcept {
+float3 Distant_sphere::object_to_texture_point(float3 const& p) const noexcept {
     return p;
 }
 
-float3 Celestial_disk::object_to_texture_vector(float3 const& v) const noexcept {
+float3 Distant_sphere::object_to_texture_vector(float3 const& v) const noexcept {
     return v;
 }
 
-AABB Celestial_disk::transformed_aabb(float4x4 const& /*m*/) const noexcept {
+AABB Distant_sphere::transformed_aabb(float4x4 const& /*m*/) const noexcept {
     return AABB::empty();
 }
 
-bool Celestial_disk::intersect(Ray& ray, Transformation const&           transformation,
+bool Distant_sphere::intersect(Ray& ray, Transformation const&           transformation,
                                Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     float3 const n = transformation.rotation.r[2];
@@ -65,7 +65,7 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&           transfo
     return false;
 }
 
-bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           transformation,
+bool Distant_sphere::intersect_fast(Ray& ray, Transformation const&           transformation,
                                     Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     float3 const n = transformation.rotation.r[2];
@@ -101,7 +101,7 @@ bool Celestial_disk::intersect_fast(Ray& ray, Transformation const&           tr
     return false;
 }
 
-bool Celestial_disk::intersect(Ray& ray, Transformation const&      transformation,
+bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformation,
                                Node_stack& /*node_stack*/, Normals& normals) const noexcept {
     float3 const n = transformation.rotation.r[2];
 
@@ -126,7 +126,7 @@ bool Celestial_disk::intersect(Ray& ray, Transformation const&      transformati
     return false;
 }
 
-bool Celestial_disk::intersect_p(Ray const& ray, Transformation const& transformation,
+bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transformation,
                                  Node_stack& /*node_stack*/) const noexcept {
     float3 const n = transformation.rotation.r[2];
 
@@ -146,14 +146,14 @@ bool Celestial_disk::intersect_p(Ray const& ray, Transformation const& transform
     return false;
 }
 
-float Celestial_disk::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
+float Distant_sphere::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
                               uint32_t /*entity*/, Filter /*filter*/,
                               Worker const& /*worker*/) const noexcept {
     // Implementation for this is not really needed, so just skip it
     return 0.f;
 }
 
-bool Celestial_disk::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
                                      uint32_t /*entity*/, Filter /*filter*/,
                                      Worker const& /*worker*/, float3& ta) const noexcept {
     // Implementation for this is not really needed, so just skip it
@@ -161,7 +161,7 @@ bool Celestial_disk::thin_absorption(Ray const& /*ray*/, Transformation const& /
     return true;
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
+bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
                             Transformation const& transformation, float area, bool /*two_sided*/,
                             Sampler& sampler, uint32_t             sampler_dimension,
                             Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
@@ -182,7 +182,7 @@ bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/,
     return true;
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
+bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                             bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
                             float2 importance_uv, AABB const& bounds, Node_stack& /*node_stack*/,
                             Sample_from& sample) const noexcept {
@@ -220,31 +220,31 @@ bool Celestial_disk::sample(uint32_t /*part*/, Transformation const& transformat
     return true;
 }
 
-float Celestial_disk::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Distant_sphere::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
                           Transformation const& /*transformation*/, float area, bool /*two_sided*/,
                           bool /*total_sphere*/) const noexcept {
     return 1.f / area;
 }
 
-float Celestial_disk::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Distant_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
                                  Transformation const& /*transformation*/, float /*volume*/) const
     noexcept {
     return 0.f;
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
+bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
                             Transformation const& /*transformation*/, float /*volume*/,
                             Sample_to& /*sample*/) const noexcept {
     return false;
 }
 
-bool Celestial_disk::sample(uint32_t /*part*/, float2 /*uv*/,
+bool Distant_sphere::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
                             bool /*two_sided*/, Sampler& /*sampler*/,
                             uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
@@ -252,30 +252,30 @@ bool Celestial_disk::sample(uint32_t /*part*/, float2 /*uv*/,
     return false;
 }
 
-float Celestial_disk::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Distant_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
                              Transformation const& /*transformation*/, float area,
                              bool /*two_sided*/) const noexcept {
     return 1.f / area;
 }
 
-float Celestial_disk::uv_weight(float2 /*uv*/) const noexcept {
+float Distant_sphere::uv_weight(float2 /*uv*/) const noexcept {
     return 1.f;
 }
 
-float Celestial_disk::area(uint32_t /*part*/, float3 const& scale) const noexcept {
+float Distant_sphere::area(uint32_t /*part*/, float3 const& scale) const noexcept {
     float const radius = scale[0];
     return Pi * (radius * radius);
 }
 
-float Celestial_disk::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+float Distant_sphere::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
     return 0.f;
 }
 
-bool Celestial_disk::is_finite() const noexcept {
+bool Distant_sphere::is_finite() const noexcept {
     return false;
 }
 
-size_t Celestial_disk::num_bytes() const noexcept {
+size_t Distant_sphere::num_bytes() const noexcept {
     return sizeof(*this);
 }
 

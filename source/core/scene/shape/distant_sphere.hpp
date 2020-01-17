@@ -1,13 +1,13 @@
-#ifndef SU_CORE_SCENE_SHAPE_CELESTIAL_DISK_HPP
-#define SU_CORE_SCENE_SHAPE_CELESTIAL_DISK_HPP
+#ifndef SU_CORE_SCENE_SHAPE_DISTANT_SPHERE_HPP
+#define SU_CORE_SCENE_SHAPE_DISTANT_SPHERE_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Celestial_disk final : public Shape {
+class Distant_sphere final : public Shape {
   public:
-    Celestial_disk() noexcept;
+    Distant_sphere() noexcept;
 
     float3 object_to_texture_point(float3 const& p) const noexcept override final;
 

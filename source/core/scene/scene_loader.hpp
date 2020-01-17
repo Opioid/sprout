@@ -86,7 +86,7 @@ class Loader {
                                  shape::triangle::Generator* generator) noexcept;
 
     Shape_ptr canopy() noexcept;
-    Shape_ptr celestial_disk() noexcept;
+    Shape_ptr distant_sphere() noexcept;
     Shape_ptr cube() noexcept;
     Shape_ptr null_shape() noexcept;
 
@@ -137,9 +137,9 @@ class Loader {
     resource::Manager& resource_manager_;
 
     Shape_ptr canopy_;
-    Shape_ptr celestial_disk_;
     Shape_ptr cube_;
     Shape_ptr disk_;
+    Shape_ptr distant_sphere_;
     Shape_ptr infinite_sphere_;
     Shape_ptr plane_;
     Shape_ptr rectangle_;
