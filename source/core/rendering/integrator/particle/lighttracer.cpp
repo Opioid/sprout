@@ -183,11 +183,11 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
     Importance const& importance = worker.particle_importance().importance(light.id);
 
     if (importance.distribution().empty()) {
-        if (!light.ref.sample(time, light_sampler_, 0, scene.aabb(), worker, light_sample)) {
+        if (!light.ref.sample(time, light_sampler_, 1, scene.aabb(), worker, light_sample)) {
             return false;
         }
     } else {
-        if (!light.ref.sample(time, light_sampler_, 0, importance.distribution(), scene.aabb(),
+        if (!light.ref.sample(time, light_sampler_, 1, importance.distribution(), scene.aabb(),
                               worker, light_sample)) {
             return false;
         }
