@@ -16,6 +16,9 @@ extern "C" {
 #define SU_SHAPE_RECTANGLE 6
 #define SU_SHAPE_SPHERE 7
 
+#define SU_UINT8 0
+#define SU_FLOAT32 1
+
 #define SU_LOG_INFO 0
 #define SU_LOG_WARNING 1
 #define SU_LOG_ERROR 2
@@ -88,7 +91,8 @@ SU_LIBRARY_API int32_t su_start_render_frame(uint32_t frame) noexcept;
 
 SU_LIBRARY_API int32_t su_render_iteration() noexcept;
 
-SU_LIBRARY_API int32_t su_copy_framebuffer(uint32_t width, uint32_t height, float* destination) noexcept;
+SU_LIBRARY_API int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height,
+                                           uint32_t num_channels, uint8_t* destination) noexcept;
 
 typedef void (*Post)(uint32_t type, char const* text);
 

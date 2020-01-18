@@ -68,7 +68,9 @@ sprout.su_mount(c_char_p(b"../../data/"))
 
 #sprout.su_load_take(c_char_p(b"takes/cornell.take"))
 
-camera = sprout.su_create_camera_perspective(640, 360, c_float(math.radians(70)))
+resolution = (640, 360)
+
+camera = sprout.su_create_camera_perspective(resolution[0], resolution[1], c_float(math.radians(70)))
 
 # integrators_desc = """{
 # "surface": {

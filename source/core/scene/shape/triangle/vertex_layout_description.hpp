@@ -12,10 +12,11 @@ class Vertex_layout_description {
 
     struct Element {
         std::string semantic_name;
-        uint32_t    semantic_index = 0;
-        Encoding    encoding;
-        uint32_t    stream      = 0;
-        uint32_t    byte_offset = 0;
+
+        uint32_t semantic_index = 0;
+        Encoding encoding;
+        uint32_t stream      = 0;
+        uint32_t byte_offset = 0;
     };
 };
 

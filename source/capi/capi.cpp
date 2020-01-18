@@ -1,7 +1,9 @@
+#include "base/encoding/encoding.inl"
 #include "base/json/json.hpp"
 #include "base/math/interpolated_function_1d.inl"
 #include "base/memory/array.inl"
 #include "base/platform/platform.hpp"
+#include "base/spectrum/rgb.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/file/file_system.hpp"
@@ -557,20 +559,58 @@ int32_t su_render_iteration() noexcept {
     return 0;
 }
 
-int32_t su_copy_framebuffer(uint32_t width, uint32_t height, float* destination) noexcept {
+int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint32_t num_channels,
+                            uint8_t* destination) noexcept {
     ASSERT_ENGINE(-1)
 
     image::Float4 const& buffer = engine->driver.target();
 
     int2 const d = buffer.description().dimensions_2();
 
-    uint32_t const len = std::min(width * height, uint32_t(d[0] * d[1]));
+    if (SU_UINT8 == type && 3 == num_channels) {
+        struct Parameters {
+            image::Float4 const& source;
 
-    float const* raw = reinterpret_cast<float const*>(buffer.data());
+            byte3* target;
 
-    std::copy(raw, raw + 4 * len, destination);
+            int32_t target_width;
+        };
 
-    return 0;
+        Parameters parameters{buffer, reinterpret_cast<byte3*>(destination),
+                              std::min(d[0], int32_t(width))};
+
+        engine->threads.run_range(
+            [&parameters](uint32_t /*id*/, int32_t begin, int32_t end) {
+                image::Float4 const& source = parameters.source;
+
+                byte3* target = parameters.target;
+
+                int2 const d = source.description().dimensions_2();
+
+                for (int32_t y = begin; y < end; ++y) {
+                    int32_t i = y * d[0];
+
+                    for (int32_t x = 0, width = parameters.target_width; x < width; ++x, ++i) {
+                        float3 const color = spectrum::linear_to_gamma_sRGB(source.at(i).xyz());
+
+                        target[i] = encoding::float_to_unorm(color);
+                    }
+                }
+            },
+            0, std::min(d[1], int32_t(height)));
+
+        return 0;
+    } else if (SU_FLOAT32 == type && 4 == num_channels) {
+        uint32_t const len = std::min(width * height, uint32_t(d[0] * d[1]));
+
+        float const* raw = reinterpret_cast<float const*>(buffer.data());
+
+        float* target = reinterpret_cast<float*>(destination);
+
+        std::copy(raw, raw + 4 * len, target);
+    }
+
+    return -2;
 }
 
 namespace logging {
