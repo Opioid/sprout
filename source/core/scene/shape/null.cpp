@@ -34,8 +34,8 @@ bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/,
     return false;
 }
 
-bool Null::intersect_fast(Ray& /*ray*/, Transformation const& /*transformation*/,
-                          Node_stack& /*node_stack*/, Intersection& /*intersection*/) const
+bool Null::intersect_nsf(Ray& /*ray*/, Transformation const& /*transformation*/,
+                         Node_stack& /*node_stack*/, Intersection& /*intersection*/) const
     noexcept {
     return false;
 }
@@ -101,9 +101,8 @@ bool Null::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
 }
 
 bool Null::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
-                  Sample_from& /*sample*/) const noexcept {
+                  float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
+                  AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

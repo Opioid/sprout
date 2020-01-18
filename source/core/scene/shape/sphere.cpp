@@ -76,11 +76,11 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
     float const radius       = transformation.scale_x();
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
-    if (discriminant >= 0.0f) {
+    if (discriminant >= 0.f) {
         float const dist = std::sqrt(discriminant);
         float const t0   = b - dist;
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
+        if ((t0 > ray.min_t) & (t0 < ray.max_t)) {
             shape::intersect(t0, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -91,7 +91,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
         float const t1 = b + dist;
 
-        if (t1 > ray.min_t && t1 < ray.max_t) {
+        if ((t1 > ray.min_t) & (t1 < ray.max_t)) {
             shape::intersect(t1, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -104,9 +104,9 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
     return false;
 }
 
-static inline void intersect_fast(float hit_t, Ray const& ray,
-                                  Shape::Transformation const& transformation,
-                                  Intersection&                intersection) {
+static inline void intersect_nsf(float hit_t, Ray const& ray,
+                                 Shape::Transformation const& transformation,
+                                 Intersection&                intersection) {
     float3 const p = ray.point(hit_t);
     float3 const n = normalize(p - transformation.position);
 
@@ -121,8 +121,8 @@ static inline void intersect_fast(float hit_t, Ray const& ray,
     intersection.part  = 0;
 }
 
-bool Sphere::intersect_fast(Ray& ray, Transformation const&           transformation,
-                            Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
+bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
+                           Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     float3 const v = transformation.position - ray.origin;
     float const  b = dot(ray.direction, v);
 
@@ -135,8 +135,8 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
         float const dist = std::sqrt(discriminant);
         float const t0   = b - dist;
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
-            shape::intersect_fast(t0, ray, transformation, intersection);
+        if ((t0 > ray.min_t) & (t0 < ray.max_t)) {
+            shape::intersect_nsf(t0, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -146,8 +146,8 @@ bool Sphere::intersect_fast(Ray& ray, Transformation const&           transforma
 
         float const t1 = b + dist;
 
-        if (t1 > ray.min_t && t1 < ray.max_t) {
-            shape::intersect_fast(t1, ray, transformation, intersection);
+        if ((t1 > ray.min_t) & (t1 < ray.max_t)) {
+            shape::intersect_nsf(t1, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -450,8 +450,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*
 }
 
 bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                    float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                    uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
+                    float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
                     AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }

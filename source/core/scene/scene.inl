@@ -29,7 +29,7 @@ inline bool Scene::intersect(Ray& ray, Worker const& worker, shape::Normals& nor
 
 inline bool Scene::intersect_volume(Ray& ray, Worker const& worker,
                                     prop::Intersection& intersection) const noexcept {
-    return volume_bvh_.intersect_fast(ray, worker, intersection);
+    return volume_bvh_.intersect_nsf(ray, worker, intersection);
 }
 
 inline bool Scene::intersect_p(Ray const& ray, Worker const& worker) const noexcept {

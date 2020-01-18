@@ -56,8 +56,8 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
     return false;
 }
 
-bool Plane::intersect_fast(Ray& ray, Transformation const&           transformation,
-                           Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
+bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformation,
+                          Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -200,9 +200,8 @@ bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/
 }
 
 bool Plane::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                   float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                   uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
-                   Sample_from& /*sample*/) const noexcept {
+                   float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
+                   AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

@@ -88,8 +88,8 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
                                              intersection);
 }
 
-bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
-                          shape::Intersection& intersection) const noexcept {
+bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
+                         shape::Intersection& intersection) const noexcept {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -105,8 +105,8 @@ bool Prop::intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect_fast(ray, transformation, worker.node_stack(),
-                                                  intersection);
+    return scene.prop_shape(self)->intersect_nsf(ray, transformation, worker.node_stack(),
+                                                 intersection);
 }
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const

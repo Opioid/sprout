@@ -34,7 +34,7 @@ AABB Cube::transformed_aabb(float4x4 const& m) const noexcept {
 
 bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                      Intersection& intersection) const noexcept {
-    bool const hit = intersect_fast(ray, transformation, node_stack, intersection);
+    bool const hit = intersect_nsf(ray, transformation, node_stack, intersection);
 
     intersection.n = intersection.geo_n;
 
@@ -46,8 +46,8 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return hit;
 }
 
-bool Cube::intersect_fast(Ray& ray, Transformation const&           transformation,
-                          Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
+bool Cube::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+                         Intersection& intersection) const noexcept {
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
@@ -290,9 +290,8 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, float3 const& uvw,
 }
 
 bool Cube::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
-                  Sample_from& /*sample*/) const noexcept {
+                  float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
+                  AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

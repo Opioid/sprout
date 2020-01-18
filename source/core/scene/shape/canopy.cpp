@@ -66,8 +66,8 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
     return false;
 }
 
-bool Canopy::intersect_fast(Ray& ray, Transformation const&           transformation,
-                            Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
+bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformation,
+                           Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
     if (ray.max_t >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
@@ -205,8 +205,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*
 }
 
 bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                    uint32_t /*sampler_dimension*/, float2 importance_uv, AABB const& bounds,
+                    float /*area*/, bool /*two_sided*/, float2 importance_uv, AABB const& bounds,
                     Sample_from& sample) const noexcept {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 

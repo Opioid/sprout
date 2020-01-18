@@ -1,9 +1,10 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_INTERSECTION_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_INTERSECTION_HPP
 
-#include <cstdint>
 #include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
+
+#include <cstdint>
 
 namespace scene::shape::triangle {
 

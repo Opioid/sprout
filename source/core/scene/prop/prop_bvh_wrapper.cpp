@@ -96,7 +96,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
     return hit;
 }
 
-bool BVH_wrapper::intersect_fast(Ray& ray, Worker const& worker, Intersection& intersection) const
+bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const
     noexcept {
     auto& node_stack = worker.node_stack();
 
@@ -141,7 +141,7 @@ bool BVH_wrapper::intersect_fast(Ray& ray, Worker const& worker, Intersection& i
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 uint32_t const p = finite_props[i];
-                if (props[p].intersect_fast(p, ray, worker, intersection.geo)) {
+                if (props[p].intersect_nsf(p, ray, worker, intersection.geo)) {
                     prop      = p;
                     hit       = true;
                     ray_max_t = scalar(ray.max_t);
@@ -156,7 +156,7 @@ bool BVH_wrapper::intersect_fast(Ray& ray, Worker const& worker, Intersection& i
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         uint32_t const p = infinite_props[i];
-        if (props[p].intersect_fast(p, ray, worker, intersection.geo)) {
+        if (props[p].intersect_nsf(p, ray, worker, intersection.geo)) {
             prop = p;
             hit  = true;
         }

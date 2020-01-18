@@ -236,8 +236,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
     if (!worker.scene().prop_shape(prop)->sample(part, rs.uv, transformation, area, two_sided,
-                                                 sampler, sampler_dimension, importance_uv, bounds,
-                                                 result)) {
+                                                 importance_uv, bounds, result)) {
         return false;
     }
 
@@ -319,8 +318,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
     if (!worker.scene().prop_shape(prop)->sample(part, rs.uv, transformation, area, two_sided,
-                                                 sampler, sampler_dimension, importance_uv.uv,
-                                                 bounds, result)) {
+                                                 importance_uv.uv, bounds, result)) {
         return false;
     }
 

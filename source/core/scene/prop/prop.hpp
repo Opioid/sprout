@@ -71,8 +71,8 @@ class Prop {
     bool intersect(uint32_t self, Ray& ray, Worker const& worker,
                    shape::Intersection& intersection) const noexcept;
 
-    bool intersect_fast(uint32_t self, Ray& ray, Worker const& worker,
-                        shape::Intersection& intersection) const noexcept;
+    bool intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
+                       shape::Intersection& intersection) const noexcept;
 
     bool intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const
         noexcept;

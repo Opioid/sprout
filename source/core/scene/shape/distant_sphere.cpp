@@ -33,7 +33,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&           transfo
 
     float const b = dot(n, ray.direction);
 
-    if (b > 0.f || ray.max_t < Ray_max_t) {
+    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
         return false;
     }
 
@@ -65,14 +65,14 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&           transfo
     return false;
 }
 
-bool Distant_sphere::intersect_fast(Ray& ray, Transformation const&           transformation,
-                                    Node_stack& /*node_stack*/, Intersection& intersection) const
+bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
+                                   Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     float3 const n = transformation.rotation.r[2];
 
     float const b = dot(n, ray.direction);
 
-    if (b > 0.f || ray.max_t < Ray_max_t) {
+    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
         return false;
     }
 
@@ -246,9 +246,8 @@ bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const
 
 bool Distant_sphere::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, Sampler& /*sampler*/,
-                            uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
-                            AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
+                            bool /*two_sided*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                            Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

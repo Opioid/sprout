@@ -104,8 +104,8 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
     return false;
 }
 
-bool Morphable_mesh::intersect_fast(Ray& ray, Transformation const& transformation,
-                                    Node_stack& node_stack, shape::Intersection& intersection) const
+bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformation,
+                                   Node_stack& node_stack, shape::Intersection& intersection) const
     noexcept {
     math::ray tray;
     tray.origin = transform_point(transformation.world_to_object, ray.origin);
@@ -238,9 +238,8 @@ bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const
 
 bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
                             Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                            uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
-                            AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
+                            bool /*two_sided*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                            Sample_from& /*sample*/) const noexcept {
     return false;
 }
 

@@ -28,8 +28,8 @@ class alignas(64) Morphable_mesh : public Shape, public Morphable_shape {
     bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                    shape::Intersection& intersection) const noexcept override final;
 
-    bool intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                        shape::Intersection& intersection) const noexcept override final;
+    bool intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+                       shape::Intersection& intersection) const noexcept override final;
 
     bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
                    Normals& normals) const noexcept override final;
@@ -74,8 +74,7 @@ class alignas(64) Morphable_mesh : public Shape, public Morphable_shape {
         noexcept override final;
 
     bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                float2 importance_uv, AABB const& bounds, Sample_from& sample) const
+                bool two_sided, float2 importance_uv, AABB const& bounds, Sample_from& sample) const
         noexcept override final;
 
     float pdf_uv(Ray const& ray, shape::Intersection const& intersection,

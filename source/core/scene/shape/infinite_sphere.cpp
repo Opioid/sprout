@@ -62,8 +62,8 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
     return false;
 }
 
-bool Infinite_sphere::intersect_fast(Ray& ray, Transformation const&           transformation,
-                                     Node_stack& /*node_stack*/, Intersection& intersection) const
+bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
+                                    Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     if (ray.max_t >= Ray_max_t) {
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
@@ -229,8 +229,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 }
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
-                             float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                             uint32_t /*sampler_dimension*/, float2 importance_uv,
+                             float /*area*/, bool /*two_sided*/, float2          importance_uv,
                              AABB const& bounds, Sample_from& sample) const noexcept {
     float const phi   = (uv[0] - 0.5f) * (2.f * Pi);
     float const theta = uv[1] * Pi;

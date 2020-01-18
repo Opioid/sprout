@@ -34,7 +34,7 @@ class BVH_wrapper {
 
     bool intersect(Ray& ray, Worker const& worker, Intersection& intersection) const noexcept;
 
-    bool intersect_fast(Ray& ray, Worker const& worker, Intersection& intersection) const noexcept;
+    bool intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const noexcept;
 
     bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const noexcept;
 

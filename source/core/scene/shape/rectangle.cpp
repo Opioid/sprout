@@ -73,8 +73,8 @@ bool Rectangle::intersect(Ray& ray, Transformation const&           transformati
     return false;
 }
 
-bool Rectangle::intersect_fast(Ray& ray, Transformation const&           transformation,
-                               Node_stack& /*node_stack*/, Intersection& intersection) const
+bool Rectangle::intersect_nsf(Ray& ray, Transformation const&           transformation,
+                              Node_stack& /*node_stack*/, Intersection& intersection) const
     noexcept {
     float3 const& normal = transformation.rotation.r[2];
 
@@ -381,8 +381,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*u
 }
 
 bool Rectangle::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                       float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                       uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
+                       float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
                        AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }

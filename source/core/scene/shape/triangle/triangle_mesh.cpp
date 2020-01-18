@@ -185,8 +185,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
 }
 
-bool Mesh::intersect_fast(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                          shape::Intersection& intersection) const noexcept {
+bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+                         shape::Intersection& intersection) const noexcept {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin);
@@ -424,9 +424,8 @@ bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
 }
 
 bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                  uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
-                  Sample_from& /*sample*/) const noexcept {
+                  float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
+                  AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
     return false;
 }
 
