@@ -2,12 +2,6 @@ from ctypes import *
 import platform
 import math
 
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-
-#matplotlib.interactive(True)
-
 LOG_FUNC = CFUNCTYPE(None, c_uint, c_char_p)
 
 PROGRESS_START_FUNC = CFUNCTYPE(None, c_uint)
@@ -257,22 +251,8 @@ transformation = Transformation(1.0, 0.0, 0.0, 0.0,
 
 sprout.su_entity_set_transformation_frame(triangle_a, 1, transformation)
 
-Image = ((c_uint8 * 3) * resolution[0]) * resolution[1]
-
-image = Image()
-
-#plt.ion()
-
-fig, ax = plt.subplots()
-ax.axis('off')
-
 sprout.su_render_frame(0)
-# sprout.su_export_frame(0)
-
-sprout.su_copy_framebuffer(0, resolution[0], resolution[1], 3, image)
-
-im = ax.imshow(image)
-plt.show()
+sprout.su_export_frame(0)
 
 sprout.su_entity_set_transformation_frame(triangle_a, 0, transformation)
 
@@ -284,13 +264,4 @@ transformation = Transformation(1.0, 0.0, 0.0, 0.0,
 sprout.su_entity_set_transformation_frame(triangle_a, 0, transformation)
 
 sprout.su_render_frame(1)
-# sprout.su_export_frame(1)
-
-sprout.su_copy_framebuffer(0, resolution[0], resolution[1], 3, image)
-
-im.set_data(image)
-
-plt.draw()
-
-#ax.imshow(image)
-#plt.show()
+sprout.su_export_frame(1)
