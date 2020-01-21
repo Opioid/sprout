@@ -21,6 +21,13 @@ void Opaque::clear(float weight) noexcept {
     }
 }
 
+void Opaque::set_weights(float weight) noexcept {
+    auto const d = dimensions();
+    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+        pixels_[i][3] = weight;
+    }
+}
+
 bool Opaque::has_alpha_transparency() const noexcept {
     return false;
 }

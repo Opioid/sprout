@@ -128,7 +128,9 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 
     progressor_.start(ranges_.size() * camera.num_views());
 
-    camera.sensor().clear(1.f);
+    int2 const d = camera.sensor_dimensions();
+
+    camera.sensor().clear(float(view_->num_particles) / float(d[0] * d[1]));
 
 #ifdef PARTICLE_TRAINING
     particle_importance_.set_training(true);
@@ -198,6 +200,8 @@ void Driver_finalframe::render_frame_backward(uint32_t frame, uint32_t iteration
     frame_iteration_ = iteration;
 
     auto& camera = *view_->camera;
+
+    camera.sensor().set_weights(float(iteration + 1));
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
         frame_view_ = v;

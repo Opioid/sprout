@@ -41,21 +41,25 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
 
     tiles_.init(view.camera->resolution(), 32, view.camera->sensor().filter_radius_int());
 
+    int2 const d = view.camera->sensor().dimensions();
+
+    uint64_t const num_particles = progressive ? uint64_t(d[0] * d[1]) : view.num_particles;
+
 #ifdef PARTICLE_TRAINING
     if (progressive) {
-        ranges_.init(view.lighttracers ? view.num_particles : 0, 0, Num_particles_per_chunk);
+        ranges_.init(view.lighttracers ? num_particles : 0, 0, Num_particles_per_chunk);
     } else {
-        uint64_t const head = uint64_t(0.1f * float(view.num_particles));
-        uint64_t const tail = view.num_particles - head;
+        uint64_t const head = uint64_t(0.1f * float(num_particles));
+        uint64_t const tail = num_particles - head;
 
         ranges_.init(view.lighttracers ? head : 0, view.lighttracers ? tail : 0,
                      Num_particles_per_chunk);
     }
 #else
-    ranges_.init(view.lighttracers ? view.num_particles : 0, 0, Num_particles_per_chunk);
+    ranges_.init(view.lighttracers ? num_particles : 0, 0, Num_particles_per_chunk);
 #endif
 
-    target_.resize(view.camera->sensor_dimensions());
+    target_.resize(d);
 
     integrator::particle::photon::Map* photon_map = nullptr;
 

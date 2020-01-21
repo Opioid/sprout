@@ -14,6 +14,8 @@ class Transparent : public Sensor {
 
     void clear(float weight) noexcept override final;
 
+    void set_weights(float weight) noexcept override final;
+
     bool has_alpha_transparency() const noexcept override final;
 
   protected:

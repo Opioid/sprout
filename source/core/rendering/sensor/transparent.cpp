@@ -22,6 +22,13 @@ void Transparent::clear(float weight) noexcept {
     }
 }
 
+void Transparent::set_weights(float weight) noexcept {
+    auto const d = dimensions();
+    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+        pixels_[i].weight = weight;
+    }
+}
+
 bool Transparent::has_alpha_transparency() const noexcept {
     return true;
 }

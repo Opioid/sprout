@@ -86,6 +86,9 @@ label = plt.figtext(0.0, 0.0, "0", color=(1.0, 1.0, 0.0))
 
 sprout.su_start_render_frame(0)
 
+def init():
+    pass
+
 def update(frame_number):
     sprout.su_render_iteration(frame_number)
 
@@ -95,7 +98,8 @@ def update(frame_number):
 
     label.set_text(str(frame_number))
 
-animation = FuncAnimation(fig, update, interval=1)
+animation = FuncAnimation(fig, update, init_func=init, interval=1)
+
 plt.show()
 
 

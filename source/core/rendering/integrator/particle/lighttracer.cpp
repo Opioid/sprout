@@ -80,13 +80,7 @@ void Lighttracer::li(uint32_t frame, uint32_t iteration, int4 const& bounds, Wor
         return;
     }
 
-    int2 const d = camera.sensor().dimensions();
-
-    float const weight = float(d[0] * d[1]) /
-                         float(uint64_t(iteration + 1) * settings_.num_light_paths);
-
-    float3 radiance = weight * light.evaluate(light_sample, Filter::Nearest, worker) /
-                      (light_sample.pdf);
+    float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
 
     for (;;) {
         float3 const wo = -ray.direction;
@@ -162,7 +156,7 @@ void Lighttracer::li(uint32_t frame, uint32_t iteration, int4 const& bounds, Wor
             //   result += throughput * vli;
             radiance *= vtr;
 
-            if (Event::Abort == hit || Event::Absorb == hit) {
+            if ((Event::Abort == hit) | (Event::Absorb == hit)) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

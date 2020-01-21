@@ -39,6 +39,8 @@ class Sensor {
 
     virtual void clear(float weight) = 0;
 
+    virtual void set_weights(float weight) = 0;
+
     virtual void add_sample(Camera_sample const& sample, float4 const& color, int4 const& isolated,
                             int4 const& bounds) noexcept = 0;
 
