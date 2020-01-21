@@ -31,15 +31,17 @@ Worker::~Worker() noexcept {
 }
 
 void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
-                  uint32_t num_samples_per_pixel, Surface_pool& surfaces, Volume_pool& volumes,
+                  uint32_t num_samples_per_pixel, Surface_pool* surfaces, Volume_pool& volumes,
                   sampler::Pool& samplers, Photon_map* photon_map,
                   take::Photon_settings const& photon_settings, Lighttracer_pool* lighttracers,
                   uint32_t             num_particles_per_chunk,
                   Particle_importance* particle_importance) noexcept {
     scene::Worker::init(id, scene, camera);
 
-    surface_integrator_ = surfaces.get(id, rng_);
-    surface_integrator_->prepare(scene, num_samples_per_pixel);
+    if (surfaces) {
+        surface_integrator_ = surfaces->get(id, rng_);
+        surface_integrator_->prepare(scene, num_samples_per_pixel);
+    }
 
     volume_integrator_ = volumes.get(id, rng_);
     volume_integrator_->prepare(scene, num_samples_per_pixel);

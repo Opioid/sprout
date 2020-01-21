@@ -85,8 +85,8 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
                                            uint32_t num_workers, bool progressive) noexcept;
 
 static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
-                                               uint32_t           num_workers,
-                                               uint64_t&          num_particles) noexcept;
+                                               uint32_t num_workers, bool surface_integrator,
+                                               uint64_t& num_particles) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
@@ -110,8 +110,10 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         return false;
     }
 
-    json::Value const* postprocessors_value = nullptr;
     json::Value const* exporter_value       = nullptr;
+    json::Value const* integrator_value     = nullptr;
+    json::Value const* postprocessors_value = nullptr;
+    json::Value const* sampler_value        = nullptr;
 
     for (auto& n : root->GetObject()) {
         if ("camera" == n.name) {
@@ -127,12 +129,12 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         } else if ("num_frames" == n.name) {
             take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
-            load_integrators(n.value, num_threads, progressive, take.view);
+            integrator_value = &n.value;
+
         } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
-            take.view.samplers = load_sampler_pool(n.value, num_threads, progressive,
-                                                   take.view.num_samples_per_pixel);
+            sampler_value = &n.value;
         } else if ("scene" == n.name) {
             take.scene_filename = n.value.GetString();
         }
@@ -141,6 +143,22 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     if (take.scene_filename.empty()) {
         logging::push_error("No reference to scene included.");
         return false;
+    }
+
+    if (integrator_value) {
+        load_integrators(*integrator_value, num_threads, progressive, take.view);
+    }
+
+    if (sampler_value) {
+        bool const potential_surface_integrator = nullptr != take.view.surface_integrators ||
+                                                  nullptr == take.view.lighttracers;
+
+        if (potential_surface_integrator) {
+            take.view.samplers = load_sampler_pool(*sampler_value, num_threads, progressive,
+                                                   take.view.num_samples_per_pixel);
+        } else {
+            take.view.samplers = new sampler::Random_pool(num_threads);
+        }
     }
 
     if (take.view.camera) {
@@ -164,13 +182,19 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         set_default_exporter(take);
     }
 
+    set_default_integrators(num_threads, progressive, take.view);
+
     if (!take.view.samplers) {
         take.view.samplers = new sampler::Random_pool(num_threads);
 
-        logging::warning("No valid sampler was specified, defaulting to Random sampler.");
+        if (take.view.surface_integrators) {
+            logging::warning("No valid sampler was specified, defaulting to Random sampler.");
+        }
     }
 
-    set_default_integrators(num_threads, progressive, take.view);
+    if (!take.view.surface_integrators) {
+        take.view.num_samples_per_pixel = 0;
+    }
 
     take.view.init(resources.threads());
 
@@ -486,14 +510,42 @@ static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32
     return nullptr;
 }
 
+static bool peek_surface_integrator(json::Value const& integrator_value) noexcept {
+    for (auto& n : integrator_value.GetObject()) {
+        if ("surface" == n.name) {
+            for (auto& s : n.value.GetObject()) {
+                if ("AO" == s.name) {
+                    return true;
+                } else if ("Whitted" == s.name) {
+                    return true;
+                } else if ("PM" == s.name) {
+                    return true;
+                } else if ("PT" == s.name) {
+                    return true;
+                } else if ("PTDL" == s.name) {
+                    return true;
+                } else if ("PTMIS" == s.name) {
+                    return true;
+                } else if ("Debug" == s.name) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
                               bool progressive, View& view) noexcept {
     if (auto const particle_node = integrator_value.FindMember("particle");
         integrator_value.MemberEnd() != particle_node) {
+        bool const surface_integrator = peek_surface_integrator(integrator_value);
+
         delete view.lighttracers;
 
         view.lighttracers = load_particle_integrator(particle_node->value, num_workers,
-                                                     view.num_particles);
+                                                     surface_integrator, view.num_particles);
     }
 
     for (auto& n : integrator_value.GetObject()) {
@@ -648,12 +700,13 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
 }
 
 static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
-                                               uint32_t           num_workers,
-                                               uint64_t&          num_particles) noexcept {
+                                               uint32_t num_workers, bool surface_integrator,
+                                               uint64_t& num_particles) noexcept {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
-    bool const full_light_path   = json::read_bool(integrator_value, "full_light_path", false);
+    bool const full_light_path   = json::read_bool(integrator_value, "full_light_path",
+                                                 !surface_integrator);
 
     uint32_t const max_bounces = json::read_uint(integrator_value, "max_bounces", 8);
 
@@ -666,7 +719,7 @@ static Particle_pool* load_particle_integrator(json::Value const& integrator_val
 void Loader::set_default_integrators(uint32_t num_workers, bool progressive, View& view) noexcept {
     using namespace rendering::integrator;
 
-    if (!view.surface_integrators) {
+    if (!view.surface_integrators && !view.lighttracers) {
         Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
 
         uint32_t const num_samples = 1;

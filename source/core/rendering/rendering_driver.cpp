@@ -76,7 +76,7 @@ void Driver::init(take::View& view, Scene& scene) noexcept {
 
     for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
         workers_[i].init(i, scene, *view.camera, view.num_samples_per_pixel,
-                         *view.surface_integrators, *view.volume_integrators, *view.samplers,
+                         view.surface_integrators, *view.volume_integrators, *view.samplers,
                          photon_map, view.photon_settings, view.lighttracers,
                          Num_particles_per_chunk, &particle_importance_);
     }

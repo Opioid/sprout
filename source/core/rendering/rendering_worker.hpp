@@ -74,7 +74,7 @@ class Worker : public scene::Worker {
     ~Worker() noexcept;
 
     void init(uint32_t id, Scene const& scene, Camera const& camera, uint32_t num_samples_per_pixel,
-              Surface_pool& surfaces, Volume_pool& volumes, sampler::Pool& samplers,
+              Surface_pool* surfaces, Volume_pool& volumes, sampler::Pool& samplers,
               Photon_map* photon_map, take::Photon_settings const& photon_settings_,
               Lighttracer_pool* lighttracers, uint32_t num_particles_per_chunk,
               Particle_importance* particle_importance) noexcept;
