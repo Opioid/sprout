@@ -42,7 +42,7 @@ void View::init(thread::Pool& threads) noexcept {
 }
 
 bool View::valid() const noexcept {
-    return nullptr != samplers && nullptr != camera;
+    return nullptr != surface_integrators && nullptr != samplers && nullptr != camera;
 }
 
 Take::Take() noexcept {}

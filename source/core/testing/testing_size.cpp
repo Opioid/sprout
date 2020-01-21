@@ -150,7 +150,7 @@ void size() {
     print_size<rendering::Camera_worker>("rendering::Camera_worker", 192);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 128);
-    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 512);
+    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 192);
 }
 
 }  // namespace testing

@@ -82,7 +82,7 @@ dpi = 100
 fig = plt.figure(figsize=(resolution[0]/dpi, resolution[1]/dpi), dpi=dpi)
 im = fig.figimage(image)
 
-label = plt.figtext(0.0, 0.0, "0", color=(0.6, 0.6, 1.0))
+label = plt.figtext(0.0, 0.0, "0", color=(1.0, 1.0, 0.0))
 
 sprout.su_start_render_frame(0)
 

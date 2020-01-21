@@ -74,7 +74,8 @@ struct Engine {
           scene_loader(resources, material_provider.create_fallback_material()),
           scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources),
           driver(threads, material_provider.max_sample_size(), progressor),
-          progressive(progressive) {}
+          progressive(progressive),
+          valid(false) {}
 
     thread::Pool threads;
 
@@ -106,6 +107,8 @@ struct Engine {
     uint32_t frame_iteration;
 
     bool const progressive;
+
+    bool valid;
 };
 
 static Engine* engine = nullptr;
@@ -160,6 +163,8 @@ int32_t su_clear() noexcept {
     engine->take.clear();
     engine->scene.clear();
 
+    engine->valid = false;
+
     return 0;
 }
 
@@ -183,6 +188,8 @@ int32_t su_load_take(char const* string) noexcept {
             logging::error("Loading take %S: ", string);
             success = false;
         }
+
+        engine->valid = success && engine->take.view.valid();
     }
 
     if (success && !engine->scene_loader.load(engine->take.scene_filename, take_name, engine->take,
@@ -208,6 +215,8 @@ int32_t su_create_defaults() noexcept {
     engine->scene.calculate_num_interpolation_frames(camera->frame_step(),
                                                      camera->frame_duration());
 
+    engine->valid = engine->take.view.valid();
+
     return 0;
 }
 
@@ -220,6 +229,8 @@ uint32_t su_create_camera(char const* string) noexcept {
         engine->take.view.clear();
 
         engine->take.view.camera = camera;
+
+        engine->valid = engine->take.view.valid();
 
         return camera->entity();
     }
@@ -256,6 +267,8 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
 
     engine->take.view.camera = camera;
 
+    engine->valid = engine->take.view.valid();
+
     return prop_id;
 }
 
@@ -274,6 +287,8 @@ int32_t su_create_sampler(uint32_t num_samples) noexcept {
         }
     }
 
+    engine->valid = engine->take.view.valid();
+
     return 0;
 }
 
@@ -285,6 +300,8 @@ int32_t su_create_integrators(char const* string) noexcept {
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
     take::Loader::load_integrators(*root, num_workers, false, engine->take.view);
+
+    engine->valid = engine->take.view.valid();
 
     return 0;
 }
@@ -501,7 +518,7 @@ int32_t su_render() noexcept {
 
     engine->threads.wait_async();
 
-    if (!engine->take.view.camera || !engine->take.view.surface_integrators) {
+    if (!engine->valid) {
         return -2;
     }
 
@@ -517,7 +534,7 @@ int32_t su_render_frame(uint32_t frame) noexcept {
 
     engine->threads.wait_async();
 
-    if (!engine->take.view.camera || !engine->take.view.surface_integrators) {
+    if (!engine->valid) {
         return -2;
     }
 
@@ -539,11 +556,12 @@ int32_t su_export_frame(uint32_t frame) noexcept {
 int32_t su_start_render_frame(uint32_t frame) noexcept {
     ASSERT_ENGINE(-1)
 
-    if (!engine->take.view.valid()) {
+    if (!engine->valid) {
         return -2;
     }
 
-    engine->frame           = frame;
+    engine->frame = frame;
+
     engine->frame_iteration = 0;
 
     engine->driver.init(engine->take.view, engine->scene);
@@ -555,6 +573,10 @@ int32_t su_start_render_frame(uint32_t frame) noexcept {
 
 int32_t su_render_iteration() noexcept {
     ASSERT_ENGINE(-1)
+
+    if (!engine->valid) {
+        return -2;
+    }
 
     engine->driver.render(engine->frame, engine->frame_iteration);
 
