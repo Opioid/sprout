@@ -104,12 +104,14 @@ class Worker : public scene::Worker {
                            Filter filter, float3& tv) noexcept;
 
     integrator::surface::Integrator* surface_integrator_ = nullptr;
-    integrator::volume::Integrator*  volume_integrator_  = nullptr;
+
+    integrator::volume::Integrator* volume_integrator_ = nullptr;
 
     sampler::Sampler* sampler_ = nullptr;
 
     Photon_mapper* photon_mapper_ = nullptr;
-    Photon_map*    photon_map_    = nullptr;
+
+    Photon_map* photon_map_ = nullptr;
 
     integrator::particle::Lighttracer* lighttracer_ = nullptr;
 

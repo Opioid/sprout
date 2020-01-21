@@ -26,6 +26,7 @@ class Scene;
 namespace take {
 
 struct Take;
+struct View;
 
 class Loader {
   public:
@@ -39,10 +40,10 @@ class Loader {
     static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept;
 
     static void load_integrators(json::Value const& integrator_value, uint32_t num_workers,
-                                 bool progressive, Take& take) noexcept;
+                                 bool progressive, View& view) noexcept;
 
     static void set_default_integrators(uint32_t num_workers, bool progressive,
-                                        Take& take) noexcept;
+                                        View& view) noexcept;
 
     static void load_postprocessors(json::Value const& pp_value, resource::Manager& resources,
                                     Pipeline& pipeline, int2 dimensions) noexcept;

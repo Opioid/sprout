@@ -57,6 +57,16 @@ struct View {
 
     void init(thread::Pool& threads) noexcept;
 
+    bool valid() const noexcept;
+
+    rendering::integrator::surface::Pool* surface_integrators = nullptr;
+
+    rendering::integrator::volume::Pool* volume_integrators = nullptr;
+
+    rendering::integrator::particle::Lighttracer_pool* lighttracers = nullptr;
+
+    sampler::Pool* samplers = nullptr;
+
     scene::camera::Camera* camera = nullptr;
 
     uint32_t num_samples_per_pixel = 1;
@@ -81,12 +91,6 @@ struct Take {
     std::string scene_filename;
 
     View view;
-
-    rendering::integrator::surface::Pool*              surface_integrators = nullptr;
-    rendering::integrator::volume::Pool*               volume_integrators  = nullptr;
-    rendering::integrator::particle::Lighttracer_pool* lighttracers        = nullptr;
-
-    sampler::Pool* samplers = nullptr;
 
     memory::Array<exporting::Sink*> exporters;
 };

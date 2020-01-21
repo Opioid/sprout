@@ -12,13 +12,25 @@ namespace take {
 View::View() noexcept {}
 
 View::~View() noexcept {
-    delete camera;
+    clear();
 }
 
 void View::clear() noexcept {
     delete camera;
 
     camera = nullptr;
+
+    delete samplers;
+    samplers = nullptr;
+
+    delete lighttracers;
+    lighttracers = nullptr;
+
+    delete volume_integrators;
+    volume_integrators = nullptr;
+
+    delete surface_integrators;
+    surface_integrators = nullptr;
 
     pipeline.clear();
 }
@@ -27,6 +39,10 @@ void View::init(thread::Pool& threads) noexcept {
     if (camera) {
         pipeline.init(*camera, threads);
     }
+}
+
+bool View::valid() const noexcept {
+    return nullptr != samplers && nullptr != camera;
 }
 
 Take::Take() noexcept {}
@@ -41,18 +57,6 @@ void Take::clear() noexcept {
     }
 
     exporters.clear();
-
-    delete samplers;
-    samplers = nullptr;
-
-    delete lighttracers;
-    lighttracers = nullptr;
-
-    delete volume_integrators;
-    volume_integrators = nullptr;
-
-    delete surface_integrators;
-    surface_integrators = nullptr;
 
     view.clear();
 }

@@ -34,34 +34,33 @@ Driver::~Driver() noexcept {
     memory::destroy_aligned(workers_, threads_.num_threads());
 }
 
-void Driver::init(take::Take& take, Scene& scene) noexcept {
-    view_ = &take.view;
+void Driver::init(take::View& view, Scene& scene) noexcept {
+    view_ = &view;
 
     scene_ = &scene;
 
-    tiles_.init(take.view.camera->resolution(), 32, take.view.camera->sensor().filter_radius_int());
+    tiles_.init(view.camera->resolution(), 32, view.camera->sensor().filter_radius_int());
 
 #ifdef PARTICLE_TRAINING
-    uint64_t const head = uint64_t(0.1f * float(take.view.num_particles));
-    uint64_t const tail = take.view.num_particles - head;
+    uint64_t const head = uint64_t(0.1f * float(view.num_particles));
+    uint64_t const tail = view.num_particles - head;
 
-    ranges_.init(take.lighttracers ? head : 0, take.lighttracers ? tail : 0,
+    ranges_.init(view.lighttracers ? head : 0, view.lighttracers ? tail : 0,
                  Num_particles_per_chunk);
 #else
     ranges_.init(take.lighttracers ? take.view.num_particles : 0, 0, Num_particles_per_chunk),
 #endif
 
-    target_.resize(take.view.camera->sensor_dimensions());
+    target_.resize(view.camera->sensor_dimensions());
 
     integrator::particle::photon::Map* photon_map = nullptr;
 
-    uint32_t const num_photons = take.view.photon_settings.num_photons;
+    uint32_t const num_photons = view.photon_settings.num_photons;
     if (num_photons) {
         uint32_t const num_workers = threads_.num_threads();
 
-        photon_map_.init(num_workers, take.view.photon_settings.num_photons,
-                         take.view.photon_settings.search_radius,
-                         take.view.photon_settings.merge_radius);
+        photon_map_.init(num_workers, view.photon_settings.num_photons,
+                         view.photon_settings.search_radius, view.photon_settings.merge_radius);
 
         uint32_t range = num_photons / num_workers;
         if (num_photons % num_workers) {
@@ -71,14 +70,14 @@ void Driver::init(take::Take& take, Scene& scene) noexcept {
         photon_map = &photon_map_;
     }
 
-    if (num_photons > 0 || take.lighttracers) {
+    if (num_photons > 0 || view.lighttracers) {
         particle_importance_.init(scene);
     }
 
     for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
-        workers_[i].init(i, scene, *take.view.camera, take.view.num_samples_per_pixel,
-                         *take.surface_integrators, *take.volume_integrators, *take.samplers,
-                         photon_map, take.view.photon_settings, take.lighttracers,
+        workers_[i].init(i, scene, *view.camera, view.num_samples_per_pixel,
+                         *view.surface_integrators, *view.volume_integrators, *view.samplers,
+                         photon_map, view.photon_settings, view.lighttracers,
                          Num_particles_per_chunk, &particle_importance_);
     }
 }

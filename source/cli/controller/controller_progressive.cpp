@@ -25,7 +25,7 @@ void progressive(take::Take& take, scene::Scene& scene, resource::Manager& resou
 
     rendering::Driver_progressive driver(threads, max_sample_size);
 
-    driver.init(take, scene);
+    driver.init(take.view, scene);
 
     //	driver.set_force_statistics(true);
 

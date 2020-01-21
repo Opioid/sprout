@@ -199,7 +199,7 @@ int32_t su_create_defaults() noexcept {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::set_default_integrators(num_workers, engine->progressive, engine->take);
+    take::Loader::set_default_integrators(num_workers, engine->progressive, engine->take.view);
 
     take::Loader::set_default_exporter(engine->take);
 
@@ -264,13 +264,13 @@ int32_t su_create_sampler(uint32_t num_samples) noexcept {
 
     engine->take.view.num_samples_per_pixel = num_samples;
 
-    if (!engine->take.samplers) {
+    if (!engine->take.view.samplers) {
         uint32_t const num_workers = engine->resources.threads().num_threads();
 
         if (engine->progressive) {
-            engine->take.samplers = new sampler::Random_pool(num_workers);
+            engine->take.view.samplers = new sampler::Random_pool(num_workers);
         } else {
-            engine->take.samplers = new sampler::Golden_ratio_pool(num_workers);
+            engine->take.view.samplers = new sampler::Golden_ratio_pool(num_workers);
         }
     }
 
@@ -284,7 +284,7 @@ int32_t su_create_integrators(char const* string) noexcept {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::load_integrators(*root, num_workers, false, engine->take);
+    take::Loader::load_integrators(*root, num_workers, false, engine->take.view);
 
     return 0;
 }
@@ -501,11 +501,11 @@ int32_t su_render() noexcept {
 
     engine->threads.wait_async();
 
-    if (!engine->take.view.camera || !engine->take.surface_integrators) {
+    if (!engine->take.view.camera || !engine->take.view.surface_integrators) {
         return -2;
     }
 
-    engine->driver.init(engine->take, engine->scene);
+    engine->driver.init(engine->take.view, engine->scene);
 
     engine->driver.render(engine->take.exporters);
 
@@ -517,11 +517,11 @@ int32_t su_render_frame(uint32_t frame) noexcept {
 
     engine->threads.wait_async();
 
-    if (!engine->take.view.camera || !engine->take.surface_integrators) {
+    if (!engine->take.view.camera || !engine->take.view.surface_integrators) {
         return -2;
     }
 
-    engine->driver.init(engine->take, engine->scene);
+    engine->driver.init(engine->take.view, engine->scene);
 
     engine->driver.render(frame);
 
@@ -539,10 +539,14 @@ int32_t su_export_frame(uint32_t frame) noexcept {
 int32_t su_start_render_frame(uint32_t frame) noexcept {
     ASSERT_ENGINE(-1)
 
+    if (!engine->take.view.valid()) {
+        return -2;
+    }
+
     engine->frame           = frame;
     engine->frame_iteration = 0;
 
-    engine->driver.init(engine->take, engine->scene);
+    engine->driver.init(engine->take.view, engine->scene);
 
     engine->driver.start_frame(frame);
 

@@ -11,7 +11,6 @@
 #include "tile_queue.hpp"
 
 namespace take {
-struct Take;
 struct View;
 }  // namespace take
 
@@ -57,7 +56,7 @@ class Driver {
 
     ~Driver() noexcept;
 
-    void init(take::Take& take, Scene& scene) noexcept;
+    void init(take::View& view, Scene& scene) noexcept;
 
     Camera& camera() noexcept;
 
