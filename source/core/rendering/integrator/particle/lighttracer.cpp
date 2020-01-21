@@ -51,7 +51,7 @@ void Lighttracer::start_pixel() noexcept {
     }
 }
 
-void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
+void Lighttracer::li(uint32_t frame, uint32_t iteration, int4 const& bounds, Worker& worker,
                      Interface_stack const& /*initial_stack*/) noexcept {
     worker.interface_stack().clear();
 
@@ -82,7 +82,8 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     int2 const d = camera.sensor().dimensions();
 
-    float const weight = float(d[0] * d[1]) / settings_.num_light_paths;
+    float const weight = float(d[0] * d[1]) /
+                         float(uint64_t(iteration + 1) * settings_.num_light_paths);
 
     float3 radiance = weight * light.evaluate(light_sample, Filter::Nearest, worker) /
                       (light_sample.pdf);
@@ -265,8 +266,7 @@ Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounce
                                    bool indirect_caustics, bool full_light_path) noexcept
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, float(num_light_paths), indirect_caustics,
-                full_light_path} {
+      settings_{min_bounces, max_bounces, num_light_paths, indirect_caustics, full_light_path} {
     std::memset(reinterpret_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
 }
 

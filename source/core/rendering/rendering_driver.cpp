@@ -34,7 +34,7 @@ Driver::~Driver() noexcept {
     memory::destroy_aligned(workers_, threads_.num_threads());
 }
 
-void Driver::init(take::View& view, Scene& scene) noexcept {
+void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
     view_ = &view;
 
     scene_ = &scene;
@@ -42,13 +42,17 @@ void Driver::init(take::View& view, Scene& scene) noexcept {
     tiles_.init(view.camera->resolution(), 32, view.camera->sensor().filter_radius_int());
 
 #ifdef PARTICLE_TRAINING
-    uint64_t const head = uint64_t(0.1f * float(view.num_particles));
-    uint64_t const tail = view.num_particles - head;
+    if (progressive) {
+        ranges_.init(view.lighttracers ? view.num_particles : 0, 0, Num_particles_per_chunk);
+    } else {
+        uint64_t const head = uint64_t(0.1f * float(view.num_particles));
+        uint64_t const tail = view.num_particles - head;
 
-    ranges_.init(view.lighttracers ? head : 0, view.lighttracers ? tail : 0,
-                 Num_particles_per_chunk);
+        ranges_.init(view.lighttracers ? head : 0, view.lighttracers ? tail : 0,
+                     Num_particles_per_chunk);
+    }
 #else
-    ranges_.init(take.lighttracers ? take.view.num_particles : 0, 0, Num_particles_per_chunk),
+    ranges_.init(view.lighttracers ? view.num_particles : 0, 0, Num_particles_per_chunk);
 #endif
 
     target_.resize(view.camera->sensor_dimensions());

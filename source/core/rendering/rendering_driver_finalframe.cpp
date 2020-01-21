@@ -83,10 +83,18 @@ void Driver_finalframe::start_frame(uint32_t frame) noexcept {
 
     camera.update(*scene_, start, workers_[0]);
 
-    camera.sensor().clear(0.f);
+    if (ranges_.size() > 0) {
+        camera.sensor().clear(1.f);
+    } else {
+        camera.sensor().clear(0.f);
+    }
+
+    particle_importance_.set_training(false);
 }
 
 void Driver_finalframe::render(uint32_t frame, uint32_t iteration) noexcept {
+    render_frame_backward(frame, iteration);
+
     render_frame_forward(frame, iteration);
 
     auto& camera = *view_->camera;
@@ -137,7 +145,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
             auto& worker = workers_[index];
 
             for (ulong2 range; ranges_.pop(0, range);) {
-                worker.particles(frame_, frame_view_, 0, range);
+                worker.particles(frame_, frame_view_, 0, 0, range);
 
                 progressor_.tick();
             }
@@ -158,7 +166,7 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
             auto& worker = workers_[index];
 
             for (ulong2 range; ranges_.pop(1, range);) {
-                worker.particles(frame_, frame_view_, 1, range);
+                worker.particles(frame_, frame_view_, 0, 1, range);
 
                 progressor_.tick();
             }
@@ -178,6 +186,37 @@ void Driver_finalframe::render_frame_backward(uint32_t frame) noexcept {
 #ifdef PARTICLE_TRAINING
     particle_importance_.export_importances();
 #endif
+}
+
+void Driver_finalframe::render_frame_backward(uint32_t frame, uint32_t iteration) noexcept {
+    if (0 == ranges_.size()) {
+        return;
+    }
+
+    frame_ = frame;
+
+    frame_iteration_ = iteration;
+
+    auto& camera = *view_->camera;
+
+    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
+        frame_view_ = v;
+
+        ranges_.restart();
+
+        threads_.run_parallel([this](uint32_t index) noexcept {
+            auto& worker = workers_[index];
+
+            for (ulong2 range; ranges_.pop(0, range);) {
+                worker.particles(frame_, frame_view_, frame_iteration_, 0, range);
+            }
+        });
+    }
+
+    // If there will be a forward pass later...
+    if (view_->num_samples_per_pixel > 0) {
+        view_->pipeline.seed(camera.sensor(), target_, threads_);
+    }
 }
 
 void Driver_finalframe::render_frame_forward(uint32_t frame) noexcept {

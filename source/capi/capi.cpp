@@ -522,7 +522,7 @@ int32_t su_render() noexcept {
         return -2;
     }
 
-    engine->driver.init(engine->take.view, engine->scene);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
     engine->driver.render(engine->take.exporters);
 
@@ -538,7 +538,7 @@ int32_t su_render_frame(uint32_t frame) noexcept {
         return -2;
     }
 
-    engine->driver.init(engine->take.view, engine->scene);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
     engine->driver.render(frame);
 
@@ -564,7 +564,7 @@ int32_t su_start_render_frame(uint32_t frame) noexcept {
 
     engine->frame_iteration = 0;
 
-    engine->driver.init(engine->take.view, engine->scene);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
     engine->driver.start_frame(frame);
 

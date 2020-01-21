@@ -56,7 +56,7 @@ class Driver {
 
     ~Driver() noexcept;
 
-    void init(take::View& view, Scene& scene) noexcept;
+    void init(take::View& view, Scene& scene, bool progressive) noexcept;
 
     Camera& camera() noexcept;
 

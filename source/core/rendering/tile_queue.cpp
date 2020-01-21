@@ -98,12 +98,12 @@ void Range_queue::restart() noexcept {
     current_consume_ = 0;
 }
 
-bool Range_queue::pop(uint32_t iteration, ulong2& range) noexcept {
+bool Range_queue::pop(uint32_t segment, ulong2& range) noexcept {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
     uint64_t const start = uint64_t(current) * uint64_t(range_size_);
 
-    uint32_t const num_ranges = 0 == iteration ? num_ranges0_ : num_ranges1_;
+    uint32_t const num_ranges = 0 == segment ? num_ranges0_ : num_ranges1_;
 
     if (current < num_ranges - 1) {
         range = ulong2(start, start + range_size_);
@@ -111,15 +111,15 @@ bool Range_queue::pop(uint32_t iteration, ulong2& range) noexcept {
     }
 
     if (current < num_ranges) {
-        range = ulong2(start, 0 == iteration ? total0_ : total1_);
+        range = ulong2(start, 0 == segment ? total0_ : total1_);
         return true;
     }
 
     return false;
 }
 
-uint32_t Range_queue::index(ulong2 const& range, uint32_t iteration) const noexcept {
-    return uint32_t(range[0] / uint64_t(range_size_)) + iteration * num_ranges0_;
+uint32_t Range_queue::index(ulong2 const& range, uint32_t segment) const noexcept {
+    return uint32_t(range[0] / uint64_t(range_size_)) + segment * num_ranges0_;
 }
 
 }  // namespace rendering

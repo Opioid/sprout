@@ -38,6 +38,8 @@ class Driver_finalframe : public Driver {
   private:
     void render_frame_backward(uint32_t frame) noexcept;
 
+    void render_frame_backward(uint32_t frame, uint32_t iteration) noexcept;
+
     void render_frame_forward(uint32_t frame) noexcept;
 
     void render_frame_forward(uint32_t frame, uint32_t iteration) noexcept;

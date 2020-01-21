@@ -46,7 +46,7 @@ class alignas(64) Lighttracer final : public Integrator {
         uint32_t min_bounces;
         uint32_t max_bounces;
 
-        float num_light_paths;
+        uint64_t num_light_paths;
 
         bool indirect_caustics;
         bool full_light_path;
@@ -60,7 +60,7 @@ class alignas(64) Lighttracer final : public Integrator {
 
     void start_pixel() noexcept override final;
 
-    void li(uint32_t frame, int4 const& bounds, Worker& worker,
+    void li(uint32_t frame, uint32_t iteration, int4 const& bounds, Worker& worker,
             Interface_stack const& initial_stack) noexcept;
 
   private:

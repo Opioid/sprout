@@ -60,13 +60,13 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
     }
 }
 
-void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t iteration,
+void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t iteration, uint32_t segment,
                               ulong2 const& range) noexcept {
     scene::camera::Camera const& camera = *camera_;
 
-    uint32_t const range_index = ranges_.index(range, iteration);
+    uint32_t const range_index = ranges_.index(range, segment);
 
-    rng_.start(0, range_index);
+    rng_.start(0, range_index + iteration * ranges_.size());
 
     lighttracer_->start_pixel();
 
@@ -75,7 +75,7 @@ void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t iteration,
     bounds[3] -= bounds[1];
 
     for (uint64_t i = range[0]; i < range[1]; ++i) {
-        particle_li(frame, bounds, camera.interface_stack());
+        particle_li(frame, iteration, bounds, camera.interface_stack());
     }
 }
 

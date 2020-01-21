@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) noexcept {
                 if (take.view.camera) {
                     rendering::Driver_finalframe driver(threads, max_sample_size, progressor);
 
-                    driver.init(take.view, scene);
+                    driver.init(take.view, scene, false);
 
                     driver.render(take.exporters);
                 } else {

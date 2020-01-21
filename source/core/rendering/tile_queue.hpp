@@ -46,9 +46,9 @@ class Range_queue {
 
     void restart() noexcept;
 
-    bool pop(uint32_t iteration, ulong2& range) noexcept;
+    bool pop(uint32_t segment, ulong2& range) noexcept;
 
-    uint32_t index(ulong2 const& range, uint32_t iteration) const noexcept;
+    uint32_t index(ulong2 const& range, uint32_t segment) const noexcept;
 
   private:
     uint64_t total0_;
