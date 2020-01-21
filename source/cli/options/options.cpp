@@ -68,10 +68,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.mounts.push_back(parameter);
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
-    } else if ("progressive" == command || "p" == command) {
-        result.progressive = true;
     } else if ("quit" == command || "q" == command) {
-        result.progressive = true;
+        result.quit = true;
     } else if ("no-textures" == command) {
         result.no_textures = true;
     } else if ("debug-material" == command) {
@@ -121,7 +119,6 @@ Usage:
                               -x creates as many threads as the number of
                               logical CPUs minus x.
                               The default value is 0.
-  -p, --progressive           Starts sprout in progressive mode.
   -q, --quit                  Automatically quit sprout after rendering.
       --no-textures           Disables loading of all textures.
   -v, --verbose               Enables verbose logging.)";

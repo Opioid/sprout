@@ -14,7 +14,7 @@
 #include "core/logging/log.hpp"
 #include "core/logging/logging.hpp"
 #include "core/progress/progress_sink.hpp"
-#include "core/rendering/rendering_driver_finalframe.hpp"
+#include "core/rendering/rendering_driver.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/sampler/sampler_golden_ratio.hpp"
 #include "core/sampler/sampler_random.hpp"
@@ -101,7 +101,7 @@ struct Engine {
 
     progress::C progressor;
 
-    rendering::Driver_finalframe driver;
+    rendering::Driver driver;
 
     uint32_t frame;
     uint32_t frame_iteration;

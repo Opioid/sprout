@@ -75,7 +75,7 @@ void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t iteration,
     bounds[3] -= bounds[1];
 
     for (uint64_t i = range[0]; i < range[1]; ++i) {
-        particle_li(frame, iteration, bounds, camera.interface_stack());
+        particle_li(frame, bounds, camera.interface_stack());
     }
 }
 

@@ -51,7 +51,7 @@ void Lighttracer::start_pixel() noexcept {
     }
 }
 
-void Lighttracer::li(uint32_t frame, uint32_t iteration, int4 const& bounds, Worker& worker,
+void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                      Interface_stack const& /*initial_stack*/) noexcept {
     worker.interface_stack().clear();
 

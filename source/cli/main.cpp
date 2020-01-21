@@ -3,7 +3,6 @@
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
-#include "controller/controller_progressive.hpp"
 #include "core/baking/baking_driver.hpp"
 #include "core/file/file_system.hpp"
 #include "core/image/image.hpp"
@@ -14,7 +13,7 @@
 #include "core/logging/logging.hpp"
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_std_out.hpp"
-#include "core/rendering/rendering_driver_finalframe.hpp"
+#include "core/rendering/rendering_driver.hpp"
 #include "core/rendering/sensor/sensor.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/scene/camera/camera.hpp"
@@ -141,8 +140,7 @@ int main(int argc, char* argv[]) noexcept {
             auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
                                   : filesystem.read_stream(args.take, take_name);
 
-            if (!stream ||
-                !take::Loader::load(take, *stream, take_name, args.progressive, scene, resources)) {
+            if (!stream || !take::Loader::load(take, *stream, take_name, false, scene, resources)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }
@@ -158,34 +156,30 @@ int main(int argc, char* argv[]) noexcept {
 
             logging::info("Rendering...");
 
-            if (args.progressive) {
-                controller::progressive(take, scene, resources, threads, max_sample_size);
+            progress::Std_out progressor;
+
+            auto const rendering_start = std::chrono::high_resolution_clock::now();
+
+            if (take.view.camera) {
+                rendering::Driver driver(threads, max_sample_size, progressor);
+
+                driver.init(take.view, scene, false);
+
+                driver.render(take.exporters);
             } else {
-                progress::Std_out progressor;
+                //			baking::Driver
+                // driver(take->surface_integrator_pool,
+                //								  take->volume_integrator_pool,
+                //								  take->sampler_pool);
 
-                auto const rendering_start = std::chrono::high_resolution_clock::now();
-
-                if (take.view.camera) {
-                    rendering::Driver_finalframe driver(threads, max_sample_size, progressor);
-
-                    driver.init(take.view, scene, false);
-
-                    driver.render(take.exporters);
-                } else {
-                    //			baking::Driver
-                    // driver(take->surface_integrator_pool,
-                    //								  take->volume_integrator_pool,
-                    //								  take->sampler_pool);
-
-                    //			driver.render(scene, take->view, thread_pool,
-                    //*take->exporter, progressor);
-                    logging::error("No camera specified.");
-                }
-
-                logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
-
-                logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
+                //			driver.render(scene, take->view, thread_pool,
+                //*take->exporter, progressor);
+                logging::error("No camera specified.");
             }
+
+            logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
+
+            logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
 
             log_memory_consumption(resources, scene_loader, scene);
         }

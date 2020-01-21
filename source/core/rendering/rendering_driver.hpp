@@ -4,6 +4,7 @@
 #define PARTICLE_TRAINING
 #define PHOTON_TRAINING
 
+#include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
 #include "image/typed_image_fwd.hpp"
 #include "integrator/particle/particle_importance.hpp"
@@ -24,35 +25,25 @@ class Scene;
 
 }  // namespace scene
 
-namespace sampler {
-class Pool;
+namespace exporting {
+class Sink;
 }
 
-namespace thread {
-class Pool;
+namespace progress {
+class Sink;
 }
 
 namespace rendering {
-
-namespace integrator {
-
-namespace surface {
-class Pool;
-}
-namespace volume {
-class Pool;
-}
-
-}  // namespace integrator
 
 class Camera_worker;
 
 class Driver {
   public:
-    using Scene  = scene::Scene;
-    using Camera = scene::camera::Camera;
+    using Scene     = scene::Scene;
+    using Camera    = scene::camera::Camera;
+    using Exporters = memory::Array<exporting::Sink*>;
 
-    Driver(thread::Pool& threads, uint32_t max_sample_size) noexcept;
+    Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& progressor) noexcept;
 
     ~Driver() noexcept;
 
@@ -65,7 +56,27 @@ class Driver {
 
     image::Float4 const& target() const noexcept;
 
-  protected:
+    void render(Exporters& exporters) noexcept;
+
+    void render(uint32_t frame) noexcept;
+
+    void start_frame(uint32_t frame) noexcept;
+
+    void render(uint32_t frame, uint32_t iteration) noexcept;
+
+    void export_frame(uint32_t frame, Exporters& exporters) const noexcept;
+
+  private:
+    void render_frame_backward(uint32_t frame) noexcept;
+
+    void render_frame_backward(uint32_t frame, uint32_t iteration) noexcept;
+
+    void render_frame_forward(uint32_t frame) noexcept;
+
+    void render_frame_forward(uint32_t frame, uint32_t iteration) noexcept;
+
+    void bake_photons(uint32_t frame) noexcept;
+
     thread::Pool& threads_;
 
     Scene* scene_;
@@ -93,6 +104,8 @@ class Driver {
     };
 
     Photon_info* photon_infos_;
+
+    progress::Sink& progressor_;
 };
 
 }  // namespace rendering
