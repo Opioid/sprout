@@ -71,7 +71,11 @@ sprout.su_mount(c_char_p(b"../../data/"))
 
 sprout.su_load_take(c_char_p(b"takes/cornell.take"))
 
-resolution = (720, 720)
+Int2 = c_int32 * 2
+
+resolution = Int2()
+
+sprout.su_camera_sensor_dimensions(resolution)
 
 Image = ((c_uint8 * 3) * resolution[0]) * resolution[1]
 

@@ -132,7 +132,7 @@ bool Perspective::sample(int4 const& bounds, uint64_t time, float3 const& p, Sam
     float const fx = std::floor(x);
     float const fy = std::floor(y);
 
-    int2 const pixel(static_cast<int32_t>(fx), static_cast<int32_t>(fy));
+    int2 const pixel(fx, fy);
 
     if (uint32_t(pixel[0] - bounds[0]) > uint32_t(bounds[2]) ||
         uint32_t(pixel[1] - bounds[1]) > uint32_t(bounds[3])) {

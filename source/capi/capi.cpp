@@ -456,6 +456,21 @@ uint32_t su_camera_entity() noexcept {
     return engine->take.view.camera->entity();
 }
 
+int32_t su_camera_sensor_dimensions(int32_t* dimensions) noexcept {
+    ASSERT_ENGINE(-1)
+
+    if (!engine->take.view.camera) {
+        return -2;
+    }
+
+    int2 const d = engine->take.view.camera->sensor_dimensions();
+
+    dimensions[0] = d[0];
+    dimensions[1] = d[1];
+
+    return 0;
+}
+
 int32_t su_entity_allocate_frames(uint32_t entity) noexcept {
     ASSERT_ENGINE(-1)
 

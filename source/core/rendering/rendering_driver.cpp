@@ -287,6 +287,7 @@ void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) noexcept 
 
     auto& camera = *view_->camera;
 
+    // This weight works because we assume 1 particle per pixel in progressive mode
     camera.sensor().set_weights(float(iteration + 1));
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {

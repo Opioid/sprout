@@ -73,6 +73,8 @@ SU_LIBRARY_API int32_t su_create_light(uint32_t entity) noexcept;
 
 SU_LIBRARY_API uint32_t su_camera_entity() noexcept;
 
+SU_LIBRARY_API int32_t su_camera_sensor_dimensions(int32_t* dimensions) noexcept;
+
 SU_LIBRARY_API int32_t su_entity_allocate_frames(uint32_t entity) noexcept;
 
 SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t     entity,
