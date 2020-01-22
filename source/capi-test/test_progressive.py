@@ -7,6 +7,8 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+matplotlib.rcParams["toolbar"] = "None"
+
 LOG_FUNC = CFUNCTYPE(None, c_uint, c_char_p)
 
 PROGRESS_START_FUNC = CFUNCTYPE(None, c_uint)
@@ -92,7 +94,7 @@ image = Image()
 
 dpi = 100
 
-fig = plt.figure(figsize=(resolution[0]/dpi, resolution[1]/dpi), dpi=dpi)
+fig = plt.figure("sprout", figsize=(resolution[0]/dpi, resolution[1]/dpi), dpi=dpi)
 im = fig.figimage(image)
 
 label = plt.figtext(0.0, 1.0, "0", color=(1.0, 1.0, 0.0), verticalalignment="top")
@@ -123,22 +125,22 @@ def restart():
     sprout.su_start_render_frame(0)
 
 def press(event):
-    if "left" == event.key:
+    if "left" == event.key or "a" == event.key:
         transformation[12] -= 0.1
         sprout.su_entity_set_transformation(camera, transformation)
         restart()
 
-    if "right" == event.key:
+    if "right" == event.key or "d" == event.key:
         transformation[12] += 0.1
         sprout.su_entity_set_transformation(camera, transformation)
         restart()
 
-    if "up" == event.key:
+    if "up" == event.key or "w" == event.key:
         transformation[14] += 0.1
         sprout.su_entity_set_transformation(camera, transformation)
         restart()
 
-    if "down" == event.key:
+    if "down" == event.key or "s" == event.key:
         transformation[14] -= 0.1
         sprout.su_entity_set_transformation(camera, transformation)
         restart()
