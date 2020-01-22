@@ -17,8 +17,6 @@ class Filter;
 template <class Base, class Clamp, class F>
 class Filtered : public Base {
   public:
-    using Filter  = filter::Filter;
-
     Filtered(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     ~Filtered() noexcept override;
@@ -50,6 +48,7 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
     using Filter           = filter::Filter;
+    using Filtered_base    = Filtered<Base, Clamp, F>;
 
     Filtered_1p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
@@ -57,7 +56,7 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
                     int4 const& bounds) noexcept override final;
 
     void splat_sample(Camera_sample_to const& sample, float4 const& color,
-                      int4 const&             bounds) noexcept override final;
+                      int4 const& bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
@@ -66,6 +65,7 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
     using Filter           = filter::Filter;
+    using Filtered_base    = Filtered<Base, Clamp, F>;
 
     Filtered_2p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
@@ -73,7 +73,7 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
                     int4 const& bounds) noexcept override final;
 
     void splat_sample(Camera_sample_to const& sample, float4 const& color,
-                      int4 const&             bounds) noexcept override final;
+                      int4 const& bounds) noexcept override final;
 };
 
 template <class Base, class Clamp, class F>
@@ -82,6 +82,7 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
     using Filter           = filter::Filter;
+    using Filtered_base    = Filtered<Base, Clamp, F>;
 
     Filtered_inf(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
 
@@ -89,7 +90,7 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
                     int4 const& bounds) noexcept override final;
 
     void splat_sample(Camera_sample_to const& sample, float4 const& color,
-                      int4 const&             bounds) noexcept override final;
+                      int4 const& bounds) noexcept override final;
 };
 
 }  // namespace rendering::sensor
