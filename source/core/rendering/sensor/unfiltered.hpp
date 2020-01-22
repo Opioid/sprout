@@ -13,16 +13,19 @@ namespace rendering::sensor {
 template <class Base, class Clamp>
 class Unfiltered final : public Base {
   public:
+    using Sample    = sampler::Camera_sample;
+    using Sample_to = sampler::Camera_sample_to;
+
     Unfiltered(int2 dimensions, float exposure, Clamp const& clamp) noexcept;
 
     int32_t filter_radius_int() const noexcept override final;
 
     int4 isolated_tile(int4 const& tile) const noexcept override final;
 
-    void add_sample(sampler::Camera_sample const& sample, float4 const& color, int4 const& isolated,
+    void add_sample(Sample const& sample, float4 const& color, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void splat_sample(sampler::Camera_sample_to const& sample, float4 const& color,
+    void splat_sample(Sample_to const& sample, float4 const& color,
                       int4 const& bounds) noexcept override final;
 
   private:

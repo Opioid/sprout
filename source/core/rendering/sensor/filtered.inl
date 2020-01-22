@@ -88,7 +88,7 @@ Filtered_1p0<Base, Clamp, F>::Filtered_1p0(int2 dimensions, float exposure, Clam
     : Filtered_base(dimensions, exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_1p0<Base, Clamp, F>::add_sample(Camera_sample const& sample, float4 const& color,
+void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
                                               int4 const& isolated, int4 const& bounds) noexcept {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
@@ -123,7 +123,7 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Camera_sample const& sample, float
 }
 
 template <class Base, class Clamp, class F>
-void Filtered_1p0<Base, Clamp, F>::splat_sample(Camera_sample_to const& sample, float4 const& color,
+void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
                                                 int4 const& bounds) noexcept {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
@@ -163,7 +163,7 @@ Filtered_2p0<Base, Clamp, F>::Filtered_2p0(int2 dimensions, float exposure, Clam
     : Filtered_base(dimensions, exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_2p0<Base, Clamp, F>::add_sample(Camera_sample const& sample, float4 const& color,
+void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
                                               int4 const& isolated, int4 const& bounds) noexcept {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
@@ -222,7 +222,7 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Camera_sample const& sample, float
 }
 
 template <class Base, class Clamp, class F>
-void Filtered_2p0<Base, Clamp, F>::splat_sample(Camera_sample_to const& sample, float4 const& color,
+void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
                                                 int4 const& bounds) noexcept {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
@@ -286,7 +286,7 @@ Filtered_inf<Base, Clamp, F>::Filtered_inf(int2 dimensions, float exposure, Clam
     : Filtered_base(dimensions, exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_inf<Base, Clamp, F>::add_sample(Camera_sample const& sample, float4 const& color,
+void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
                                               int4 const& isolated, int4 const& bounds) noexcept {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
@@ -310,7 +310,7 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Camera_sample const& sample, float
 }
 
 template <class Base, class Clamp, class F>
-void Filtered_inf<Base, Clamp, F>::splat_sample(Camera_sample_to const& sample, float4 const& color,
+void Filtered_inf<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
                                                 int4 const& bounds) noexcept {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 

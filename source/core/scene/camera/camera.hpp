@@ -36,13 +36,13 @@ namespace camera {
 
 class Camera {
   public:
-    using Frustum          = math::Frustum;
-    using Prop             = prop::Prop;
-    using Transformation   = entity::Composed_transformation;
-    using Camera_sample    = sampler::Camera_sample;
-    using Camera_sample_to = sampler::Camera_sample_to;
-    using Sampler          = sampler::Sampler;
-    using Sensor           = rendering::sensor::Sensor;
+    using Frustum        = math::Frustum;
+    using Prop           = prop::Prop;
+    using Transformation = entity::Composed_transformation;
+    using Sample         = sampler::Camera_sample;
+    using Sample_to      = sampler::Camera_sample_to;
+    using Sampler        = sampler::Sampler;
+    using Sensor         = rendering::sensor::Sensor;
 
     Camera(int2 resolution) noexcept;
 
@@ -62,12 +62,12 @@ class Camera {
 
     void update(Scene& scene, uint64_t time, Worker& worker) noexcept;
 
-    virtual bool generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t view,
+    virtual bool generate_ray(Sample const& sample, uint32_t frame, uint32_t view,
                               Scene const& scene, Ray& ray) const noexcept = 0;
 
     virtual bool sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
-                        uint32_t sampler_dimension, Scene const& scene,
-                        Camera_sample_to& sample) const noexcept = 0;
+                        uint32_t sampler_dimension, Scene const& scene, Sample_to& sample) const
+        noexcept = 0;
 
     virtual Frustum frustum() const noexcept;
 

@@ -39,9 +39,8 @@ float Perspective_stereoscopic::pixel_solid_angle() const noexcept {
     return 1.f;
 }
 
-bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample, uint32_t frame,
-                                            uint32_t view, Scene const& scene,
-                                            scene::Ray& ray) const noexcept {
+bool Perspective_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, uint32_t view,
+                                            Scene const& scene, scene::Ray& ray) const noexcept {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -61,7 +60,7 @@ bool Perspective_stereoscopic::generate_ray(sampler::Camera_sample const& sample
 bool Perspective_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/,
                                       float3 const& /*p*/, Sampler& /*sampler*/,
                                       uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
-                                      Camera_sample_to& /*sample*/) const noexcept {
+                                      Sample_to& /*sample*/) const noexcept {
     return false;
 }
 

@@ -45,7 +45,7 @@ float Perspective::pixel_solid_angle() const noexcept {
     return x * x;
 }
 
-bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint32_t /*view*/,
+bool Perspective::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*view*/,
                                Scene const& scene, Ray& ray) const noexcept {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
@@ -83,8 +83,8 @@ bool Perspective::generate_ray(Camera_sample const& sample, uint32_t frame, uint
 }
 
 bool Perspective::sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
-                         uint32_t sampler_dimension, Scene const& scene,
-                         Camera_sample_to& sample) const noexcept {
+                         uint32_t sampler_dimension, Scene const& scene, Sample_to& sample) const
+    noexcept {
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 

@@ -22,14 +22,14 @@ int4 Unfiltered<Base, Clamp>::isolated_tile(int4 const& tile) const noexcept {
 }
 
 template <class Base, class Clamp>
-void Unfiltered<Base, Clamp>::add_sample(sampler::Camera_sample const& sample, float4 const& color,
+void Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4 const&   color,
                                          int4 const& /*isolated*/, int4 const& bounds) noexcept {
     Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 
 template <class Base, class Clamp>
-void Unfiltered<Base, Clamp>::splat_sample(sampler::Camera_sample_to const& sample,
-                                           float4 const& color, int4 const& bounds) noexcept {
+void Unfiltered<Base, Clamp>::splat_sample(Sample_to const& sample, float4 const& color,
+                                           int4 const& bounds) noexcept {
     Base::splat_pixel_atomic(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 
