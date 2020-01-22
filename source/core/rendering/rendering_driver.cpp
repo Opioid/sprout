@@ -169,11 +169,7 @@ void Driver::start_frame(uint32_t frame) noexcept {
 
     camera.update(*scene_, start, workers_[0]);
 
-    if (ranges_.size() > 0) {
-        camera.sensor().clear(1.f);
-    } else {
-        camera.sensor().clear(0.f);
-    }
+    camera.sensor().clear(0.f);
 
     particle_importance_.set_training(false);
 }

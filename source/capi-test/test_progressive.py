@@ -86,23 +86,36 @@ dpi = 100
 fig = plt.figure(figsize=(resolution[0]/dpi, resolution[1]/dpi), dpi=dpi)
 im = fig.figimage(image)
 
-label = plt.figtext(0.0, 0.0, "0", color=(1.0, 1.0, 0.0))
+label = plt.figtext(0.0, 1.0, "0", color=(1.0, 1.0, 0.0), verticalalignment="top")
 
 sprout.su_start_render_frame(0)
 
-def init():
-    pass
+frame_iteration = 0
 
 def update(frame_number):
-    sprout.su_render_iteration(frame_number)
+    global frame_iteration
+
+    sprout.su_render_iteration(frame_iteration)
 
     sprout.su_copy_framebuffer(0, resolution[0], resolution[1], 3, image)
 
     im.set_data(image)
 
-    label.set_text(str(frame_number))
+    label.set_text(str(frame_iteration))
 
-animation = FuncAnimation(fig, update, init_func=init, interval=1)
+    frame_iteration += 1
+
+animation = FuncAnimation(fig, update, interval=1)
+
+def press(event):
+    if 'r' == event.key:
+        global frame_iteration
+
+        frame_iteration = 0
+
+        sprout.su_start_render_frame(0)
+
+fig.canvas.mpl_connect('key_press_event', press)
 
 plt.show()
 
