@@ -483,6 +483,20 @@ int32_t su_entity_allocate_frames(uint32_t entity) noexcept {
     return 0;
 }
 
+int32_t su_entity_transformation(uint32_t entity, float* transformation) noexcept {
+    ASSERT_ENGINE(-1)
+
+    if (engine->scene.num_props() <= entity) {
+        return -2;
+    }
+
+    float4x4 const m = engine->scene.prop_world_transformation(entity).object_to_world();
+
+    std::copy(m.r[0].v, m.r[0].v + 16, transformation);
+
+    return 0;
+}
+
 int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) noexcept {
     ASSERT_ENGINE(-1)
 
@@ -494,7 +508,7 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
 
     float3x3 r;
 
-    math::Transformation t;
+    Transformation t;
 
     decompose(m, r, t.scale, t.position);
 

@@ -77,6 +77,15 @@ resolution = Int2()
 
 sprout.su_camera_sensor_dimensions(resolution)
 
+
+camera = sprout.su_camera_entity()
+
+Transformation = c_float * 16
+
+transformation = Transformation()
+
+sprout.su_entity_transformation(camera, transformation)
+
 Image = ((c_uint8 * 3) * resolution[0]) * resolution[1]
 
 image = Image()
@@ -107,13 +116,35 @@ def update(frame_number):
 
 animation = FuncAnimation(fig, update, interval=1)
 
+def restart():
+    global frame_iteration
+
+    frame_iteration = 0
+    sprout.su_start_render_frame(0)
+
 def press(event):
-    if 'r' == event.key:
-        global frame_iteration
+    if "left" == event.key:
+        transformation[12] -= 0.1
+        sprout.su_entity_set_transformation(camera, transformation)
+        restart()
 
-        frame_iteration = 0
+    if "right" == event.key:
+        transformation[12] += 0.1
+        sprout.su_entity_set_transformation(camera, transformation)
+        restart()
 
-        sprout.su_start_render_frame(0)
+    if "up" == event.key:
+        transformation[14] += 0.1
+        sprout.su_entity_set_transformation(camera, transformation)
+        restart()
+
+    if "down" == event.key:
+        transformation[14] -= 0.1
+        sprout.su_entity_set_transformation(camera, transformation)
+        restart()
+
+    if "r" == event.key:
+        restart()
 
 fig.canvas.mpl_connect('key_press_event', press)
 
