@@ -148,6 +148,10 @@ def press(event):
     if "r" == event.key:
         restart()
 
+    if "e" == event.key:
+        global frame_iteration
+        sprout.su_export_frame(frame_iteration)
+
 fig.canvas.mpl_connect('key_press_event', press)
 
 plt.show()
