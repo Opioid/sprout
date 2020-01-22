@@ -3,10 +3,6 @@
 
 #include "base/math/vector.hpp"
 
-namespace image::texture {
-class Texture;
-}
-
 namespace sampler {
 struct Camera_sample;
 struct Camera_sample_to;
@@ -22,12 +18,8 @@ template <class Base, class Clamp, class F>
 class Filtered : public Base {
   public:
     using Filter  = filter::Filter;
-    using Texture = image::texture::Texture;
 
     Filtered(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
-
-    Filtered(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
-             F&& filter) noexcept;
 
     ~Filtered() noexcept override;
 
@@ -58,17 +50,13 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
     using Filter           = filter::Filter;
-    using Texture          = image::texture::Texture;
 
     Filtered_1p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
-
-    Filtered_1p0(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
-                 F&& filter) noexcept;
 
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void splat_sample(Camera_sample_to const& sample, float4 const&,
+    void splat_sample(Camera_sample_to const& sample, float4 const& color,
                       int4 const&             bounds) noexcept override final;
 };
 
@@ -78,17 +66,13 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
     using Filter           = filter::Filter;
-    using Texture          = image::texture::Texture;
 
     Filtered_2p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
-
-    Filtered_2p0(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
-                 F&& filter) noexcept;
 
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void splat_sample(Camera_sample_to const& sample, float4 const&,
+    void splat_sample(Camera_sample_to const& sample, float4 const& color,
                       int4 const&             bounds) noexcept override final;
 };
 
@@ -98,17 +82,13 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
     using Filter           = filter::Filter;
-    using Texture          = image::texture::Texture;
 
     Filtered_inf(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
-
-    Filtered_inf(int2 dimensions, float exposure, Texture* backplate, Clamp const& clamp,
-                 F&& filter) noexcept;
 
     void add_sample(Camera_sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
 
-    void splat_sample(Camera_sample_to const& sample, float4 const&,
+    void splat_sample(Camera_sample_to const& sample, float4 const& color,
                       int4 const&             bounds) noexcept override final;
 };
 
