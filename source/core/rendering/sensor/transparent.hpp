@@ -8,7 +8,7 @@ namespace rendering::sensor {
 
 class Transparent : public Sensor {
   public:
-    Transparent(int2 dimensions, float exposure) noexcept;
+    Transparent(float exposure) noexcept;
 
     ~Transparent() noexcept override;
 

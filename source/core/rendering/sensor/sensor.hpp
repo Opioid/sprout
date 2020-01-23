@@ -21,7 +21,7 @@ class Sensor {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
 
-    Sensor(int2 dimensions, float exposure) noexcept;
+    Sensor(float exposure) noexcept;
 
     virtual ~Sensor() noexcept;
 

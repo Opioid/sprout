@@ -243,9 +243,7 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
 
     engine->take.view.clear();
 
-    int2 const resolution(width, height);
-
-    camera::Perspective* camera = new camera::Perspective(resolution);
+    camera::Perspective* camera = new camera::Perspective(int2(width, height));
 
     camera->set_fov(fov);
 
@@ -257,7 +255,7 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
     filter::Gaussian filter(radius, alpha);
 
     Sensor* sensor = new Filtered_1p0<Opaque, clamp::Identity, filter::Gaussian>(
-        camera->sensor_dimensions(), 0.f, clamp::Identity(), std::move(filter));
+        0.f, clamp::Identity(), std::move(filter));
 
     camera->set_sensor(sensor);
 

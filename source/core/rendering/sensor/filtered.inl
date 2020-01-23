@@ -8,9 +8,8 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::Filtered(int2 dimensions, float exposure, Clamp const& clamp,
-                                   F&& filter) noexcept
-    : Base(dimensions, exposure), clamp_(clamp), filter_(std::move(filter)) {}
+Filtered<Base, Clamp, F>::Filtered(float exposure, Clamp const& clamp, F&& filter) noexcept
+    : Base(exposure), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 Filtered<Base, Clamp, F>::~Filtered() noexcept {}
@@ -83,9 +82,8 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 }
 
 template <class Base, class Clamp, class F>
-Filtered_1p0<Base, Clamp, F>::Filtered_1p0(int2 dimensions, float exposure, Clamp const& clamp,
-                                           F&& filter) noexcept
-    : Filtered_base(dimensions, exposure, clamp, std::move(filter)) {}
+Filtered_1p0<Base, Clamp, F>::Filtered_1p0(float exposure, Clamp const& clamp, F&& filter) noexcept
+    : Filtered_base(exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
@@ -158,9 +156,8 @@ void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_2p0<Base, Clamp, F>::Filtered_2p0(int2 dimensions, float exposure, Clamp const& clamp,
-                                           F&& filter) noexcept
-    : Filtered_base(dimensions, exposure, clamp, std::move(filter)) {}
+Filtered_2p0<Base, Clamp, F>::Filtered_2p0(float exposure, Clamp const& clamp, F&& filter) noexcept
+    : Filtered_base(exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
@@ -281,9 +278,8 @@ void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_inf<Base, Clamp, F>::Filtered_inf(int2 dimensions, float exposure, Clamp const& clamp,
-                                           F&& filter) noexcept
-    : Filtered_base(dimensions, exposure, clamp, std::move(filter)) {}
+Filtered_inf<Base, Clamp, F>::Filtered_inf(float exposure, Clamp const& clamp, F&& filter) noexcept
+    : Filtered_base(exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,

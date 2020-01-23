@@ -6,9 +6,7 @@
 
 namespace rendering::sensor {
 
-Opaque::Opaque(int2 dimensions, float exposure) noexcept
-    : Sensor(dimensions, exposure),
-      pixels_(memory::allocate_aligned<float4>(uint32_t(dimensions[0] * dimensions[1]))) {}
+Opaque::Opaque(float exposure) noexcept : Sensor(exposure), pixels_(nullptr) {}
 
 Opaque::~Opaque() noexcept {
     memory::free_aligned(pixels_);

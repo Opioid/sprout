@@ -8,8 +8,8 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp>
-Unfiltered<Base, Clamp>::Unfiltered(int2 dimensions, float exposure, Clamp const& clamp) noexcept
-    : Base(dimensions, exposure), clamp_(clamp) {}
+Unfiltered<Base, Clamp>::Unfiltered(float exposure, Clamp const& clamp) noexcept
+    : Base(exposure), clamp_(clamp) {}
 
 template <class Base, class Clamp>
 int32_t Unfiltered<Base, Clamp>::filter_radius_int() const noexcept {

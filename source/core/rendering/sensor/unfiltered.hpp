@@ -16,7 +16,7 @@ class Unfiltered final : public Base {
     using Sample    = sampler::Camera_sample;
     using Sample_to = sampler::Camera_sample_to;
 
-    Unfiltered(int2 dimensions, float exposure, Clamp const& clamp) noexcept;
+    Unfiltered(float exposure, Clamp const& clamp) noexcept;
 
     int32_t filter_radius_int() const noexcept override final;
 

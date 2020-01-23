@@ -75,15 +75,16 @@ class Camera {
 
     int2 resolution() const noexcept;
 
+    void set_resolution(int2 resolution) noexcept;
+
     Sensor& sensor() const noexcept;
 
     void set_sensor(Sensor* sensor) noexcept;
 
-    void resize(int2 resolution) noexcept;
-
     prop::Interface_stack const& interface_stack() const noexcept;
 
     uint64_t frame_step() const noexcept;
+
     uint64_t frame_duration() const noexcept;
 
     uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;

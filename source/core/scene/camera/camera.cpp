@@ -102,12 +102,8 @@ void Camera::set_sensor(Sensor* sensor) noexcept {
     sensor_ = sensor;
 }
 
-void Camera::resize(int2 resolution) noexcept {
+void Camera::set_resolution(int2 resolution) noexcept {
     resolution_ = resolution;
-
-    if (sensor_) {
-        sensor_->resize(sensor_dimensions());
-    }
 }
 
 prop::Interface_stack const& Camera::interface_stack() const noexcept {
@@ -123,8 +119,8 @@ uint64_t Camera::frame_duration() const noexcept {
 }
 
 uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept {
-    double const delta    = static_cast<double>(frame_delta);
-    double const duration = static_cast<double>(frame_duration_);
+    double const delta    = double(frame_delta);
+    double const duration = double(frame_duration_);
 
     uint64_t const fdi = uint64_t(delta * duration + 0.5);
 

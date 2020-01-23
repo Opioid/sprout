@@ -7,7 +7,7 @@ namespace rendering::sensor {
 
 class Opaque : public Sensor {
   public:
-    Opaque(int2 dimensions, float exposure) noexcept;
+    Opaque(float exposure) noexcept;
 
     ~Opaque() noexcept override;
 

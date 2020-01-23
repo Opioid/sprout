@@ -17,7 +17,7 @@ class Filter;
 template <class Base, class Clamp, class F>
 class Filtered : public Base {
   public:
-    Filtered(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
+    Filtered(float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     ~Filtered() noexcept override;
 
@@ -50,7 +50,7 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_1p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
+    Filtered_1p0(float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
@@ -67,7 +67,7 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_2p0(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
+    Filtered_2p0(float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;
@@ -84,7 +84,7 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_inf(int2 dimensions, float exposure, Clamp const& clamp, F&& filter) noexcept;
+    Filtered_inf(float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) noexcept override final;

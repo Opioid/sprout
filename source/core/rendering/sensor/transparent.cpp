@@ -6,9 +6,7 @@
 
 namespace rendering::sensor {
 
-Transparent::Transparent(int2 dimensions, float exposure) noexcept
-    : Sensor(dimensions, exposure),
-      pixels_(memory::allocate_aligned<Pixel>(uint32_t(dimensions[0] * dimensions[1]))) {}
+Transparent::Transparent(float exposure) noexcept : Sensor(exposure), pixels_(nullptr) {}
 
 Transparent::~Transparent() noexcept {
     memory::free_aligned(pixels_);

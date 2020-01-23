@@ -72,7 +72,7 @@ using Particle_pool  = rendering::integrator::particle::Lighttracer_pool;
 using Postprocessor  = rendering::postprocessor::Postprocessor;
 using Light_sampling = rendering::integrator::Light_sampling;
 
-static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept;
+static Sensor* load_sensor(json::Value const& sensor_value) noexcept;
 
 static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
                                         bool progressive, uint32_t& num_samples_per_pixel) noexcept;
@@ -305,7 +305,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) noexc
     }
 
     if (sensor_value) {
-        auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions());
+        auto sensor = load_sensor(*sensor_value);
 
         camera->set_sensor(sensor);
     }
@@ -366,40 +366,40 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value)
 }
 
 template <typename Base, typename Filter>
-static Sensor* make_filtered_sensor(int2 dimensions, float exposure, float3 const& clamp_max,
+static Sensor* make_filtered_sensor(float exposure, float3 const& clamp_max,
                                     json::Value const& filter_value) noexcept {
     using namespace rendering::sensor;
 
-    bool const clamp = !math::any_negative(clamp_max);
+    bool const clamp = !any_negative(clamp_max);
 
     Filter filter = load_filter<Filter>(filter_value);
 
     if (clamp) {
         if (filter.radius() <= 1.f) {
-            return new Filtered_1p0<Base, clamp::Clamp, Filter>(
-                dimensions, exposure, clamp::Clamp(clamp_max), std::move(filter));
+            return new Filtered_1p0<Base, clamp::Clamp, Filter>(exposure, clamp::Clamp(clamp_max),
+                                                                std::move(filter));
         }
 
         if (filter.radius() <= 2.f) {
-            return new Filtered_2p0<Base, clamp::Clamp, Filter>(
-                dimensions, exposure, clamp::Clamp(clamp_max), std::move(filter));
+            return new Filtered_2p0<Base, clamp::Clamp, Filter>(exposure, clamp::Clamp(clamp_max),
+                                                                std::move(filter));
         }
 
-        return new Filtered_inf<Base, clamp::Clamp, Filter>(
-            dimensions, exposure, clamp::Clamp(clamp_max), std::move(filter));
+        return new Filtered_inf<Base, clamp::Clamp, Filter>(exposure, clamp::Clamp(clamp_max),
+                                                            std::move(filter));
     }
 
     if (filter.radius() <= 1.f) {
-        return new Filtered_1p0<Base, clamp::Identity, Filter>(
-            dimensions, exposure, clamp::Identity(), std::move(filter));
+        return new Filtered_1p0<Base, clamp::Identity, Filter>(exposure, clamp::Identity(),
+                                                               std::move(filter));
     }
 
     if (filter.radius() <= 2.f) {
-        return new Filtered_2p0<Base, clamp::Identity, Filter>(
-            dimensions, exposure, clamp::Identity(), std::move(filter));
+        return new Filtered_2p0<Base, clamp::Identity, Filter>(exposure, clamp::Identity(),
+                                                               std::move(filter));
     }
 
-    return new Filtered_inf<Base, clamp::Identity, Filter>(dimensions, exposure, clamp::Identity(),
+    return new Filtered_inf<Base, clamp::Identity, Filter>(exposure, clamp::Identity(),
                                                            std::move(filter));
 }
 
@@ -421,7 +421,7 @@ static Sensor_filter_type read_filter_type(json::Value const& filter_value) noex
     return Sensor_filter_type::Undefined;
 }
 
-static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noexcept {
+static Sensor* load_sensor(json::Value const& sensor_value) noexcept {
     using namespace rendering::sensor;
     using namespace rendering::sensor::filter;
 
@@ -451,40 +451,35 @@ static Sensor* load_sensor(json::Value const& sensor_value, int2 dimensions) noe
     if (filter_value && Sensor_filter_type::Undefined != filter_type) {
         if (alpha_transparency) {
             if (Sensor_filter_type::Gaussian == filter_type) {
-                return make_filtered_sensor<Transparent, Gaussian>(dimensions, exposure, clamp_max,
+                return make_filtered_sensor<Transparent, Gaussian>(exposure, clamp_max,
                                                                    *filter_value);
             }
 
-            return make_filtered_sensor<Transparent, Mitchell>(dimensions, exposure, clamp_max,
-                                                               *filter_value);
+            return make_filtered_sensor<Transparent, Mitchell>(exposure, clamp_max, *filter_value);
         }
 
         if (Sensor_filter_type::Gaussian == filter_type) {
-            return make_filtered_sensor<Opaque, Gaussian>(dimensions, exposure, clamp_max,
-                                                          *filter_value);
+            return make_filtered_sensor<Opaque, Gaussian>(exposure, clamp_max, *filter_value);
         }
 
-        return make_filtered_sensor<Opaque, Mitchell>(dimensions, exposure, clamp_max,
-                                                      *filter_value);
+        return make_filtered_sensor<Opaque, Mitchell>(exposure, clamp_max, *filter_value);
     }
 
     bool const clamp = !math::any_negative(clamp_max);
 
     if (alpha_transparency) {
         if (clamp) {
-            return new Unfiltered<Transparent, clamp::Clamp>(dimensions, exposure,
-                                                             clamp::Clamp(clamp_max));
+            return new Unfiltered<Transparent, clamp::Clamp>(exposure, clamp::Clamp(clamp_max));
         } else {
-            return new Unfiltered<Transparent, clamp::Identity>(dimensions, exposure,
-                                                                clamp::Identity());
+            return new Unfiltered<Transparent, clamp::Identity>(exposure, clamp::Identity());
         }
     }
 
     if (clamp) {
-        return new Unfiltered<Opaque, clamp::Clamp>(dimensions, exposure, clamp::Clamp(clamp_max));
+        return new Unfiltered<Opaque, clamp::Clamp>(exposure, clamp::Clamp(clamp_max));
     }
 
-    return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
+    return new Unfiltered<Opaque, clamp::Identity>(exposure, clamp::Identity());
 }
 
 static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
