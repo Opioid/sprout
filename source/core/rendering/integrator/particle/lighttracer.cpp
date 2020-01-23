@@ -256,11 +256,11 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
 }
 
 Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces,
-                                   uint32_t max_bounces, uint64_t num_light_paths,
-                                   bool indirect_caustics, bool full_light_path) noexcept
+                                   uint32_t max_bounces, bool indirect_caustics,
+                                   bool full_light_path) noexcept
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, num_light_paths, indirect_caustics, full_light_path} {
+      settings_{min_bounces, max_bounces, indirect_caustics, full_light_path} {
     std::memset(reinterpret_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
 }
 

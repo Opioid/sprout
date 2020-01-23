@@ -71,14 +71,13 @@ struct View {
 
     rendering::postprocessor::Pipeline pipeline;
 
-    uint32_t num_samples_per_pixel = 1;
+    uint32_t num_samples_per_pixel   = 1;
+    uint32_t num_particles_per_pixel = 0;
 
     uint32_t start_frame = 0;
     uint32_t num_frames  = 1;
 
     Photon_settings photon_settings;
-
-    uint64_t num_particles = 0;
 };
 
 struct Take {

@@ -86,7 +86,7 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
 
 static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
                                                uint32_t num_workers, bool surface_integrator,
-                                               uint64_t& num_particles) noexcept;
+                                               uint32_t& num_particles_per_pixel) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
 
@@ -539,8 +539,8 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
 
         delete view.lighttracers;
 
-        view.lighttracers = load_particle_integrator(particle_node->value, num_workers,
-                                                     surface_integrator, view.num_particles);
+        view.lighttracers = load_particle_integrator(
+            particle_node->value, num_workers, surface_integrator, view.num_particles_per_pixel);
     }
 
     for (auto& n : integrator_value.GetObject()) {
@@ -696,7 +696,7 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
 
 static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
                                                uint32_t num_workers, bool surface_integrator,
-                                               uint64_t& num_particles) noexcept {
+                                               uint32_t& num_particles_per_pixel) noexcept {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
@@ -705,10 +705,9 @@ static Particle_pool* load_particle_integrator(json::Value const& integrator_val
 
     uint32_t const max_bounces = json::read_uint(integrator_value, "max_bounces", 8);
 
-    num_particles = json::read_uint64(integrator_value, "num_particles", 1280000);
+    num_particles_per_pixel = json::read_uint64(integrator_value, "particles_per_pixel", 1);
 
-    return new Lighttracer_pool(num_workers, 1, max_bounces, num_particles, indirect_caustics,
-                                full_light_path);
+    return new Lighttracer_pool(num_workers, 1, max_bounces, indirect_caustics, full_light_path);
 }
 
 void Loader::set_default_integrators(uint32_t num_workers, bool progressive, View& view) noexcept {

@@ -49,7 +49,8 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
 
     target_.resize(d);
 
-    uint64_t const num_particles = progressive ? uint64_t(d[0] * d[1]) : view.num_particles;
+    uint64_t const num_particles = uint64_t(d[0] * d[1]) *
+                                   uint64_t(progressive ? 1 : view.num_particles_per_pixel);
 
 #ifdef PARTICLE_TRAINING
     if (progressive) {
@@ -212,9 +213,7 @@ void Driver::render_frame_backward(uint32_t frame) noexcept {
 
     progressor_.start(ranges_.size() * camera.num_views());
 
-    int2 const d = camera.sensor_dimensions();
-
-    camera.sensor().clear(float(view_->num_particles) / float(d[0] * d[1]));
+    camera.sensor().clear(float(view_->num_particles_per_pixel));
 
 #ifdef PARTICLE_TRAINING
     particle_importance_.set_training(true);
