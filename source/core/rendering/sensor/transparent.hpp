@@ -12,6 +12,8 @@ class Transparent : public Sensor {
 
     ~Transparent() noexcept override;
 
+    void set_layer(int32_t layer) noexcept override final;
+
     void clear(float weight) noexcept override final;
 
     void set_weights(float weight) noexcept override final;
@@ -30,13 +32,14 @@ class Transparent : public Sensor {
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
         noexcept override final;
 
-    void on_resize(int2 dimensions) noexcept override;
+    void on_resize(int2 dimensions, int32_t num_layers) noexcept override;
 
     struct Pixel {
         float4 color;
         float  weight;
     };
 
+    Pixel* layers_;
     Pixel* pixels_;
 };
 

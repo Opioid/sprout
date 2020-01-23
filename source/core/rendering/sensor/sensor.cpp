@@ -5,7 +5,8 @@
 
 namespace rendering::sensor {
 
-Sensor::Sensor(float exposure) noexcept : dimensions_(0), exposure_factor_(std::exp2(exposure)) {}
+Sensor::Sensor(float exposure) noexcept
+    : dimensions_(0), num_layers_(0), exposure_factor_(std::exp2(exposure)) {}
 
 Sensor::~Sensor() noexcept {}
 
@@ -27,10 +28,12 @@ void Sensor::resolve_accumulate(thread::Pool& threads, image::Float4& target) co
         0, target.description().area());
 }
 
-void Sensor::resize(int2 dimensions) noexcept {
-    on_resize(dimensions);
+void Sensor::resize(int2 dimensions, int32_t num_layers) noexcept {
+    on_resize(dimensions, num_layers);
 
     dimensions_ = dimensions;
+
+    num_layers_ = num_layers;
 }
 
 }  // namespace rendering::sensor

@@ -45,7 +45,7 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
 
     int2 const d = view.camera->sensor_dimensions();
 
-    view.camera->sensor().resize(d);
+    view.camera->sensor().resize(d, progressive && view.lighttracers ? 2 : 1);
 
     target_.resize(d);
 
@@ -184,7 +184,11 @@ void Driver::render(uint32_t frame, uint32_t iteration) noexcept {
 
     auto& camera = *view_->camera;
 
-    view_->pipeline.apply(camera.sensor(), target_, threads_);
+    if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
+        view_->pipeline.apply_accumulate(camera.sensor(), target_, threads_);
+    } else {
+        view_->pipeline.apply(camera.sensor(), target_, threads_);
+    }
 }
 
 void Driver::export_frame(uint32_t frame, Exporters& exporters) const noexcept {
@@ -284,6 +288,12 @@ void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) noexcept 
 
     auto& camera = *view_->camera;
 
+    bool const forward = view_->num_samples_per_pixel > 0;
+
+    if (forward) {
+        camera.sensor().set_layer(1);
+    }
+
     // This weight works because we assume 1 particle per pixel in progressive mode
     camera.sensor().set_weights(float(iteration + 1));
 
@@ -302,8 +312,10 @@ void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) noexcept 
     }
 
     // If there will be a forward pass later...
-    if (view_->num_samples_per_pixel > 0) {
+    if (forward) {
         view_->pipeline.seed(camera.sensor(), target_, threads_);
+
+        camera.sensor().set_layer(0);
     }
 }
 

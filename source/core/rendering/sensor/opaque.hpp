@@ -11,6 +11,8 @@ class Opaque : public Sensor {
 
     ~Opaque() noexcept override;
 
+    void set_layer(int32_t layer) noexcept override final;
+
     void clear(float weight) noexcept override final;
 
     void set_weights(float weight) noexcept override final;
@@ -29,9 +31,10 @@ class Opaque : public Sensor {
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
         noexcept override final;
 
-    void on_resize(int2 dimensions) noexcept override;
+    void on_resize(int2 dimensions, int32_t num_layers) noexcept override;
 
     // weight_sum is saved in pixel.w
+    float4* layers_;
     float4* pixels_;
 };
 

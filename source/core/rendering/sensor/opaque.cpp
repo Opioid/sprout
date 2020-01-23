@@ -6,15 +6,19 @@
 
 namespace rendering::sensor {
 
-Opaque::Opaque(float exposure) noexcept : Sensor(exposure), pixels_(nullptr) {}
+Opaque::Opaque(float exposure) noexcept : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
 
 Opaque::~Opaque() noexcept {
-    memory::free_aligned(pixels_);
+    memory::free_aligned(layers_);
+}
+
+void Opaque::set_layer(int32_t layer) noexcept {
+    pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
 }
 
 void Opaque::clear(float weight) noexcept {
     auto const d = dimensions();
-    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+    for (int32_t i = 0, len = d[0] * d[1] * num_layers_; i < len; ++i) {
         pixels_[i] = float4(0.f, 0.f, 0.f, weight);
     }
 }
@@ -82,15 +86,17 @@ void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& targe
     }
 }
 
-void Opaque::on_resize(int2 dimensions) noexcept {
-    int32_t const current_len = dimensions_[0] * dimensions_[1];
+void Opaque::on_resize(int2 dimensions, int32_t num_layers) noexcept {
+    int32_t const current_len = dimensions_[0] * dimensions_[1] * num_layers_;
 
-    int32_t const len = dimensions[0] * dimensions[1];
+    int32_t const len = dimensions[0] * dimensions[1] * num_layers;
 
     if (len != current_len) {
-        memory::free_aligned(pixels_);
+        memory::free_aligned(layers_);
 
-        pixels_ = memory::allocate_aligned<float4>(uint32_t(len));
+        layers_ = memory::allocate_aligned<float4>(uint32_t(len));
+
+        pixels_ = layers_;
     }
 }
 

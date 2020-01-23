@@ -6,10 +6,15 @@
 
 namespace rendering::sensor {
 
-Transparent::Transparent(float exposure) noexcept : Sensor(exposure), pixels_(nullptr) {}
+Transparent::Transparent(float exposure) noexcept
+    : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
 
 Transparent::~Transparent() noexcept {
-    memory::free_aligned(pixels_);
+    memory::free_aligned(layers_);
+}
+
+void Transparent::set_layer(int32_t layer) noexcept {
+    pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
 }
 
 void Transparent::clear(float weight) noexcept {
@@ -85,15 +90,17 @@ void Transparent::resolve_accumulate(int32_t begin, int32_t end, image::Float4& 
     }
 }
 
-void Transparent::on_resize(int2 dimensions) noexcept {
-    int32_t const current_len = dimensions_[0] * dimensions_[1];
+void Transparent::on_resize(int2 dimensions, int32_t num_layers) noexcept {
+    int32_t const current_len = dimensions_[0] * dimensions_[1] * num_layers_;
 
-    int32_t const len = dimensions[0] * dimensions[1];
+    int32_t const len = dimensions[0] * dimensions[1] * num_layers;
 
     if (len != current_len) {
-        memory::free_aligned(pixels_);
+        memory::free_aligned(layers_);
 
-        pixels_ = memory::allocate_aligned<Pixel>(uint32_t(len));
+        layers_ = memory::allocate_aligned<Pixel>(uint32_t(len));
+
+        pixels_ = layers_;
     }
 }
 
