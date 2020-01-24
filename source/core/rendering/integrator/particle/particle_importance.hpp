@@ -59,6 +59,7 @@ class Importance_cache {
 
     void increment(uint32_t light_id, float2 uv) noexcept;
     void increment(uint32_t light_id, float2 uv, float3 const& p) noexcept;
+    void increment(uint32_t light_id, float2 uv, float3 const& p, float weight) noexcept;
 
     Importance const& importance(uint32_t light_id) const noexcept;
 

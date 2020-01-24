@@ -56,7 +56,7 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
     if (progressive) {
         ranges_.init(view.lighttracers ? num_particles : 0, 0, Num_particles_per_chunk);
     } else {
-        uint64_t const head = uint64_t(0.1f * float(num_particles));
+        uint64_t const head = num_particles / 10;
         uint64_t const tail = num_particles - head;
 
         ranges_.init(view.lighttracers ? head : 0, view.lighttracers ? tail : 0,

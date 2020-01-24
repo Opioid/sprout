@@ -28,12 +28,58 @@ Importance::~Importance() noexcept {
 }
 
 void Importance::increment(float2 uv, float weight) noexcept {
-    int32_t const x = std::min(int32_t(uv[0] * dimensions_float_[0] + 0.5f), dimensions_back_[0]);
-    int32_t const y = std::min(int32_t(uv[1] * dimensions_float_[1] + 0.5f), dimensions_back_[1]);
+//    int32_t const x = std::min(int32_t(uv[0] * dimensions_float_[0] + 0.5f), dimensions_back_[0]);
+//    int32_t const y = std::min(int32_t(uv[1] * dimensions_float_[1] + 0.5f), dimensions_back_[1]);
 
-    int32_t const id = y * dimensions_[0] + x;
+//    int32_t const id = y * dimensions_[0] + x;
 
-    atomic::add_assign(importance_[id], weight);
+//    atomic::add_assign(importance_[id], weight);
+
+
+    int32_t const xa = int32_t(uv[0] * dimensions_float_[0] );
+    int32_t const ya = int32_t(uv[1] * dimensions_float_[1] );
+
+    weight *= 0.25f;
+
+    {
+        int32_t const x = xa;//std::min(xa, dimensions_back_[0]);
+        int32_t const y = ya;//std::min(ya, dimensions_back_[1]);
+
+        int32_t const id = y * dimensions_[0] + x;
+
+        atomic::add_assign(importance_[id], weight);
+    }
+
+    if (xa + 1 < dimensions_back_[0])
+    {
+        int32_t const x = xa + 1;//std::min(xa + 1, dimensions_back_[0]);
+        int32_t const y = ya;//std::min(ya, dimensions_back_[1]);
+
+        int32_t const id = y * dimensions_[0] + x;
+
+        atomic::add_assign(importance_[id], weight);
+    }
+
+    if (ya + 1 < dimensions_back_[1])
+    {
+        int32_t const x = xa;//std::min(xa, dimensions_back_[0]);
+        int32_t const y = ya + 1;//std::min(ya + 1, dimensions_back_[1]);
+
+        int32_t const id = y * dimensions_[0] + x;
+
+        atomic::add_assign(importance_[id], weight);
+    }
+
+    if (xa + 1 < dimensions_back_[0] && ya + 1 < dimensions_back_[1])
+    {
+        int32_t const x = xa + 1;//std::min(xa + 1, dimensions_back_[0]);
+        int32_t const y = ya + 1;//std::min(ya + 1, dimensions_back_[1]);
+
+        int32_t const id = y * dimensions_[0] + x;
+
+        atomic::add_assign(importance_[id], weight);
+    }
+
 }
 
 Distribution_2D const& Importance::distribution() const noexcept {
@@ -60,6 +106,8 @@ void Importance::prepare_sampling(thread::Pool& threads) noexcept {
         max = std::max(importance_[i], max);
     }
 
+    max *= 20.f;
+
     threads.run_range(
         [this, max](uint32_t /*id*/, int32_t begin, int32_t end) {
             Distribution_2D::Distribution_impl* conditional = distribution_.conditional();
@@ -72,7 +120,7 @@ void Importance::prepare_sampling(thread::Pool& threads) noexcept {
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float const weight = std::max(importance_[i] / max, 0.002f);
+                    float const weight = std::max(importance_[i] / max, 0.000f);
 
                     weights[x] = weight;
                 }
@@ -124,6 +172,14 @@ void Importance_cache::increment(uint32_t light_id, float2 uv, float3 const& p) 
         float const d = std::exp(std::max(distance(p, eye_), 1.f));
 
         importances_[light_id].increment(uv, 1.f / d);
+    }
+}
+
+void Importance_cache::increment(uint32_t light_id, float2 uv, float3 const& p, float weight) noexcept {
+    if (training_) {
+        float const d = std::exp(std::max(distance(p, eye_), 1.f));
+
+        importances_[light_id].increment(uv, weight / d);
     }
 }
 
