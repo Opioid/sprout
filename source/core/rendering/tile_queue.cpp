@@ -118,15 +118,7 @@ bool Range_queue::pop(uint32_t segment, ulong2& range) noexcept {
 }
 
 uint32_t Range_queue::index(ulong2 const& range, uint32_t segment) const noexcept {
-    uint64_t const range_size = uint64_t(range_size_);
-
-    uint64_t const r = range[0] % range_size;
-
-    if (0 == r) {
-        return uint32_t(range[0] / range_size);
-    }
-
-    return uint32_t((range[0] + r) / range_size);
+    return uint32_t(range[0] / uint64_t(range_size_)) + segment * num_ranges0_;
 }
 
 }  // namespace rendering
