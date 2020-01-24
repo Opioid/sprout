@@ -57,6 +57,8 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     Camera const& camera = worker.camera();
 
+    Importance_cache& importance = worker.particle_importance();
+
     Filter const filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -69,9 +71,9 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     bool caustic_ray = false;
 
-    Ray      ray;
-    Light    light;
-    uint32_t light_id;
+    Ray          ray;
+    Light const* light;
+    uint32_t     light_id;
     if (!generate_light_ray(frame, worker, ray, light, light_id, light_sample)) {
         return;
     }
@@ -80,7 +82,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         return;
     }
 
-    float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
+    float3 radiance = light->evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
 
     for (;;) {
         float3 const wo = -ray.direction;
@@ -101,14 +103,16 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
             if (sample_result.type.is(Bxdf_type::Caustic)) {
                 caustic_ray = true;
             } else {
-                if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
-                    ((caustic_ray &&
-                      worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
-                     settings_.full_light_path)) {
+                bool const side = intersection.subsurface | material_sample.same_hemisphere(wo);
+
+                bool const caustic = caustic_ray &
+                                     worker.interface_stack().top_is_vacuum_or_not_scattering(
+                                         worker);
+
+                if (side & (caustic | settings_.full_light_path)) {
                     if (direct_camera(camera, bounds, radiance, ray, intersection, material_sample,
                                       filter, worker)) {
-                        worker.particle_importance().increment_importance(light_id, light_sample.xy,
-                                                                          intersection.geo.p);
+                        importance.increment(light_id, light_sample.xy, intersection.geo.p);
                     }
                 }
 
@@ -165,8 +169,9 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
     }
 }
 
-bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, Light& light_out,
-                                     uint32_t& light_id, Sample_from& light_sample) noexcept {
+bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray,
+                                     Light const*& light_out, uint32_t& light_id,
+                                     Sample_from& light_sample) noexcept {
     Scene const& scene = worker.scene();
 
     float const select = light_sampler_.generate_sample_1D(1);
@@ -198,7 +203,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray, L
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_out = light.ref;
+    light_out = &light.ref;
     light_id  = light.id;
 
     light_sample.pdf *= light.pdf;

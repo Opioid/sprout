@@ -126,6 +126,14 @@ class alignas(16) Light {
     float extent_;
 };
 
+struct Light_ref {
+    light::Light const& ref;
+
+    uint32_t id;
+
+    float pdf;
+};
+
 }  // namespace light
 }  // namespace scene
 

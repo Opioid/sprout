@@ -31,9 +31,9 @@ class Tile_queue {
 
     int32_t tiles_per_row_;
 
-    uint32_t num_tiles_;
+    int32_t num_tiles_;
 
-    std::atomic<uint32_t> current_consume_;
+    std::atomic<int32_t> current_consume_;
 };
 
 class Range_queue {

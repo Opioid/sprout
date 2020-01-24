@@ -705,7 +705,7 @@ static Particle_pool* load_particle_integrator(json::Value const& integrator_val
 
     uint32_t const max_bounces = json::read_uint(integrator_value, "max_bounces", 8);
 
-    num_particles_per_pixel = json::read_uint64(integrator_value, "particles_per_pixel", 1);
+    num_particles_per_pixel = json::read_uint(integrator_value, "particles_per_pixel", 1);
 
     return new Lighttracer_pool(num_workers, 1, max_bounces, indirect_caustics, full_light_path);
 }

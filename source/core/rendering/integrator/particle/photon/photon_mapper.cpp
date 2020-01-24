@@ -68,8 +68,7 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
             for (uint32_t j = 0; j < num_photons; ++j) {
                 map.insert(photons_[j], uint32_t(i) + j);
 
-                worker.particle_importance().increment_importance(light_id, light_sample.xy,
-                                                                  photons_[j].p);
+                worker.particle_importance().increment(light_id, light_sample.xy, photons_[j].p);
             }
 
             i += num_photons;

@@ -57,8 +57,8 @@ class Importance_cache {
 
     void prepare_sampling(thread::Pool& threads) noexcept;
 
-    void increment_importance(uint32_t light_id, float2 uv) noexcept;
-    void increment_importance(uint32_t light_id, float2 uv, float3 const& p) noexcept;
+    void increment(uint32_t light_id, float2 uv) noexcept;
+    void increment(uint32_t light_id, float2 uv, float3 const& p) noexcept;
 
     Importance const& importance(uint32_t light_id) const noexcept;
 

@@ -112,7 +112,8 @@ class Prop {
 };
 
 struct Prop_ptr {
-    Prop*    ptr;
+    Prop* ptr;
+
     uint32_t id;
 
     static Prop_ptr constexpr Null() noexcept {

@@ -17,7 +17,7 @@ Importance::Importance() noexcept
     : dimensions_(Dimensions),
       importance_(memory::allocate_aligned<float>(Dimensions * Dimensions)),
       dimensions_back_(Dimensions - 1),
-      dimensions_float_(float2(Dimensions)) {
+      dimensions_float_(float2(Dimensions - 1)) {
     for (int32_t i = 0, len = dimensions_[0] * dimensions_[1]; i < len; ++i) {
         importance_[i] = 0.f;
     }
@@ -28,8 +28,8 @@ Importance::~Importance() noexcept {
 }
 
 void Importance::increment(float2 uv, float weight) noexcept {
-    int32_t const x = std::min(int32_t(uv[0] * dimensions_float_[0]), dimensions_back_[0]);
-    int32_t const y = std::min(int32_t(uv[1] * dimensions_float_[1]), dimensions_back_[1]);
+    int32_t const x = std::min(int32_t(uv[0] * dimensions_float_[0] + 0.5f), dimensions_back_[0]);
+    int32_t const y = std::min(int32_t(uv[1] * dimensions_float_[1] + 0.5f), dimensions_back_[1]);
 
     int32_t const id = y * dimensions_[0] + x;
 
@@ -113,14 +113,13 @@ void Importance_cache::prepare_sampling(thread::Pool& threads) noexcept {
     //        }
 }
 
-void Importance_cache::increment_importance(uint32_t light_id, float2 uv) noexcept {
+void Importance_cache::increment(uint32_t light_id, float2 uv) noexcept {
     if (training_) {
         importances_[light_id].increment(uv, 1.f);
     }
 }
 
-void Importance_cache::increment_importance(uint32_t light_id, float2 uv,
-                                            float3 const& p) noexcept {
+void Importance_cache::increment(uint32_t light_id, float2 uv, float3 const& p) noexcept {
     if (training_) {
         float const d = std::exp(std::max(distance(p, eye_), 1.f));
 
@@ -133,7 +132,7 @@ Importance const& Importance_cache::importance(uint32_t light_id) const noexcept
 }
 
 void Importance_cache::export_importances() const noexcept {
-    for (uint32_t i = 0, len = importances_.size(); i < len; ++i) {
+    for (uint32_t i = 0, len = uint32_t(importances_.size()); i < len; ++i) {
         importances_[i].export_heatmap("particle_importance_" + std::to_string(i) + ".png");
     }
 }

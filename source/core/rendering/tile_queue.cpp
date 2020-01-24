@@ -14,14 +14,13 @@ void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_r
 
     tiles_per_row_ = tiles_per_row;
 
-    num_tiles_ = uint32_t(tiles_per_row_) *
-                 uint32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)));
+    num_tiles_ = tiles_per_row_ * int32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)));
 
     current_consume_ = 0;
 }
 
 uint32_t Tile_queue::size() const noexcept {
-    return num_tiles_;
+    return uint32_t(num_tiles_);
 }
 
 void Tile_queue::restart() noexcept {
@@ -30,7 +29,7 @@ void Tile_queue::restart() noexcept {
 
 bool Tile_queue::pop(int4& tile) noexcept {
     // uint32_t const current = current_consume_++;
-    uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
+    int32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
     if (current < num_tiles_) {
         int2 const resolution = resolution_;
@@ -119,7 +118,15 @@ bool Range_queue::pop(uint32_t segment, ulong2& range) noexcept {
 }
 
 uint32_t Range_queue::index(ulong2 const& range, uint32_t segment) const noexcept {
-    return uint32_t(range[0] / uint64_t(range_size_)) + segment * num_ranges0_;
+    uint64_t const range_size = uint64_t(range_size_);
+
+    uint64_t const r = range[0] % range_size;
+
+    if (0 == r) {
+        return uint32_t(range[0] / range_size);
+    }
+
+    return uint32_t((range[0] + r) / range_size);
 }
 
 }  // namespace rendering

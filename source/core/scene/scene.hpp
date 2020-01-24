@@ -78,6 +78,7 @@ class Scene {
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
+    using Light          = light::Light_ref;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;
     using Prop_ptr       = prop::Prop_ptr;
@@ -127,13 +128,6 @@ class Scene {
     uint32_t num_lights() const noexcept;
 
     light::Light const& light(uint32_t id) const noexcept;
-
-    struct Light {
-        light::Light const& ref;
-
-        uint32_t id;
-        float    pdf;
-    };
 
     Light light(uint32_t id, bool calculate_pdf) const noexcept;
 
