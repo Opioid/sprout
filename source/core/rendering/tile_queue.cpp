@@ -14,7 +14,7 @@ void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_r
 
     tiles_per_row_ = tiles_per_row;
 
-    num_tiles_ = tiles_per_row_ * int32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)));
+    num_tiles_ = tiles_per_row * int32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)));
 
     current_consume_ = 0;
 }
