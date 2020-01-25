@@ -84,8 +84,6 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     float3 radiance = light->evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
 
-    float const initial_power = average(radiance);
-
     bool first = true;
 
     for (;;) {
@@ -116,10 +114,10 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                 if (side & (caustic | settings_.full_light_path)) {
                     if (direct_camera(camera, bounds, radiance, ray, intersection, material_sample,
                                       filter, worker)) {
-                    //    if (first) {
-                        importance.increment(light_id, light_sample.xy, intersection.geo.p/*, average(radiance) / initial_power*/);
-                        first = false;
-                     //   }
+                        if (first) {
+                            importance.increment(light_id, light_sample.xy, intersection.geo.p);
+                            first = false;
+                        }
                     }
                 }
 

@@ -4,7 +4,6 @@
 #include "base/math/distribution/distribution_2d.hpp"
 #include "base/math/vector3.hpp"
 
-#include <string_view>
 #include <vector>
 
 namespace scene {
@@ -29,16 +28,14 @@ class Importance {
 
     float denormalization_factor() const noexcept;
 
-    void export_heatmap(std::string_view name) const noexcept;
+    void prepare_sampling(uint32_t id, float* buffer, thread::Pool& threads) noexcept;
 
-    void prepare_sampling(thread::Pool& threads) noexcept;
+    static int32_t constexpr Dimensions = 256;
 
   private:
-    int2   dimensions_;
-    float* importance_;
+    void dilate(float* buffer) const noexcept;
 
-    int2   dimensions_back_;
-    float2 dimensions_float_;
+    float* importance_;
 
     Distribution_2D distribution_;
 };
@@ -58,12 +55,10 @@ class Importance_cache {
     void prepare_sampling(thread::Pool& threads) noexcept;
 
     void increment(uint32_t light_id, float2 uv) noexcept;
+
     void increment(uint32_t light_id, float2 uv, float3 const& p) noexcept;
-    void increment(uint32_t light_id, float2 uv, float3 const& p, float weight) noexcept;
 
     Importance const& importance(uint32_t light_id) const noexcept;
-
-    void export_importances() const noexcept;
 
   private:
     float3 eye_;
@@ -71,6 +66,8 @@ class Importance_cache {
     bool training_;
 
     std::vector<Importance> importances_;
+
+    float* buffer_;
 };
 
 }  // namespace rendering::integrator::particle

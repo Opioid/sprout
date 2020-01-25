@@ -271,10 +271,6 @@ void Driver::render_frame_backward(uint32_t frame) noexcept {
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Light ray time " + string::to_string(duration) + " s");
-
-#ifdef PARTICLE_TRAINING
-    particle_importance_.export_importances();
-#endif
 }
 
 void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) noexcept {
@@ -453,10 +449,6 @@ void Driver::bake_photons(uint32_t frame) noexcept {
     }
 
     photon_map_.compile_finalize();
-
-#ifdef PHOTON_TRAINING
-    particle_importance_.export_importances();
-#endif
 
     auto const duration = chrono::seconds_since(start);
     logging::info("Photon time " + string::to_string(duration) + " s");

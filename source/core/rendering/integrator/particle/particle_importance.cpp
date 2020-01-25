@@ -11,14 +11,9 @@
 
 namespace rendering::integrator::particle {
 
-static int32_t constexpr Dimensions = 256;
-
 Importance::Importance() noexcept
-    : dimensions_(Dimensions),
-      importance_(memory::allocate_aligned<float>(Dimensions * Dimensions)),
-      dimensions_back_(Dimensions - 1),
-      dimensions_float_(float2(Dimensions - 1)) {
-    for (int32_t i = 0, len = dimensions_[0] * dimensions_[1]; i < len; ++i) {
+    : importance_(memory::allocate_aligned<float>(Dimensions * Dimensions)) {
+    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
         importance_[i] = 0.f;
     }
 }
@@ -28,58 +23,12 @@ Importance::~Importance() noexcept {
 }
 
 void Importance::increment(float2 uv, float weight) noexcept {
-//    int32_t const x = std::min(int32_t(uv[0] * dimensions_float_[0] + 0.5f), dimensions_back_[0]);
-//    int32_t const y = std::min(int32_t(uv[1] * dimensions_float_[1] + 0.5f), dimensions_back_[1]);
+    int32_t const x = std::min(int32_t(uv[0] * float(Dimensions - 1) + 0.5f), Dimensions - 1);
+    int32_t const y = std::min(int32_t(uv[1] * float(Dimensions - 1) + 0.5f), Dimensions - 1);
 
-//    int32_t const id = y * dimensions_[0] + x;
+    int32_t const id = y * Dimensions + x;
 
-//    atomic::add_assign(importance_[id], weight);
-
-
-    int32_t const xa = int32_t(uv[0] * dimensions_float_[0] );
-    int32_t const ya = int32_t(uv[1] * dimensions_float_[1] );
-
-    weight *= 0.25f;
-
-    {
-        int32_t const x = xa;//std::min(xa, dimensions_back_[0]);
-        int32_t const y = ya;//std::min(ya, dimensions_back_[1]);
-
-        int32_t const id = y * dimensions_[0] + x;
-
-        atomic::add_assign(importance_[id], weight);
-    }
-
-    if (xa + 1 < dimensions_back_[0])
-    {
-        int32_t const x = xa + 1;//std::min(xa + 1, dimensions_back_[0]);
-        int32_t const y = ya;//std::min(ya, dimensions_back_[1]);
-
-        int32_t const id = y * dimensions_[0] + x;
-
-        atomic::add_assign(importance_[id], weight);
-    }
-
-    if (ya + 1 < dimensions_back_[1])
-    {
-        int32_t const x = xa;//std::min(xa, dimensions_back_[0]);
-        int32_t const y = ya + 1;//std::min(ya + 1, dimensions_back_[1]);
-
-        int32_t const id = y * dimensions_[0] + x;
-
-        atomic::add_assign(importance_[id], weight);
-    }
-
-    if (xa + 1 < dimensions_back_[0] && ya + 1 < dimensions_back_[1])
-    {
-        int32_t const x = xa + 1;//std::min(xa + 1, dimensions_back_[0]);
-        int32_t const y = ya + 1;//std::min(ya + 1, dimensions_back_[1]);
-
-        int32_t const id = y * dimensions_[0] + x;
-
-        atomic::add_assign(importance_[id], weight);
-    }
-
+    atomic::add_assign(importance_[id], weight);
 }
 
 Distribution_2D const& Importance::distribution() const noexcept {
@@ -90,26 +39,26 @@ float Importance::denormalization_factor() const noexcept {
     return float(Dimensions * Dimensions);
 }
 
-void Importance::export_heatmap(std::string_view name) const noexcept {
-    image::encoding::png::Writer::write_heatmap(name, importance_, dimensions_);
-}
-
-void Importance::prepare_sampling(thread::Pool& threads) noexcept {
+void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& threads) noexcept {
     if (!distribution_.empty()) {
         return;
     }
+
+    dilate(buffer);
+
+    std::string const name = "particle_importance_" + std::to_string(id) + ".png";
+
+    image::encoding::png::Writer::write_heatmap(name, buffer, int2(Dimensions));
 
     distribution_.allocate(Dimensions);
 
     float max = 0.f;
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
-        max = std::max(importance_[i], max);
+        max = std::max(buffer[i], max);
     }
 
-    max *= 20.f;
-
     threads.run_range(
-        [this, max](uint32_t /*id*/, int32_t begin, int32_t end) {
+        [this, buffer, max](uint32_t /*id*/, int32_t begin, int32_t end) {
             Distribution_2D::Distribution_impl* conditional = distribution_.conditional();
 
             auto weights = memory::Buffer<float>(Dimensions);
@@ -120,7 +69,7 @@ void Importance::prepare_sampling(thread::Pool& threads) noexcept {
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float const weight = std::max(importance_[i] / max, 0.000f);
+                    float const weight = std::max(buffer[i] / max, 0.01f);
 
                     weights[x] = weight;
                 }
@@ -133,9 +82,46 @@ void Importance::prepare_sampling(thread::Pool& threads) noexcept {
     distribution_.init();
 }
 
-Importance_cache::Importance_cache() noexcept {}
+void Importance::dilate(float* buffer) const noexcept {
+    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
+        buffer[i] = 0.f;
+    }
 
-Importance_cache::~Importance_cache() noexcept {}
+    static int32_t constexpr Kernel_radius = 4;
+
+    for (int32_t y = 0; y < Dimensions; ++y) {
+        int32_t const row = y * Dimensions;
+
+        for (int32_t x = 0; x < Dimensions; ++x) {
+            int32_t const i = row + x;
+
+            float const value = importance_[i];
+
+            for (int32_t ky = -Kernel_radius; ky <= Kernel_radius; ++ky) {
+                for (int32_t kx = -Kernel_radius; kx <= Kernel_radius; ++kx) {
+                    int32_t const tx = x + kx;
+                    int32_t const ty = y + ky;
+
+                    if (tx >= 0 && tx < Dimensions && ty >= 0 && ty < Dimensions) {
+                        int32_t const o = ty * Dimensions + tx;
+
+                        //    buffer[o] += value;
+
+                        buffer[o] += (1.f / float(std::max(2 * (std::abs(kx) + std::abs(ky)), 1))) *
+                                     value;
+                    }
+                }
+            }
+        }
+    }
+}
+
+Importance_cache::Importance_cache() noexcept
+    : buffer_(memory::allocate_aligned<float>(Importance::Dimensions * Importance::Dimensions)) {}
+
+Importance_cache::~Importance_cache() noexcept {
+    memory::free_aligned(buffer_);
+}
 
 void Importance_cache::init(scene::Scene const& scene) noexcept {
     importances_.resize(scene.num_lights());
@@ -154,10 +140,10 @@ void Importance_cache::prepare_sampling(thread::Pool& threads) noexcept {
     // We need a proper way to select which light should have importances and which not.
     uint32_t const light = std::min(1u, uint32_t(importances_.size()) - 1);
 
-    importances_[light].prepare_sampling(threads);
+    importances_[light].prepare_sampling(light, buffer_, threads);
 
     //        for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-    //            importances_[i].prepare_sampling(threads);
+    //            importances_[i].prepare_sampling(i, threads);
     //        }
 }
 
@@ -175,22 +161,8 @@ void Importance_cache::increment(uint32_t light_id, float2 uv, float3 const& p) 
     }
 }
 
-void Importance_cache::increment(uint32_t light_id, float2 uv, float3 const& p, float weight) noexcept {
-    if (training_) {
-        float const d = std::exp(std::max(distance(p, eye_), 1.f));
-
-        importances_[light_id].increment(uv, weight / d);
-    }
-}
-
 Importance const& Importance_cache::importance(uint32_t light_id) const noexcept {
     return importances_[light_id];
-}
-
-void Importance_cache::export_importances() const noexcept {
-    for (uint32_t i = 0, len = uint32_t(importances_.size()); i < len; ++i) {
-        importances_[i].export_heatmap("particle_importance_" + std::to_string(i) + ".png");
-    }
 }
 
 }  // namespace rendering::integrator::particle
