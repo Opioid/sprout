@@ -107,8 +107,7 @@ void Importance::dilate(float* buffer) const noexcept {
 
                         //    buffer[o] += value;
 
-                        buffer[o] += (1.f / float(std::max(2 * (std::abs(kx) + std::abs(ky)), 1))) *
-                                     value;
+                        buffer[o] += (1.f / std::max(length(float2(kx, ky)), 1.f)) * value;
                     }
                 }
             }
