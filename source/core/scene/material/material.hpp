@@ -135,7 +135,9 @@ class Material {
     virtual float similarity_relation_scale(uint32_t depth) const noexcept;
 
     virtual bool is_heterogeneous_volume() const noexcept;
+
     virtual bool is_textured_volume() const noexcept;
+
     virtual bool is_scattering_volume() const noexcept;
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,

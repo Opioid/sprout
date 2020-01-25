@@ -150,8 +150,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                     caustic_path = true;
                 } else {
                     if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
-                        ((caustic_path &&
-                          worker.interface_stack().top_is_vacuum_or_not_scattering(worker)) ||
+                        ((caustic_path && worker.interface_stack().top_is_straight(worker)) ||
                          settings_.full_light_path)) {
                         if ((!infinite_world || unnatural_limit.intersect(intersection.geo.p))
 #ifdef ISLAND_MODE

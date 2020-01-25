@@ -144,8 +144,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics & !primary_ray &
-                                    worker.interface_stack().top_is_vacuum_or_not_scattering(
-                                        worker);
+                                    worker.interface_stack().top_is_straight(worker);
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);

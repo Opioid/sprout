@@ -96,10 +96,9 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
     for (;;) {
         float3 const wo = -ray.direction;
 
-        bool const maybe_caustic = !primary_ray &&
-                                   worker.interface_stack().top_is_vacuum_or_not_scattering(worker);
+        bool const maybe_caustic = !primary_ray && worker.interface_stack().top_is_straight(worker);
 
-        bool const avoid_caustics = settings_.avoid_caustics && maybe_caustic;
+        bool const avoid_caustics = settings_.avoid_caustics & maybe_caustic;
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
@@ -115,8 +114,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (material_sample.is_pure_emissive()) {
-            transparent &= !worker.scene().prop(intersection.prop)->visible_in_camera() &&
-                           ray.max_t >= scene::Ray_max_t;
+            transparent &= !worker.scene().prop(intersection.prop)->visible_in_camera() &
+                           (ray.max_t >= scene::Ray_max_t);
             break;
         }
 
@@ -183,7 +182,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
             throughput *= vtr;
 
-            if (Event::Abort == hit || Event::Absorb == hit) {
+            if ((Event::Abort == hit) | (Event::Absorb == hit)) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

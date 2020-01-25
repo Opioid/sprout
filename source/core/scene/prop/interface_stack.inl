@@ -90,7 +90,7 @@ inline bool Interface_stack::top_is_vacuum(Worker const& worker) const noexcept 
     return true;
 }
 
-inline bool Interface_stack::top_is_vacuum_or_not_scattering(Worker const& worker) const noexcept {
+inline bool Interface_stack::top_is_straight(Worker const& worker) const noexcept {
     if (index_ > 0) {
         auto const material = stack_[index_ - 1].material(worker);
         return (1.f == material->ior()) | (!material->is_scattering_volume());

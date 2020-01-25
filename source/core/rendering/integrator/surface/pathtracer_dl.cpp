@@ -102,9 +102,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
     for (;;) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics && !primary_ray &&
-                                    worker.interface_stack().top_is_vacuum_or_not_scattering(
-                                        worker);
+        bool const avoid_caustics = settings_.avoid_caustics & !primary_ray &
+                                    worker.interface_stack().top_is_straight(worker);
 
         auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                     worker);
@@ -180,7 +179,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
             throughput *= vtr;
 
-            if (Event::Abort == hit || Event::Absorb == hit) {
+            if ((Event::Abort == hit) | (Event::Absorb == hit)) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

@@ -51,7 +51,7 @@ class Interface_stack {
     float top_ior(Worker const& worker) const noexcept;
 
     bool top_is_vacuum(Worker const& worker) const noexcept;
-    bool top_is_vacuum_or_not_scattering(Worker const& worker) const noexcept;
+    bool top_is_straight(Worker const& worker) const noexcept;
 
     void push(Intersection const& intersection) noexcept;
 
