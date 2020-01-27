@@ -12,9 +12,9 @@
 namespace rendering::integrator::particle {
 
 Importance::Importance() noexcept
-    : importance_(memory::allocate_aligned<float>(Dimensions * Dimensions)) {
+    : importance_(memory::allocate_aligned<Weight>(Dimensions * Dimensions)) {
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
-        importance_[i] = 0.f;
+        importance_[i] = {0.f, 0};
     }
 }
 
@@ -28,7 +28,8 @@ void Importance::increment(float2 uv, float weight) noexcept {
 
     int32_t const id = y * Dimensions + x;
 
-    atomic::add_assign(importance_[id], weight);
+    atomic::add_assign(importance_[id].w, weight);
+    atomic::add_assign(importance_[id].c, 1);
 }
 
 Distribution_2D const& Importance::distribution() const noexcept {
@@ -69,7 +70,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float const weight = std::max(buffer[i] / max, 0.01f);
+                    float const weight = buffer[i] / max;
 
                     weights[x] = weight;
                 }
@@ -104,7 +105,9 @@ void Importance::filter(float* buffer, thread::Pool& threads) const noexcept {
                             if (tx >= 0 && tx < Dimensions && ty >= 0 && ty < Dimensions) {
                                 int32_t const o = ty * Dimensions + tx;
 
-                                float const value = importance_[o];
+                                Weight const w = importance_[o];
+
+                                float const value = w.c > 0 ? w.w / float(w.c) : 0.f;
 
                                 float const weight = (1.f / (length(float2(kx, ky)) + 1.f));
 
@@ -115,7 +118,7 @@ void Importance::filter(float* buffer, thread::Pool& threads) const noexcept {
                         }
                     }
 
-                    buffer[i] = filtered / weight_sum;
+                    buffer[i] = weight_sum > 0.f ? filtered / weight_sum : 0.f;
                 }
             }
         },
@@ -161,7 +164,7 @@ void Importance_cache::increment(uint32_t light_id, float2 uv) noexcept {
 
 void Importance_cache::increment(uint32_t light_id, float2 uv, float3 const& p) noexcept {
     if (training_) {
-        float const d = std::exp(std::max(distance(p, eye_), 1.f));
+        float const d = std::max(squared_distance(p, eye_), 1.f);
 
         importances_[light_id].increment(uv, 1.f / d);
     }

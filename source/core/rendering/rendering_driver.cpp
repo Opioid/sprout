@@ -52,7 +52,7 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
     uint64_t const num_particles = uint64_t(d[0] * d[1]) *
                                    uint64_t(progressive ? 1 : view.num_particles_per_pixel);
 
-#ifdef PARTICLE_TRAINING
+#ifdef PARTICLE_GUIDING
     if (progressive) {
         ranges_.init(view.lighttracers ? num_particles : 0, 0, Num_particles_per_chunk);
     } else {
@@ -219,7 +219,7 @@ void Driver::render_frame_backward(uint32_t frame) noexcept {
 
     camera.sensor().clear(float(view_->num_particles_per_pixel));
 
-#ifdef PARTICLE_TRAINING
+#ifdef PARTICLE_GUIDING
     particle_importance_.set_training(true);
 #else
     particle_importance_.set_training(false);
@@ -241,7 +241,7 @@ void Driver::render_frame_backward(uint32_t frame) noexcept {
         });
     }
 
-#ifdef PARTICLE_TRAINING
+#ifdef PARTICLE_GUIDING
 
     particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
@@ -400,7 +400,7 @@ void Driver::bake_photons(uint32_t frame) noexcept {
 
     photon_map_.start();
 
-#ifdef PHOTON_TRAINING
+#ifdef PHOTON_GUIDING
     uint32_t num_photons = std::max(settings_num_photons / 10, 1u);
     particle_importance_.set_training(true);
 #else
@@ -433,7 +433,7 @@ void Driver::bake_photons(uint32_t frame) noexcept {
 
         uint32_t const new_begin = photon_map_.compile_iteration(num_photons, num_paths, threads_);
 
-#ifdef PHOTON_TRAINING
+#ifdef PHOTON_GUIDING
         particle_importance_.prepare_sampling(threads_);
         particle_importance_.set_training(false);
 #endif

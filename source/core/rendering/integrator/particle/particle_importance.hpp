@@ -35,7 +35,13 @@ class Importance {
   private:
     void filter(float* buffer, thread::Pool& threads) const noexcept;
 
-    float* importance_;
+    struct Weight {
+        float w;
+
+        uint32_t c;
+    };
+
+    Weight* importance_;
 
     Distribution_2D distribution_;
 };

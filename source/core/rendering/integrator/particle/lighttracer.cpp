@@ -1,4 +1,5 @@
 #include "lighttracer.hpp"
+#include "base/math/frustum.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
@@ -71,10 +72,19 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
     bool caustic_ray = false;
 
+    // ---
+    // Frustum const frustum = worker.camera().frustum();
+
+    AABB const& world_bounds = settings_.full_light_path ? worker.scene().aabb()
+                                                         : worker.scene().caustic_aabb();
+
+    AABB const frustum_bounds = world_bounds;  //.intersection(frustum.calculate_aabb());
+    // ---
+
     Ray          ray;
     Light const* light;
     uint32_t     light_id;
-    if (!generate_light_ray(frame, worker, ray, light, light_id, light_sample)) {
+    if (!generate_light_ray(frame, frustum_bounds, worker, ray, light, light_id, light_sample)) {
         return;
     }
 
@@ -172,26 +182,24 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
     }
 }
 
-bool Lighttracer::generate_light_ray(uint32_t frame, Worker& worker, Ray& ray,
+bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                                      Light const*& light_out, uint32_t& light_id,
                                      Sample_from& light_sample) noexcept {
-    Scene const& scene = worker.scene();
-
     float const select = light_sampler_.generate_sample_1D(1);
 
-    auto const light = scene.random_light(select);
+    auto const light = worker.scene().random_light(select);
 
     uint64_t const time = worker.absolute_time(frame, light_sampler_.generate_sample_1D(2));
 
     Importance const& importance = worker.particle_importance().importance(light.id);
 
     if (importance.distribution().empty()) {
-        if (!light.ref.sample(time, light_sampler_, 1, scene.aabb(), worker, light_sample)) {
+        if (!light.ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
             return false;
         }
     } else {
-        if (!light.ref.sample(time, light_sampler_, 1, importance.distribution(), scene.aabb(),
-                              worker, light_sample)) {
+        if (!light.ref.sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
+                              light_sample)) {
             return false;
         }
 
