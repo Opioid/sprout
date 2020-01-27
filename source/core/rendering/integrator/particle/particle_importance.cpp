@@ -44,7 +44,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
         return;
     }
 
-    dilate(buffer);
+    filter(buffer, threads);
 
     std::string const name = "particle_importance_" + std::to_string(id) + ".png";
 
@@ -82,37 +82,39 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
     distribution_.init();
 }
 
-void Importance::dilate(float* buffer) const noexcept {
-    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
-        buffer[i] = 0.f;
-    }
-
+void Importance::filter(float* buffer, thread::Pool& threads) const noexcept {
     static int32_t constexpr Kernel_radius = 4;
 
-    for (int32_t y = 0; y < Dimensions; ++y) {
-        int32_t const row = y * Dimensions;
+    threads.run_range(
+        [this, buffer](uint32_t /*id*/, int32_t begin, int32_t end) {
+            for (int32_t y = begin; y < end; ++y) {
+                int32_t const row = y * Dimensions;
 
-        for (int32_t x = 0; x < Dimensions; ++x) {
-            int32_t const i = row + x;
+                for (int32_t x = 0; x < Dimensions; ++x) {
+                    int32_t const i = row + x;
 
-            float const value = importance_[i];
+                    float filtered = 0.f;
 
-            for (int32_t ky = -Kernel_radius; ky <= Kernel_radius; ++ky) {
-                for (int32_t kx = -Kernel_radius; kx <= Kernel_radius; ++kx) {
-                    int32_t const tx = x + kx;
-                    int32_t const ty = y + ky;
+                    for (int32_t ky = -Kernel_radius; ky <= Kernel_radius; ++ky) {
+                        for (int32_t kx = -Kernel_radius; kx <= Kernel_radius; ++kx) {
+                            int32_t const tx = x + kx;
+                            int32_t const ty = y + ky;
 
-                    if (tx >= 0 && tx < Dimensions && ty >= 0 && ty < Dimensions) {
-                        int32_t const o = ty * Dimensions + tx;
+                            if (tx >= 0 && tx < Dimensions && ty >= 0 && ty < Dimensions) {
+                                int32_t const o = ty * Dimensions + tx;
 
-                        //    buffer[o] += value;
+                                float const value = importance_[o];
 
-                        buffer[o] += (1.f / std::max(length(float2(kx, ky)), 1.f)) * value;
+                                filtered += (1.f / std::max(length(float2(kx, ky)), 1.f)) * value;
+                            }
+                        }
                     }
+
+                    buffer[i] = filtered;
                 }
             }
-        }
-    }
+        },
+        0, Dimensions);
 }
 
 Importance_cache::Importance_cache() noexcept

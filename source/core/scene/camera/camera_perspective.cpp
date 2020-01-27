@@ -148,7 +148,7 @@ bool Perspective::sample(int4 const& bounds, uint64_t time, float3 const& p, Sam
     sample.pixel_uv = float2(x - fx, y - fy);
     sample.dir      = transformation.object_to_world_vector(out_dir);
     sample.t        = t;
-    sample.pdf      = (wa * wb);
+    sample.pdf      = wa * wb;
 
     return true;
 }

@@ -33,7 +33,7 @@ class Importance {
     static int32_t constexpr Dimensions = 256;
 
   private:
-    void dilate(float* buffer) const noexcept;
+    void filter(float* buffer, thread::Pool& threads) const noexcept;
 
     float* importance_;
 
