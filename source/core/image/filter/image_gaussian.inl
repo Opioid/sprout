@@ -2,6 +2,7 @@
 #define SU_CORE_IMAGE_FILTER_GAUSSIAN_INL
 
 #include "base/math/filter/gaussian.hpp"
+#include "base/memory/array.inl"
 #include "image_gaussian.hpp"
 #include "thread/thread_pool.hpp"
 
@@ -9,7 +10,7 @@ namespace image::filter {
 
 template <typename T>
 Gaussian<T>::Gaussian(float radius, float alpha) noexcept : scratch_(Description()) {
-    int32_t const width = 2 * static_cast<int32_t>(radius + 0.5f) + 1;
+    int32_t const width = 2 * int32_t(radius + 0.5f) + 1;
 
     kernel_.resize(width);
 
@@ -17,7 +18,7 @@ Gaussian<T>::Gaussian(float radius, float alpha) noexcept : scratch_(Description
 
     math::filter::Gaussian_functor const gauss(fr * fr, alpha);
 
-    int32_t const ir = static_cast<int32_t>(radius);
+    int32_t const ir = int32_t(radius);
 
     for (int32_t x = 0; x < width; ++x) {
         int32_t const o = -ir + x;
@@ -41,13 +42,15 @@ void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& threads) noexcept 
         [&target, d, this](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < d[0]; ++x) {
-                    T     accum(0.f);
+                    T accum(0.f);
+
                     float weight_sum = 0.f;
+
                     for (auto k : kernel_) {
-                        int32_t kx = x + k.o;
+                        int32_t const kx = x + k.o;
 
                         if (kx >= 0 && kx < d[0]) {
-                            T v = target.load(kx, y);
+                            T const v = target.load(kx, y);
                             accum += k.w * v;
                             weight_sum += k.w;
                         }
@@ -65,13 +68,15 @@ void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& threads) noexcept 
         [&target, d, this](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < d[0]; ++x) {
-                    T     accum(0.f);
+                    T accum(0.f);
+
                     float weight_sum = 0.f;
+
                     for (auto k : kernel_) {
-                        int32_t ky = y + k.o;
+                        int32_t const ky = y + k.o;
 
                         if (ky >= 0 && ky < d[1]) {
-                            T v = scratch_.load(x, ky);
+                            T const v = scratch_.load(x, ky);
                             accum += k.w * v;
                             weight_sum += k.w;
                         }

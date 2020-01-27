@@ -93,7 +93,8 @@ void Importance::filter(float* buffer, thread::Pool& threads) const noexcept {
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float filtered = 0.f;
+                    float filtered   = 0.f;
+                    float weight_sum = 0.f;
 
                     for (int32_t ky = -Kernel_radius; ky <= Kernel_radius; ++ky) {
                         for (int32_t kx = -Kernel_radius; kx <= Kernel_radius; ++kx) {
@@ -105,12 +106,16 @@ void Importance::filter(float* buffer, thread::Pool& threads) const noexcept {
 
                                 float const value = importance_[o];
 
-                                filtered += (1.f / std::max(length(float2(kx, ky)), 1.f)) * value;
+                                float const weight = (1.f / (length(float2(kx, ky)) + 1.f));
+
+                                filtered += value * weight;
+
+                                weight_sum += weight;
                             }
                         }
                     }
 
-                    buffer[i] = filtered;
+                    buffer[i] = filtered / weight_sum;
                 }
             }
         },

@@ -1,7 +1,7 @@
 #ifndef SU_CORE_IMAGE_FILTER_GAUSSIAN_HPP
 #define SU_CORE_IMAGE_FILTER_GAUSSIAN_HPP
 
-#include <vector>
+#include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
 
 namespace thread {
@@ -25,7 +25,7 @@ class Gaussian {
         float   w;
     };
 
-    std::vector<K> kernel_;
+    memory::Arrayr<K> kernel_;
 };
 
 }  // namespace image::filter
