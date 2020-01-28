@@ -314,11 +314,11 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     float3 const p = material_sample.offset_p(intersection.geo.p);
 
-    float3 const n = material_sample.geometric_normal();
-
-    bool const is_translucent = material_sample.is_translucent();
-
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
+        float3 const n = material_sample.geometric_normal();
+
+        bool const is_translucent = material_sample.is_translucent();
+
         for (uint32_t i = num_samples; i > 0; --i) {
             float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
@@ -412,16 +412,15 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, float3 const& geo_n,
     float3 const wo = -sample_result.wi;
 
     // This will invalidate the contents of previous material sample.
-    auto const& light_material_sample = intersection.sample(wo, ray, filter, false, sampler_,
-                                                            worker);
+    auto const& material_sample = intersection.sample(wo, ray, filter, false, sampler_, worker);
 
-    pure_emissive = light_material_sample.is_pure_emissive();
+    pure_emissive = material_sample.is_pure_emissive();
 
-    if (!light_material_sample.same_hemisphere(wo)) {
+    if (!material_sample.same_hemisphere(wo)) {
         return float3(0.f);
     }
 
-    float3 const ls_energy = light_material_sample.radiance();
+    float3 const ls_energy = material_sample.radiance();
 
     float const weight = power_heuristic(sample_result.pdf, light_pdf);
 
