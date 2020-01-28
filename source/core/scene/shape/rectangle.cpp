@@ -286,7 +286,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const&
         c = std::abs(c);
     }
 
-    if (c <= 0.f) {
+    if (c <= Dot_min) {
         return false;
     }
 

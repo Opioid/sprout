@@ -142,6 +142,9 @@ class Shape {
     virtual Morphable_shape* morphable_shape() noexcept;
 
     virtual size_t num_bytes() const noexcept = 0;
+
+  protected:
+    static float constexpr Dot_min = 0.00001f;
 };
 
 }  // namespace shape

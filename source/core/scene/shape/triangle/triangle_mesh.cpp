@@ -352,7 +352,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
         c = std::abs(c);
     }
 
-    if (c <= 0.00001f) {
+    if (c <= Dot_min) {
         return false;
     }
 

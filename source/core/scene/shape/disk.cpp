@@ -252,15 +252,11 @@ bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
         c = std::abs(c);
     }
 
-    if (c <= 0.f) {
+    if (c <= Dot_min) {
         return false;
     }
 
     float const pdf = sl / (c * area);
-
-    if (pdf > 1.6e19f) {
-        return false;
-    }
 
     sample.wi  = wi;
     sample.pdf = pdf;
