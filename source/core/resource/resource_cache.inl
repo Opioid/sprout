@@ -18,18 +18,9 @@ Typed_cache<T>::Typed_cache(Provider<T>& provider) noexcept : provider_(provider
 
 template <typename T>
 Typed_cache<T>::~Typed_cache() noexcept {
-    clear();
-}
-
-template <typename T>
-void Typed_cache<T>::clear() noexcept {
     for (auto r : resources_) {
         delete r;
     }
-
-    resources_.clear();
-
-    entries_.clear();
 }
 
 template <typename T>

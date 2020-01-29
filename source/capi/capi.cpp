@@ -162,7 +162,6 @@ int32_t su_clear() noexcept {
 
     engine->take.clear();
     engine->scene.clear();
-    engine->resources.clear();
 
     engine->valid = false;
 
@@ -491,7 +490,7 @@ int32_t su_entity_transformation(uint32_t entity, float* transformation) noexcep
 
     float4x4 const m = engine->scene.prop_world_transformation(entity).object_to_world();
 
-    std::copy(m.r[0].v, m.r[0].v + 16, transformation);
+    std::copy(m.r[0].v, &m.r[0].v[0] + 16, transformation);
 
     return 0;
 }

@@ -19,12 +19,6 @@ thread::Pool& Manager::threads() noexcept {
     return threads_;
 }
 
-void Manager::clear() noexcept {
-    for (auto c : caches_) {
-        c.second->clear();
-    }
-}
-
 void Manager::increment_generation() noexcept {
     for (auto c : caches_) {
         c.second->increment_generation();

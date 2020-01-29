@@ -27,8 +27,6 @@ class Cache {
 
     virtual ~Cache() noexcept;
 
-    virtual void clear() noexcept = 0;
-
     void increment_generation() noexcept;
 
   protected:
@@ -43,8 +41,6 @@ class Typed_cache final : public Cache {
     Typed_cache(Provider<T>& provider) noexcept;
 
     ~Typed_cache() noexcept override final;
-
-    void clear() noexcept override final;
 
     std::vector<T*> const& resources() const noexcept;
 
