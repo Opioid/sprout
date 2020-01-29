@@ -14,8 +14,8 @@ class Provider final : public resource::Provider<Image> {
 
     ~Provider() noexcept override final;
 
-    Image* load(std::string const& filename, Variant_map const& options,
-                resource::Manager& resources, std::string& resolved_name) noexcept override final;
+    Image* load(std::string const& filename, Variants const& options, Resources& resources,
+                std::string& resolved_name) noexcept override final;
 
     struct Description {
         enum class Pixel_type { Byte = 0, Short, Float };
@@ -33,8 +33,8 @@ class Provider final : public resource::Provider<Image> {
         char const* data;
     };
 
-    Image* load(void const* data, std::string const& source_name, Variant_map const& options,
-                resource::Manager& resources) noexcept override final;
+    Image* load(void const* data, std::string const& source_name, Variants const& options,
+                Resources& resources) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

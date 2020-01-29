@@ -27,6 +27,8 @@ class Cache {
 
     virtual ~Cache() noexcept;
 
+    virtual void clear() noexcept = 0;
+
     void increment_generation() noexcept;
 
   protected:
@@ -34,31 +36,34 @@ class Cache {
 };
 
 template <typename T>
-class Typed_cache : public Cache {
+class Typed_cache final : public Cache {
   public:
+    using Variants = memory::Variant_map;
+
     Typed_cache(Provider<T>& provider) noexcept;
 
     ~Typed_cache() noexcept override final;
 
+    void clear() noexcept override final;
+
     std::vector<T*> const& resources() const noexcept;
 
-    Resource_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
-                         Manager& manager) noexcept;
+    Resource_ptr<T> load(std::string const& filename, Variants const& options,
+                         Manager& resources) noexcept;
 
-    Resource_ptr<T> load(std::string const& filename, memory::Variant_map const& options,
-                         Manager& manager, std::string& resolved_name) noexcept;
+    Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources,
+                         std::string& resolved_name) noexcept;
 
     Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
-                         memory::Variant_map const& options, Manager& manager) noexcept;
+                         Variants const& options, Manager& resources) noexcept;
 
-    Resource_ptr<T> get(std::string const& filename, memory::Variant_map const& options) noexcept;
+    Resource_ptr<T> get(std::string const& filename, Variants const& options) noexcept;
 
     Resource_ptr<T> get(uint32_t id) const noexcept;
 
     Resource_ptr<T> store(T* resource) noexcept;
 
-    Resource_ptr<T> store(std::string const& name, memory::Variant_map const& options,
-                          T* resource) noexcept;
+    Resource_ptr<T> store(std::string const& name, Variants const& options, T* resource) noexcept;
 
     size_t num_bytes() const noexcept;
 

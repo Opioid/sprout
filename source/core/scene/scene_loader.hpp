@@ -71,8 +71,9 @@ class Loader {
     using Material     = material::Material;
     using Material_ptr = resource::Resource_ptr<Material>;
     using Materials    = memory::Array<Material_ptr>;
+    using Resources    = resource::Manager;
 
-    Loader(resource::Manager& resources, Material* fallback_material) noexcept;
+    Loader(Resources& resources, Material* fallback_material) noexcept;
 
     ~Loader() noexcept;
 

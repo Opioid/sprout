@@ -20,13 +20,15 @@ namespace procedural::flakes {
 
 class Provider {
   public:
-    Image* create_normal_map(memory::Variant_map const& options) noexcept;
+    using Variants = memory::Variant_map;
 
-    Image* create_mask(memory::Variant_map const& options) noexcept;
+    Image* create_normal_map(Variants const& options) noexcept;
+
+    Image* create_mask(Variants const& options) noexcept;
 
   private:
     struct Properties {
-        Properties(memory::Variant_map const& options) noexcept;
+        Properties(Variants const& options) noexcept;
 
         int2 dimensions;
 

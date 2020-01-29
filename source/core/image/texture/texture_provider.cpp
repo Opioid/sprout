@@ -28,8 +28,8 @@ Provider::Provider(bool no_textures) noexcept : no_textures_(no_textures) {
     encoding::init();
 }
 
-Texture* Provider::load(std::string const& filename, Variant_map const& options,
-                        resource::Manager& resources, std::string& resolved_name) noexcept {
+Texture* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
+                        std::string& resolved_name) noexcept {
     if (no_textures_) {
         return nullptr;
     }
@@ -116,7 +116,7 @@ Texture* Provider::load(std::string const& filename, Variant_map const& options,
 }
 
 Texture* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
-                        Variant_map const& /*options*/, resource::Manager& /*manager*/) noexcept {
+                        Variants const& /*options*/, resource::Manager& /*resources*/) noexcept {
     return nullptr;
 }
 
@@ -134,7 +134,7 @@ std::string Provider::encode_name(uint32_t image_id) noexcept {
 
 uint32_t Provider::decode_name(std::string const& name) noexcept {
     if ("tex:" == name.substr(0, 4)) {
-        return atoi(name.substr(4).c_str());
+        return uint32_t(std::atoi(name.substr(4).c_str()));
     }
 
     return resource::Null;

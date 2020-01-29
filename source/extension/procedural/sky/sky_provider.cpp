@@ -38,7 +38,7 @@ void Provider::set_material_provider(material::Provider& material_provider) noex
 }
 
 uint32_t Provider::create_extension(json::Value const& extension_value, std::string const& name,
-                                    Scene& scene, resource::Manager& resources) noexcept {
+                                    Scene& scene, Resources& resources) noexcept {
     Sky* sky = new Sky;
 
     uint32_t const sky_entity = scene.create_extension(sky, name);

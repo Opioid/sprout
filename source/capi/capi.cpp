@@ -162,6 +162,7 @@ int32_t su_clear() noexcept {
 
     engine->take.clear();
     engine->scene.clear();
+    engine->resources.clear();
 
     engine->valid = false;
 

@@ -14,17 +14,18 @@ class Manager;
 template <typename T>
 class Provider {
   public:
-    using Variant_map = memory::Variant_map;
+    using Variants  = memory::Variant_map;
+    using Resources = Manager;
 
     Provider() noexcept;
 
     virtual ~Provider() noexcept;
 
-    virtual T* load(std::string const& filename, Variant_map const& options, Manager& manager,
+    virtual T* load(std::string const& filename, Variants const& options, Resources& resources,
                     std::string& resolved_name) noexcept = 0;
 
-    virtual T* load(void const* data, std::string const& source_name, Variant_map const& options,
-                    Manager& manager) noexcept = 0;
+    virtual T* load(void const* data, std::string const& source_name, Variants const& options,
+                    Resources& resources) noexcept = 0;
 
     virtual size_t num_bytes() const noexcept = 0;
 

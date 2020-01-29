@@ -23,8 +23,8 @@ Provider::Provider() noexcept {}
 
 Provider::~Provider() noexcept {}
 
-Image* Provider::load(std::string const& filename, Variant_map const& options,
-                      resource::Manager& resources, std::string& resolved_name) noexcept {
+Image* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
+                      std::string& resolved_name) noexcept {
     if ("proc:flakes" == filename) {
         return flakes_provider_.create_normal_map(options);
     } else if ("proc:flakes_mask" == filename) {
@@ -74,7 +74,7 @@ Image* Provider::load(std::string const& filename, Variant_map const& options,
 }
 
 Image* Provider::load(void const* data, std::string const& /*source_name*/,
-                      Variant_map const& /*options*/, resource::Manager& /*manager*/) noexcept {
+                      Variants const& /*options*/, resource::Manager& /*manager*/) noexcept {
     Description const& desc = *reinterpret_cast<Description const*>(data);
 
     Image* image = nullptr;

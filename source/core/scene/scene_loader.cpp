@@ -31,7 +31,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& resources, Material* fallback_material) noexcept
+Loader::Loader(Resources& resources, Material* fallback_material) noexcept
     : resource_manager_(resources),
       canopy_(resources.store<Shape>(new shape::Canopy())),
       cube_(resources.store<Shape>(new shape::Cube())),

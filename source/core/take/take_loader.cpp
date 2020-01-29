@@ -100,7 +100,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
 static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) noexcept;
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
-                  Scene& scene, resource::Manager& resources) noexcept {
+                  Scene& scene, Resources& resources) noexcept {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -746,7 +746,7 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
     settings.full_light_path     = json::read_bool(value, "full_light_path", false);
 }
 
-void Loader::load_postprocessors(json::Value const& pp_value, resource::Manager& resources,
+void Loader::load_postprocessors(json::Value const& pp_value, Resources& resources,
                                  Pipeline& pipeline, int2 dimensions) noexcept {
     if (!pp_value.IsArray()) {
         return;

@@ -10,7 +10,7 @@
 
 namespace image::procedural::flakes {
 
-Image* Provider::create_normal_map(memory::Variant_map const& options) noexcept {
+Image* Provider::create_normal_map(Variants const& options) noexcept {
     Properties props(options);
 
     Renderer renderer(props.dimensions, 1);
@@ -43,7 +43,7 @@ Image* Provider::create_normal_map(memory::Variant_map const& options) noexcept 
     return image;
 }
 
-Image* Provider::create_mask(memory::Variant_map const& options) noexcept {
+Image* Provider::create_mask(Variants const& options) noexcept {
     Properties props(options);
 
     Renderer renderer(props.dimensions, 8);
@@ -72,8 +72,7 @@ Image* Provider::create_mask(memory::Variant_map const& options) noexcept {
     return image;
 }
 
-Provider::Properties::Properties(memory::Variant_map const& options) noexcept
-    : dimensions(1024, 1024) {
+Provider::Properties::Properties(Variants const& options) noexcept : dimensions(1024, 1024) {
     float size    = 0.006f;
     float density = 0.5f;
     options.query("size", size);

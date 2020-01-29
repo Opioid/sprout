@@ -30,12 +30,13 @@ struct View;
 
 class Loader {
   public:
-    using Scene    = scene::Scene;
-    using Camera   = scene::camera::Camera;
-    using Pipeline = rendering::postprocessor::Pipeline;
+    using Scene     = scene::Scene;
+    using Camera    = scene::camera::Camera;
+    using Pipeline  = rendering::postprocessor::Pipeline;
+    using Resources = resource::Manager;
 
     static bool load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
-                     Scene& scene, resource::Manager& resources) noexcept;
+                     Scene& scene, Resources& resources) noexcept;
 
     static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept;
 
@@ -45,7 +46,7 @@ class Loader {
     static void set_default_integrators(uint32_t num_workers, bool progressive,
                                         View& view) noexcept;
 
-    static void load_postprocessors(json::Value const& pp_value, resource::Manager& resources,
+    static void load_postprocessors(json::Value const& pp_value, Resources& resources,
                                     Pipeline& pipeline, int2 dimensions) noexcept;
 
     static void set_default_exporter(Take& take) noexcept;

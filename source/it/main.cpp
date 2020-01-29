@@ -22,10 +22,11 @@
 
 using namespace it::options;
 
-using Pipeline = rendering::postprocessor::Pipeline;
+using Pipeline  = rendering::postprocessor::Pipeline;
+using Resources = resource::Manager;
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   resource::Manager& resources) noexcept;
+                   Resources& resources) noexcept;
 
 void comparison(std::vector<Item> const& items) noexcept;
 
@@ -132,7 +133,7 @@ int main(int argc, char* argv[]) noexcept {
 }
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   resource::Manager& resources) noexcept {
+                   Resources& resources) noexcept {
     std::string error;
     auto const  root = json::parse(stream, error);
     if (!root) {

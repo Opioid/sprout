@@ -38,8 +38,8 @@ Provider::Provider() noexcept {}
 
 Provider::~Provider() noexcept {}
 
-Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*options*/,
-                      resource::Manager& resources, std::string& resolved_name) noexcept {
+Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
+                      Resources& resources, std::string& resolved_name) noexcept {
     auto stream_pointer = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         logging::error("Loading mesh %S: ", filename);
@@ -155,8 +155,7 @@ Shape* Provider::load(std::string const& filename, memory::Variant_map const& /*
 }
 
 Shape* Provider::load(void const* data, std::string const& /*source_name*/,
-                      memory::Variant_map const& /*options*/,
-                      resource::Manager& resources) noexcept {
+                      Variants const& /*options*/, Resources& resources) noexcept {
     Description const& desc = *reinterpret_cast<Description const*>(data);
 
     if (!desc.positions || !desc.normals) {
@@ -282,7 +281,7 @@ Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertice
 }
 
 Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
-                                     resource::Manager& resources) noexcept {
+                                     Resources& resources) noexcept {
     auto collection = new Morph_target_collection;
 
     Json_handler handler;

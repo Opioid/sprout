@@ -27,7 +27,7 @@ class Provider;
 
 class Manager {
   public:
-    using Variant_map = memory::Variant_map;
+    using Variants = memory::Variant_map;
 
     Manager(thread::Pool& threads) noexcept;
 
@@ -37,6 +37,8 @@ class Manager {
 
     thread::Pool& threads() noexcept;
 
+    void clear() noexcept;
+
     void increment_generation() noexcept;
 
     template <typename T>
@@ -44,20 +46,19 @@ class Manager {
 
     template <typename T>
     Resource_ptr<T> load(std::string const& filename,
-                         Variant_map const& options = Variant_map()) noexcept;
+                         Variants const&    options = Variants()) noexcept;
 
     template <typename T>
-    Resource_ptr<T> load(std::string const& filename, Variant_map const& options,
+    Resource_ptr<T> load(std::string const& filename, Variants const& options,
                          std::string& resolved_name) noexcept;
 
     template <typename T>
     Resource_ptr<T> load(std::string const& name, void const* data,
                          std::string const& source_name = "",
-                         Variant_map const& options     = Variant_map()) noexcept;
+                         Variants const&    options     = Variants()) noexcept;
 
     template <typename T>
-    Resource_ptr<T> get(std::string const& filename,
-                        Variant_map const& options = Variant_map()) noexcept;
+    Resource_ptr<T> get(std::string const& filename, Variants const& options = Variants()) noexcept;
 
     template <typename T>
     Resource_ptr<T> get(uint32_t id) const noexcept;
@@ -67,7 +68,7 @@ class Manager {
 
     template <typename T>
     Resource_ptr<T> store(std::string const& name, T* resource,
-                          Variant_map const& options = Variant_map()) noexcept;
+                          Variants const& options = Variants()) noexcept;
 
     template <typename T>
     size_t num_bytes() const noexcept;

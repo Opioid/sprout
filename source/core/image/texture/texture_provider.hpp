@@ -28,11 +28,11 @@ class Provider final : public resource::Provider<Texture> {
         Mask
     };
 
-    Texture* load(std::string const& filename, Variant_map const& options,
-                  resource::Manager& resources, std::string& resolved_name) noexcept override final;
+    Texture* load(std::string const& filename, Variants const& options, Resources& resources,
+                  std::string& resolved_name) noexcept override final;
 
-    Texture* load(void const* data, std::string const& source_name, Variant_map const& options,
-                  resource::Manager& resources) noexcept override final;
+    Texture* load(void const* data, std::string const& source_name, Variants const& options,
+                  Resources& resources) noexcept override final;
 
     size_t num_bytes() const noexcept override final;
 

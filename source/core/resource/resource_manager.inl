@@ -24,7 +24,7 @@ std::vector<T*> const& Manager::register_provider(Provider<T>& provider) noexcep
 }
 
 template <typename T>
-Resource_ptr<T> Manager::load(std::string const& filename, Variant_map const& options) noexcept {
+Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options) noexcept {
     if (filename.empty()) {
         return Resource_ptr<T>::Null();
     }
@@ -40,7 +40,7 @@ Resource_ptr<T> Manager::load(std::string const& filename, Variant_map const& op
 }
 
 template <typename T>
-Resource_ptr<T> Manager::load(std::string const& filename, Variant_map const& options,
+Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options,
                               std::string& resolved_name) noexcept {
     if (filename.empty()) {
         return Resource_ptr<T>::Null();
@@ -58,7 +58,7 @@ Resource_ptr<T> Manager::load(std::string const& filename, Variant_map const& op
 
 template <typename T>
 Resource_ptr<T> Manager::load(std::string const& name, void const* data,
-                              std::string const& source_name, Variant_map const& options) noexcept {
+                              std::string const& source_name, Variants const& options) noexcept {
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
@@ -70,7 +70,7 @@ Resource_ptr<T> Manager::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-Resource_ptr<T> Manager::get(std::string const& filename, Variant_map const& options) noexcept {
+Resource_ptr<T> Manager::get(std::string const& filename, Variants const& options) noexcept {
     if (filename.empty()) {
         return Resource_ptr<T>::Null();
     }
@@ -115,7 +115,7 @@ Resource_ptr<T> Manager::store(T* resource) noexcept {
 
 template <typename T>
 Resource_ptr<T> Manager::store(std::string const& name, T* resource,
-                               Variant_map const& options) noexcept {
+                               Variants const& options) noexcept {
     if (name.empty() || !resource) {
         return Resource_ptr<T>::Null();
     }

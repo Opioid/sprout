@@ -18,9 +18,18 @@ Typed_cache<T>::Typed_cache(Provider<T>& provider) noexcept : provider_(provider
 
 template <typename T>
 Typed_cache<T>::~Typed_cache() noexcept {
+    clear();
+}
+
+template <typename T>
+void Typed_cache<T>::clear() noexcept {
     for (auto r : resources_) {
         delete r;
     }
+
+    resources_.clear();
+
+    entries_.clear();
 }
 
 template <typename T>
@@ -29,18 +38,16 @@ std::vector<T*> const& Typed_cache<T>::resources() const noexcept {
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
-                                     memory::Variant_map const& options,
-                                     Manager&                   manager) noexcept {
+Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
+                                     Manager& manager) noexcept {
     std::string resolved_name;
 
     return load(filename, options, manager, resolved_name);
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
-                                     memory::Variant_map const& options, Manager& manager,
-                                     std::string& resolved_name) noexcept {
+Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
+                                     Manager& resources, std::string& resolved_name) noexcept {
     auto const key = std::make_pair(filename, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
@@ -52,7 +59,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
         }
     }
 
-    auto resource = provider_.load(filename, options, manager, resolved_name);
+    auto resource = provider_.load(filename, options, resources, resolved_name);
     if (!resource) {
         return Resource_ptr<T>::Null();
     }
@@ -77,10 +84,9 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const&         filename,
 
 template <typename T>
 Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
-                                     std::string const&         source_name,
-                                     memory::Variant_map const& options,
-                                     Manager&                   manager) noexcept {
-    auto resource = provider_.load(data, source_name, options, manager);
+                                     std::string const& source_name, Variants const& options,
+                                     Manager& resources) noexcept {
+    auto resource = provider_.load(data, source_name, options, resources);
     if (!resource) {
         return Resource_ptr<T>::Null();
     }
@@ -101,8 +107,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::get(std::string const&         filename,
-                                    memory::Variant_map const& options) noexcept {
+Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const& options) noexcept {
     auto const key = std::make_pair(filename, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
@@ -138,7 +143,7 @@ Resource_ptr<T> Typed_cache<T>::store(T* resource) noexcept {
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::store(std::string const& name, memory::Variant_map const& options,
+Resource_ptr<T> Typed_cache<T>::store(std::string const& name, Variants const& options,
                                       T* resource) noexcept {
     auto const key = std::make_pair(name, options);
 

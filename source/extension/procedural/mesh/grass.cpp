@@ -18,7 +18,7 @@ using namespace scene::shape;
 using namespace scene::shape::triangle;
 
 Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
-                                    resource::Manager& resources) noexcept {
+                                    Resources& resources) noexcept {
     std::vector<Index_triangle> triangles;
     std::vector<Vertex>         vertices;
 

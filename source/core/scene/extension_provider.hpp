@@ -18,12 +18,13 @@ struct Prop_ptr;
 
 class Extension_provider {
   public:
-    using Prop_ptr = prop::Prop_ptr;
+    using Prop_ptr  = prop::Prop_ptr;
+    using Resources = resource::Manager;
 
     virtual ~Extension_provider() noexcept {}
 
     virtual uint32_t create_extension(json::Value const& extension_value, std::string const& name,
-                                      Scene& scene, resource::Manager& resources) noexcept = 0;
+                                      Scene& scene, Resources& resources) noexcept = 0;
 };
 
 }  // namespace scene
