@@ -63,7 +63,7 @@ logfunc = LOG_FUNC(py_log_callback)
 progstartfunc = PROGRESS_START_FUNC(py_progress_start)
 progtickfunc = PROGRESS_TICK_FUNC(py_progress_tick)
 
-sprout.su_register_log(logfunc, False)
+sprout.su_register_log(logfunc)
 
 sprout.su_init(True)
 

@@ -74,8 +74,6 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.no_textures = true;
     } else if ("debug-material" == command) {
         result.debug_material = true;
-    } else if ("verbose" == command || "v" == command) {
-        result.verbose = true;
     } else {
         logging::warning("Option %S does not exist.", command);
     }
@@ -120,8 +118,7 @@ Usage:
                               logical CPUs minus x.
                               The default value is 0.
   -q, --quit                  Automatically quit sprout after rendering.
-      --no-textures           Disables loading of all textures.
-  -v, --verbose               Enables verbose logging.)";
+      --no-textures           Disables loading of all textures)";
 
     logging::info(text);
 }

@@ -11,7 +11,7 @@ int main(int /*argc*/, char* /*argv*/[]) noexcept {
 
     su_init(false);
 
-    su_register_log(&logging_post, false);
+    su_register_log(&logging_post);
 
     su_register_progress(&progress_start, &progress_tick);
 

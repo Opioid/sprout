@@ -48,7 +48,7 @@ Loader::~Loader() noexcept {}
 
 bool Loader::load(std::string const& filename, std::string_view take_name, take::Take const& take,
                   Scene& scene) noexcept {
-    logging::verbose("Loading scene %S...", filename);
+    LOGGING_VERBOSE("Loading scene %S...", filename);
 
     std::string_view const take_mount_folder = string::parent_directory(take_name);
 
@@ -321,7 +321,7 @@ void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value,
 
 uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
                            Local_materials const& local_materials, Scene& scene) noexcept {
-    logging::verbose("Loading prop...");
+    LOGGING_VERBOSE("Loading prop...");
 
     Shape_ptr shape = Shape_ptr::Null();
 

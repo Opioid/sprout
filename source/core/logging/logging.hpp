@@ -22,13 +22,29 @@ void error(std::string const& text, std::string const& a) noexcept;
 void push_error(std::string const& text) noexcept;
 void push_error(std::string const& text, std::string const& a) noexcept;
 
+#ifdef SU_DEBUG
+
 void verbose(std::string const& text) noexcept;
 void verbose(std::string const& text, std::string const& a) noexcept;
 
-void set_verbose(bool verbose) noexcept;
-
-bool is_verbose() noexcept;
+#endif
 
 }  // namespace logging
+
+#define GET_LOGGING_MACRO(_1, _2, NAME, ...) NAME
+#define LOGGING_VERBOSE(...) \
+    GET_LOGGING_MACRO(__VA_ARGS__, LOGGING_VERBOSE2, LOGGING_VERBOSE1)(__VA_ARGS__)
+
+#ifndef SU_DEBUG
+
+#define LOGGING_VERBOSE1(TEXT) ((void)0)
+#define LOGGING_VERBOSE2(TEXT, A) ((void)0)
+
+#else
+
+#define LOGGING_VERBOSE1(TEXT) logging::verbose(TEXT)
+#define LOGGING_VERBOSE2(TEXT, A) logging::verbose(TEXT, A)
+
+#endif
 
 #endif

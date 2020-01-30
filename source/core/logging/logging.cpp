@@ -6,8 +6,6 @@ namespace logging {
 
 static memory::Unique_ptr<Log> log;
 
-static bool log_verbose = false;
-
 void init(Log* l) noexcept {
     log = memory::Unique_ptr<Log>(l);
 }
@@ -66,24 +64,20 @@ void push_error(std::string const& text, std::string const& a) noexcept {
     }
 }
 
+#ifdef SU_DEBUG
+
 void verbose(std::string const& text) noexcept {
-    if (log & log_verbose) {
+    if (log) {
         log->post(Log::Type::Verbose, text);
     }
 }
 
 void verbose(std::string const& text, std::string const& a) noexcept {
-    if (log & log_verbose) {
+    if (log) {
         log->post(Log::Type::Verbose, text, a);
     }
 }
 
-void set_verbose(bool verbose) noexcept {
-    log_verbose = verbose;
-}
-
-bool is_verbose() noexcept {
-    return log_verbose;
-}
+#endif
 
 }  // namespace logging

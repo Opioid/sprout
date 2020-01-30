@@ -93,8 +93,6 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.take = parameter;
     } else if ("threads" == command || "t" == command) {
         result.threads = std::atoi(parameter.data());
-    } else if ("verbose" == command || "v" == command) {
-        result.verbose = true;
     } else {
         logging::warning("Option %S does not exist.", command);
     }
@@ -163,8 +161,7 @@ Usage:
                               0 creates one thread for each logical CPU.
                               -x creates as many threads as the number of
                               logical CPUs minus x.
-                              The default value is 0.
-  -v, --verbose               Enables verbose logging.)";
+                              The default value is 0.)";
 
     logging::info(text);
 }

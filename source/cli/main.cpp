@@ -28,8 +28,6 @@
 #include "extension/procedural/sky/sky_provider.hpp"
 #include "options/options.hpp"
 
-#include <iostream>
-#include <istream>
 #include <sstream>
 
 //#include "core/scene/material/substitute/substitute_test.hpp"
@@ -42,8 +40,10 @@
 //#include "core/sampler/sampler_test.hpp"
 //#include "core/scene/material/ggx/ggx_integrate.hpp"
 
+#ifdef SU_DEBUG
 static void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
                                    scene::Scene const& scene) noexcept;
+#endif
 
 int main(int argc, char* argv[]) noexcept {
     //	scene::material::substitute::testing::test();
@@ -72,8 +72,6 @@ int main(int argc, char* argv[]) noexcept {
     logging::info("Welcome to sprout (" + platform::build() + " - " + platform::revision() + ")!");
 
     auto const args = options::parse(argc, argv);
-
-    logging::set_verbose(args.verbose);
 
     if (args.take.empty()) {
         logging::error("No take specified.");
@@ -180,8 +178,9 @@ int main(int argc, char* argv[]) noexcept {
             logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
 
             logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
-
+#ifdef SU_DEBUG
             log_memory_consumption(resources, scene_loader, scene);
+#endif
         }
 
         if (args.quit) {
@@ -202,12 +201,9 @@ int main(int argc, char* argv[]) noexcept {
     return 0;
 }
 
+#ifdef SU_DEBUG
 void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
                             scene::Scene const& scene) noexcept {
-    if (!logging::is_verbose()) {
-        return;
-    }
-
     logging::verbose("Memory consumption:");
 
     size_t const image_num_bytes = manager.num_bytes<image::Image>();
@@ -226,3 +222,4 @@ void log_memory_consumption(resource::Manager const& manager, scene::Loader cons
                                    scene_num_bytes;
     logging::verbose("\tTotal: " + string::print_bytes(total_num_bytes));
 }
+#endif

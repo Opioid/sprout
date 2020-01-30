@@ -34,7 +34,6 @@ struct Options {
     int threads = 0;
 
     bool no_export = false;
-    bool verbose   = false;
 };
 
 Options parse(int argc, char* argv[]) noexcept;

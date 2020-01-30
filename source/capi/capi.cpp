@@ -682,14 +682,12 @@ class C : public Log {
 
 }  // namespace logging
 
-int32_t su_register_log(Post post, bool verbose) noexcept {
+int32_t su_register_log(Post post) noexcept {
     if (!post) {
         return -1;
     }
 
     logging::init(new logging::C(post));
-
-    logging::set_verbose(verbose);
 
     return 0;
 }

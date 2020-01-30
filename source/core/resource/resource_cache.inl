@@ -8,8 +8,11 @@
 #include "resource_cache.hpp"
 #include "resource_provider.hpp"
 
-#include <sstream>
 #include <string_view>
+
+#ifdef SU_DEBUG
+#include <sstream>
+#endif
 
 namespace resource {
 
@@ -64,11 +67,11 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
 
     entries_.insert_or_assign(key, Entry{id, generation_, resolved_name, last_write});
 
-    if (logging::is_verbose()) {
-        std::stringstream stream;
-        stream << "Loaded " << T::identifier() << " resource \"" << filename << "\"";
-        logging::verbose(stream.str());
-    }
+#ifdef SU_DEBUG
+    std::stringstream stream;
+    stream << "Loaded " << T::identifier() << " resource \"" << filename << "\"";
+    LOGGING_VERBOSE(stream.str());
+#endif
 
     return {resource, id};
 }

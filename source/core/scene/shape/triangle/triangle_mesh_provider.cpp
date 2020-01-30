@@ -123,7 +123,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     }
 
     resources.threads().run_async([mesh, handler_raw{handler.release()}, &resources]() {
-        logging::verbose("Started asynchronously building triangle mesh BVH.");
+        LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
         auto& triangles = handler_raw->triangles();
 
@@ -148,7 +148,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
 
         delete handler_raw;
 
-        logging::verbose("Finished asynchronously building triangle mesh BVH.");
+        LOGGING_VERBOSE("Finished asynchronously building triangle mesh BVH.");
     });
 
     return mesh;
@@ -178,7 +178,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
     }
 
     resources.threads().run_async([mesh, desc, &resources]() {
-        logging::verbose("Started asynchronously building triangle mesh BVH.");
+        LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
         uint32_t const num_triangles = desc.num_triangles;
 
@@ -238,7 +238,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
 
         memory::free_aligned(tangents);
 
-        logging::verbose("Finished asynchronously building triangle mesh BVH.");
+        LOGGING_VERBOSE("Finished asynchronously building triangle mesh BVH.");
     });
 
     return mesh;

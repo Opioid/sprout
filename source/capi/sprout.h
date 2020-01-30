@@ -101,7 +101,7 @@ SU_LIBRARY_API int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32
 
 typedef void (*Post)(uint32_t type, char const* text);
 
-SU_LIBRARY_API int32_t su_register_log(Post post, bool verbose) noexcept;
+SU_LIBRARY_API int32_t su_register_log(Post post) noexcept;
 
 typedef void (*Progress_start)(uint32_t resolution);
 

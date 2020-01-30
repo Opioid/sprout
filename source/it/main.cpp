@@ -31,7 +31,9 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
 void comparison(std::vector<Item> const& items) noexcept;
 
 int main(int argc, char* argv[]) noexcept {
+#ifdef SU_DEBUG
     auto const total_start = std::chrono::high_resolution_clock::now();
+#endif
 
     logging::init(new logging::Std_out);
 
@@ -39,8 +41,6 @@ int main(int argc, char* argv[]) noexcept {
     //    ")!");
 
     auto const args = it::options::parse(argc, argv);
-
-    logging::set_verbose(args.verbose);
 
     if (args.images.empty()) {
         logging::error("No images specified.");
@@ -112,18 +112,18 @@ int main(int argc, char* argv[]) noexcept {
 
     if (Options::Operator::Average == args.op) {
         if (uint32_t const num = op::average(items, args, resources.threads()); num) {
-            logging::verbose("average " + string::to_string(num) + " images in " +
-                             string::to_string(chrono::seconds_since(total_start)) + " s");
+            LOGGING_VERBOSE("average " + string::to_string(num) + " images in " +
+                            string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Diff == args.op) {
         if (uint32_t const num = op::difference(items, args, resources.threads()); num) {
-            logging::verbose("diff " + string::to_string(num) + " images in " +
-                             string::to_string(chrono::seconds_since(total_start)) + " s");
+            LOGGING_VERBOSE("diff " + string::to_string(num) + " images in " +
+                            string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Cat == args.op) {
         if (uint32_t const num = op::concatenate(items, args, pipeline, resources.threads()); num) {
-            logging::verbose("cat " + string::to_string(num) + " images in " +
-                             string::to_string(chrono::seconds_since(total_start)) + " s");
+            LOGGING_VERBOSE("cat " + string::to_string(num) + " images in " +
+                            string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     }
 
