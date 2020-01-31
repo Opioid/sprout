@@ -270,6 +270,20 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
     return prop_id;
 }
 
+int32_t su_camera_set_resolution(uint32_t width, uint32_t height) noexcept {
+    ASSERT_ENGINE(-1)
+
+    scene::camera::Camera* camera = engine->take.view.camera;
+
+    if (!camera) {
+        return -2;
+    }
+
+    camera->set_resolution(int2(width, height));
+
+    return 0;
+}
+
 int32_t su_create_sampler(uint32_t num_samples) noexcept {
     ASSERT_ENGINE(-1)
 

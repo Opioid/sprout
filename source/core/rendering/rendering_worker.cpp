@@ -49,7 +49,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     sampler_ = samplers.get(id, rng_);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
-    if (photon_settings.num_photons) {
+    if (photon_settings.num_photons > 0) {
         delete photon_mapper_;
 
         Photon_mapper::Settings const ps{photon_settings.max_bounces,
