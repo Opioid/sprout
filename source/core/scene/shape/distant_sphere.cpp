@@ -107,7 +107,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformati
 
     float const b = dot(n, ray.direction);
 
-    if (b > 0.f || ray.max_t < Ray_max_t) {
+    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
         return false;
     }
 
@@ -132,7 +132,7 @@ bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transform
 
     float const b = dot(n, ray.direction);
 
-    if (b > 0.f || ray.max_t < Ray_max_t) {
+    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
         return false;
     }
 

@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_MORPHABLE_MESH_HPP
 
 #include "base/math/distribution/distribution_1d.hpp"
-#include "scene/shape/morphable_shape.hpp"
+#include "scene/shape/morphable.hpp"
 #include "scene/shape/shape.hpp"
 #include "triangle_mesh_bvh.hpp"
 
@@ -11,7 +11,7 @@ namespace scene::shape::triangle {
 struct Triangle_MT;
 class Morph_target_collection;
 
-class alignas(64) Morphable_mesh : public Shape, public Morphable_shape {
+class alignas(64) Morphable_mesh : public Shape, public Morphable {
   public:
     Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts) noexcept;
 
@@ -91,7 +91,7 @@ class alignas(64) Morphable_mesh : public Shape, public Morphable_shape {
 
     void prepare_sampling(uint32_t part) noexcept final;
 
-    Morphable_shape* morphable_shape() noexcept final;
+    Morphable* morphable_shape() noexcept final;
 
     void morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads) noexcept final;
 

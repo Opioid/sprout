@@ -18,6 +18,7 @@ static inline float3 prop_power(uint32_t prop, uint32_t part, float area, AABB c
     if (scene.prop_shape(prop)->is_finite()) {
         return area * radiance;
     }
+
     return squared_length(scene_bb.halfsize()) * area * radiance;
 }
 

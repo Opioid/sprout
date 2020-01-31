@@ -271,7 +271,7 @@ bool Morphable_mesh::is_analytical() const noexcept {
 
 void Morphable_mesh::prepare_sampling(uint32_t /*part*/) noexcept {}
 
-Morphable_shape* Morphable_mesh::morphable_shape() noexcept {
+Morphable* Morphable_mesh::morphable_shape() noexcept {
     return this;
 }
 

@@ -12,7 +12,7 @@ target_sources(core
     "distant_sphere.hpp"
     "infinite_sphere.cpp"
     "infinite_sphere.hpp"
-    "morphable_shape.hpp"
+    "morphable.hpp"
     "node_stack.hpp"
     "node_stack.inl"
     "null.cpp"

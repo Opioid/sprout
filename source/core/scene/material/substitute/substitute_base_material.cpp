@@ -19,6 +19,7 @@ float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
         return emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
     }
+
     return float3(0.f);
 }
 
@@ -26,6 +27,7 @@ float3 Material_base::average_radiance(float /*area*/, Scene const& scene) const
     if (emission_map_.is_valid()) {
         return emission_factor_ * emission_map_.texture(scene).average_3();
     }
+
     return float3(0.f);
 }
 

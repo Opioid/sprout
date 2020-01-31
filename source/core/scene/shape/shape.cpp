@@ -56,7 +56,7 @@ float3 Shape::center(uint32_t /*part*/) const noexcept {
     return float3(0.f);
 }
 
-Morphable_shape* Shape::morphable_shape() noexcept {
+Morphable* Shape::morphable_shape() noexcept {
     return nullptr;
 }
 

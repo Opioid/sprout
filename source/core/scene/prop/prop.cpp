@@ -11,7 +11,7 @@
 #include "scene/scene.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
-#include "scene/shape/morphable_shape.hpp"
+#include "scene/shape/morphable.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/shape_intersection.hpp"
 

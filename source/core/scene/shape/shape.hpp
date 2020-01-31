@@ -33,7 +33,7 @@ struct Normals;
 struct Sample_to;
 struct Sample_from;
 class Node_stack;
-class Morphable_shape;
+class Morphable;
 
 class Shape {
   public:
@@ -139,7 +139,7 @@ class Shape {
 
     virtual float3 center(uint32_t part) const noexcept;
 
-    virtual Morphable_shape* morphable_shape() noexcept;
+    virtual Morphable* morphable_shape() noexcept;
 
     virtual size_t num_bytes() const noexcept = 0;
 

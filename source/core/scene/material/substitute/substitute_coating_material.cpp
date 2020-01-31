@@ -33,6 +33,7 @@ float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float2 uv, fl
 
         return clearcoat.attenuation(1.f) * radiance;
     }
+
     return float3(0.f);
 }
 

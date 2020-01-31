@@ -62,16 +62,20 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
 
         return encoding::png::Reader::read(stream, channels, num_elements, swap_xy, invert);
     }
+
     if (file::Type::RGBE == type) {
         return encoding::rgbe::Reader::read(stream);
     }
+
     if (file::Type::SUB == type) {
         return encoding::sub::Reader::read(stream);
     }
+
     if (file::Type::Undefined == type) {
         if ("raw" == string::suffix(filename) || "raw" == string::presuffix(filename)) {
             return encoding::raw::Reader::read(stream);
         }
+
         if ("json" == string::suffix(filename) || "json" == string::presuffix(filename)) {
             return encoding::json::Reader::read(stream, filename);
         }

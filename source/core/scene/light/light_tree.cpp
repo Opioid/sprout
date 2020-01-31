@@ -57,6 +57,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
     if (children | total_sphere) {
         return 0.5f * base;
     }
+
     float3 const na = normalize(axis);
 
     return std::max(dot(n, na), 0.01f) * base;
@@ -71,6 +72,7 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
 
         return {l.offset, l.pdf * ip};
     }
+
     float pdf = 1.f - ip;
 
     random = (random - ip) / pdf;
@@ -117,6 +119,7 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
     if (lo < infinite_end_) {
         return ip * infinite_light_distribution_.pdf(lo);
     }
+
     float pdf = 1.f - ip;
 
     for (uint32_t nid = 0;;) {
