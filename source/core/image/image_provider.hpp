@@ -12,10 +12,10 @@ class Provider final : public resource::Provider<Image> {
   public:
     Provider() noexcept;
 
-    ~Provider() noexcept override final;
+    ~Provider() noexcept final;
 
     Image* load(std::string const& filename, Variants const& options, Resources& resources,
-                std::string& resolved_name) noexcept override final;
+                std::string& resolved_name) noexcept final;
 
     struct Description {
         enum class Pixel_type { Byte = 0, Short, Float };
@@ -34,11 +34,11 @@ class Provider final : public resource::Provider<Image> {
     };
 
     Image* load(void const* data, std::string const& source_name, Variants const& options,
-                Resources& resources) noexcept override final;
+                Resources& resources) noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
-    size_t num_bytes(Image const* resource) const noexcept override final;
+    size_t num_bytes(Image const* resource) const noexcept final;
 
   private:
     procedural::flakes::Provider flakes_provider_;

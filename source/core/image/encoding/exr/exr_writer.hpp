@@ -10,9 +10,9 @@ class Writer : public image::Writer {
   public:
     Writer(bool alpha);
 
-    std::string file_extension() const override final;
+    std::string file_extension() const final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) override final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
 
   private:
     bool no_compression(std::ostream& stream, Float4 const& image) const noexcept;

@@ -27,7 +27,9 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
                       std::string& resolved_name) noexcept {
     if ("proc:flakes" == filename) {
         return flakes_provider_.create_normal_map(options);
-    } else if ("proc:flakes_mask" == filename) {
+    }
+
+    if ("proc:flakes_mask" == filename) {
         return flakes_provider_.create_mask(options);
     }
 
@@ -42,7 +44,9 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
 
     if (file::Type::EXR == type) {
         return encoding::exr::Reader::read(stream);
-    } else if (file::Type::PNG == type) {
+    }
+
+    if (file::Type::PNG == type) {
         Channels channels = Channels::None;
         options.query("channels", channels);
 
@@ -57,14 +61,18 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
         options.query("invert", invert);
 
         return encoding::png::Reader::read(stream, channels, num_elements, swap_xy, invert);
-    } else if (file::Type::RGBE == type) {
+    }
+    if (file::Type::RGBE == type) {
         return encoding::rgbe::Reader::read(stream);
-    } else if (file::Type::SUB == type) {
+    }
+    if (file::Type::SUB == type) {
         return encoding::sub::Reader::read(stream);
-    } else if (file::Type::Undefined == type) {
+    }
+    if (file::Type::Undefined == type) {
         if ("raw" == string::suffix(filename) || "raw" == string::presuffix(filename)) {
             return encoding::raw::Reader::read(stream);
-        } else if ("json" == string::suffix(filename) || "json" == string::presuffix(filename)) {
+        }
+        if ("json" == string::suffix(filename) || "json" == string::presuffix(filename)) {
             return encoding::json::Reader::read(stream, filename);
         }
     }

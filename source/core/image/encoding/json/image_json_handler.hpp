@@ -19,9 +19,9 @@ class Byte1_handler : public Image_handler {
   public:
     Byte1_handler(Byte1& image);
 
-    void add(uint32_t value) override final;
+    void add(uint32_t value) final;
 
-    void add(float value) override final;
+    void add(float value) final;
 
   private:
     Byte1& image_;
@@ -33,9 +33,9 @@ class Float1_handler : public Image_handler {
   public:
     Float1_handler(Float1& image);
 
-    void add(uint32_t value) override final;
+    void add(uint32_t value) final;
 
-    void add(float value) override final;
+    void add(float value) final;
 
   private:
     Float1& image_;

@@ -13,10 +13,9 @@ class Statistics : public Sink {
   public:
     Statistics() noexcept;
 
-    ~Statistics() noexcept override final;
+    ~Statistics() noexcept final;
 
-    void write(image::Float4 const& image, uint32_t frame,
-               thread::Pool& threads) noexcept override final;
+    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) noexcept final;
 };
 
 }  // namespace exporting

@@ -12,11 +12,11 @@ class Material_base : public material::Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override;
 
-    float3 average_radiance(float area, Scene const& scene) const noexcept override final;
+    float3 average_radiance(float area, Scene const& scene) const noexcept final;
 
-    bool has_emission_map() const noexcept override final;
+    bool has_emission_map() const noexcept final;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
     void set_ior(float ior) noexcept;
 

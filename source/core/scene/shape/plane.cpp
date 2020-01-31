@@ -114,11 +114,7 @@ bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
-        return true;
-    }
-
-    return false;
+    return (hit_t > ray.min_t) & (hit_t < ray.max_t);
 }
 
 float Plane::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,

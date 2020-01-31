@@ -12,17 +12,25 @@ Type query_type(std::istream& stream) {
 
     if (!strncmp("\x76\x2f\x31\x01", header, 4)) {
         return Type::EXR;
-    } else if (!strncmp("\037\213", header, 2)) {
-        return Type::GZIP;
-    } else if (!strncmp("\211PNG", header, 4)) {
-        return Type::PNG;
-    } else if (!strncmp("#?", header, 2)) {
-        return Type::RGBE;
-    } else if (!strncmp("SUB\000", header, 4)) {
-        return Type::SUB;
-    } else {
-        return Type::Undefined;
     }
+
+    if (!strncmp("\037\213", header, 2)) {
+        return Type::GZIP;
+    }
+
+    if (!strncmp("\211PNG", header, 4)) {
+        return Type::PNG;
+    }
+
+    if (!strncmp("#?", header, 2)) {
+        return Type::RGBE;
+    }
+
+    if (!strncmp("SUB\000", header, 4)) {
+        return Type::SUB;
+    }
+
+    return Type::Undefined;
 }
 
 }  // namespace file

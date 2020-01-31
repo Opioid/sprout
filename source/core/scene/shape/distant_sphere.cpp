@@ -139,11 +139,7 @@ bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transform
     float const radius = transformation.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
-    if (det > 0.f) {
-        return true;
-    }
-
-    return false;
+    return det > 0.f;
 }
 
 float Distant_sphere::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,

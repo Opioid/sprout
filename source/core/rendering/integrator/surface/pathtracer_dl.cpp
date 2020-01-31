@@ -257,34 +257,33 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         }
 
         return result / float(num_samples);
-    } else {
-        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
-            auto const& light = worker.scene().light(l);
+    }
+    for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
+        auto const& light = worker.scene().light(l);
 
-            shape::Sample_to light_sample;
-            if (!light.sample(p, n, ray.time, is_translucent, sampler, l, worker, light_sample)) {
-                continue;
-            }
-
-            shadow_ray.set_direction(light_sample.wi);
-            shadow_ray.max_t = light_sample.t;
-
-            float3 tr;
-            if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
-                continue;
-            }
-
-            auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
-
-            float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
-
-            float const weight = 1.f / (light_sample.pdf);
-
-            result += weight * (tr * radiance * bxdf.reflection);
+        shape::Sample_to light_sample;
+        if (!light.sample(p, n, ray.time, is_translucent, sampler, l, worker, light_sample)) {
+            continue;
         }
 
-        return result / float(num_samples);
+        shadow_ray.set_direction(light_sample.wi);
+        shadow_ray.max_t = light_sample.t;
+
+        float3 tr;
+        if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
+            continue;
+        }
+
+        auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+
+        float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
+
+        float const weight = 1.f / (light_sample.pdf);
+
+        result += weight * (tr * radiance * bxdf.reflection);
     }
+
+    return result / float(num_samples);
 }
 
 sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) noexcept {

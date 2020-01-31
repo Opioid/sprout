@@ -46,7 +46,7 @@ class Sample_base : public material::Sample {
   public:
     using Sampler = sampler::Sampler;
 
-    float3 const& base_shading_normal() const noexcept override final;
+    float3 const& base_shading_normal() const noexcept final;
 
     Layer layer_;
 };

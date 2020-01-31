@@ -76,7 +76,8 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
     if (!interface_stack.empty()) {
         reset_interface_stack(interface_stack);
 
-        float3 vli, vtr;
+        float3 vli;
+        float3 vtr;
         if (auto const event = volume_integrator_->integrate(ray, intersection, Filter::Undefined,
                                                              *this, vli, vtr);
             Event::Absorb == event) {
@@ -90,15 +91,17 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
         SOFT_ASSERT(all_finite_and_positive(li));
 
         return float4(vtr * li.xyz() + vli, li[3]);
-    } else if (intersect_and_resolve_mask(ray, intersection, Filter::Undefined)) {
+    }
+
+    if (intersect_and_resolve_mask(ray, intersection, Filter::Undefined)) {
         float4 const li = surface_integrator_->li(ray, intersection, *this, interface_stack);
 
         SOFT_ASSERT(all_finite_and_positive(li));
 
         return li;
-    } else {
-        return float4(0.f);
     }
+
+    return float4(0.f);
 }
 
 bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& intersection,

@@ -21,14 +21,14 @@ class alignas(64) Pathtracer_DL final : public Integrator {
 
     Pathtracer_DL(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept;
 
-    ~Pathtracer_DL() noexcept override final;
+    ~Pathtracer_DL() noexcept final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
 
-    void start_pixel() noexcept override final;
+    void start_pixel() noexcept final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept override final;
+              Interface_stack const& initial_stack) noexcept final;
 
   private:
     float3 direct_light(Ray const& ray, Intersection const& intersection,
@@ -58,7 +58,7 @@ class Pathtracer_DL_pool final : public Typed_pool<Pathtracer_DL> {
                        uint32_t min_bounces, uint32_t max_bounces, Light_sampling light_sampling,
                        bool enable_caustics) noexcept;
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept final;
 
   private:
     Pathtracer_DL::Settings settings_;

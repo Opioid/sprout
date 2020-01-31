@@ -7,7 +7,7 @@ namespace scene::material::glass {
 
 class Sample_dispersion final : public Sample {
   public:
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept final;
 
     void set_dispersion(float abbe, float wavelength) noexcept;
 

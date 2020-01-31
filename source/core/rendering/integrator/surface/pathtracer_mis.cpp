@@ -227,7 +227,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (!worker.interface_stack().empty()) {
-            float3     vli, vtr;
+            float3     vli;
+            float3     vtr;
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             if (Event::Absorb == hit) {
@@ -243,10 +244,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                 SOFT_ASSERT(all_finite_and_positive(result_li));
 
                 break;
-            } else {
-                // This is only needed for Tracking_single at the moment...
-                result_li += throughput * vli;
             }
+
+            // This is only needed for Tracking_single at the moment...
+            result_li += throughput * vli;
 
             throughput *= vtr;
 

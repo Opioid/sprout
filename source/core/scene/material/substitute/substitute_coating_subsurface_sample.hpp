@@ -10,13 +10,13 @@ namespace scene::material::substitute {
 class Sample_coating_subsurface final
     : public Sample_coating<coating::Clearcoat_layer, disney::Isotropic_no_lambert> {
   public:
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept final;
 
-    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept final;
 
     void set_volumetric(float anisotropy, float ior, float ior_outside) noexcept;
 
@@ -33,13 +33,13 @@ class Sample_coating_subsurface final
 
 class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
   public:
-    float3 const& base_shading_normal() const noexcept override final;
+    float3 const& base_shading_normal() const noexcept final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
 
-    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept final;
 
   private:
     float3 attenuation(float3 const& wi) const noexcept;

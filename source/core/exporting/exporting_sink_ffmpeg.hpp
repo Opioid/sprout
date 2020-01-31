@@ -14,10 +14,9 @@ class Ffmpeg : public Sink, image::encoding::Srgb {
     Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion,
            uint32_t framerate) noexcept;
 
-    ~Ffmpeg() noexcept override final;
+    ~Ffmpeg() noexcept final;
 
-    void write(image::Float4 const& image, uint32_t frame,
-               thread::Pool& threads) noexcept override final;
+    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) noexcept final;
 
   private:
     FILE* stream_;

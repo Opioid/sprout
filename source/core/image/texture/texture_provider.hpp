@@ -29,14 +29,14 @@ class Provider final : public resource::Provider<Texture> {
     };
 
     Texture* load(std::string const& filename, Variants const& options, Resources& resources,
-                  std::string& resolved_name) noexcept override final;
+                  std::string& resolved_name) noexcept final;
 
     Texture* load(void const* data, std::string const& source_name, Variants const& options,
-                  Resources& resources) noexcept override final;
+                  Resources& resources) noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
-    size_t num_bytes(Texture const* resource) const noexcept override final;
+    size_t num_bytes(Texture const* resource) const noexcept final;
 
     static std::string encode_name(uint32_t image_id) noexcept;
 

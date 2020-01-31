@@ -20,12 +20,12 @@ class alignas(64) Whitted final : public Integrator {
 
     Whitted(rnd::Generator& rng, Settings const& settings) noexcept;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
 
-    void start_pixel() noexcept override final;
+    void start_pixel() noexcept final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept override final;
+              Interface_stack const& initial_stack) noexcept final;
 
   private:
     float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept;
@@ -42,7 +42,7 @@ class Whitted_pool final : public Typed_pool<Whitted> {
   public:
     Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples) noexcept;
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept final;
 
   private:
     Whitted::Settings settings_;

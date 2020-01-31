@@ -527,13 +527,12 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
             material->set_emission_map(emission_map, animation_duration);
             material->set_emission_factor(emission_factor);
             return material;
-        } else {
-            auto material = new light::Emissionmap(sampler_settings, two_sided);
-            material->set_mask(mask);
-            material->set_emission_map(emission_map);
-            material->set_emission_factor(emission_factor);
-            return material;
         }
+        auto material = new light::Emissionmap(sampler_settings, two_sided);
+        material->set_mask(mask);
+        material->set_emission_map(emission_map);
+        material->set_emission_factor(emission_factor);
+        return material;
     }
 
     auto material = new light::Constant(sampler_settings, two_sided);
@@ -1274,13 +1273,13 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
             material->set_emission(emission);
             material->set_anisotropy(anisotropy);
             return material;
-        } else {
-            auto material = new Grid(sampler_settings, density_map);
-            material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
-            material->set_emission(emission);
-            material->set_anisotropy(anisotropy);
-            return material;
         }
+        auto material = new Grid(sampler_settings, density_map);
+        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+        material->set_emission(emission);
+        material->set_anisotropy(anisotropy);
+        return material;
+
     } else if (color_map.is_valid()) {
         auto material = new Grid_color(sampler_settings);
         material->set_color(color_map);

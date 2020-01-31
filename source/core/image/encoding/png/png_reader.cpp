@@ -100,8 +100,8 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
 
     stream.read(reinterpret_cast<char*>(signature), Signature_size);
 
-    if (memcmp(reinterpret_cast<const void*>(Signature), reinterpret_cast<void*>(signature),
-               Signature_size)) {
+    if (0 != memcmp(reinterpret_cast<const void*>(Signature), reinterpret_cast<void*>(signature),
+                    Signature_size)) {
         logging::push_error("Bad PNG signature");
         return nullptr;
     }
@@ -203,7 +203,9 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         }
 
         return image;
-    } else if (2 == num_channels) {
+    }
+
+    if (2 == num_channels) {
         Image* image = new Image(Byte2(Description(dimensions, num_elements)));
 
         byte2 color(0, 0);
@@ -218,7 +220,9 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         }
 
         return image;
-    } else if (3 == num_channels) {
+    }
+
+    if (3 == num_channels) {
         Image* image = new Image(Byte3(Description(dimensions, num_elements)));
 
         byte3 color(0, 0, 0);
@@ -237,7 +241,9 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         }
 
         return image;
-    } else if (4 == num_channels) {
+    }
+
+    if (4 == num_channels) {
         Image* image = new Image(Byte4(Description(dimensions, num_elements)));
 
         byte4 color(0, 0, 0, 255);

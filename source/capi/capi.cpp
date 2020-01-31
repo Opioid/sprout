@@ -43,13 +43,13 @@ namespace progress {
 
 class C : public Sink {
   public:
-    void start(uint32_t resolution) noexcept override final {
+    void start(uint32_t resolution) noexcept final {
         if (start_) {
             start_(resolution);
         }
     }
 
-    void tick() noexcept override final {
+    void tick() noexcept final {
         if (tick_) {
             tick_();
         }
@@ -73,7 +73,7 @@ struct Engine {
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),
           scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources),
-          driver(threads, material_provider.max_sample_size(), progressor),
+          driver(threads, material::Provider::max_sample_size(), progressor),
           progressive(progressive),
           valid(false) {}
 
@@ -667,7 +667,9 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
             0, std::min(d[1], int32_t(height)));
 
         return 0;
-    } else if (SU_FLOAT32 == type && 4 == num_channels) {
+    }
+
+    if (SU_FLOAT32 == type && 4 == num_channels) {
         uint32_t const len = std::min(width * height, uint32_t(d[0] * d[1]));
 
         float const* raw = reinterpret_cast<float const*>(buffer.data());
@@ -687,7 +689,7 @@ class C : public Log {
     C(Post post) noexcept : post_(post) {}
 
   private:
-    void internal_post(Type type, std::string const& text) noexcept override final {
+    void internal_post(Type type, std::string const& text) noexcept final {
         post_(uint32_t(type), text.c_str());
     }
 

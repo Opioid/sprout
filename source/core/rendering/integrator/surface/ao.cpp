@@ -17,9 +17,8 @@ namespace rendering::integrator::surface {
 static sampler::Sampler* create_sampler(rnd::Generator& rng, bool progressive) noexcept {
     if (progressive) {
         return new sampler::Random(rng);
-    } else {
-        return new sampler::Golden_ratio(rng);
     }
+    return new sampler::Golden_ratio(rng);
 }
 
 AO::AO(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept

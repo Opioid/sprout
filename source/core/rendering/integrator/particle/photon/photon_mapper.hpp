@@ -44,9 +44,9 @@ class Mapper : public Integrator {
 
     ~Mapper() noexcept override;
 
-    void prepare(Scene const& scene, uint32_t num_photons) noexcept override final;
+    void prepare(Scene const& scene, uint32_t num_photons) noexcept final;
 
-    void start_pixel() noexcept override final;
+    void start_pixel() noexcept final;
 
     uint32_t bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t iteration,
                   Worker& worker) noexcept;

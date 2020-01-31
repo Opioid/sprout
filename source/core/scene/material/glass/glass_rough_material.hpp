@@ -11,14 +11,14 @@ class Glass_rough : public Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
     void set_normal_map(Texture_adapter const& normal_map) noexcept;
     void set_roughness_map(Texture_adapter const& roughness_map) noexcept;
@@ -28,7 +28,7 @@ class Glass_rough : public Material {
     void set_ior(float ior) noexcept;
     void set_roughness(float roughness) noexcept;
 
-    bool is_caustic() const noexcept override final;
+    bool is_caustic() const noexcept final;
 
     static size_t sample_size() noexcept;
 

@@ -9,26 +9,25 @@ class Homogeneous : public Material {
   public:
     Homogeneous(Sampler_settings const& sampler_settings) noexcept;
 
-    void compile(thread::Pool& threads, Scene const& scene) noexcept override final;
+    void compile(thread::Pool& threads, Scene const& scene) noexcept final;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
-                             Worker const& worker) const noexcept override final;
+                             Worker const& worker) const noexcept final;
 
     float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    CC collision_coefficients() const noexcept override final;
+    CC collision_coefficients() const noexcept final;
 
-    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const noexcept final;
 
     CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    CCE collision_coefficients_emission() const noexcept override final;
+    CCE collision_coefficients_emission() const noexcept final;
 
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
-                                        Worker const& worker) const noexcept override final;
+                                        Worker const& worker) const noexcept final;
 
     size_t num_bytes() const noexcept override;
 };

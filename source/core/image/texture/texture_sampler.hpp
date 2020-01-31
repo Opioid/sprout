@@ -25,20 +25,17 @@ class Sampler_2D {
 template <typename Address_mode_U, typename Address_mode_V>
 class Nearest_2D final : public Sampler_2D {
   public:
-    float  sample_1(Texture const& texture, float2 uv) const noexcept override final;
-    float2 sample_2(Texture const& texture, float2 uv) const noexcept override final;
-    float3 sample_3(Texture const& texture, float2 uv) const noexcept override final;
+    float  sample_1(Texture const& texture, float2 uv) const noexcept final;
+    float2 sample_2(Texture const& texture, float2 uv) const noexcept final;
+    float3 sample_3(Texture const& texture, float2 uv) const noexcept final;
 
-    float sample_1(Texture const& texture, float2 uv, int32_t element) const
-        noexcept override final;
+    float sample_1(Texture const& texture, float2 uv, int32_t element) const noexcept final;
 
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const
-        noexcept override final;
+    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const noexcept final;
 
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const
-        noexcept override final;
+    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const noexcept final;
 
-    float2 address(float2 uv) const noexcept override final;
+    float2 address(float2 uv) const noexcept final;
 
   private:
     static int2 map(Texture const& texture, float2 uv) noexcept;
@@ -47,20 +44,17 @@ class Nearest_2D final : public Sampler_2D {
 template <typename Address_U, typename Address_V>
 class Linear_2D : public Sampler_2D {
   public:
-    float  sample_1(Texture const& texture, float2 uv) const noexcept override final;
-    float2 sample_2(Texture const& texture, float2 uv) const noexcept override final;
-    float3 sample_3(Texture const& texture, float2 uv) const noexcept override final;
+    float  sample_1(Texture const& texture, float2 uv) const noexcept final;
+    float2 sample_2(Texture const& texture, float2 uv) const noexcept final;
+    float3 sample_3(Texture const& texture, float2 uv) const noexcept final;
 
-    float sample_1(Texture const& texture, float2 uv, int32_t element) const
-        noexcept override final;
+    float sample_1(Texture const& texture, float2 uv, int32_t element) const noexcept final;
 
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const
-        noexcept override final;
+    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const noexcept final;
 
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const
-        noexcept override final;
+    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const noexcept final;
 
-    float2 address(float2 uv) const noexcept override final;
+    float2 address(float2 uv) const noexcept final;
 
   private:
     static float2 map(Texture const& texture, float2 uv, int4& xy_xy1) noexcept;
@@ -81,12 +75,12 @@ class Sampler_3D {
 template <typename Address_mode>
 class Nearest_3D : public Sampler_3D {
   public:
-    float  sample_1(Texture const& texture, float3 const& uvw) const noexcept override final;
-    float2 sample_2(Texture const& texture, float3 const& uvw) const noexcept override final;
-    float3 sample_3(Texture const& texture, float3 const& uvw) const noexcept override final;
-    float4 sample_4(Texture const& texture, float3 const& uvw) const noexcept override final;
+    float  sample_1(Texture const& texture, float3 const& uvw) const noexcept final;
+    float2 sample_2(Texture const& texture, float3 const& uvw) const noexcept final;
+    float3 sample_3(Texture const& texture, float3 const& uvw) const noexcept final;
+    float4 sample_4(Texture const& texture, float3 const& uvw) const noexcept final;
 
-    float3 address(float3 const& uvw) const noexcept override final;
+    float3 address(float3 const& uvw) const noexcept final;
 
   private:
     static int3 map(Texture const& texture, float3 const& uvw) noexcept;
@@ -95,12 +89,12 @@ class Nearest_3D : public Sampler_3D {
 template <typename Address_mode>
 class Linear_3D : public Sampler_3D {
   public:
-    float  sample_1(Texture const& texture, float3 const& uvw) const noexcept override final;
-    float2 sample_2(Texture const& texture, float3 const& uvw) const noexcept override final;
-    float3 sample_3(Texture const& texture, float3 const& uvw) const noexcept override final;
-    float4 sample_4(Texture const& texture, float3 const& uvw) const noexcept override final;
+    float  sample_1(Texture const& texture, float3 const& uvw) const noexcept final;
+    float2 sample_2(Texture const& texture, float3 const& uvw) const noexcept final;
+    float3 sample_3(Texture const& texture, float3 const& uvw) const noexcept final;
+    float4 sample_4(Texture const& texture, float3 const& uvw) const noexcept final;
 
-    float3 address(float3 const& uvw) const noexcept override final;
+    float3 address(float3 const& uvw) const noexcept final;
 
   private:
     static float3 map(Texture const& texture, float3 const& uvw, int3& xyz, int3& xyz1) noexcept;

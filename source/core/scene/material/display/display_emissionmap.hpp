@@ -11,11 +11,11 @@ class Emissionmap : public light::Emissionmap {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
     void set_roughness(float roughness) noexcept;
     void set_ior(float ior) noexcept;

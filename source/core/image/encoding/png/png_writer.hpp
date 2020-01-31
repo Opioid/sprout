@@ -10,10 +10,9 @@ class Writer : public image::Writer, Srgb {
   public:
     Writer(bool error_diffusion) noexcept;
 
-    std::string file_extension() const noexcept override final;
+    std::string file_extension() const noexcept final;
 
-    bool write(std::ostream& stream, Float4 const& image,
-               thread::Pool& threads) noexcept override final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept final;
 
     bool write_heatmap(std::string_view name, float const* data, int2 dimensions, float max_value,
                        thread::Pool& threads) noexcept;
@@ -44,10 +43,9 @@ class Writer_alpha : public image::Writer, Srgb_alpha {
   public:
     Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha) noexcept;
 
-    std::string file_extension() const noexcept override final;
+    std::string file_extension() const noexcept final;
 
-    bool write(std::ostream& stream, Float4 const& image,
-               thread::Pool& threads) noexcept override final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept final;
 };
 
 }  // namespace image::encoding::png

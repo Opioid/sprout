@@ -40,7 +40,7 @@ class Typed_cache final : public Cache {
 
     Typed_cache(Provider<T>& provider) noexcept;
 
-    ~Typed_cache() noexcept override final;
+    ~Typed_cache() noexcept final;
 
     std::vector<T*> const& resources() const noexcept;
 

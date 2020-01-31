@@ -51,9 +51,8 @@ void Emittance::set_radiance(float3 const& radiance) noexcept {
 float3 Emittance::radiance(float area) const noexcept {
     if (Quantity::Intensity == quantity_) {
         return value_ / area;
-    } else {
-        return value_;
     }
+    return value_;
 }
 
 }  // namespace light

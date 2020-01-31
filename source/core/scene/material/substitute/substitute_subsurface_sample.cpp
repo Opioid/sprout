@@ -156,9 +156,8 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
 
         if (Forward) {
             return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf};
-        } else {
-            return ggx;
         }
+        return ggx;
     }
 
     float3 const h = normalize(wo_ + wi);

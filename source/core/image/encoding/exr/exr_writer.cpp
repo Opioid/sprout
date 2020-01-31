@@ -128,9 +128,11 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
 
     if (Compression::No == compression) {
         return no_compression(stream, image);
-    } else if (Compression::ZIPS == compression) {
+    }
+    if (Compression::ZIPS == compression) {
         return zip_compression(stream, image, Compression::ZIPS, threads);
-    } else if (Compression::ZIP == compression) {
+    }
+    if (Compression::ZIP == compression) {
         return zip_compression(stream, image, Compression::ZIP, threads);
     }
 

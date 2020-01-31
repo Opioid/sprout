@@ -21,7 +21,7 @@ class Sky : public scene::Extension {
 
     void init(uint32_t sky, uint32_t sun, Scene& scene) noexcept;
 
-    void set_parameters(json::Value const& parameters, Scene& scene) noexcept override final;
+    void set_parameters(json::Value const& parameters, Scene& scene) noexcept final;
 
     Model& model() noexcept;
 
@@ -37,7 +37,7 @@ class Sky : public scene::Extension {
   private:
     void private_update(Scene& scene) noexcept;
 
-    //   void on_set_transformation() noexcept override final;
+    //   void on_set_transformation() noexcept final;
 
     Model model_;
 

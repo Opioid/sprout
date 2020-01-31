@@ -18,15 +18,15 @@ class Unfiltered final : public Base {
 
     Unfiltered(float exposure, Clamp const& clamp) noexcept;
 
-    int32_t filter_radius_int() const noexcept override final;
+    int32_t filter_radius_int() const noexcept final;
 
-    int4 isolated_tile(int4 const& tile) const noexcept override final;
+    int4 isolated_tile(int4 const& tile) const noexcept final;
 
     void add_sample(Sample const& sample, float4 const& color, int4 const& isolated,
-                    int4 const& bounds) noexcept override final;
+                    int4 const& bounds) noexcept final;
 
     void splat_sample(Sample_to const& sample, float4 const& color,
-                      int4 const& bounds) noexcept override final;
+                      int4 const& bounds) noexcept final;
 
   private:
     Clamp clamp_;

@@ -32,9 +32,8 @@ float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float2 uv, fl
         clearcoat.set(coating_.absorption_coefficient, thickness, 1.f, 1.f, coating_.alpha, 1.f);
 
         return clearcoat.attenuation(1.f) * radiance;
-    } else {
-        return float3(0.f);
     }
+    return float3(0.f);
 }
 
 material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray const& /*ray*/,

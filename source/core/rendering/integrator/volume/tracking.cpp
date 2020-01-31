@@ -179,21 +179,23 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         tr = w;
         return true;
-    } else if (material.is_textured_volume()) {
+    }
+
+    if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, Filter::Nearest, worker);
 
         float3 const mu_t = mu.a + mu.s;
 
         tr = attenuation(d - ray.min_t, mu_t);
         return true;
-    } else {
-        auto const mu = material.collision_coefficients();
-
-        float3 const mu_t = mu.a + mu.s;
-
-        tr = attenuation(d - ray.min_t, mu_t);
-        return true;
     }
+
+    auto const mu = material.collision_coefficients();
+
+    float3 const mu_t = mu.a + mu.s;
+
+    tr = attenuation(d - ray.min_t, mu_t);
+    return true;
 }
 
 static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm,

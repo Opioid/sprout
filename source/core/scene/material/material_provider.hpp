@@ -20,17 +20,17 @@ class Provider final : public resource::Provider<Material> {
   public:
     Provider(bool force_debug_material) noexcept;
 
-    ~Provider() noexcept override final;
+    ~Provider() noexcept final;
 
     Material* load(std::string const& filename, Variants const& options, Resources& resources,
-                   std::string& resolved_name) noexcept override final;
+                   std::string& resolved_name) noexcept final;
 
     Material* load(void const* data, std::string const& source_name, Variants const& options,
-                   Resources& resources) noexcept override final;
+                   Resources& resources) noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
-    size_t num_bytes(Material const* resource) const noexcept override final;
+    size_t num_bytes(Material const* resource) const noexcept final;
 
     Material* create_fallback_material() noexcept;
 

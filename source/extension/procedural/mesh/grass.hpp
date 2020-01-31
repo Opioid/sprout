@@ -22,7 +22,7 @@ class Grass : public scene::shape::triangle::Generator {
     using Shape = scene::shape::Shape;
 
     virtual Shape_ptr create_mesh(json::Value const& mesh_value,
-                                  Resources&         resources) noexcept override final;
+                                  Resources&         resources) noexcept final;
 
   private:
     void add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,

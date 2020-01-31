@@ -14,24 +14,24 @@ class Emissionmap_animated : public Emissionmap {
     ~Emissionmap_animated() noexcept override;
 
     void simulate(uint64_t start, uint64_t end, uint64_t frame_length, thread::Pool& threads,
-                  Scene const& scene) noexcept override final;
+                  Scene const& scene) noexcept final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
         noexcept override;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             Worker const& worker) const noexcept override final;
+                             Worker const& worker) const noexcept final;
 
     float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
-                          Scene const& scene) noexcept override final;
+                          Scene const& scene) noexcept final;
 
-    bool is_animated() const noexcept override final;
+    bool is_animated() const noexcept final;
 
     void set_emission_map(Texture_adapter const& emission_map,
                           uint64_t               animation_duration) noexcept;

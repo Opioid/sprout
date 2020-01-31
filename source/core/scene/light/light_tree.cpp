@@ -56,11 +56,10 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 
     if (children | total_sphere) {
         return 0.5f * base;
-    } else {
-        float3 const na = normalize(axis);
-
-        return std::max(dot(n, na), 0.01f) * base;
     }
+    float3 const na = normalize(axis);
+
+    return std::max(dot(n, na), 0.01f) * base;
 }
 
 Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -71,42 +70,41 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
         auto const l = infinite_light_distribution_.sample_discrete(random);
 
         return {l.offset, l.pdf * ip};
-    } else {
-        float pdf = 1.f - ip;
+    }
+    float pdf = 1.f - ip;
 
-        random = (random - ip) / pdf;
+    random = (random - ip) / pdf;
 
-        for (uint32_t nid = 0;;) {
-            Node const& node = nodes_[nid];
+    for (uint32_t nid = 0;;) {
+        Node const& node = nodes_[nid];
 
-            if (node.children) {
-                uint32_t const c0 = nid + 1;
-                uint32_t const c1 = node.next_or_light;
+        if (node.children) {
+            uint32_t const c0 = nid + 1;
+            uint32_t const c1 = node.next_or_light;
 
-                float p0 = nodes_[c0].weight(p, n, total_sphere);
-                float p1 = nodes_[c1].weight(p, n, total_sphere);
+            float p0 = nodes_[c0].weight(p, n, total_sphere);
+            float p1 = nodes_[c1].weight(p, n, total_sphere);
 
-                float const pt = p0 + p1;
+            float const pt = p0 + p1;
 
-                SOFT_ASSERT(pt > 0.f);
+            SOFT_ASSERT(pt > 0.f);
 
-                p0 /= pt;
-                p1 /= pt;
+            p0 /= pt;
+            p1 /= pt;
 
-                if (random < p0) {
-                    nid = c0;
-                    pdf *= p0;
-                    random /= p0;
-                } else {
-                    nid = c1;
-                    pdf *= p1;
-                    random = (random - p0) / p1;
-                }
+            if (random < p0) {
+                nid = c0;
+                pdf *= p0;
+                random /= p0;
             } else {
-                SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
-
-                return {node.next_or_light, pdf};
+                nid = c1;
+                pdf *= p1;
+                random = (random - p0) / p1;
             }
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
+
+            return {node.next_or_light, pdf};
         }
     }
 }
@@ -118,35 +116,34 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
 
     if (lo < infinite_end_) {
         return ip * infinite_light_distribution_.pdf(lo);
-    } else {
-        float pdf = 1.f - ip;
+    }
+    float pdf = 1.f - ip;
 
-        for (uint32_t nid = 0;;) {
-            Node const& node = nodes_[nid];
+    for (uint32_t nid = 0;;) {
+        Node const& node = nodes_[nid];
 
-            if (node.children) {
-                uint32_t const c0 = nid + 1;
-                uint32_t const c1 = node.next_or_light;
+        if (node.children) {
+            uint32_t const c0 = nid + 1;
+            uint32_t const c1 = node.next_or_light;
 
-                float const p0 = nodes_[c0].weight(p, n, total_sphere);
-                float const p1 = nodes_[c1].weight(p, n, total_sphere);
+            float const p0 = nodes_[c0].weight(p, n, total_sphere);
+            float const p1 = nodes_[c1].weight(p, n, total_sphere);
 
-                float const pt = p0 + p1;
+            float const pt = p0 + p1;
 
-                SOFT_ASSERT(pt > 0.f);
+            SOFT_ASSERT(pt > 0.f);
 
-                if (lo < node.middle) {
-                    nid = c0;
-                    pdf *= p0 / pt;
-                } else {
-                    nid = c1;
-                    pdf *= p1 / pt;
-                }
+            if (lo < node.middle) {
+                nid = c0;
+                pdf *= p0 / pt;
             } else {
-                SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
-
-                return pdf;
+                nid = c1;
+                pdf *= p1 / pt;
             }
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
+
+            return pdf;
         }
     }
 }

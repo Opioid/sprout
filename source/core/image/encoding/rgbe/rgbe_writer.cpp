@@ -159,14 +159,13 @@ byte4 Writer::float_to_rgbe(float4 const& c) {
 
     if (v < 1e-32f) {
         return byte4(0, 0, 0, 0);
-    } else {
-        int         e;
-        float const f = std::frexp(v, &e);
-
-        v = f * 256.f / v;
-
-        return byte4(uint8_t(c[0] * v), uint8_t(c[1] * v), uint8_t(c[2] * v), uint8_t(e + 128));
     }
+    int         e;
+    float const f = std::frexp(v, &e);
+
+    v = f * 256.f / v;
+
+    return byte4(uint8_t(c[0] * v), uint8_t(c[1] * v), uint8_t(c[2] * v), uint8_t(e + 128));
 }
 
 }  // namespace image::encoding::rgbe

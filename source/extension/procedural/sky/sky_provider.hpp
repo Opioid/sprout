@@ -19,13 +19,13 @@ void init(scene::Loader& loader, scene::material::Provider& material_provider) n
 
 class Provider : public scene::Extension_provider {
   public:
-    ~Provider() noexcept override final;
+    ~Provider() noexcept final;
 
     void set_scene_loader(scene::Loader& loader) noexcept;
     void set_material_provider(scene::material::Provider& provider) noexcept;
 
     uint32_t create_extension(json::Value const& extension_value, std::string const& name,
-                              scene::Scene& scene, Resources& resources) noexcept override final;
+                              scene::Scene& scene, Resources& resources) noexcept final;
 
   private:
     scene::Loader*             scene_loader_      = nullptr;

@@ -52,11 +52,11 @@ class alignas(64) Lighttracer final : public Integrator {
 
     Lighttracer(rnd::Generator& rng, Settings const& settings) noexcept;
 
-    ~Lighttracer() noexcept override final;
+    ~Lighttracer() noexcept final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
 
-    void start_pixel() noexcept override final;
+    void start_pixel() noexcept final;
 
     void li(uint32_t frame, int4 const& bounds, Worker& worker,
             Interface_stack const& initial_stack) noexcept;

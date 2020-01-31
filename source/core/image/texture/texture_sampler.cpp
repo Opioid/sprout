@@ -245,7 +245,8 @@ int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) no
 
 template <typename Address_mode>
 float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uvw) const noexcept {
-    int3         xyz, xyz1;
+    int3         xyz;
+    int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
     float const c000 = texture.at_1(xyz[0], xyz[1], xyz[2]);
@@ -265,7 +266,8 @@ float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uv
 
 template <typename Address_mode>
 float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3 const& uvw) const noexcept {
-    int3         xyz, xyz1;
+    int3         xyz;
+    int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
     float2 const c000 = texture.at_2(xyz[0], xyz[1], xyz[2]);
@@ -285,7 +287,8 @@ float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3 const& u
 
 template <typename Address_mode>
 float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3 const& uvw) const noexcept {
-    int3         xyz, xyz1;
+    int3         xyz;
+    int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
     float3 const c000 = texture.at_3(xyz[0], xyz[1], xyz[2]);

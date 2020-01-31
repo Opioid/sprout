@@ -9,13 +9,13 @@ namespace scene::material::substitute {
 
 class Sample_subsurface final : public Sample_base {
   public:
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept final;
 
-    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept final;
 
     void set_volumetric(float anisotropy, float ior, float ior_outside) noexcept;
 
@@ -34,7 +34,7 @@ class Sample_subsurface final : public Sample_base {
 
 class Sample_subsurface_volumetric final : public volumetric::Sample {
   public:
-    bool evaluates_back(bool previously, bool same_side) const noexcept override final;
+    bool evaluates_back(bool previously, bool same_side) const noexcept final;
 };
 
 }  // namespace scene::material::substitute

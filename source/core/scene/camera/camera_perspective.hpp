@@ -25,22 +25,22 @@ class Perspective final : public Camera {
 
     Perspective(int2 resolution) noexcept;
 
-    uint32_t num_views() const noexcept override final;
+    uint32_t num_views() const noexcept final;
 
-    int2 sensor_dimensions() const noexcept override final;
+    int2 sensor_dimensions() const noexcept final;
 
-    int4 view_bounds(uint32_t view) const noexcept override final;
+    int4 view_bounds(uint32_t view) const noexcept final;
 
-    float pixel_solid_angle() const noexcept override final;
+    float pixel_solid_angle() const noexcept final;
 
     bool generate_ray(Sample const& sample, uint32_t frame, uint32_t view, Scene const& scene,
-                      Ray& ray) const noexcept override final;
+                      Ray& ray) const noexcept final;
 
     bool sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
                 uint32_t sampler_dimension, Scene const& scene, Sample_to& sample) const
-        noexcept override final;
+        noexcept final;
 
-    Frustum frustum() const noexcept override final;
+    Frustum frustum() const noexcept final;
 
     void set_fov(float fov) noexcept;
 
@@ -49,11 +49,11 @@ class Perspective final : public Camera {
     void set_focus(Focus const& focus) noexcept;
 
   private:
-    void on_update(uint64_t time, Worker& worker) noexcept override final;
+    void on_update(uint64_t time, Worker& worker) noexcept final;
 
     void update_focus(uint64_t time, Worker& worker) noexcept;
 
-    void set_parameter(std::string_view name, json::Value const& value) noexcept override final;
+    void set_parameter(std::string_view name, json::Value const& value) noexcept final;
 
     void load_lens(json::Value const& lens_value, Lens& lens) noexcept;
 

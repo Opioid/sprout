@@ -10,13 +10,13 @@ class Backplate : public Postprocessor {
   public:
     Backplate(image::texture::Texture* backplate);
 
-    void init(scene::camera::Camera const& camera, thread::Pool& threads) override final;
+    void init(scene::camera::Camera const& camera, thread::Pool& threads) final;
 
-    bool alpha_out(bool alpha_in) const override final;
+    bool alpha_out(bool alpha_in) const final;
 
   private:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
-               image::Float4& destination) override final;
+               image::Float4& destination) final;
 
     image::texture::Texture* backplate_;
 };

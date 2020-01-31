@@ -13,9 +13,9 @@ class Sample : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override;
 
-    void sample(Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const noexcept final;
 
-    bool is_translucent() const noexcept override final;
+    bool is_translucent() const noexcept final;
 
     bool evaluates_back(bool previously, bool same_side) const noexcept override;
 

@@ -39,9 +39,8 @@ float Interpolated::evaluate(float wl) const noexcept {
         float const intensity1 = intensities_[index];
 
         return math::lerp((wl - wl0) / (wl1 - wl0), intensity0, intensity1);
-    } else {
-        return intensities_[index];
     }
+    return intensities_[index];
 }
 
 float Interpolated::integrate(float a, float b) const noexcept {

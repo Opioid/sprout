@@ -14,9 +14,9 @@ class alignas(64) Glass : public Material {
         noexcept override;
 
     float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
     size_t num_bytes() const noexcept override;
 
@@ -26,7 +26,7 @@ class alignas(64) Glass : public Material {
     void set_attenuation(float3 const& absorption_color, float distance) noexcept;
     void set_ior(float ior) noexcept;
 
-    bool is_caustic() const noexcept override final;
+    bool is_caustic() const noexcept final;
 
     static size_t sample_size() noexcept;
 

@@ -18,14 +18,14 @@ class alignas(64) AO final : public Integrator {
 
     AO(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept;
 
-    ~AO() noexcept override final;
+    ~AO() noexcept final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
 
-    void start_pixel() noexcept override final;
+    void start_pixel() noexcept final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept override final;
+              Interface_stack const& initial_stack) noexcept final;
 
   private:
     Settings const settings_;
@@ -38,7 +38,7 @@ class AO_pool final : public Typed_pool<AO> {
     AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
             float radius) noexcept;
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept final;
 
   private:
     AO::Settings settings_;

@@ -15,24 +15,23 @@ class alignas(64) Grid : public Material {
     ~Grid() noexcept override;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
-                             Worker const& worker) const noexcept override final;
+                             Worker const& worker) const noexcept final;
 
-    CC collision_coefficients() const noexcept override final;
+    CC collision_coefficients() const noexcept final;
 
-    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const noexcept final;
 
     CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
-                                        Worker const& worker) const noexcept override final;
+                                        Worker const& worker) const noexcept final;
 
-    void compile(thread::Pool& threads, Scene const& scene) noexcept override final;
+    void compile(thread::Pool& threads, Scene const& scene) noexcept final;
 
-    Gridtree const* volume_tree() const noexcept override final;
+    Gridtree const* volume_tree() const noexcept final;
 
-    bool is_heterogeneous_volume() const noexcept override final;
+    bool is_heterogeneous_volume() const noexcept final;
 
     size_t num_bytes() const noexcept override;
 
@@ -50,17 +49,16 @@ class Grid_emission : public Grid {
 
     ~Grid_emission() noexcept override;
 
-    bool has_emission_map() const noexcept override final;
+    bool has_emission_map() const noexcept final;
 
-    Sample_3D radiance_sample(float3 const& r2) const noexcept override final;
+    Sample_3D radiance_sample(float3 const& r2) const noexcept final;
 
-    float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const
-        noexcept override final;
+    float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const noexcept final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
-                          Scene const& scene) noexcept override final;
+                          Scene const& scene) noexcept final;
 
     size_t num_bytes() const noexcept override;
 
@@ -81,26 +79,25 @@ class Grid_color : public Material {
     void set_color(Texture_adapter const& color) noexcept;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
-                             Worker const& worker) const noexcept override final;
+                             Worker const& worker) const noexcept final;
 
-    CC collision_coefficients() const noexcept override final;
+    CC collision_coefficients() const noexcept final;
 
-    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const noexcept final;
 
     CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
-                                        Worker const& worker) const noexcept override final;
+                                        Worker const& worker) const noexcept final;
 
     void set_attenuation(float scattering_factor, float distance) noexcept;
 
-    void compile(thread::Pool& threads, Scene const& scene) noexcept override final;
+    void compile(thread::Pool& threads, Scene const& scene) noexcept final;
 
-    Gridtree const* volume_tree() const noexcept override final;
+    Gridtree const* volume_tree() const noexcept final;
 
-    bool is_heterogeneous_volume() const noexcept override final;
+    bool is_heterogeneous_volume() const noexcept final;
 
     size_t num_bytes() const noexcept override;
 

@@ -13,17 +13,17 @@ class Material : public material::Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
-    CM control_medium() const noexcept override final;
+    CM control_medium() const noexcept final;
 
-    float similarity_relation_scale(uint32_t depth) const noexcept override final;
+    float similarity_relation_scale(uint32_t depth) const noexcept final;
 
-    bool is_scattering_volume() const noexcept override final;
+    bool is_scattering_volume() const noexcept final;
 
-    float3 average_radiance(float area, Scene const& scene) const noexcept override final;
+    float3 average_radiance(float area, Scene const& scene) const noexcept final;
 
     void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                          float distance) noexcept;

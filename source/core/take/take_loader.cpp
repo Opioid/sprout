@@ -495,9 +495,13 @@ static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32
 
         if ("Random" == n.name) {
             return new sampler::Random_pool(num_workers);
-        } else if ("RD" == n.name) {
+        }
+
+        if ("RD" == n.name) {
             return new sampler::RD_pool(num_workers);
-        } else if ("Golden_ratio" == n.name) {
+        }
+
+        if ("Golden_ratio" == n.name) {
             return new sampler::Golden_ratio_pool(num_workers);
         }
     }
@@ -511,17 +515,29 @@ static bool peek_surface_integrator(json::Value const& integrator_value) noexcep
             for (auto& s : n.value.GetObject()) {
                 if ("AO" == s.name) {
                     return true;
-                } else if ("Whitted" == s.name) {
+                }
+
+                if ("Whitted" == s.name) {
                     return true;
-                } else if ("PM" == s.name) {
+                }
+
+                if ("PM" == s.name) {
                     return true;
-                } else if ("PT" == s.name) {
+                }
+
+                if ("PT" == s.name) {
                     return true;
-                } else if ("PTDL" == s.name) {
+                }
+
+                if ("PTDL" == s.name) {
                     return true;
-                } else if ("PTMIS" == s.name) {
+                }
+
+                if ("PTMIS" == s.name) {
                     return true;
-                } else if ("Debug" == s.name) {
+                }
+
+                if ("Debug" == s.name) {
                     return true;
                 }
             }

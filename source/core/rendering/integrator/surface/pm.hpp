@@ -17,14 +17,14 @@ class alignas(64) PM final : public Integrator {
 
     PM(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept;
 
-    ~PM() noexcept override final;
+    ~PM() noexcept final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept override final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
 
-    void start_pixel() noexcept override final;
+    void start_pixel() noexcept final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept override final;
+              Interface_stack const& initial_stack) noexcept final;
 
   private:
     sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
@@ -45,7 +45,7 @@ class PM_pool final : public Typed_pool<PM> {
     PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces, uint32_t max_bounces,
             bool photons_only_through_specular) noexcept;
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept override final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept final;
 
   private:
     PM::Settings settings_;

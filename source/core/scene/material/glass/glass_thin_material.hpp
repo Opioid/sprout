@@ -11,16 +11,16 @@ class Glass_thin : public Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
-                           Filter filter, Worker const& worker) const noexcept override final;
+                           Filter filter, Worker const& worker) const noexcept final;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
-    bool has_tinted_shadow() const noexcept override final;
+    bool has_tinted_shadow() const noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
     void set_normal_map(Texture_adapter const& normal_map) noexcept;
 

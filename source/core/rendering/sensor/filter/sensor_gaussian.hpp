@@ -36,11 +36,11 @@ class Gaussian_1 : public Filter {
   public:
     Gaussian_1(float radius, float alpha);
 
-    float radius() const override final;
+    float radius() const final;
 
-    float evaluate(float d) const override final;
+    float evaluate(float d) const final;
 
-    float evaluate(float2 p) const override final;
+    float evaluate(float2 p) const final;
 
   private:
     float radius_;

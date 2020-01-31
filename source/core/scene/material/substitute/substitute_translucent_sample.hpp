@@ -7,13 +7,13 @@ namespace scene::material::substitute {
 
 class Sample_translucent : public Sample_base {
   public:
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept final;
 
-    bool is_translucent() const noexcept override final;
+    bool is_translucent() const noexcept final;
 
     void set_transluceny(float3 const& diffuse_color, float thickness,
                          float attenuation_distance) noexcept;

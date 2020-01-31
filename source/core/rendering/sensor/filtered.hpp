@@ -21,9 +21,9 @@ class Filtered : public Base {
 
     ~Filtered() noexcept override;
 
-    int32_t filter_radius_int() const noexcept override final;
+    int32_t filter_radius_int() const noexcept final;
 
-    int4 isolated_tile(int4 const& tile) const noexcept override final;
+    int4 isolated_tile(int4 const& tile) const noexcept final;
 
   protected:
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& isolated,
@@ -53,10 +53,10 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     Filtered_1p0(float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
-                    int4 const& bounds) noexcept override final;
+                    int4 const& bounds) noexcept final;
 
     void splat_sample(Sample_to const& sample, float4 const& color,
-                      int4 const& bounds) noexcept override final;
+                      int4 const& bounds) noexcept final;
 };
 
 template <class Base, class Clamp, class F>
@@ -70,10 +70,10 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     Filtered_2p0(float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
-                    int4 const& bounds) noexcept override final;
+                    int4 const& bounds) noexcept final;
 
     void splat_sample(Sample_to const& sample, float4 const& color,
-                      int4 const& bounds) noexcept override final;
+                      int4 const& bounds) noexcept final;
 };
 
 template <class Base, class Clamp, class F>
@@ -87,10 +87,10 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     Filtered_inf(float exposure, Clamp const& clamp, F&& filter) noexcept;
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
-                    int4 const& bounds) noexcept override final;
+                    int4 const& bounds) noexcept final;
 
     void splat_sample(Sample_to const& sample, float4 const& color,
-                      int4 const& bounds) noexcept override final;
+                      int4 const& bounds) noexcept final;
 };
 
 }  // namespace rendering::sensor

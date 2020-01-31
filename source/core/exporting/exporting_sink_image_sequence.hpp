@@ -15,10 +15,9 @@ class Image_sequence : public Sink {
   public:
     Image_sequence(std::string const& filename, image::Writer* writer) noexcept;
 
-    ~Image_sequence() noexcept override final;
+    ~Image_sequence() noexcept final;
 
-    void write(image::Float4 const& image, uint32_t frame,
-               thread::Pool& threads) noexcept override final;
+    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) noexcept final;
 
   private:
     std::string filename_;

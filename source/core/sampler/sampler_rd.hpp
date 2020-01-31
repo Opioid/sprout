@@ -9,16 +9,16 @@ class alignas(64) RD : public Sampler {
   public:
     RD(rnd::Generator& rng) noexcept;
 
-    ~RD() noexcept override final;
+    ~RD() noexcept final;
 
-    float2 generate_sample_2D(uint32_t dimension = 0) noexcept override final;
+    float2 generate_sample_2D(uint32_t dimension = 0) noexcept final;
 
-    float generate_sample_1D(uint32_t dimension = 0) noexcept override final;
+    float generate_sample_1D(uint32_t dimension = 0) noexcept final;
 
   private:
-    void on_resize() noexcept override final;
+    void on_resize() noexcept final;
 
-    void on_start_pixel() noexcept override final;
+    void on_start_pixel() noexcept final;
 
     void generate_2D(uint32_t dimension) noexcept;
     void generate_1D(uint32_t dimension) noexcept;

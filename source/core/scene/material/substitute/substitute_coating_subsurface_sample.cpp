@@ -174,9 +174,8 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
 
         if (Forward) {
             return {std::min(n_dot_wi, n_dot_wo) * attenuation * ggx.reflection, ggx.pdf};
-        } else {
-            return {attenuation * ggx.reflection, ggx.pdf};
         }
+        return {attenuation * ggx.reflection, ggx.pdf};
     }
 
     auto result = Clearcoat_no_lambert::evaluate<Forward>(wi);

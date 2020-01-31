@@ -19,16 +19,15 @@ class alignas(64) Emissionmap : public Material {
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const noexcept override;
 
-    float3 average_radiance(float area, Scene const& scene) const noexcept override final;
+    float3 average_radiance(float area, Scene const& scene) const noexcept final;
 
     float ior() const noexcept override;
 
-    bool has_emission_map() const noexcept override final;
+    bool has_emission_map() const noexcept final;
 
-    Sample_2D radiance_sample(float2 r2) const noexcept override final;
+    Sample_2D radiance_sample(float2 r2) const noexcept final;
 
-    float emission_pdf(float2 uv, Filter filter, Worker const& worker) const
-        noexcept override final;
+    float emission_pdf(float2 uv, Filter filter, Worker const& worker) const noexcept final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,

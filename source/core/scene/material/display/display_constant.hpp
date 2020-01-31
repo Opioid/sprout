@@ -10,16 +10,16 @@ class Constant : public Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             Worker const& worker) const noexcept override final;
+                             Worker const& worker) const noexcept final;
 
-    float3 average_radiance(float area, Scene const& scene) const noexcept override final;
+    float3 average_radiance(float area, Scene const& scene) const noexcept final;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
     void set_emission(float3 const& radiance) noexcept;
     void set_roughness(float roughness) noexcept;

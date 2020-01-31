@@ -55,9 +55,8 @@ float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);
         return mask_.sample_1(worker, sampler, uv, element_);
-    } else {
-        return 1.f;
     }
+    return 1.f;
 }
 
 void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,

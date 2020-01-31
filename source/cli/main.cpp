@@ -46,6 +46,8 @@ static void log_memory_consumption(resource::Manager const& manager, scene::Load
 #endif
 
 int main(int argc, char* argv[]) noexcept {
+    using namespace scene;
+
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
     //  scene::material::glass::testing::rough_refraction();
@@ -102,25 +104,24 @@ int main(int argc, char* argv[]) noexcept {
     image::texture::Provider texture_provider(args.no_textures);
     auto const&              texture_resources = resources.register_provider(texture_provider);
 
-    scene::shape::triangle::Provider mesh_provider;
-    auto const&                      shape_resources = resources.register_provider(mesh_provider);
+    shape::triangle::Provider mesh_provider;
+    auto const&               shape_resources = resources.register_provider(mesh_provider);
 
-    scene::material::Provider material_provider(args.debug_material);
-    auto const&               material_resources = resources.register_provider(material_provider);
+    material::Provider material_provider(args.debug_material);
+    auto const&        material_resources = resources.register_provider(material_provider);
 
     scene::Loader scene_loader(resources, material_provider.create_fallback_material());
 
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    scene::Scene scene(scene_loader.null_shape(), shape_resources, material_resources,
-                       texture_resources);
+    Scene scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources);
 
     std::string take_name;
 
     take::Take take;
 
-    uint32_t const max_sample_size = material_provider.max_sample_size();
+    uint32_t const max_sample_size = material::Provider::max_sample_size();
 
     for (;;) {
         logging::info("Loading...");

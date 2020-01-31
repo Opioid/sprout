@@ -13,19 +13,19 @@ class Sun_material : public Material {
     scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             scene::Worker const& worker) const noexcept override final;
+                             scene::Worker const& worker) const noexcept final;
 
-    float3 average_radiance(float area, scene::Scene const& scene) const noexcept override final;
+    float3 average_radiance(float area, scene::Scene const& scene) const noexcept final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
-                          scene::Scene const& scene) noexcept override final;
+                          scene::Scene const& scene) noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 };
 
 class Sun_baked_material : public Material {
@@ -35,19 +35,19 @@ class Sun_baked_material : public Material {
     scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             scene::Worker const& worker) const noexcept override final;
+                             scene::Worker const& worker) const noexcept final;
 
-    float3 average_radiance(float area, scene::Scene const& scenr) const noexcept override final;
+    float3 average_radiance(float area, scene::Scene const& scenr) const noexcept final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
-                          scene::Scene const& scene) noexcept override final;
+                          scene::Scene const& scene) noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
   private:
     math::Interpolated_function_1D<float3> emission_;

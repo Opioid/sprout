@@ -12,18 +12,18 @@ class Glare : public Postprocessor {
 
     Glare(Adaption adaption, float threshold, float intensity);
 
-    ~Glare() override final;
+    ~Glare() final;
 
-    void init(scene::camera::Camera const& camera, thread::Pool& threads) override final;
+    void init(scene::camera::Camera const& camera, thread::Pool& threads) final;
 
   private:
     void pre_apply(image::Float4 const& source, image::Float4& destination,
-                   thread::Pool& threads) override final;
+                   thread::Pool& threads) final;
 
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
-               image::Float4& destination) override final;
+               image::Float4& destination) final;
 
-    void post_pass(uint32_t pass) override final;
+    void post_pass(uint32_t pass) final;
 
     Adaption adaption_;
 

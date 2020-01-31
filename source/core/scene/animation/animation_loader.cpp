@@ -26,7 +26,9 @@ Animation* load(json::Value const& animation_value, Transformation const& defaul
 
         if ("keyframes" == node_name) {
             return load_keyframes(node_value, default_transformation, scene);
-        } else if ("morph_sequence" == node_name) {
+        }
+
+        if ("morph_sequence" == node_name) {
             return load_sequence(node_value, default_transformation, scene);
         }
     }

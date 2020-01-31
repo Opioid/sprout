@@ -38,9 +38,9 @@ char read_key() noexcept {
 
 #else
 
-#include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+#include <cstdio>
 
 char read_key() noexcept {
     static size_t constexpr MAGIC_MAX_CHARS = 18;

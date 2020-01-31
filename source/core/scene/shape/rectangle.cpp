@@ -173,14 +173,11 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation
             return false;
         }
 
-        float3 b = -transformation.rotation.r[1];
+        float3 const b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale_y());
-        if (v > 1.f || v < -1.f) {
-            return false;
-        }
+        float const v = dot(b, k / transformation.scale_y());
 
-        return true;
+        return (v > 1.f) | (v < -1.f);
     }
 
     return false;

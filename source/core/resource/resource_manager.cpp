@@ -6,7 +6,7 @@ namespace resource {
 Manager::Manager(thread::Pool& threads) noexcept : threads_(threads) {}
 
 Manager::~Manager() noexcept {
-    for (auto c : caches_) {
+    for (auto const c : caches_) {
         delete c.second;
     }
 }

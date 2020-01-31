@@ -142,9 +142,9 @@ Image* Reader::read(std::istream& stream) noexcept {
 
     if (Compression::ZIP == compression) {
         return read_zip(stream, data_window.zw() + 1, channels);
-    } else {
-        logging::push_error("only ZIP compression is supported");
     }
+
+    logging::push_error("only ZIP compression is supported");
 
     return nullptr;
 }
@@ -195,7 +195,9 @@ static void channel_list(std::istream& stream, Channels& channels) noexcept {
 
         if (channel.name.empty()) {
             break;
-        } else if (i > 0) {
+        }
+
+        if (i > 0) {
             //        std::cout << ", ";
         }
 

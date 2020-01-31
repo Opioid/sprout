@@ -10,7 +10,7 @@ namespace scene::material::substitute {
 template <typename Coating_layer, typename Diffuse>
 class Sample_coating : public Sample_base {
   public:
-    float3 radiance() const noexcept override final;
+    float3 radiance() const noexcept final;
 
     bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override;
 

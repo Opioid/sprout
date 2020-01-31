@@ -32,7 +32,7 @@ void Json_handler::clear(bool read_indices) {
 }
 
 void Json_handler::create_part() {
-    parts_.push_back(Part{0, 0, 3 * uint32_t(triangles_.size())});
+    parts_.emplace_back(Part{0, 0, 3 * uint32_t(triangles_.size())});
 }
 
 bool Json_handler::Null() {
@@ -104,7 +104,7 @@ bool Json_handler::StartObject() {
 
     switch (expected_object_) {
         case Object::Part:
-            parts_.push_back(Part());
+            parts_.emplace_back(Part());
             break;
         default:
             break;

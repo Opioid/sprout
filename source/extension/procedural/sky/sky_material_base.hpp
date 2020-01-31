@@ -11,7 +11,7 @@ class Material : public scene::material::Material {
   public:
     Material(Sky& sky) noexcept;
 
-    float ior() const noexcept override final;
+    float ior() const noexcept final;
 
   protected:
     Sky& sky_;

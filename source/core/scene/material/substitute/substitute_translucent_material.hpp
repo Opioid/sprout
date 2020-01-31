@@ -10,9 +10,9 @@ class Material_translucent : public Material_base {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
     void set_thickness(float thickness) noexcept;
     void set_attenuation_distance(float attenuation_distance) noexcept;

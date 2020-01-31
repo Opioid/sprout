@@ -31,7 +31,7 @@ class Provider : public resource::Provider<Shape> {
     ~Provider() noexcept override;
 
     Shape* load(std::string const& filename, Variants const& options, Resources& resources,
-                std::string& resolved_name) noexcept override final;
+                std::string& resolved_name) noexcept final;
 
     struct Description {
         uint32_t num_triangles;
@@ -52,14 +52,14 @@ class Provider : public resource::Provider<Shape> {
     };
 
     Shape* load(void const* data, std::string const& source_name, Variants const& options,
-                resource::Manager& resources) noexcept override final;
+                resource::Manager& resources) noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
-    size_t num_bytes(Shape const* resource) const noexcept override final;
+    size_t num_bytes(Shape const* resource) const noexcept final;
 
-    static Shape* create_mesh(Triangles const& triangles, Vertices const& vertices,
-                              uint32_t num_parts, thread::Pool& threads) noexcept;
+    static Shape* create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
+                              thread::Pool& threads) noexcept;
 
   private:
     Shape* load_morphable_mesh(std::string const& filename, Strings const& morph_targets,

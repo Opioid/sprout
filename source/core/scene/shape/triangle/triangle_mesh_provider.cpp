@@ -252,8 +252,8 @@ size_t Provider::num_bytes(Shape const* resource) const noexcept {
     return resource->num_bytes();
 }
 
-Shape* Provider::create_mesh(Triangles const& triangles, Vertices const& vertices,
-                             uint32_t num_parts, thread::Pool& threads) noexcept {
+Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
+                             thread::Pool& threads) noexcept {
     if (triangles.empty() || vertices.empty() || !num_parts) {
         logging::error("No mesh data.");
         return nullptr;

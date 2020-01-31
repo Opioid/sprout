@@ -50,9 +50,9 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) no
                 interpolated_frames[i] = b;
 
                 break;
-            } else {
-                ++last_frame;
             }
+
+            ++last_frame;
         }
     }
 

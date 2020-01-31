@@ -396,32 +396,38 @@ Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shap
     noexcept {
     if ("Canopy" == type) {
         return canopy_;
-    } else if ("Cube" == type) {
-        return cube_;
-    } else if ("Disk" == type) {
-        return disk_;
-    } else if ("Distant_sphere" == type) {
-        return distant_sphere_;
-    } else if ("Infinite_sphere" == type) {
-        return infinite_sphere_;
-    } else if ("Plane" == type) {
-        return plane_;
-    } else if ("Rectangle" == type) {
-        return rectangle_;
-    } else if ("Sphere" == type) {
-        return sphere_;
-    } else {
-        if (auto g = mesh_generators_.find(type); mesh_generators_.end() != g) {
-            auto shape = g->second->create_mesh(shape_value, resource_manager_);
-            if (!shape.ptr) {
-                logging::error("Cannot create shape of type \"" + type + "\".");
-            }
-
-            return shape;
-        } else {
-            logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
-        }
     }
+    if ("Cube" == type) {
+        return cube_;
+    }
+    if ("Disk" == type) {
+        return disk_;
+    }
+    if ("Distant_sphere" == type) {
+        return distant_sphere_;
+    }
+    if ("Infinite_sphere" == type) {
+        return infinite_sphere_;
+    }
+    if ("Plane" == type) {
+        return plane_;
+    }
+    if ("Rectangle" == type) {
+        return rectangle_;
+    }
+    if ("Sphere" == type) {
+        return sphere_;
+    }
+
+    if (auto g = mesh_generators_.find(type); mesh_generators_.end() != g) {
+        auto shape = g->second->create_mesh(shape_value, resource_manager_);
+        if (!shape.ptr) {
+            logging::error("Cannot create shape of type \"" + type + "\".");
+        }
+
+        return shape;
+    }
+    logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
 
     return Shape_ptr::Null();
 }

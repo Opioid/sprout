@@ -11,9 +11,9 @@ class alignas(32) Material : public Material_base {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
     static size_t sample_size() noexcept;
 };
@@ -24,13 +24,13 @@ class alignas(32) Frozen : public Material_base {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override final;
+        noexcept final;
 
     void set_snow_normal_map(Texture_adapter const& normal_map) noexcept;
 
     void set_snow_mask(Texture_adapter const& mask) noexcept;
 
-    size_t num_bytes() const noexcept override final;
+    size_t num_bytes() const noexcept final;
 
     static size_t sample_size() noexcept;
 

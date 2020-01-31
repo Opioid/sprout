@@ -167,7 +167,8 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
         }
 
         if (!worker.interface_stack().empty()) {
-            float3     vli, vtr;
+            float3     vli;
+            float3     vtr;
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
             //   result += throughput * vli;

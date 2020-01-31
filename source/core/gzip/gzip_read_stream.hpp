@@ -30,18 +30,17 @@ class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
     Filebuffer* close();
 
   protected:
-    int_type underflow() override final;
+    int_type underflow() final;
 
-    pos_type seekpos(pos_type pos, std::ios_base::openmode) override final;
+    pos_type seekpos(pos_type pos, std::ios_base::openmode) final;
 
-    pos_type seekoff(off_type off, std::ios_base::seekdir dir,
-                     std::ios_base::openmode mode) override final;
+    pos_type seekoff(off_type off, std::ios_base::seekdir dir, std::ios_base::openmode mode) final;
 
-    int_type overflow(int_type c = traits_type::eof()) override final;
+    int_type overflow(int_type c = traits_type::eof()) final;
 
-    int sync() override final;
+    int sync() final;
 
-    std::streamsize showmanyc() override final;
+    std::streamsize showmanyc() final;
 
   private:
     bool init_z_stream();

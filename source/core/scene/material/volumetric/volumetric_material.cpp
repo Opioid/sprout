@@ -97,7 +97,9 @@ float Material::SR_inv_range = 1.f / float(Material::SR_high - Material::SR_low)
 float Material::van_de_hulst_anisotropy(uint32_t depth) const noexcept {
     if (depth < SR_low) {
         return anisotropy_;
-    } else if (depth < SR_high) {
+    }
+
+    if (depth < SR_high) {
         float const towards_zero = SR_inv_range * float(depth - SR_low);
 
         return lerp(anisotropy_, 0.f, towards_zero);
