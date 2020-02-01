@@ -1,9 +1,10 @@
 #ifndef CORE_IMAGE_WRITER_HPP
 #define CORE_IMAGE_WRITER_HPP
 
+#include "typed_image_fwd.hpp"
+
 #include <iosfwd>
 #include <string>
-#include "typed_image_fwd.hpp"
 
 namespace thread {
 class Pool;

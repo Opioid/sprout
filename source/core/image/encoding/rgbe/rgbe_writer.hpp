@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_ENCODING_RGBE_WRITER_HPP
+#define SU_CORE_IMAGE_ENCODING_RGBE_WRITER_HPP
 
 #include "image/image_writer.hpp"
 
@@ -15,3 +16,5 @@ class Writer : public image::Writer {
 };
 
 }  // namespace image::encoding::rgbe
+
+#endif
