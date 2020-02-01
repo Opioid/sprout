@@ -7,7 +7,7 @@ namespace rendering::postprocessor {
 
 Postprocessor::Postprocessor(uint32_t num_passes) : num_passes_(num_passes) {}
 
-Postprocessor::~Postprocessor() {}
+Postprocessor::~Postprocessor() = default;
 
 bool Postprocessor::alpha_out(bool alpha_in) const {
     return alpha_in;

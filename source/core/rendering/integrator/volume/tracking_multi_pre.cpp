@@ -107,7 +107,9 @@ Event Tracking_multi_pre::integrate(Ray& ray, Intersection& intersection, Filter
                         set_scattering(intersection, interface, ray.point(t));
                         event = Event::Scatter;
                         break;
-                    } else if (Event::Absorb == result) {
+                    }
+
+                    if (Event::Absorb == result) {
                         transmittance      = w;
                         ray.max_t          = t;
                         intersection.geo.p = local_ray.point(t);
@@ -143,7 +145,9 @@ Event Tracking_multi_pre::integrate(Ray& ray, Intersection& intersection, Filter
 
         transmittance = w;
         return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
-    } else if (material.is_textured_volume()) {
+    }
+
+    if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
         float3 w;
@@ -157,108 +161,108 @@ Event Tracking_multi_pre::integrate(Ray& ray, Intersection& intersection, Filter
         li            = float3(0.f);
         transmittance = w;
         return event;
-    } else {
-        static bool constexpr decomposition = false;
+    }
 
-        if (decomposition) {
-            auto const cm = material.control_medium();
+    static bool constexpr decomposition = false;
 
-            float const minorant_mu_t = cm.minorant_mu_t();
+    if (decomposition) {
+        auto const cm = material.control_medium();
 
-            float const rc  = rng_.random_float();
-            float const t_c = ray.min_t - std::log(1.f - rc) / minorant_mu_t;
+        float const minorant_mu_t = cm.minorant_mu_t();
 
-            if (t_c > ray.max_t) {
-                set_scattering(intersection, interface, ray.point(t_c));
+        float const rc  = rng_.random_float();
+        float const t_c = ray.min_t - std::log(1.f - rc) / minorant_mu_t;
+
+        if (t_c > ray.max_t) {
+            set_scattering(intersection, interface, ray.point(t_c));
+
+            li            = float3(0.f);
+            transmittance = float3(cm.minorant_mu_s / minorant_mu_t);
+
+            return Event::Scatter;
+        }
+
+        float const mt = cm.majorant_mu_t() - minorant_mu_t;
+
+        auto mu = material.collision_coefficients();
+        mu.a -= cm.minorant_mu_a;
+        mu.s -= cm.minorant_mu_s;
+
+        float3 const mu_t = mu.a + mu.s;
+
+        float3 const mu_n = float3(mt) - mu_t;
+
+        float const imt = 1.f / mt;
+
+        float3 w(1.f);
+
+        for (float t = ray.min_t;;) {
+            float const r0 = rng_.random_float();
+            t -= std::log(1.f - r0) * imt;
+            if (t > d) {
+                li            = float3(0.f);
+                transmittance = w;
+                return Event::Pass;
+            }
+
+            float const ms = average(mu.s * w);
+            float const mn = average(mu_n * w);
+            float const c  = 1.f / (ms + mn);
+
+            float const ps = ms * c;
+            float const pn = mn * c;
+
+            float const r1 = rng_.random_float();
+            if (r1 <= 1.f - pn && ps > 0.f) {
+                set_scattering(intersection, interface, ray.point(t));
+
+                float3 const ws = mu.s / (mt * ps);
 
                 li            = float3(0.f);
-                transmittance = float3(cm.minorant_mu_s / minorant_mu_t);
+                transmittance = w * ws;
 
                 return Event::Scatter;
             }
 
-            float const mt = cm.majorant_mu_t() - minorant_mu_t;
+            float3 const wn = mu_n / (mt * pn);
 
-            auto mu = material.collision_coefficients();
-            mu.a -= cm.minorant_mu_a;
-            mu.s -= cm.minorant_mu_s;
+            SOFT_ASSERT(all_finite(wn));
 
-            float3 const mu_t = mu.a + mu.s;
+            w *= wn;
+        }
+    } else {
+        float3 w;
 
-            float3 const mu_n = float3(mt) - mu_t;
+        Event event = Event::Pass;
 
-            float const imt = 1.f / mt;
+        if (material.is_emissive(worker.scene())) {
+            auto const cce = material.collision_coefficients_emission();
 
-            float3 w(1.f);
+            float      t;
+            auto const result = Tracking::tracking(ray, cce, rng_, t, w, li);
 
-            for (float t = ray.min_t;;) {
-                float const r0 = rng_.random_float();
-                t -= std::log(1.f - r0) * imt;
-                if (t > d) {
-                    li            = float3(0.f);
-                    transmittance = w;
-                    return Event::Pass;
-                }
+            transmittance = w;
 
-                float const ms = average(mu.s * w);
-                float const mn = average(mu_n * w);
-                float const c  = 1.f / (ms + mn);
-
-                float const ps = ms * c;
-                float const pn = mn * c;
-
-                float const r1 = rng_.random_float();
-                if (r1 <= 1.f - pn && ps > 0.f) {
-                    set_scattering(intersection, interface, ray.point(t));
-
-                    float3 const ws = mu.s / (mt * ps);
-
-                    li            = float3(0.f);
-                    transmittance = w * ws;
-
-                    return Event::Scatter;
-                } else {
-                    float3 const wn = mu_n / (mt * pn);
-
-                    SOFT_ASSERT(all_finite(wn));
-
-                    w *= wn;
-                }
+            if (Event::Scatter == result) {
+                set_scattering(intersection, interface, ray.point(t));
+                event = Event::Scatter;
+            } else if (Event::Absorb == result) {
+                ray.max_t = t;
+                return Event::Absorb;
             }
+
+            return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
         } else {
-            float3 w;
+            auto const mu = material.collision_coefficients();
 
-            Event event = Event::Pass;
-
-            if (material.is_emissive(worker.scene())) {
-                auto const cce = material.collision_coefficients_emission();
-
-                float      t;
-                auto const result = Tracking::tracking(ray, cce, rng_, t, w, li);
-
-                transmittance = w;
-
-                if (Event::Scatter == result) {
-                    set_scattering(intersection, interface, ray.point(t));
-                    event = Event::Scatter;
-                } else if (Event::Absorb == result) {
-                    ray.max_t = t;
-                    return Event::Absorb;
-                }
-
-                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
-            } else {
-                auto const mu = material.collision_coefficients();
-
-                if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-                    set_scattering(intersection, interface, ray.point(t));
-                    event = Event::Scatter;
-                }
-
-                li            = float3(0.f);
-                transmittance = w;
-                return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
+            if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
+                set_scattering(intersection, interface, ray.point(t));
+                event = Event::Scatter;
             }
+
+            li            = float3(0.f);
+            transmittance = w;
+            return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
         }
     }
 }

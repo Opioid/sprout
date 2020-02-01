@@ -36,7 +36,7 @@ class Grid {
 
     ~Grid() noexcept;
 
-    void init(float search_radius, float grid_radius_factor, bool check_disk) noexcept;
+    void init(float search_radius, float grid_cell_factor, bool check_disk) noexcept;
 
     void resize(AABB const& aabb) noexcept;
 

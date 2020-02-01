@@ -292,11 +292,17 @@ bool handle_chunk(const Chunk& chunk, Info& info) noexcept {
 
     if (!strncmp("IHDR", type, 4)) {
         return parse_header(chunk, info);
-    } else if (!strncmp("PLTE", type, 4)) {
+    }
+
+    if (!strncmp("PLTE", type, 4)) {
         return parse_lte(chunk, info);
-    } else if (!strncmp("IDAT", type, 4)) {
+    }
+
+    if (!strncmp("IDAT", type, 4)) {
         return parse_data(chunk, info);
-    } else if (!strncmp("IEND", type, 4)) {
+    }
+
+    if (!strncmp("IEND", type, 4)) {
         return false;
     }
 

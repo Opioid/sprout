@@ -25,7 +25,7 @@ void Float1_handler::add(float value) {
     image_.store(current_texel_++, value);
 }
 
-Image_handler::~Image_handler() {}
+Image_handler::~Image_handler() = default;
 
 Json_handler::Json_handler() {
     clear();

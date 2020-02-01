@@ -48,8 +48,8 @@ void Map::insert(Photon const& photon, uint32_t index) noexcept {
 }
 
 uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
-                                thread::Pool& pool) noexcept {
-    AABB const aabb = calculate_aabb(num_photons, pool);
+                                thread::Pool& threads) noexcept {
+    AABB const aabb = calculate_aabb(num_photons, threads);
 
     grid_.resize(aabb);
 
@@ -61,7 +61,7 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
 
     uint32_t const reduced_num = num_photons == total_num_photons
                                      ? grid_.reduce_and_move(photons_.data(), merge_radius_,
-                                                             num_reduced_, pool)
+                                                             num_reduced_, threads)
                                      : num_photons;
 
     float const percentage_caustics = float(reduced_num) / float(total_num_photons);
@@ -88,8 +88,8 @@ bool Map::caustics_only() const noexcept {
     return caustic_only_;
 }
 
-AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& pool) const noexcept {
-    pool.run_range(
+AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& threads) const noexcept {
+    threads.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {
             AABB aabb = AABB::empty();
 
@@ -103,7 +103,7 @@ AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& pool) const noexcep
 
     AABB aabb = AABB::empty();
 
-    for (uint32_t i = 0, len = pool.num_threads(); i < len; ++i) {
+    for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
         aabb.merge_assign(aabbs_[i]);
     }
 

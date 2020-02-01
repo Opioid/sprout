@@ -33,7 +33,7 @@ class Sparse_grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Sparse_grid(float search_radius, float grid_radius_factor, bool check_disk) noexcept;
+    Sparse_grid(float search_radius, float grid_cell_factor, bool check_disk) noexcept;
 
     ~Sparse_grid() noexcept;
 

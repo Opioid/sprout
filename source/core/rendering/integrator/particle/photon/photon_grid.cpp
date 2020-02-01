@@ -559,11 +559,13 @@ static float3 scattering_coefficient(prop::Intersection const& intersection,
         float3 const uvw = shape->object_to_texture_point(local_position);
 
         return material.collision_coefficients(uvw, Filter::Undefined, worker).s;
-    } else if (material.is_textured_volume()) {
-        return material.collision_coefficients(intersection.geo.uv, Filter::Undefined, worker).s;
-    } else {
-        return material.collision_coefficients().s;
     }
+
+    if (material.is_textured_volume()) {
+        return material.collision_coefficients(intersection.geo.uv, Filter::Undefined, worker).s;
+    }
+
+    return material.collision_coefficients().s;
 }
 
 }  // namespace rendering::integrator::particle::photon

@@ -224,7 +224,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
             ray.max_t = scene::Ray_max_t;
 
             if (!worker.interface_stack().empty()) {
-                float3     vli, vtr;
+                float3     vli;
+                float3     vtr;
                 auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
                 //   radiance += throughput * vli;

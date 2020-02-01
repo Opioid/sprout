@@ -8,7 +8,7 @@
 
 namespace image::texture {
 
-Sampler_2D::~Sampler_2D() noexcept {}
+Sampler_2D::~Sampler_2D() noexcept = default;
 
 template <typename Address_mode_U, typename Address_mode_V>
 float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& texture, float2 uv) const
@@ -308,7 +308,8 @@ float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3 const& u
 
 template <typename Address_mode>
 float4 Linear_3D<Address_mode>::sample_4(Texture const& texture, float3 const& uvw) const noexcept {
-    int3         xyz, xyz1;
+    int3         xyz;
+    int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
     float4 const c000 = texture.at_4(xyz[0], xyz[1], xyz[2]);

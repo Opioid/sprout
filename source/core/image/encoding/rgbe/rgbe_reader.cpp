@@ -55,16 +55,16 @@ Image* Reader::read(std::istream& stream) noexcept {
         }
 
         return image;
-    } else {
-        auto image = new Image(Float3(Description(dimensions)));
-
-        if (!read_pixels_RLE(stream, header.width, header.height, image->float3())) {
-            delete image;
-            return nullptr;
-        }
-
-        return image;
     }
+
+    auto image = new Image(Float3(Description(dimensions)));
+
+    if (!read_pixels_RLE(stream, header.width, header.height, image->float3())) {
+        delete image;
+        return nullptr;
+    }
+
+    return image;
 }
 
 Header read_header(std::istream& stream) noexcept {
@@ -83,7 +83,9 @@ Header read_header(std::istream& stream) noexcept {
         if (line.empty() || 0 == line[0]) {
             // blank lines signifies end of meta data header
             break;
-        } else if ("FORMAT=32-bit_rle_rgbe" == line) {
+        }
+
+        if ("FORMAT=32-bit_rle_rgbe" == line) {
             format_specifier = true;
         }
     }
@@ -230,9 +232,9 @@ image_float3 rgbe_to_float3(uint8_t rgbe[4]) noexcept {
         float const f = std::ldexp(1.f, int32_t(rgbe[3]) - (128 + 8));
 
         return image_float3(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
-    } else {
-        return image_float3(0.f);
     }
+
+    return image_float3(0.f);
 }
 
 }  // namespace image::encoding::rgbe

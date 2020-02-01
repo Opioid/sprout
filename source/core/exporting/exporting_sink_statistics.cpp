@@ -6,9 +6,9 @@
 
 namespace exporting {
 
-Statistics::Statistics() noexcept {}
+Statistics::Statistics() noexcept = default;
 
-Statistics::~Statistics() noexcept {}
+Statistics::~Statistics() noexcept = default;
 
 void Statistics::write(image::Float4 const& image, uint32_t frame,
                        thread::Pool& /*threads*/) noexcept {

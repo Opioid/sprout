@@ -15,7 +15,7 @@ static std::string resolve(std::string const& text, std::string const& a) noexce
     return text.substr(0, i) + "\"" + a + "\"" + text.substr(i + 2);
 }
 
-Log::~Log() {}
+Log::~Log() = default;
 
 void Log::post(Type type, std::string const& text) noexcept {
     if (0 == current_entry_) {

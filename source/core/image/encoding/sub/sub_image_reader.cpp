@@ -15,7 +15,9 @@ static bool read_image_type(json::Value const& value, Image::Type& type) noexcep
         if ("Byte1" == node->value) {
             type = Image::Type::Byte1;
             return true;
-        } else if ("Float1" == node->value) {
+        }
+
+        if ("Float1" == node->value) {
             type = Image::Type::Float1;
             return true;
         }
@@ -135,7 +137,9 @@ Image* Reader::read(std::istream& stream) noexcept {
             }
 
             return image;
-        } else /*if (Image::Type::Float1 == type)*/ {
+        }
+
+        /*if (Image::Type::Float1 == type)*/ {
             static bool constexpr sparse = true;
 
             Description description(dimensions);
@@ -178,28 +182,28 @@ Image* Reader::read(std::istream& stream) noexcept {
                 return image;
             }
         }
-    } else {
-        stream.seekg(std::streamoff(binary_start + pixels_offset));
+    }
 
-        if (Image::Type::Byte1 == type) {
-            Description description(dimensions);
+    stream.seekg(std::streamoff(binary_start + pixels_offset));
 
-            auto image = new Image(Byte1(description));
+    if (Image::Type::Byte1 == type) {
+        Description description(dimensions);
 
-            stream.read(reinterpret_cast<char*>(image->byte1().data()),
-                        std::streamsize(pixels_size));
+        auto image = new Image(Byte1(description));
 
-            return image;
-        } else /*if (Image::Type::Float1 == type)*/ {
-            Description description(dimensions);
+        stream.read(reinterpret_cast<char*>(image->byte1().data()), std::streamsize(pixels_size));
 
-            auto image = new Image(Float1(description));
+        return image;
+    }
 
-            stream.read(reinterpret_cast<char*>(image->float1().data()),
-                        std::streamsize(pixels_size));
+    /*if (Image::Type::Float1 == type)*/ {
+        Description description(dimensions);
 
-            return image;
-        }
+        auto image = new Image(Float1(description));
+
+        stream.read(reinterpret_cast<char*>(image->float1().data()), std::streamsize(pixels_size));
+
+        return image;
     }
 }
 

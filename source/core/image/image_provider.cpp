@@ -19,9 +19,9 @@
 
 namespace image {
 
-Provider::Provider() noexcept {}
+Provider::Provider() noexcept = default;
 
-Provider::~Provider() noexcept {}
+Provider::~Provider() noexcept = default;
 
 Image* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
                       std::string& resolved_name) noexcept {

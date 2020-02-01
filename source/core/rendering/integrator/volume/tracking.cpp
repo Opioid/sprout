@@ -235,7 +235,9 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
             w     = float3(lw);
             t_out = t;
             return false;
-        } else if (r1 < (f += pc_s)) {
+        }
+
+        if (r1 < (f += pc_s)) {
             lw *= cm.minorant_mu_s / (mt * pc_s);
             w = float3(lw);
 
@@ -392,7 +394,9 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
             w     = float3(0.f);
             li    = lw * wa * cce.e;
             return Event::Absorb;
-        } else if ((r1 <= 1.f - pn) & (ps > 0.f)) {
+        }
+
+        if ((r1 <= 1.f - pn) & (ps > 0.f)) {
             float3 const ws = mu.s / (mt * ps);
 
             SOFT_ASSERT(all_finite(ws));
@@ -401,13 +405,13 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
             w     = lw * ws;
             li    = float3(0.);
             return Event::Scatter;
-        } else {
-            float3 const wn = mu_n / (mt * pn);
-
-            SOFT_ASSERT(all_finite(wn));
-
-            lw *= wn;
         }
+
+        float3 const wn = mu_n / (mt * pn);
+
+        SOFT_ASSERT(all_finite(wn));
+
+        lw *= wn;
     }
 }
 

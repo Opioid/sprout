@@ -8,7 +8,7 @@ namespace rendering::sensor {
 Sensor::Sensor(float exposure) noexcept
     : dimensions_(0), num_layers_(0), exposure_factor_(std::exp2(exposure)) {}
 
-Sensor::~Sensor() noexcept {}
+Sensor::~Sensor() noexcept = default;
 
 int2 Sensor::dimensions() const noexcept {
     return dimensions_;

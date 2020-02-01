@@ -30,7 +30,7 @@ Lighttracer::Lighttracer(rnd::Generator& rng, Settings const& settings) noexcept
       light_sampler_(rng),
       material_samplers_{rng, rng, rng} {}
 
-Lighttracer::~Lighttracer() noexcept {}
+Lighttracer::~Lighttracer() noexcept = default;
 
 void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);

@@ -241,7 +241,9 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         li = float3(0.f);
         tr = w;
         return Event::Pass;
-    } else if (material.is_textured_volume()) {
+    }
+
+    if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
 
         float3 const extinction = mu.a + mu.s;
