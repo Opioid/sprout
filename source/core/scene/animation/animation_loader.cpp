@@ -13,7 +13,7 @@ namespace scene::animation {
 Animation* load_keyframes(json::Value const&    keyframes_value,
                           Transformation const& default_transformation, Scene& scene);
 
-Animation* load_sequence(json::Value const&    keyframes_value,
+Animation* load_sequence(json::Value const&    sequence_value,
                          Transformation const& default_transformation, Scene& scene);
 
 void read_morphing(json::Value const& value, entity::Morphing& morphing);

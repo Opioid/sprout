@@ -7,8 +7,6 @@
 
 namespace scene::material::testing {
 
-void print_vector(float3 const& v);
-
 bool check(float3 const& result, float3 const& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
            float pdf, const Layer& layer) {
     if (!std::isfinite(pdf) || !all_finite_and_positive(result)) {

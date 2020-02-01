@@ -703,7 +703,9 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
             return new Emission_pool(num_workers, step_size);
-        } else if ("Tracking" == n.name) {
+        }
+
+        if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 
             uint2 const sr_range = uint2(
@@ -714,9 +716,9 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
 
             if (multiple_scattering) {
                 return new Tracking_multi_pool(num_workers);
-            } else {
-                return new Tracking_single_pool(num_workers, progressive);
             }
+
+            return new Tracking_single_pool(num_workers, progressive);
         }
     }
 

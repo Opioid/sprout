@@ -23,7 +23,7 @@ static void newline(std::ostream& stream, uint32_t num_tabs) noexcept {
 }
 
 static void binary_tag(std::ostream& stream, uint64_t offset, uint64_t size) noexcept {
-    stream << "\"binary\":{\"offset\":" << offset << ",\"size\":" << size << "}";
+    stream << R"("binary":{"offset":)" << offset << R"(,"size":)" << size << "}";
 }
 
 void Exporter::write(std::string const& filename, Json_handler& handler) noexcept {

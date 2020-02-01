@@ -94,8 +94,8 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
 }
 
 void Model::release() noexcept {
-    for (uint32_t i = 0; i < Num_bands; ++i) {
-        arhosekskymodelstate_free(skymodel_states_[i]);
+    for (auto s : skymodel_states_) {
+        arhosekskymodelstate_free(s);
     }
 }
 

@@ -6,7 +6,7 @@ namespace resource {
 Manager::Manager(thread::Pool& threads) noexcept : threads_(threads) {}
 
 Manager::~Manager() noexcept {
-    for (auto const c : caches_) {
+    for (auto const& c : caches_) {
         delete c.second;
     }
 }
@@ -20,7 +20,7 @@ thread::Pool& Manager::threads() noexcept {
 }
 
 void Manager::increment_generation() noexcept {
-    for (auto c : caches_) {
+    for (auto& c : caches_) {
         c.second->increment_generation();
     }
 }

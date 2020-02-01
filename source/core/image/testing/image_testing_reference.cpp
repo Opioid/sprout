@@ -3,8 +3,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "miniz/miniz.hpp"
 
-namespace image {
-namespace testing {
+namespace image::testing {
 
 // the normal map will look correct if tangent follows same direction as texture coordinates
 // positive z is pointing into the screen
@@ -107,5 +106,4 @@ void create_reference_normal_map(int2 dimensions) {
     delete[] rgb;
 }
 
-}  // namespace testing
-}  // namespace image
+}  // namespace image::testing

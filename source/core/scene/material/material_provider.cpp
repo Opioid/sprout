@@ -53,9 +53,9 @@ static Material* load_substitute(json::Value const& substitute_value,
                                  Resources&         resources) noexcept;
 
 struct Texture_description {
-    std::string filename = "Color";
+    std::string filename;
 
-    std::string usage;
+    std::string usage = "Color";
 
     image::Swizzle swizzle = image::Swizzle::XYZW;
 
@@ -431,33 +431,35 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         material->set_ior(ior);
         material->set_roughness(roughness);
         return material;
-    } else {
-        if (thickness > 0.f) {
-            auto material = new glass::Glass_thin(sampler_settings);
-            material->set_mask(mask);
-            material->set_normal_map(normal_map);
-            material->set_refraction_color(refraction_color);
-            material->set_attenuation(absorption_color, attenuation_distance);
-            material->set_ior(ior);
-            material->set_thickness(thickness);
-            return material;
-        } else if (abbe > 0.f) {
-            auto material = new glass::Glass_dispersion(sampler_settings);
-            material->set_normal_map(normal_map);
-            material->set_refraction_color(refraction_color);
-            material->set_attenuation(absorption_color, attenuation_distance);
-            material->set_ior(ior);
-            material->set_abbe(abbe);
-            return material;
-        } else {
-            auto material = new glass::Glass(sampler_settings);
-            material->set_normal_map(normal_map);
-            material->set_refraction_color(refraction_color);
-            material->set_attenuation(absorption_color, attenuation_distance);
-            material->set_ior(ior);
-            return material;
-        }
     }
+
+    if (thickness > 0.f) {
+        auto material = new glass::Glass_thin(sampler_settings);
+        material->set_mask(mask);
+        material->set_normal_map(normal_map);
+        material->set_refraction_color(refraction_color);
+        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_ior(ior);
+        material->set_thickness(thickness);
+        return material;
+    }
+
+    if (abbe > 0.f) {
+        auto material = new glass::Glass_dispersion(sampler_settings);
+        material->set_normal_map(normal_map);
+        material->set_refraction_color(refraction_color);
+        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_ior(ior);
+        material->set_abbe(abbe);
+        return material;
+    }
+
+    auto material = new glass::Glass(sampler_settings);
+    material->set_normal_map(normal_map);
+    material->set_refraction_color(refraction_color);
+    material->set_attenuation(absorption_color, attenuation_distance);
+    material->set_ior(ior);
+    return material;
 }
 
 Material* Provider::load_light(json::Value const& light_value, Resources& resources) noexcept {
@@ -1012,7 +1014,9 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         material->set_attenuation_distance(attenuation_distance);
 
         return material;
-    } else if (coating.ior > 1.f) {
+    }
+
+    if (coating.ior > 1.f) {
         Texture_adapter coating_thickness_map;
         Texture_adapter coating_normal_map;
 
@@ -1049,46 +1053,23 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
             material->set_thinfilm(coating.ior, coating.roughness, coating.thickness);
 
             return material;
-        } else {
-            if (attenuation_distance > 0.f || density_map.is_valid()) {
-                auto material = new substitute::Material_coating_subsurface(sampler_settings);
+        }
 
-                material->set_mask(mask);
-                material->set_color_map(color_map);
-                material->set_normal_map(normal_map);
-                material->set_surface_map(surface_map);
-                material->set_emission_map(emission_map);
-                material->set_density_map(density_map);
-
-                material->set_color(color);
-                material->set_attenuation(use_absorption_color ? absorption_color : color,
-                                          use_scattering_color ? scattering_color : color,
-                                          attenuation_distance);
-                material->set_volumetric_anisotropy(volumetric_anisotropy);
-                material->set_ior(ior);
-                material->set_roughness(roughness);
-                material->set_metallic(metallic);
-                material->set_emission_factor(emission_factor);
-
-                material->set_coating_normal_map(coating_normal_map);
-                material->set_coating_thickness_map(coating_thickness_map);
-                material->set_coating_attenuation(coating.color, coating.attenuation_distance);
-                material->set_coating_ior(coating.ior);
-                material->set_coating_roughness(coating.roughness);
-                material->set_coating_thickness(coating.thickness);
-
-                return material;
-            }
-
-            auto material = new substitute::Material_clearcoat(sampler_settings, two_sided);
+        if (attenuation_distance > 0.f || density_map.is_valid()) {
+            auto material = new substitute::Material_coating_subsurface(sampler_settings);
 
             material->set_mask(mask);
             material->set_color_map(color_map);
             material->set_normal_map(normal_map);
             material->set_surface_map(surface_map);
             material->set_emission_map(emission_map);
+            material->set_density_map(density_map);
 
             material->set_color(color);
+            material->set_attenuation(use_absorption_color ? absorption_color : color,
+                                      use_scattering_color ? scattering_color : color,
+                                      attenuation_distance);
+            material->set_volumetric_anisotropy(volumetric_anisotropy);
             material->set_ior(ior);
             material->set_roughness(roughness);
             material->set_metallic(metallic);
@@ -1103,7 +1084,32 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
 
             return material;
         }
-    } else if (attenuation_distance > 0.f || density_map.is_valid()) {
+
+        auto material = new substitute::Material_clearcoat(sampler_settings, two_sided);
+
+        material->set_mask(mask);
+        material->set_color_map(color_map);
+        material->set_normal_map(normal_map);
+        material->set_surface_map(surface_map);
+        material->set_emission_map(emission_map);
+
+        material->set_color(color);
+        material->set_ior(ior);
+        material->set_roughness(roughness);
+        material->set_metallic(metallic);
+        material->set_emission_factor(emission_factor);
+
+        material->set_coating_normal_map(coating_normal_map);
+        material->set_coating_thickness_map(coating_thickness_map);
+        material->set_coating_attenuation(coating.color, coating.attenuation_distance);
+        material->set_coating_ior(coating.ior);
+        material->set_coating_roughness(coating.roughness);
+        material->set_coating_thickness(coating.thickness);
+
+        return material;
+    }
+
+    if (attenuation_distance > 0.f || density_map.is_valid()) {
         auto material = new substitute::Material_subsurface(sampler_settings);
 
         material->set_mask(mask);
@@ -1466,9 +1472,13 @@ float3 read_spectrum(json::Value const& spectrum_value) noexcept {
         if ("sRGB" == n.name) {
             float3 const srgb = read_color(n.value);
             return spectrum::gamma_to_linear_sRGB(srgb);
-        } else if ("RGB" == n.name) {
+        }
+
+        if ("RGB" == n.name) {
             return read_color(n.value);
-        } else if ("temperature" == n.name) {
+        }
+
+        if ("temperature" == n.name) {
             float const temperature = json::read_float(n.value);
             return spectrum::blackbody(std::max(800.f, temperature));
         }

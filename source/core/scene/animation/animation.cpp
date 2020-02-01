@@ -46,7 +46,9 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) no
                 a.m.interpolate(interpolated_frames[i].m, b.m, t);
 
                 break;
-            } else if (j + 1 == keyframes_back) {
+            }
+
+            if (j + 1 == keyframes_back) {
                 interpolated_frames[i] = b;
 
                 break;

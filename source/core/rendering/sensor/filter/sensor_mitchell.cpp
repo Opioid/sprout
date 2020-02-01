@@ -17,11 +17,11 @@ struct Functor {
             return ((-b_ - 6.f * c_) * xx * x + (6.f * b_ + 30.f * c_) * xx +
                     (-12.f * b_ - 48.f * c_) * x + (8.f * b_ + 24.f * c_)) *
                    (1.f / 6.f);
-        } else {
-            return ((12.f - 9.f * b_ - 6.f * c_) * xx * x + (-18.f + 12.f * b_ + 6.f * c_) * xx +
-                    (6.f - 2.f * b_)) *
-                   (1.f / 6.f);
         }
+
+        return ((12.f - 9.f * b_ - 6.f * c_) * xx * x + (-18.f + 12.f * b_ + 6.f * c_) * xx +
+                (6.f - 2.f * b_)) *
+               (1.f / 6.f);
     }
 
     float b_;
