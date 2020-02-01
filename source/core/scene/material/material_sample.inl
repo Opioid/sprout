@@ -9,7 +9,6 @@
 #include "scene/scene_worker.hpp"
 
 #include <cmath>
-#include <cstring>
 
 namespace scene::material {
 

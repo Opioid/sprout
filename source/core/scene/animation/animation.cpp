@@ -69,8 +69,7 @@ Stage::Stage(uint32_t entity, Animation* animation) noexcept
 void Stage::update(Scene& scene, thread::Pool& threads) const noexcept {
     scene.prop_set_frames(entity_, animation_->interpolated_frames());
 
-    if (shape::Morphable* morphable = scene.prop_shape(entity_)->morphable_shape();
-        morphable) {
+    if (shape::Morphable* morphable = scene.prop_shape(entity_)->morphable_shape(); morphable) {
         auto const& m = animation_->interpolated_frames()[0].m;
         morphable->morph(m.targets[0], m.targets[1], m.weight, threads);
     }

@@ -27,9 +27,11 @@ struct Layer {
     void set_tangent_frame(float3 const& n) noexcept;
 
     float n_dot(float3 const& v) const noexcept;
+
     float abs_n_dot(float3 const& v) const noexcept;
 
     float clamp_n_dot(float3 const& v) const noexcept;
+
     float clamp_abs_n_dot(float3 const& v) const noexcept;
 
     float3 const& shading_normal() const noexcept;
