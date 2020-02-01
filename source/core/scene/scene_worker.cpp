@@ -22,7 +22,7 @@ using Texture_sampler_3D = image::texture::Sampler_3D;
 Worker::Worker(uint32_t max_sample_size) noexcept
     : node_stack_(128 + 16), sample_cache_(max_sample_size) {}
 
-Worker::~Worker() noexcept {}
+Worker::~Worker() noexcept = default;
 
 void Worker::init(uint32_t id, Scene const& scene, Camera const& camera) noexcept {
     rng_.start(0, id);

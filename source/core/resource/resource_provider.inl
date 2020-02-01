@@ -6,10 +6,10 @@
 namespace resource {
 
 template <typename T>
-Provider<T>::Provider() noexcept {}
+Provider<T>::Provider() noexcept = default;
 
 template <typename T>
-Provider<T>::~Provider() noexcept {}
+Provider<T>::~Provider() noexcept = default;
 
 }  // namespace resource
 

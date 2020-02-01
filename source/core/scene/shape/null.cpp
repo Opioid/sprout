@@ -7,7 +7,7 @@
 
 namespace scene::shape {
 
-Null::Null() noexcept {}
+Null::Null() noexcept = default;
 
 float3 Null::object_to_texture_point(float3 const& p) const noexcept {
     return p;

@@ -9,7 +9,7 @@ char const* Shape::identifier() noexcept {
     return "Shape";
 }
 
-Shape::~Shape() noexcept {}
+Shape::~Shape() noexcept = default;
 
 uint32_t Shape::num_parts() const noexcept {
     return 1;

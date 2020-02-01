@@ -12,7 +12,7 @@
 
 namespace scene::shape {
 
-Distant_sphere::Distant_sphere() noexcept {}
+Distant_sphere::Distant_sphere() noexcept = default;
 
 float3 Distant_sphere::object_to_texture_point(float3 const& p) const noexcept {
     return p;

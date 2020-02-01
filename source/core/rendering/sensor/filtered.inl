@@ -12,7 +12,7 @@ Filtered<Base, Clamp, F>::Filtered(float exposure, Clamp const& clamp, F&& filte
     : Base(exposure), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::~Filtered() noexcept {}
+Filtered<Base, Clamp, F>::~Filtered() noexcept = default;
 
 template <class Base, class Clamp, class F>
 int32_t Filtered<Base, Clamp, F>::filter_radius_int() const noexcept {

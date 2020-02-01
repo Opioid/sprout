@@ -11,7 +11,7 @@ namespace scene::bvh {
 
 Builder::Builder() noexcept : Builder_base(16, 64) {}
 
-Builder::~Builder() noexcept {}
+Builder::~Builder() noexcept = default;
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
                     thread::Pool& threads) noexcept {

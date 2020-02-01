@@ -104,7 +104,7 @@ Provider::Provider(bool force_debug_material) noexcept
     Material::init_rainbow();
 }
 
-Provider::~Provider() noexcept {}
+Provider::~Provider() noexcept = default;
 
 Material* Provider::load(std::string const& filename, Variants const& /*options*/,
                          Resources& resources, std::string& resolved_name) noexcept {

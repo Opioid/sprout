@@ -10,7 +10,7 @@ class Scene;
 
 class Extension {
   public:
-    virtual ~Extension() noexcept {}
+    virtual ~Extension() noexcept = default;
 
     void init(uint32_t prop) noexcept {
         prop_ = prop;

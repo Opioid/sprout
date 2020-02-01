@@ -34,9 +34,9 @@ bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triang
                    std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
-Provider::Provider() noexcept {}
+Provider::Provider() noexcept = default;
 
-Provider::~Provider() noexcept {}
+Provider::~Provider() noexcept = default;
 
 Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
                       Resources& resources, std::string& resolved_name) noexcept {

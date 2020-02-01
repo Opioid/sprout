@@ -18,7 +18,7 @@ namespace scene::shape {
 
 static float constexpr Canopy_eps = -0.0005f;
 
-Canopy::Canopy() noexcept {}
+Canopy::Canopy() noexcept = default;
 
 float3 Canopy::object_to_texture_point(float3 const& p) const noexcept {
     return p;

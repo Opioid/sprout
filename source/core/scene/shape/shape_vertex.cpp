@@ -7,7 +7,7 @@ size_t Vertex::unpadded_size() noexcept {
     return 3 * 4 + 3 * 4 + 3 * 4 + 2 * 4 + 1;
 }
 
-Vertex_stream::~Vertex_stream() noexcept {}
+Vertex_stream::~Vertex_stream() noexcept = default;
 
 Vertex_stream::Vertex_stream(uint32_t num_vertices) noexcept : num_vertices_(num_vertices) {}
 

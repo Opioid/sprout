@@ -13,7 +13,7 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
                                            bool                    two_sided) noexcept
     : Emissionmap(sampler_settings, two_sided), element_(-1) {}
 
-Emissionmap_animated::~Emissionmap_animated() noexcept {}
+Emissionmap_animated::~Emissionmap_animated() noexcept = default;
 
 void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /*frame_length*/,
                                     thread::Pool& /*threads*/, Scene const& scene) noexcept {

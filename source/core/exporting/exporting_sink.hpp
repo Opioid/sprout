@@ -11,7 +11,7 @@ namespace exporting {
 
 class Sink {
   public:
-    virtual ~Sink() noexcept {}
+    virtual ~Sink() noexcept = default;
 
     virtual void write(image::Float4 const& image, uint32_t frame,
                        thread::Pool& threads) noexcept = 0;

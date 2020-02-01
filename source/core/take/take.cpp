@@ -9,7 +9,7 @@
 
 namespace take {
 
-View::View() noexcept {}
+View::View() noexcept = default;
 
 View::~View() noexcept {
     clear();
@@ -46,7 +46,7 @@ bool View::valid() const noexcept {
            nullptr != camera;
 }
 
-Take::Take() noexcept {}
+Take::Take() noexcept = default;
 
 Take::~Take() noexcept {
     clear();

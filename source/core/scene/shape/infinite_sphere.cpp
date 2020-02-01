@@ -16,7 +16,7 @@
 
 namespace scene::shape {
 
-Infinite_sphere::Infinite_sphere() noexcept {}
+Infinite_sphere::Infinite_sphere() noexcept = default;
 
 float3 Infinite_sphere::object_to_texture_point(float3 const& p) const noexcept {
     return p;

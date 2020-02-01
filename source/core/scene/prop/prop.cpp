@@ -21,7 +21,7 @@ using Transformation = entity::Composed_transformation;
 
 Prop::Prop() noexcept = default;
 
-Prop::~Prop() noexcept {}
+Prop::~Prop() noexcept = default;
 
 void Prop::set_visible_in_shadow(bool value) noexcept {
     properties_.set(Property::Visible_in_shadow, value);

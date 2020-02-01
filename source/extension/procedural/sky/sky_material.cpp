@@ -66,7 +66,7 @@ Sky_baked_material::Sky_baked_material(Sky& sky) noexcept
       cache_(image::Description(Bake_dimensions)),
       cache_texture_(image::texture::Float3(cache_)) {}
 
-Sky_baked_material::~Sky_baked_material() noexcept {}
+Sky_baked_material::~Sky_baked_material() noexcept = default;
 
 material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene::Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter       filter,

@@ -44,7 +44,7 @@ Loader::Loader(Resources& resources, Material* fallback_material) noexcept
       null_shape_(resources.store<Shape>(new shape::Null())),
       fallback_material_(resources.store<Material>(fallback_material)) {}
 
-Loader::~Loader() noexcept {}
+Loader::~Loader() noexcept = default;
 
 bool Loader::load(std::string const& filename, std::string_view take_name, take::Take const& take,
                   Scene& scene) noexcept {

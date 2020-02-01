@@ -9,7 +9,7 @@
 namespace math {
 
 template <typename T>
-Interpolated_function_3D<T>::Interpolated_function_3D() noexcept {}
+Interpolated_function_3D<T>::Interpolated_function_3D() noexcept = default;
 
 template <typename T>
 Interpolated_function_3D<T>::Interpolated_function_3D(Interpolated_function_3D&& other) noexcept

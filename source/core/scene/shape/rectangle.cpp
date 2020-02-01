@@ -15,7 +15,7 @@
 
 namespace scene::shape {
 
-Rectangle::Rectangle() noexcept {}
+Rectangle::Rectangle() noexcept = default;
 
 float3 Rectangle::object_to_texture_point(float3 const& p) const noexcept {
     return (p - float3(-1.f)) * (1.f / float3(2.f, 2.f, 0.2f));

@@ -12,7 +12,7 @@ namespace procedural::sky {
 
 Sky::Sky() noexcept = default;
 
-Sky::~Sky() noexcept {}
+Sky::~Sky() noexcept = default;
 
 void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) noexcept {
     sky_ = sky;

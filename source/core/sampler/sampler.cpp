@@ -66,6 +66,6 @@ Camera_sample Sampler::generate_camera_sample(int2 pixel) noexcept {
 
 Pool::Pool(uint32_t num_samplers) noexcept : num_samplers_(num_samplers) {}
 
-Pool::~Pool() noexcept {}
+Pool::~Pool() noexcept = default;
 
 }  // namespace sampler

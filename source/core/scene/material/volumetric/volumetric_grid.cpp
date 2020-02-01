@@ -19,7 +19,7 @@ namespace scene::material::volumetric {
 Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density) noexcept
     : Material(sampler_settings), density_(density) {}
 
-Grid::~Grid() noexcept {}
+Grid::~Grid() noexcept = default;
 
 float3 Grid::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
                                Filter filter, Worker const& worker) const noexcept {
@@ -82,7 +82,7 @@ Grid_emission::Grid_emission(Sampler_settings const& sampler_settings,
                              Texture_adapter const&  grid) noexcept
     : Grid(sampler_settings, grid), average_emission_(float3(-1.f)) {}
 
-Grid_emission::~Grid_emission() noexcept {}
+Grid_emission::~Grid_emission() noexcept = default;
 
 bool Grid_emission::has_emission_map() const noexcept {
     return true;
@@ -180,7 +180,7 @@ Grid_color::Grid_color(Sampler_settings const& sampler_settings) noexcept
     cm_ = CM(cc_);
 }
 
-Grid_color::~Grid_color() noexcept {}
+Grid_color::~Grid_color() noexcept = default;
 
 void Grid_color::set_color(Texture_adapter const& color) noexcept {
     color_ = color;

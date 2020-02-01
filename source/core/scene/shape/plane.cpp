@@ -11,7 +11,7 @@
 
 namespace scene::shape {
 
-Plane::Plane() noexcept {}
+Plane::Plane() noexcept = default;
 
 float3 Plane::object_to_texture_point(float3 const& p) const noexcept {
     return p;

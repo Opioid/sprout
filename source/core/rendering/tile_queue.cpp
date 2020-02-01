@@ -3,7 +3,7 @@
 
 namespace rendering {
 
-Tile_queue::~Tile_queue() noexcept {}
+Tile_queue::~Tile_queue() noexcept = default;
 
 void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) noexcept {
     resolution_      = resolution;
@@ -77,7 +77,7 @@ uint32_t Tile_queue::index(int4 const& tile) const noexcept {
     return uint32_t(y * tiles_per_row_ + x);
 }
 
-Range_queue::~Range_queue() noexcept {}
+Range_queue::~Range_queue() noexcept = default;
 
 void Range_queue::init(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept {
     total0_ = total0;

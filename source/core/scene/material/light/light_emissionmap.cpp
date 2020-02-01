@@ -18,7 +18,7 @@ namespace scene::material::light {
 Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : Material(sampler_settings, two_sided), average_emission_(float3(-1.f)) {}
 
-Emissionmap::~Emissionmap() noexcept {}
+Emissionmap::~Emissionmap() noexcept = default;
 
 material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*ray*/,
                                             Renderstate const& rs, Filter       filter,

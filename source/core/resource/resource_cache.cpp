@@ -4,7 +4,7 @@ namespace resource {
 
 Cache::Cache() noexcept : generation_(0) {}
 
-Cache::~Cache() noexcept {}
+Cache::~Cache() noexcept = default;
 
 void Cache::increment_generation() noexcept {
     ++generation_;

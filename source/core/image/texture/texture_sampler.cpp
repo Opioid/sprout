@@ -191,7 +191,7 @@ float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv,
     return float2(u - fu, v - fv);
 }
 
-Sampler_3D::~Sampler_3D() noexcept {}
+Sampler_3D::~Sampler_3D() noexcept = default;
 
 template <typename Address_mode>
 float Nearest_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uvw) const noexcept {

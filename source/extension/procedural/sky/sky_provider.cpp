@@ -27,7 +27,7 @@ void init(scene::Loader& loader, material::Provider& material_provider) noexcept
     loader.register_extension_provider("Sky", &provider);
 }
 
-Provider::~Provider() noexcept {}
+Provider::~Provider() noexcept = default;
 
 void Provider::set_scene_loader(Loader& loader) noexcept {
     scene_loader_ = &loader;

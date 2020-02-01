@@ -17,7 +17,7 @@ char const* Material::identifier() noexcept {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
     : sampler_key_(sampler_settings.key()), two_sided_(two_sided) {}
 
-Material::~Material() noexcept {}
+Material::~Material() noexcept = default;
 
 void Material::set_mask(Texture_adapter const& mask) noexcept {
     mask_ = mask;

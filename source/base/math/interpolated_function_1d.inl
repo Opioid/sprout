@@ -8,7 +8,7 @@
 namespace math {
 
 template <typename T>
-Interpolated_function_1D<T>::Interpolated_function_1D() noexcept {}
+Interpolated_function_1D<T>::Interpolated_function_1D() noexcept = default;
 
 template <typename T>
 Interpolated_function_1D<T>::Interpolated_function_1D(Interpolated_function_1D&& other) noexcept

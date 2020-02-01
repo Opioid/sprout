@@ -8,6 +8,6 @@ Integrator::~Integrator() noexcept = default;
 
 Pool::Pool(uint32_t num_integrators) noexcept : num_integrators_(num_integrators) {}
 
-Pool::~Pool() noexcept {}
+Pool::~Pool() noexcept = default;
 
 }  // namespace rendering::integrator::surface
