@@ -11,7 +11,7 @@ class Bloom : public Postprocessor {
   public:
     Bloom(float angle, float alpha, float threshold, float intensity);
 
-    virtual void init(scene::camera::Camera const& camera, thread::Pool& threads) final;
+    virtual void init(Camera const& camera, thread::Pool& threads) final;
 
   private:
     virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,

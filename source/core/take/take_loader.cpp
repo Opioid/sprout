@@ -73,18 +73,17 @@ using Light_sampling = rendering::integrator::Light_sampling;
 
 static Sensor* load_sensor(json::Value const& sensor_value) noexcept;
 
-static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
+static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers,
                                         bool progressive, uint32_t& num_samples_per_pixel) noexcept;
 
-static Surface_pool* load_surface_integrator(json::Value const& integrator_value,
-                                             uint32_t num_workers, bool progressive,
-                                             bool lighttracer) noexcept;
+static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
+                                             bool progressive, bool lighttracer) noexcept;
 
-static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
-                                           uint32_t num_workers, bool progressive) noexcept;
+static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
+                                           bool progressive) noexcept;
 
-static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
-                                               uint32_t num_workers, bool surface_integrator,
+static Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
+                                               bool      surface_integrator,
                                                uint32_t& num_particles_per_pixel) noexcept;
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
@@ -93,10 +92,10 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexc
 
 static bool peek_stereoscopic(json::Value const& parameters_value) noexcept;
 
-static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporter_value,
+static memory::Array<exporting::Sink*> load_exporters(json::Value const& value,
                                                       View const&        view) noexcept;
 
-static void load_light_sampling(json::Value const& parent_value, Light_sampling& sampling) noexcept;
+static void load_light_sampling(json::Value const& value, Light_sampling& sampling) noexcept;
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
                   Scene& scene, Resources& resources) noexcept {
@@ -483,7 +482,7 @@ static Sensor* load_sensor(json::Value const& sensor_value) noexcept {
     return new Unfiltered<Opaque, clamp::Identity>(exposure, clamp::Identity());
 }
 
-static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32_t num_workers,
+static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers,
                                         bool      progressive,
                                         uint32_t& num_samples_per_pixel) noexcept {
     if (progressive) {
@@ -491,7 +490,7 @@ static sampler::Pool* load_sampler_pool(json::Value const& sampler_value, uint32
         return new sampler::Random_pool(num_workers);
     }
 
-    for (auto& n : sampler_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 
         if ("Random" == n.name) {
@@ -576,9 +575,8 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
     }
 }
 
-static Surface_pool* load_surface_integrator(json::Value const& integrator_value,
-                                             uint32_t num_workers, bool progressive,
-                                             bool lighttracer) noexcept {
+static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
+                                             bool progressive, bool lighttracer) noexcept {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -588,7 +586,7 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
 
     bool const default_caustics = true;
 
-    for (auto& n : integrator_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         if ("AO" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
@@ -694,11 +692,11 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
     return nullptr;
 }
 
-static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
-                                           uint32_t num_workers, bool progressive) noexcept {
+static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
+                                           bool progressive) noexcept {
     using namespace rendering::integrator::volume;
 
-    for (auto& n : integrator_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         if ("Emission" == n.name) {
             float const step_size = json::read_float(n.value, "step_size", 1.f);
 
@@ -725,18 +723,17 @@ static Volume_pool* load_volume_integrator(json::Value const& integrator_value,
     return nullptr;
 }
 
-static Particle_pool* load_particle_integrator(json::Value const& integrator_value,
-                                               uint32_t num_workers, bool surface_integrator,
+static Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
+                                               bool      surface_integrator,
                                                uint32_t& num_particles_per_pixel) noexcept {
     using namespace rendering::integrator::particle;
 
-    bool const indirect_caustics = json::read_bool(integrator_value, "indirect_caustics", true);
-    bool const full_light_path   = json::read_bool(integrator_value, "full_light_path",
-                                                 !surface_integrator);
+    bool const indirect_caustics = json::read_bool(value, "indirect_caustics", true);
+    bool const full_light_path   = json::read_bool(value, "full_light_path", !surface_integrator);
 
-    uint32_t const max_bounces = json::read_uint(integrator_value, "max_bounces", 8);
+    uint32_t const max_bounces = json::read_uint(value, "max_bounces", 8);
 
-    num_particles_per_pixel = json::read_uint(integrator_value, "particles_per_pixel", 1);
+    num_particles_per_pixel = json::read_uint(value, "particles_per_pixel", 1);
 
     return new Lighttracer_pool(num_workers, 1, max_bounces, indirect_caustics, full_light_path);
 }
@@ -876,14 +873,10 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexc
 
 static bool peek_stereoscopic(json::Value const& parameters_value) noexcept {
     auto const export_node = parameters_value.FindMember("stereo");
-    if (parameters_value.MemberEnd() == export_node) {
-        return false;
-    }
-
-    return true;
+    return parameters_value.MemberEnd() != export_node;
 }
 
-static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporter_value,
+static memory::Array<exporting::Sink*> load_exporters(json::Value const& value,
                                                       View const&        view) noexcept {
     if (!view.camera) {
         return {};
@@ -892,9 +885,9 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& exporte
     auto const& camera = *view.camera;
 
     memory::Array<exporting::Sink*> exporters;
-    exporters.reserve(exporter_value.GetObject().MemberCount());
+    exporters.reserve(value.GetObject().MemberCount());
 
-    for (auto& n : exporter_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         if ("Image" == n.name) {
             using namespace image::encoding;
 
@@ -962,10 +955,9 @@ void Loader::set_default_exporter(Take& take) noexcept {
     }
 }
 
-static void load_light_sampling(json::Value const& parent_value,
-                                Light_sampling&    sampling) noexcept {
-    auto const light_sampling_node = parent_value.FindMember("light_sampling");
-    if (parent_value.MemberEnd() == light_sampling_node) {
+static void load_light_sampling(json::Value const& value, Light_sampling& sampling) noexcept {
+    auto const light_sampling_node = value.FindMember("light_sampling");
+    if (value.MemberEnd() == light_sampling_node) {
         return;
     }
 

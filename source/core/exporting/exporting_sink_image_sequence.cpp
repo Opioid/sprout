@@ -7,8 +7,8 @@
 
 namespace exporting {
 
-Image_sequence::Image_sequence(std::string const& filename, image::Writer* writer) noexcept
-    : filename_(filename), writer_(writer) {}
+Image_sequence::Image_sequence(std::string filename, image::Writer* writer) noexcept
+    : filename_(std::move(filename)), writer_(writer) {}
 
 Image_sequence::~Image_sequence() noexcept {
     delete writer_;

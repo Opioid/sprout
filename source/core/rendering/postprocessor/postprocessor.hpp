@@ -2,7 +2,10 @@
 #define SU_CORE_RENDERING_POSTPROCESSOR_POSTPROCESSOR_HPP
 
 #include "image/typed_image_fwd.hpp"
-#include "scene/camera/camera.hpp"
+
+namespace scene::camera {
+class Camera;
+}
 
 namespace thread {
 class Pool;
@@ -12,11 +15,13 @@ namespace rendering::postprocessor {
 
 class Postprocessor {
   public:
-    Postprocessor(uint32_t num_passes = 1);
+    using Camera = scene::camera::Camera;
 
-    virtual ~Postprocessor();
+    Postprocessor(uint32_t num_passes = 1) noexcept;
 
-    virtual void init(scene::camera::Camera const& camera, thread::Pool& threads) = 0;
+    virtual ~Postprocessor() noexcept;
+
+    virtual void init(Camera const& camera, thread::Pool& threads) = 0;
 
     virtual bool alpha_out(bool alpha_in) const;
 

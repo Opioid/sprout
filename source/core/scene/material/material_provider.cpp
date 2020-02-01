@@ -87,7 +87,7 @@ struct Coating_description {
     Texture_description thickness_map_description;
 };
 
-static void read_coating_description(json::Value const&   clearcoat_value,
+static void read_coating_description(json::Value const&   value,
                                      Coating_description& description) noexcept;
 
 static float3 read_hex_RGB(std::string const& text) noexcept;
@@ -1282,8 +1282,9 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
         material->set_emission(emission);
         material->set_anisotropy(anisotropy);
         return material;
+    }
 
-    } else if (color_map.is_valid()) {
+    if (color_map.is_valid()) {
         auto material = new Grid_color(sampler_settings);
         material->set_color(color_map);
         material->set_attenuation(1.f, attenuation_distance);
@@ -1312,7 +1313,9 @@ Sampler_settings::Address read_address(json::Value const& address_value) noexcep
 
     if ("Clamp" == address) {
         return Sampler_settings::Address::Clamp;
-    } else if ("Repeat" == address) {
+    }
+
+    if ("Repeat" == address) {
         return Sampler_settings::Address::Repeat;
     }
 
@@ -1385,13 +1388,12 @@ Texture_adapter create_texture(Texture_description const& description, memory::V
                            description.scale);
 }
 
-void read_coating_description(json::Value const&   coating_value,
-                              Coating_description& description) noexcept {
-    if (!coating_value.IsObject()) {
+void read_coating_description(json::Value const& value, Coating_description& description) noexcept {
+    if (!value.IsObject()) {
         return;
     }
 
-    for (auto& n : coating_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         if ("color" == n.name) {
             description.color = json::read_float3(n.value);
         } else if ("attenuation_distance" == n.name) {

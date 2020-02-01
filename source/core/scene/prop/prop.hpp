@@ -83,7 +83,7 @@ class Prop {
         noexcept;
 
     bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
-                         float3& ca) const noexcept;
+                         float3& ta) const noexcept;
 
     bool has_masked_material() const noexcept;
 

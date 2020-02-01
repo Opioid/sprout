@@ -4,6 +4,7 @@
 #include "image/typed_image.hpp"
 #include "postprocessor.hpp"
 #include "rendering/sensor/sensor.hpp"
+#include "scene/camera/camera.hpp"
 
 namespace rendering::postprocessor {
 

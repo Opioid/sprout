@@ -7,12 +7,12 @@ namespace rendering::postprocessor::tonemapping {
 
 class Tonemapper : public Postprocessor {
   public:
-    ~Tonemapper() override;
+    ~Tonemapper() noexcept override;
 
-    void init(scene::camera::Camera const& camera, thread::Pool& threads) final;
+    void init(Camera const& camera, thread::Pool& threads) noexcept final;
 
   protected:
-    static float normalization_factor(float hdr_max, float tonemapped_max);
+    static float normalization_factor(float hdr_max, float tonemapped_max) noexcept;
 };
 
 }  // namespace rendering::postprocessor::tonemapping

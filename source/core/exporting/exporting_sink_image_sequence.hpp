@@ -13,7 +13,7 @@ namespace exporting {
 
 class Image_sequence : public Sink {
   public:
-    Image_sequence(std::string const& filename, image::Writer* writer) noexcept;
+    Image_sequence(std::string filename, image::Writer* writer) noexcept;
 
     ~Image_sequence() noexcept final;
 

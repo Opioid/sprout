@@ -8,6 +8,7 @@
 #include "base/spectrum/xyz.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"
+#include "scene/camera/camera.hpp"
 
 namespace rendering::postprocessor {
 
@@ -42,7 +43,7 @@ static inline float f3(float theta, float lambda) {
     return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }
 
-void Glare::init(scene::camera::Camera const& camera, thread::Pool& threads) {
+void Glare::init(Camera const& camera, thread::Pool& threads) {
     auto const dim = camera.sensor_dimensions();
 
     dimensions_ = dim;

@@ -1,6 +1,7 @@
 #ifndef SU_CORE_RENDERING_POSTPROCESSOR_GLARE_HPP
 #define SU_CORE_RENDERING_POSTPROCESSOR_GLARE_HPP
 
+#include "base/math/vector2.hpp"
 #include "base/memory/array.hpp"
 #include "postprocessor.hpp"
 
@@ -14,7 +15,7 @@ class Glare : public Postprocessor {
 
     ~Glare() final;
 
-    void init(scene::camera::Camera const& camera, thread::Pool& threads) final;
+    void init(Camera const& camera, thread::Pool& threads) final;
 
   private:
     void pre_apply(image::Float4 const& source, image::Float4& destination,

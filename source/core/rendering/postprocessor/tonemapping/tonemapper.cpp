@@ -1,17 +1,13 @@
 #include "tonemapper.hpp"
 
-namespace rendering {
-namespace postprocessor {
-namespace tonemapping {
+namespace rendering::postprocessor::tonemapping {
 
-Tonemapper::~Tonemapper() {}
+Tonemapper::~Tonemapper() = default;
 
-void Tonemapper::init(scene::camera::Camera const& /*camera*/, thread::Pool& /*threads*/) {}
+void Tonemapper::init(Camera const& /*camera*/, thread::Pool& /*threads*/) noexcept {}
 
-float Tonemapper::normalization_factor(float linear_max, float tonemapped_max) {
+float Tonemapper::normalization_factor(float linear_max, float tonemapped_max) noexcept {
     return linear_max > 0.f ? 1.f / tonemapped_max : 1.f;
 }
 
-}  // namespace tonemapping
-}  // namespace postprocessor
-}  // namespace rendering
+}  // namespace rendering::postprocessor::tonemapping

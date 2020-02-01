@@ -64,11 +64,11 @@ float Mitchell::mitchell(float x) const noexcept {
         return ((-b - 6.f * c) * xx * x + (6.f * b + 30.f * c) * xx + (-12.f * b - 48.f * c) * x +
                 (8.f * b + 24.f * c)) *
                (1.f / 6.f);
-    } else {
-        return ((12.f - 9.f * b - 6.f * c) * xx * x + (-18.f + 12.f * b + 6.f * c) * xx +
-                (6.f - 2.f * b)) *
-               (1.f / 6.f);
     }
+
+    return ((12.f - 9.f * b - 6.f * c) * xx * x + (-18.f + 12.f * b + 6.f * c) * xx +
+            (6.f - 2.f * b)) *
+           (1.f / 6.f);
 
     //    x = std::abs(x);
 

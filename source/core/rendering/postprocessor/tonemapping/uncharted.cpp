@@ -2,9 +2,7 @@
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
 
-namespace rendering {
-namespace postprocessor {
-namespace tonemapping {
+namespace rendering::postprocessor::tonemapping {
 
 Uncharted::Uncharted(float hdr_max)
     : normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
@@ -35,6 +33,4 @@ float Uncharted::tonemap_function(float x) {
     return ((x * (ax + c * b) + d * e) / (x * (ax + b) + d * f)) - e / f;
 }
 
-}  // namespace tonemapping
-}  // namespace postprocessor
-}  // namespace rendering
+}  // namespace rendering::postprocessor::tonemapping
