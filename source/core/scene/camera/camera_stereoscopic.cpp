@@ -7,7 +7,7 @@ Stereoscopic::Stereoscopic(int2 resolution) : Camera(resolution) {
     set_interpupillary_distance(0.062f);
 }
 
-Stereoscopic::~Stereoscopic() {}
+Stereoscopic::~Stereoscopic() = default;
 
 void Stereoscopic::set_interpupillary_distance(float ipd) {
     float const half_ipd = 0.5f * ipd;

@@ -164,23 +164,23 @@ Image* Reader::read(std::istream& stream) noexcept {
                 }
 
                 return image;
-            } else {
-                auto image = new Image(Float1(description));
-
-                float* data = image->float1().data();
-
-                for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
-                    if (field.get(i)) {
-                        float density;
-                        stream.read(reinterpret_cast<char*>(&density), sizeof(float));
-                        data[i] = density;
-                    } else {
-                        data[i] = 0.f;
-                    }
-                }
-
-                return image;
             }
+
+            auto image = new Image(Float1(description));
+
+            float* data = image->float1().data();
+
+            for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
+                if (field.get(i)) {
+                    float density;
+                    stream.read(reinterpret_cast<char*>(&density), sizeof(float));
+                    data[i] = density;
+                } else {
+                    data[i] = 0.f;
+                }
+            }
+
+            return image;
         }
     }
 

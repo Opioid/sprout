@@ -251,9 +251,13 @@ void write_histogram(Item const& item, std::ostream& stream) noexcept {
 static inline float linear_to_gamma_sRGB_unbounded(float c) {
     if (c <= 0.f) {
         return 0.f;
-    } else if (c < 0.0031308f) {
+    }
+
+    if (c < 0.0031308f) {
         return 12.92f * c;
-    } else if (c < 1.f) {
+    }
+
+    if (c < 1.f) {
         return 1.055f * std::pow(c, 0.41666f) - 0.055f;
     }
 

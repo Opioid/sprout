@@ -1,13 +1,11 @@
 target_sources(core
-  PRIVATE
-  "aces.cpp"
-  "aces.hpp"
-  "generic.cpp"
-  "generic.hpp"
-  "identity.cpp"
-  "identity.hpp"
-  "tonemapper.cpp"
-  "tonemapper.hpp"
-  "uncharted.cpp"
-  "uncharted.hpp"
-) 
+    PRIVATE
+    "aces.cpp"
+    "aces.hpp"
+    "generic.cpp"
+    "generic.hpp"
+    "tonemapper.cpp"
+    "tonemapper.hpp"
+    "uncharted.cpp"
+    "uncharted.hpp"
+    ) 

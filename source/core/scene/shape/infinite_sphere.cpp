@@ -187,9 +187,9 @@ float Infinite_sphere::pdf(Ray const& /*ray*/, Intersection const& /*intersectio
                            bool /*two_sided*/, bool total_sphere) const noexcept {
     if (total_sphere) {
         return 1.f / (4.f * Pi);
-    } else {
-        return 1.f / (2.f * Pi);
     }
+
+    return 1.f / (2.f * Pi);
 }
 
 float Infinite_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,

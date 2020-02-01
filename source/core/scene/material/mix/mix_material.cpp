@@ -18,9 +18,9 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
 
     if (mask > sampler.generate_sample_1D(1)) {
         return material_a_->sample(wo, ray, rs, filter, sampler, worker);
-    } else {
-        return material_b_->sample(wo, ray, rs, filter, sampler, worker);
     }
+
+    return material_b_->sample(wo, ray, rs, filter, sampler, worker);
 }
 
 float Material::opacity(float2 /*uv*/, uint64_t /*time*/, Filter /*filter*/,

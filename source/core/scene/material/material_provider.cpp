@@ -53,18 +53,15 @@ static Material* load_substitute(json::Value const& substitute_value,
                                  Resources&         resources) noexcept;
 
 struct Texture_description {
-    Texture_description() noexcept
-        : usage("Color"), swizzle(image::Swizzle::XYZW), scale(1.f), num_elements(1) {}
-
-    std::string filename;
+    std::string filename = "Color";
 
     std::string usage;
 
-    image::Swizzle swizzle;
+    image::Swizzle swizzle = image::Swizzle::XYZW;
 
-    float scale;
+    float scale = 1.f;
 
-    int32_t num_elements;
+    int32_t num_elements = 1;
 };
 
 static void read_sampler_settings(json::Value const& sampler_value,
@@ -349,15 +346,15 @@ Material* Provider::load_display(json::Value const& display_value, Resources& re
             material->set_roughness(roughness);
             material->set_ior(ior);
             return material;
-        } else {
-            auto material = new display::Emissionmap(sampler_settings, two_sided);
-            material->set_mask(mask);
-            material->set_emission_map(emission_map);
-            material->set_emission_factor(emission_factor);
-            material->set_roughness(roughness);
-            material->set_ior(ior);
-            return material;
         }
+
+        auto material = new display::Emissionmap(sampler_settings, two_sided);
+        material->set_mask(mask);
+        material->set_emission_map(emission_map);
+        material->set_emission_factor(emission_factor);
+        material->set_roughness(roughness);
+        material->set_ior(ior);
+        return material;
     }
 
     auto material = new display::Constant(sampler_settings, two_sided);
@@ -669,19 +666,19 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
         material->set_roughness(roughness_aniso);
 
         return material;
-    } else {
-        auto material = new metal::Material_isotropic(sampler_settings, two_sided);
-
-        material->set_mask(mask);
-        material->set_normal_map(normal_map);
-        //	material->set_surface_map(surface_map);
-
-        material->set_ior(ior);
-        material->set_absorption(absorption);
-        material->set_roughness(roughness);
-
-        return material;
     }
+
+    auto material = new metal::Material_isotropic(sampler_settings, two_sided);
+
+    material->set_mask(mask);
+    material->set_normal_map(normal_map);
+    //	material->set_surface_map(surface_map);
+
+    material->set_ior(ior);
+    material->set_absorption(absorption);
+    material->set_roughness(roughness);
+
+    return material;
 }
 
 Material* Provider::load_metallic_paint(json::Value const& paint_value,

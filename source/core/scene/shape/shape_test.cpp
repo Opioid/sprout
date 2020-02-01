@@ -42,11 +42,7 @@ bool check(const Sample_to& sample) {
         return false;
     }
 
-    if (!all_finite(sample.uvw)) {
-        return false;
-    }
-
-    return true;
+    return all_finite(sample.uvw);
 }
 
 void test() {

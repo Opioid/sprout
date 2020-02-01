@@ -3,6 +3,6 @@
 
 namespace image {
 
-Writer::~Writer() {}
+Writer::~Writer() = default;
 
 }  // namespace image

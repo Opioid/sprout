@@ -13,11 +13,12 @@ namespace image {
 
 class Writer {
   public:
-    virtual ~Writer();
+    virtual ~Writer() noexcept;
 
-    virtual std::string file_extension() const = 0;
+    virtual std::string file_extension() const noexcept = 0;
 
-    virtual bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) = 0;
+    virtual bool write(std::ostream& stream, Float4 const& image,
+                       thread::Pool& threads) noexcept = 0;
 };
 
 }  // namespace image

@@ -47,7 +47,7 @@ float3 Sky_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*
 }
 
 float3 Sky_material::average_radiance(float /*area*/, Scene const& /*scene*/) const noexcept {
-    return sky_.model().evaluate_sky(sky_.model().zenith());
+    return sky_.model().evaluate_sky(Model::zenith());
 }
 
 void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
@@ -190,7 +190,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
         // This controls how often the sky will be sampled,
         // Zenith sample cause less variance in one test (favoring the sun)...
         // average_emission_ = cache_texture->average_3();
-        average_emission_ = sky_.model().evaluate_sky(sky_.model().zenith());
+        average_emission_ = sky_.model().evaluate_sky(Model::zenith());
     }
 }
 

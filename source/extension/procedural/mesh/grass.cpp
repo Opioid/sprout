@@ -246,10 +246,9 @@ void Grass::calculate_normals(std::vector<Index_triangle>& triangles,
     }
 
     struct Shading_normal {
-        Shading_normal() : sum(0.f, 0.f, 0.f), num(0) {}
+        packed_float3 sum = packed_float3(0.f);
 
-        packed_float3 sum;
-        uint32_t      num;
+        uint32_t num = 0;
     };
 
     std::vector<Shading_normal> normals(vertices.size());

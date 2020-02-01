@@ -75,9 +75,9 @@ float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker cons
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key_, filter);
         return mask_.sample_1(worker, sampler, uv);
-    } else {
-        return 1.f;
     }
+
+    return 1.f;
 }
 
 float3 Material::thin_absorption(float3 const& /*wi*/, float3 const& /*n*/, float2 uv,

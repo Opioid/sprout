@@ -84,29 +84,43 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
 
     if (Image::Type::Byte1 == image->type()) {
         return new Texture(Byte1_unorm(image->byte1()));
-    } else if (Image::Type::Byte2 == image->type()) {
+    }
+
+    if (Image::Type::Byte2 == image->type()) {
         if (Usage::Anisotropy == usage) {
             return new Texture(Byte2_snorm(image->byte2()));
-        } else {
-            return new Texture(Byte2_unorm(image->byte2()));
         }
-    } else if (Image::Type::Byte3 == image->type()) {
+
+        return new Texture(Byte2_unorm(image->byte2()));
+    }
+
+    if (Image::Type::Byte3 == image->type()) {
         if (Usage::Normal == usage) {
             SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
 
             return new Texture(Byte3_snorm(image->byte3()));
-        } else {
-            return new Texture(Byte3_sRGB(image->byte3()));
         }
-    } else if (Image::Type::Byte4 == image->type()) {
+
+        return new Texture(Byte3_sRGB(image->byte3()));
+    }
+
+    if (Image::Type::Byte4 == image->type()) {
         return new Texture(Byte4_sRGB(image->byte4()));
-    } else if (Image::Type::Short3 == image->type()) {
+    }
+
+    if (Image::Type::Short3 == image->type()) {
         return new Texture(Half3(image->short3()));
-    } else if (Image::Type::Float1 == image->type()) {
+    }
+
+    if (Image::Type::Float1 == image->type()) {
         return new Texture(Float1(image->float1()));
-    } else if (Image::Type::Float1_sparse == image->type()) {
+    }
+
+    if (Image::Type::Float1_sparse == image->type()) {
         return new Texture(Float1_sparse(image->float1_sparse()));
-    } else if (Image::Type::Float3 == image->type()) {
+    }
+
+    if (Image::Type::Float3 == image->type()) {
         return new Texture(Float3(image->float3()));
     }
 

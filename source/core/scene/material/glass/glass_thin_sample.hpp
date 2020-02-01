@@ -18,7 +18,7 @@ class Sample_thin : public material::Sample {
     bool is_translucent() const noexcept final;
 
     void set(float3 const& refraction_color, float3 const& absorption_coefficient, float ior,
-             float ior_outside, float thickess) noexcept;
+             float ior_outside, float thickness) noexcept;
 
     Layer layer_;
 

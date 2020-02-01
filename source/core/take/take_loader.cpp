@@ -34,7 +34,6 @@
 #include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
-#include "rendering/postprocessor/tonemapping/identity.hpp"
 #include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filter/sensor_gaussian.hpp"
@@ -409,7 +408,9 @@ static Sensor_filter_type read_filter_type(json::Value const& filter_value) noex
     for (auto& n : filter_value.GetObject()) {
         if ("Gaussian" == n.name) {
             return Sensor_filter_type::Gaussian;
-        } else if ("Mitchell" == n.name) {
+        }
+
+        if ("Mitchell" == n.name) {
             return Sensor_filter_type::Mitchell;
         }
     }
@@ -470,9 +471,9 @@ static Sensor* load_sensor(json::Value const& sensor_value) noexcept {
     if (alpha_transparency) {
         if (clamp) {
             return new Unfiltered<Transparent, clamp::Clamp>(exposure, clamp::Clamp(clamp_max));
-        } else {
-            return new Unfiltered<Transparent, clamp::Identity>(exposure, clamp::Identity());
         }
+
+        return new Unfiltered<Transparent, clamp::Identity>(exposure, clamp::Identity());
     }
 
     if (clamp) {
@@ -594,12 +595,16 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
             float const radius = json::read_float(n.value, "radius", 1.f);
 
             return new AO_pool(num_workers, progressive, num_samples, radius);
-        } else if ("Whitted" == n.name) {
+        }
+
+        if ("Whitted" == n.name) {
             uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
                                                                light_sampling.num_samples);
 
             return new Whitted_pool(num_workers, num_light_samples);
-        } else if ("PM" == n.name) {
+        }
+
+        if ("PM" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          default_min_bounces);
 
@@ -610,7 +615,9 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
 
             return new PM_pool(num_workers, progressive, min_bounces, max_bounces,
                                photons_only_through_specular);
-        } else if ("PT" == n.name) {
+        }
+
+        if ("PT" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
@@ -623,7 +630,9 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
 
             return new Pathtracer_pool(num_workers, progressive, num_samples, min_bounces,
                                        max_bounces, enable_caustics);
-        } else if ("PTDL" == n.name) {
+        }
+
+        if ("PTDL" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
@@ -638,7 +647,9 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
 
             return new Pathtracer_DL_pool(num_workers, progressive, num_samples, min_bounces,
                                           max_bounces, light_sampling, enable_caustics);
-        } else if ("PTMIS" == n.name) {
+        }
+
+        if ("PTMIS" == n.name) {
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
@@ -657,7 +668,9 @@ static Surface_pool* load_surface_integrator(json::Value const& integrator_value
             return new Pathtracer_MIS_pool(num_workers, progressive, num_samples, min_bounces,
                                            max_bounces, light_sampling, enable_caustics,
                                            photons_only_through_specular);
-        } else if ("Debug" == n.name) {
+        }
+
+        if ("Debug" == n.name) {
             auto vector = Debug::Settings::Vector::Shading_normal;
 
             std::string const vector_type = json::read_string(n.value, "vector");
@@ -833,9 +846,13 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexc
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
             return new Aces(hdr_max);
-        } else if ("ACES_MJP" == n.name) {
+        }
+
+        if ("ACES_MJP" == n.name) {
             return new Aces_MJP();
-        } else if ("Generic" == n.name) {
+        }
+
+        if ("Generic" == n.name) {
             float const contrast = json::read_float(n.value, "contrast", 1.15f);
             float const shoulder = json::read_float(n.value, "shoulder", 0.99f);
             float const mid_in   = json::read_float(n.value, "mid_in", 0.18f);
@@ -843,9 +860,9 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexc
             float const hdr_max  = json::read_float(n.value, "hdr_max", 1.f);
 
             return new Generic(contrast, shoulder, mid_in, mid_out, hdr_max);
-        } else if ("Identity" == n.name) {
-            return new Identity();
-        } else if ("Uncharted" == n.name) {
+        }
+
+        if ("Uncharted" == n.name) {
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
             return new Uncharted(hdr_max);

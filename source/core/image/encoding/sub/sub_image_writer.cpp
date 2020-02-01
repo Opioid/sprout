@@ -17,7 +17,7 @@ static void newline(std::ostream& stream, uint32_t num_tabs) {
 }
 
 static void binary_tag(std::ostream& stream, size_t offset, size_t size) {
-    stream << "\"binary\":{\"offset\":" << offset << ",\"size\":" << size << "}";
+    stream << R"("binary":{"offset":)" << offset << R"(,"size":)" << size << "}";
 }
 
 static std::string image_type_string(Image::Type type) {
@@ -73,23 +73,23 @@ void Writer::write(std::string const& filename, Image const& image) {
     jstream << "{";
 
     newline(jstream, 1);
-    jstream << "\"image\":{";
+    jstream << R"("image":{)";
 
     auto const& description = image.description();
 
     newline(jstream, 2);
-    jstream << "\"description\":{";
+    jstream << R"("description":{)";
 
     newline(jstream, 3);
-    jstream << "\"type\":\"" << image_type_string(image.type()) << "\",";
+    jstream << R"("type":")" << image_type_string(image.type()) << R"(",)";
 
     int3 const& d = description.dimensions_;
     newline(jstream, 3);
-    jstream << "\"dimensions\":[";
+    jstream << R"("dimensions":[)";
     jstream << d[0] << "," << d[1] << "," << d[2] << "],";
 
     newline(jstream, 3);
-    jstream << "\"num_elements\":" << description.num_elements_;
+    jstream << R"("num_elements":)" << description.num_elements_;
 
     // close description
     newline(jstream, 2);
@@ -99,7 +99,7 @@ void Writer::write(std::string const& filename, Image const& image) {
 
     if (Bitfield) {
         newline(jstream, 2);
-        jstream << "\"topology\":{";
+        jstream << R"("topology":{)";
 
         memory::Bitfield field(description.num_pixels());
 
@@ -140,7 +140,7 @@ void Writer::write(std::string const& filename, Image const& image) {
         }
 
         newline(jstream, 2);
-        jstream << "\"pixels\":{";
+        jstream << R"("pixels":{)";
 
         uint64_t const pixels_size = num_active_pixels * image_type_bytes_per_pixel(image.type());
 
@@ -149,7 +149,7 @@ void Writer::write(std::string const& filename, Image const& image) {
         jstream << ",";
 
         newline(jstream, 3);
-        jstream << "\"encoding\":\"Float32\"";
+        jstream << R"("encoding":"Float32")";
 
         // close pixels
         newline(jstream, 2);
@@ -198,7 +198,7 @@ void Writer::write(std::string const& filename, Image const& image) {
         }
     } else {
         newline(jstream, 2);
-        jstream << "\"pixels\":{";
+        jstream << R"("pixels":{)";
 
         uint64_t const pixels_size = description.num_pixels() *
                                      image_type_bytes_per_pixel(image.type());
@@ -208,7 +208,7 @@ void Writer::write(std::string const& filename, Image const& image) {
         jstream << ",";
 
         newline(jstream, 3);
-        jstream << "\"encoding\":\"" << image_type_encoding(image.type()) << "\"";
+        jstream << R"("encoding":")" << image_type_encoding(image.type()) << R"(")";
 
         // close pixels
         newline(jstream, 2);

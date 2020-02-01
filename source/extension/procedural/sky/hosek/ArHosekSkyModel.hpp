@@ -421,7 +421,7 @@ hk_real arhosek_tristim_skymodel_radiance(ArHosekSkyModelState* state,
                                           hk_real cos_gamma, int channel);
 
 void arhosekskymodel_solar_radiance_temp(ArHosekSkyModelSolarTemp* temp, hk_real theta,
-                                         hk_real gamma);
+                                         hk_real sin_gamma_squared);
 
 //   Delivers the complete function: sky + sun, including limb darkening.
 //   Please read the above description before using this - there are several

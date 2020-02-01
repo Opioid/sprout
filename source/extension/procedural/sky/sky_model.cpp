@@ -9,8 +9,8 @@
 namespace procedural::sky {
 
 Model::Model() noexcept {
-    for (uint32_t i = 0; i < Num_bands; ++i) {
-        skymodel_states_[i] = nullptr;
+    for (auto& s : skymodel_states_) {
+        s = nullptr;
     }
 
     Spectrum::init(380.f, 720.f);

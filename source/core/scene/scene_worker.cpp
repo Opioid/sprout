@@ -71,9 +71,9 @@ void Worker::reset_interface_stack(Interface_stack const& stack) noexcept {
 float Worker::ior_outside(float3 const& wo, Intersection const& intersection) const noexcept {
     if (intersection.same_hemisphere(wo)) {
         return interface_stack_.top_ior(*this);
-    } else {
-        return interface_stack_.peek_ior(intersection, *this);
     }
+
+    return interface_stack_.peek_ior(intersection, *this);
 }
 
 void Worker::interface_change(float3 const& dir, Intersection const& intersection) noexcept {

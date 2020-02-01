@@ -120,7 +120,9 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
         if ("geometry" == name) {
             top_object_ = Object::Geometry;
             return true;
-        } else if ("morph_targets" == name) {
+        }
+
+        if ("morph_targets" == name) {
             top_object_      = Object::Morph_targets;
             expected_string_ = String_type::Morph_target;
             return true;
@@ -162,7 +164,9 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
         }
 
         return true;
-    } else if (Object::Vertices == top_object_) {
+    }
+
+    if (Object::Vertices == top_object_) {
         if ("positions" == name) {
             expected_number_        = Number::Position;
             current_vertex_         = 0;

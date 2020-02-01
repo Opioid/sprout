@@ -61,11 +61,11 @@ class Renderer {
 
     void draw_n_gon(float2 pos, float angle, float radius, uint32_t num_vertices);
 
-    void resolve_sRGB(Byte3& target) const;
+    void resolve_sRGB(Byte3& image) const;
 
-    void resolve(Byte3& target) const;
+    void resolve(Byte3& image) const;
 
-    void resolve(Byte1& target) const;
+    void resolve(Byte1& image) const;
 
   private:
     void set_sample(int32_t x, int32_t y, float4 const& color);

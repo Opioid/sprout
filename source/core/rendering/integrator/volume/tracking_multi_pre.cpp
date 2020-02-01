@@ -252,18 +252,18 @@ Event Tracking_multi_pre::integrate(Ray& ray, Intersection& intersection, Filter
             }
 
             return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
-        } else {
-            auto const mu = material.collision_coefficients();
-
-            if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-                set_scattering(intersection, interface, ray.point(t));
-                event = Event::Scatter;
-            }
-
-            li            = float3(0.f);
-            transmittance = w;
-            return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
         }
+
+        auto const mu = material.collision_coefficients();
+
+        if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
+            set_scattering(intersection, interface, ray.point(t));
+            event = Event::Scatter;
+        }
+
+        li            = float3(0.f);
+        transmittance = w;
+        return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
     }
 }
 

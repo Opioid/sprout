@@ -34,7 +34,7 @@ float Aces::tonemap_function(float x) {
     return (x * (a * x + b)) / (x * (c * x + d) + e);
 }
 
-Aces_MJP::Aces_MJP() {}
+Aces_MJP::Aces_MJP() = default;
 
 // The code in this file was originally written by Stephen Hill (@self_shadow), who deserves all
 // credit for coming up with this fit and implementing it. Buy him a beer next time you see him. :)

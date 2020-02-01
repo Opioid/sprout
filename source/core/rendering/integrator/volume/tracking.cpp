@@ -265,16 +265,18 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
             w     = float3(lw);
             t_out = t;
             return false;
-        } else if (r1 < (f += pr_s)) {
+        }
+
+        if (r1 < (f += pr_s)) {
             lw *= rm.s[0] / (mt * pr_s);
             w = float3(lw);
 
             t_out = t;
 
             return true;
-        } else {
-            lw *= mu_n / (mt * p_n);
         }
+
+        lw *= mu_n / (mt * p_n);
     }
 }
 

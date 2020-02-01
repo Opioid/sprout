@@ -320,8 +320,8 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     return true;
 }
 
-Writer_alpha::Writer_alpha(bool error_diffusion, bool pre_muliplied_alpha) noexcept
-    : Srgb_alpha(error_diffusion, pre_muliplied_alpha) {}
+Writer_alpha::Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha) noexcept
+    : Srgb_alpha(error_diffusion, pre_multiplied_alpha) {}
 
 std::string Writer_alpha::file_extension() const noexcept {
     return "png";

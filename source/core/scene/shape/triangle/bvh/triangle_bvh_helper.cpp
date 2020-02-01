@@ -49,11 +49,13 @@ uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, math::
 
     if (3 == behind) {
         return 0;
-    } else if (0 == behind) {
-        return 1;
-    } else {
-        return 2;
     }
+
+    if (0 == behind) {
+        return 1;
+    }
+
+    return 2;
 }
 
 bool triangle_completely_behind(float3 const& a, float3 const& b, float3 const& c,

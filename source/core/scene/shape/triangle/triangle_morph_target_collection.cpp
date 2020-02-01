@@ -15,7 +15,7 @@ std::vector<Index_triangle>& Morph_target_collection::triangles() noexcept {
 }
 
 void Morph_target_collection::add_swap_vertices(std::vector<Vertex>& vertices) noexcept {
-    morph_targets_.push_back(std::vector<Vertex>());
+    morph_targets_.emplace_back(std::vector<Vertex>());
     morph_targets_.back().swap(vertices);
 }
 

@@ -269,11 +269,7 @@ bool Renderer::intersect_disk(float2 pos, float3 const& normal, float radius,
 
     float const l = dot(k, k);
 
-    if (l <= radius * radius) {
-        return true;
-    }
-
-    return false;
+    return l <= radius * radius;
 }
 
 bool Renderer::intersect_n_gon(float2 pos, float angle, float radius, uint32_t num_vertices,
