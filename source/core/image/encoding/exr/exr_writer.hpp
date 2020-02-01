@@ -8,11 +8,11 @@ namespace image::encoding::exr {
 
 class Writer : public image::Writer {
   public:
-    Writer(bool alpha);
+    Writer(bool alpha) noexcept;
 
-    std::string file_extension() const final;
+    std::string file_extension() const noexcept final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept final;
 
   private:
     bool no_compression(std::ostream& stream, Float4 const& image) const noexcept;

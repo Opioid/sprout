@@ -13,9 +13,9 @@
 
 namespace image::encoding::exr {
 
-Writer::Writer(bool alpha) : alpha_(alpha) {}
+Writer::Writer(bool alpha) noexcept : alpha_(alpha) {}
 
-std::string Writer::file_extension() const {
+std::string Writer::file_extension() const noexcept {
     return "exr";
 }
 
@@ -27,7 +27,7 @@ static void w(std::ostream& stream, int64_t i) noexcept;
 static void w(std::ostream& stream, std::string const& s) noexcept;
 static void w(std::ostream& stream, Channel const& c) noexcept;
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept {
     stream.write(reinterpret_cast<const char*>(Signature), Signature_size);
 
     uint8_t version[4];
