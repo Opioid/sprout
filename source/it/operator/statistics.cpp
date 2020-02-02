@@ -41,7 +41,7 @@ class Histogram {
     }
 
     void insert(float value) noexcept {
-        uint32_t const i = uint32_t((value / max_value_) * float(num_buckets_ - 1) + 0.5f);
+        uint32_t const i = uint32_t(std::lrint((value / max_value_) * float(num_buckets_ - 1)));
 
         ++buckets_[i];
     }

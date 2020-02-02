@@ -80,7 +80,7 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
         }
 
         for (auto const& c : candidates) {
-            writer.write_heatmap(c.name(), c.difference(), dimensions, max_dif);
+            writer.write_heatmap(c.name(), c.difference(), dimensions, max_dif, threads);
         }
     }
 

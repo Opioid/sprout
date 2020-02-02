@@ -12,7 +12,7 @@ class Tonemapper : public Postprocessor {
     void init(Camera const& camera, thread::Pool& threads) noexcept final;
 
   protected:
-    static float normalization_factor(float hdr_max, float tonemapped_max) noexcept;
+    static float normalization_factor(float linear_max, float tonemapped_max) noexcept;
 };
 
 }  // namespace rendering::postprocessor::tonemapping

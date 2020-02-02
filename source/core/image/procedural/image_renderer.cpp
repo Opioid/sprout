@@ -59,8 +59,9 @@ void Renderer::draw_circle(float2 pos, float radius) {
 void Renderer::draw_circle(float2 pos, float radius, int32_t border) {
     int2 const sample(pos * dimensions_f_);
 
-    int32_t x   = static_cast<int32_t>(radius * dimensions_f_[0] + 0.5f) + border;
-    int32_t y   = 0;
+    int32_t x = int32_t(std::lrint(radius * dimensions_f_[0])) + border;
+    int32_t y = 0;
+
     int32_t err = 0;
 
     while (x >= y) {

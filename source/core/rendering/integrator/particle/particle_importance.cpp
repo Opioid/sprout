@@ -23,8 +23,8 @@ Importance::~Importance() noexcept {
 }
 
 void Importance::increment(float2 uv, float weight) noexcept {
-    int32_t const x = std::min(int32_t(uv[0] * float(Dimensions - 1) + 0.5f), Dimensions - 1);
-    int32_t const y = std::min(int32_t(uv[1] * float(Dimensions - 1) + 0.5f), Dimensions - 1);
+    int32_t const x = std::min(int32_t(std::lrint(uv[0] * float(Dimensions - 1))), Dimensions - 1);
+    int32_t const y = std::min(int32_t(std::lrint(uv[1] * float(Dimensions - 1))), Dimensions - 1);
 
     int32_t const id = y * Dimensions + x;
 

@@ -80,7 +80,7 @@ Provider::Properties::Properties(Variants const& options) noexcept : dimensions(
 
     radius = 0.5f * size;
 
-    num_flakes = uint32_t(density / (size * size) + 0.5f);
+    num_flakes = uint32_t(std::lrint(density / (size * size)));
 }
 
 Provider::Flake Provider::random_flake(uint32_t index, uint32_t seed, Properties const& props,

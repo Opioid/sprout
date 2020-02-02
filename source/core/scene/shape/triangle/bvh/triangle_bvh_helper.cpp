@@ -32,18 +32,18 @@ float triangle_area(float3 const& a, float3 const& b, float3 const& c) {
     return 0.5f * length(cross(b - a, c - a));
 }
 
-uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, math::Plane const& p) {
+uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, Plane const& p) {
     uint32_t behind = 0;
 
-    if (math::plane::behind(p, a)) {
+    if (plane::behind(p, a)) {
         ++behind;
     }
 
-    if (math::plane::behind(p, b)) {
+    if (plane::behind(p, b)) {
         ++behind;
     }
 
-    if (math::plane::behind(p, c)) {
+    if (plane::behind(p, c)) {
         ++behind;
     }
 
@@ -58,13 +58,8 @@ uint32_t triangle_side(float3 const& a, float3 const& b, float3 const& c, math::
     return 2;
 }
 
-bool triangle_completely_behind(float3 const& a, float3 const& b, float3 const& c,
-                                math::Plane const& p) {
-    if (math::plane::behind(p, a) && math::plane::behind(p, b) && math::plane::behind(p, c)) {
-        return true;
-    }
-
-    return false;
+bool triangle_completely_behind(float3 const& a, float3 const& b, float3 const& c, Plane const& p) {
+    return plane::behind(p, a) && plane::behind(p, b) && plane::behind(p, c);
 }
 
 }  // namespace scene::shape::triangle::bvh

@@ -20,7 +20,7 @@ void Bloom::init(Camera const& camera, thread::Pool& /*threads*/) {
 
     float const solid_angle = camera.pixel_solid_angle();
 
-    int32_t const radius = int32_t(angle_ / solid_angle + 0.5f);
+    int32_t const radius = int32_t(std::lrint(angle_ / solid_angle));
 
     int32_t const width = 2 * radius + 1;
 

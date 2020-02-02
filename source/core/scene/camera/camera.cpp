@@ -122,7 +122,7 @@ uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept
     double const delta    = double(frame_delta);
     double const duration = double(frame_duration_);
 
-    uint64_t const fdi = uint64_t(delta * duration + 0.5);
+    uint64_t const fdi = uint64_t(std::llrint(delta * duration));
 
     return uint64_t(frame) * frame_step_ + fdi;
 }

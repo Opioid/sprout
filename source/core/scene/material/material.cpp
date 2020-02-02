@@ -246,9 +246,9 @@ float3 Material::spectrum_at_wavelength(float lambda, float value) noexcept {
 
     if (id >= Num_bands) {
         return rainbow_[Num_bands];
-    } else {
-        return value * lerp(rainbow_[id], rainbow_[id + 1], frac);
     }
+
+    return value * lerp(rainbow_[id], rainbow_[id + 1], frac);
 }
 
 }  // namespace scene::material

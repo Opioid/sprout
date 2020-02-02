@@ -456,13 +456,13 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
             t_out = t;
             w     = lw * ws;
             return true;
-        } else {
-            float3 const wn = mu_n / (mt * pn);
-
-            SOFT_ASSERT(all_finite(wn));
-
-            lw *= wn;
         }
+
+        float3 const wn = mu_n / (mt * pn);
+
+        SOFT_ASSERT(all_finite(wn));
+
+        lw *= wn;
     }
 }
 

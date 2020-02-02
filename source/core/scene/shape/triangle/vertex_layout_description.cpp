@@ -29,15 +29,14 @@ using Element = scene::shape::triangle::Vertex_layout_description::Element;
 
 std::stringstream& operator<<(std::stringstream& stream, Element const& element) {
     stream << "{";
-    stream << "\"semantic_name\":\"" << element.semantic_name << "\",";
-    stream << "\"semantic_index\":" << element.semantic_index << ",";
-    //	stream << "\"encoding\":\"" << element.encoding << "\"";
+    stream << R"("semantic_name":")" << element.semantic_name << R"(",)";
+    stream << R"("semantic_index":)" << element.semantic_index << ",";
 
-    stream << "\"encoding\":\"";
+    stream << R"("encoding":")";
     print(stream, element.encoding);
-    stream << "\",";
-    stream << "\"stream\":" << element.stream << ",";
-    stream << "\"byte_offset\":" << element.byte_offset;
+    stream << R"(",)";
+    stream << R"("stream":)" << element.stream << ",";
+    stream << R"("byte_offset":)" << element.byte_offset;
 
     stream << "}";
 

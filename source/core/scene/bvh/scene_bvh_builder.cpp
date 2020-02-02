@@ -27,7 +27,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
         {
             float const log2_num_triangles = std::log2(float(indices.size()));
 
-            spatial_split_threshold_ = uint32_t(log2_num_triangles / 2.f + 0.5f);
+            spatial_split_threshold_ = uint32_t(std::lrint(log2_num_triangles / 2.f));
 
             References references(indices.size());
 

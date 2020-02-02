@@ -7,8 +7,8 @@
 namespace scene::material::volumetric {
 
 Octree_builder::Build_node::~Build_node() {
-    for (uint32_t i = 0; i < 8; ++i) {
-        delete children[i];
+    for (auto c : children) {
+        delete c;
     }
 }
 
@@ -118,8 +118,8 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
                                     lcm.majorant_mu_s - lcm.minorant_mu_s);
 
         if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || any_less(maxb - minb, w)) {
-            for (uint32_t i = 0; i < 8; ++i) {
-                node->children[i] = nullptr;
+            for (auto& c : node->children) {
+                c = nullptr;
             }
 
             auto& data = node->data;
@@ -171,8 +171,8 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
         float const diff = max_density - min_density;
 
         if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || any_less(maxb - minb, w)) {
-            for (uint32_t i = 0; i < 8; ++i) {
-                node->children[i] = nullptr;
+            for (auto& c : node->children) {
+                c = nullptr;
             }
 
             auto& data = node->data;

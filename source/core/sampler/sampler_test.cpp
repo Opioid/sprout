@@ -65,7 +65,9 @@ static inline float2 sample_triangle_uniform(float u) noexcept {
     for (int32_t i = 0; i < 16; ++i) {
         int32_t d = (ui >> (2 * (15 - i))) & 0x3ull;
 
-        float2 An, Bn, Cn;
+        float2 An;
+        float2 Bn;
+        float2 Cn;
         switch (d) {
             case 0:
                 An = (b + c) / 2.f;
