@@ -9,9 +9,9 @@ class Json_handler;
 
 class Exporter {
   public:
-    static void write(std::string const& filename, Json_handler& handler) noexcept;
+    static void write(std::string const& filename, Json_handler& handler);
 
-    static void write_json(std::string const& filename, Json_handler& handler) noexcept;
+    static void write_json(std::string const& filename, Json_handler& handler);
 };
 
 }  // namespace scene::shape::triangle

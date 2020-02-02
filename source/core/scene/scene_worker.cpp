@@ -19,18 +19,17 @@ static material::Sampler_cache const Sampler_cache;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 using Texture_sampler_3D = image::texture::Sampler_3D;
 
-Worker::Worker(uint32_t max_sample_size) noexcept
-    : node_stack_(128 + 16), sample_cache_(max_sample_size) {}
+Worker::Worker(uint32_t max_sample_size) : node_stack_(128 + 16), sample_cache_(max_sample_size) {}
 
-Worker::~Worker() noexcept = default;
+Worker::~Worker() = default;
 
-void Worker::init(uint32_t id, Scene const& scene, Camera const& camera) noexcept {
+void Worker::init(uint32_t id, Scene const& scene, Camera const& camera) {
     rng_.start(0, id);
     scene_  = &scene;
     camera_ = &camera;
 }
 
-bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept {
+bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) {
     float const start_min_t = ray.min_t;
 
     float opacity = intersection.opacity(ray.time, filter, *this);
@@ -56,19 +55,19 @@ bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) n
     return true;
 }
 
-Texture_sampler_2D const& Worker::sampler_2D(uint32_t key, Filter filter) const noexcept {
+Texture_sampler_2D const& Worker::sampler_2D(uint32_t key, Filter filter) const {
     return Sampler_cache.sampler_2D(key, filter);
 }
 
-Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Filter filter) const noexcept {
+Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Filter filter) const {
     return Sampler_cache.sampler_3D(key, filter);
 }
 
-void Worker::reset_interface_stack(Interface_stack const& stack) noexcept {
+void Worker::reset_interface_stack(Interface_stack const& stack) {
     interface_stack_ = stack;
 }
 
-float Worker::ior_outside(float3 const& wo, Intersection const& intersection) const noexcept {
+float Worker::ior_outside(float3 const& wo, Intersection const& intersection) const {
     if (intersection.same_hemisphere(wo)) {
         return interface_stack_.top_ior(*this);
     }
@@ -76,7 +75,7 @@ float Worker::ior_outside(float3 const& wo, Intersection const& intersection) co
     return interface_stack_.peek_ior(intersection, *this);
 }
 
-void Worker::interface_change(float3 const& dir, Intersection const& intersection) noexcept {
+void Worker::interface_change(float3 const& dir, Intersection const& intersection) {
     if (intersection.same_hemisphere(dir)) {
         interface_stack_.remove(intersection);
     } else if (interface_stack_.top_is_vacuum(*this) |
@@ -85,8 +84,7 @@ void Worker::interface_change(float3 const& dir, Intersection const& intersectio
     }
 }
 
-material::IoR Worker::interface_change_ior(float3 const&       dir,
-                                           Intersection const& intersection) noexcept {
+material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const& intersection) {
     bool const leave = intersection.same_hemisphere(dir);
 
     material::IoR ior;

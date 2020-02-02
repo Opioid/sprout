@@ -4,9 +4,9 @@ namespace rendering::postprocessor::tonemapping {
 
 Tonemapper::~Tonemapper() = default;
 
-void Tonemapper::init(Camera const& /*camera*/, thread::Pool& /*threads*/) noexcept {}
+void Tonemapper::init(Camera const& /*camera*/, thread::Pool& /*threads*/) {}
 
-float Tonemapper::normalization_factor(float linear_max, float tonemapped_max) noexcept {
+float Tonemapper::normalization_factor(float linear_max, float tonemapped_max) {
     return linear_max > 0.f ? 1.f / tonemapped_max : 1.f;
 }
 

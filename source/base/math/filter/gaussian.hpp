@@ -8,10 +8,10 @@ namespace math::filter {
 
 class Gaussian_functor {
   public:
-    Gaussian_functor(float squared_radius, float alpha) noexcept
+    Gaussian_functor(float squared_radius, float alpha)
         : exp_(std::exp(-alpha * squared_radius)), alpha_(alpha) {}
 
-    float operator()(float squared_d) const noexcept {
+    float operator()(float squared_d) const {
         return std::max(0.f, std::exp(-alpha_ * squared_d) - exp_);
     }
 
@@ -22,10 +22,10 @@ class Gaussian_functor {
 
 class Gaussian_functor_1 {
   public:
-    Gaussian_functor_1(float squared_radius, float alpha) noexcept
+    Gaussian_functor_1(float squared_radius, float alpha)
         : exp_(std::exp(-alpha * squared_radius)), alpha_(alpha) {}
 
-    float operator()(float d) const noexcept {
+    float operator()(float d) const {
         return std::max(0.f, std::exp(-alpha_ * d * d) - exp_);
     }
 

@@ -10,17 +10,17 @@ namespace rendering {
 
 class Tile_queue {
   public:
-    ~Tile_queue() noexcept;
+    ~Tile_queue();
 
-    void init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) noexcept;
+    void init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius);
 
-    uint32_t size() const noexcept;
+    uint32_t size() const;
 
-    void restart() noexcept;
+    void restart();
 
-    bool pop(int4& tile) noexcept;
+    bool pop(int4& tile);
 
-    uint32_t index(int4 const& tile) const noexcept;
+    uint32_t index(int4 const& tile) const;
 
   private:
     int2 resolution_;
@@ -38,17 +38,17 @@ class Tile_queue {
 
 class Range_queue {
   public:
-    ~Range_queue() noexcept;
+    ~Range_queue();
 
-    void init(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept;
+    void init(uint64_t total0, uint64_t total1, uint32_t range_size);
 
-    uint32_t size() const noexcept;
+    uint32_t size() const;
 
-    void restart() noexcept;
+    void restart();
 
-    bool pop(uint32_t segment, ulong2& range) noexcept;
+    bool pop(uint32_t segment, ulong2& range);
 
-    uint32_t index(ulong2 const& range, uint32_t segment) const noexcept;
+    uint32_t index(ulong2 const& range, uint32_t segment) const;
 
   private:
     uint64_t total0_;

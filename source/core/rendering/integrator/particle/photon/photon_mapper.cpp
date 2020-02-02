@@ -23,24 +23,24 @@
 
 namespace rendering::integrator::particle::photon {
 
-Mapper::Mapper(rnd::Generator& rng, Settings const& settings) noexcept
+Mapper::Mapper(rnd::Generator& rng, Settings const& settings)
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
       photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
 
-Mapper::~Mapper() noexcept {
+Mapper::~Mapper() {
     memory::free_aligned(photons_);
 }
 
-void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) noexcept {
+void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) {
     sampler_.resize(1, 1, 1, 1);
 }
 
-void Mapper::start_pixel() noexcept {}
+void Mapper::start_pixel() {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t /*iteration*/,
-                      Worker& worker) noexcept {
+                      Worker& worker) {
     Frustum const frustum = worker.camera().frustum();
 
     AABB const& world_bounds = settings_.full_light_path ? worker.scene().aabb()
@@ -86,7 +86,7 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
 uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const& /*frustum*/,
                               bool infinite_world, bool caustics_only, Worker& worker,
                               uint32_t max_photons, Photon* photons, uint32_t& num_photons,
-                              uint32_t& light_id, Sample_from& light_sample) noexcept {
+                              uint32_t& light_id, Sample_from& light_sample) {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -248,8 +248,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 }
 
 bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                                Light& light_out, uint32_t& light_id,
-                                Sample_from& light_sample) noexcept {
+                                Light& light_out, uint32_t& light_id, Sample_from& light_sample) {
     float const select = sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);

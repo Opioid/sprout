@@ -19,12 +19,12 @@
 
 namespace image {
 
-Provider::Provider() noexcept = default;
+Provider::Provider() = default;
 
-Provider::~Provider() noexcept = default;
+Provider::~Provider() = default;
 
 Image* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
-                      std::string& resolved_name) noexcept {
+                      std::string& resolved_name) {
     if ("proc:flakes" == filename) {
         return flakes_provider_.create_normal_map(options);
     }
@@ -86,7 +86,7 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
 }
 
 Image* Provider::load(void const* data, std::string const& /*source_name*/,
-                      Variants const& /*options*/, resource::Manager& /*manager*/) noexcept {
+                      Variants const& /*options*/, resource::Manager& /*manager*/) {
     Description const& desc = *reinterpret_cast<Description const*>(data);
 
     Image* image = nullptr;
@@ -157,11 +157,11 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
     return image;
 }
 
-size_t Provider::num_bytes() const noexcept {
+size_t Provider::num_bytes() const {
     return sizeof(*this);
 }
 
-size_t Provider::num_bytes(Image const* resource) const noexcept {
+size_t Provider::num_bytes(Image const* resource) const {
     return resource->num_bytes();
 }
 

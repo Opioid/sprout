@@ -72,11 +72,10 @@ class Renderer {
 
     void set_row(int32_t start_x, int32_t end_x, int32_t y, float4 const& color);
 
-    static bool intersect_disk(float2 pos, float3 const& normal, float radius,
-                               float2 sample) noexcept;
+    static bool intersect_disk(float2 pos, float3 const& normal, float radius, float2 sample);
 
     static bool intersect_n_gon(float2 pos, float angle, float radius, uint32_t num_vertices,
-                                float2 sample) noexcept;
+                                float2 sample);
 
     int32_t const sqrt_num_samples_;
 

@@ -17,15 +17,15 @@
 
 namespace rendering::integrator::particle::photon {
 
-Map::Map() noexcept : aabbs_(nullptr), num_reduced_(nullptr) {}
+Map::Map() : aabbs_(nullptr), num_reduced_(nullptr) {}
 
-Map::~Map() noexcept {
+Map::~Map() {
     memory::free_aligned(num_reduced_);
     memory::free_aligned(aabbs_);
 }
 
 void Map::init(uint32_t num_workers, uint32_t num_photons, float search_radius,
-               float merge_radius) noexcept {
+               float merge_radius) {
     merge_radius_ = merge_radius;
 
     grid_.init(search_radius, 1.5f, false);
@@ -38,17 +38,16 @@ void Map::init(uint32_t num_workers, uint32_t num_photons, float search_radius,
     }
 }
 
-void Map::start() noexcept {
+void Map::start() {
     reduced_num_  = 0;
     caustic_only_ = false;
 }
 
-void Map::insert(Photon const& photon, uint32_t index) noexcept {
+void Map::insert(Photon const& photon, uint32_t index) {
     photons_[index] = photon;
 }
 
-uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
-                                thread::Pool& threads) noexcept {
+uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& threads) {
     AABB const aabb = calculate_aabb(num_photons, threads);
 
     grid_.resize(aabb);
@@ -74,21 +73,21 @@ uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths,
     return reduced_num;
 }
 
-void Map::compile_finalize() noexcept {
+void Map::compile_finalize() {
     grid_.init_cells(reduced_num_, photons_.data());
     grid_.set_num_paths(num_paths_);
 }
 
 float3 Map::li(Intersection const& intersection, Material_sample const& sample,
-               scene::Worker const& worker) const noexcept {
+               scene::Worker const& worker) const {
     return grid_.li(intersection, sample, worker);
 }
 
-bool Map::caustics_only() const noexcept {
+bool Map::caustics_only() const {
     return caustic_only_;
 }
 
-AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& threads) const noexcept {
+AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& threads) const {
     threads.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {
             AABB aabb = AABB::empty();

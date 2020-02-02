@@ -43,39 +43,39 @@ class Driver {
     using Camera    = scene::camera::Camera;
     using Exporters = memory::Array<exporting::Sink*>;
 
-    Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& progressor) noexcept;
+    Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& progressor);
 
-    ~Driver() noexcept;
+    ~Driver();
 
-    void init(take::View& view, Scene& scene, bool progressive) noexcept;
+    void init(take::View& view, Scene& scene, bool progressive);
 
-    Camera& camera() noexcept;
+    Camera& camera();
 
-    Scene const& scene() const noexcept;
-    Scene&       scene() noexcept;
+    Scene const& scene() const;
+    Scene&       scene();
 
-    image::Float4 const& target() const noexcept;
+    image::Float4 const& target() const;
 
-    void render(Exporters& exporters) noexcept;
+    void render(Exporters& exporters);
 
-    void render(uint32_t frame) noexcept;
+    void render(uint32_t frame);
 
-    void start_frame(uint32_t frame) noexcept;
+    void start_frame(uint32_t frame);
 
-    void render(uint32_t frame, uint32_t iteration) noexcept;
+    void render(uint32_t frame, uint32_t iteration);
 
-    void export_frame(uint32_t frame, Exporters& exporters) const noexcept;
+    void export_frame(uint32_t frame, Exporters& exporters) const;
 
   private:
-    void render_frame_backward(uint32_t frame) noexcept;
+    void render_frame_backward(uint32_t frame);
 
-    void render_frame_backward(uint32_t frame, uint32_t iteration) noexcept;
+    void render_frame_backward(uint32_t frame, uint32_t iteration);
 
-    void render_frame_forward(uint32_t frame) noexcept;
+    void render_frame_forward(uint32_t frame);
 
-    void render_frame_forward(uint32_t frame, uint32_t iteration) noexcept;
+    void render_frame_forward(uint32_t frame, uint32_t iteration);
 
-    void bake_photons(uint32_t frame) noexcept;
+    void bake_photons(uint32_t frame);
 
     thread::Pool& threads_;
 

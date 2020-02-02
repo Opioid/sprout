@@ -26,7 +26,7 @@ namespace rendering::integrator::volume {
 
 using namespace scene;
 
-Tracking_single::Tracking_single(rnd::Generator& rng, bool progressive) noexcept
+Tracking_single::Tracking_single(rnd::Generator& rng, bool progressive)
     : Integrator(rng),
       sampler_(rng),
       sampler_pool_(progressive ? nullptr
@@ -47,11 +47,11 @@ Tracking_single::Tracking_single(rnd::Generator& rng, bool progressive) noexcept
     }
 }
 
-Tracking_single::~Tracking_single() noexcept {
+Tracking_single::~Tracking_single() {
     delete sampler_pool_;
 }
 
-void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     for (auto s : material_samplers_) {
@@ -63,7 +63,7 @@ void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_p
     }
 }
 
-void Tracking_single::start_pixel() noexcept {
+void Tracking_single::start_pixel() {
     sampler_.start_pixel();
 
     for (auto s : material_samplers_) {
@@ -156,7 +156,7 @@ const ms = average(mu_s * w); float const mn = average(mu_n * w); float const c 
 */
 static inline void avg_history_probabilities(float mt, float3 const& mu_s, float3 const& mu_n,
                                              float3 const& w, float& ps, float& pn, float3& ws,
-                                             float3& wn) noexcept {
+                                             float3& wn) {
     float const ms = average(mu_s * w);
     float const mn = average(mu_n * w);
     float const c  = 1.f / (ms + mn);
@@ -178,12 +178,12 @@ average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f / (ms
         wn = (mu_n / (mt * pn));
 }
 */
-bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept {
+bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& tr) {
     return Tracking::transmittance(ray, rng_, worker, tr);
 }
 
 Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter,
-                                 Worker& worker, float3& li, float3& tr) noexcept {
+                                 Worker& worker, float3& li, float3& tr) {
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li = float3(0.f);
         tr = float3(1.f);
@@ -391,7 +391,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 }
 
 float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
-                                     Intersection const& intersection, Worker& worker) noexcept {
+                                     Intersection const& intersection, Worker& worker) {
     auto const light = worker.scene().random_light(rng_.random_float());
 
     return direct_light(light.ref, light.pdf, ray, position, intersection, worker);
@@ -399,7 +399,7 @@ float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
                                      float3 const& position, Intersection const& intersection,
-                                     Worker& worker) noexcept {
+                                     Worker& worker) {
     shape::Sample_to light_sample;
     if (!light.sample(position, ray.time, light_sampler(ray.depth), 0, worker, light_sample)) {
         return float3(0.f);
@@ -424,7 +424,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
     return (phase * tr * radiance) / (light_sample.pdf * light_pdf);
 }
 
-sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
         return *material_samplers_[bounce];
     }
@@ -432,7 +432,7 @@ sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
         return *light_samplers_[bounce];
     }
@@ -440,10 +440,10 @@ sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progressive) noexcept
+Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progressive)
     : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
 
-Integrator* Tracking_single_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Tracking_single_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Tracking_single(rng, progressive_);

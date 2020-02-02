@@ -36,20 +36,19 @@ class Loader {
     using Resources = resource::Manager;
 
     static bool load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
-                     Scene& scene, Resources& resources) noexcept;
+                     Scene& scene, Resources& resources);
 
-    static Camera* load_camera(json::Value const& camera_value, Scene& scene) noexcept;
+    static Camera* load_camera(json::Value const& camera_value, Scene& scene);
 
     static void load_integrators(json::Value const& integrator_value, uint32_t num_workers,
-                                 bool progressive, View& view) noexcept;
+                                 bool progressive, View& view);
 
-    static void set_default_integrators(uint32_t num_workers, bool progressive,
-                                        View& view) noexcept;
+    static void set_default_integrators(uint32_t num_workers, bool progressive, View& view);
 
     static void load_postprocessors(json::Value const& pp_value, Resources& resources,
-                                    Pipeline& pipeline, int2 dimensions) noexcept;
+                                    Pipeline& pipeline, int2 dimensions);
 
-    static void set_default_exporter(Take& take) noexcept;
+    static void set_default_exporter(Take& take);
 };
 
 }  // namespace take

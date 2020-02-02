@@ -424,24 +424,24 @@ origin.z;			   m.m33 = T(1);
  *
  ****************************************************************************/
 
-inline Matrix4x4f_a::Matrix4x4f_a() noexcept = default;
+inline Matrix4x4f_a::Matrix4x4f_a() = default;
 
 inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03, float m10, float m11,
                                   float m12, float m13, float m20, float m21, float m22, float m23,
-                                  float m30, float m31, float m32, float m33) noexcept
+                                  float m30, float m31, float m32, float m33)
     : r{{m00, m01, m02, m03}, {m10, m11, m12, m13}, {m20, m21, m22, m23}, {m30, m31, m32, m33}} {}
 
-inline Matrix4x4f_a::Matrix4x4f_a(float const* a) noexcept
+inline Matrix4x4f_a::Matrix4x4f_a(float const* a)
     : r{{a[0], a[1], a[2], a[3]},
         {a[4], a[5], a[6], a[7]},
         {a[8], a[9], a[10], a[11]},
         {a[12], a[13], a[14], a[15]}} {}
 
-inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m) noexcept
+inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m)
     : r{Vector4f_a(m.r[0]), Vector4f_a(m.r[1]), Vector4f_a(m.r[2]), {0.f, 0.f, 0.f, 1.f}} {}
 
 static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a const& scale,
-                                   Vector3f_a const& origin) noexcept {
+                                   Vector3f_a const& origin) {
     return Matrix4x4f_a(basis.r[0][0] * scale[0], basis.r[0][1] * scale[0],
                         basis.r[0][2] * scale[0], 0.f, basis.r[1][0] * scale[1],
                         basis.r[1][1] * scale[1], basis.r[1][2] * scale[1], 0.f,
@@ -450,7 +450,7 @@ static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a const& 
 }
 
 static inline Matrix4x4f_a compose(Matrix4x4f_a const& basis, Vector3f_a const& scale,
-                                   Vector3f_a const& origin) noexcept {
+                                   Vector3f_a const& origin) {
     return Matrix4x4f_a(basis.r[0][0] * scale[0], basis.r[0][1] * scale[0],
                         basis.r[0][2] * scale[0], 0.f, basis.r[1][0] * scale[1],
                         basis.r[1][1] * scale[1], basis.r[1][2] * scale[1], 0.f,
@@ -467,26 +467,26 @@ static inline void decompose(Matrix4x4f_a const& m, Matrix3x3f_a& basis, Vector3
     origin = m.w();
 }
 
-inline Matrix4x4f_a::Matrix4x4f_a(Transformation const& t) noexcept
+inline Matrix4x4f_a::Matrix4x4f_a(Transformation const& t)
     : Matrix4x4f_a(compose(quaternion::create_matrix3x3(t.rotation), t.scale, t.position)) {}
 
-inline Vector3f_a Matrix4x4f_a::x() const noexcept {
+inline Vector3f_a Matrix4x4f_a::x() const {
     return r[0].xyz();
 }
 
-inline Vector3f_a Matrix4x4f_a::y() const noexcept {
+inline Vector3f_a Matrix4x4f_a::y() const {
     return r[1].xyz();
 }
 
-inline Vector3f_a Matrix4x4f_a::z() const noexcept {
+inline Vector3f_a Matrix4x4f_a::z() const {
     return r[2].xyz();
 }
 
-inline Vector3f_a Matrix4x4f_a::w() const noexcept {
+inline Vector3f_a Matrix4x4f_a::w() const {
     return r[3].xyz();
 }
 
-static inline Matrix4x4f_a operator*(Matrix4x4f_a const& a, Matrix4x4f_a const& b) noexcept {
+static inline Matrix4x4f_a operator*(Matrix4x4f_a const& a, Matrix4x4f_a const& b) {
     return Matrix4x4f_a((a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0]) +
                             (a.r[0][2] * b.r[2][0] + a.r[0][3] * b.r[3][0]),
                         (a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1]) +
@@ -524,26 +524,25 @@ static inline Matrix4x4f_a operator*(Matrix4x4f_a const& a, Matrix4x4f_a const& 
                             (a.r[3][2] * b.r[2][3] + a.r[3][3] * b.r[3][3]));
 }
 
-static inline Vector3f_a transform_vector(Matrix4x4f_a const& m, Vector3f_a const& v) noexcept {
+static inline Vector3f_a transform_vector(Matrix4x4f_a const& m, Vector3f_a const& v) {
     return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
                       v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
                       v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector_transposed(Matrix4x4f_a const& m,
-                                                     Vector3f_a const&   v) noexcept {
+static inline Vector3f_a transform_vector_transposed(Matrix4x4f_a const& m, Vector3f_a const& v) {
     return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
                       v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
                       v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_point(Matrix4x4f_a const& m, Vector3f_a const& v) noexcept {
+static inline Vector3f_a transform_point(Matrix4x4f_a const& m, Vector3f_a const& v) {
     return Vector3f_a((v[0] * m.r[0][0] + v[1] * m.r[1][0]) + (v[2] * m.r[2][0] + m.r[3][0]),
                       (v[0] * m.r[0][1] + v[1] * m.r[1][1]) + (v[2] * m.r[2][1] + m.r[3][1]),
                       (v[0] * m.r[0][2] + v[1] * m.r[1][2]) + (v[2] * m.r[2][2] + m.r[3][2]));
 }
 
-static inline Matrix4x4f_a affine_inverted(Matrix4x4f_a const& m) noexcept {
+static inline Matrix4x4f_a affine_inverted(Matrix4x4f_a const& m) {
     Matrix4x4f_a o;
 
     float id;
@@ -609,7 +608,7 @@ static inline Matrix4x4f_a affine_inverted(Matrix4x4f_a const& m) noexcept {
     return o;
 }
 
-static inline void set_translation(Matrix4x4f_a& m, Vector3f_a const& v) noexcept {
+static inline void set_translation(Matrix4x4f_a& m, Vector3f_a const& v) {
     m.r[0][0] = 1.f;
     m.r[0][1] = 0.f;
     m.r[0][2] = 0.f;
@@ -628,7 +627,7 @@ static inline void set_translation(Matrix4x4f_a& m, Vector3f_a const& v) noexcep
     m.r[3][3] = 1.f;
 }
 
-static inline void set_rotation_x(Matrix4x4f_a& m, float a) noexcept {
+static inline void set_rotation_x(Matrix4x4f_a& m, float a) {
     float const c = std::cos(a);
     float const s = std::sin(a);
 
@@ -650,7 +649,7 @@ static inline void set_rotation_x(Matrix4x4f_a& m, float a) noexcept {
     m.r[3][3] = 1.f;
 }
 
-static inline void set_rotation_y(Matrix4x4f_a& m, float a) noexcept {
+static inline void set_rotation_y(Matrix4x4f_a& m, float a) {
     float const c = std::cos(a);
     float const s = std::sin(a);
 
@@ -672,8 +671,7 @@ static inline void set_rotation_y(Matrix4x4f_a& m, float a) noexcept {
     m.r[3][3] = 1.f;
 }
 
-static inline void set_view(Matrix4x4f_a& m, Matrix3x3f_a const& basis,
-                            Vector3f_a const& eye) noexcept {
+static inline void set_view(Matrix4x4f_a& m, Matrix3x3f_a const& basis, Vector3f_a const& eye) {
     m.r[0][0] = basis.r[0][0];
     m.r[0][1] = basis.r[1][0];
     m.r[0][2] = basis.r[2][0];
@@ -695,7 +693,7 @@ static inline void set_view(Matrix4x4f_a& m, Matrix3x3f_a const& basis,
     m.r[3][3] = 1.f;
 }
 
-static inline void set_perspective(Matrix4x4f_a& m, float fov, float ratio) noexcept {
+static inline void set_perspective(Matrix4x4f_a& m, float fov, float ratio) {
     /*
     xScale     0          0               0
     0        yScale       0               0
@@ -731,7 +729,7 @@ static inline void set_perspective(Matrix4x4f_a& m, float fov, float ratio) noex
     m.r[3][3] = 0.f;
 }
 
-inline Simd4x4f::Simd4x4f(Matrix4x4f_a const& source) noexcept
+inline Simd4x4f::Simd4x4f(Matrix4x4f_a const& source)
     : r{Simd3f(source.r[0].v), Simd3f(source.r[1].v), Simd3f(source.r[2].v),
         Simd3f(source.r[3].v)} {}
 

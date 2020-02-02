@@ -7,11 +7,11 @@ namespace progress {
 
 class Sink {
   public:
-    virtual ~Sink() noexcept = default;
+    virtual ~Sink() = default;
 
-    virtual void start(uint32_t resolution) noexcept = 0;
+    virtual void start(uint32_t resolution) = 0;
 
-    virtual void tick() noexcept = 0;
+    virtual void tick() = 0;
 };
 
 }  // namespace progress

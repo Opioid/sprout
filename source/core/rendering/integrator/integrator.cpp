@@ -2,8 +2,8 @@
 
 namespace rendering::integrator {
 
-Integrator::Integrator(rnd::Generator& rng) noexcept : rng_(rng) {}
+Integrator::Integrator(rnd::Generator& rng) : rng_(rng) {}
 
-Integrator::~Integrator() noexcept = default;
+Integrator::~Integrator() = default;
 
 }  // namespace rendering::integrator

@@ -20,46 +20,42 @@ class Adapter {
     using Scene  = scene::Scene;
     using Worker = scene::Worker;
 
-    Adapter() noexcept;
-    Adapter(uint32_t texture) noexcept;
-    Adapter(uint32_t texture, float scale) noexcept;
+    Adapter();
+    Adapter(uint32_t texture);
+    Adapter(uint32_t texture, float scale);
 
     ~Adapter();
 
-    bool operator==(Adapter const& other) const noexcept;
+    bool operator==(Adapter const& other) const;
 
-    bool is_valid() const noexcept;
+    bool is_valid() const;
 
-    Texture const& texture(Scene const& scene) const noexcept;
+    Texture const& texture(Scene const& scene) const;
 
-    float  sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
-    float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
-    float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const noexcept;
+    float  sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
+    float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
+    float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
 
     float sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                   int32_t element) const noexcept;
+                   int32_t element) const;
 
     float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                    int32_t element) const noexcept;
+                    int32_t element) const;
 
     float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                    int32_t element) const noexcept;
+                    int32_t element) const;
 
-    float2 address(Sampler_2D const& sampler, float2 uv) const noexcept;
+    float2 address(Sampler_2D const& sampler, float2 uv) const;
 
-    float sample_1(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
-        noexcept;
+    float sample_1(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
 
-    float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
-        noexcept;
+    float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
 
-    float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
-        noexcept;
+    float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
 
-    float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const
-        noexcept;
+    float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
 
-    float3 address(Sampler_3D const& sampler, float3 const& uvw) const noexcept;
+    float3 address(Sampler_3D const& sampler, float3 const& uvw) const;
 
   private:
     uint32_t texture_;

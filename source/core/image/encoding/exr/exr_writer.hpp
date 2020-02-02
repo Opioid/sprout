@@ -8,17 +8,17 @@ namespace image::encoding::exr {
 
 class Writer : public image::Writer {
   public:
-    Writer(bool alpha) noexcept;
+    Writer(bool alpha);
 
-    std::string file_extension() const noexcept final;
+    std::string file_extension() const final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
 
   private:
-    bool no_compression(std::ostream& stream, Float4 const& image) const noexcept;
+    bool no_compression(std::ostream& stream, Float4 const& image) const;
 
     bool zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
-                         thread::Pool& threads) const noexcept;
+                         thread::Pool& threads) const;
 
     bool half_ = true;
     bool alpha_;

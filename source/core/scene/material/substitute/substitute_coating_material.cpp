@@ -8,12 +8,11 @@
 
 namespace scene::material::substitute {
 
-Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings,
-                                       bool                    two_sided) noexcept
+Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_coating<Clearcoat_data>(sampler_settings, two_sided) {}
 
 float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                             Filter filter, Worker const& worker) const noexcept {
+                                             Filter filter, Worker const& worker) const {
     if (emission_map_.is_valid()) {
         auto const&  sampler  = worker.sampler_2D(sampler_key(), filter);
         float3 const radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
@@ -40,7 +39,7 @@ float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float2 uv, fl
 material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker) const noexcept {
+                                                   Worker const& worker) const {
     auto& sample = worker.sample<Sample_clearcoat>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -69,33 +68,31 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
     return sample;
 }
 
-void Material_clearcoat::set_coating_attenuation(float3 const& absorption_color,
-                                                 float         distance) noexcept {
+void Material_clearcoat::set_coating_attenuation(float3 const& absorption_color, float distance) {
     coating_.absorption_coefficient = extinction_coefficient(absorption_color, distance);
 }
 
-void Material_clearcoat::set_coating_ior(float ior) noexcept {
+void Material_clearcoat::set_coating_ior(float ior) {
     coating_.ior = ior;
 }
 
-void Material_clearcoat::set_coating_roughness(float roughness) noexcept {
+void Material_clearcoat::set_coating_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     coating_.alpha = r * r;
 }
 
-size_t Material_clearcoat::sample_size() noexcept {
+size_t Material_clearcoat::sample_size() {
     return sizeof(Sample_clearcoat);
 }
 
-Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings,
-                                     bool                    two_sided) noexcept
+Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_coating<Thinfilm_data>(sampler_settings, two_sided) {}
 
 material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray const& /*ray*/,
                                                   Renderstate const& rs, Filter filter,
                                                   sampler::Sampler& /*sampler*/,
-                                                  Worker const& worker) const noexcept {
+                                                  Worker const& worker) const {
     auto& sample = worker.sample<Sample_thinfilm>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -109,7 +106,7 @@ material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray con
     return sample;
 }
 
-void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) noexcept {
+void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) {
     coating_.ior = ior;
 
     float const r = ggx::clamp_roughness(roughness);
@@ -119,7 +116,7 @@ void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness
     coating_.thickness = thickness;
 }
 
-size_t Material_thinfilm::sample_size() noexcept {
+size_t Material_thinfilm::sample_size() {
     return sizeof(Sample_thinfilm);
 }
 

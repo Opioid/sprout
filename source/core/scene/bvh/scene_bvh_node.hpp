@@ -12,32 +12,32 @@ namespace scene::bvh {
 
 class Node {
   public:
-    Node() noexcept;
+    Node();
 
-    float3 min() const noexcept;
+    float3 min() const;
 
-    float3 max() const noexcept;
+    float3 max() const;
 
-    uint32_t next() const noexcept;
+    uint32_t next() const;
 
-    uint8_t axis() const noexcept;
+    uint8_t axis() const;
 
-    uint8_t num_primitives() const noexcept;
+    uint8_t num_primitives() const;
 
-    uint32_t indices_start() const noexcept;
+    uint32_t indices_start() const;
 
-    uint32_t indices_end() const noexcept;
+    uint32_t indices_end() const;
 
-    void set_aabb(float const* min, float const* max) noexcept;
+    void set_aabb(float const* min, float const* max);
 
-    void set_split_node(uint32_t next_node, uint8_t axis) noexcept;
+    void set_split_node(uint32_t next_node, uint8_t axis);
 
-    void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives) noexcept;
+    void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives);
 
     bool intersect_p(math::ray const& ray) const;
 
     bool intersect_p(Simd3f const& origin, Simd3f const& inv_direction, scalar const& min_t,
-                     scalar const& max_t) const noexcept;
+                     scalar const& max_t) const;
 
   private:
     struct alignas(16) Min {

@@ -6,10 +6,10 @@
 namespace memory {
 
 template <class T>
-Unique_ptr<T>::Unique_ptr() noexcept : value_(nullptr) {}
+Unique_ptr<T>::Unique_ptr() : value_(nullptr) {}
 
 template <class T>
-Unique_ptr<T>::Unique_ptr(T* value) noexcept : value_(value) {}
+Unique_ptr<T>::Unique_ptr(T* value) : value_(value) {}
 
 template <class T>
 Unique_ptr<T>::Unique_ptr(Unique_ptr&& other) noexcept {
@@ -18,22 +18,22 @@ Unique_ptr<T>::Unique_ptr(Unique_ptr&& other) noexcept {
 }
 
 template <class T>
-Unique_ptr<T>::~Unique_ptr() noexcept {
+Unique_ptr<T>::~Unique_ptr() {
     delete value_;
 }
 
 template <class T>
-Unique_ptr<T>::operator bool() const noexcept {
+Unique_ptr<T>::operator bool() const {
     return nullptr != value_;
 }
 
 template <class T>
-bool Unique_ptr<T>::operator!() const noexcept {
+bool Unique_ptr<T>::operator!() const {
     return nullptr == value_;
 }
 
 template <class T>
-Unique_ptr<T>& Unique_ptr<T>::operator=(Unique_ptr other) noexcept {
+Unique_ptr<T>& Unique_ptr<T>::operator=(Unique_ptr other) {
     T* value     = value_;
     value_       = other.value_;
     other.value_ = value;
@@ -42,27 +42,27 @@ Unique_ptr<T>& Unique_ptr<T>::operator=(Unique_ptr other) noexcept {
 }
 
 template <class T>
-T const& Unique_ptr<T>::operator*() const noexcept {
+T const& Unique_ptr<T>::operator*() const {
     return *value_;
 }
 
 template <class T>
-T& Unique_ptr<T>::operator*() noexcept {
+T& Unique_ptr<T>::operator*() {
     return *value_;
 }
 
 template <class T>
-T const* Unique_ptr<T>::operator->() const noexcept {
+T const* Unique_ptr<T>::operator->() const {
     return value_;
 }
 
 template <class T>
-T* Unique_ptr<T>::operator->() noexcept {
+T* Unique_ptr<T>::operator->() {
     return value_;
 }
 
 template <class T>
-T* Unique_ptr<T>::release() noexcept {
+T* Unique_ptr<T>::release() {
     T* value = value_;
 
     value_ = nullptr;

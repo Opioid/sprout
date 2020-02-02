@@ -18,7 +18,7 @@ using Texture_sampler_2D = image::texture::Sampler_2D;
 
 static inline float3 sample_normal(float3 const& wo, Renderstate const& rs, float2 const uv,
                                    Texture_adapter const& map, Texture_sampler_2D const& sampler,
-                                   scene::Worker const& worker) noexcept {
+                                   scene::Worker const& worker) {
     float3 const nm = map.sample_3(worker, sampler, uv);
     float3 const n  = normalize(rs.tangent_to_world(nm));
 
@@ -37,7 +37,7 @@ static inline float3 sample_normal(float3 const& wo, Renderstate const& rs, floa
 
 static inline float3 sample_normal(float3 const& wo, Renderstate const& rs,
                                    Texture_adapter const& map, Texture_sampler_2D const& sampler,
-                                   scene::Worker const& worker) noexcept {
+                                   scene::Worker const& worker) {
     return sample_normal(wo, rs, rs.uv, map, sampler, worker);
 }
 

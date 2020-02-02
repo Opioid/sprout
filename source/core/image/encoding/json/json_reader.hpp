@@ -9,7 +9,7 @@ namespace image::encoding::json {
 
 class Reader {
   public:
-    static Image* read(std::istream& stream, std::string const& filename) noexcept;
+    static Image* read(std::istream& stream, std::string const& filename);
 
   private:
 };

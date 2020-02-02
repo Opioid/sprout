@@ -17,10 +17,10 @@
 
 namespace scene::material::substitute {
 
-Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings) noexcept
+Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings)
     : Material_base(sampler_settings, false) {}
 
-void Material_subsurface::compile(thread::Pool& threads, Scene const& scene) noexcept {
+void Material_subsurface::compile(thread::Pool& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture(scene);
 
@@ -34,7 +34,7 @@ void Material_subsurface::compile(thread::Pool& threads, Scene const& scene) noe
 material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray const& /*ray*/,
                                                     Renderstate const& rs, Filter filter,
                                                     sampler::Sampler& /*sampler*/,
-                                                    Worker const& worker) const noexcept {
+                                                    Worker const& worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample_subsurface_volumetric>();
 
@@ -57,7 +57,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
 }
 
 float Material_subsurface::volume_border_hack(float3 const& wi, float3 const& n,
-                                              Worker const& /*worker*/) const noexcept {
+                                              Worker const& /*worker*/) const {
     float const f0 = fresnel::schlick_f0(ior_, 1.f);
 
     float const n_dot_wi = clamp_dot(n, wi);
@@ -67,16 +67,16 @@ float Material_subsurface::volume_border_hack(float3 const& wi, float3 const& n,
     return n_dot_wi * (f / (0.45f * Pi));
 }
 
-size_t Material_subsurface::num_bytes() const noexcept {
+size_t Material_subsurface::num_bytes() const {
     return sizeof(*this);
 }
 
-void Material_subsurface::set_density_map(Texture_adapter const& density_map) noexcept {
+void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
 }
 
 void Material_subsurface::set_attenuation(float3 const& absorption_color,
-                                          float3 const& scattering_color, float distance) noexcept {
+                                          float3 const& scattering_color, float distance) {
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
     } else {
@@ -89,12 +89,12 @@ void Material_subsurface::set_attenuation(float3 const& absorption_color,
     attenuation_distance_ = distance;
 }
 
-void Material_subsurface::set_volumetric_anisotropy(float anisotropy) noexcept {
+void Material_subsurface::set_volumetric_anisotropy(float anisotropy) {
     anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
 float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
-                                                   Worker const& worker) const noexcept {
+                                                   Worker const& worker) const {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
         float3 const color   = color_map_.sample_3(worker, sampler, uv);
@@ -105,12 +105,12 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
     return cc_.a;
 }
 
-CC Material_subsurface::collision_coefficients() const noexcept {
+CC Material_subsurface::collision_coefficients() const {
     return cc_;
 }
 
-CC Material_subsurface::collision_coefficients(float2 uv, Filter filter, Worker const& worker) const
-    noexcept {
+CC Material_subsurface::collision_coefficients(float2 uv, Filter filter,
+                                               Worker const& worker) const {
     SOFT_ASSERT(color_map_.is_valid());
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -121,7 +121,7 @@ CC Material_subsurface::collision_coefficients(float2 uv, Filter filter, Worker 
 }
 
 CC Material_subsurface::collision_coefficients(float3 const& p, Filter filter,
-                                               Worker const& worker) const noexcept {
+                                               Worker const& worker) const {
     SOFT_ASSERT(density_map_.is_valid());
 
     float const d = density(p, filter, worker);
@@ -141,37 +141,36 @@ CC Material_subsurface::collision_coefficients(float3 const& p, Filter filter,
     //	return {d * mu_a, d * mu_s};
 }
 
-CM Material_subsurface::control_medium() const noexcept {
+CM Material_subsurface::control_medium() const {
     return cm_;
 }
 
-volumetric::Gridtree const* Material_subsurface::volume_tree() const noexcept {
+volumetric::Gridtree const* Material_subsurface::volume_tree() const {
     //	return nullptr;
     return &tree_;
 }
 
-bool Material_subsurface::is_heterogeneous_volume() const noexcept {
+bool Material_subsurface::is_heterogeneous_volume() const {
     return density_map_.is_valid();
 }
 
-bool Material_subsurface::is_textured_volume() const noexcept {
+bool Material_subsurface::is_textured_volume() const {
     return color_map_.is_valid();
 }
 
-bool Material_subsurface::is_scattering_volume() const noexcept {
+bool Material_subsurface::is_scattering_volume() const {
     return is_scattering_;
 }
 
-bool Material_subsurface::is_caustic() const noexcept {
+bool Material_subsurface::is_caustic() const {
     return true;
 }
 
-size_t Material_subsurface::sample_size() noexcept {
+size_t Material_subsurface::sample_size() {
     return sizeof(Sample_subsurface);
 }
 
-float Material_subsurface::density(float3 const& p, Filter filter, Worker const& worker) const
-    noexcept {
+float Material_subsurface::density(float3 const& p, Filter filter, Worker const& worker) const {
     // p is in object space already
 
     float3 const p_g = 0.5f * (float3(1.f) + p);
@@ -182,7 +181,7 @@ float Material_subsurface::density(float3 const& p, Filter filter, Worker const&
 }
 
 float3 Material_subsurface::color(float3 const& p, Filter /*filter*/,
-                                  Worker const& /*worker*/) const noexcept {
+                                  Worker const& /*worker*/) const {
     float3 const p_g = 0.5f * (float3(1.f) + p);
 
     //	auto const& sampler = worker.sampler_3D(sampler_key(), filter);

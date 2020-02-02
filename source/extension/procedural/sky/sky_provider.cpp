@@ -20,25 +20,25 @@ using namespace scene;
 
 static Provider provider;
 
-void init(scene::Loader& loader, material::Provider& material_provider) noexcept {
+void init(scene::Loader& loader, material::Provider& material_provider) {
     provider.set_scene_loader(loader);
     provider.set_material_provider(material_provider);
 
     loader.register_extension_provider("Sky", &provider);
 }
 
-Provider::~Provider() noexcept = default;
+Provider::~Provider() = default;
 
-void Provider::set_scene_loader(Loader& loader) noexcept {
+void Provider::set_scene_loader(Loader& loader) {
     scene_loader_ = &loader;
 }
 
-void Provider::set_material_provider(material::Provider& material_provider) noexcept {
+void Provider::set_material_provider(material::Provider& material_provider) {
     material_provider_ = &material_provider;
 }
 
 uint32_t Provider::create_extension(json::Value const& extension_value, std::string const& name,
-                                    Scene& scene, Resources& resources) noexcept {
+                                    Scene& scene, Resources& resources) {
     Sky* sky = new Sky;
 
     uint32_t const sky_entity = scene.create_extension(sky, name);

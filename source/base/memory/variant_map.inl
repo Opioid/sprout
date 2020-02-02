@@ -6,7 +6,7 @@
 namespace memory {
 
 template <typename T>
-bool Variant_map::query(std::string_view key, T& value) const noexcept {
+bool Variant_map::query(std::string_view key, T& value) const {
     auto const i = map_.find(key);
 
     if (map_.end() == i) {
@@ -24,7 +24,7 @@ bool Variant_map::query(std::string_view key, T& value) const noexcept {
     return true;
 }
 
-inline bool Variant_map::query(std::string_view key, bool& value) const noexcept {
+inline bool Variant_map::query(std::string_view key, bool& value) const {
     auto const i = map_.find(key);
 
     if (map_.end() == i) {
@@ -42,7 +42,7 @@ inline bool Variant_map::query(std::string_view key, bool& value) const noexcept
     return true;
 }
 
-inline bool Variant_map::query(std::string_view key, int32_t& value) const noexcept {
+inline bool Variant_map::query(std::string_view key, int32_t& value) const {
     auto const i = map_.find(key);
 
     if (map_.end() == i) {
@@ -60,7 +60,7 @@ inline bool Variant_map::query(std::string_view key, int32_t& value) const noexc
     return true;
 }
 
-inline bool Variant_map::query(std::string_view key, uint32_t& value) const noexcept {
+inline bool Variant_map::query(std::string_view key, uint32_t& value) const {
     auto const i = map_.find(key);
 
     if (map_.end() == i) {
@@ -78,7 +78,7 @@ inline bool Variant_map::query(std::string_view key, uint32_t& value) const noex
     return true;
 }
 
-inline bool Variant_map::query(std::string_view key, float& value) const noexcept {
+inline bool Variant_map::query(std::string_view key, float& value) const {
     auto const i = map_.find(key);
 
     if (map_.end() == i) {
@@ -97,27 +97,27 @@ inline bool Variant_map::query(std::string_view key, float& value) const noexcep
 }
 
 template <typename T>
-void Variant_map::set(std::string const& key, T value) noexcept {
+void Variant_map::set(std::string const& key, T value) {
     map_.emplace(key, uint32_t(value));
 }
 
-inline void Variant_map::set(std::string const& key, bool value) noexcept {
+inline void Variant_map::set(std::string const& key, bool value) {
     map_.emplace(key, value);
 }
 
-inline void Variant_map::set(std::string const& key, int32_t value) noexcept {
+inline void Variant_map::set(std::string const& key, int32_t value) {
     map_.emplace(key, value);
 }
 
-inline void Variant_map::set(std::string const& key, uint32_t value) noexcept {
+inline void Variant_map::set(std::string const& key, uint32_t value) {
     map_.emplace(key, value);
 }
 
-inline void Variant_map::set(std::string const& key, float value) noexcept {
+inline void Variant_map::set(std::string const& key, float value) {
     map_.emplace(key, value);
 }
 
-inline void Variant_map::inherit(Variant_map const& other, std::string const& key) noexcept {
+inline void Variant_map::inherit(Variant_map const& other, std::string const& key) {
     auto const i = other.map_.find(key);
 
     if (other.map_.end() == i) {
@@ -127,7 +127,7 @@ inline void Variant_map::inherit(Variant_map const& other, std::string const& ke
     map_.insert_or_assign(key, i->second);
 }
 
-inline void Variant_map::inherit_except(Variant_map const& other, std::string_view key) noexcept {
+inline void Variant_map::inherit_except(Variant_map const& other, std::string_view key) {
     for (auto i : other.map_) {
         if (i.first != key) {
             map_.insert(map_.end(), i);

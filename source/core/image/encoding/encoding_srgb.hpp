@@ -7,15 +7,15 @@ namespace image::encoding {
 
 class Srgb {
   public:
-    Srgb(bool error_diffusion) noexcept;
+    Srgb(bool error_diffusion);
 
-    ~Srgb() noexcept;
+    ~Srgb();
 
-    void resize(uint32_t num_pixels) noexcept;
+    void resize(uint32_t num_pixels);
 
-    byte3 const* data() const noexcept;
+    byte3 const* data() const;
 
-    void to_sRGB(Float4 const& image, int32_t begin, int32_t end) noexcept;
+    void to_sRGB(Float4 const& image, int32_t begin, int32_t end);
 
   protected:
     byte3* rgb_;
@@ -27,15 +27,15 @@ class Srgb {
 
 class Srgb_alpha {
   public:
-    Srgb_alpha(bool error_diffusion, bool pre_multiplied_alpha) noexcept;
+    Srgb_alpha(bool error_diffusion, bool pre_multiplied_alpha);
 
-    ~Srgb_alpha() noexcept;
+    ~Srgb_alpha();
 
-    void resize(uint32_t num_pixels) noexcept;
+    void resize(uint32_t num_pixels);
 
-    byte4 const* data() const noexcept;
+    byte4 const* data() const;
 
-    void to_sRGB(Float4 const& image, int32_t begin, int32_t end) noexcept;
+    void to_sRGB(Float4 const& image, int32_t begin, int32_t end);
 
   protected:
     byte4* rgba_;

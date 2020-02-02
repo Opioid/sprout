@@ -49,8 +49,7 @@ using Texture       = image::texture::Texture;
 using Texture_usage = image::texture::Provider::Usage;
 using Resources     = resource::Manager;
 
-static Material* load_substitute(json::Value const& substitute_value,
-                                 Resources&         resources) noexcept;
+static Material* load_substitute(json::Value const& substitute_value, Resources& resources);
 
 struct Texture_description {
     std::string filename;
@@ -64,14 +63,12 @@ struct Texture_description {
     int32_t num_elements = 1;
 };
 
-static void read_sampler_settings(json::Value const& sampler_value,
-                                  Sampler_settings&  settings) noexcept;
+static void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings);
 
-static Texture_description read_texture_description(json::Value const& texture_value) noexcept;
+static Texture_description read_texture_description(json::Value const& texture_value);
 
 static Texture_adapter create_texture(Texture_description const& description,
-                                      memory::Variant_map&       options,
-                                      resource::Manager&         resources) noexcept;
+                                      memory::Variant_map& options, resource::Manager& resources);
 
 struct Coating_description {
     float3 color = float3(1.f);
@@ -87,24 +84,22 @@ struct Coating_description {
     Texture_description thickness_map_description;
 };
 
-static void read_coating_description(json::Value const&   value,
-                                     Coating_description& description) noexcept;
+static void read_coating_description(json::Value const& value, Coating_description& description);
 
-static float3 read_hex_RGB(std::string const& text) noexcept;
+static float3 read_hex_RGB(std::string const& text);
 
-static float3 read_color(json::Value const& color_value) noexcept;
+static float3 read_color(json::Value const& color_value);
 
-static float3 read_spectrum(json::Value const& spectrum_value) noexcept;
+static float3 read_spectrum(json::Value const& spectrum_value);
 
-Provider::Provider(bool force_debug_material) noexcept
-    : force_debug_material_(force_debug_material) {
+Provider::Provider(bool force_debug_material) : force_debug_material_(force_debug_material) {
     Material::init_rainbow();
 }
 
-Provider::~Provider() noexcept = default;
+Provider::~Provider() = default;
 
 Material* Provider::load(std::string const& filename, Variants const& /*options*/,
-                         Resources& resources, std::string& resolved_name) noexcept {
+                         Resources& resources, std::string& resolved_name) {
     auto stream_pointer = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         return nullptr;
@@ -121,26 +116,26 @@ Material* Provider::load(std::string const& filename, Variants const& /*options*
 }
 
 Material* Provider::load(void const* data, std::string const&    source_name,
-                         Variants const& /*options*/, Resources& resources) noexcept {
+                         Variants const& /*options*/, Resources& resources) {
     json::Value const* value = reinterpret_cast<json::Value const*>(data);
 
     return load(*value, string::parent_directory(source_name), resources);
 }
 
-size_t Provider::num_bytes() const noexcept {
+size_t Provider::num_bytes() const {
     return sizeof(*this);
 }
 
-size_t Provider::num_bytes(Material const* resource) const noexcept {
+size_t Provider::num_bytes(Material const* resource) const {
     return resource->num_bytes();
 }
 
-Material* Provider::create_fallback_material() noexcept {
+Material* Provider::create_fallback_material() {
     return new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
 }
 
 Material* Provider::load(json::Value const& value, std::string_view mount_folder,
-                         Resources& resources) noexcept {
+                         Resources& resources) {
     json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
     if (value.MemberEnd() == rendering_node) {
         logging::push_error("Material has no render node.");
@@ -203,7 +198,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
     return material;
 }
 
-Material* Provider::load_cloth(json::Value const& cloth_value, Resources& resources) noexcept {
+Material* Provider::load_cloth(json::Value const& cloth_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
@@ -254,7 +249,7 @@ Material* Provider::load_cloth(json::Value const& cloth_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_debug(json::Value const& debug_value, Resources& resources) noexcept {
+Material* Provider::load_debug(json::Value const& debug_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -286,7 +281,7 @@ Material* Provider::load_debug(json::Value const& debug_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_display(json::Value const& display_value, Resources& resources) noexcept {
+Material* Provider::load_display(json::Value const& display_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -365,7 +360,7 @@ Material* Provider::load_display(json::Value const& display_value, Resources& re
     return material;
 }
 
-Material* Provider::load_glass(json::Value const& glass_value, Resources& resources) noexcept {
+Material* Provider::load_glass(json::Value const& glass_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -462,7 +457,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_light(json::Value const& light_value, Resources& resources) noexcept {
+Material* Provider::load_light(json::Value const& light_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     std::string quantity;
@@ -554,7 +549,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_matte(json::Value const& matte_value, Resources& resources) noexcept {
+Material* Provider::load_matte(json::Value const& matte_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     //	Texture_ptr normal_map;
@@ -601,7 +596,7 @@ Material* Provider::load_matte(json::Value const& matte_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) noexcept {
+Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter normal_map;
@@ -683,8 +678,7 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_metallic_paint(json::Value const& paint_value,
-                                        Resources&         resources) noexcept {
+Material* Provider::load_metallic_paint(json::Value const& paint_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -785,7 +779,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value,
     return material;
 }
 
-Material* Provider::load_mix(json::Value const& mix_value, Resources& resources) noexcept {
+Material* Provider::load_mix(json::Value const& mix_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -847,7 +841,7 @@ Material* Provider::load_mix(json::Value const& mix_value, Resources& resources)
     return material;
 }
 
-Material* Provider::load_sky(json::Value const& sky_value, Resources& resources) noexcept {
+Material* Provider::load_sky(json::Value const& sky_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -888,7 +882,7 @@ Material* Provider::load_sky(json::Value const& sky_value, Resources& resources)
     return material;
 }
 
-Material* load_substitute(json::Value const& substitute_value, Resources& resources) noexcept {
+Material* load_substitute(json::Value const& substitute_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
@@ -1195,8 +1189,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_volumetric(json::Value const& volumetric_value,
-                                    Resources&         resources) noexcept {
+Material* Provider::load_volumetric(json::Value const& volumetric_value, Resources& resources) {
     Sampler_settings sampler_settings(Sampler_settings::Filter::Linear,
                                       Sampler_settings::Address::Clamp,
                                       Sampler_settings::Address::Clamp);
@@ -1308,7 +1301,7 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
     return material;
 }
 
-Sampler_settings::Address read_address(json::Value const& address_value) noexcept {
+Sampler_settings::Address read_address(json::Value const& address_value) {
     std::string const address = json::read_string(address_value);
 
     if ("Clamp" == address) {
@@ -1322,7 +1315,7 @@ Sampler_settings::Address read_address(json::Value const& address_value) noexcep
     return Sampler_settings::Address::Undefined;
 }
 
-void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings) noexcept {
+void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings) {
     for (auto& n : sampler_value.GetObject()) {
         if ("filter" == n.name) {
             std::string const filter = json::read_string(n.value);
@@ -1349,7 +1342,7 @@ void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& s
     }
 }
 
-Texture_description read_texture_description(json::Value const& texture_value) noexcept {
+Texture_description read_texture_description(json::Value const& texture_value) {
     Texture_description description;
 
     for (auto& n : texture_value.GetObject()) {
@@ -1375,7 +1368,7 @@ Texture_description read_texture_description(json::Value const& texture_value) n
 }
 
 Texture_adapter create_texture(Texture_description const& description, memory::Variant_map& options,
-                               Resources& resources) noexcept {
+                               Resources& resources) {
     if (description.num_elements > 1) {
         options.set("num_elements", description.num_elements);
     }
@@ -1388,7 +1381,7 @@ Texture_adapter create_texture(Texture_description const& description, memory::V
                            description.scale);
 }
 
-void read_coating_description(json::Value const& value, Coating_description& description) noexcept {
+void read_coating_description(json::Value const& value, Coating_description& description) {
     if (!value.IsObject()) {
         return;
     }
@@ -1424,7 +1417,7 @@ void read_coating_description(json::Value const& value, Coating_description& des
     }
 }
 
-float3 read_hex_RGB(std::string const& text) noexcept {
+float3 read_hex_RGB(std::string const& text) {
     if (7 != text.length() || '#' != text[0]) {
         return float3(0.f);
     }
@@ -1452,7 +1445,7 @@ float3 read_hex_RGB(std::string const& text) noexcept {
                   float(elements[2]) / 255.f);
 }
 
-float3 read_color(json::Value const& color_value) noexcept {
+float3 read_color(json::Value const& color_value) {
     if (color_value.IsArray()) {
         return json::read_float3(color_value);
     }
@@ -1465,7 +1458,7 @@ float3 read_color(json::Value const& color_value) noexcept {
     return read_hex_RGB(hex_string);
 }
 
-float3 read_spectrum(json::Value const& spectrum_value) noexcept {
+float3 read_spectrum(json::Value const& spectrum_value) {
     if (!spectrum_value.IsObject()) {
         return float3(0.f);
     }
@@ -1489,7 +1482,7 @@ float3 read_spectrum(json::Value const& spectrum_value) noexcept {
     return float3(0.f);
 }
 
-uint32_t Provider::max_sample_size() noexcept {
+uint32_t Provider::max_sample_size() {
     size_t num_bytes = 0;
 
     num_bytes = std::max(cloth::Material::sample_size(), num_bytes);

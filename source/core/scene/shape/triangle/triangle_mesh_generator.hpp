@@ -26,7 +26,7 @@ class Generator {
 
     using Shape_ptr = resource::Resource_ptr<Shape>;
 
-    virtual Shape_ptr create_mesh(json::Value const& mesh_value, Resources& resources) noexcept = 0;
+    virtual Shape_ptr create_mesh(json::Value const& mesh_value, Resources& resources) = 0;
 };
 
 }  // namespace triangle

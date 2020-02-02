@@ -8,7 +8,7 @@
 namespace spectrum {
 
 template <int32_t N>
-Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float s) noexcept {
+Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float s) {
     for (int32_t i = 0; i < N; ++i) {
         values_[i] = s;
     }
@@ -16,7 +16,7 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(fl
 
 template <int32_t N>
 Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
-    Interpolated const& interpolated) noexcept {
+    Interpolated const& interpolated) {
     for (int32_t i = 0; i < N; ++i) {
         float const a = wavelengths_[i];
         float const b = wavelengths_[i + 1];
@@ -25,8 +25,7 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
 }
 
 template <int32_t N>
-Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
-    float3 const& rgb) noexcept
+Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float3 const& rgb)
     : Discrete_spectral_power_distribution(0.f) {
     float const r = rgb[0];
     float const g = rgb[1];
@@ -65,18 +64,17 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
 }
 
 template <int32_t N>
-float constexpr Discrete_spectral_power_distribution<N>::value(int32_t bin) const noexcept {
+float constexpr Discrete_spectral_power_distribution<N>::value(int32_t bin) const {
     return values_[bin];
 }
 
 template <int32_t N>
-void Discrete_spectral_power_distribution<N>::set_bin(int32_t bin, float value) noexcept {
+void Discrete_spectral_power_distribution<N>::set_bin(int32_t bin, float value) {
     values_[bin] = value;
 }
 
 template <int32_t N>
-void Discrete_spectral_power_distribution<N>::set_at_wavelength(float lambda,
-                                                                float value) noexcept {
+void Discrete_spectral_power_distribution<N>::set_at_wavelength(float lambda, float value) {
     if (lambda < wavelengths_[0] || lambda > wavelengths_[N]) {
         return;
     }
@@ -89,7 +87,7 @@ void Discrete_spectral_power_distribution<N>::set_at_wavelength(float lambda,
 }
 
 template <int32_t N>
-float3 constexpr Discrete_spectral_power_distribution<N>::XYZ() const noexcept {
+float3 constexpr Discrete_spectral_power_distribution<N>::XYZ() const {
     float3 xyz(0.f);
     for (int32_t i = 0; i < N; ++i) {
         xyz += values_[i] * cie_[i];
@@ -99,14 +97,13 @@ float3 constexpr Discrete_spectral_power_distribution<N>::XYZ() const noexcept {
 }
 
 template <int32_t N>
-float3 constexpr Discrete_spectral_power_distribution<N>::normalized_XYZ() const noexcept {
+float3 constexpr Discrete_spectral_power_distribution<N>::normalized_XYZ() const {
     float constexpr normalization = 1.f / 106.856895f;
     return normalization * XYZ();
 }
 
 template <int32_t N>
-void Discrete_spectral_power_distribution<N>::init(float start_wavelength,
-                                                   float end_wavelength) noexcept {
+void Discrete_spectral_power_distribution<N>::init(float start_wavelength, float end_wavelength) {
     float const step = (end_wavelength - start_wavelength) / float(N);
 
     // initialize the wavelengths ranges of the bins
@@ -147,22 +144,22 @@ void Discrete_spectral_power_distribution<N>::init(float start_wavelength,
 }
 
 template <int32_t N>
-int32_t constexpr Discrete_spectral_power_distribution<N>::num_bands() noexcept {
+int32_t constexpr Discrete_spectral_power_distribution<N>::num_bands() {
     return N;
 }
 
 template <int32_t N>
-float constexpr Discrete_spectral_power_distribution<N>::wavelength_center(int32_t bin) noexcept {
+float constexpr Discrete_spectral_power_distribution<N>::wavelength_center(int32_t bin) {
     return (wavelengths_[bin] + wavelengths_[bin + 1]) * 0.5f;
 }
 
 template <int32_t N>
-float constexpr Discrete_spectral_power_distribution<N>::start_wavelength() noexcept {
+float constexpr Discrete_spectral_power_distribution<N>::start_wavelength() {
     return wavelengths_[0];
 }
 
 template <int32_t N>
-float constexpr Discrete_spectral_power_distribution<N>::end_wavelength() noexcept {
+float constexpr Discrete_spectral_power_distribution<N>::end_wavelength() {
     return wavelengths_[N];
 }
 
@@ -205,8 +202,7 @@ Discrete_spectral_power_distribution<N>
 
 template <int32_t N>
 Discrete_spectral_power_distribution<N>& operator+=(
-    Discrete_spectral_power_distribution<N>&       a,
-    Discrete_spectral_power_distribution<N> const& b) noexcept {
+    Discrete_spectral_power_distribution<N>& a, Discrete_spectral_power_distribution<N> const& b) {
     for (int32_t i = 0; i < N; ++i) {
         a.values_[i] += b.values_[i];
     }
@@ -216,7 +212,7 @@ Discrete_spectral_power_distribution<N>& operator+=(
 
 template <int32_t N>
 Discrete_spectral_power_distribution<N>& operator*=(Discrete_spectral_power_distribution<N>& a,
-                                                    float s) noexcept {
+                                                    float                                    s) {
     for (int32_t i = 0; i < N; ++i) {
         a.values_[i] *= s;
     }
@@ -226,7 +222,7 @@ Discrete_spectral_power_distribution<N>& operator*=(Discrete_spectral_power_dist
 
 template <int32_t N>
 Discrete_spectral_power_distribution<N> operator*(
-    float s, Discrete_spectral_power_distribution<N> const& v) noexcept {
+    float s, Discrete_spectral_power_distribution<N> const& v) {
     Discrete_spectral_power_distribution<N> r;
 
     for (int32_t i = 0; i < N; ++i) {

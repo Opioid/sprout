@@ -5,29 +5,29 @@
 
 namespace scene::material {
 
-static inline float abs_dot(float3 const& a, float3 const& b) noexcept {
+static inline float abs_dot(float3 const& a, float3 const& b) {
     return std::abs(dot(a, b));
 }
 
 static float constexpr Dot_min = 0.00001f;
 
-static inline float clamp(float x) noexcept {
+static inline float clamp(float x) {
     return std::clamp(x, Dot_min, 1.f);
 }
 
-static inline float clamp_abs(float x) noexcept {
+static inline float clamp_abs(float x) {
     return std::clamp(std::abs(x), Dot_min, 1.f);
 }
 
-static inline float clamp_dot(float3 const& a, float3 const& b) noexcept {
+static inline float clamp_dot(float3 const& a, float3 const& b) {
     return std::clamp(dot(a, b), Dot_min, 1.f);
 }
 
-static inline float clamp_abs_dot(float3 const& a, float3 const& b) noexcept {
+static inline float clamp_abs_dot(float3 const& a, float3 const& b) {
     return std::clamp(std::abs(dot(a, b)), Dot_min, 1.f);
 }
 
-static inline bool refract(float3 const& n, float3 const& v, float eta, float3& vr) noexcept {
+static inline bool refract(float3 const& n, float3 const& v, float eta, float3& vr) {
     float const n_dot_wo = std::min(std::abs(dot(n, v)), 1.f);
     float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
 

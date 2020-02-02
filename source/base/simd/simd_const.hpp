@@ -17,15 +17,15 @@ struct alignas(16) Vector_f32 {
         __m128 v;
     };
 
-    inline operator __m128() const noexcept {
+    inline operator __m128() const {
         return v;
     }
 
-    inline operator __m128i() const noexcept {
+    inline operator __m128i() const {
         return _mm_castps_si128(v);
     }
 
-    inline operator __m128d() const noexcept {
+    inline operator __m128d() const {
         return _mm_castps_pd(v);
     }
 };
@@ -36,15 +36,15 @@ struct alignas(16) Vector_i32 {
         __m128  v;
     };
 
-    inline operator __m128() const noexcept {
+    inline operator __m128() const {
         return v;
     }
 
-    inline operator __m128i() const noexcept {
+    inline operator __m128i() const {
         return _mm_castps_si128(v);
     }
 
-    inline operator __m128d() const noexcept {
+    inline operator __m128d() const {
         return _mm_castps_pd(v);
     }
 };
@@ -55,15 +55,15 @@ struct alignas(16) Vector_u32 {
         __m128   v;
     };
 
-    inline operator __m128() const noexcept {
+    inline operator __m128() const {
         return v;
     }
 
-    inline operator __m128i() const noexcept {
+    inline operator __m128i() const {
         return _mm_castps_si128(v);
     }
 
-    inline operator __m128d() const noexcept {
+    inline operator __m128d() const {
         return _mm_castps_pd(v);
     }
 };

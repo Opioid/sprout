@@ -23,11 +23,11 @@ struct Resource_ptr;
 
 class Cache {
   public:
-    Cache() noexcept;
+    Cache();
 
-    virtual ~Cache() noexcept;
+    virtual ~Cache();
 
-    void increment_generation() noexcept;
+    void increment_generation();
 
   protected:
     uint32_t generation_;
@@ -38,30 +38,29 @@ class Typed_cache final : public Cache {
   public:
     using Variants = memory::Variant_map;
 
-    Typed_cache(Provider<T>& provider) noexcept;
+    Typed_cache(Provider<T>& provider);
 
-    ~Typed_cache() noexcept final;
+    ~Typed_cache() final;
 
-    std::vector<T*> const& resources() const noexcept;
+    std::vector<T*> const& resources() const;
 
-    Resource_ptr<T> load(std::string const& filename, Variants const& options,
-                         Manager& resources) noexcept;
+    Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources);
 
     Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources,
-                         std::string& resolved_name) noexcept;
+                         std::string& resolved_name);
 
     Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
-                         Variants const& options, Manager& resources) noexcept;
+                         Variants const& options, Manager& resources);
 
-    Resource_ptr<T> get(std::string const& filename, Variants const& options) noexcept;
+    Resource_ptr<T> get(std::string const& filename, Variants const& options);
 
-    Resource_ptr<T> get(uint32_t id) const noexcept;
+    Resource_ptr<T> get(uint32_t id) const;
 
-    Resource_ptr<T> store(T* resource) noexcept;
+    Resource_ptr<T> store(T* resource);
 
-    Resource_ptr<T> store(std::string const& name, Variants const& options, T* resource) noexcept;
+    Resource_ptr<T> store(std::string const& name, Variants const& options, T* resource);
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     struct Entry {
@@ -74,7 +73,7 @@ class Typed_cache final : public Cache {
         std::filesystem::file_time_type last_write;
     };
 
-    bool check_up_to_date(Entry& entry) const noexcept;
+    bool check_up_to_date(Entry& entry) const;
 
     Provider<T>& provider_;
 

@@ -10,26 +10,25 @@ namespace scene::material::substitute {
 template <typename Coating_layer, typename Diffuse>
 class Sample_coating : public Sample_base {
   public:
-    float3 radiance() const noexcept final;
+    float3 radiance() const final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept override;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const override;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept override;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const override;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
 
   protected:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi) const noexcept;
+    bxdf::Result evaluate(float3 const& wi) const;
 
-    void coating_sample_and_base(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+    void coating_sample_and_base(sampler::Sampler& sampler, bxdf::Sample& result) const;
 
-    void diffuse_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+    void diffuse_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const;
 
-    void gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept;
+    void gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const;
 
-    void pure_gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const
-        noexcept;
+    void pure_gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const;
 
   public:
     Base_closure<Diffuse> base_;

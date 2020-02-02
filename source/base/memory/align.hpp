@@ -7,29 +7,29 @@ namespace memory {
 
 static size_t constexpr L1_cache_line_size = 64;
 
-void* allocate_aligned(size_t size) noexcept;
+void* allocate_aligned(size_t size);
 
 template <typename T>
-T* allocate_aligned(size_t count) noexcept {
+T* allocate_aligned(size_t count) {
     return reinterpret_cast<T*>(allocate_aligned(count * sizeof(T)));
 }
 
-void free_aligned(void* pointer) noexcept;
+void free_aligned(void* pointer);
 
 template <class T>
-void destroy(T* t) noexcept {
+void destroy(T* t) {
     if (t) {
         t->~T();
     }
 }
 
 template <class T>
-void destroy(T& t) noexcept {
+void destroy(T& t) {
     t.~T();
 }
 
 template <typename T, typename... P>
-T* construct_array_aligned(size_t count, P&... ps) noexcept {
+T* construct_array_aligned(size_t count, P&... ps) {
     // This is more complicated than expected. See for example:
     // https://stackoverflow.com/questions/8720425/array-placement-new-requires-unspecified-overhead-in-the-buffer
     // Basically there is a small memory overhead for placement new[] that is "unknown" beforehand,
@@ -49,7 +49,7 @@ T* construct_array_aligned(size_t count, P&... ps) noexcept {
 }
 
 template <typename T>
-void destroy_aligned(T* objects, size_t count) noexcept {
+void destroy_aligned(T* objects, size_t count) {
     for (size_t i = 0; i < count; ++i) {
         objects[i].~T();
     }
@@ -60,27 +60,27 @@ void destroy_aligned(T* objects, size_t count) noexcept {
 template <typename T>
 class Buffer {
   public:
-    Buffer(size_t size) noexcept : data_(allocate_aligned<T>(size)) {}
+    Buffer(size_t size) : data_(allocate_aligned<T>(size)) {}
 
-    ~Buffer() noexcept {
+    ~Buffer() {
         free_aligned(data_);
     }
 
-    T* data() noexcept {
+    T* data() {
         return data_;
     }
 
-    operator T*() noexcept {
+    operator T*() {
         return data_;
     }
 
     template <typename I>
-    T const& operator[](I i) const noexcept {
+    T const& operator[](I i) const {
         return data_[i];
     }
 
     template <typename I>
-    T& operator[](I i) noexcept {
+    T& operator[](I i) {
         return data_[i];
     }
 

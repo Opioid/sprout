@@ -6,7 +6,7 @@
 namespace scene::material {
 
 template <typename T>
-T& Sample_cache::get() noexcept {
+T& Sample_cache::get() {
     return *new (buffer_) T;
 }
 

@@ -6,32 +6,32 @@
 
 namespace scene::material::light {
 
-float3 const& Sample::base_shading_normal() const noexcept {
+float3 const& Sample::base_shading_normal() const {
     return geo_n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const {
     return {float3(0.f), 0.f};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const {
     return {float3(0.f), 0.f};
 }
 
-float3 Sample::radiance() const noexcept {
+float3 Sample::radiance() const {
     return radiance_;
 }
 
-void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const noexcept {
+void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const {
     result.reflection = float3(0.f);
     result.pdf        = 0.f;
 }
 
-bool Sample::is_pure_emissive() const noexcept {
+bool Sample::is_pure_emissive() const {
     return true;
 }
 
-void Sample::set(float3 const& radiance) noexcept {
+void Sample::set(float3 const& radiance) {
     radiance_ = radiance;
 }
 

@@ -24,9 +24,9 @@
 
 namespace rendering {
 
-Worker::Worker(uint32_t max_sample_size) noexcept : scene::Worker(max_sample_size) {}
+Worker::Worker(uint32_t max_sample_size) : scene::Worker(max_sample_size) {}
 
-Worker::~Worker() noexcept {
+Worker::~Worker() {
     delete photon_mapper_;
 }
 
@@ -34,8 +34,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
                   uint32_t num_samples_per_pixel, Surface_pool* surfaces, Volume_pool& volumes,
                   sampler::Pool& samplers, Photon_map* photon_map,
                   take::Photon_settings const& photon_settings, Lighttracer_pool* lighttracers,
-                  uint32_t             num_particles_per_chunk,
-                  Particle_importance* particle_importance) noexcept {
+                  uint32_t num_particles_per_chunk, Particle_importance* particle_importance) {
     scene::Worker::init(id, scene, camera);
 
     if (surfaces) {
@@ -70,7 +69,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     particle_importance_ = particle_importance;
 }
 
-float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
+float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
     Intersection intersection;
 
     if (!interface_stack.empty()) {
@@ -105,7 +104,7 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) noexcept {
 }
 
 bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& intersection,
-                         Filter filter, float3& tr) noexcept {
+                         Filter filter, float3& tr) {
     if (float3 a; tinted_visibility(ray, wo, intersection, filter, a)) {
         if (float3 b; transmittance(ray, b)) {
             tr = a * b;
@@ -116,8 +115,7 @@ bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& interse
     return false;
 }
 
-uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame,
-                              uint32_t iteration) noexcept {
+uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration) {
     if (photon_mapper_) {
         return photon_mapper_->bake(*photon_map_, begin, end, frame, iteration, *this);
     }
@@ -125,8 +123,7 @@ uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame,
     return 0;
 }
 
-float3 Worker::photon_li(Intersection const& intersection, Material_sample const& sample) const
-    noexcept {
+float3 Worker::photon_li(Intersection const& intersection, Material_sample const& sample) const {
     if (photon_map_) {
         return photon_map_->li(intersection, sample, *this);
     }
@@ -134,11 +131,11 @@ float3 Worker::photon_li(Intersection const& intersection, Material_sample const
     return float3(0.f);
 }
 
-Worker::Particle_importance& Worker::particle_importance() const noexcept {
+Worker::Particle_importance& Worker::particle_importance() const {
     return *particle_importance_;
 }
 
-bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
+bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     if (!scene_->has_volumes()) {
         transmittance = float3(1.f);
         return true;
@@ -199,7 +196,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) noexcept {
 }
 
 bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                               Filter filter, float3& tv) noexcept {
+                               Filter filter, float3& tv) {
     auto const& material = *intersection.material(*this);
 
     if (intersection.subsurface & (material.ior() > 1.f)) {

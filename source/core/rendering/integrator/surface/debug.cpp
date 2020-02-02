@@ -11,15 +11,15 @@
 
 namespace rendering::integrator::surface {
 
-Debug::Debug(rnd::Generator& rng, Settings const& settings) noexcept
+Debug::Debug(rnd::Generator& rng, Settings const& settings)
     : Integrator(rng), settings_(settings), sampler_(rng) {}
 
-void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
+void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
-void Debug::start_pixel() noexcept {}
+void Debug::start_pixel() {}
 
 float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
-                 Interface_stack const& initial_stack) noexcept {
+                 Interface_stack const& initial_stack) {
     worker.reset_interface_stack(initial_stack);
 
     float3 vector;
@@ -56,12 +56,12 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(0.5f * (vector + float3(1.f)), 1.f);
 }
 
-Debug_pool::Debug_pool(uint32_t num_integrators, Debug::Settings::Vector vector) noexcept
+Debug_pool::Debug_pool(uint32_t num_integrators, Debug::Settings::Vector vector)
     : Typed_pool<Debug>(num_integrators) {
     settings_.vector = vector;
 }
 
-Integrator* Debug_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Debug_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Debug(rng, settings_);

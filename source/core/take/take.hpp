@@ -49,15 +49,15 @@ struct Photon_settings {
 };
 
 struct View {
-    View() noexcept;
+    View();
 
-    ~View() noexcept;
+    ~View();
 
-    void clear() noexcept;
+    void clear();
 
-    void init(thread::Pool& threads) noexcept;
+    void init(thread::Pool& threads);
 
-    bool valid() const noexcept;
+    bool valid() const;
 
     rendering::integrator::surface::Pool* surface_integrators = nullptr;
 
@@ -81,11 +81,11 @@ struct View {
 };
 
 struct Take {
-    Take() noexcept;
+    Take();
 
-    ~Take() noexcept;
+    ~Take();
 
-    void clear() noexcept;
+    void clear();
 
     std::string scene_filename;
 

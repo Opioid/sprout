@@ -18,22 +18,22 @@ namespace scene::shape {
 
 static float constexpr Canopy_eps = -0.0005f;
 
-Canopy::Canopy() noexcept = default;
+Canopy::Canopy() = default;
 
-float3 Canopy::object_to_texture_point(float3 const& p) const noexcept {
+float3 Canopy::object_to_texture_point(float3 const& p) const {
     return p;
 }
 
-float3 Canopy::object_to_texture_vector(float3 const& v) const noexcept {
+float3 Canopy::object_to_texture_vector(float3 const& v) const {
     return v;
 }
 
-AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const noexcept {
+AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       Intersection& intersection) const noexcept {
+                       Intersection& intersection) const {
     if (ray.max_t >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
@@ -67,7 +67,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
 }
 
 bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformation,
-                           Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
+                           Node_stack& /*node_stack*/, Intersection& intersection) const {
     if (ray.max_t >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
@@ -99,7 +99,7 @@ bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformat
 }
 
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       Normals& normals) const noexcept {
+                       Normals& normals) const {
     if (ray.max_t >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
@@ -119,21 +119,20 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
 }
 
 bool Canopy::intersect_p(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                         Node_stack& /*node_stack*/) const noexcept {
+                         Node_stack& /*node_stack*/) const {
     // Implementation for this is not really needed, so just skip it
     return false;
 }
 
 float Canopy::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                      uint32_t /*entity*/, Filter /*filter*/, Worker const& /*worker*/) const
-    noexcept {
+                      uint32_t /*entity*/, Filter /*filter*/, Worker const& /*worker*/) const {
     // Implementation for this is not really needed, so just skip it
     return 0.f;
 }
 
 bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
                              uint32_t /*entity*/, Filter /*filter*/, Worker const& /*worker*/,
-                             float3& ta) const noexcept {
+                             float3& ta) const {
     // Implementation for this is not really needed, so just skip it
     ta = float3(1.f);
     return true;
@@ -141,8 +140,8 @@ bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transfo
 
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& transformation,
                     float /*area*/, bool /*two_sided*/, Sampler&                  sampler,
-                    uint32_t sampler_dimension, Node_stack& /*node_stack*/, Sample_to& sample) const
-    noexcept {
+                    uint32_t   sampler_dimension, Node_stack& /*node_stack*/,
+                    Sample_to& sample) const {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
@@ -163,24 +162,24 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
 bool Canopy::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
                     bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                     float2 /*importance_uv*/, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                    Sample_from& /*sample*/) const noexcept {
+                    Sample_from& /*sample*/) const {
     return false;
 }
 
 float Canopy::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                  bool /*total_sphere*/) const noexcept {
+                  bool /*total_sphere*/) const {
     return 1.f / (2.f * Pi);
 }
 
 float Canopy::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
-                         Transformation const& /*transformation*/, float /*area*/) const noexcept {
+                         Transformation const& /*transformation*/, float /*area*/) const {
     return 0.f;
 }
 
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
                     Transformation const& transformation, float /*area*/, bool /*two_sided*/,
-                    Sample_to&            sample) const noexcept {
+                    Sample_to&            sample) const {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     if (float const z = dot(disk, disk); z > 1.f) {
@@ -200,13 +199,13 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
 
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
                     Transformation const& /*transformation*/, float /*volume*/,
-                    Sample_to& /*sample*/) const noexcept {
+                    Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
                     float /*area*/, bool /*two_sided*/, float2 importance_uv, AABB const& bounds,
-                    Sample_from& sample) const noexcept {
+                    Sample_from& sample) const {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     if (float const z = dot(disk, disk); z > 1.f) {
@@ -239,11 +238,11 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 
 float Canopy::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
                      Transformation const& /*transformation*/, float /*area*/,
-                     bool /*two_sided*/) const noexcept {
+                     bool /*two_sided*/) const {
     return 1.f / (2.f * Pi);
 }
 
-float Canopy::uv_weight(float2 uv) const noexcept {
+float Canopy::uv_weight(float2 uv) const {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     if (float const z = dot(disk, disk); z > 1.f) {
@@ -253,19 +252,19 @@ float Canopy::uv_weight(float2 uv) const noexcept {
     return 1.f;
 }
 
-float Canopy::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+float Canopy::area(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 2.f * Pi;
 }
 
-float Canopy::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+float Canopy::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
 }
 
-bool Canopy::is_finite() const noexcept {
+bool Canopy::is_finite() const {
     return false;
 }
 
-size_t Canopy::num_bytes() const noexcept {
+size_t Canopy::num_bytes() const {
     return sizeof(*this);
 }
 

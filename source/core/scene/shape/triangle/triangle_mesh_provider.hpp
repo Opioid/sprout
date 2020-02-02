@@ -26,12 +26,12 @@ class Provider : public resource::Provider<Shape> {
     using Vertices  = std::vector<Vertex>;
     using Strings   = std::vector<std::string>;
 
-    Provider() noexcept;
+    Provider();
 
-    ~Provider() noexcept override;
+    ~Provider() override;
 
     Shape* load(std::string const& filename, Variants const& options, Resources& resources,
-                std::string& resolved_name) noexcept final;
+                std::string& resolved_name) final;
 
     struct Description {
         uint32_t num_triangles;
@@ -52,26 +52,26 @@ class Provider : public resource::Provider<Shape> {
     };
 
     Shape* load(void const* data, std::string const& source_name, Variants const& options,
-                resource::Manager& resources) noexcept final;
+                resource::Manager& resources) final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    size_t num_bytes(Shape const* resource) const noexcept final;
+    size_t num_bytes(Shape const* resource) const final;
 
     static Shape* create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
-                              thread::Pool& threads) noexcept;
+                              thread::Pool& threads);
 
   private:
     Shape* load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
-                               Resources& resources) noexcept;
+                               Resources& resources);
 
     static void build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                          Vertex_stream const& vertices, thread::Pool& threads) noexcept;
+                          Vertex_stream const& vertices, thread::Pool& threads);
 
     //	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
     //						  BVH_preset bvh_preset, thread::Pool& threads);
 
-    static Shape* load_binary(std::istream& stream, thread::Pool& threads) noexcept;
+    static Shape* load_binary(std::istream& stream, thread::Pool& threads);
 };
 
 }  // namespace triangle

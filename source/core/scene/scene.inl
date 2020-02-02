@@ -13,31 +13,29 @@
 
 namespace scene {
 
-inline bool Scene::has_volumes() const noexcept {
+inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
 
-inline bool Scene::intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
-    noexcept {
+inline bool Scene::intersect(Ray& ray, Worker const& worker,
+                             prop::Intersection& intersection) const {
     return prop_bvh_.intersect(ray, worker, intersection);
 }
 
-inline bool Scene::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const
-    noexcept {
+inline bool Scene::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const {
     return prop_bvh_.intersect(ray, worker, normals);
 }
 
 inline bool Scene::intersect_volume(Ray& ray, Worker const& worker,
-                                    prop::Intersection& intersection) const noexcept {
+                                    prop::Intersection& intersection) const {
     return volume_bvh_.intersect_nsf(ray, worker, intersection);
 }
 
-inline bool Scene::intersect_p(Ray const& ray, Worker const& worker) const noexcept {
+inline bool Scene::intersect_p(Ray const& ray, Worker const& worker) const {
     return prop_bvh_.intersect_p(ray, worker);
 }
 
-inline bool Scene::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const
-    noexcept {
+inline bool Scene::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const {
     if (has_masked_material_) {
         return prop_bvh_.visibility(ray, filter, worker, v);
     }
@@ -52,7 +50,7 @@ inline bool Scene::visibility(Ray const& ray, Filter filter, Worker const& worke
 }
 
 inline bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                                   float3& ta) const noexcept {
+                                   float3& ta) const {
     if (has_tinted_shadow_) {
         return prop_bvh_.thin_absorption(ray, filter, worker, ta);
     }
@@ -65,17 +63,15 @@ inline bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& 
     return false;
 }
 
-inline uint32_t Scene::num_interpolation_frames() const noexcept {
+inline uint32_t Scene::num_interpolation_frames() const {
     return num_interpolation_frames_;
 }
 
-inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const
-    noexcept {
+inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t entity) const {
     return prop_world_transformations_[entity];
 }
 
-inline void Scene::prop_set_transformation(uint32_t                    entity,
-                                           math::Transformation const& t) noexcept {
+inline void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) {
     uint32_t const f = prop_frames_[entity];
 
     entity::Keyframe& local_frame = keyframes_[f + num_interpolation_frames_];
@@ -83,13 +79,12 @@ inline void Scene::prop_set_transformation(uint32_t                    entity,
     local_frame.transformation = t;
 }
 
-inline void Scene::prop_set_world_transformation(uint32_t                    entity,
-                                                 math::Transformation const& t) noexcept {
+inline void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) {
     prop_world_transformations_[entity].set(t);
 }
 
 inline Scene::Transformation const& Scene::prop_transformation_at(
-    uint32_t entity, uint64_t time, Transformation& transformation) const noexcept {
+    uint32_t entity, uint64_t time, Transformation& transformation) const {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
@@ -100,7 +95,7 @@ inline Scene::Transformation const& Scene::prop_transformation_at(
 }
 
 inline Scene::Transformation const& Scene::prop_transformation_at(
-    uint32_t entity, uint64_t time, bool is_static, Transformation& transformation) const noexcept {
+    uint32_t entity, uint64_t time, bool is_static, Transformation& transformation) const {
     if (is_static) {
         return prop_world_transformation(entity);
     }
@@ -108,44 +103,43 @@ inline Scene::Transformation const& Scene::prop_transformation_at(
     return prop_animated_transformation_at(prop_frames_[entity], time, transformation);
 }
 
-inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const noexcept {
+inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const {
     entity::Keyframe const* frames = &keyframes_[prop_frames_[entity]];
 
     return frames[num_interpolation_frames_].transformation;
 }
 
-inline AABB const& Scene::prop_aabb(uint32_t entity) const noexcept {
+inline AABB const& Scene::prop_aabb(uint32_t entity) const {
     return prop_aabbs_[entity];
 }
 
-inline bool Scene::prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept {
+inline bool Scene::prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const {
     return prop_aabbs_[entity].intersect_p(ray);
 }
 
-inline shape::Shape* Scene::prop_shape(uint32_t entity) const noexcept {
+inline shape::Shape* Scene::prop_shape(uint32_t entity) const {
     return shape_resources_[props_[entity].shape()];
 }
 
-inline material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) const
-    noexcept {
+inline material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) const {
     uint32_t const p = prop_parts_[entity] + part;
     return material_resources_[materials_[p]];
 }
 
-inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const noexcept {
+inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const {
     return prop_topology_[entity];
 }
 
-inline image::texture::Texture const* Scene::texture(uint32_t id) const noexcept {
+inline image::texture::Texture const* Scene::texture(uint32_t id) const {
     return texture_resources_[id];
 }
 
-inline uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const noexcept {
+inline uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const {
     uint32_t const p = prop_parts_[entity] + part;
     return light_ids_[p];
 }
 
-inline float Scene::light_area(uint32_t entity, uint32_t part) const noexcept {
+inline float Scene::light_area(uint32_t entity, uint32_t part) const {
     uint32_t const p = prop_parts_[entity] + part;
 
     uint32_t const light_id = light_ids_[p];
@@ -157,27 +151,27 @@ inline float Scene::light_area(uint32_t entity, uint32_t part) const noexcept {
     return lights_[light_id].area();
 }
 
-inline float3 Scene::light_center(uint32_t light) const noexcept {
+inline float3 Scene::light_center(uint32_t light) const {
     return light_centers_[light];
 }
 
-inline uint32_t Scene::num_props() const noexcept {
+inline uint32_t Scene::num_props() const {
     return uint32_t(props_.size());
 }
 
-inline prop::Prop const* Scene::prop(uint32_t index) const noexcept {
+inline prop::Prop const* Scene::prop(uint32_t index) const {
     SOFT_ASSERT(index < props_.size());
 
     return &props_[index];
 }
 
-inline prop::Prop* Scene::prop(uint32_t index) noexcept {
+inline prop::Prop* Scene::prop(uint32_t index) {
     SOFT_ASSERT(index < props_.size());
 
     return &props_[index];
 }
 
-inline prop::Prop* Scene::prop(std::string_view name) noexcept {
+inline prop::Prop* Scene::prop(std::string_view name) {
     auto e = named_props_.find(name);
     if (named_props_.end() == e) {
         return nullptr;
@@ -186,11 +180,11 @@ inline prop::Prop* Scene::prop(std::string_view name) noexcept {
     return &props_[e->second];
 }
 
-inline uint32_t Scene::num_lights() const noexcept {
+inline uint32_t Scene::num_lights() const {
     return uint32_t(lights_.size());
 }
 
-inline light::Light const& Scene::light(uint32_t id) const noexcept {
+inline light::Light const& Scene::light(uint32_t id) const {
     return lights_[id];
 }
 

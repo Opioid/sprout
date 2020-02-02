@@ -8,13 +8,13 @@
 
 namespace scene::material::matte {
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
                                          Renderstate const& rs, Filter /*filter*/,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker) const
-    noexcept {
+                                         sampler::Sampler& /*sampler*/,
+                                         Worker const& worker) const {
     auto& sample = worker.sample<Sample>();
 
     //	auto& sampler = worker.sampler_2D(sampler_key_, filter);
@@ -28,19 +28,19 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-float Material::ior() const noexcept {
+float Material::ior() const {
     return 1.47f;
 }
 
-size_t Material::num_bytes() const noexcept {
+size_t Material::num_bytes() const {
     return sizeof(*this);
 }
 
-void Material::set_color(float3 const& color) noexcept {
+void Material::set_color(float3 const& color) {
     color_ = color;
 }
 
-size_t Material::sample_size() noexcept {
+size_t Material::sample_size() {
     return sizeof(Sample);
 }
 

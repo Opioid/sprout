@@ -16,21 +16,21 @@
 
 namespace scene::camera {
 
-Camera::Camera(int2 resolution) noexcept : resolution_(resolution), sensor_(nullptr) {}
+Camera::Camera(int2 resolution) : resolution_(resolution), sensor_(nullptr) {}
 
-Camera::~Camera() noexcept {
+Camera::~Camera() {
     delete sensor_;
 }
 
-void Camera::init(uint32_t entity) noexcept {
+void Camera::init(uint32_t entity) {
     entity_ = entity;
 }
 
-uint32_t Camera::entity() const noexcept {
+uint32_t Camera::entity() const {
     return entity_;
 }
 
-void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
+void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
     interface_stack_.clear();
     interfaces_.clear();
 
@@ -63,11 +63,11 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) noexcept {
     on_update(time, worker);
 }
 
-Frustum Camera::frustum() const noexcept {
+Frustum Camera::frustum() const {
     return Frustum();
 }
 
-void Camera::set_parameters(json::Value const& parameters) noexcept {
+void Camera::set_parameters(json::Value const& parameters) {
     bool motion_blur = true;
 
     for (auto& n : parameters.GetObject()) {
@@ -90,35 +90,35 @@ void Camera::set_parameters(json::Value const& parameters) noexcept {
     frame_duration_ = motion_blur ? frame_step_ : 0;
 }
 
-int2 Camera::resolution() const noexcept {
+int2 Camera::resolution() const {
     return resolution_;
 }
 
-rendering::sensor::Sensor& Camera::sensor() const noexcept {
+rendering::sensor::Sensor& Camera::sensor() const {
     return *sensor_;
 }
 
-void Camera::set_sensor(Sensor* sensor) noexcept {
+void Camera::set_sensor(Sensor* sensor) {
     sensor_ = sensor;
 }
 
-void Camera::set_resolution(int2 resolution) noexcept {
+void Camera::set_resolution(int2 resolution) {
     resolution_ = resolution;
 }
 
-prop::Interface_stack const& Camera::interface_stack() const noexcept {
+prop::Interface_stack const& Camera::interface_stack() const {
     return interface_stack_;
 }
 
-uint64_t Camera::frame_step() const noexcept {
+uint64_t Camera::frame_step() const {
     return frame_step_;
 }
 
-uint64_t Camera::frame_duration() const noexcept {
+uint64_t Camera::frame_duration() const {
     return frame_duration_;
 }
 
-uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept {
+uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const {
     double const delta    = double(frame_delta);
     double const duration = double(frame_duration_);
 
@@ -127,7 +127,7 @@ uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const noexcept
     return uint64_t(frame) * frame_step_ + fdi;
 }
 
-Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept {
+Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) {
     return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);
 }
 

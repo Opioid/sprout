@@ -52,22 +52,21 @@ class Tracking {
     using CM             = scene::material::CM;
     using Intersection   = scene::prop::Intersection;
 
-    static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
-                              float3& tr) noexcept;
+    static bool transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker, float3& tr);
 
     static bool tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
-                         float3& w) noexcept;
+                         float3& w);
 
     static Event tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                           Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
-                          float3& w, float3& li) noexcept;
+                          float3& w, float3& li);
 
     static bool tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
-                         float3& w) noexcept;
+                         float3& w);
 
     static Event tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
-                          float3& w, float3& li) noexcept;
+                          float3& w, float3& li);
 
     static float constexpr Min_mt        = 1e-10f;
     static float constexpr Abort_epsilon = 7.5e-4f;

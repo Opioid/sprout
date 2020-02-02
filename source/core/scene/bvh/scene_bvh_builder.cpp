@@ -9,12 +9,12 @@
 
 namespace scene::bvh {
 
-Builder::Builder() noexcept : Builder_base(16, 64) {}
+Builder::Builder() : Builder_base(16, 64) {}
 
-Builder::~Builder() noexcept = default;
+Builder::~Builder() = default;
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
-                    thread::Pool& threads) noexcept {
+                    thread::Pool& threads) {
     Build_node root;
 
     if (indices.empty()) {
@@ -34,7 +34,8 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
             memory::Array<Simd_AABB> taabbs(threads.num_threads());
 
             threads.run_range(
-                [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin, int32_t end) {
+                [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin,
+                                                         int32_t end) noexcept {
                     Simd_AABB aabb(AABB::empty());
 
                     for (int32_t i = begin; i < end; ++i) {
@@ -75,7 +76,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
     tree.aabb_ = root.aabb;
 }
 
-void Builder::serialize(Build_node* node, Tree& tree, uint32_t& current_prop) noexcept {
+void Builder::serialize(Build_node* node, Tree& tree, uint32_t& current_prop) {
     auto& n = new_node();
     n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 

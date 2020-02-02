@@ -17,8 +17,7 @@ namespace procedural::mesh {
 using namespace scene::shape;
 using namespace scene::shape::triangle;
 
-Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
-                                    Resources& resources) noexcept {
+Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/, Resources& resources) {
     std::vector<Index_triangle> triangles;
     std::vector<Vertex>         vertices;
 
@@ -86,7 +85,7 @@ Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/,
 
 void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,
                       float height, uint32_t vertex_offset, std::vector<Index_triangle>& triangles,
-                      std::vector<Vertex>& vertices) const noexcept {
+                      std::vector<Vertex>& vertices) const {
     scene::shape::triangle::Index_triangle tri;
     tri.part = 0;
 
@@ -229,7 +228,7 @@ void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor,
 }
 
 void Grass::calculate_normals(std::vector<Index_triangle>& triangles,
-                              std::vector<Vertex>&         vertices) noexcept {
+                              std::vector<Vertex>&         vertices) {
     std::vector<packed_float3> triangle_normals(triangles.size());
 
     for (size_t i = 0, len = triangles.size(); i < len; ++i) {

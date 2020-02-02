@@ -7,12 +7,12 @@ namespace scene::material {
 
 class Sample_cache {
   public:
-    Sample_cache(uint32_t max_sample_size) noexcept;
+    Sample_cache(uint32_t max_sample_size);
 
-    ~Sample_cache() noexcept;
+    ~Sample_cache();
 
     template <typename T>
-    T& get() noexcept;
+    T& get();
 
   private:
     uint32_t max_sample_size_;

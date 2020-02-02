@@ -26,7 +26,7 @@ namespace rendering::integrator::volume {
 using namespace scene::prop;
 
 static inline void set_scattering(Intersection& intersection, Interface const* interface,
-                                  float3 const& p) noexcept {
+                                  float3 const& p) {
     intersection.prop       = interface->prop;
     intersection.geo.p      = p;
     intersection.geo.uv     = interface->uv;
@@ -34,18 +34,18 @@ static inline void set_scattering(Intersection& intersection, Interface const* i
     intersection.subsurface = true;
 }
 
-Tracking_multi::Tracking_multi(rnd::Generator& rng) noexcept : Integrator(rng) {}
+Tracking_multi::Tracking_multi(rnd::Generator& rng) : Integrator(rng) {}
 
-void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) noexcept {}
+void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
-void Tracking_multi::start_pixel() noexcept {}
+void Tracking_multi::start_pixel() {}
 
-bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept {
+bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& tr) {
     return Tracking::transmittance(ray, rng_, worker, tr);
 }
 
 Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
-                                float3& li, float3& tr) noexcept {
+                                float3& li, float3& tr) {
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li = float3(0.f);
         tr = float3(1.f);
@@ -469,10 +469,10 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
     }
 }
 
-Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators) noexcept
+Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators)
     : Typed_pool<Tracking_multi>(num_integrators) {}
 
-Integrator* Tracking_multi_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Tracking_multi_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Tracking_multi(rng);

@@ -18,13 +18,13 @@ class Sampler_cache {
     using Texture_sampler_2D = image::texture::Sampler_2D;
     using Texture_sampler_3D = image::texture::Sampler_3D;
 
-    Sampler_cache() noexcept;
+    Sampler_cache();
 
-    ~Sampler_cache() noexcept;
+    ~Sampler_cache();
 
-    Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const noexcept;
+    Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const;
 
-    Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const noexcept;
+    Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const;
 
   private:
     static uint32_t constexpr Num_samplers = 8;

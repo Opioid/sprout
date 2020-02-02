@@ -24,15 +24,15 @@ struct Keyframe {
 
 class Animation {
   public:
-    Animation(uint32_t num_frames, uint32_t num_interpolated_frames) noexcept;
+    Animation(uint32_t num_frames, uint32_t num_interpolated_frames);
 
-    ~Animation() noexcept;
+    ~Animation();
 
-    void set(uint32_t index, Keyframe const& keyframe) noexcept;
+    void set(uint32_t index, Keyframe const& keyframe);
 
-    void resample(uint64_t start, uint64_t end, uint64_t frame_length) noexcept;
+    void resample(uint64_t start, uint64_t end, uint64_t frame_length);
 
-    Keyframe const* interpolated_frames() const noexcept;
+    Keyframe const* interpolated_frames() const;
 
   private:
     uint32_t last_frame_;
@@ -43,9 +43,9 @@ class Animation {
 
 class Stage {
   public:
-    Stage(uint32_t entity, Animation* animation) noexcept;
+    Stage(uint32_t entity, Animation* animation);
 
-    void update(Scene& scene, thread::Pool& threads) const noexcept;
+    void update(Scene& scene, thread::Pool& threads) const;
 
   private:
     uint32_t entity_;

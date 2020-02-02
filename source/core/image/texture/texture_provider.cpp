@@ -24,12 +24,12 @@
 
 namespace image::texture {
 
-Provider::Provider(bool no_textures) noexcept : no_textures_(no_textures) {
+Provider::Provider(bool no_textures) : no_textures_(no_textures) {
     encoding::init();
 }
 
 Texture* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
-                        std::string& resolved_name) noexcept {
+                        std::string& resolved_name) {
     if (no_textures_) {
         return nullptr;
     }
@@ -130,23 +130,23 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
 }
 
 Texture* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
-                        Variants const& /*options*/, resource::Manager& /*resources*/) noexcept {
+                        Variants const& /*options*/, resource::Manager& /*resources*/) {
     return nullptr;
 }
 
-size_t Provider::num_bytes() const noexcept {
+size_t Provider::num_bytes() const {
     return sizeof(*this);
 }
 
-size_t Provider::num_bytes(Texture const* /*resource*/) const noexcept {
+size_t Provider::num_bytes(Texture const* /*resource*/) const {
     return 0;
 }
 
-std::string Provider::encode_name(uint32_t image_id) noexcept {
+std::string Provider::encode_name(uint32_t image_id) {
     return "tex:" + std::to_string(image_id);
 }
 
-uint32_t Provider::decode_name(std::string const& name) noexcept {
+uint32_t Provider::decode_name(std::string const& name) {
     if ("tex:" == name.substr(0, 4)) {
         return uint32_t(std::atoi(name.substr(4).c_str()));
     }

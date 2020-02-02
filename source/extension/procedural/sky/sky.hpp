@@ -15,29 +15,29 @@ class Sky : public scene::Extension {
   public:
     using Scene = scene::Scene;
 
-    Sky() noexcept;
+    Sky();
 
-    ~Sky() noexcept override;
+    ~Sky() override;
 
-    void init(uint32_t sky, uint32_t sun, Scene& scene) noexcept;
+    void init(uint32_t sky, uint32_t sun, Scene& scene);
 
-    void set_parameters(json::Value const& parameters, Scene& scene) noexcept final;
+    void set_parameters(json::Value const& parameters, Scene& scene) final;
 
-    Model& model() noexcept;
+    Model& model();
 
-    float3 sun_wi(float v) const noexcept;
+    float3 sun_wi(float v) const;
 
-    float sun_v(float3 const& wi) const noexcept;
+    float sun_v(float3 const& wi) const;
 
-    bool sky_changed_since_last_check() noexcept;
-    bool sun_changed_since_last_check() noexcept;
+    bool sky_changed_since_last_check();
+    bool sun_changed_since_last_check();
 
-    void update(Scene& scene) noexcept final override;
+    void update(Scene& scene) final override;
 
   private:
-    void private_update(Scene& scene) noexcept;
+    void private_update(Scene& scene);
 
-    //   void on_set_transformation() noexcept final;
+    //   void on_set_transformation()  final;
 
     Model model_;
 

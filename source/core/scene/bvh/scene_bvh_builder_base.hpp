@@ -17,12 +17,12 @@ class Node;
 
 class Builder_base {
   protected:
-    Builder_base(uint32_t num_slices, uint32_t sweep_threshold) noexcept;
+    Builder_base(uint32_t num_slices, uint32_t sweep_threshold);
 
     struct Build_node {
-        Build_node() noexcept;
+        Build_node();
 
-        ~Build_node() noexcept;
+        ~Build_node();
 
         AABB aabb;
 
@@ -37,16 +37,16 @@ class Builder_base {
     };
 
     void split(Build_node* node, References& references, AABB const& aabb, uint32_t max_primitives,
-               uint32_t depth, thread::Pool& threads) noexcept;
+               uint32_t depth, thread::Pool& threads);
 
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
-                                    bool& exhausted, thread::Pool& threads) noexcept;
+                                    bool& exhausted, thread::Pool& threads);
 
-    void assign(Build_node* node, References const& references) noexcept;
+    void assign(Build_node* node, References const& references);
 
-    Node& new_node() noexcept;
+    Node& new_node();
 
-    uint32_t current_node_index() const noexcept;
+    uint32_t current_node_index() const;
 
     uint32_t current_node_;
 

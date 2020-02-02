@@ -28,7 +28,7 @@ static size_t constexpr Num_reserved_props = 32;
 
 Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
              std::vector<Material*> const& material_resources,
-             std::vector<Texture*> const&  texture_resources) noexcept
+             std::vector<Texture*> const&  texture_resources)
     : null_shape_(null_shape),
       shape_resources_(shape_resources),
       material_resources_(material_resources),
@@ -52,11 +52,11 @@ Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
     infinite_volumes_.reserve(1);
 }
 
-Scene::~Scene() noexcept {
+Scene::~Scene() {
     clear();
 }
 
-void Scene::clear() noexcept {
+void Scene::clear() {
     prop_parts_.clear();
     prop_topology_.clear();
     prop_frames_.clear();
@@ -91,7 +91,7 @@ void Scene::clear() noexcept {
     extensions_.clear();
 }
 
-void Scene::finish() noexcept {
+void Scene::finish() {
     if (lights_.empty()) {
         uint32_t const dummy = create_entity();
         allocate_light(light::Light::Type::Null, dummy, 0);
@@ -100,11 +100,11 @@ void Scene::finish() noexcept {
     light_powers_.resize(uint32_t(lights_.size()));
 }
 
-AABB const& Scene::aabb() const noexcept {
+AABB const& Scene::aabb() const {
     return prop_bvh_.aabb();
 }
 
-AABB Scene::caustic_aabb() const noexcept {
+AABB Scene::caustic_aabb() const {
     AABB aabb = AABB::empty();
 
     for (auto const i : finite_props_) {
@@ -116,11 +116,11 @@ AABB Scene::caustic_aabb() const noexcept {
     return aabb;
 }
 
-bool Scene::is_infinite() const noexcept {
+bool Scene::is_infinite() const {
     return !infinite_props_.empty() || !infinite_volumes_.empty();
 }
 
-Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
+Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
     // If the assert doesn't hold it would pose a problem,
     // but I think it is more efficient to handle those cases outside or implicitely.
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
@@ -133,7 +133,7 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const noexcept {
 }
 
 Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
-                          bool calculate_pdf) const noexcept {
+                          bool calculate_pdf) const {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
@@ -143,7 +143,7 @@ Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool to
     return {lights_[id], id, pdf};
 }
 
-Scene::Light Scene::random_light(float random) const noexcept {
+Scene::Light Scene::random_light(float random) const {
     SOFT_ASSERT(!lights_.empty());
 
     auto const l = light_distribution_.sample_discrete(random);
@@ -154,13 +154,13 @@ Scene::Light Scene::random_light(float random) const noexcept {
 }
 
 Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sphere,
-                                 float random) const noexcept {
+                                 float random) const {
     auto const l = light_tree_.random_light(p, n, total_sphere, random);
 
     return {lights_[l.id], l.id, l.pdf};
 }
 
-void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept {
+void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;
     uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
@@ -182,7 +182,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexce
     compile(start, threads);
 }
 
-void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
+void Scene::compile(uint64_t time, thread::Pool& threads) {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
 
@@ -226,12 +226,11 @@ void Scene::compile(uint64_t time, thread::Pool& threads) noexcept {
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }
 
-void Scene::calculate_num_interpolation_frames(uint64_t frame_step,
-                                               uint64_t frame_duration) noexcept {
+void Scene::calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) {
     num_interpolation_frames_ = count_frames(frame_step, frame_duration) + 1;
 }
 
-uint32_t Scene::create_entity() noexcept {
+uint32_t Scene::create_entity() {
     auto const prop = allocate_prop();
 
     prop.ptr->configure(null_shape_, nullptr);
@@ -239,7 +238,7 @@ uint32_t Scene::create_entity() noexcept {
     return prop.id;
 }
 
-uint32_t Scene::create_entity(std::string const& name) noexcept {
+uint32_t Scene::create_entity(std::string const& name) {
     uint32_t const dummy = create_entity();
 
     add_named_prop(dummy, name);
@@ -247,7 +246,7 @@ uint32_t Scene::create_entity(std::string const& name) noexcept {
     return dummy;
 }
 
-uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) noexcept {
+uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) {
     auto const prop = allocate_prop();
 
     prop.ptr->configure(shape, materials);
@@ -289,7 +288,7 @@ uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) noex
 }
 
 uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials,
-                            std::string const& name) noexcept {
+                            std::string const& name) {
     uint32_t const prop = create_prop(shape, materials);
 
     add_named_prop(prop, name);
@@ -297,23 +296,23 @@ uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials,
     return prop;
 }
 
-void Scene::create_prop_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_light(uint32_t prop, uint32_t part) {
     allocate_light(light::Light::Type::Prop, prop, part);
 }
 
-void Scene::create_prop_image_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_image_light(uint32_t prop, uint32_t part) {
     allocate_light(light::Light::Type::Prop_image, prop, part);
 }
 
-void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) {
     allocate_light(light::Light::Type::Volume, prop, part);
 }
 
-void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept {
+void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) {
     allocate_light(light::Light::Type::Volume_image, prop, part);
 }
 
-uint32_t Scene::create_extension(Extension* extension) noexcept {
+uint32_t Scene::create_extension(Extension* extension) {
     extensions_.push_back(extension);
 
     uint32_t const dummy = create_entity();
@@ -323,7 +322,7 @@ uint32_t Scene::create_extension(Extension* extension) noexcept {
     return dummy;
 }
 
-uint32_t Scene::create_extension(Extension* extension, std::string const& name) noexcept {
+uint32_t Scene::create_extension(Extension* extension, std::string const& name) {
     extensions_.push_back(extension);
 
     uint32_t const dummy = create_entity(name);
@@ -333,7 +332,7 @@ uint32_t Scene::create_extension(Extension* extension, std::string const& name) 
     return dummy;
 }
 
-void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept {
+void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) {
     props_[child_id].set_has_parent();
 
     if (prop_has_animated_frames(parent_id) && !prop_has_animated_frames(child_id)) {
@@ -350,7 +349,7 @@ void Scene::prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept
     }
 }
 
-void Scene::prop_allocate_frames(uint32_t entity, bool local_animation) noexcept {
+void Scene::prop_allocate_frames(uint32_t entity, bool local_animation) {
     prop_frames_[entity] = uint32_t(keyframes_.size());
 
     uint32_t const num_world_frames = num_interpolation_frames_;
@@ -365,11 +364,11 @@ void Scene::prop_allocate_frames(uint32_t entity, bool local_animation) noexcept
     props_[entity].configure_animated(entity, local_animation, *this);
 }
 
-bool Scene::prop_has_animated_frames(uint32_t entity) const noexcept {
+bool Scene::prop_has_animated_frames(uint32_t entity) const {
     return prop::Null != prop_frames_[entity];
 }
 
-void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames) noexcept {
+void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames) {
     uint32_t const num_frames = num_interpolation_frames_;
 
     uint32_t const f = prop_frames_[entity];
@@ -380,7 +379,7 @@ void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames) 
     }
 }
 
-void Scene::prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k) noexcept {
+void Scene::prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k) {
     uint32_t const num_frames = num_interpolation_frames_;
 
     uint32_t const f = prop_frames_[entity];
@@ -390,7 +389,7 @@ void Scene::prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k) n
     local_frames[frame] = k;
 }
 
-void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
+void Scene::prop_calculate_world_transformation(uint32_t entity) {
     auto const& p = props_[entity];
 
     if (p.has_no_parent()) {
@@ -407,7 +406,7 @@ void Scene::prop_calculate_world_transformation(uint32_t entity) noexcept {
     }
 }
 
-void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
+void Scene::prop_propagate_transformation(uint32_t entity) {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
@@ -454,8 +453,7 @@ void Scene::prop_propagate_transformation(uint32_t entity) noexcept {
     }
 }
 
-void Scene::prop_inherit_transformation(uint32_t              entity,
-                                        Transformation const& transformation) noexcept {
+void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& transformation) {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null != f) {
@@ -472,7 +470,7 @@ void Scene::prop_inherit_transformation(uint32_t              entity,
     prop_propagate_transformation(entity);
 }
 
-void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames) noexcept {
+void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames) {
     bool const local_animation = prop(entity)->has_local_animation();
 
     entity::Keyframe* tf = &keyframes_[prop_frames_[entity]];
@@ -486,13 +484,13 @@ void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const*
 }
 
 void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
-                                bool in_shadow) noexcept {
+                                bool in_shadow) {
     props_[entity].set_visibility(in_camera, in_reflection, in_shadow);
 }
 
 void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light, uint64_t time,
                                   bool material_importance_sampling, bool volume,
-                                  thread::Pool& threads) noexcept {
+                                  thread::Pool& threads) {
     auto shape = prop_shape(entity);
 
     shape->prepare_sampling(part);
@@ -516,7 +514,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
         *shape, part, time, transformation, extent, material_importance_sampling, threads, *this);
 }
 
-animation::Animation* Scene::create_animation(uint32_t count) noexcept {
+animation::Animation* Scene::create_animation(uint32_t count) {
     animation::Animation* animation = new animation::Animation(count, num_interpolation_frames_);
 
     animations_.push_back(animation);
@@ -524,13 +522,13 @@ animation::Animation* Scene::create_animation(uint32_t count) noexcept {
     return animation;
 }
 
-void Scene::create_animation_stage(uint32_t entity, animation::Animation* animation) noexcept {
+void Scene::create_animation_stage(uint32_t entity, animation::Animation* animation) {
     animation_stages_.emplace_back(entity, animation);
 
     prop_allocate_frames(entity, true);
 }
 
-size_t Scene::num_bytes() const noexcept {
+size_t Scene::num_bytes() const {
     size_t num_bytes = 0;
 
     for (auto& p : props_) {
@@ -541,7 +539,7 @@ size_t Scene::num_bytes() const noexcept {
 }
 
 Scene::Transformation const& Scene::prop_animated_transformation_at(
-    uint32_t frames_id, uint64_t time, Transformation& transformation) const noexcept {
+    uint32_t frames_id, uint64_t time, Transformation& transformation) const {
     entity::Keyframe const* frames = &keyframes_[frames_id];
 
     uint64_t const i = (time - current_time_start_) / tick_duration_;
@@ -560,7 +558,7 @@ Scene::Transformation const& Scene::prop_animated_transformation_at(
     return transformation;
 }
 
-Scene::Prop_ptr Scene::allocate_prop() noexcept {
+Scene::Prop_ptr Scene::allocate_prop() {
     props_.emplace_back();
     prop_world_transformations_.emplace_back();
     prop_parts_.emplace_back();
@@ -575,14 +573,14 @@ Scene::Prop_ptr Scene::allocate_prop() noexcept {
     return {prop, prop_id};
 }
 
-void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) noexcept {
+void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) {
     lights_.emplace_back(type, entity, part);
 
     light_centers_.emplace_back(0.f);
 }
 
 bool Scene::prop_is_instance(Shape_ptr shape, Material_ptr const* materials,
-                             uint32_t num_parts) const noexcept {
+                             uint32_t num_parts) const {
     if (props_.size() < 2 || props_[props_.size() - 2].shape() != shape.id) {
         return false;
     }
@@ -601,7 +599,7 @@ bool Scene::prop_is_instance(Shape_ptr shape, Material_ptr const* materials,
     return true;
 }
 
-bool Scene::prop_has_caustic_material(uint32_t entity) const noexcept {
+bool Scene::prop_has_caustic_material(uint32_t entity) const {
     auto const shape = prop_shape(entity);
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
         if (prop_material(entity, i)->is_caustic()) {
@@ -612,7 +610,7 @@ bool Scene::prop_has_caustic_material(uint32_t entity) const noexcept {
     return false;
 }
 
-void Scene::add_named_prop(uint32_t prop, std::string const& name) noexcept {
+void Scene::add_named_prop(uint32_t prop, std::string const& name) {
     if (!prop || name.empty()) {
         return;
     }
@@ -624,11 +622,11 @@ void Scene::add_named_prop(uint32_t prop, std::string const& name) noexcept {
     named_props_.insert_or_assign(name, prop);
 }
 
-static inline bool matching(uint64_t a, uint64_t b) noexcept {
+static inline bool matching(uint64_t a, uint64_t b) {
     return 0 == (a > b ? a % b : (0 == a ? 0 : b % a));
 }
 
-uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept {
+uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const {
     uint32_t const a = std::max(uint32_t(frame_duration / tick_duration_), 1u);
     uint32_t const b = matching(frame_step, tick_duration_) ? 0 : 1;
     uint32_t const c = matching(frame_duration, tick_duration_) ? 0 : 1;

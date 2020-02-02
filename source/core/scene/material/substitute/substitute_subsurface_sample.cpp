@@ -8,15 +8,15 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_subsurface::evaluate_f(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_subsurface::evaluate_f(float3 const& wi, bool include_back) const {
     return evaluate<true>(wi, include_back);
 }
 
-bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi, bool include_back) const {
     return evaluate<false>(wi, include_back);
 }
 
-void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (1.f == base_.metallic_) {
         base_.pure_gloss_sample(wo_, layer_, sampler, result);
         result.wavelength = 0.f;
@@ -102,11 +102,11 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-bool Sample_subsurface::evaluates_back(bool previously, bool same_side) const noexcept {
+bool Sample_subsurface::evaluates_back(bool previously, bool same_side) const {
     return previously || same_side;
 }
 
-void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) noexcept {
+void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) {
     anisotropy_ = anisotropy;
 
     ior_.eta_t = ior;
@@ -114,7 +114,7 @@ void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_ou
 }
 
 template <bool Forward>
-bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) const {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }
@@ -174,7 +174,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
     return result;
 }
 
-void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = float3(1.f);
         result.wi         = -wo_;
@@ -197,8 +197,7 @@ void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result)
     result.type.set(bxdf::Type::Caustic);
 }
 
-bool Sample_subsurface_volumetric::evaluates_back(bool /*previously*/, bool /*same_side*/) const
-    noexcept {
+bool Sample_subsurface_volumetric::evaluates_back(bool /*previously*/, bool /*same_side*/) const {
     return false;
 }
 

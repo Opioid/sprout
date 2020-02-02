@@ -8,18 +8,18 @@ namespace rendering::sensor::filter {
 
 class Mitchell {
   public:
-    Mitchell(float radius, float b, float c) noexcept;
+    Mitchell(float radius, float b, float c);
 
     Mitchell(Mitchell&& other) noexcept;
 
-    float radius() const noexcept;
+    float radius() const;
 
-    float evaluate(float d) const noexcept;
+    float evaluate(float d) const;
 
-    float evaluate(float2 p) const noexcept;
+    float evaluate(float2 p) const;
 
   private:
-    float mitchell(float x) const noexcept;
+    float mitchell(float x) const;
 
     float radius_;
     float radius_inv_;

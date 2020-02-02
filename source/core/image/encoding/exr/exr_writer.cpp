@@ -13,21 +13,21 @@
 
 namespace image::encoding::exr {
 
-Writer::Writer(bool alpha) noexcept : alpha_(alpha) {}
+Writer::Writer(bool alpha) : alpha_(alpha) {}
 
-std::string Writer::file_extension() const noexcept {
+std::string Writer::file_extension() const {
     return "exr";
 }
 
-static void w(std::ostream& stream, int16_t i) noexcept;
-static void w(std::ostream& stream, uint32_t i) noexcept;
-static void w(std::ostream& stream, int32_t i) noexcept;
-static void w(std::ostream& stream, float f) noexcept;
-static void w(std::ostream& stream, int64_t i) noexcept;
-static void w(std::ostream& stream, std::string const& s) noexcept;
-static void w(std::ostream& stream, Channel const& c) noexcept;
+static void w(std::ostream& stream, int16_t i);
+static void w(std::ostream& stream, uint32_t i);
+static void w(std::ostream& stream, int32_t i);
+static void w(std::ostream& stream, float f);
+static void w(std::ostream& stream, int64_t i);
+static void w(std::ostream& stream, std::string const& s);
+static void w(std::ostream& stream, Channel const& c);
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
     stream.write(reinterpret_cast<const char*>(Signature), Signature_size);
 
     uint8_t version[4];
@@ -140,7 +140,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
 }
 
 static inline void write_scanline(std::ostream& stream, Float4 const& image, int32_t y,
-                                  uint32_t channel, bool half) noexcept {
+                                  uint32_t channel, bool half) {
     int32_t const width = image.description().dimensions_2()[0];
 
     if (half) {
@@ -156,7 +156,7 @@ static inline void write_scanline(std::ostream& stream, Float4 const& image, int
     }
 }
 
-bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noexcept {
+bool Writer::no_compression(std::ostream& stream, Float4 const& image) const {
     int2 const d = image.description().dimensions_2();
 
     int64_t const scanline_offset = stream.tellp() + int64_t(d[1] * 8);
@@ -192,7 +192,7 @@ bool Writer::no_compression(std::ostream& stream, Float4 const& image) const noe
     return true;
 }
 
-static void reorder(uint8_t* destination, uint8_t const* source, uint32_t len) noexcept {
+static void reorder(uint8_t* destination, uint8_t const* source, uint32_t len) {
     // Reorder the pixel data.
     {
         uint8_t* t1 = destination;
@@ -234,7 +234,7 @@ static void reorder(uint8_t* destination, uint8_t const* source, uint32_t len) n
 }
 
 static inline void block_half(uint8_t* destination, Float4 const& image, int32_t num_channels,
-                              int32_t num_rows, int32_t pixel) noexcept {
+                              int32_t num_rows, int32_t pixel) {
     int32_t const width = image.description().dimensions_2()[0];
 
     int16_t* halfs = reinterpret_cast<int16_t*>(destination);
@@ -261,7 +261,7 @@ static inline void block_half(uint8_t* destination, Float4 const& image, int32_t
 }
 
 static inline void block_float(uint8_t* destination, Float4 const& image, int32_t num_channels,
-                               int32_t num_rows, int32_t pixel) noexcept {
+                               int32_t num_rows, int32_t pixel) {
     int32_t const width = image.description().dimensions_2()[0];
 
     float* floats = reinterpret_cast<float*>(destination);
@@ -288,7 +288,7 @@ static inline void block_float(uint8_t* destination, Float4 const& image, int32_
 }
 
 bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
-                             thread::Pool& threads) const noexcept {
+                             thread::Pool& threads) const {
     int2 const d = image.description().dimensions_2();
 
     int32_t const rows_per_block = exr::num_scanlines_per_block(compression);
@@ -337,7 +337,7 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compress
                     block_buffer,    cb,         image};
 
     threads.run_range(
-        [&args](uint32_t id, int32_t begin, int32_t end) {
+        [&args](uint32_t id, int32_t begin, int32_t end) noexcept {
             mz_stream zip;
             zip.zalloc = nullptr;
             zip.zfree  = nullptr;
@@ -420,32 +420,32 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compress
     return true;
 }
 
-static void w(std::ostream& stream, int16_t i) noexcept {
+static void w(std::ostream& stream, int16_t i) {
     stream.write(reinterpret_cast<const char*>(&i), 2);
 }
 
-static void w(std::ostream& stream, uint32_t i) noexcept {
+static void w(std::ostream& stream, uint32_t i) {
     stream.write(reinterpret_cast<const char*>(&i), 4);
 }
 
-static void w(std::ostream& stream, int32_t i) noexcept {
+static void w(std::ostream& stream, int32_t i) {
     stream.write(reinterpret_cast<const char*>(&i), 4);
 }
 
-static void w(std::ostream& stream, float f) noexcept {
+static void w(std::ostream& stream, float f) {
     stream.write(reinterpret_cast<const char*>(&f), 4);
 }
 
-static void w(std::ostream& stream, int64_t i) noexcept {
+static void w(std::ostream& stream, int64_t i) {
     stream.write(reinterpret_cast<const char*>(&i), 8);
 }
 
-static void w(std::ostream& stream, std::string const& s) noexcept {
+static void w(std::ostream& stream, std::string const& s) {
     stream << s;
     stream.put(0x00);
 }
 
-static void w(std::ostream& stream, Channel const& c) noexcept {
+static void w(std::ostream& stream, Channel const& c) {
     w(stream, c.name);
 
     stream.write(reinterpret_cast<const char*>(&c.type), 4);

@@ -7,15 +7,15 @@
 
 namespace it::options {
 
-static bool handle_all(std::string const&, std::string const& parameter, Options& result) noexcept;
+static bool handle_all(std::string const&, std::string const& parameter, Options& result);
 
-static bool handle(std::string const&, std::string const& parameter, Options& result) noexcept;
+static bool handle(std::string const&, std::string const& parameter, Options& result);
 
-static bool is_parameter(std::string_view text) noexcept;
+static bool is_parameter(std::string_view text);
 
-static void help() noexcept;
+static void help();
 
-Options parse(int argc, char* argv[]) noexcept {
+Options parse(int argc, char* argv[]) {
     Options result;
 
     if (1 == argc) {
@@ -45,8 +45,7 @@ Options parse(int argc, char* argv[]) noexcept {
     return result;
 }
 
-bool handle_all(std::string const& command, std::string const& parameter,
-                Options& result) noexcept {
+bool handle_all(std::string const& command, std::string const& parameter, Options& result) {
     if (command[0] == '-') {
         return handle(command.substr(1), parameter, result);
     }
@@ -60,7 +59,7 @@ bool handle_all(std::string const& command, std::string const& parameter,
     return true;
 }
 
-bool handle(std::string const& command, std::string const& parameter, Options& result) noexcept {
+bool handle(std::string const& command, std::string const& parameter, Options& result) {
     if ("help" == command || "h" == command) {
         help();
     } else if ("average" == command || "a" == command) {
@@ -100,7 +99,7 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
     return true;
 }
 
-bool is_parameter(std::string_view text) noexcept {
+bool is_parameter(std::string_view text) {
     if (text.size() <= 1) {
         return true;
     }
@@ -120,7 +119,7 @@ bool is_parameter(std::string_view text) noexcept {
     return true;
 }
 
-void help() noexcept {
+void help() {
     static std::string const text =
         R"(it is an image tool
 Usage:

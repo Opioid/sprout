@@ -14,7 +14,7 @@
 
 namespace scene::material::ggx {
 
-float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) noexcept {
+float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
     if (alpha < Min_alpha) {
         return 1.f;
     }
@@ -44,7 +44,7 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) noexcept
     return accum / float(num_samples);
 }
 
-float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_samples) noexcept {
+float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_samples) {
     if (alpha < Min_alpha || ior_t <= 1.f) {
         return 1.f;
     }
@@ -118,7 +118,7 @@ float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_sa
     return accum / float(num_samples);
 }
 
-float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_samples) noexcept {
+float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_samples) {
     if (alpha < Min_alpha || ior_t <= 1.f) {
         return 1.f;
     }
@@ -198,7 +198,7 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
     return std::min(accum / float(num_samples), 1.f);
 }
 
-void make_f_ss_table(std::ostream& stream) noexcept {
+void make_f_ss_table(std::ostream& stream) {
     uint32_t constexpr Num_samples = 32;
 
     stream << "SU_GLOBALCONST(uint32_t) E_size = " << Num_samples << ";\n\n";
@@ -247,7 +247,7 @@ void make_f_ss_table(std::ostream& stream) noexcept {
     //    image::encoding::png::Writer::write("e.png", &E[0][0], int2(Num_samples), 1.f, false);
 }
 
-void make_f_s_ss_table(std::ostream& stream) noexcept {
+void make_f_s_ss_table(std::ostream& stream) {
     uint32_t constexpr Num_samples = 32;
 
     stream << "SU_GLOBALCONST(uint32_t) E_s_size = " << Num_samples << ";\n\n";
@@ -309,7 +309,7 @@ void make_f_s_ss_table(std::ostream& stream) noexcept {
     stream << "};" << std::endl;
 }
 
-void make_f_sd_ss_table(std::ostream& stream) noexcept {
+void make_f_sd_ss_table(std::ostream& stream) {
     uint32_t constexpr Num_samples = 32;
 
     stream << "static uint32_t constexpr E_sd_size = " << Num_samples << ";\n\n";
@@ -371,7 +371,7 @@ void make_f_sd_ss_table(std::ostream& stream) noexcept {
     stream << "};" << std::endl;
 }
 
-void integrate() noexcept {
+void integrate() {
     std::ofstream stream("../source/core/scene/material/ggx/ggx_integral.inl");
 
     stream << "#include <cstdint>\n\n";

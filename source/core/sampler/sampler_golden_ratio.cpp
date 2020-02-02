@@ -10,14 +10,14 @@
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio(rnd::Generator& rng) noexcept
+Golden_ratio::Golden_ratio(rnd::Generator& rng)
     : Sampler(rng), samples_2D_(nullptr), samples_1D_(nullptr) {}
 
-Golden_ratio::~Golden_ratio() noexcept {
+Golden_ratio::~Golden_ratio() {
     memory::free_aligned(samples_2D_);
 }
 
-float2 Golden_ratio::generate_sample_2D(uint32_t dimension) noexcept {
+float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
     SOFT_ASSERT(current_sample_2D_[dimension] < num_samples_);
 
     uint32_t const current = current_sample_2D_[dimension]++;
@@ -29,7 +29,7 @@ float2 Golden_ratio::generate_sample_2D(uint32_t dimension) noexcept {
     return samples_2D_[dimension * num_samples_ + current];
 }
 
-float Golden_ratio::generate_sample_1D(uint32_t dimension) noexcept {
+float Golden_ratio::generate_sample_1D(uint32_t dimension) {
     SOFT_ASSERT(current_sample_1D_[dimension] < num_samples_);
 
     uint32_t const current = current_sample_1D_[dimension]++;
@@ -41,7 +41,7 @@ float Golden_ratio::generate_sample_1D(uint32_t dimension) noexcept {
     return samples_1D_[dimension * num_samples_ + current];
 }
 
-void Golden_ratio::on_resize() noexcept {
+void Golden_ratio::on_resize() {
     memory::free_aligned(samples_2D_);
 
     float* buffer = memory::allocate_aligned<float>(num_samples_ * 2 * num_dimensions_2D_ +
@@ -51,9 +51,9 @@ void Golden_ratio::on_resize() noexcept {
     samples_1D_ = buffer + num_samples_ * 2 * num_dimensions_2D_;
 }
 
-void Golden_ratio::on_start_pixel() noexcept {}
+void Golden_ratio::on_start_pixel() {}
 
-void Golden_ratio::generate_2D(uint32_t dimension) noexcept {
+void Golden_ratio::generate_2D(uint32_t dimension) {
     float2 const r(rng_.random_float(), rng_.random_float());
 
     float2* begin = samples_2D_ + dimension * num_samples_;
@@ -63,7 +63,7 @@ void Golden_ratio::generate_2D(uint32_t dimension) noexcept {
     rnd::biased_shuffle(begin, num_samples_, rng_);
 }
 
-void Golden_ratio::generate_1D(uint32_t dimension) noexcept {
+void Golden_ratio::generate_1D(uint32_t dimension) {
     float const r = rng_.random_float();
 
     float* begin = samples_1D_ + dimension * num_samples_;

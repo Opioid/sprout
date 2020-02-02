@@ -7,17 +7,17 @@ namespace scene::material::glass {
 
 class alignas(64) Sample : public material::Sample {
   public:
-    float3 const& base_shading_normal() const noexcept final;
+    float3 const& base_shading_normal() const final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept override;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
 
-    void set(float3 const& refraction_color, float ior, float ior_outside) noexcept;
+    void set(float3 const& refraction_color, float ior, float ior_outside);
 
-    void sample(float ior, float p, bxdf::Sample& result) const noexcept;
+    void sample(float ior, float p, bxdf::Sample& result) const;
 
     Layer layer_;
 
@@ -26,11 +26,10 @@ class alignas(64) Sample : public material::Sample {
     float ior_;
     float ior_outside_;
 
-    static void reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                        bxdf::Sample& result) noexcept;
+    static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result);
 
     static void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                        float n_dot_t, float eta, bxdf::Sample& result) noexcept;
+                        float n_dot_t, float eta, bxdf::Sample& result);
 };
 
 }  // namespace scene::material::glass

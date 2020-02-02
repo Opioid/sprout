@@ -34,12 +34,12 @@ bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triang
                    std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
-Provider::Provider() noexcept = default;
+Provider::Provider() = default;
 
-Provider::~Provider() noexcept = default;
+Provider::~Provider() = default;
 
 Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
-                      Resources& resources, std::string& resolved_name) noexcept {
+                      Resources& resources, std::string& resolved_name) {
     auto stream_pointer = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream_pointer) {
         logging::error("Loading mesh %S: ", filename);
@@ -122,7 +122,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
         mesh->set_material_for_part(p, handler->parts()[p].material_index);
     }
 
-    resources.threads().run_async([mesh, handler_raw{handler.release()}, &resources]() {
+    resources.threads().run_async([mesh, handler_raw{handler.release()}, &resources]() noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
         auto& triangles = handler_raw->triangles();
@@ -155,7 +155,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
 }
 
 Shape* Provider::load(void const* data, std::string const& /*source_name*/,
-                      Variants const& /*options*/, Resources& resources) noexcept {
+                      Variants const& /*options*/, Resources& resources) {
     Description const& desc = *reinterpret_cast<Description const*>(data);
 
     if (!desc.positions || !desc.normals) {
@@ -177,7 +177,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
         mesh->set_material_for_part(0, 0);
     }
 
-    resources.threads().run_async([mesh, desc, &resources]() {
+    resources.threads().run_async([mesh, desc, &resources]() noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
         uint32_t const num_triangles = desc.num_triangles;
@@ -244,16 +244,16 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
     return mesh;
 }
 
-size_t Provider::num_bytes() const noexcept {
+size_t Provider::num_bytes() const {
     return sizeof(*this);
 }
 
-size_t Provider::num_bytes(Shape const* resource) const noexcept {
+size_t Provider::num_bytes(Shape const* resource) const {
     return resource->num_bytes();
 }
 
 Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
-                             thread::Pool& threads) noexcept {
+                             thread::Pool& threads) {
     if (triangles.empty() || vertices.empty() || !num_parts) {
         logging::error("No mesh data.");
         return nullptr;
@@ -268,7 +268,7 @@ Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t 
     }
 
     threads.run_async([mesh, triangles_in{std::move(triangles)}, vertices_in{std::move(vertices)},
-                       &threads]() {
+                       &threads]() noexcept {
         Vertex_stream_interleaved vertex_stream(uint32_t(vertices_in.size()), vertices_in.data());
 
         build_bvh(*mesh, uint32_t(triangles_in.size()), triangles_in.data(), vertex_stream,
@@ -281,7 +281,7 @@ Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t 
 }
 
 Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
-                                     Resources& resources) noexcept {
+                                     Resources& resources) {
     auto collection = new Morph_target_collection;
 
     Json_handler handler;
@@ -360,14 +360,14 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 }
 
 void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                         Vertex_stream const& vertices, thread::Pool& threads) noexcept {
+                         Vertex_stream const& vertices, thread::Pool& threads) {
     bvh::Builder_SAH builder(16, 64);
     builder.build(mesh.tree(), num_triangles, triangles, vertices, 4, threads);
 }
 
 template <typename Index>
 void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index const* const indices,
-                          Index_triangle* const triangles) noexcept {
+                          Index_triangle* const triangles) {
     int32_t previous_index(0);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
@@ -397,7 +397,7 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
 
 template <typename Index>
 void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* const indices,
-                    Index_triangle* const triangles) noexcept {
+                    Index_triangle* const triangles) {
     for (uint32_t i = 0; i < num_parts; ++i) {
         Part const& p = parts[i];
 
@@ -416,7 +416,7 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
     }
 }
 
-Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) noexcept {
+Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     stream.seekg(4);
 
     uint64_t json_size = 0;
@@ -597,7 +597,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) noexce
     }
 
     threads.run_async([mesh, num_parts, parts, num_indices, indices, vertex_stream, index_bytes,
-                       delta_indices, &threads]() {
+                       delta_indices, &threads]() noexcept {
         memory::Array<Index_triangle> triangles(num_indices / 3);
 
         if (4 == index_bytes) {

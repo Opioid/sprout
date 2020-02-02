@@ -8,20 +8,20 @@ namespace rendering::sensor::filter {
 
 class Gaussian {
   public:
-    Gaussian(float radius, float alpha) noexcept;
+    Gaussian(float radius, float alpha);
 
     Gaussian(Gaussian&& other) noexcept;
 
-    float radius() const noexcept;
+    float radius() const;
 
-    float evaluate(float d) const noexcept;
+    float evaluate(float d) const;
 
-    float evaluate(float2 p) const noexcept;
+    float evaluate(float2 p) const;
 
   private:
     //  float gaussian(float d) const;
 
-    float integral(uint32_t num_samples) const noexcept;
+    float integral(uint32_t num_samples) const;
 
     float radius_;
 

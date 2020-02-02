@@ -6,44 +6,44 @@
 
 namespace image {
 
-Description::Description() noexcept : dimensions_(0), num_elements_(0) {}
+Description::Description() : dimensions_(0), num_elements_(0) {}
 
-Description::Description(int2 dimensions, int32_t num_elements) noexcept
+Description::Description(int2 dimensions, int32_t num_elements)
     : dimensions_(dimensions, 1), num_elements_(num_elements) {}
 
-Description::Description(int3 const& dimensions, int32_t num_elements) noexcept
+Description::Description(int3 const& dimensions, int32_t num_elements)
     : dimensions_(dimensions), num_elements_(num_elements) {}
 
-uint64_t Description::num_pixels() const noexcept {
+uint64_t Description::num_pixels() const {
     return uint64_t(dimensions_[0]) * uint64_t(dimensions_[1]) * uint64_t(dimensions_[2]) *
            uint64_t(num_elements_);
 }
 
-int2 Description::dimensions_2() const noexcept {
+int2 Description::dimensions_2() const {
     return dimensions_.xy();
 }
 
-int3 const& Description::dimensions_3() const noexcept {
+int3 const& Description::dimensions_3() const {
     return dimensions_;
 }
 
-int32_t Description::area() const noexcept {
+int32_t Description::area() const {
     return dimensions_[0] * dimensions_[1];
 }
 
-int32_t Description::volume() const noexcept {
+int32_t Description::volume() const {
     return dimensions_[0] * dimensions_[1] * dimensions_[2];
 }
 
-int32_t Description::num_elements() const noexcept {
+int32_t Description::num_elements() const {
     return num_elements_;
 }
 
 template <typename T>
-Typed_image<T>::Typed_image() noexcept : data_(nullptr) {}
+Typed_image<T>::Typed_image() : data_(nullptr) {}
 
 template <typename T>
-Typed_image<T>::Typed_image(Description const& description) noexcept
+Typed_image<T>::Typed_image(Description const& description)
     : description_(description), data_(memory::allocate_aligned<T>(description.num_pixels())) {}
 
 template <typename T>
@@ -53,17 +53,17 @@ Typed_image<T>::Typed_image(Typed_image&& other) noexcept
 }
 
 template <typename T>
-Typed_image<T>::~Typed_image() noexcept {
+Typed_image<T>::~Typed_image() {
     memory::free_aligned(data_);
 }
 
 template <typename T>
-Description const& Typed_image<T>::description() const noexcept {
+Description const& Typed_image<T>::description() const {
     return description_;
 }
 
 template <typename T>
-int2 Typed_image<T>::coordinates_2(int32_t index) const noexcept {
+int2 Typed_image<T>::coordinates_2(int32_t index) const {
     int2 c;
     c[1] = index / description_.dimensions_[0];
     c[0] = index - c[1] * description_.dimensions_[0];
@@ -71,7 +71,7 @@ int2 Typed_image<T>::coordinates_2(int32_t index) const noexcept {
 }
 
 template <typename T>
-void Typed_image<T>::resize(Description const& description) noexcept {
+void Typed_image<T>::resize(Description const& description) {
     if (description.num_pixels() == description_.num_pixels()) {
         return;
     }
@@ -85,64 +85,64 @@ void Typed_image<T>::resize(Description const& description) noexcept {
 }
 
 template <typename T>
-void Typed_image<T>::clear(T v) noexcept {
+void Typed_image<T>::clear(T v) {
     for (int32_t i = 0, len = description_.volume(); i < len; ++i) {
         data_[i] = v;
     }
 }
 
 template <typename T>
-T Typed_image<T>::load(int32_t index) const noexcept {
+T Typed_image<T>::load(int32_t index) const {
     return data_[index];
 }
 
 template <typename T>
-T* Typed_image<T>::address(int32_t index) const noexcept {
+T* Typed_image<T>::address(int32_t index) const {
     return data_ + index;
 }
 
 template <typename T>
-void Typed_image<T>::store(int32_t index, T v) noexcept {
+void Typed_image<T>::store(int32_t index, T v) {
     data_[index] = v;
 }
 
 template <typename T>
-T const& Typed_image<T>::at(int32_t index) const noexcept {
+T const& Typed_image<T>::at(int32_t index) const {
     return data_[index];
 }
 
 template <typename T>
-T Typed_image<T>::load(int32_t x, int32_t y) const noexcept {
+T Typed_image<T>::load(int32_t x, int32_t y) const {
     int32_t const i = y * description_.dimensions_[0] + x;
     return data_[i];
 }
 
 template <typename T>
-void Typed_image<T>::store(int32_t x, int32_t y, T v) noexcept {
+void Typed_image<T>::store(int32_t x, int32_t y, T v) {
     int32_t const i = y * description_.dimensions_[0] + x;
     data_[i]        = v;
 }
 
 template <typename T>
-T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const noexcept {
+T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const {
     int32_t const i = (element * description_.dimensions_[1] + y) * description_.dimensions_[0] + x;
     return data_[i];
 }
 
 template <typename T>
-T const& Typed_image<T>::at(int32_t x, int32_t y) const noexcept {
+T const& Typed_image<T>::at(int32_t x, int32_t y) const {
     int32_t const i = y * description_.dimensions_[0] + x;
     return data_[i];
 }
 
 template <typename T>
-T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const noexcept {
+T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
     int32_t const i = (element * description_.dimensions_[1] + y) * description_.dimensions_[0] + x;
     return data_[i];
 }
 
 template <typename T>
-T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
+T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const {
     int64_t const i = (int64_t(z) * int64_t(description_.dimensions_[1]) + int64_t(y)) *
                           int64_t(description_.dimensions_[0]) +
                       int64_t(x);
@@ -150,7 +150,7 @@ T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
 }
 
 template <typename T>
-T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const noexcept {
+T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
     int64_t const i = (int64_t(z) * int64_t(description_.dimensions_[1]) + int64_t(y)) *
                           int64_t(description_.dimensions_[0]) +
                       int64_t(x);
@@ -158,15 +158,14 @@ T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const noexcept {
 }
 
 template <typename T>
-T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const
-    noexcept {
+T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const {
     int3 const    d = description_.dimensions_;
     int32_t const i = ((element * d[2] + z) * d[1] + y) * d[0] + x;
     return data_[i];
 }
 
 template <typename T>
-void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const noexcept {
+void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const {
     int32_t const width = description_.dimensions_[0];
 
     int32_t const y0 = width * xy_xy1[1];
@@ -181,7 +180,7 @@ void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const noexcept {
 }
 
 template <typename T>
-void Typed_image<T>::square_transpose() noexcept {
+void Typed_image<T>::square_transpose() {
     int32_t const n = description_.dimensions_[0];
     for (int32_t y = 0, height = n - 2; y < height; ++y) {
         for (int32_t x = y + 1, width = n - 1; x < width; ++x) {
@@ -193,27 +192,27 @@ void Typed_image<T>::square_transpose() noexcept {
 }
 
 template <typename T>
-T* Typed_image<T>::data() const noexcept {
+T* Typed_image<T>::data() const {
     return data_;
 }
 
 template <typename T>
-void Typed_image<T>::copy(Typed_image& destination) const noexcept {
+void Typed_image<T>::copy(Typed_image& destination) const {
     std::copy(&data_[0], &data_[description_.num_pixels() - 1], destination.data_);
 }
 
 template <typename T>
-size_t Typed_image<T>::num_bytes() const noexcept {
+size_t Typed_image<T>::num_bytes() const {
     return sizeof(*this) +
            size_t(description_.dimensions_[0]) * size_t(description_.dimensions_[1]) *
                size_t(description_.dimensions_[2]) * size_t(description_.num_elements_) * sizeof(T);
 }
 
 // template <typename T>
-// Typed_sparse_image<T>::Typed_sparse_image() noexcept = default;
+// Typed_sparse_image<T>::Typed_sparse_image()  = default;
 
 template <typename T>
-Typed_sparse_image<T>::Typed_sparse_image(Description const& description) noexcept
+Typed_sparse_image<T>::Typed_sparse_image(Description const& description)
     : description_(description) {
     int3 const d = description.dimensions_;
 
@@ -239,7 +238,7 @@ Typed_sparse_image<T>::Typed_sparse_image(Typed_sparse_image&& other) noexcept
 }
 
 template <typename T>
-Typed_sparse_image<T>::~Typed_sparse_image() noexcept {
+Typed_sparse_image<T>::~Typed_sparse_image() {
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
     for (int32_t i = 0; i < cell_len; ++i) {
@@ -250,12 +249,12 @@ Typed_sparse_image<T>::~Typed_sparse_image() noexcept {
 }
 
 template <typename T>
-Description const& Typed_sparse_image<T>::description() const noexcept {
+Description const& Typed_sparse_image<T>::description() const {
     return description_;
 }
 
 template <typename T>
-T Typed_sparse_image<T>::load(int64_t index) const noexcept {
+T Typed_sparse_image<T>::load(int64_t index) const {
     int3 const c  = coordinates_3(index);
     int3 const cc = c >> Log2_cell_dim;
 
@@ -277,7 +276,7 @@ T Typed_sparse_image<T>::load(int64_t index) const noexcept {
 }
 
 template <typename T>
-void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
+void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) {
     int3 const c  = coordinates_3(index);
     int3 const cc = c >> Log2_cell_dim;
 
@@ -322,7 +321,7 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) noexcept {
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at(int64_t index) const noexcept {
+T const& Typed_sparse_image<T>::at(int64_t index) const {
     int3 const c  = coordinates_3(index);
     int3 const cc = c >> Log2_cell_dim;
 
@@ -344,21 +343,20 @@ T const& Typed_sparse_image<T>::at(int64_t index) const noexcept {
 }
 
 template <typename T>
-T Typed_sparse_image<T>::load(int32_t /*x*/, int32_t /*y*/) const noexcept {
+T Typed_sparse_image<T>::load(int32_t /*x*/, int32_t /*y*/) const {
     //    int32_t const i = y * description_.dimensions[0] + x;
     //    return data_[i];
     return T(0);
 }
 
 template <typename T>
-void Typed_sparse_image<T>::store(int32_t /*x*/, int32_t /*y*/, T /*v*/) noexcept {
+void Typed_sparse_image<T>::store(int32_t /*x*/, int32_t /*y*/, T /*v*/) {
     //    int32_t const i = y * description_.dimensions[0] + x;
     //    data_[i]        = v;
 }
 
 template <typename T>
-T Typed_sparse_image<T>::load_element(int32_t /*x*/, int32_t /*y*/, int32_t /*element*/) const
-    noexcept {
+T Typed_sparse_image<T>::load_element(int32_t /*x*/, int32_t /*y*/, int32_t /*element*/) const {
     //    int32_t const i = (element * description_.dimensions[1] + y) * description_.dimensions[0]
     //    + x; return data_[i];
 
@@ -366,7 +364,7 @@ T Typed_sparse_image<T>::load_element(int32_t /*x*/, int32_t /*y*/, int32_t /*el
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const noexcept {
+T const& Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const {
     //    int32_t const i = y * description_.dimensions[0] + x;
     //    return data_[i];
 
@@ -374,8 +372,8 @@ T const& Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const noexcept 
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t /*element*/) const
-    noexcept {
+T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/,
+                                           int32_t /*element*/) const {
     //    int32_t const i = (element * description_.dimensions[1] + y) * description_.dimensions[0]
     //    + x; return data_[i];
 
@@ -383,7 +381,7 @@ T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t
 }
 
 template <typename T>
-T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
+T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const {
     int3 const c(x, y, z);
     int3 const cc = c >> Log2_cell_dim;
 
@@ -405,7 +403,7 @@ T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const noexcept {
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const noexcept {
+T const& Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const {
     int3 const c(x, y, z);
     int3 const cc = c >> Log2_cell_dim;
 
@@ -428,7 +426,7 @@ T const& Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const noexce
 
 template <typename T>
 T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t /*z*/,
-                                           int32_t /*element*/) const noexcept {
+                                           int32_t /*element*/) const {
     //    int3 const    d = description_.dimensions;
     //    int32_t const i = ((element * d[2] + z) * d[1] + y) * d[0] + x;
     //    return data_[i];
@@ -437,7 +435,7 @@ T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t
 }
 
 template <typename T>
-void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const noexcept {
+void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const {
     //    int32_t const width = description_.dimensions[0];
 
     //    int32_t const y0 = width * xy_xy1[1];
@@ -457,7 +455,7 @@ void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const noexcep
 }
 
 template <typename T>
-size_t Typed_sparse_image<T>::num_bytes() const noexcept {
+size_t Typed_sparse_image<T>::num_bytes() const {
     uint32_t const cell_len = uint32_t(num_cells_[0] * num_cells_[1] * num_cells_[2]);
 
     size_t num_bytes = cell_len * sizeof(Cell);
@@ -472,7 +470,7 @@ size_t Typed_sparse_image<T>::num_bytes() const noexcept {
 }
 
 template <typename T>
-int3 Typed_sparse_image<T>::coordinates_3(int64_t index) const noexcept {
+int3 Typed_sparse_image<T>::coordinates_3(int64_t index) const {
     int64_t const area = int64_t(description_.dimensions_[0]) *
                          int64_t(description_.dimensions_[1]);
 

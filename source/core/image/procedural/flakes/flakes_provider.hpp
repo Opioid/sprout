@@ -22,13 +22,13 @@ class Provider {
   public:
     using Variants = memory::Variant_map;
 
-    Image* create_normal_map(Variants const& options) noexcept;
+    Image* create_normal_map(Variants const& options);
 
-    Image* create_mask(Variants const& options) noexcept;
+    Image* create_mask(Variants const& options);
 
   private:
     struct Properties {
-        Properties(Variants const& options) noexcept;
+        Properties(Variants const& options);
 
         int2 dimensions;
 
@@ -43,7 +43,7 @@ class Provider {
     };
 
     static Flake random_flake(uint32_t index, uint32_t seed, Properties const& props,
-                              rnd::Generator& rng) noexcept;
+                              rnd::Generator& rng);
 };
 
 }  // namespace procedural::flakes

@@ -18,29 +18,27 @@ class Map {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Map() noexcept;
+    Map();
 
-    ~Map() noexcept;
+    ~Map();
 
-    void init(uint32_t num_workers, uint32_t num_photons, float search_radius,
-              float merge_radius) noexcept;
+    void init(uint32_t num_workers, uint32_t num_photons, float search_radius, float merge_radius);
 
-    void start() noexcept;
+    void start();
 
-    void insert(Photon const& photon, uint32_t index) noexcept;
+    void insert(Photon const& photon, uint32_t index);
 
-    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths,
-                               thread::Pool& threads) noexcept;
+    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& threads);
 
-    void compile_finalize() noexcept;
+    void compile_finalize();
 
     float3 li(Intersection const& intersection, Material_sample const& sample,
-              scene::Worker const& worker) const noexcept;
+              scene::Worker const& worker) const;
 
-    bool caustics_only() const noexcept;
+    bool caustics_only() const;
 
   private:
-    AABB calculate_aabb(uint32_t num_photons, thread::Pool& threads) const noexcept;
+    AABB calculate_aabb(uint32_t num_photons, thread::Pool& threads) const;
 
     uint64_t num_paths_;
 

@@ -21,68 +21,66 @@ struct Reference;
 template <typename SV>
 class Indexed_data {
   public:
-    Indexed_data() noexcept;
+    Indexed_data();
 
-    ~Indexed_data() noexcept;
+    ~Indexed_data();
 
-    uint32_t num_triangles() const noexcept;
+    uint32_t num_triangles() const;
 
-    bool intersect(uint32_t index, ray& ray, float2& uv) const noexcept;
+    bool intersect(uint32_t index, ray& ray, float2& uv) const;
 
-    bool intersect_p(uint32_t index, ray const& ray) const noexcept;
-
-    bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                   scalar& max_t, uint32_t index, scalar& u, scalar& v) const noexcept;
+    bool intersect_p(uint32_t index, ray const& ray) const;
 
     bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                   scalar& max_t, uint32_t index) const noexcept;
+                   scalar& max_t, uint32_t index, scalar& u, scalar& v) const;
+
+    bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
+                   scalar& max_t, uint32_t index) const;
 
     bool intersect_p(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                     scalar const& max_t, uint32_t index) const noexcept;
+                     scalar const& max_t, uint32_t index) const;
 
-    float3 interpolate_p(float2 uv, uint32_t index) const noexcept;
+    float3 interpolate_p(float2 uv, uint32_t index) const;
 
-    Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
+    Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
-    void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const
-        noexcept;
+    void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
 
     void interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n, Simd3f& t,
-                          float2& tc) const noexcept;
+                          float2& tc) const;
 
-    Simd3f interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const
-        noexcept;
+    Simd3f interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
-    float2 interpolate_uv(uint32_t index, float2 uv) const noexcept;
+    float2 interpolate_uv(uint32_t index, float2 uv) const;
 
-    float2 interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
+    float2 interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
-    float bitangent_sign(uint32_t index) const noexcept;
+    float bitangent_sign(uint32_t index) const;
 
-    uint32_t material_index(uint32_t index) const noexcept;
+    uint32_t material_index(uint32_t index) const;
 
-    float3 normal(uint32_t index) const noexcept;
+    float3 normal(uint32_t index) const;
 
-    Simd3f normal_v(uint32_t index) const noexcept;
+    Simd3f normal_v(uint32_t index) const;
 
-    float area(uint32_t index) const noexcept;
+    float area(uint32_t index) const;
 
-    float area(uint32_t index, float3 const& scale) const noexcept;
+    float area(uint32_t index, float3 const& scale) const;
 
-    float3 center(uint32_t index) const noexcept;
+    float3 center(uint32_t index) const;
 
-    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
+    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
-    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) noexcept;
+    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices);
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertex_stream const& vertices, uint32_t current_triangle) noexcept;
+                      Vertex_stream const& vertices, uint32_t current_triangle);
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
     struct alignas(16) Index_triangle {
         Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint8_t bitangent_sign,
-                       uint32_t material_index) noexcept;
+                       uint32_t material_index);
 
         uint32_t a, b, c;
         uint32_t bts : 1;

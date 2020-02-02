@@ -6,42 +6,42 @@
 
 namespace rendering::sensor {
 
-Opaque::Opaque(float exposure) noexcept : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
+Opaque::Opaque(float exposure) : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
 
-Opaque::~Opaque() noexcept {
+Opaque::~Opaque() {
     memory::free_aligned(layers_);
 }
 
-void Opaque::set_layer(int32_t layer) noexcept {
+void Opaque::set_layer(int32_t layer) {
     pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
 }
 
-void Opaque::clear(float weight) noexcept {
+void Opaque::clear(float weight) {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1] * num_layers_; i < len; ++i) {
         pixels_[i] = float4(0.f, 0.f, 0.f, weight);
     }
 }
 
-void Opaque::set_weights(float weight) noexcept {
+void Opaque::set_weights(float weight) {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
         pixels_[i][3] = weight;
     }
 }
 
-bool Opaque::has_alpha_transparency() const noexcept {
+bool Opaque::has_alpha_transparency() const {
     return false;
 }
 
-void Opaque::add_pixel(int2 pixel, float4 const& color, float weight) noexcept {
+void Opaque::add_pixel(int2 pixel, float4 const& color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
     value += float4(weight * color.xyz(), weight);
 }
 
-void Opaque::add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept {
+void Opaque::add_pixel_atomic(int2 pixel, float4 const& color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -51,7 +51,7 @@ void Opaque::add_pixel_atomic(int2 pixel, float4 const& color, float weight) noe
     atomic::add_assign(value[3], weight);
 }
 
-void Opaque::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept {
+void Opaque::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -60,7 +60,7 @@ void Opaque::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) n
     atomic::add_assign(value[2], weight * color[2]);
 }
 
-void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept {
+void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
     float const exposure_factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -72,7 +72,7 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const no
     }
 }
 
-void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const noexcept {
+void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const {
     float const exposure_factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -86,7 +86,7 @@ void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& targe
     }
 }
 
-void Opaque::on_resize(int2 dimensions, int32_t num_layers) noexcept {
+void Opaque::on_resize(int2 dimensions, int32_t num_layers) {
     int32_t const current_len = dimensions_[0] * dimensions_[1] * num_layers_;
 
     int32_t const len = dimensions[0] * dimensions[1] * num_layers;

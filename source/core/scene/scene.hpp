@@ -90,86 +90,82 @@ class Scene {
 
     Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
           std::vector<Material*> const& material_resources,
-          std::vector<Texture*> const&  texture_resources) noexcept;
+          std::vector<Texture*> const&  texture_resources);
 
-    ~Scene() noexcept;
+    ~Scene();
 
-    void clear() noexcept;
+    void clear();
 
-    void finish() noexcept;
+    void finish();
 
-    AABB const& aabb() const noexcept;
+    AABB const& aabb() const;
 
-    AABB caustic_aabb() const noexcept;
+    AABB caustic_aabb() const;
 
-    bool is_infinite() const noexcept;
+    bool is_infinite() const;
 
-    bool has_volumes() const noexcept;
+    bool has_volumes() const;
 
-    bool intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const noexcept;
-    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const noexcept;
+    bool intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const;
 
-    bool intersect_volume(Ray& ray, Worker const& worker, prop::Intersection& intersection) const
-        noexcept;
+    bool intersect_volume(Ray& ray, Worker const& worker, prop::Intersection& intersection) const;
 
-    bool intersect_p(Ray const& ray, Worker const& worker) const noexcept;
+    bool intersect_p(Ray const& ray, Worker const& worker) const;
 
-    bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const noexcept;
+    bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const;
 
-    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
-        noexcept;
+    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const;
 
-    uint32_t num_props() const noexcept;
+    uint32_t num_props() const;
 
-    Prop const* prop(uint32_t index) const noexcept;
-    Prop*       prop(uint32_t index) noexcept;
-    Prop*       prop(std::string_view name) noexcept;
+    Prop const* prop(uint32_t index) const;
+    Prop*       prop(uint32_t index);
+    Prop*       prop(std::string_view name);
 
-    uint32_t num_lights() const noexcept;
+    uint32_t num_lights() const;
 
-    light::Light const& light(uint32_t id) const noexcept;
+    light::Light const& light(uint32_t id) const;
 
-    Light light(uint32_t id, bool calculate_pdf) const noexcept;
+    Light light(uint32_t id, bool calculate_pdf) const;
 
     Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
-                bool calculate_pdf) const noexcept;
+                bool calculate_pdf) const;
 
-    Light random_light(float random) const noexcept;
+    Light random_light(float random) const;
 
-    Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const
-        noexcept;
+    Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
 
-    void simulate(uint64_t start, uint64_t end, thread::Pool& threads) noexcept;
+    void simulate(uint64_t start, uint64_t end, thread::Pool& threads);
 
-    void compile(uint64_t time, thread::Pool& threads) noexcept;
+    void compile(uint64_t time, thread::Pool& threads);
 
-    uint32_t num_interpolation_frames() const noexcept;
+    uint32_t num_interpolation_frames() const;
 
-    void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) noexcept;
+    void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration);
 
-    uint32_t create_entity() noexcept;
-    uint32_t create_entity(std::string const& name) noexcept;
+    uint32_t create_entity();
+    uint32_t create_entity(std::string const& name);
 
-    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials) noexcept;
-    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials,
-                         std::string const& name) noexcept;
+    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials);
+    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials, std::string const& name);
 
-    void create_prop_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_light(uint32_t prop, uint32_t part);
 
-    void create_prop_image_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_image_light(uint32_t prop, uint32_t part);
 
-    void create_prop_volume_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_volume_light(uint32_t prop, uint32_t part);
 
-    void create_prop_volume_image_light(uint32_t prop, uint32_t part) noexcept;
+    void create_prop_volume_image_light(uint32_t prop, uint32_t part);
 
-    uint32_t create_extension(Extension* extension) noexcept;
-    uint32_t create_extension(Extension* extension, std::string const& name) noexcept;
+    uint32_t create_extension(Extension* extension);
+    uint32_t create_extension(Extension* extension, std::string const& name);
 
-    void prop_serialize_child(uint32_t parent_id, uint32_t child_id) noexcept;
+    void prop_serialize_child(uint32_t parent_id, uint32_t child_id);
 
-    void prop_set_transformation(uint32_t entity, math::Transformation const& t) noexcept;
+    void prop_set_transformation(uint32_t entity, math::Transformation const& t);
 
-    void prop_set_world_transformation(uint32_t entity, math::Transformation const& t) noexcept;
+    void prop_set_world_transformation(uint32_t entity, math::Transformation const& t);
 
     // Only the returned reference is guaranteed to contain the actual transformation data.
     // This might or might not be the same reference which is passed as a parameter,
@@ -177,79 +173,75 @@ class Scene {
     // This can sometimes avoid a relatively costly copy,
     // while keeping the animated state out of the interface.
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time,
-                                                 Transformation& transformation) const noexcept;
+                                                 Transformation& transformation) const;
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time, bool is_static,
-                                                 Transformation& transformation) const noexcept;
+                                                 Transformation& transformation) const;
 
-    Transformation const& prop_world_transformation(uint32_t entity) const noexcept;
+    Transformation const& prop_world_transformation(uint32_t entity) const;
 
-    math::Transformation const& prop_local_frame_0(uint32_t entity) const noexcept;
+    math::Transformation const& prop_local_frame_0(uint32_t entity) const;
 
-    void prop_allocate_frames(uint32_t entity, bool local_animation) noexcept;
+    void prop_allocate_frames(uint32_t entity, bool local_animation);
 
-    bool prop_has_animated_frames(uint32_t entity) const noexcept;
+    bool prop_has_animated_frames(uint32_t entity) const;
 
-    void prop_set_frames(uint32_t entity, animation::Keyframe const* frames) noexcept;
+    void prop_set_frames(uint32_t entity, animation::Keyframe const* frames);
 
-    void prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k) noexcept;
+    void prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k);
 
-    void prop_calculate_world_transformation(uint32_t entity) noexcept;
+    void prop_calculate_world_transformation(uint32_t entity);
 
-    void prop_propagate_transformation(uint32_t entity) noexcept;
+    void prop_propagate_transformation(uint32_t entity);
 
-    void prop_inherit_transformation(uint32_t              entity,
-                                     const Transformation& transformation) noexcept;
+    void prop_inherit_transformation(uint32_t entity, const Transformation& transformation);
 
-    void prop_inherit_transformation(uint32_t entity, Keyframe const* frames) noexcept;
+    void prop_inherit_transformation(uint32_t entity, Keyframe const* frames);
 
-    void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
-                             bool in_shadow) noexcept;
+    void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection, bool in_shadow);
 
     void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
                                bool material_importance_sampling, bool volume,
-                               thread::Pool& threads) noexcept;
+                               thread::Pool& threads);
 
-    AABB const& prop_aabb(uint32_t entity) const noexcept;
+    AABB const& prop_aabb(uint32_t entity) const;
 
-    bool prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const noexcept;
+    bool prop_aabb_intersect_p(uint32_t entity, Ray const& ray) const;
 
-    Shape* prop_shape(uint32_t entity) const noexcept;
+    Shape* prop_shape(uint32_t entity) const;
 
-    material::Material const* prop_material(uint32_t entity, uint32_t part) const noexcept;
+    material::Material const* prop_material(uint32_t entity, uint32_t part) const;
 
-    prop::Prop_topology const& prop_topology(uint32_t entity) const noexcept;
+    prop::Prop_topology const& prop_topology(uint32_t entity) const;
 
-    Texture const* texture(uint32_t id) const noexcept;
+    Texture const* texture(uint32_t id) const;
 
-    uint32_t prop_light_id(uint32_t entity, uint32_t part) const noexcept;
+    uint32_t prop_light_id(uint32_t entity, uint32_t part) const;
 
-    float light_area(uint32_t entity, uint32_t part) const noexcept;
+    float light_area(uint32_t entity, uint32_t part) const;
 
-    float3 light_center(uint32_t light) const noexcept;
+    float3 light_center(uint32_t light) const;
 
-    animation::Animation* create_animation(uint32_t count) noexcept;
+    animation::Animation* create_animation(uint32_t count);
 
-    void create_animation_stage(uint32_t entity, animation::Animation* animation) noexcept;
+    void create_animation_stage(uint32_t entity, animation::Animation* animation);
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
-                                                          Transformation& transformation) const
-        noexcept;
+                                                          Transformation& transformation) const;
 
-    Prop_ptr allocate_prop() noexcept;
+    Prop_ptr allocate_prop();
 
-    void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) noexcept;
+    void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part);
 
-    bool prop_is_instance(Shape_ptr shape, Material_ptr const* materials, uint32_t num_parts) const
-        noexcept;
+    bool prop_is_instance(Shape_ptr shape, Material_ptr const* materials, uint32_t num_parts) const;
 
-    bool prop_has_caustic_material(uint32_t entity) const noexcept;
+    bool prop_has_caustic_material(uint32_t entity) const;
 
-    void add_named_prop(uint32_t prop, std::string const& name) noexcept;
+    void add_named_prop(uint32_t prop, std::string const& name);
 
-    uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const noexcept;
+    uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
 
     uint64_t const tick_duration_ = Units_per_second / 60;
 

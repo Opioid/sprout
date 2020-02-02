@@ -9,82 +9,78 @@
 
 namespace image::texture {
 
-inline Adapter::Adapter() noexcept : texture_(0xFFFFFFFF) {}
+inline Adapter::Adapter() : texture_(0xFFFFFFFF) {}
 
-inline Adapter::Adapter(uint32_t texture) noexcept : texture_(texture), scale_(1.f) {}
+inline Adapter::Adapter(uint32_t texture) : texture_(texture), scale_(1.f) {}
 
-inline Adapter::Adapter(uint32_t texture, float scale) noexcept
-    : texture_(texture), scale_(scale) {}
+inline Adapter::Adapter(uint32_t texture, float scale) : texture_(texture), scale_(scale) {}
 
 inline Adapter::~Adapter() {}
 
-inline bool Adapter::operator==(Adapter const& other) const noexcept {
+inline bool Adapter::operator==(Adapter const& other) const {
     return texture_ == other.texture_ && scale_ == other.scale_;
 }
 
-inline bool Adapter::is_valid() const noexcept {
+inline bool Adapter::is_valid() const {
     return texture_ != 0xFFFFFFFF;
 }
 
-inline Texture const& Adapter::texture(Scene const& scene) const noexcept {
+inline Texture const& Adapter::texture(Scene const& scene) const {
     return *scene.texture(texture_);
 }
 
-inline float Adapter::sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const
-    noexcept {
+inline float Adapter::sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const {
     return sampler.sample_1(*worker.texture(texture_), scale_ * uv);
 }
 
-inline float2 Adapter::sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const
-    noexcept {
+inline float2 Adapter::sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const {
     return sampler.sample_2(*worker.texture(texture_), scale_ * uv);
 }
 
-inline float3 Adapter::sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const
-    noexcept {
+inline float3 Adapter::sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const {
     return sampler.sample_3(*worker.texture(texture_), scale_ * uv);
 }
 
 inline float Adapter::sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                               int32_t element) const noexcept {
+                               int32_t element) const {
     return sampler.sample_1(*worker.texture(texture_), scale_ * uv, element);
 }
 
 inline float2 Adapter::sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                                int32_t element) const noexcept {
+                                int32_t element) const {
     return sampler.sample_2(*worker.texture(texture_), scale_ * uv, element);
 }
 
 inline float3 Adapter::sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                                int32_t element) const noexcept {
+                                int32_t element) const {
     return sampler.sample_3(*worker.texture(texture_), scale_ * uv, element);
 }
 
-inline float2 Adapter::address(Sampler_2D const& sampler, float2 uv) const noexcept {
+inline float2 Adapter::address(Sampler_2D const& sampler, float2 uv) const {
     return sampler.address(scale_ * uv);
 }
 
 inline float Adapter::sample_1(Worker const& worker, Sampler_3D const& sampler,
-                               float3 const& uvw) const noexcept {
+                               float3 const& uvw) const {
     return sampler.sample_1(*worker.texture(texture_), uvw);
 }
 
 inline float2 Adapter::sample_2(Worker const& worker, Sampler_3D const& sampler,
-                                float3 const& uvw) const noexcept {
+                                float3 const& uvw) const {
     return sampler.sample_2(*worker.texture(texture_), uvw);
 }
 
 inline float3 Adapter::sample_3(Worker const& worker, Sampler_3D const& sampler,
-                                float3 const& uvw) const noexcept {
+                                float3 const& uvw) const {
     return sampler.sample_3(*worker.texture(texture_), uvw);
 }
 
 inline float4 Adapter::sample_4(Worker const& worker, Sampler_3D const& sampler,
-                                float3 const& uvw) const noexcept {
+                                float3 const& uvw) const {
     return sampler.sample_4(*worker.texture(texture_), uvw);
 }
 
-inline float3 Adapter::address(Sampler_3D const& sampler, float3 const& uvw) const noexcept {
+inline float3 Adapter::address(Sampler_3D const& sampler, float3 const& uvw) const {
     return sampler.address(uvw);
 }
 

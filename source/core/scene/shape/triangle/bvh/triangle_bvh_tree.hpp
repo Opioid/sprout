@@ -43,95 +43,92 @@ namespace bvh {
 template <typename Data>
 class Tree {
   public:
-    Tree() noexcept;
+    Tree();
 
-    ~Tree() noexcept;
+    ~Tree();
 
     using Node      = scene::bvh::Node;
     using Filter    = material::Sampler_settings::Filter;
     using Material  = material::Material;
     using Materials = Material const* const*;
 
-    Node* allocate_nodes(uint32_t num_nodes) noexcept;
+    Node* allocate_nodes(uint32_t num_nodes);
 
-    AABB aabb() const noexcept;
+    AABB aabb() const;
 
-    uint32_t num_parts() const noexcept;
+    uint32_t num_parts() const;
 
-    uint32_t num_triangles() const noexcept;
-    uint32_t num_triangles(uint32_t part) const noexcept;
+    uint32_t num_triangles() const;
+    uint32_t num_triangles(uint32_t part) const;
 
-    bool intersect(ray& ray, Node_stack& node_stack, Intersectioni& intersection) const noexcept;
+    bool intersect(ray& ray, Node_stack& node_stack, Intersectioni& intersection) const;
 
-    bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const noexcept;
+    bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
-    bool intersect(ray& ray, Node_stack& node_stack) const noexcept;
-
-    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                   Simd3f const& ray_inv_direction, scalar const& ray_min_t, scalar& ray_max_t,
-                   uint32_t ray_signs[4], Node_stack& node_stack, Intersection& intersection) const
-        noexcept;
+    bool intersect(ray& ray, Node_stack& node_stack) const;
 
     bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
                    Simd3f const& ray_inv_direction, scalar const& ray_min_t, scalar& ray_max_t,
-                   uint32_t ray_signs[4], Node_stack& node_stack) const noexcept;
+                   uint32_t ray_signs[4], Node_stack& node_stack, Intersection& intersection) const;
 
-    bool intersect_p(ray const& ray, Node_stack& node_stack) const noexcept;
+    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
+                   Simd3f const& ray_inv_direction, scalar const& ray_min_t, scalar& ray_max_t,
+                   uint32_t ray_signs[4], Node_stack& node_stack) const;
+
+    bool intersect_p(ray const& ray, Node_stack& node_stack) const;
 
     bool intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
                      Simd3f const& ray_inv_direction, scalar const& ray_min_t,
-                     scalar const& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack) const
-        noexcept;
+                     scalar const& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack) const;
 
     float opacity(ray& ray, uint64_t time, uint32_t entity, Filter filter,
-                  Worker const& worker) const noexcept;
+                  Worker const& worker) const;
 
     bool absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker const& worker,
-                    float3& ta) const noexcept;
+                    float3& ta) const;
 
-    float3 interpolate_p(float2 uv, uint32_t index) const noexcept;
+    float3 interpolate_p(float2 uv, uint32_t index) const;
 
-    Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
+    Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
     void interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
-                                   float2& tc) const noexcept;
+                                   float2& tc) const;
 
     void interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n,
-                                   Simd3f& t, float2& tc) const noexcept;
+                                   Simd3f& t, float2& tc) const;
 
-    Simd3f interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const
-        noexcept;
+    Simd3f interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
-    float2 interpolate_triangle_uv(uint32_t index, float2 uv) const noexcept;
+    float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;
 
-    float2 interpolate_triangle_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const noexcept;
+    float2 interpolate_triangle_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
-    float triangle_bitangent_sign(uint32_t index) const noexcept;
+    float triangle_bitangent_sign(uint32_t index) const;
 
-    uint32_t triangle_material_index(uint32_t index) const noexcept;
+    uint32_t triangle_material_index(uint32_t index) const;
 
-    float3 triangle_normal(uint32_t index) const noexcept;
+    float3 triangle_normal(uint32_t index) const;
 
-    Simd3f triangle_normal_v(uint32_t index) const noexcept;
+    Simd3f triangle_normal_v(uint32_t index) const;
 
-    float triangle_area(uint32_t index) const noexcept;
+    float triangle_area(uint32_t index) const;
 
-    float triangle_area(uint32_t index, float3 const& scale) const noexcept;
+    float triangle_area(uint32_t index, float3 const& scale) const;
 
-    float3 triangle_center(uint32_t index) const noexcept;
+    float3 triangle_center(uint32_t index) const;
 
-    //    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const noexcept;
-    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const noexcept;
-    //    void sample(uint32_t index, float2 r2, float3& p) const noexcept;
+    //    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const ;
+    void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
+    //    void sample(uint32_t index, float2 r2, float3& p) const ;
 
-    void allocate_parts(uint32_t num_parts) noexcept;
+    void allocate_parts(uint32_t num_parts);
 
-    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) noexcept;
+    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices);
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertex_stream const& vertices, uint32_t current_triangle) noexcept;
+                      Vertex_stream const& vertices, uint32_t current_triangle);
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     uint32_t num_nodes_;

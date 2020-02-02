@@ -10,15 +10,15 @@ class Scene;
 
 class Extension {
   public:
-    virtual ~Extension() noexcept = default;
+    virtual ~Extension() = default;
 
-    void init(uint32_t prop) noexcept {
+    void init(uint32_t prop) {
         prop_ = prop;
     }
 
-    virtual void set_parameters(json::Value const& parameters, Scene& scene) noexcept = 0;
+    virtual void set_parameters(json::Value const& parameters, Scene& scene) = 0;
 
-    virtual void update(Scene& scene) noexcept = 0;
+    virtual void update(Scene& scene) = 0;
 
   protected:
     uint32_t prop_ = 0xFFFFFFFF;

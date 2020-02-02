@@ -9,11 +9,11 @@ namespace scene::material::debug {
 static float3 constexpr color_front(0.4f, 0.9f, 0.1f);
 static float3 constexpr color_back(0.9f, 0.1f, 0.4f);
 
-float3 const& Sample::base_shading_normal() const noexcept {
+float3 const& Sample::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
     float3 const n = cross(layer_.t_, layer_.b_);
 
     bool const same_side = dot(n, layer_.n_) > 0.f;
@@ -29,7 +29,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
     return {n_dot_wi * lambert, pdf};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
     float3 const n = cross(layer_.t_, layer_.b_);
 
     bool const same_side = dot(n, layer_.n_) > 0.f;
@@ -45,7 +45,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
     return {lambert, pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float3 const n = cross(layer_.t_, layer_.b_);
 
     bool const same_side = dot(n, layer_.n_) > 0.f;

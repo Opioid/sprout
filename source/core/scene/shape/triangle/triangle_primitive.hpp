@@ -6,9 +6,9 @@
 namespace scene::shape::triangle {
 
 struct Index_triangle {
-    Index_triangle() noexcept = default;
+    Index_triangle() = default;
 
-    Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t p) noexcept : i{a, b, c}, part(p) {}
+    Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t p) : i{a, b, c}, part(p) {}
 
     uint32_t i[3];
 

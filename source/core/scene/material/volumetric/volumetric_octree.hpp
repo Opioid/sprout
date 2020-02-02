@@ -23,29 +23,29 @@ struct Box {
 };
 
 struct Node {
-    bool is_parent() const noexcept {
+    bool is_parent() const {
         return 0 != has_children;
     }
 
-    bool is_empty() const noexcept {
+    bool is_empty() const {
         return 0x7FFFFFFF == children_or_data;
     }
 
-    uint32_t index() const noexcept {
+    uint32_t index() const {
         return children_or_data;
     }
 
-    void set_children(uint32_t index) noexcept {
+    void set_children(uint32_t index) {
         has_children     = 1;
         children_or_data = index;
     }
 
-    void set_data(uint32_t index) noexcept {
+    void set_data(uint32_t index) {
         has_children     = 0;
         children_or_data = index;
     }
 
-    void set_empty() noexcept {
+    void set_empty() {
         has_children     = 0;
         children_or_data = 0x7FFFFFFF;
     }
@@ -56,21 +56,21 @@ struct Node {
 
 class alignas(64) Gridtree {
   public:
-    Gridtree() noexcept;
+    Gridtree();
 
-    ~Gridtree() noexcept;
+    ~Gridtree();
 
-    Node* allocate_nodes(uint32_t num_nodes) noexcept;
+    Node* allocate_nodes(uint32_t num_nodes);
 
-    CM* allocate_data(uint32_t num_data) noexcept;
+    CM* allocate_data(uint32_t num_data);
 
-    void set_dimensions(int3 const& dimensions, int3 const& num_cells) noexcept;
+    void set_dimensions(int3 const& dimensions, int3 const& num_cells);
 
-    bool is_valid() const noexcept;
+    bool is_valid() const;
 
-    bool intersect(ray& ray, CM& data) const noexcept;
+    bool intersect(ray& ray, CM& data) const;
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
     static int32_t constexpr Log2_cell_dim = 5;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;

@@ -7,13 +7,13 @@
 
 namespace scene::material::debug {
 
-Material::Material(Sampler_settings const& sampler_settings) noexcept
+Material::Material(Sampler_settings const& sampler_settings)
     : material::Material(sampler_settings, true) {}
 
 material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
                                          Renderstate const& rs, Filter /*filter*/,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker) const
-    noexcept {
+                                         sampler::Sampler& /*sampler*/,
+                                         Worker const& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -23,11 +23,11 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-float Material::ior() const noexcept {
+float Material::ior() const {
     return 1.47f;
 }
 
-size_t Material::num_bytes() const noexcept {
+size_t Material::num_bytes() const {
     return sizeof(*this);
 }
 

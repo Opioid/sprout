@@ -14,7 +14,7 @@
 
 namespace scene::camera {
 
-Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) noexcept
+Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution)
     : Stereoscopic(int2(resolution[0], resolution[0])) {
     float const f = float(resolution[0]);
 
@@ -60,24 +60,24 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) noexcept
     set_interpupillary_distance_falloff(0.36f);
 }
 
-uint32_t Cubic_stereoscopic::num_views() const noexcept {
+uint32_t Cubic_stereoscopic::num_views() const {
     return 12;
 }
 
-int2 Cubic_stereoscopic::sensor_dimensions() const noexcept {
+int2 Cubic_stereoscopic::sensor_dimensions() const {
     return sensor_dimensions_;
 }
 
-int4 Cubic_stereoscopic::view_bounds(uint32_t view) const noexcept {
+int4 Cubic_stereoscopic::view_bounds(uint32_t view) const {
     return view_bounds_[view];
 }
 
-float Cubic_stereoscopic::pixel_solid_angle() const noexcept {
+float Cubic_stereoscopic::pixel_solid_angle() const {
     return 1.f;
 }
 
 bool Cubic_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, uint32_t view,
-                                      Scene const& scene, Ray& ray) const noexcept {
+                                      Scene const& scene, Ray& ray) const {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -110,17 +110,17 @@ bool Cubic_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, uint
 
 bool Cubic_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& /*p*/,
                                 Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                                Scene const& /*scene*/, Sample_to& /*sample*/) const noexcept {
+                                Scene const& /*scene*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) noexcept {
+void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) {
     ipd_falloff_ = std::sqrt(ipd_falloff);
 }
 
-void Cubic_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
+void Cubic_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {}
 
-void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) noexcept {
+void Cubic_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
     if ("stereo" == name) {
         for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
             std::string const  node_name  = n->name.GetString();

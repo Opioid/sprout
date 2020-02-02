@@ -20,20 +20,18 @@
 
 namespace rendering::integrator::volume {
 
-Tracking_multi_pre::Tracking_multi_pre(rnd::Generator& rng) noexcept : Integrator(rng) {}
+Tracking_multi_pre::Tracking_multi_pre(rnd::Generator& rng) : Integrator(rng) {}
 
-void Tracking_multi_pre::prepare(Scene const& /*scene*/,
-                                 uint32_t /*num_samples_per_pixel*/) noexcept {}
+void Tracking_multi_pre::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
-void Tracking_multi_pre::start_pixel() noexcept {}
+void Tracking_multi_pre::start_pixel() {}
 
-bool Tracking_multi_pre::transmittance(Ray const& ray, Worker& worker,
-                                       float3& transmittance) noexcept {
+bool Tracking_multi_pre::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
     return Tracking::transmittance(ray, rng_, worker, transmittance);
 }
 
 Event Tracking_multi_pre::integrate(Ray& ray, Intersection& intersection, Filter filter,
-                                    Worker& worker, float3& li, float3& transmittance) noexcept {
+                                    Worker& worker, float3& li, float3& transmittance) {
     if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
         li            = float3(0.f);
         transmittance = float3(1.f);
@@ -268,7 +266,7 @@ Event Tracking_multi_pre::integrate(Ray& ray, Intersection& intersection, Filter
 }
 
 void Tracking_multi_pre::set_scattering(Intersection& intersection, Interface const* interface,
-                                        float3 const& p) noexcept {
+                                        float3 const& p) {
     intersection.prop       = interface->prop;
     intersection.geo.p      = p;
     intersection.geo.uv     = interface->uv;
@@ -276,10 +274,10 @@ void Tracking_multi_pre::set_scattering(Intersection& intersection, Interface co
     intersection.subsurface = true;
 }
 
-Tracking_multi_pre_pool::Tracking_multi_pre_pool(uint32_t num_integrators) noexcept
+Tracking_multi_pre_pool::Tracking_multi_pre_pool(uint32_t num_integrators)
     : Typed_pool<Tracking_multi_pre>(num_integrators) {}
 
-Integrator* Tracking_multi_pre_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Tracking_multi_pre_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Tracking_multi_pre(rng);

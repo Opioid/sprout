@@ -71,13 +71,13 @@ class Integrator {
     using Intersection    = scene::prop::Intersection;
     using Visibility      = scene::shape::Visibility;
 
-    Integrator(rnd::Generator& rng) noexcept;
+    Integrator(rnd::Generator& rng);
 
-    virtual ~Integrator() noexcept;
+    virtual ~Integrator();
 
-    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept = 0;
+    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) = 0;
 
-    virtual void start_pixel() noexcept = 0;
+    virtual void start_pixel() = 0;
 
   protected:
     rnd::Generator& rng_;

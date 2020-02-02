@@ -12,13 +12,13 @@ struct Simd3f;
 //==============================================================================
 
 struct Simd1f {
-    Simd1f() noexcept;
+    Simd1f();
 
-    Simd1f(__m128 m) noexcept;
+    Simd1f(__m128 m);
 
-    explicit Simd1f(float s) noexcept;
+    explicit Simd1f(float s);
 
-    float x() const noexcept;
+    float x() const;
 
     __m128 v;
 };

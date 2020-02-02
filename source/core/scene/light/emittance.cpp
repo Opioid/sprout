@@ -4,7 +4,7 @@
 
 namespace light {
 
-void Emittance::set_luminous_flux(float3 const& color, float value) noexcept {
+void Emittance::set_luminous_flux(float3 const& color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / (Pi * luminance)) * color;
@@ -12,7 +12,7 @@ void Emittance::set_luminous_flux(float3 const& color, float value) noexcept {
     quantity_ = Quantity::Intensity;
 }
 
-void Emittance::set_luminous_intensity(float3 const& color, float value) noexcept {
+void Emittance::set_luminous_intensity(float3 const& color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / luminance) * color;
@@ -20,7 +20,7 @@ void Emittance::set_luminous_intensity(float3 const& color, float value) noexcep
     quantity_ = Quantity::Intensity;
 }
 
-void Emittance::set_luminous_exitance(float3 const& color, float value) noexcept {
+void Emittance::set_luminous_exitance(float3 const& color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / (Pi * luminance)) * color;
@@ -28,7 +28,7 @@ void Emittance::set_luminous_exitance(float3 const& color, float value) noexcept
     quantity_ = Quantity::Radiance;
 }
 
-void Emittance::set_luminance(float3 const& color, float value) noexcept {
+void Emittance::set_luminance(float3 const& color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / luminance) * color;
@@ -36,19 +36,19 @@ void Emittance::set_luminance(float3 const& color, float value) noexcept {
     quantity_ = Quantity::Radiance;
 }
 
-void Emittance::set_intensity(float3 const& intensity) noexcept {
+void Emittance::set_intensity(float3 const& intensity) {
     value_ = intensity;
 
     quantity_ = Quantity::Intensity;
 }
 
-void Emittance::set_radiance(float3 const& radiance) noexcept {
+void Emittance::set_radiance(float3 const& radiance) {
     value_ = radiance;
 
     quantity_ = Quantity::Radiance;
 }
 
-float3 Emittance::radiance(float area) const noexcept {
+float3 Emittance::radiance(float area) const {
     if (Quantity::Intensity == quantity_) {
         return value_ / area;
     }

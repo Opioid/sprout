@@ -70,7 +70,8 @@ float3 ACESFitted(float3 color) {
 
 void Aces_MJP::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
                      image::Float4 const& source, image::Float4& destination) {
-    float3       tmax = ACESFitted(float3(12.f));
+    // float3 tmax = ACESFitted(float3(12.f));
+
     float3 const norm = float3(
         1.f);  // float3(normalization_factor(12.f, tmax[0]), normalization_factor(12.f, tmax[1]),
                // normalization_factor(12.f, tmax[2]));

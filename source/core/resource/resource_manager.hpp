@@ -29,56 +29,54 @@ class Manager {
   public:
     using Variants = memory::Variant_map;
 
-    Manager(thread::Pool& threads) noexcept;
+    Manager(thread::Pool& threads);
 
-    ~Manager() noexcept;
+    ~Manager();
 
-    file::System& filesystem() noexcept;
+    file::System& filesystem();
 
-    thread::Pool& threads() noexcept;
+    thread::Pool& threads();
 
-    void clear() noexcept;
+    void clear();
 
-    void increment_generation() noexcept;
-
-    template <typename T>
-    std::vector<T*> const& register_provider(Provider<T>& provider) noexcept;
+    void increment_generation();
 
     template <typename T>
-    Resource_ptr<T> load(std::string const& filename,
-                         Variants const&    options = Variants()) noexcept;
+    std::vector<T*> const& register_provider(Provider<T>& provider);
+
+    template <typename T>
+    Resource_ptr<T> load(std::string const& filename, Variants const& options = Variants());
 
     template <typename T>
     Resource_ptr<T> load(std::string const& filename, Variants const& options,
-                         std::string& resolved_name) noexcept;
+                         std::string& resolved_name);
 
     template <typename T>
     Resource_ptr<T> load(std::string const& name, void const* data,
-                         std::string const& source_name = "",
-                         Variants const&    options     = Variants()) noexcept;
+                         std::string const& source_name = "", Variants const& options = Variants());
 
     template <typename T>
-    Resource_ptr<T> get(std::string const& filename, Variants const& options = Variants()) noexcept;
+    Resource_ptr<T> get(std::string const& filename, Variants const& options = Variants());
 
     template <typename T>
-    Resource_ptr<T> get(uint32_t id) const noexcept;
+    Resource_ptr<T> get(uint32_t id) const;
 
     template <typename T>
-    Resource_ptr<T> store(T* resource) noexcept;
+    Resource_ptr<T> store(T* resource);
 
     template <typename T>
     Resource_ptr<T> store(std::string const& name, T* resource,
-                          Variants const& options = Variants()) noexcept;
+                          Variants const& options = Variants());
 
     template <typename T>
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     template <typename T>
-    Typed_cache<T> const* typed_cache() const noexcept;
+    Typed_cache<T> const* typed_cache() const;
 
     template <typename T>
-    Typed_cache<T>* typed_cache() noexcept;
+    Typed_cache<T>* typed_cache();
 
     file::System filesystem_;
 

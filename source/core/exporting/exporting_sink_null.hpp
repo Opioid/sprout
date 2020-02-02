@@ -7,11 +7,11 @@ namespace exporting {
 
 class Null : public Sink {
   public:
-    Null() noexcept;
+    Null();
 
-    ~Null() noexcept final;
+    ~Null() final;
 
-    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) noexcept final;
+    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) final;
 };
 
 }  // namespace exporting

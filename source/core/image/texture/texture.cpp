@@ -3,11 +3,11 @@
 
 namespace image::texture {
 
-char const* Texture::identifier() noexcept {
+char const* Texture::identifier() {
     return "Texture";
 }
 
-float Texture::average_1() const noexcept {
+float Texture::average_1() const {
     float average(0.f);
 
     auto const& d = dimensions_3();
@@ -20,7 +20,7 @@ float Texture::average_1() const noexcept {
     return average / (df[0] * df[1] * d[2]);
 }
 
-float3 Texture::average_3() const noexcept {
+float3 Texture::average_3() const {
     float3 average(0.f);
 
     auto const d = dimensions_2();
@@ -34,7 +34,7 @@ float3 Texture::average_3() const noexcept {
     return average / (df[0] * df[1]);
 }
 
-float3 Texture::average_3(int32_t element) const noexcept {
+float3 Texture::average_3(int32_t element) const {
     float3 average(0.f);
 
     auto const d = dimensions_2();

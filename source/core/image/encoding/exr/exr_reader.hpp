@@ -11,7 +11,7 @@ namespace encoding::exr {
 
 class Reader {
   public:
-    static Image* read(std::istream& stream) noexcept;
+    static Image* read(std::istream& stream);
 };
 
 }  // namespace encoding::exr

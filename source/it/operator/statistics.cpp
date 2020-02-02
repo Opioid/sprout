@@ -12,7 +12,7 @@
 
 namespace op {
 
-float luminance_gamma_sRGB(float3 const& linear) noexcept;
+float luminance_gamma_sRGB(float3 const& linear);
 
 struct Luminance {
     float avg;
@@ -21,13 +21,13 @@ struct Luminance {
 
 Luminance average_and_max_luminance(Texture const* image);
 
-void write_histogram(Item const& item, std::ostream& stream) noexcept;
+void write_histogram(Item const& item, std::ostream& stream);
 
 class Histogram {
   public:
     static uint32_t constexpr Num_buckets = 64;
 
-    Histogram(float max_value) noexcept
+    Histogram(float max_value)
         : max_value_(max_value), num_buckets_(uint32_t(std::ceil(max_value * 4.f)) * Num_buckets) {
         buckets_ = new uint32_t[num_buckets_];
 
@@ -36,17 +36,17 @@ class Histogram {
         }
     }
 
-    ~Histogram() noexcept {
+    ~Histogram() {
         delete[] buckets_;
     }
 
-    void insert(float value) noexcept {
+    void insert(float value) {
         uint32_t const i = uint32_t(std::lrint((value / max_value_) * float(num_buckets_ - 1)));
 
         ++buckets_[i];
     }
 
-    uint32_t count(uint32_t id) const noexcept {
+    uint32_t count(uint32_t id) const {
         uint32_t const factor = num_buckets_ / Num_buckets;
 
         uint32_t b = 0;
@@ -61,7 +61,7 @@ class Histogram {
         return b;
     }
 
-    uint32_t max() const noexcept {
+    uint32_t max() const {
         uint32_t m = 0;
 
         for (uint32_t i = 0, len = num_buckets_; i < len; ++i) {
@@ -80,7 +80,7 @@ class Histogram {
 };
 
 uint32_t statistics(std::vector<Item> const& items, it::options::Options const& options,
-                    thread::Pool& /*threads*/) noexcept {
+                    thread::Pool& /*threads*/) {
     std::stringstream stream;
 
     for (auto const& i : items) {
@@ -125,7 +125,7 @@ Luminance average_and_max_luminance(Texture const* image) {
     return {average, max};
 }
 
-void write_histogram(Item const& item, std::ostream& stream) noexcept {
+void write_histogram(Item const& item, std::ostream& stream) {
     Texture const* image = item.image;
 
     auto const [avg_l, max_l] = average_and_max_luminance(image);
@@ -264,7 +264,7 @@ static inline float linear_to_gamma_sRGB_unbounded(float c) {
     return std::pow(c, 0.41666f);
 }
 
-float luminance_gamma_sRGB(float3 const& linear) noexcept {
+float luminance_gamma_sRGB(float3 const& linear) {
     return /*linear_to_gamma_sRGB_unbounded*/ (spectrum::luminance(linear));
 }
 

@@ -7,31 +7,31 @@ namespace scene::material::metallic_paint {
 
 class Material : public material::Material {
   public:
-    Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Material(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept final;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const final;
 
-    float ior() const noexcept final;
+    float ior() const final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    void set_color(float3 const& a, float3 const& b) noexcept;
-    void set_roughness(float roughness) noexcept;
+    void set_color(float3 const& a, float3 const& b);
+    void set_roughness(float roughness);
 
-    void set_flakes_mask(Texture_adapter const& mask) noexcept;
-    void set_flakes_normal_map(Texture_adapter const& normal_map) noexcept;
-    void set_flakes_ior(float3 const& ior) noexcept;
-    void set_flakes_absorption(float3 const& absorption) noexcept;
-    void set_flakes_roughness(float roughness) noexcept;
+    void set_flakes_mask(Texture_adapter const& mask);
+    void set_flakes_normal_map(Texture_adapter const& normal_map);
+    void set_flakes_ior(float3 const& ior);
+    void set_flakes_absorption(float3 const& absorption);
+    void set_flakes_roughness(float roughness);
 
-    void set_coating_thickness(float thickness) noexcept;
-    void set_coating_attenuation(float3 const& absorption_color, float distance) noexcept;
-    void set_coating_ior(float ior) noexcept;
-    void set_coating_roughness(float roughness) noexcept;
+    void set_coating_thickness(float thickness);
+    void set_coating_attenuation(float3 const& absorption_color, float distance);
+    void set_coating_ior(float ior);
+    void set_coating_roughness(float roughness);
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 
   protected:
     Texture_adapter flakes_mask_;

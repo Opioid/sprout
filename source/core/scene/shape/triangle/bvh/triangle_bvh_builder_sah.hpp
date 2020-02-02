@@ -32,7 +32,7 @@ class Tree;
 
 class Builder_SAH : private scene::bvh::Builder_base {
   public:
-    Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold) noexcept;
+    Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
 
     using Triangles = Index_triangle const* const;
     using Vertices  = Vertex_stream const&;

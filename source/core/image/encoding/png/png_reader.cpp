@@ -16,7 +16,7 @@
 namespace image::encoding::png {
 
 struct Chunk {
-    ~Chunk() noexcept {
+    ~Chunk() {
         memory::free_aligned(type);
     }
 
@@ -38,7 +38,7 @@ enum class Color_type {
 enum class Filter { None, Sub, Up, Average, Paeth };
 
 struct Info {
-    ~Info() noexcept {
+    ~Info() {
         memory::free_aligned(previous_row_data);
         memory::free_aligned(current_row_data);
         memory::free_aligned(buffer);
@@ -67,27 +67,27 @@ struct Info {
 };
 
 static Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
-                           bool invert) noexcept;
+                           bool invert);
 
-static void read_chunk(std::istream& stream, Chunk& chunk) noexcept;
+static void read_chunk(std::istream& stream, Chunk& chunk);
 
-static bool handle_chunk(const Chunk& chunk, Info& info) noexcept;
+static bool handle_chunk(const Chunk& chunk, Info& info);
 
-static bool parse_header(const Chunk& chunk, Info& info) noexcept;
+static bool parse_header(const Chunk& chunk, Info& info);
 
-static bool parse_lte(const Chunk& chunk, Info& info) noexcept;
+static bool parse_lte(const Chunk& chunk, Info& info);
 
-static bool parse_data(const Chunk& chunk, Info& info) noexcept;
+static bool parse_data(const Chunk& chunk, Info& info);
 
-static uint8_t filter(uint8_t byte, Filter filter, const Info& info) noexcept;
+static uint8_t filter(uint8_t byte, Filter filter, const Info& info);
 
-static uint8_t raw(int column, const Info& info) noexcept;
-static uint8_t prior(int column, const Info& info) noexcept;
+static uint8_t raw(int column, const Info& info);
+static uint8_t prior(int column, const Info& info);
 
-static uint8_t average(uint8_t a, uint8_t b) noexcept;
-static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) noexcept;
+static uint8_t average(uint8_t a, uint8_t b);
+static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c);
 
-static uint32_t byteswap(uint32_t v) noexcept;
+static uint32_t byteswap(uint32_t v);
 
 static uint32_t constexpr Signature_size = 8;
 
@@ -95,7 +95,7 @@ static uint8_t constexpr Signature[Signature_size] = {0x89, 0x50, 0x4E, 0x47,
                                                       0x0D, 0x0A, 0x1A, 0x0A};
 
 Image* Reader::read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
-                    bool invert) noexcept {
+                    bool invert) {
     uint8_t signature[Signature_size];
 
     stream.read(reinterpret_cast<char*>(signature), Signature_size);
@@ -128,7 +128,7 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
 }
 
 Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
-                    bool invert) noexcept {
+                    bool invert) {
     if (0 == info.num_channels || Channels::None == channels) {
         return nullptr;
     }
@@ -267,7 +267,7 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
     return nullptr;
 }
 
-void read_chunk(std::istream& stream, Chunk& chunk) noexcept {
+void read_chunk(std::istream& stream, Chunk& chunk) {
     uint32_t length = 0;
     stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
     chunk.length = byteswap(length);
@@ -287,7 +287,7 @@ void read_chunk(std::istream& stream, Chunk& chunk) noexcept {
     chunk.crc = byteswap(crc);
 }
 
-bool handle_chunk(const Chunk& chunk, Info& info) noexcept {
+bool handle_chunk(const Chunk& chunk, Info& info) {
     char const* type = reinterpret_cast<char const*>(chunk.type);
 
     if (!strncmp("IHDR", type, 4)) {
@@ -309,13 +309,13 @@ bool handle_chunk(const Chunk& chunk, Info& info) noexcept {
     return true;
 }
 
-static bool header_error(std::string const& text, Info& info) noexcept {
+static bool header_error(std::string const& text, Info& info) {
     logging::push_error(text);
     info.num_channels = 0;
     return false;
 }
 
-bool parse_header(const Chunk& chunk, Info& info) noexcept {
+bool parse_header(const Chunk& chunk, Info& info) {
     info.width  = int32_t(byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]));
     info.height = int32_t(byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]));
 
@@ -371,11 +371,11 @@ bool parse_header(const Chunk& chunk, Info& info) noexcept {
     return true;
 }
 
-bool parse_lte(const Chunk& /*chunk*/, Info& /*info*/) noexcept {
+bool parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
     return true;
 }
 
-bool parse_data(const Chunk& chunk, Info& info) noexcept {
+bool parse_data(const Chunk& chunk, Info& info) {
     static uint32_t constexpr buffer_size = 8192;
     uint8_t buffer[buffer_size];
 
@@ -419,7 +419,7 @@ bool parse_data(const Chunk& chunk, Info& info) noexcept {
     return true;
 }
 
-uint8_t filter(uint8_t byte, Filter filter, const Info& info) noexcept {
+uint8_t filter(uint8_t byte, Filter filter, const Info& info) {
     switch (filter) {
         case Filter::None:
             return byte;
@@ -439,7 +439,7 @@ uint8_t filter(uint8_t byte, Filter filter, const Info& info) noexcept {
     }
 }
 
-uint8_t raw(int column, const Info& info) noexcept {
+uint8_t raw(int column, const Info& info) {
     if (column < 0) {
         return 0;
     }
@@ -447,7 +447,7 @@ uint8_t raw(int column, const Info& info) noexcept {
     return info.current_row_data[column];
 }
 
-uint8_t prior(int column, const Info& info) noexcept {
+uint8_t prior(int column, const Info& info) {
     if (column < 0) {
         return 0;
     }
@@ -455,11 +455,11 @@ uint8_t prior(int column, const Info& info) noexcept {
     return info.previous_row_data[column];
 }
 
-uint8_t average(uint8_t a, uint8_t b) noexcept {
+uint8_t average(uint8_t a, uint8_t b) {
     return uint8_t((uint32_t(a) + uint32_t(b)) >> 1);
 }
 
-uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) noexcept {
+uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
     int32_t const A  = static_cast<int32_t>(a);
     int32_t const B  = static_cast<int32_t>(b);
     int32_t const C  = static_cast<int32_t>(c);
@@ -479,7 +479,7 @@ uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) noexcept {
     return c;
 }
 
-uint32_t byteswap(uint32_t v) noexcept {
+uint32_t byteswap(uint32_t v) {
     return ((v & 0xFF) << 24) | ((v & 0xFF00) << 8) | ((v & 0xFF0000) >> 8) |
            ((v & 0xFF000000) >> 24);
 }

@@ -3,7 +3,7 @@
 
 namespace testing {
 
-void vector() noexcept;
+void vector();
 
 }
 

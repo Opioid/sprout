@@ -2,11 +2,11 @@
 
 namespace resource {
 
-Cache::Cache() noexcept : generation_(0) {}
+Cache::Cache() : generation_(0) {}
 
-Cache::~Cache() noexcept = default;
+Cache::~Cache() = default;
 
-void Cache::increment_generation() noexcept {
+void Cache::increment_generation() {
     ++generation_;
 }
 

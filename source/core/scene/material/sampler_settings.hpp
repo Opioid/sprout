@@ -19,9 +19,9 @@ struct Sampler_settings {
     enum class Filter : uint32_t { Nearest = 0 << 2, Linear = 1 << 2, Undefined = 0xFFFFFFFF };
 
     Sampler_settings(Filter filter = Filter::Linear, Address address_u = Address::Repeat,
-                     Address address_v = Address::Repeat) noexcept;
+                     Address address_v = Address::Repeat);
 
-    uint32_t key() const noexcept;
+    uint32_t key() const;
 
     Filter filter;
 

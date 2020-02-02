@@ -11,41 +11,41 @@ namespace procedural::sky {
 
 class Model {
   public:
-    Model() noexcept;
+    Model();
 
-    ~Model() noexcept;
+    ~Model();
 
-    void compile() noexcept;
+    void compile();
 
-    float3 sun_direction() const noexcept;
+    float3 sun_direction() const;
 
-    void set_sun_direction(float3 const& direction) noexcept;
+    void set_sun_direction(float3 const& direction);
 
-    void set_ground_albedo(float3 const& albedo) noexcept;
+    void set_ground_albedo(float3 const& albedo);
 
-    void set_turbidity(float turbidity) noexcept;
+    void set_turbidity(float turbidity);
 
-    float3 evaluate_sky(float3 const& wi) const noexcept;
+    float3 evaluate_sky(float3 const& wi) const;
 
-    float3 evaluate_sky_and_sun(float3 const& wi) const noexcept;
+    float3 evaluate_sky_and_sun(float3 const& wi) const;
 
-    static float constexpr angular_radius() noexcept {
+    static float constexpr angular_radius() {
         // 0.5 * 0.51 degrees should match hosek
         // ... but we changed hosek ...
         // return degrees_to_radians(0.5f * 0.51f);
         return degrees_to_radians(0.5f * 0.5334f);
     }
 
-    static float radius() noexcept {
+    static float radius() {
         return std::tan(angular_radius());
     }
 
-    static float3 constexpr zenith() noexcept {
+    static float3 constexpr zenith() {
         return float3(0.f, 1.f, 0.f);
     }
 
   private:
-    void release() noexcept;
+    void release();
 
     static int32_t constexpr Num_bands = 12;
 

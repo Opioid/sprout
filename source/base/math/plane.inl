@@ -7,36 +7,35 @@
 
 namespace math::plane {
 
-static inline Plane create(Vector3f_a const& normal, float d) noexcept {
+static inline Plane create(Vector3f_a const& normal, float d) {
     return Plane(normal, d);
 }
 
-static inline Plane create(Vector3f_a const& normal, Vector3f_a const& point) noexcept {
+static inline Plane create(Vector3f_a const& normal, Vector3f_a const& point) {
     return Plane(normal[0], normal[1], normal[2], -dot(normal, point));
 }
 
-static inline Plane create(Vector3f_a const& v0, Vector3f_a const& v1,
-                           Vector3f_a const& v2) noexcept {
+static inline Plane create(Vector3f_a const& v0, Vector3f_a const& v1, Vector3f_a const& v2) {
     Vector3f_a const n = normalize(cross(v2 - v1, v0 - v1));
 
     return create(n, v0);
 }
 
-static inline float dot(Plane const& p, Vector3f_a const& v) noexcept {
+static inline float dot(Plane const& p, Vector3f_a const& v) {
     return (p[0] * v[0] + p[1] * v[1]) + (p[2] * v[2] + p[3]);
 }
 
-static inline bool behind(Plane const& p, Vector3f_a const& point) noexcept {
+static inline bool behind(Plane const& p, Vector3f_a const& point) {
     return dot(p, point) < 0.f;
 }
 
-static inline Plane normalize(Plane const& p) noexcept {
+static inline Plane normalize(Plane const& p) {
     float const t = 1.f / length(p.xyz());
 
     return t * p;
 }
 
-static inline Vector3f_a intersection(Plane const& p0, Plane const& p1, Plane const& p2) noexcept {
+static inline Vector3f_a intersection(Plane const& p0, Plane const& p1, Plane const& p2) {
     Vector3f_a const n1(p0[0], p0[1], p0[2]);
 
     float const d1 = p0[3];

@@ -8,21 +8,21 @@ namespace scene::material::substitute {
 template <typename Coating>
 class Material_coating : public Material_base {
   public:
-    Material_coating(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Material_coating(Sampler_settings const& sampler_settings, bool two_sided);
 
-    size_t num_bytes() const noexcept override;
+    size_t num_bytes() const override;
 
-    void set_coating_thickness_map(Texture_adapter const& thickness_map) noexcept;
+    void set_coating_thickness_map(Texture_adapter const& thickness_map);
 
-    void set_coating_normal_map(Texture_adapter const& normal_map) noexcept;
+    void set_coating_normal_map(Texture_adapter const& normal_map);
 
-    void set_coating_thickness(float thickness) noexcept;
+    void set_coating_thickness(float thickness);
 
   protected:
     template <typename Sample>
     void set_coating_basis(float3 const& wo, Renderstate const& rs,
                            Texture_sampler_2D const& sampler, Worker const& worker,
-                           Sample& sample) const noexcept;
+                           Sample& sample) const;
 
     Texture_adapter coating_thickness_map_;
     Texture_adapter coating_normal_map_;
@@ -40,22 +40,22 @@ struct Clearcoat_data {
 
 class Material_clearcoat : public Material_coating<Clearcoat_data> {
   public:
-    Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided);
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             Worker const& worker) const noexcept final;
+                             Worker const& worker) const final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const override;
 
-    void set_coating_attenuation(float3 const& absorption_color, float distance) noexcept;
+    void set_coating_attenuation(float3 const& absorption_color, float distance);
 
-    void set_coating_ior(float ior) noexcept;
+    void set_coating_ior(float ior);
 
-    void set_coating_roughness(float roughness) noexcept;
+    void set_coating_roughness(float roughness);
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 };
 
 struct Thinfilm_data {
@@ -66,15 +66,15 @@ struct Thinfilm_data {
 
 class Material_thinfilm : public Material_coating<Thinfilm_data> {
   public:
-    Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept final;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const final;
 
-    void set_thinfilm(float ior, float roughness, float thickness) noexcept;
+    void set_thinfilm(float ior, float roughness, float thickness);
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 };
 
 }  // namespace scene::material::substitute

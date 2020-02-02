@@ -11,58 +11,57 @@ namespace procedural::sky {
 
 class Sky_material : public Material {
   public:
-    Sky_material(Sky& sky) noexcept;
+    Sky_material(Sky& sky);
 
     scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
-                                          Sampler& sampler, scene::Worker const& worker) const
-        noexcept final;
+                                          Sampler&             sampler,
+                                          scene::Worker const& worker) const final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             scene::Worker const& worker) const noexcept final;
+                             scene::Worker const& worker) const final;
 
-    float3 average_radiance(float area, scene::Scene const& scene) const noexcept final;
+    float3 average_radiance(float area, scene::Scene const& scene) const final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
-                          scene::Scene const& scene) noexcept final;
+                          scene::Scene const& scene) final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 };
 
 class Sky_baked_material : public Material {
   public:
-    Sky_baked_material(Sky& sky) noexcept;
+    Sky_baked_material(Sky& sky);
 
-    ~Sky_baked_material() noexcept override;
+    ~Sky_baked_material() override;
 
     scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
-                                          Sampler& sampler, scene::Worker const& worker) const
-        noexcept final;
+                                          Sampler&             sampler,
+                                          scene::Worker const& worker) const final;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                             scene::Worker const& worker) const noexcept final;
+                             scene::Worker const& worker) const final;
 
-    float3 average_radiance(float area, scene::Scene const& scene) const noexcept final;
+    float3 average_radiance(float area, scene::Scene const& scene) const final;
 
-    bool has_emission_map() const noexcept final;
+    bool has_emission_map() const final;
 
-    Sample_2D radiance_sample(float2 r2) const noexcept final;
+    Sample_2D radiance_sample(float2 r2) const final;
 
-    float emission_pdf(float2 uv, Filter filter, scene::Worker const& worker) const noexcept final;
+    float emission_pdf(float2 uv, Filter filter, scene::Worker const& worker) const final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
-                          scene::Scene const& scene) noexcept final;
+                          scene::Scene const& scene) final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
   private:
-    static float3 unclipped_canopy_mapping(Transformation const& transformation,
-                                           float2                uv) noexcept;
+    static float3 unclipped_canopy_mapping(Transformation const& transformation, float2 uv);
 
     image::Float3 cache_;
 

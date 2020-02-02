@@ -12,7 +12,7 @@ namespace scene::light {
 Light::Light() = default;
 
 static inline float3 prop_power(uint32_t prop, uint32_t part, float area, AABB const& scene_bb,
-                                Scene const& scene) noexcept {
+                                Scene const& scene) {
     float3 const radiance = scene.prop_material(prop, part)->average_radiance(area, scene);
 
     if (scene.prop_shape(prop)->is_finite()) {
@@ -22,14 +22,13 @@ static inline float3 prop_power(uint32_t prop, uint32_t part, float area, AABB c
     return squared_length(scene_bb.halfsize()) * area * radiance;
 }
 
-static inline float3 volume_power(uint32_t prop, uint32_t part, float volume,
-                                  Scene const& scene) noexcept {
+static inline float3 volume_power(uint32_t prop, uint32_t part, float volume, Scene const& scene) {
     float3 const radiance = scene.prop_material(prop, part)->average_radiance(volume, scene);
 
     return volume * radiance;
 }
 
-float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
+float3 Light::power(AABB const& scene_bb, Scene const& scene) const {
     switch (type_) {
         case Type::Null:
             return float3(0.f);
@@ -47,7 +46,7 @@ float3 Light::power(AABB const& scene_bb, Scene const& scene) const noexcept {
 }
 
 void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
-                             thread::Pool& threads) const noexcept {
+                             thread::Pool& threads) const {
     switch (type_) {
         case Type::Null:
             break;

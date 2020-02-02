@@ -9,13 +9,12 @@ namespace scene::shape::triangle {
 
 inline Triangle_MT::Triangle_MT(const shape::Vertex& a, const shape::Vertex& b,
                                 const shape::Vertex& c, float bitangent_sign,
-                                uint32_t material_index) noexcept
+                                uint32_t material_index)
     : a(a), b(b), c(c), bitangent_sign(bitangent_sign), material_index(material_index) {}
 
-inline Triangle_MT::Vertex::Vertex(const shape::Vertex& v) noexcept
-    : p(v.p), n(v.n), t(v.t), uv(v.uv) {}
+inline Triangle_MT::Vertex::Vertex(const shape::Vertex& v) : p(v.p), n(v.n), t(v.t), uv(v.uv) {}
 
-inline bool Triangle_MT::intersect(ray& ray, float2& uv) const noexcept {
+inline bool Triangle_MT::intersect(ray& ray, float2& uv) const {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
@@ -50,7 +49,7 @@ inline bool Triangle_MT::intersect(ray& ray, float2& uv) const noexcept {
     return false;
 }
 
-inline bool Triangle_MT::intersect_p(ray const& ray) const noexcept {
+inline bool Triangle_MT::intersect_p(ray const& ray) const {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
@@ -82,7 +81,7 @@ inline bool Triangle_MT::intersect_p(ray const& ray) const noexcept {
     return false;
 }
 
-inline void Triangle_MT::interpolate(float2 uv, float3& p, float3& n, float2& tc) const noexcept {
+inline void Triangle_MT::interpolate(float2 uv, float3& p, float3& n, float2& tc) const {
     float w = 1.f - uv[0] - uv[1];
 
     p  = w * a.p + uv[0] * b.p + uv[1] * c.p;
@@ -90,21 +89,20 @@ inline void Triangle_MT::interpolate(float2 uv, float3& p, float3& n, float2& tc
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline void Triangle_MT::interpolate(float2 uv, float3& p, float2& tc) const noexcept {
+inline void Triangle_MT::interpolate(float2 uv, float3& p, float2& tc) const {
     float w = 1.f - uv[0] - uv[1];
 
     p  = w * a.p + uv[0] * b.p + uv[1] * c.p;
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline void Triangle_MT::interpolate(float2 uv, float3& p) const noexcept {
+inline void Triangle_MT::interpolate(float2 uv, float3& p) const {
     float w = 1.f - uv[0] - uv[1];
 
     p = w * a.p + uv[0] * b.p + uv[1] * c.p;
 }
 
-inline void Triangle_MT::interpolate_data(float2 uv, float3& n, float3& t, float2& tc) const
-    noexcept {
+inline void Triangle_MT::interpolate_data(float2 uv, float3& n, float3& t, float2& tc) const {
     float w = 1.f - uv[0] - uv[1];
 
     n  = normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
@@ -112,24 +110,24 @@ inline void Triangle_MT::interpolate_data(float2 uv, float3& n, float3& t, float
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline float2 Triangle_MT::interpolate_uv(float2 uv) const noexcept {
+inline float2 Triangle_MT::interpolate_uv(float2 uv) const {
     float w = 1.f - uv[0] - uv[1];
 
     return w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline float3 Triangle_MT::normal() const noexcept {
+inline float3 Triangle_MT::normal() const {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
     return normalize(cross(e1, e2));
 }
 
-inline float Triangle_MT::area() const noexcept {
+inline float Triangle_MT::area() const {
     return 0.5f * length(cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(float3 const& scale) const noexcept {
+inline float Triangle_MT::area(float3 const& scale) const {
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;
@@ -137,7 +135,7 @@ inline float Triangle_MT::area(float3 const& scale) const noexcept {
 }
 
 static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, ray& ray,
-                             float2& uv) noexcept {
+                             float2& uv) {
     float3 e1 = b - a;
     float3 e2 = c - a;
 
@@ -190,7 +188,7 @@ static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, 
 
 static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
                              scalar& max_t, float const* a, float const* b, float const* c,
-                             scalar& u_out, scalar& v_out) noexcept {
+                             scalar& u_out, scalar& v_out) {
     Simd3f ap(a);
     Simd3f bp(b);
     Simd3f cp(c);
@@ -228,8 +226,7 @@ static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scal
 }
 
 static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                             scalar& max_t, float const* a, float const* b,
-                             float const* c) noexcept {
+                             scalar& max_t, float const* a, float const* b, float const* c) {
     Simd3f ap(a);
     Simd3f bp(b);
     Simd3f cp(c);
@@ -264,8 +261,7 @@ static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scal
     return false;
 }
 
-static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c,
-                               ray const& ray) noexcept {
+static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c, ray const& ray) {
     // Implementation A
     /*	float3 e1 = b.p - a.p;
             float3 e2 = c.p - a.p;
@@ -327,7 +323,7 @@ static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c
 
 static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
                                scalar const& max_t, float const* a, float const* b,
-                               float const* c) noexcept {
+                               float const* c) {
     // Implementation C
 
     Simd3f ap(a);
@@ -360,25 +356,24 @@ static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, sc
 }
 
 static inline Simd3f interpolate_p(Simd3f const& a, Simd3f const& b, Simd3f const& c,
-                                   Simd3f const& u, Simd3f const& v) noexcept {
+                                   Simd3f const& u, Simd3f const& v) {
     Simd3f const w = simd::One - u - v;
 
     return w * a + u * b + v * c;
 }
 
 static inline void interpolate_p(float3 const& a, float3 const& b, float3 const& c, float2 uv,
-                                 float3& p) noexcept {
+                                 float3& p) {
     float const w = 1.f - uv[0] - uv[1];
 
     p = w * a + uv[0] * b + uv[1] * c;
 }
 
-static inline float area(float3 const& a, float3 const& b, float3 const& c) noexcept {
+static inline float area(float3 const& a, float3 const& b, float3 const& c) {
     return 0.5f * length(cross(b - a, c - a));
 }
 
-static inline float area(float3 const& a, float3 const& b, float3 const& c,
-                         float3 const& scale) noexcept {
+static inline float area(float3 const& a, float3 const& b, float3 const& c, float3 const& scale) {
     float3 const sa = scale * a;
     float3 const sb = scale * b;
     float3 const sc = scale * c;
@@ -386,7 +381,7 @@ static inline float area(float3 const& a, float3 const& b, float3 const& c,
 }
 
 static inline float2 interpolate_uv(const Shading_vertex_MT& a, const Shading_vertex_MT& b,
-                                    const Shading_vertex_MT& c, float2 uv) noexcept {
+                                    const Shading_vertex_MT& c, float2 uv) {
     float const w = 1.f - uv[0] - uv[1];
 
     return w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
@@ -394,7 +389,7 @@ static inline float2 interpolate_uv(const Shading_vertex_MT& a, const Shading_ve
 
 static inline void interpolate_data(const Shading_vertex_MT& a, const Shading_vertex_MT& b,
                                     const Shading_vertex_MT& c, float2 uv, float3& n, float3& t,
-                                    float2& tc) noexcept {
+                                    float2& tc) {
     float const w = 1.f - uv[0] - uv[1];
 
     n  = normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
@@ -402,7 +397,7 @@ static inline void interpolate_data(const Shading_vertex_MT& a, const Shading_ve
     tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline Shading_vertex_MTC::Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv) noexcept
+inline Shading_vertex_MTC::Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv)
     : n_u(n, uv[0]), t_v(t, uv[1]) {
     // Not too happy about handling degenerate tangents here (only one very special case even)
     if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
@@ -411,7 +406,7 @@ inline Shading_vertex_MTC::Shading_vertex_MTC(float3 const& n, float3 const& t, 
 }
 
 static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
-                                    const Shading_vertex_MTC& c, float2 uv) noexcept {
+                                    const Shading_vertex_MTC& c, float2 uv) {
     float const w = 1.f - uv[0] - uv[1];
 
     return float2(w * a.n_u[3] + uv[0] * b.n_u[3] + uv[1] * c.n_u[3],
@@ -419,8 +414,7 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_v
 }
 
 static inline float2 interpolate_uv(Simd3f const& u, Simd3f const& v, const Shading_vertex_MTC& a,
-                                    const Shading_vertex_MTC& b,
-                                    const Shading_vertex_MTC& c) noexcept {
+                                    const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
     Simd3f const w = simd::One - u - v;
 
     Simd3f va(a.n_u[3], a.t_v[3], 0.f);
@@ -441,7 +435,7 @@ static inline float2 interpolate_uv(Simd3f const& u, Simd3f const& v, const Shad
 
 static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
                                     const Shading_vertex_MTC& c, float2 uv, float3& n, float3& t,
-                                    float2& tc) noexcept {
+                                    float2& tc) {
     float const w = 1.f - uv[0] - uv[1];
 
     float4 const n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
@@ -455,7 +449,7 @@ static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_v
 
 static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c,
-                                    Simd3f& n, Simd3f& t, float2& tc) noexcept {
+                                    Simd3f& n, Simd3f& t, float2& tc) {
     Simd3f const w = simd::One - u - v;
 
     Simd3f va = w * Simd3f(a.n_u.v);
@@ -488,7 +482,7 @@ static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shad
 
 static inline Simd3f interpolate_normal(Simd3f const& u, Simd3f const& v,
                                         const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
-                                        const Shading_vertex_MTC& c) noexcept {
+                                        const Shading_vertex_MTC& c) {
     Simd3f const w = simd::One - u - v;
 
     Simd3f va = w * Simd3f(a.n_u.v);
@@ -502,31 +496,31 @@ static inline Simd3f interpolate_normal(Simd3f const& u, Simd3f const& v,
     return normalize(v0);
 }
 
-inline float xnorm_to_float(int16_t xnorm) noexcept {
+inline float xnorm_to_float(int16_t xnorm) {
     return float(xnorm) / 511.f;
 }
 
-inline int16_t float_to_xnorm(float x) noexcept {
+inline int16_t float_to_xnorm(float x) {
     return static_cast<int16_t>(x * 511.f);
 }
 
-inline float4 snorm16_to_float(short4 v) noexcept {
+inline float4 snorm16_to_float(short4 v) {
     return float4(encoding::snorm16_to_float(v[0]), encoding::snorm16_to_float(v[1]),
                   encoding::snorm16_to_float(v[2]), xnorm_to_float(v[3]));
 }
 
-inline short4 float_to_snorm16(float3 const& v, float s) noexcept {
+inline short4 float_to_snorm16(float3 const& v, float s) {
     return short4(encoding::float_to_snorm16(v[0]), encoding::float_to_snorm16(v[1]),
                   encoding::float_to_snorm16(v[2]), float_to_xnorm(s));
 }
 
-inline short4 float_to_snorm16(packed_float3 const& v, float s) noexcept {
+inline short4 float_to_snorm16(packed_float3 const& v, float s) {
     return short4(encoding::float_to_snorm16(v[0]), encoding::float_to_snorm16(v[1]),
                   encoding::float_to_snorm16(v[2]), float_to_xnorm(s));
 }
 
 inline Vertex_MTC::Vertex_MTC(packed_float3 const& p, packed_float3 const& n,
-                              packed_float3 const& t, float2 uv) noexcept
+                              packed_float3 const& t, float2 uv)
     : p(p), n_u(n, uv[0]), t_v(t, uv[1]) {
     // Not too happy about handling degenerate tangents here (only one very special case even)
     if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
@@ -535,7 +529,7 @@ inline Vertex_MTC::Vertex_MTC(packed_float3 const& p, packed_float3 const& n,
 }
 
 inline bool intersect(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c, ray& ray,
-                      float2& uv) noexcept {
+                      float2& uv) {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
@@ -571,7 +565,7 @@ inline bool intersect(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC
 }
 
 inline bool intersect_p(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                        ray const& ray) noexcept {
+                        ray const& ray) {
     float3 e1 = b.p - a.p;
     float3 e2 = c.p - a.p;
 
@@ -604,7 +598,7 @@ inline bool intersect_p(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_M
 }
 
 inline float2 interpolate_uv(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                             float2 uv) noexcept {
+                             float2 uv) {
     float w = 1.f - uv[0] - uv[1];
 
     return float2(w * a.n_u[3] + uv[0] * b.n_u[3] + uv[1] * c.n_u[3],
@@ -612,7 +606,7 @@ inline float2 interpolate_uv(const Vertex_MTC& a, const Vertex_MTC& b, const Ver
 }
 
 inline void interpolate_p_uv(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                             float2 uv, float3& p, float2& tc) noexcept {
+                             float2 uv, float3& p, float2& tc) {
     float w = 1.f - uv[0] - uv[1];
 
     p = w * a.p + uv[0] * b.p + uv[1] * c.p;
@@ -622,7 +616,7 @@ inline void interpolate_p_uv(const Vertex_MTC& a, const Vertex_MTC& b, const Ver
 }
 
 inline void interpolate_data(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                             float2 uv, float3& n, float3& t, float2& tc) noexcept {
+                             float2 uv, float3& n, float3& t, float2& tc) {
     float w = 1.f - uv[0] - uv[1];
 
     float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
@@ -634,12 +628,12 @@ inline void interpolate_data(const Vertex_MTC& a, const Vertex_MTC& b, const Ver
     tc = float2(n_u[3], t_v[3]);
 }
 
-inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c) noexcept {
+inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c) {
     return 0.5f * length(cross(b.p - a.p, c.p - a.p));
 }
 
 inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                  float3 const& scale) noexcept {
+                  float3 const& scale) {
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;

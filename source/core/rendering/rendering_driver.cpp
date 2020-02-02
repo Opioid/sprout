@@ -20,7 +20,7 @@ namespace rendering {
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
 
-Driver::Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& progressor) noexcept
+Driver::Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& progressor)
     : threads_(threads),
       workers_(memory::construct_array_aligned<Camera_worker>(threads.num_threads(),
                                                               max_sample_size, tiles_, ranges_)),
@@ -30,13 +30,13 @@ Driver::Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& 
       photon_infos_(new Photon_info[threads.num_threads()]),
       progressor_(progressor) {}
 
-Driver::~Driver() noexcept {
+Driver::~Driver() {
     delete[] photon_infos_;
 
     memory::destroy_aligned(workers_, threads_.num_threads());
 }
 
-void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
+void Driver::init(take::View& view, Scene& scene, bool progressive) {
     view_ = &view;
 
     scene_ = &scene;
@@ -95,23 +95,23 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) noexcept {
     }
 }
 
-scene::camera::Camera& Driver::camera() noexcept {
+scene::camera::Camera& Driver::camera() {
     return *view_->camera;
 }
 
-scene::Scene const& Driver::scene() const noexcept {
+scene::Scene const& Driver::scene() const {
     return *scene_;
 }
 
-scene::Scene& Driver::scene() noexcept {
+scene::Scene& Driver::scene() {
     return *scene_;
 }
 
-image::Float4 const& Driver::target() const noexcept {
+image::Float4 const& Driver::target() const {
     return target_;
 }
 
-void Driver::render(Exporters& exporters) noexcept {
+void Driver::render(Exporters& exporters) {
     for (uint32_t f = 0; f < view_->num_frames; ++f) {
         uint32_t const frame = view_->start_frame + f;
 
@@ -121,7 +121,7 @@ void Driver::render(Exporters& exporters) noexcept {
     }
 }
 
-void Driver::render(uint32_t frame) noexcept {
+void Driver::render(uint32_t frame) {
     auto& camera = *view_->camera;
 
     scene_->finish();
@@ -162,7 +162,7 @@ void Driver::render(uint32_t frame) noexcept {
     logging::info("Post-process time %f s", pp_duration);
 }
 
-void Driver::start_frame(uint32_t frame) noexcept {
+void Driver::start_frame(uint32_t frame) {
     auto& camera = *view_->camera;
 
     scene_->finish();
@@ -177,7 +177,7 @@ void Driver::start_frame(uint32_t frame) noexcept {
     particle_importance_.set_training(false);
 }
 
-void Driver::render(uint32_t frame, uint32_t iteration) noexcept {
+void Driver::render(uint32_t frame, uint32_t iteration) {
     render_frame_backward(frame, iteration);
 
     render_frame_forward(frame, iteration);
@@ -191,7 +191,7 @@ void Driver::render(uint32_t frame, uint32_t iteration) noexcept {
     }
 }
 
-void Driver::export_frame(uint32_t frame, Exporters& exporters) const noexcept {
+void Driver::export_frame(uint32_t frame, Exporters& exporters) const {
     auto const export_start = std::chrono::high_resolution_clock::now();
 
     for (auto& e : exporters) {
@@ -202,7 +202,7 @@ void Driver::export_frame(uint32_t frame, Exporters& exporters) const noexcept {
     logging::info("Export time %f s", export_duration);
 }
 
-void Driver::render_frame_backward(uint32_t frame) noexcept {
+void Driver::render_frame_backward(uint32_t frame) {
     if (0 == ranges_.size()) {
         return;
     }
@@ -273,7 +273,7 @@ void Driver::render_frame_backward(uint32_t frame) noexcept {
     logging::info("Light ray time " + string::to_string(duration) + " s");
 }
 
-void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) noexcept {
+void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) {
     if (0 == ranges_.size()) {
         return;
     }
@@ -315,7 +315,7 @@ void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) noexcept 
     }
 }
 
-void Driver::render_frame_forward(uint32_t frame) noexcept {
+void Driver::render_frame_forward(uint32_t frame) {
     if (0 == view_->num_samples_per_pixel) {
         return;
     }
@@ -354,7 +354,7 @@ void Driver::render_frame_forward(uint32_t frame) noexcept {
     logging::info("Camera ray time " + string::to_string(duration) + " s");
 }
 
-void Driver::render_frame_forward(uint32_t frame, uint32_t iteration) noexcept {
+void Driver::render_frame_forward(uint32_t frame, uint32_t iteration) {
     if (0 == view_->num_samples_per_pixel) {
         return;
     }
@@ -382,7 +382,7 @@ void Driver::render_frame_forward(uint32_t frame, uint32_t iteration) noexcept {
     }
 }
 
-void Driver::bake_photons(uint32_t frame) noexcept {
+void Driver::bake_photons(uint32_t frame) {
     uint32_t const settings_num_photons = view_->photon_settings.num_photons;
 
     if (/*photons_baked_ || */ 0 == settings_num_photons) {
@@ -414,7 +414,7 @@ void Driver::bake_photons(uint32_t frame) noexcept {
         frame_iteration_ = iteration;
 
         threads_.run_range(
-            [this](uint32_t id, int32_t begin, int32_t end) noexcept {
+            [this](uint32_t id, int32_t begin, int32_t end) {
                 auto& worker = workers_[id];
 
                 photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame_,

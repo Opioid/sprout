@@ -16,12 +16,12 @@ namespace op {
 
 using namespace image;
 
-int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) noexcept;
+int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row);
 
-void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) noexcept;
+void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip);
 
 uint32_t concatenate(std::vector<Item> const& items, it::options::Options const& options,
-                     Pipeline& pipeline, thread::Pool& threads) noexcept {
+                     Pipeline& pipeline, thread::Pool& threads) {
     uint32_t num_per_row = options.concat_num_per_row;
 
     float2 const clip = options.clip;
@@ -93,7 +93,7 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
     return uint32_t(items.size());
 }
 
-int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) noexcept {
+int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) {
     int2 dimensions(0);
 
     int32_t  row_width  = 0;
@@ -124,13 +124,13 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
     return dimensions;
 }
 
-static inline float4 clip(float4 const& v, float2 clip) noexcept {
+static inline float4 clip(float4 const& v, float2 clip) {
     return float4((v[0] < clip[0] || v[0] > clip[1]) ? 0.f : v[0],
                   (v[1] < clip[0] || v[1] > clip[1]) ? 0.f : v[1],
                   (v[2] < clip[0] || v[2] > clip[1]) ? 0.f : v[2], v[3]);
 }
 
-void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) noexcept {
+void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip) {
     int2 const sd = source.dimensions_2();
 
     for (int32_t y = 0; y < sd[1]; ++y) {

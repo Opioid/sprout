@@ -21,7 +21,7 @@ using Texture = texture::Texture;
 namespace op {
 
 uint32_t difference(std::vector<Item> const& items, it::options::Options const& options,
-                    thread::Pool& threads) noexcept {
+                    thread::Pool& threads) {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
         return 0;

@@ -24,7 +24,7 @@ using namespace scene;
 
 enum Adjacent { None = 0, Positive = 1, Negative = 2 };
 
-static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
+static inline uint8_t adjacent(float s, float2 cell_bound) {
     if (s < cell_bound[0]) {
         return Negative;
     }
@@ -36,16 +36,15 @@ static inline uint8_t adjacent(float s, float2 cell_bound) noexcept {
     return None;
 }
 
-static float3 scattering_coefficient(prop::Intersection const& intersection,
-                                     Worker const&             worker) noexcept;
+static float3 scattering_coefficient(prop::Intersection const& intersection, Worker const& worker);
 
-Grid::Grid() noexcept : grid_(nullptr) {}
+Grid::Grid() : grid_(nullptr) {}
 
-Grid::~Grid() noexcept {
+Grid::~Grid() {
     memory::free_aligned(grid_);
 }
 
-void Grid::init(float search_radius, float grid_cell_factor, bool check_disk) noexcept {
+void Grid::init(float search_radius, float grid_cell_factor, bool check_disk) {
     search_radius_ = search_radius;
 
     grid_cell_factor_ = grid_cell_factor;
@@ -55,7 +54,7 @@ void Grid::init(float search_radius, float grid_cell_factor, bool check_disk) no
     check_disk_ = check_disk;
 }
 
-void Grid::resize(AABB const& aabb) noexcept {
+void Grid::resize(AABB const& aabb) {
     aabb_ = aabb;
 
     float const diameter = 2.f * search_radius_;
@@ -233,7 +232,7 @@ void Grid::resize(AABB const& aabb) noexcept {
     }
 }
 
-void Grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
+void Grid::init_cells(uint32_t num_photons, Photon* photons) {
     num_photons_ = num_photons;
     photons_     = photons;
 
@@ -241,7 +240,7 @@ void Grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
         return;
     }
 
-    std::sort(photons, photons + num_photons, [this](Photon const& a, Photon const& b) noexcept {
+    std::sort(photons, photons + num_photons, [this](Photon const& a, Photon const& b) {
         int32_t const ida = map1(a.p);
         int32_t const idb = map1(b.p);
 
@@ -264,7 +263,7 @@ void Grid::init_cells(uint32_t num_photons, Photon* photons) noexcept {
 }
 
 uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                               thread::Pool& threads) noexcept {
+                               thread::Pool& threads) {
     threads.run_range(
         [this, merge_radius, num_reduced](uint32_t id, int32_t begin, int32_t end) noexcept {
             num_reduced[id] = reduce(merge_radius, begin, end);
@@ -278,7 +277,7 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
     }
 
     std::partition(photons_, photons_ + num_photons_,
-                   [](Photon const& p) noexcept { return p.alpha[0] >= 0.f; });
+                   [](Photon const& p) { return p.alpha[0] >= 0.f; });
 
     if (photons != photons_) {
         Photon* old_photons = photons_;
@@ -292,19 +291,19 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
     return comp_num_photons;
 }
 
-static inline float cone_filter(float squared_distance, float inv_squared_radius) noexcept {
+static inline float cone_filter(float squared_distance, float inv_squared_radius) {
     float const s = 1.f - squared_distance * inv_squared_radius;
 
     return s * s;
 }
 
-static inline float conely_filter(float squared_distance, float inv_squared_radius) noexcept {
+static inline float conely_filter(float squared_distance, float inv_squared_radius) {
     float const s = 1.f - squared_distance * inv_squared_radius;
 
     return s;
 }
 
-void Grid::set_num_paths(uint64_t num_paths) noexcept {
+void Grid::set_num_paths(uint64_t num_paths) {
     float const radius2 = search_radius_ * search_radius_;
 
     // conely
@@ -318,7 +317,7 @@ void Grid::set_num_paths(uint64_t num_paths) noexcept {
 }
 
 float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
-                scene::Worker const& worker) const noexcept {
+                scene::Worker const& worker) const {
     if (0 == num_photons_) {
         return float3(0.f);
     }
@@ -407,7 +406,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     return result;
 }
 
-uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
+uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) {
     float const merge_grid_cell_factor = (search_radius_ * grid_cell_factor_) / merge_radius;
 
     float2 const cell_bound(0.5f / merge_grid_cell_factor, 1.f - (0.5f / merge_grid_cell_factor));
@@ -505,13 +504,13 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) noexcept {
     return num_reduced;
 }
 
-int32_t Grid::map1(float3 const& v) const noexcept {
+int32_t Grid::map1(float3 const& v) const {
     int3 const c = static_cast<int3>((v - aabb_.min()) * local_to_texture_) + 1;
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
-int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const noexcept {
+int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const {
     float3 const r = (v - aabb_.min()) * local_to_texture_;
 
     int3 const c = static_cast<int3>(r);
@@ -525,7 +524,7 @@ int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const no
     return c + 1;
 }
 
-void Grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const noexcept {
+void Grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const {
     uint8_t    adjacents;
     int3 const c = map3(v, cell_bound, adjacents);
 
@@ -541,8 +540,7 @@ void Grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacen
     }
 }
 
-static float3 scattering_coefficient(prop::Intersection const& intersection,
-                                     Worker const&             worker) noexcept {
+static float3 scattering_coefficient(prop::Intersection const& intersection, Worker const& worker) {
     using Filter = material::Sampler_settings::Filter;
 
     auto const& material = *intersection.material(worker);

@@ -12,27 +12,26 @@
 
 namespace scene::prop {
 
-inline material::Material const* Intersection::material(Worker const& worker) const noexcept {
+inline material::Material const* Intersection::material(Worker const& worker) const {
     return worker.scene().prop_material(prop, geo.part);
 }
 
-inline uint32_t Intersection::light_id(Worker const& worker) const noexcept {
+inline uint32_t Intersection::light_id(Worker const& worker) const {
     return worker.scene().prop_light_id(prop, geo.part);
 }
 
-inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& worker) const
-    noexcept {
+inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& worker) const {
     return material(worker)->opacity(geo.uv, time, filter, worker);
 }
 
 inline float3 Intersection::thin_absorption(float3 const& wo, uint64_t time, Filter filter,
-                                            Worker const& worker) const noexcept {
+                                            Worker const& worker) const {
     return material(worker)->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
 }
 
 inline material::Sample const& Intersection::sample(float3 const& wo, Ray const& ray, Filter filter,
                                                     bool avoid_caustics, sampler::Sampler& sampler,
-                                                    Worker const& worker) const noexcept {
+                                                    Worker const& worker) const {
     material::Material const* material = Intersection::material(worker);
 
     Renderstate rs;
@@ -61,7 +60,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
     return material->sample(wo, ray, rs, filter, sampler, worker);
 }
 
-inline bool Intersection::same_hemisphere(float3 const& v) const noexcept {
+inline bool Intersection::same_hemisphere(float3 const& v) const {
     return dot(geo.geo_n, v) > 0.f;
 }
 

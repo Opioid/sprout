@@ -8,15 +8,15 @@ namespace scene::bvh {
 class Node;
 
 struct Tree {
-    Tree() noexcept;
+    Tree();
 
-    ~Tree() noexcept;
+    ~Tree();
 
     using Node = bvh::Node;
 
-    Node* allocate_nodes(uint32_t num_nodes) noexcept;
+    Node* allocate_nodes(uint32_t num_nodes);
 
-    void alllocate_indices(uint32_t num_indices) noexcept;
+    void alllocate_indices(uint32_t num_indices);
 
     uint32_t num_nodes_   = 0;
     uint32_t num_indices_ = 0;

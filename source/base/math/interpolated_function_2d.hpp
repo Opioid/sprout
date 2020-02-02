@@ -8,20 +8,19 @@ namespace math {
 template <typename T>
 class Interpolated_function_2D {
   public:
-    Interpolated_function_2D() noexcept;
+    Interpolated_function_2D();
 
     Interpolated_function_2D(Interpolated_function_2D&& other) noexcept;
 
-    Interpolated_function_2D(float2 range_begin, float2 range_end, uint2 num_samples,
-                             T const t[]) noexcept;
+    Interpolated_function_2D(float2 range_begin, float2 range_end, uint2 num_samples, T const t[]);
 
-    ~Interpolated_function_2D() noexcept;
+    ~Interpolated_function_2D();
 
-    void from_array(float2 range_begin, float2 range_end, uint2 num_samples, T const t[]) noexcept;
+    void from_array(float2 range_begin, float2 range_end, uint2 num_samples, T const t[]);
 
-    void scale(T s) noexcept;
+    void scale(T s);
 
-    T operator()(float x, float y) const noexcept;
+    T operator()(float x, float y) const;
 
   private:
     float2 range_end_;

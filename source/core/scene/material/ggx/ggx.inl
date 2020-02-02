@@ -26,15 +26,15 @@ E_tex(float2(0.f), float2(1.f), uint2(E_size), &E[0][0]);
 SU_GLOBALCONST(Interpolated_function_3D<float>)
 E_s_tex(float3(0.f), float3(1.f), uint3(E_s_size), &E_s[0][0][0]);
 
-static inline float3 ilm_ep_conductor(float3 const& f0, float n_dot_wo, float alpha) noexcept {
+static inline float3 ilm_ep_conductor(float3 const& f0, float n_dot_wo, float alpha) {
     return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
 }
 
-static inline float ilm_ep_dielectric(float n_dot_wo, float alpha, float ior) noexcept {
+static inline float ilm_ep_dielectric(float n_dot_wo, float alpha, float ior) {
     return 1.f / E_s_tex(n_dot_wo, alpha, ior - 1.f);
 }
 
-// static inline float ilm_ep_dielectric_diffuse(float n_dot_wo, float alpha, float ior) noexcept {
+// static inline float ilm_ep_dielectric_diffuse(float n_dot_wo, float alpha, float ior)  {
 //    return 1.f / E_sd_tex(n_dot_wo, alpha, ior - 1.f);
 //}
 
@@ -43,21 +43,21 @@ float constexpr Min_roughness = 0.01314f;
 float constexpr Min_alpha  = Min_roughness * Min_roughness;
 float constexpr Min_alpha2 = Min_alpha * Min_alpha;
 
-static inline float clamp_roughness(float roughness) noexcept {
+static inline float clamp_roughness(float roughness) {
     return std::max(roughness, Min_roughness);
 }
 
-static inline float map_roughness(float roughness) noexcept {
+static inline float map_roughness(float roughness) {
     return roughness * (1.f - Min_roughness) + Min_roughness;
 }
 
-static inline float distribution_isotropic(float n_dot_h, float alpha2) noexcept {
+static inline float distribution_isotropic(float n_dot_h, float alpha2) {
     float const d = (n_dot_h * n_dot_h) * (alpha2 - 1.f) + 1.f;
     return alpha2 / (Pi * d * d);
 }
 
 static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
-                                             float2 alpha2, float axy) noexcept {
+                                             float2 alpha2, float axy) {
     float const x = (x_dot_h * x_dot_h) / alpha2[0];
     float const y = (y_dot_h * y_dot_h) / alpha2[1];
     float const d = (x + y) + (n_dot_h * n_dot_h);
@@ -66,7 +66,7 @@ static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float
 }
 
 static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_dot_wo,
-                                                      float alpha2) noexcept {
+                                                      float alpha2) {
     // Un-correlated version
     // This is an optimized version that does the following in one step:
     //
@@ -94,7 +94,7 @@ static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_do
 }
 
 static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float n_dot_wo,
-                                                           float alpha2) noexcept {
+                                                           float alpha2) {
     //    float const t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
     //    float const t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
 
@@ -109,16 +109,15 @@ static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float
     return {0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi), t_wo + n_dot_wo};
 }
 
-static inline float3 microfacet(float d, float g, float3 const& f, float n_dot_wi,
-                                float n_dot_wo) noexcept {
+static inline float3 microfacet(float d, float g, float3 const& f, float n_dot_wi, float n_dot_wo) {
     return (d * g * f) / (4.f * n_dot_wi * n_dot_wo);
 }
 
-static inline float G_ggx(float n_dot_v, float alpha2) noexcept {
+static inline float G_ggx(float n_dot_v, float alpha2) {
     return (2.f * n_dot_v) / (n_dot_v + std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_v * n_dot_v)));
 }
 
-static inline float G_smith(float n_dot_wi, float n_dot_wo, float alpha2) noexcept {
+static inline float G_smith(float n_dot_wi, float n_dot_wo, float alpha2) {
     return G_ggx(n_dot_wi, alpha2) * G_ggx(n_dot_wo, alpha2);
 }
 
@@ -129,21 +128,20 @@ static inline float G_smith_correlated(float n_dot_wi, float n_dot_wo, float alp
     return (2.f * n_dot_wi * n_dot_wo) / (a + b);
 }
 
-static inline float pdf(float n_dot_h, float wo_dot_h, float d) noexcept {
+static inline float pdf(float n_dot_h, float wo_dot_h, float d) {
     return (d * n_dot_h) / (4.f * wo_dot_h);
 }
 
 // This PDF is for the distribution of visible normals
 // https://hal.archives-ouvertes.fr/hal-01509746/document
 // https://hal.inria.fr/hal-00996995v2/document
-static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float alpha2) noexcept {
+static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float alpha2) {
     float const g1 = G_ggx(n_dot_wo, alpha2);
 
     return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
 }
 
-static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d,
-                                        float alpha2) noexcept {
+static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d, float alpha2) {
     //    return (wo_dot_h * d);
 
     float const g1 = G_ggx(n_dot_wo, alpha2);
@@ -151,7 +149,7 @@ static inline float pdf_visible_refract(float n_dot_wo, float wo_dot_h, float d,
     return (g1 * wo_dot_h * d / n_dot_wo);
 }
 
-static inline float pdf_visible(float d, float g1_wo) noexcept {
+static inline float pdf_visible(float d, float g1_wo) {
     //	return (0.25f * g1_wo * d) / n_dot_wo;
 
     return (0.5f * d) / g1_wo;
@@ -159,15 +157,14 @@ static inline float pdf_visible(float d, float g1_wo) noexcept {
 
 template <typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, Fresnel const& fresnel) noexcept {
+                                   float alpha, Fresnel const& fresnel) {
     float3 fresnel_result;
     return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, fresnel, fresnel_result);
 }
 
 template <typename Fresnel>
 bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, Fresnel const& fresnel,
-                                   float3& fresnel_result) noexcept {
+                                   float alpha, Fresnel const& fresnel, float3& fresnel_result) {
     float const alpha2 = alpha * alpha;
 
     float const  d = distribution_isotropic(n_dot_h, alpha2);
@@ -187,7 +184,7 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 
 template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, float2 xi, bxdf::Sample& result) noexcept {
+                         Fresnel const& fresnel, float2 xi, bxdf::Sample& result) {
     float3 fresnel_result;
     return reflect(wo, n_dot_wo, layer, alpha, fresnel, xi, fresnel_result, result);
 }
@@ -195,7 +192,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, f
 template <typename Fresnel>
 float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, float2 xi, float3& fresnel_result,
-                         bxdf::Sample& result) noexcept {
+                         bxdf::Sample& result) {
     float        n_dot_h;
     float3 const h = sample(wo, layer, alpha, xi, n_dot_h);
 
@@ -233,7 +230,7 @@ float Isotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer, f
 template <typename Fresnel>
 bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
                                    float n_dot_h, float alpha, IoR const& ior,
-                                   Fresnel const& fresnel) noexcept {
+                                   Fresnel const& fresnel) {
     float const alpha2 = alpha * alpha;
 
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
@@ -264,8 +261,7 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
 template <typename Fresnel>
 float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         IoR const& ior, Fresnel const& fresnel, float2 xi,
-                         bxdf::Sample& result) noexcept {
+                         IoR const& ior, Fresnel const& fresnel, float2 xi, bxdf::Sample& result) {
     float        n_dot_h;
     float3 const h = sample(wo, layer, alpha, xi, n_dot_h);
 
@@ -320,7 +316,7 @@ float Isotropic::refract(float3 const& wo, float n_dot_wo, Layer const& layer, f
 }
 
 inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alpha, float2 xi,
-                                float& n_dot_h) noexcept {
+                                float& n_dot_h) {
     float3 const lwo = layer.world_to_tangent(wo);
 
     // stretch view
@@ -357,7 +353,7 @@ inline float3 Isotropic::sample(float3 const& wo, Layer const& layer, float alph
 
 inline float Isotropic::reflect(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
                                 float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,
-                                bxdf::Sample& result) noexcept {
+                                bxdf::Sample& result) {
     float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
@@ -382,7 +378,7 @@ inline float Isotropic::reflect(float3 const& wo, float3 const& h, float n_dot_w
 
 inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
                                 float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,
-                                IoR const& ior, bxdf::Sample& result) noexcept {
+                                IoR const& ior, bxdf::Sample& result) {
     float const eta = ior.eta_i / ior.eta_t;
 
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
@@ -421,8 +417,7 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
 
 template <typename Layer, typename Fresnel>
 bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_dot_wo,
-                                     float wo_dot_h, Layer const& layer,
-                                     Fresnel const& fresnel) noexcept {
+                                     float wo_dot_h, Layer const& layer, Fresnel const& fresnel) {
     float const n_dot_h = saturate(dot(layer.n_, h));
 
     float const x_dot_h = dot(layer.t_, h);
@@ -442,7 +437,7 @@ bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_do
 
 template <typename Layer, typename Fresnel>
 float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                           Fresnel const& fresnel, float2 xi, bxdf::Sample& result) noexcept {
+                           Fresnel const& fresnel, float2 xi, bxdf::Sample& result) {
     float const phi     = (2.f * Pi) * xi[0];
     float const sin_phi = std::sin(phi);
     float const cos_phi = std::cos(phi);

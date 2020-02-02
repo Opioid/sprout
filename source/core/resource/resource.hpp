@@ -13,11 +13,11 @@ struct Resource_ptr {
 
     uint32_t id;
 
-    bool operator!() const noexcept {
+    bool operator!() const {
         return nullptr == ptr;
     }
 
-    static Resource_ptr constexpr Null() noexcept {
+    static Resource_ptr constexpr Null() {
         return {nullptr, resource::Null};
     }
 };

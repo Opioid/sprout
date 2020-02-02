@@ -180,7 +180,7 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 
 namespace quaternion {
 
-static inline Quaternion create(float3x3 const& m) noexcept {
+static inline Quaternion create(float3x3 const& m) {
     float const trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
     Quaternion  temp;
 
@@ -210,7 +210,7 @@ static inline Quaternion create(float3x3 const& m) noexcept {
     return temp;
 }
 
-static inline float3x3 create_matrix3x3(Quaternion const& q) noexcept {
+static inline float3x3 create_matrix3x3(Quaternion const& q) {
     float const d = dot(q, q);
     float const s = 2.f / d;
 
@@ -257,26 +257,26 @@ static inline float3x3 create_matrix3x3(Quaternion const& q) noexcept {
     return m;
 }
 
-static inline Quaternion create_rotation_x(float a) noexcept {
+static inline Quaternion create_rotation_x(float a) {
     return Quaternion(std::sin(a * 0.5f), 0.f, 0.f, std::cos(a * 0.5f));
 }
 
-static inline Quaternion create_rotation_y(float a) noexcept {
+static inline Quaternion create_rotation_y(float a) {
     return Quaternion(0.f, std::sin(a * 0.5f), 0.f, std::cos(a * 0.5f));
 }
 
-static inline Quaternion create_rotation_z(float a) noexcept {
+static inline Quaternion create_rotation_z(float a) {
     return Quaternion(0.f, 0.f, std::sin(a * 0.5f), std::cos(a * 0.5f));
 }
 
-static inline Quaternion mul(Quaternion const& a, Quaternion const& b) noexcept {
+static inline Quaternion mul(Quaternion const& a, Quaternion const& b) {
     return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
                       (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
                       (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
                       (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
-static inline Quaternion slerp(Quaternion const& a, Quaternion const& b, float t) noexcept {
+static inline Quaternion slerp(Quaternion const& a, Quaternion const& b, float t) {
     // calc cosine theta
     float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 
@@ -312,7 +312,7 @@ static inline Quaternion slerp(Quaternion const& a, Quaternion const& b, float t
                       sclp * a[2] + sclq * end[2], sclp * a[3] + sclq * end[3]);
 }
 
-static inline constexpr Quaternion identity() noexcept {
+static inline constexpr Quaternion identity() {
     return Quaternion(0.f, 0.f, 0.f, 1.f);
 }
 

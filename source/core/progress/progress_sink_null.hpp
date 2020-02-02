@@ -7,9 +7,9 @@ namespace progress {
 
 class Null : public Sink {
   public:
-    void start(uint32_t /*resolution*/) noexcept final {}
+    void start(uint32_t /*resolution*/) final {}
 
-    void tick() noexcept final {}
+    void tick() final {}
 };
 
 }  // namespace progress

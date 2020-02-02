@@ -10,21 +10,21 @@
 
 namespace image::encoding::rgbe {
 
-static void write_header(std::ostream& stream, int2 dimensions) noexcept;
+static void write_header(std::ostream& stream, int2 dimensions);
 
-static void write_pixels(std::ostream& stream, Float4 const& image) noexcept;
+static void write_pixels(std::ostream& stream, Float4 const& image);
 
-static void write_pixels_rle(std::ostream& stream, Float4 const& image) noexcept;
+static void write_pixels_rle(std::ostream& stream, Float4 const& image);
 
-static void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes) noexcept;
+static void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes);
 
-static byte4 float_to_rgbe(float4 const& c) noexcept;
+static byte4 float_to_rgbe(float4 const& c);
 
-std::string Writer::file_extension() const noexcept {
+std::string Writer::file_extension() const {
     return "hdr";
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*threads*/) noexcept {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*threads*/) {
     write_header(stream, image.description().dimensions_2());
 
     write_pixels_rle(stream, image);
@@ -32,13 +32,13 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*th
     return true;
 }
 
-void write_header(std::ostream& stream, int2 dimensions) noexcept {
+void write_header(std::ostream& stream, int2 dimensions) {
     stream << "#?RGBE\n";
     stream << "FORMAT=32-bit_rle_rgbe\n\n";
     stream << "-Y " << dimensions[1] << " +X " << dimensions[0] << "\n";
 }
 
-void write_pixels(std::ostream& stream, Float4 const& image) noexcept {
+void write_pixels(std::ostream& stream, Float4 const& image) {
     auto const& d = image.description().dimensions_3();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
         byte4 const rgbe = float_to_rgbe(image.at(i));
@@ -47,7 +47,7 @@ void write_pixels(std::ostream& stream, Float4 const& image) noexcept {
     }
 }
 
-void write_pixels_rle(std::ostream& stream, Float4 const& image) noexcept {
+void write_pixels_rle(std::ostream& stream, Float4 const& image) {
     int32_t const scanline_width = image.description().dimensions_3()[0];
     int32_t       num_scanlines  = image.description().dimensions_3()[1];
 
@@ -92,7 +92,7 @@ void write_pixels_rle(std::ostream& stream, Float4 const& image) noexcept {
 // Run length encoding adds considerable complexity but does
 // save some space.  For each scanline, each channel (r,g,b,e) is
 // encoded separately for better compression.
-void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes) noexcept {
+void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes) {
     uint32_t constexpr min_run_length = 4;
 
     uint8_t  buffer[2];
@@ -156,7 +156,7 @@ void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_byt
     }
 }
 
-byte4 float_to_rgbe(float4 const& c) noexcept {
+byte4 float_to_rgbe(float4 const& c) {
     float v = c[0];
 
     if (c[1] > v) {

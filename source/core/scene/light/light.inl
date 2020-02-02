@@ -24,27 +24,27 @@ using Sampler        = sampler::Sampler;
 inline Light::Light(Type type, uint32_t prop, uint32_t part)
     : type_(type), prop_(prop), part_(part) {}
 
-inline float Light::area() const noexcept {
+inline float Light::area() const {
     return extent_;
 }
 
-inline void Light::set_extent(float extent) noexcept {
+inline void Light::set_extent(float extent) {
     extent_ = extent;
 }
 
 inline Transformation const& Light::transformation_at(uint64_t time, Transformation& transformation,
-                                                      Scene const& scene) const noexcept {
+                                                      Scene const& scene) const {
     return scene.prop_transformation_at(prop_, time, transformation);
 }
 
-inline bool Light::is_finite(Scene const& scene) const noexcept {
+inline bool Light::is_finite(Scene const& scene) const {
     return scene.prop_shape(prop_)->is_finite();
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
                                float3 const& n, Transformation const& transformation,
                                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
-                               Worker const& worker, Sample_to& result) noexcept {
+                               Worker const& worker, Sample_to& result) {
     shape::Shape const* shape = worker.scene().prop_shape(prop);
 
     auto const material = worker.scene().prop_material(prop, part);
@@ -74,7 +74,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
                                      float3 const& n, Transformation const& transformation,
                                      bool total_sphere, Sampler& sampler,
                                      uint32_t sampler_dimension, Worker const& worker,
-                                     Sample_to& result) noexcept {
+                                     Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -103,7 +103,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
 static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
                                  float3 const& n, Transformation const& transformation,
                                  Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                                 Sample_to& result) noexcept {
+                                 Sample_to& result) {
     if (!worker.scene().prop_shape(prop)->sample_volume(part, p, transformation, volume, sampler,
                                                         sampler_dimension, worker.node_stack(),
                                                         result)) {
@@ -120,7 +120,7 @@ static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, flo
 static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
                                        float3 const& n, Transformation const& transformation,
                                        Sampler& sampler, uint32_t sampler_dimension,
-                                       Worker const& worker, Sample_to& result) noexcept {
+                                       Worker const& worker, Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -145,7 +145,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
 
 inline bool Light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
                           bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
-                          Worker const& worker, Sample_to& result) const noexcept {
+                          Worker const& worker, Sample_to& result) const {
     switch (type_) {
         case Type::Null:
             return false;
@@ -167,23 +167,20 @@ inline bool Light::sample(float3 const& p, float3 const& n, Transformation const
 }
 
 static inline float3 prop_evaluate(uint32_t prop, uint32_t part, float area,
-                                   Sample_to const& sample, Filter filter,
-                                   Worker const& worker) noexcept {
+                                   Sample_to const& sample, Filter filter, Worker const& worker) {
     auto const material = worker.scene().prop_material(prop, part);
 
     return material->evaluate_radiance(sample.wi, sample.uvw.xy(), area, filter, worker);
 }
 
 static inline float3 volume_evaluate(uint32_t prop, uint32_t part, float volume,
-                                     Sample_to const& sample, Filter filter,
-                                     Worker const& worker) noexcept {
+                                     Sample_to const& sample, Filter filter, Worker const& worker) {
     auto const material = worker.scene().prop_material(prop, part);
 
     return material->evaluate_radiance(sample.wi, sample.uvw, volume, filter, worker);
 }
 
-inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const
-    noexcept {
+inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const {
     switch (type_) {
         case Type::Null:
             return float3(0.f);
@@ -201,7 +198,7 @@ inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker con
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
                                Transformation const& transformation, Sampler& sampler,
                                uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
-                               Sample_from& result) noexcept {
+                               Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     bool const two_sided = material->is_two_sided();
@@ -220,7 +217,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
                                      Transformation const& transformation, Sampler& sampler,
                                      uint32_t sampler_dimension, AABB const& bounds,
-                                     Worker const& worker, Sample_from& result) noexcept {
+                                     Worker const& worker, Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -247,7 +244,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
 inline bool Light::sample(Transformation const& transformation, Sampler& sampler,
                           uint32_t sampler_dimension, AABB const& bounds, Worker const& worker,
-                          Sample_from& result) const noexcept {
+                          Sample_from& result) const {
     switch (type_) {
         case Type::Null:
             return false;
@@ -269,8 +266,7 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
                                Transformation const& transformation, Sampler& sampler,
                                uint32_t sampler_dimension, Distribution_2D const& importance,
-                               AABB const& bounds, Worker const& worker,
-                               Sample_from& result) noexcept {
+                               AABB const& bounds, Worker const& worker, Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     bool const two_sided = material->is_two_sided();
@@ -297,7 +293,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
                                      Transformation const& transformation, Sampler& sampler,
                                      uint32_t sampler_dimension, Distribution_2D const& importance,
                                      AABB const& bounds, Worker const& worker,
-                                     Sample_from& result) noexcept {
+                                     Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float2 const s2d0 = sampler.generate_sample_2D(sampler_dimension);
@@ -329,8 +325,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
 inline bool Light::sample(Transformation const& transformation, Sampler& sampler,
                           uint32_t sampler_dimension, Distribution_2D const& importance,
-                          AABB const& bounds, Worker const& worker, Sample_from& result) const
-    noexcept {
+                          AABB const& bounds, Worker const& worker, Sample_from& result) const {
     switch (type_) {
         case Type::Null:
             return false;
@@ -350,15 +345,14 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
 }
 
 static inline float3 prop_evaluate(uint32_t prop, uint32_t part, float area,
-                                   Sample_from const& sample, Filter filter,
-                                   Worker const& worker) noexcept {
+                                   Sample_from const& sample, Filter filter, Worker const& worker) {
     auto const material = worker.scene().prop_material(prop, part);
 
     return material->evaluate_radiance(-sample.dir, sample.uv, area, filter, worker);
 }
 
-inline float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const
-    noexcept {
+inline float3 Light::evaluate(Sample_from const& sample, Filter filter,
+                              Worker const& worker) const {
     switch (type_) {
         case Type::Null:
             return float3(0.f);
@@ -375,7 +369,7 @@ inline float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker c
 
 inline bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
                           Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                          Sample_to& result) const noexcept {
+                          Sample_to& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
 
@@ -383,8 +377,8 @@ inline bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool 
 }
 
 inline bool Light::sample(float3 const& p, uint64_t time, Sampler& sampler,
-                          uint32_t sampler_dimension, Worker const& worker, Sample_to& result) const
-    noexcept {
+                          uint32_t sampler_dimension, Worker const& worker,
+                          Sample_to& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
 
@@ -392,8 +386,7 @@ inline bool Light::sample(float3 const& p, uint64_t time, Sampler& sampler,
 }
 
 inline bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                          AABB const& bounds, Worker const& worker, Sample_from& result) const
-    noexcept {
+                          AABB const& bounds, Worker const& worker, Sample_from& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
 
@@ -402,7 +395,7 @@ inline bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dime
 
 inline bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
                           Distribution_2D const& importance, AABB const& bounds,
-                          Worker const& worker, Sample_from& result) const noexcept {
+                          Worker const& worker, Sample_from& result) const {
     Transformation temp;
     auto const&    transformation = transformation_at(time, temp, worker.scene());
 
@@ -412,7 +405,7 @@ inline bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dime
 static inline float prop_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
                              shape::Intersection const& intersection,
                              Transformation const& transformation, bool total_sphere,
-                             Worker const& worker) noexcept {
+                             Worker const& worker) {
     bool const two_sided = worker.scene().prop_material(prop, part)->is_two_sided();
 
     return worker.scene().prop_shape(prop)->pdf(ray, intersection, transformation, area, two_sided,
@@ -422,7 +415,7 @@ static inline float prop_pdf(uint32_t prop, uint32_t part, float area, Ray const
 static inline float prop_image_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
                                    shape::Intersection const& intersection,
                                    Transformation const& transformation, Filter filter,
-                                   Worker const& worker) noexcept {
+                                   Worker const& worker) {
     auto const material = worker.scene().prop_material(prop, part);
 
     bool const two_sided = material->is_two_sided();
@@ -438,14 +431,14 @@ static inline float prop_image_pdf(uint32_t prop, uint32_t part, float area, Ray
 
 static float volume_pdf(uint32_t prop, uint32_t /*part*/, float volume, Ray const& ray,
                         shape::Intersection const& intersection,
-                        Transformation const& transformation, Worker const& worker) noexcept {
+                        Transformation const& transformation, Worker const& worker) {
     return worker.scene().prop_shape(prop)->pdf_volume(ray, intersection, transformation, volume);
 }
 
 static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume, Ray const& ray,
                                      shape::Intersection const& intersection,
                                      Transformation const& transformation, Filter filter,
-                                     Worker const& worker) noexcept {
+                                     Worker const& worker) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float const shape_pdf = worker.scene().prop_shape(prop)->pdf_volume(ray, intersection,
@@ -457,7 +450,7 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume,
 }
 
 inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,
-                        Filter filter, Worker const& worker) const noexcept {
+                        Filter filter, Worker const& worker) const {
     Transformation temp;
     auto const&    transformation = transformation_at(ray.time, temp, worker.scene());
 
@@ -480,19 +473,19 @@ inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool t
     return 0.f;
 }
 
-inline bool Light::equals(uint32_t prop, uint32_t part) const noexcept {
+inline bool Light::equals(uint32_t prop, uint32_t part) const {
     return prop_ == prop && part_ == part;
 }
 
-inline bool Light::is_light(uint32_t id) noexcept {
+inline bool Light::is_light(uint32_t id) {
     return Null != id;
 }
 
-inline bool Light::is_area_light(uint32_t id) noexcept {
+inline bool Light::is_area_light(uint32_t id) {
     return 0 == (id & Volume_light_mask);
 }
 
-inline uint32_t Light::strip_mask(uint32_t id) noexcept {
+inline uint32_t Light::strip_mask(uint32_t id) {
     return ~Volume_light_mask & id;
 }
 

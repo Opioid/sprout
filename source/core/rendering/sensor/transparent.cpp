@@ -6,18 +6,17 @@
 
 namespace rendering::sensor {
 
-Transparent::Transparent(float exposure) noexcept
-    : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
+Transparent::Transparent(float exposure) : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
 
-Transparent::~Transparent() noexcept {
+Transparent::~Transparent() {
     memory::free_aligned(layers_);
 }
 
-void Transparent::set_layer(int32_t layer) noexcept {
+void Transparent::set_layer(int32_t layer) {
     pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
 }
 
-void Transparent::clear(float weight) noexcept {
+void Transparent::clear(float weight) {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
         pixels_[i].color  = float4(0.f);
@@ -25,18 +24,18 @@ void Transparent::clear(float weight) noexcept {
     }
 }
 
-void Transparent::set_weights(float weight) noexcept {
+void Transparent::set_weights(float weight) {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
         pixels_[i].weight = weight;
     }
 }
 
-bool Transparent::has_alpha_transparency() const noexcept {
+bool Transparent::has_alpha_transparency() const {
     return true;
 }
 
-void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) noexcept {
+void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -44,7 +43,7 @@ void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) noexc
     value.weight += weight;
 }
 
-void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept {
+void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -55,7 +54,7 @@ void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight
     atomic::add_assign(value.weight, weight);
 }
 
-void Transparent::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept {
+void Transparent::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -65,7 +64,7 @@ void Transparent::splat_pixel_atomic(int2 pixel, float4 const& color, float weig
     atomic::add_assign(value.color[3], weight * color[3]);
 }
 
-void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept {
+void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) const {
     float const exposure_factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -77,8 +76,7 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) con
     }
 }
 
-void Transparent::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const
-    noexcept {
+void Transparent::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const {
     float const exposure_factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
@@ -90,7 +88,7 @@ void Transparent::resolve_accumulate(int32_t begin, int32_t end, image::Float4& 
     }
 }
 
-void Transparent::on_resize(int2 dimensions, int32_t num_layers) noexcept {
+void Transparent::on_resize(int2 dimensions, int32_t num_layers) {
     int32_t const current_len = dimensions_[0] * dimensions_[1] * num_layers_;
 
     int32_t const len = dimensions[0] * dimensions[1] * num_layers;

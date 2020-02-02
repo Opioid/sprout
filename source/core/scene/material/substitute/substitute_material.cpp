@@ -12,13 +12,13 @@
 
 namespace scene::material::substitute {
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
-                                         Renderstate const& rs, Filter                filter,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker) const
-    noexcept {
+                                         Renderstate const& rs, Filter filter,
+                                         sampler::Sampler& /*sampler*/,
+                                         Worker const& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>();
@@ -30,20 +30,20 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-size_t Material::num_bytes() const noexcept {
+size_t Material::num_bytes() const {
     return sizeof(*this);
 }
 
-size_t Material::sample_size() noexcept {
+size_t Material::sample_size() {
     return sizeof(Sample);
 }
 
-Frozen::Frozen(Sampler_settings const& sampler_settings, bool two_sided) noexcept
+Frozen::Frozen(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
                                        Filter        filter, sampler::Sampler& /*sampler*/,
-                                       Worker const& worker) const noexcept {
+                                       Worker const& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>();
@@ -101,19 +101,19 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
     return sample;
 }
 
-void Frozen::set_snow_normal_map(Texture_adapter const& normal_map) noexcept {
+void Frozen::set_snow_normal_map(Texture_adapter const& normal_map) {
     snow_normal_map_ = normal_map;
 }
 
-void Frozen::set_snow_mask(Texture_adapter const& mask) noexcept {
+void Frozen::set_snow_mask(Texture_adapter const& mask) {
     snow_mask_ = mask;
 }
 
-size_t Frozen::num_bytes() const noexcept {
+size_t Frozen::num_bytes() const {
     return sizeof(*this);
 }
 
-size_t Frozen::sample_size() noexcept {
+size_t Frozen::sample_size() {
     return sizeof(Sample);
 }
 

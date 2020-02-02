@@ -17,11 +17,11 @@
 namespace image::encoding::exr {
 
 struct Channels {
-    Channels() noexcept {
+    Channels() {
         channels.reserve(4);
     }
 
-    bool single_type() const noexcept {
+    bool single_type() const {
         Channel::Type const type = channels[0].type;
 
         for (size_t i = 1, len = channels.size(); i < len; ++i) {
@@ -33,7 +33,7 @@ struct Channels {
         return true;
     }
 
-    int32_t bytes_per_pixel() const noexcept {
+    int32_t bytes_per_pixel() const {
         int32_t size = 0;
         for (Channel const& c : channels) {
             size += c.byte_size();
@@ -45,13 +45,13 @@ struct Channels {
     std::vector<Channel> channels;
 };
 
-static void channel_list(std::istream& stream, Channels& channels) noexcept;
+static void channel_list(std::istream& stream, Channels& channels);
 
-static Compression compression(std::istream& stream) noexcept;
+static Compression compression(std::istream& stream);
 
-static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels) noexcept;
+static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels);
 
-Image* Reader::read(std::istream& stream) noexcept {
+Image* Reader::read(std::istream& stream) {
     uint8_t header[Signature_size];
 
     // Check signature
@@ -149,7 +149,7 @@ Image* Reader::read(std::istream& stream) noexcept {
     return nullptr;
 }
 
-static Compression compression(std::istream& stream) noexcept {
+static Compression compression(std::istream& stream) {
     Compression type;
     stream.read(reinterpret_cast<char*>(&type), sizeof(uint8_t));
 
@@ -185,7 +185,7 @@ static Compression compression(std::istream& stream) noexcept {
     return type;
 }
 
-static void channel_list(std::istream& stream, Channels& channels) noexcept {
+static void channel_list(std::istream& stream, Channels& channels) {
     //   std::cout << "[ ";
 
     for (int32_t i = 0;; ++i) {
@@ -240,27 +240,27 @@ static void reconstruct_scalar(uint8_t* buf, int32_t len) {
     }
 }
 
-static void interleave_scalar(uint8_t const* source, int32_t len, uint8_t* out) {
-    uint8_t const* t1 = source;
-    uint8_t const* t2 = source + (len + 1) / 2;
+// static void interleave_scalar(uint8_t const* source, int32_t len, uint8_t* out) {
+//    uint8_t const* t1 = source;
+//    uint8_t const* t2 = source + (len + 1) / 2;
 
-    uint8_t*       s    = out;
-    uint8_t* const stop = s + len;
+//    uint8_t*       s    = out;
+//    uint8_t* const stop = s + len;
 
-    while (true) {
-        if (s < stop) {
-            *(s++) = *(t1++);
-        } else {
-            break;
-        }
+//    while (true) {
+//        if (s < stop) {
+//            *(s++) = *(t1++);
+//        } else {
+//            break;
+//        }
 
-        if (s < stop) {
-            *(s++) = *(t2++);
-        } else {
-            break;
-        }
-    }
-}
+//        if (s < stop) {
+//            *(s++) = *(t2++);
+//        } else {
+//            break;
+//        }
+//    }
+//}
 
 static void interleave_sse2(uint8_t const* source, int32_t len, uint8_t* out) {
     static int32_t constexpr bytesPerChunk = 2 * sizeof(__m128i);
@@ -293,7 +293,7 @@ static void interleave_sse2(uint8_t const* source, int32_t len, uint8_t* out) {
     }
 }
 
-static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels) noexcept {
+static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels) {
     int32_t const rows_per_block = exr::num_scanlines_per_block(Compression::ZIP);
     int32_t const row_blocks     = exr::num_scanline_blocks(dimensions[1], Compression::ZIP);
 

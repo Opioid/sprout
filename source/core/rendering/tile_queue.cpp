@@ -3,9 +3,9 @@
 
 namespace rendering {
 
-Tile_queue::~Tile_queue() noexcept = default;
+Tile_queue::~Tile_queue() = default;
 
-void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) noexcept {
+void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) {
     resolution_      = resolution;
     tile_dimensions_ = tile_dimensions;
     filter_radius_   = filter_radius;
@@ -19,15 +19,15 @@ void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_r
     current_consume_ = 0;
 }
 
-uint32_t Tile_queue::size() const noexcept {
+uint32_t Tile_queue::size() const {
     return uint32_t(num_tiles_);
 }
 
-void Tile_queue::restart() noexcept {
+void Tile_queue::restart() {
     current_consume_ = 0;
 }
 
-bool Tile_queue::pop(int4& tile) noexcept {
+bool Tile_queue::pop(int4& tile) {
     // uint32_t const current = current_consume_++;
     int32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
@@ -70,16 +70,16 @@ bool Tile_queue::pop(int4& tile) noexcept {
     return false;
 }
 
-uint32_t Tile_queue::index(int4 const& tile) const noexcept {
+uint32_t Tile_queue::index(int4 const& tile) const {
     int32_t const x = std::max(tile[0], 0) / tile_dimensions_;
     int32_t const y = std::max(tile[1], 0) / tile_dimensions_;
 
     return uint32_t(y * tiles_per_row_ + x);
 }
 
-Range_queue::~Range_queue() noexcept = default;
+Range_queue::~Range_queue() = default;
 
-void Range_queue::init(uint64_t total0, uint64_t total1, uint32_t range_size) noexcept {
+void Range_queue::init(uint64_t total0, uint64_t total1, uint32_t range_size) {
     total0_ = total0;
     total1_ = total1;
 
@@ -89,15 +89,15 @@ void Range_queue::init(uint64_t total0, uint64_t total1, uint32_t range_size) no
     num_ranges1_ = uint32_t(std::ceil(float(total1) / float(range_size)));
 }
 
-uint32_t Range_queue::size() const noexcept {
+uint32_t Range_queue::size() const {
     return num_ranges0_ + num_ranges1_;
 }
 
-void Range_queue::restart() noexcept {
+void Range_queue::restart() {
     current_consume_ = 0;
 }
 
-bool Range_queue::pop(uint32_t segment, ulong2& range) noexcept {
+bool Range_queue::pop(uint32_t segment, ulong2& range) {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
     uint64_t const start = uint64_t(current) * uint64_t(range_size_);
@@ -117,7 +117,7 @@ bool Range_queue::pop(uint32_t segment, ulong2& range) noexcept {
     return false;
 }
 
-uint32_t Range_queue::index(ulong2 const& range, uint32_t segment) const noexcept {
+uint32_t Range_queue::index(ulong2 const& range, uint32_t segment) const {
     return uint32_t(range[0] / uint64_t(range_size_)) + segment * num_ranges0_;
 }
 

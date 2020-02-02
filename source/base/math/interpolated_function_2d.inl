@@ -9,7 +9,7 @@
 namespace math {
 
 template <typename T>
-Interpolated_function_2D<T>::Interpolated_function_2D() noexcept = default;
+Interpolated_function_2D<T>::Interpolated_function_2D() = default;
 
 template <typename T>
 Interpolated_function_2D<T>::Interpolated_function_2D(Interpolated_function_2D&& other) noexcept
@@ -23,18 +23,18 @@ Interpolated_function_2D<T>::Interpolated_function_2D(Interpolated_function_2D&&
 
 template <typename T>
 Interpolated_function_2D<T>::Interpolated_function_2D(float2 range_begin, float2 range_end,
-                                                      uint2 num_samples, T const t[]) noexcept {
+                                                      uint2 num_samples, T const t[]) {
     from_array(range_begin, range_end, num_samples, t);
 }
 
 template <typename T>
-Interpolated_function_2D<T>::~Interpolated_function_2D() noexcept {
+Interpolated_function_2D<T>::~Interpolated_function_2D() {
     memory::free_aligned(samples_);
 }
 
 template <typename T>
 void Interpolated_function_2D<T>::from_array(float2 range_begin, float2 range_end,
-                                             uint2 num_samples, T const t[]) noexcept {
+                                             uint2 num_samples, T const t[]) {
     uint32_t const area = num_samples[0] * num_samples[1];
 
     if (num_samples_[0] * num_samples_[1] != area) {
@@ -61,14 +61,14 @@ void Interpolated_function_2D<T>::from_array(float2 range_begin, float2 range_en
 }
 
 template <typename T>
-void Interpolated_function_2D<T>::scale(T s) noexcept {
+void Interpolated_function_2D<T>::scale(T s) {
     for (uint32_t i = 0, len = num_samples_[0] * num_samples_[1]; i < len; ++i) {
         samples_[i] *= s;
     }
 }
 
 template <typename T>
-T Interpolated_function_2D<T>::operator()(float x, float y) const noexcept {
+T Interpolated_function_2D<T>::operator()(float x, float y) const {
     x = std::min(x, range_end_[0]);
     y = std::min(y, range_end_[1]);
 

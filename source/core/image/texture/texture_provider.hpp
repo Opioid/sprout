@@ -13,7 +13,7 @@ class Texture;
 
 class Provider final : public resource::Provider<Texture> {
   public:
-    Provider(bool no_textures) noexcept;
+    Provider(bool no_textures);
 
     enum class Usage {
         Undefined,
@@ -29,18 +29,18 @@ class Provider final : public resource::Provider<Texture> {
     };
 
     Texture* load(std::string const& filename, Variants const& options, Resources& resources,
-                  std::string& resolved_name) noexcept final;
+                  std::string& resolved_name) final;
 
     Texture* load(void const* data, std::string const& source_name, Variants const& options,
-                  Resources& resources) noexcept final;
+                  Resources& resources) final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    size_t num_bytes(Texture const* resource) const noexcept final;
+    size_t num_bytes(Texture const* resource) const final;
 
-    static std::string encode_name(uint32_t image_id) noexcept;
+    static std::string encode_name(uint32_t image_id);
 
-    static uint32_t decode_name(std::string const& name) noexcept;
+    static uint32_t decode_name(std::string const& name);
 
   private:
     bool no_textures_;

@@ -26,22 +26,22 @@ class Difference_item {
   public:
     using Texture = image::texture::Texture;
 
-    Difference_item(Item const& item) noexcept;
+    Difference_item(Item const& item);
 
-    ~Difference_item() noexcept;
+    ~Difference_item();
 
-    std::string name() const noexcept;
+    std::string name() const;
 
-    float const* difference() const noexcept;
+    float const* difference() const;
 
-    float max_dif() const noexcept;
+    float max_dif() const;
 
-    float rmse() const noexcept;
+    float rmse() const;
 
-    float psnr() const noexcept;
+    float psnr() const;
 
     void calculate_difference(Texture const* other, Scratch* scratch, float clamp, float2 clip,
-                              thread::Pool& threads) noexcept;
+                              thread::Pool& threads);
 
   private:
     std::string name_;

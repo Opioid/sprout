@@ -98,13 +98,14 @@ All instructions on how to use this code are in the accompanying header file.
 */
 
 #include "ArHosekSkyModel.hpp"
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
 #include "ArHosekSkyModelData_CIEXYZ.hpp"
 #include "ArHosekSkyModelData_RGB.hpp"
 #include "ArHosekSkyModelData_Spectral.hpp"
+
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 
 //   Some macro definitions that occur elsewhere in ART, and that have to be
 //   replicated to make this a stand-alone module.
@@ -141,6 +142,9 @@ All instructions on how to use this code are in the accompanying header file.
 
 typedef const hk_real* ArHosekSkyModel_Dataset;
 typedef const hk_real* ArHosekSkyModel_Radiance_Dataset;
+
+using ArHosekSkyModel_Dataset          = hk_real const*;
+using ArHosekSkyModel_Radiance_Dataset = hk_real const*;
 
 // internal functions
 
@@ -390,7 +394,7 @@ ArHosekSkyModelState* arhosekskymodelstate_alienworld_alloc_init(
 
         //   The wavelength of this band in nanometers
 
-        hk_real owl = (hk_real(320) + hk_real(40) * wl) * hk_real(10E-10);
+        hk_real owl = (hk_real(320) + hk_real(40) * hk_real(wl)) * hk_real(10E-10);
 
         //   The original intensity we just computed
 

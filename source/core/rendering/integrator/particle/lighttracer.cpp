@@ -23,16 +23,16 @@
 
 namespace rendering::integrator::particle {
 
-Lighttracer::Lighttracer(rnd::Generator& rng, Settings const& settings) noexcept
+Lighttracer::Lighttracer(rnd::Generator& rng, Settings const& settings)
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
       light_sampler_(rng),
       material_samplers_{rng, rng, rng} {}
 
-Lighttracer::~Lighttracer() noexcept = default;
+Lighttracer::~Lighttracer() = default;
 
-void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     light_sampler_.resize(num_samples_per_pixel, 1, 2, 3);
@@ -42,7 +42,7 @@ void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel
     }
 }
 
-void Lighttracer::start_pixel() noexcept {
+void Lighttracer::start_pixel() {
     sampler_.start_pixel();
 
     light_sampler_.start_pixel();
@@ -53,7 +53,7 @@ void Lighttracer::start_pixel() noexcept {
 }
 
 void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
-                     Interface_stack const& /*initial_stack*/) noexcept {
+                     Interface_stack const& /*initial_stack*/) {
     worker.interface_stack().clear();
 
     Camera const& camera = worker.camera();
@@ -185,7 +185,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
 bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                                      Light const*& light_out, uint32_t& light_id,
-                                     Sample_from& light_sample) noexcept {
+                                     Sample_from& light_sample) {
     float const select = light_sampler_.generate_sample_1D(1);
 
     auto const light = worker.scene().random_light(select);
@@ -226,7 +226,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3 const& radiance,
                                 Ray const& history, Intersection const& intersection,
                                 Material_sample const& material_sample, Filter filter,
-                                Worker& worker) noexcept {
+                                Worker& worker) {
     if (!worker.scene().prop(intersection.prop)->visible_in_camera()) {
         return false;
     }
@@ -264,7 +264,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
     return true;
 }
 
-sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
     if (Num_material_samplers > bounce) {
         return material_samplers_[bounce];
     }
@@ -274,14 +274,14 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) noexcept {
 
 Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces,
                                    uint32_t max_bounces, bool indirect_caustics,
-                                   bool full_light_path) noexcept
+                                   bool full_light_path)
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces, indirect_caustics, full_light_path} {
     std::memset(reinterpret_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
 }
 
-Lighttracer_pool::~Lighttracer_pool() noexcept {
+Lighttracer_pool::~Lighttracer_pool() {
     for (uint32_t i = 0, len = num_integrators_; i < len; ++i) {
         memory::destroy(&integrators_[i]);
     }
@@ -289,7 +289,7 @@ Lighttracer_pool::~Lighttracer_pool() noexcept {
     memory::free_aligned(integrators_);
 }
 
-Lighttracer* Lighttracer_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Lighttracer* Lighttracer_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Lighttracer(rng, settings_);
@@ -298,7 +298,7 @@ Lighttracer* Lighttracer_pool::get(uint32_t id, rnd::Generator& rng) const noexc
     return &integrators_[id];
 }
 
-uint32_t Lighttracer_pool::max_sample_depth() const noexcept {
+uint32_t Lighttracer_pool::max_sample_depth() const {
     return 1;
 }
 

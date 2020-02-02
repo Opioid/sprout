@@ -6,14 +6,14 @@
 
 namespace image::encoding {
 
-Srgb::Srgb(bool error_diffusion) noexcept
+Srgb::Srgb(bool error_diffusion)
     : rgb_(nullptr), num_pixels_(0), error_diffusion_(error_diffusion) {}
 
-Srgb::~Srgb() noexcept {
+Srgb::~Srgb() {
     delete[] rgb_;
 }
 
-void Srgb::resize(uint32_t num_pixels) noexcept {
+void Srgb::resize(uint32_t num_pixels) {
     if (num_pixels > num_pixels_) {
         delete[] rgb_;
 
@@ -23,15 +23,15 @@ void Srgb::resize(uint32_t num_pixels) noexcept {
     }
 }
 
-byte3 const* Srgb::data() const noexcept {
+byte3 const* Srgb::data() const {
     return rgb_;
 }
 
-static inline float golden_ratio(int32_t n) noexcept {
+static inline float golden_ratio(int32_t n) {
     return frac(float(n) * 0.618033988749894f);
 }
 
-void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) noexcept {
+void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
     int2 const d = image.description().dimensions_2();
 
     if (error_diffusion_) {
@@ -58,17 +58,17 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) noexcept {
     }
 }
 
-Srgb_alpha::Srgb_alpha(bool error_diffusion, bool pre_multiplied_alpha) noexcept
+Srgb_alpha::Srgb_alpha(bool error_diffusion, bool pre_multiplied_alpha)
     : rgba_(nullptr),
       num_pixels_(0),
       error_diffusion_(error_diffusion),
       pre_multiplied_alpha_(pre_multiplied_alpha) {}
 
-Srgb_alpha::~Srgb_alpha() noexcept {
+Srgb_alpha::~Srgb_alpha() {
     delete[] rgba_;
 }
 
-void Srgb_alpha::resize(uint32_t num_pixels) noexcept {
+void Srgb_alpha::resize(uint32_t num_pixels) {
     if (num_pixels > num_pixels_) {
         delete[] rgba_;
 
@@ -78,11 +78,11 @@ void Srgb_alpha::resize(uint32_t num_pixels) noexcept {
     }
 }
 
-const byte4* Srgb_alpha::data() const noexcept {
+const byte4* Srgb_alpha::data() const {
     return rgba_;
 }
 
-void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) noexcept {
+void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
     int2 const d = image.description().dimensions_2();
 
     if (error_diffusion_) {

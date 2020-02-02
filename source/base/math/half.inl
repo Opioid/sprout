@@ -9,7 +9,7 @@
 
 namespace math {
 
-static inline int16_t float_to_half(float f) noexcept {
+static inline int16_t float_to_half(float f) {
     return int16_t(_mm_cvtsi128_si32(_mm_cvtps_ph(_mm_set_ss(f), _MM_FROUND_TO_NEAREST_INT)));
 }
 
@@ -17,7 +17,7 @@ static inline int16_t rounded(int32_t value, int32_t g, int32_t s) {
     return int16_t(value + (g & (s | value)));
 }
 
-static inline int16_t float_to_half2(float f) noexcept {
+static inline int16_t float_to_half2(float f) {
     int32_t fbits;
     std::memcpy(&fbits, &f, sizeof(float));
 
@@ -48,15 +48,15 @@ static inline int16_t float_to_half2(float f) noexcept {
     return int16_t(sign);
 }
 
-static inline short3 float_to_half(packed_float3 const& f) noexcept {
+static inline short3 float_to_half(packed_float3 const& f) {
     return short3(float_to_half(f[0]), float_to_half(f[1]), float_to_half(f[2]));
 }
 
-static inline float half_to_float(int16_t h) noexcept {
+static inline float half_to_float(int16_t h) {
     return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(h)));
 }
 
-static inline float half_to_float2(int16_t h) noexcept {
+static inline float half_to_float2(int16_t h) {
     int32_t fbits = int32_t(h & 0x8000) << 16;
     int32_t abs   = h & 0x7FFF;
 
@@ -74,15 +74,15 @@ static inline float half_to_float2(int16_t h) noexcept {
     return out;
 }
 
-static inline float2 half_to_float(short2 h) noexcept {
+static inline float2 half_to_float(short2 h) {
     return float2(half_to_float(h[0]), half_to_float(h[1]));
 }
 
-// static inline float3 half_to_float(short3 h) noexcept {
+// static inline float3 half_to_float(short3 h)  {
 //    return float3(half_to_float(h[0]), half_to_float(h[1]), half_to_float(h[2]));
 //}
 
-static inline float3 half_to_float(short3 h) noexcept {
+static inline float3 half_to_float(short3 h) {
     alignas(16) int32_t const i[4] = {int32_t(h[0]) | int32_t(h[1]) << 16, int32_t(h[2]), 0, 0};
 
     __m128 const r = _mm_cvtph_ps(_mm_load_si128(reinterpret_cast<__m128i const*>(i)));
@@ -92,7 +92,7 @@ static inline float3 half_to_float(short3 h) noexcept {
     return result;
 }
 
-// inline half::half(float s) noexcept
+// inline half::half(float s)
 //    : h(int16_t(_mm_cvtsi128_si32(
 //          _mm_cvtps_ph(_mm_set_ss(s), _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC)))) {}
 

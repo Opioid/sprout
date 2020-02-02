@@ -25,7 +25,7 @@ namespace op {
 using Pipeline = rendering::postprocessor::Pipeline;
 
 uint32_t concatenate(std::vector<Item> const& items, it::options::Options const& options,
-                     Pipeline& pipeline, thread::Pool& threads) noexcept;
+                     Pipeline& pipeline, thread::Pool& threads);
 }  // namespace op
 
 #endif

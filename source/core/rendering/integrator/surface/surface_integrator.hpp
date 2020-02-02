@@ -18,21 +18,21 @@ class Integrator : public integrator::Integrator {
   public:
     using Interface_stack = scene::prop::Interface_stack;
 
-    Integrator(rnd::Generator& rng) noexcept;
+    Integrator(rnd::Generator& rng);
 
-    ~Integrator() noexcept override;
+    ~Integrator() override;
 
     virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-                      Interface_stack const& initial_stack) noexcept = 0;
+                      Interface_stack const& initial_stack) = 0;
 };
 
 class Pool {
   public:
-    Pool(uint32_t num_integrators) noexcept;
+    Pool(uint32_t num_integrators);
 
-    virtual ~Pool() noexcept;
+    virtual ~Pool();
 
-    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept = 0;
+    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const = 0;
 
   protected:
     uint32_t num_integrators_;
@@ -41,9 +41,9 @@ class Pool {
 template <typename T>
 class Typed_pool : public Pool {
   public:
-    Typed_pool(uint32_t num_integrators) noexcept;
+    Typed_pool(uint32_t num_integrators);
 
-    ~Typed_pool() noexcept override;
+    ~Typed_pool() override;
 
   protected:
     T* integrators_;

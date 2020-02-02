@@ -5,7 +5,7 @@
 
 namespace math {
 
-static inline uint32_t radical_inverse_vdC_uint(uint32_t bits) noexcept {
+static inline uint32_t radical_inverse_vdC_uint(uint32_t bits) {
     bits = (bits << 16) | (bits >> 16);
     bits = ((bits & 0x55555555) << 1) | ((bits & 0xAAAAAAAA) >> 1);
     bits = ((bits & 0x33333333) << 2) | ((bits & 0xCCCCCCCC) >> 2);
@@ -15,7 +15,7 @@ static inline uint32_t radical_inverse_vdC_uint(uint32_t bits) noexcept {
     return bits;  // / 0x100000000
 }
 
-static inline float radical_inverse_vdC(uint32_t bits, uint32_t r) noexcept {
+static inline float radical_inverse_vdC(uint32_t bits, uint32_t r) {
     bits = (bits << 16) | (bits >> 16);
     bits = ((bits & 0x55555555) << 1) | ((bits & 0xAAAAAAAA) >> 1);
     bits = ((bits & 0x33333333) << 2) | ((bits & 0xCCCCCCCC) >> 2);
@@ -27,7 +27,7 @@ static inline float radical_inverse_vdC(uint32_t bits, uint32_t r) noexcept {
     return float(bits) * 2.3283064365386963e-10f;  // / 0x100000000
 }
 
-static inline float radical_inverse_S(uint32_t i, uint32_t r) noexcept {
+static inline float radical_inverse_S(uint32_t i, uint32_t r) {
     for (uint32_t v = 1u << 31; i; i >>= 1, v ^= v >> 1) {
         if (i & 1) {
             r ^= v;
@@ -37,7 +37,7 @@ static inline float radical_inverse_S(uint32_t i, uint32_t r) noexcept {
     return float(r) * 2.3283064365386963e-10f;  // / 0x100000000
 }
 
-static inline float radical_inverse_LP(uint32_t i, uint32_t r) noexcept {
+static inline float radical_inverse_LP(uint32_t i, uint32_t r) {
     for (uint32_t v = 1u << 31; i; i >>= 1, v |= v >> 1) {
         if (i & 1) {
             r ^= v;
@@ -47,25 +47,25 @@ static inline float radical_inverse_LP(uint32_t i, uint32_t r) noexcept {
     return float(r) * 2.3283064365386963e-10f;  // / 0x100000000
 }
 
-static inline float2 hammersley(uint32_t i, uint32_t num_samples, uint32_t r) noexcept {
+static inline float2 hammersley(uint32_t i, uint32_t num_samples, uint32_t r) {
     return float2(float(i) / float(num_samples), radical_inverse_vdC(i, r));
 }
 
-static inline float2 ems(uint32_t i, uint32_t r_0, uint32_t r_1) noexcept {
+static inline float2 ems(uint32_t i, uint32_t r_0, uint32_t r_1) {
     return float2(radical_inverse_vdC(i, r_0), radical_inverse_S(i, r_1));
 }
 
-static inline float2 thing(uint32_t i, uint32_t num_samples, uint32_t r) noexcept {
+static inline float2 thing(uint32_t i, uint32_t num_samples, uint32_t r) {
     return float2(float(i) / float(num_samples), radical_inverse_LP(i, r));
 }
 
-static inline void vdC(float* samples, uint32_t num_samples, uint32_t r) noexcept {
+static inline void vdC(float* samples, uint32_t num_samples, uint32_t r) {
     for (uint32_t i = 0; i < num_samples; ++i) {
         samples[i] = radical_inverse_vdC(i, r);
     }
 }
 
-static inline void golden_ratio(float* samples, uint32_t num_samples, float r) noexcept {
+static inline void golden_ratio(float* samples, uint32_t num_samples, float r) {
     // set the initial second coordinate
     float x = r;
     // set the second coordinates
@@ -80,7 +80,7 @@ static inline void golden_ratio(float* samples, uint32_t num_samples, float r) n
     }
 }
 
-static inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r) noexcept {
+static inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r) {
     // set the initial first coordinate
     float    x   = r[0];
     float    min = x;

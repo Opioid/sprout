@@ -31,7 +31,7 @@
 
 namespace scene {
 
-Loader::Loader(Resources& resources, Material* fallback_material) noexcept
+Loader::Loader(Resources& resources, Material* fallback_material)
     : resource_manager_(resources),
       canopy_(resources.store<Shape>(new shape::Canopy())),
       cube_(resources.store<Shape>(new shape::Cube())),
@@ -44,10 +44,10 @@ Loader::Loader(Resources& resources, Material* fallback_material) noexcept
       null_shape_(resources.store<Shape>(new shape::Null())),
       fallback_material_(resources.store<Material>(fallback_material)) {}
 
-Loader::~Loader() noexcept = default;
+Loader::~Loader() = default;
 
 bool Loader::load(std::string const& filename, std::string_view take_name, take::Take const& take,
-                  Scene& scene) noexcept {
+                  Scene& scene) {
     LOGGING_VERBOSE("Loading scene %S...", filename);
 
     std::string_view const take_mount_folder = string::parent_directory(take_name);
@@ -69,33 +69,32 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
     return success;
 }
 
-void Loader::register_extension_provider(std::string const&  name,
-                                         Extension_provider* provider) noexcept {
+void Loader::register_extension_provider(std::string const& name, Extension_provider* provider) {
     extension_providers_[name] = provider;
 }
 
 void Loader::register_mesh_generator(std::string const&          name,
-                                     shape::triangle::Generator* generator) noexcept {
+                                     shape::triangle::Generator* generator) {
     mesh_generators_[name] = generator;
 }
 
-Loader::Shape_ptr Loader::canopy() noexcept {
+Loader::Shape_ptr Loader::canopy() {
     return canopy_;
 }
 
-Loader::Shape_ptr Loader::distant_sphere() noexcept {
+Loader::Shape_ptr Loader::distant_sphere() {
     return distant_sphere_;
 }
 
-Loader::Shape_ptr Loader::cube() noexcept {
+Loader::Shape_ptr Loader::cube() {
     return cube_;
 }
 
-Loader::Shape_ptr Loader::null_shape() noexcept {
+Loader::Shape_ptr Loader::null_shape() {
     return null_shape_;
 }
 
-void Loader::create_light(uint32_t prop_id, Scene& scene) noexcept {
+void Loader::create_light(uint32_t prop_id, Scene& scene) {
     auto const shape = scene.prop_shape(prop_id);
 
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
@@ -117,21 +116,21 @@ void Loader::create_light(uint32_t prop_id, Scene& scene) noexcept {
     }
 }
 
-Loader::Materials& Loader::materials_buffer() noexcept {
+Loader::Materials& Loader::materials_buffer() {
     return materials_;
 }
 
-Loader::Material_ptr Loader::fallback_material() const noexcept {
+Loader::Material_ptr Loader::fallback_material() const {
     return fallback_material_;
 }
 
-size_t Loader::num_bytes() const noexcept {
+size_t Loader::num_bytes() const {
     return 0;
 }
 
 bool Loader::load(std::string const& filename, std::string_view take_mount_folder,
                   uint32_t parent_id, math::Transformation const& parent_transformation,
-                  Scene& scene) noexcept {
+                  Scene& scene) {
     auto& filesystem = resource_manager_.filesystem();
 
     if (!take_mount_folder.empty()) {
@@ -179,7 +178,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 }
 
 void Loader::read_materials(json::Value const& materials_value, std::string const& source_name,
-                            Local_materials& local_materials) const noexcept {
+                            Local_materials& local_materials) const {
     if (!materials_value.IsArray()) {
         return;
     }
@@ -200,7 +199,7 @@ void Loader::read_materials(json::Value const& materials_value, std::string cons
 
 void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id,
                            math::Transformation const& parent_transformation,
-                           Local_materials const& local_materials, Scene& scene) noexcept {
+                           Local_materials const& local_materials, Scene& scene) {
     if (!entities_value.IsArray()) {
         return;
     }
@@ -300,8 +299,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
     }
 }
 
-void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value,
-                            Scene& scene) noexcept {
+void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value, Scene& scene) {
     bool in_camera     = true;
     bool in_reflection = true;
     bool in_shadow     = true;
@@ -320,7 +318,7 @@ void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value,
 }
 
 uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
-                           Local_materials const& local_materials, Scene& scene) noexcept {
+                           Local_materials const& local_materials, Scene& scene) {
     LOGGING_VERBOSE("Loading prop...");
 
     Shape_ptr shape = Shape_ptr::Null();
@@ -370,7 +368,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& nam
 }
 
 uint32_t Loader::load_extension(std::string const& type, json::Value const& extension_value,
-                                std::string const& name, Scene& scene) noexcept {
+                                std::string const& name, Scene& scene) {
     if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
         return p->second->create_extension(extension_value, name, scene, resource_manager_);
     }
@@ -378,7 +376,7 @@ uint32_t Loader::load_extension(std::string const& type, json::Value const& exte
     return 0xFFFFFFFF;
 }
 
-Loader::Shape_ptr Loader::load_shape(json::Value const& shape_value) noexcept {
+Loader::Shape_ptr Loader::load_shape(json::Value const& shape_value) {
     if (std::string const type = json::read_string(shape_value, "type"); !type.empty()) {
         return shape(type, shape_value);
     }
@@ -392,8 +390,7 @@ Loader::Shape_ptr Loader::load_shape(json::Value const& shape_value) noexcept {
     return Shape_ptr::Null();
 }
 
-Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shape_value) const
-    noexcept {
+Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shape_value) const {
     if ("Canopy" == type) {
         return canopy_;
     }
@@ -434,7 +431,7 @@ Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shap
 
 void Loader::load_materials(json::Value const&     materials_value,
                             Local_materials const& local_materials, Scene& scene,
-                            Materials& materials) const noexcept {
+                            Materials& materials) const {
     if (!materials_value.IsArray()) {
         return;
     }
@@ -450,7 +447,7 @@ void Loader::load_materials(json::Value const&     materials_value,
 
 Loader::Material_ptr Loader::load_material(std::string const&     name,
                                            Local_materials const& local_materials,
-                                           Scene&                 scene) const noexcept {
+                                           Scene&                 scene) const {
     // First, check if we maybe already have cached the material.
     if (auto material = resource_manager_.get<Material>(name); material.ptr) {
         return material;

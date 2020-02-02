@@ -3,11 +3,11 @@
 
 namespace scene::material {
 
-Sample_cache::Sample_cache(uint32_t max_sample_size) noexcept
+Sample_cache::Sample_cache(uint32_t max_sample_size)
     : max_sample_size_(max_sample_size),
       buffer_(memory::allocate_aligned<char>(max_sample_size_)) {}
 
-Sample_cache::~Sample_cache() noexcept {
+Sample_cache::~Sample_cache() {
     memory::free_aligned(buffer_);
 }
 

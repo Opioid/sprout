@@ -21,11 +21,10 @@ namespace lambert {
 
 class Isotropic {
   public:
-    static bxdf::Result reflection(float3 const& color, float n_dot_wi,
-                                   Layer const& layer) noexcept;
+    static bxdf::Result reflection(float3 const& color, float n_dot_wi, Layer const& layer);
 
     static float reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result) noexcept;
+                         bxdf::Sample& result);
 };
 
 }  // namespace lambert

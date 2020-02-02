@@ -11,22 +11,22 @@
 
 namespace scene::shape {
 
-Plane::Plane() noexcept = default;
+Plane::Plane() = default;
 
-float3 Plane::object_to_texture_point(float3 const& p) const noexcept {
+float3 Plane::object_to_texture_point(float3 const& p) const {
     return p;
 }
 
-float3 Plane::object_to_texture_vector(float3 const& v) const noexcept {
+float3 Plane::object_to_texture_vector(float3 const& v) const {
     return v;
 }
 
-AABB Plane::transformed_aabb(float4x4 const& /*m*/) const noexcept {
+AABB Plane::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
 bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                      Intersection& intersection) const noexcept {
+                      Intersection& intersection) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -57,7 +57,7 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
 }
 
 bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformation,
-                          Node_stack& /*node_stack*/, Intersection& intersection) const noexcept {
+                          Node_stack& /*node_stack*/, Intersection& intersection) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -85,7 +85,7 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
 }
 
 bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                      Normals& normals) const noexcept {
+                      Normals& normals) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -106,7 +106,7 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
 }
 
 bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
-                        Node_stack& /*node_stack*/) const noexcept {
+                        Node_stack& /*node_stack*/) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -118,7 +118,7 @@ bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Plane::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                     Filter filter, Worker const& worker) const noexcept {
+                     Filter filter, Worker const& worker) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -137,7 +137,7 @@ float Plane::opacity(Ray const& ray, Transformation const& transformation, uint3
 }
 
 bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                            Filter filter, Worker const& worker, float3& ta) const noexcept {
+                            Filter filter, Worker const& worker, float3& ta) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -161,69 +161,69 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*transformation*/,
                    float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
                    uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                   Sample_to& /*sample*/) const noexcept {
+                   Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
                    bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                    float2 /*importance_uv*/, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                   Sample_from& /*sample*/) const noexcept {
+                   Sample_from& /*sample*/) const {
     return false;
 }
 
 float Plane::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                 bool /*total_sphere*/) const noexcept {
+                 bool /*total_sphere*/) const {
     return 0.f;
 }
 
 float Plane::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
-                        Transformation const& /*transformation*/, float /*volume*/) const noexcept {
+                        Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                    Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                   Sample_to& /*sample*/) const noexcept {
+                   Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
                    Transformation const& /*transformation*/, float /*volume*/,
-                   Sample_to& /*sample*/) const noexcept {
+                   Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                    float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
-                   AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
+                   AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
 float Plane::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
                     Transformation const& /*transformation*/, float /*area*/,
-                    bool /*two_sided*/) const noexcept {
+                    bool /*two_sided*/) const {
     return 0.f;
 }
 
-float Plane::uv_weight(float2 /*uv*/) const noexcept {
+float Plane::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Plane::area(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+float Plane::area(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 1.f;
 }
 
-float Plane::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+float Plane::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
 }
 
-bool Plane::is_finite() const noexcept {
+bool Plane::is_finite() const {
     return false;
 }
 
-size_t Plane::num_bytes() const noexcept {
+size_t Plane::num_bytes() const {
     return sizeof(*this);
 }
 

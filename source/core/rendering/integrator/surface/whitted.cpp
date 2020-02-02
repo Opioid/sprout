@@ -16,20 +16,20 @@
 
 namespace rendering::integrator::surface {
 
-Whitted::Whitted(rnd::Generator& rng, Settings const& settings) noexcept
+Whitted::Whitted(rnd::Generator& rng, Settings const& settings)
     : Integrator(rng), settings_(settings), sampler_(rng) {}
 
-void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
+void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
     uint32_t const num_lights = scene.num_lights();
     sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
 }
 
-void Whitted::start_pixel() noexcept {
+void Whitted::start_pixel() {
     sampler_.start_pixel();
 }
 
 float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
-                   Interface_stack const& initial_stack) noexcept {
+                   Interface_stack const& initial_stack) {
     worker.reset_interface_stack(initial_stack);
 
     //	float3 result(0.f);
@@ -63,7 +63,7 @@ float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(shade(ray, intersection, worker), 1.f);
 }
 
-float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept {
+float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& worker) {
     float3 result(0.f);
 
     float3 const wo = -ray.direction;
@@ -85,8 +85,7 @@ float3 Whitted::shade(Ray const& ray, Intersection const& intersection, Worker& 
 }
 
 float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                      Material_sample const& material_sample,
-                                      Worker&                worker) noexcept {
+                                      Material_sample const& material_sample, Worker& worker) {
     float3 result(0.f);
 
     Ray shadow_ray;
@@ -122,13 +121,13 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     return settings_.num_light_samples_reciprocal * result;
 }
 
-Whitted_pool::Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples) noexcept
+Whitted_pool::Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples)
     : Typed_pool<Whitted>(num_integrators) {
     settings_.num_light_samples            = num_light_samples;
     settings_.num_light_samples_reciprocal = 1.f / float(num_light_samples);
 }
 
-Integrator* Whitted_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Whitted_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Whitted(rng, settings_);

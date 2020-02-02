@@ -8,22 +8,20 @@ namespace scene::entity {
 struct Composed_transformation;
 
 struct Morphing {
-    void interpolate(Morphing& __restrict result, Morphing const& __restrict other, float t) const
-        noexcept;
+    void interpolate(Morphing& __restrict result, Morphing const& __restrict other, float t) const;
 
     uint32_t targets[2];
     float    weight;
 };
 
 struct alignas(16) Keyframe {
-    void interpolate(Keyframe& __restrict result, Keyframe const& __restrict other, float t) const
-        noexcept;
+    void interpolate(Keyframe& __restrict result, Keyframe const& __restrict other, float t) const;
 
     using Transformation = Composed_transformation;
 
-    void transform(Keyframe& result, Transformation const& from) const noexcept;
+    void transform(Keyframe& result, Transformation const& from) const;
 
-    void transform(Keyframe& __restrict result, Keyframe const& __restrict from) const noexcept;
+    void transform(Keyframe& __restrict result, Keyframe const& __restrict from) const;
 
     math::Transformation transformation;
 };

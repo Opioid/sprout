@@ -10,7 +10,7 @@
 namespace rendering::integrator::volume {
 
 inline math::ray texture_space_ray(scene::Ray const& ray, uint32_t entity,
-                                   scene::Worker const& worker) noexcept {
+                                   scene::Worker const& worker) {
     scene::Scene::Transformation temp;
     auto const& transformation = worker.scene().prop_transformation_at(entity, ray.time, temp);
 

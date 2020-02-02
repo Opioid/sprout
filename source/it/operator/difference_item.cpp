@@ -6,7 +6,7 @@
 
 namespace op {
 
-Difference_item::Difference_item(Item const& item) noexcept
+Difference_item::Difference_item(Item const& item)
     : name_(item.name_out.empty() ? item.name.substr(0, item.name.find_last_of('.')) + "_dif.png"
                                   : item.name_out),
       image_(item.image) {
@@ -14,32 +14,32 @@ Difference_item::Difference_item(Item const& item) noexcept
     difference_  = new float[d[0] * d[1]];
 }
 
-Difference_item::~Difference_item() noexcept {
+Difference_item::~Difference_item() {
     delete[] difference_;
 }
 
-std::string Difference_item::name() const noexcept {
+std::string Difference_item::name() const {
     return name_;
 }
 
-float const* Difference_item::difference() const noexcept {
+float const* Difference_item::difference() const {
     return difference_;
 }
 
-float Difference_item::max_dif() const noexcept {
+float Difference_item::max_dif() const {
     return round(max_dif_, 4);
 }
 
-float Difference_item::rmse() const noexcept {
+float Difference_item::rmse() const {
     return round(rmse_, 4);
 }
 
-float Difference_item::psnr() const noexcept {
+float Difference_item::psnr() const {
     return round(psnr_, 2);
 }
 
 void Difference_item::calculate_difference(Texture const* other, Scratch* scratch, float clamp,
-                                           float2 clip, thread::Pool& threads) noexcept {
+                                           float2 clip, thread::Pool& threads) {
     int2 const d = image_->dimensions_2();
 
     int32_t const num_pixel = d[0] * d[1];

@@ -9,7 +9,7 @@
 #undef min
 #undef max
 
-char read_key() noexcept {
+char read_key() {
     DWORD  mode;
     HANDLE hstdin;
 
@@ -42,7 +42,7 @@ char read_key() noexcept {
 #include <unistd.h>
 #include <cstdio>
 
-char read_key() noexcept {
+char read_key() {
     static size_t constexpr MAGIC_MAX_CHARS = 18;
 
     termios initial_settings;

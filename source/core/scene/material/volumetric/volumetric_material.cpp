@@ -9,14 +9,14 @@
 
 namespace scene::material::volumetric {
 
-Material::Material(Sampler_settings const& sampler_settings) noexcept
+Material::Material(Sampler_settings const& sampler_settings)
     : material::Material(sampler_settings, true), is_scattering_(true) {}
 
-Material::~Material() noexcept = default;
+Material::~Material() = default;
 
 material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                          Filter /*filter*/, sampler::Sampler& /*sampler*/,
-                                         Worker const& worker) const noexcept {
+                                         Worker const& worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>();
 
@@ -36,30 +36,30 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     return sample;
 }
 
-float Material::ior() const noexcept {
+float Material::ior() const {
     return 1.f;
 }
 
-CM Material::control_medium() const noexcept {
+CM Material::control_medium() const {
     return cm_;
 }
 
-float Material::similarity_relation_scale(uint32_t depth) const noexcept {
+float Material::similarity_relation_scale(uint32_t depth) const {
     float const gs = van_de_hulst_anisotropy(depth);
 
     return van_de_hulst(anisotropy_, gs);
 }
 
-bool Material::is_scattering_volume() const noexcept {
+bool Material::is_scattering_volume() const {
     return is_scattering_;
 }
 
-float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const noexcept {
+float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const {
     return cc_.a * emission_;
 }
 
 void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                               float distance) noexcept {
+                               float distance) {
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
     } else {
@@ -71,15 +71,15 @@ void Material::set_attenuation(float3 const& absorption_color, float3 const& sca
     distance_ = distance;
 }
 
-void Material::set_emission(float3 const& emission) noexcept {
+void Material::set_emission(float3 const& emission) {
     emission_ = emission;
 }
 
-void Material::set_anisotropy(float anisotropy) noexcept {
+void Material::set_anisotropy(float anisotropy) {
     anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
-size_t Material::sample_size() noexcept {
+size_t Material::sample_size() {
     return sizeof(Sample);
 }
 
@@ -94,7 +94,7 @@ uint32_t Material::SR_high = 64;
 
 float Material::SR_inv_range = 1.f / float(Material::SR_high - Material::SR_low);
 
-float Material::van_de_hulst_anisotropy(uint32_t depth) const noexcept {
+float Material::van_de_hulst_anisotropy(uint32_t depth) const {
     if (depth < SR_low) {
         return anisotropy_;
     }

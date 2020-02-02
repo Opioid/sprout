@@ -7,11 +7,11 @@
 namespace math {
 
 struct Transformation {
-    bool operator==(Transformation const& o) const noexcept;
+    bool operator==(Transformation const& o) const;
 
-    bool operator!=(Transformation const& o) const noexcept;
+    bool operator!=(Transformation const& o) const;
 
-    Transformation transform(Transformation const& other) const noexcept;
+    Transformation transform(Transformation const& other) const;
 
     float3     position;
     float3     scale;

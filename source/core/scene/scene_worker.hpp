@@ -47,55 +47,54 @@ class Worker {
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
 
-    Worker(uint32_t max_sample_size) noexcept;
+    Worker(uint32_t max_sample_size);
 
-    ~Worker() noexcept;
+    ~Worker();
 
-    void init(uint32_t id, Scene const& scene, Camera const& camera) noexcept;
+    void init(uint32_t id, Scene const& scene, Camera const& camera);
 
-    bool intersect(Ray& ray, Intersection& intersection) const noexcept;
+    bool intersect(Ray& ray, Intersection& intersection) const;
 
-    bool intersect(Ray& ray, shape::Normals& normals) const noexcept;
+    bool intersect(Ray& ray, shape::Normals& normals) const;
 
-    bool resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept;
+    bool resolve_mask(Ray& ray, Intersection& intersection, Filter filter);
 
-    bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection, Filter filter) noexcept;
+    bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection, Filter filter);
 
-    bool visibility(Ray const& ray) const noexcept;
+    bool visibility(Ray const& ray) const;
 
-    bool masked_visibility(Ray const& ray, Filter filter, float& mv) const noexcept;
+    bool masked_visibility(Ray const& ray, Filter filter, float& mv) const;
 
-    Scene const& scene() const noexcept;
+    Scene const& scene() const;
 
-    Camera const& camera() const noexcept;
+    Camera const& camera() const;
 
-    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
+    uint64_t absolute_time(uint32_t frame, float frame_delta) const;
 
-    shape::Node_stack& node_stack() const noexcept;
+    shape::Node_stack& node_stack() const;
 
-    material::Sample_cache& sample_cache() const noexcept;
+    material::Sample_cache& sample_cache() const;
 
     template <typename T>
-    T& sample() const noexcept;
+    T& sample() const;
 
-    Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const noexcept;
+    Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const;
 
-    Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const noexcept;
+    Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const;
 
-    Texture const* texture(uint32_t id) const noexcept;
+    Texture const* texture(uint32_t id) const;
 
-    Interface_stack& interface_stack() noexcept;
+    Interface_stack& interface_stack();
 
-    rnd::Generator& rng() const noexcept;
+    rnd::Generator& rng() const;
 
-    void reset_interface_stack(Interface_stack const& stack) noexcept;
+    void reset_interface_stack(Interface_stack const& stack);
 
-    float ior_outside(float3 const& wo, Intersection const& intersection) const noexcept;
+    float ior_outside(float3 const& wo, Intersection const& intersection) const;
 
-    void interface_change(float3 const& dir, Intersection const& intersection) noexcept;
+    void interface_change(float3 const& dir, Intersection const& intersection);
 
-    material::IoR interface_change_ior(float3 const&       dir,
-                                       Intersection const& intersection) noexcept;
+    material::IoR interface_change_ior(float3 const& dir, Intersection const& intersection);
 
   protected:
     mutable rnd::Generator rng_;

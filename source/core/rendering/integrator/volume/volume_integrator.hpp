@@ -13,23 +13,23 @@ namespace integrator::volume {
 
 class Integrator : public integrator::Integrator {
   public:
-    Integrator(rnd::Generator& rng) noexcept;
+    Integrator(rnd::Generator& rng);
 
-    virtual ~Integrator() noexcept;
+    virtual ~Integrator();
 
-    virtual bool transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept = 0;
+    virtual bool transmittance(Ray const& ray, Worker& worker, float3& tr) = 0;
 
     virtual Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
-                            float3& li, float3& tr) noexcept = 0;
+                            float3& li, float3& tr) = 0;
 };
 
 class Pool {
   public:
-    Pool(uint32_t num_integrators) noexcept;
+    Pool(uint32_t num_integrators);
 
-    virtual ~Pool() noexcept;
+    virtual ~Pool();
 
-    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept = 0;
+    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const = 0;
 
   protected:
     uint32_t num_integrators_;
@@ -38,9 +38,9 @@ class Pool {
 template <typename T>
 class Typed_pool : public Pool {
   public:
-    Typed_pool(uint32_t num_integrators) noexcept;
+    Typed_pool(uint32_t num_integrators);
 
-    ~Typed_pool() noexcept override;
+    ~Typed_pool() override;
 
   protected:
     T* integrators_;

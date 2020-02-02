@@ -8,7 +8,7 @@
 
 namespace procedural::sky {
 
-Model::Model() noexcept {
+Model::Model() {
     for (auto& s : skymodel_states_) {
         s = nullptr;
     }
@@ -17,11 +17,11 @@ Model::Model() noexcept {
     //	Spectrum::init(410.f, 690.f);
 }
 
-Model::~Model() noexcept {
+Model::~Model() {
     release();
 }
 
-void Model::compile() noexcept {
+void Model::compile() {
     release();
 
     float const elevation = std::max(dot(sun_direction_, zenith()) * (-0.5f * Pi), 0.f);
@@ -33,23 +33,23 @@ void Model::compile() noexcept {
     }
 }
 
-float3 Model::sun_direction() const noexcept {
+float3 Model::sun_direction() const {
     return sun_direction_;
 }
 
-void Model::set_sun_direction(float3 const& direction) noexcept {
+void Model::set_sun_direction(float3 const& direction) {
     sun_direction_ = direction;
 }
 
-void Model::set_ground_albedo(float3 const& albedo) noexcept {
+void Model::set_ground_albedo(float3 const& albedo) {
     ground_albedo_ = Spectrum(albedo);
 }
 
-void Model::set_turbidity(float turbidity) noexcept {
+void Model::set_turbidity(float turbidity) {
     turbidity_ = turbidity;
 }
 
-float3 Model::evaluate_sky(float3 const& wi) const noexcept {
+float3 Model::evaluate_sky(float3 const& wi) const {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
     float const wi_dot_s = std::min(-dot(wi, sun_direction_), 0.99999f);
 
@@ -68,7 +68,7 @@ float3 Model::evaluate_sky(float3 const& wi) const noexcept {
     return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
 }
 
-float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
+float3 Model::evaluate_sky_and_sun(float3 const& wi) const {
     float const wi_dot_z = std::max(wi[1], 0.00001f);
     float const wi_dot_s = std::min(-dot(wi, sun_direction_), 0.99999f);
 
@@ -93,7 +93,7 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const noexcept {
     return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
 }
 
-void Model::release() noexcept {
+void Model::release() {
     for (auto s : skymodel_states_) {
         arhosekskymodelstate_free(s);
     }

@@ -8,11 +8,11 @@
 
 namespace scene::material::matte {
 
-float3 const& Sample::base_shading_normal() const noexcept {
+float3 const& Sample::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
@@ -25,7 +25,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
     return {n_dot_wi * brdf.reflection, brdf.pdf};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
@@ -38,7 +38,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
     return brdf;
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     float2 const xi = sampler.generate_sample_2D();
@@ -51,7 +51,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     result.wavelength = 0.f;
 }
 
-void Sample::set(float3 const& color) noexcept {
+void Sample::set(float3 const& color) {
     diffuse_color_ = color;
     alpha_         = math::pow2(1.f);
 }

@@ -6,7 +6,7 @@
 namespace math {
 
 // struct half {
-//    half(float s) noexcept;
+//    half(float s) ;
 
 //    int16_t h;
 //};

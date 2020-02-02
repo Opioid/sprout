@@ -9,42 +9,42 @@ template <typename T>
 struct Flags {
     using impl_type = typename std::underlying_type<T>::type;
 
-    Flags() noexcept = default;
+    Flags() = default;
 
     Flags(T flag) : values(static_cast<impl_type>(flag)) {}
 
-    constexpr bool empty() const noexcept {
+    constexpr bool empty() const {
         return impl_type(0) != values;
     }
 
-    constexpr bool is(T flag) const noexcept {
+    constexpr bool is(T flag) const {
         return static_cast<impl_type>(flag) == (values & static_cast<impl_type>(flag));
     }
 
-    constexpr bool no(T flag) const noexcept {
+    constexpr bool no(T flag) const {
         return 0 == (values & static_cast<impl_type>(flag));
     }
 
-    constexpr bool any(T a, T b) const noexcept {
+    constexpr bool any(T a, T b) const {
         return (static_cast<impl_type>(a) == (values & static_cast<impl_type>(a))) |
                (static_cast<impl_type>(b) == (values & static_cast<impl_type>(b)));
     }
 
-    constexpr bool any(T a, T b, T c) const noexcept {
+    constexpr bool any(T a, T b, T c) const {
         return (static_cast<impl_type>(a) == (values & static_cast<impl_type>(a))) |
                (static_cast<impl_type>(b) == (values & static_cast<impl_type>(b))) |
                (static_cast<impl_type>(c) == (values & static_cast<impl_type>(c)));
     }
 
-    constexpr bool operator!=(Flags other) const noexcept {
+    constexpr bool operator!=(Flags other) const {
         return values != other.values;
     }
 
-    void set(T flag) noexcept {
+    void set(T flag) {
         values |= static_cast<impl_type>(flag);
     }
 
-    void set(T flag, bool value) noexcept {
+    void set(T flag, bool value) {
         if (value) {
             values |= static_cast<impl_type>(flag);
         } else {
@@ -52,15 +52,15 @@ struct Flags {
         }
     }
 
-    void unset(T flag) noexcept {
+    void unset(T flag) {
         values &= ~static_cast<impl_type>(flag);
     }
 
-    void clear() noexcept {
+    void clear() {
         values = impl_type(0);
     }
 
-    void clear(T flag) noexcept {
+    void clear(T flag) {
         values = static_cast<impl_type>(flag);
     }
 

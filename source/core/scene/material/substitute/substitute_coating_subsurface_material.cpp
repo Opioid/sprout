@@ -18,11 +18,10 @@
 
 namespace scene::material::substitute {
 
-Material_coating_subsurface::Material_coating_subsurface(
-    Sampler_settings const& sampler_settings) noexcept
+Material_coating_subsurface::Material_coating_subsurface(Sampler_settings const& sampler_settings)
     : Material_clearcoat(sampler_settings, false) {}
 
-void Material_coating_subsurface::compile(thread::Pool& threads, Scene const& scene) noexcept {
+void Material_coating_subsurface::compile(thread::Pool& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture(scene);
 
@@ -36,7 +35,7 @@ void Material_coating_subsurface::compile(thread::Pool& threads, Scene const& sc
 material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ray const& /*ray*/,
                                                             Renderstate const& rs, Filter filter,
                                                             sampler::Sampler& /*sampler*/,
-                                                            Worker const& worker) const noexcept {
+                                                            Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     float thickness;
@@ -82,17 +81,16 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
     return sample;
 }
 
-size_t Material_coating_subsurface::num_bytes() const noexcept {
+size_t Material_coating_subsurface::num_bytes() const {
     return sizeof(*this);
 }
 
-void Material_coating_subsurface::set_density_map(Texture_adapter const& density_map) noexcept {
+void Material_coating_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
 }
 
 void Material_coating_subsurface::set_attenuation(float3 const& absorption_color,
-                                                  float3 const& scattering_color,
-                                                  float         distance) noexcept {
+                                                  float3 const& scattering_color, float distance) {
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
     } else {
@@ -104,12 +102,12 @@ void Material_coating_subsurface::set_attenuation(float3 const& absorption_color
     attenuation_distance_ = distance;
 }
 
-void Material_coating_subsurface::set_volumetric_anisotropy(float anisotropy) noexcept {
+void Material_coating_subsurface::set_volumetric_anisotropy(float anisotropy) {
     anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
 float3 Material_coating_subsurface::absorption_coefficient(float2 uv, Filter filter,
-                                                           Worker const& worker) const noexcept {
+                                                           Worker const& worker) const {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
         float3 const color   = color_map_.sample_3(worker, sampler, uv);
@@ -120,12 +118,12 @@ float3 Material_coating_subsurface::absorption_coefficient(float2 uv, Filter fil
     return cc_.a;
 }
 
-CC Material_coating_subsurface::collision_coefficients() const noexcept {
+CC Material_coating_subsurface::collision_coefficients() const {
     return cc_;
 }
 
 CC Material_coating_subsurface::collision_coefficients(float2 uv, Filter filter,
-                                                       Worker const& worker) const noexcept {
+                                                       Worker const& worker) const {
     SOFT_ASSERT(color_map_.is_valid());
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -136,7 +134,7 @@ CC Material_coating_subsurface::collision_coefficients(float2 uv, Filter filter,
 }
 
 CC Material_coating_subsurface::collision_coefficients(float3 const& p, Filter filter,
-                                                       Worker const& worker) const noexcept {
+                                                       Worker const& worker) const {
     SOFT_ASSERT(density_map_.is_valid());
 
     float const d = density(p, filter, worker);
@@ -156,37 +154,37 @@ CC Material_coating_subsurface::collision_coefficients(float3 const& p, Filter f
     //	return {d * mu_a, d * mu_s};
 }
 
-CM Material_coating_subsurface::control_medium() const noexcept {
+CM Material_coating_subsurface::control_medium() const {
     return cm_;
 }
 
-volumetric::Gridtree const* Material_coating_subsurface::volume_tree() const noexcept {
+volumetric::Gridtree const* Material_coating_subsurface::volume_tree() const {
     //	return nullptr;
     return &tree_;
 }
 
-bool Material_coating_subsurface::is_heterogeneous_volume() const noexcept {
+bool Material_coating_subsurface::is_heterogeneous_volume() const {
     return density_map_.is_valid();
 }
 
-bool Material_coating_subsurface::is_textured_volume() const noexcept {
+bool Material_coating_subsurface::is_textured_volume() const {
     return color_map_.is_valid();
 }
 
-bool Material_coating_subsurface::is_scattering_volume() const noexcept {
+bool Material_coating_subsurface::is_scattering_volume() const {
     return is_scattering_;
 }
 
-bool Material_coating_subsurface::is_caustic() const noexcept {
+bool Material_coating_subsurface::is_caustic() const {
     return true;
 }
 
-size_t Material_coating_subsurface::sample_size() noexcept {
+size_t Material_coating_subsurface::sample_size() {
     return sizeof(Sample_coating_subsurface);
 }
 
 float Material_coating_subsurface::density(float3 const& p, Filter filter,
-                                           Worker const& worker) const noexcept {
+                                           Worker const& worker) const {
     // p is in object space already
 
     float3 const p_g = 0.5f * (float3(1.f) + p);
@@ -197,7 +195,7 @@ float Material_coating_subsurface::density(float3 const& p, Filter filter,
 }
 
 float3 Material_coating_subsurface::color(float3 const& p, Filter /*filter*/,
-                                          Worker const& /*worker*/) const noexcept {
+                                          Worker const& /*worker*/) const {
     float3 const p_g = 0.5f * (float3(1.f) + p);
 
     //	auto const& sampler = worker.sampler_3D(sampler_key(), filter);

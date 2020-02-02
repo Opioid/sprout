@@ -7,32 +7,32 @@ namespace scene::material::substitute {
 
 class alignas(32) Material : public Material_base {
   public:
-    Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Material(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept final;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 };
 
 class alignas(32) Frozen : public Material_base {
   public:
-    Frozen(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Frozen(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept final;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const final;
 
-    void set_snow_normal_map(Texture_adapter const& normal_map) noexcept;
+    void set_snow_normal_map(Texture_adapter const& normal_map);
 
-    void set_snow_mask(Texture_adapter const& mask) noexcept;
+    void set_snow_mask(Texture_adapter const& mask);
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 
   private:
     Texture_adapter snow_normal_map_;

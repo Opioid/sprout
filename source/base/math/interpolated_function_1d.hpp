@@ -8,29 +8,28 @@ namespace math {
 template <typename T>
 class Interpolated_function_1D {
   public:
-    Interpolated_function_1D() noexcept;
+    Interpolated_function_1D();
 
     Interpolated_function_1D(Interpolated_function_1D&& other) noexcept;
 
     template <typename F>
-    Interpolated_function_1D(float range_begin, float range_end, uint32_t num_samples,
-                             F f) noexcept;
+    Interpolated_function_1D(float range_begin, float range_end, uint32_t num_samples, F f);
 
-    ~Interpolated_function_1D() noexcept;
+    ~Interpolated_function_1D();
 
-    void allocate(float range_begin, float range_end, uint32_t num_samples) noexcept;
+    void allocate(float range_begin, float range_end, uint32_t num_samples);
 
-    void from_array(float range_begin, float range_end, uint32_t num_samples, T const t[]) noexcept;
+    void from_array(float range_begin, float range_end, uint32_t num_samples, T const t[]);
 
-    void scale(T s) noexcept;
+    void scale(T s);
 
-    T operator()(float x) const noexcept;
-
-    template <typename I>
-    T const& operator[](I i) const noexcept;
+    T operator()(float x) const;
 
     template <typename I>
-    T& operator[](I i) noexcept;
+    T const& operator[](I i) const;
+
+    template <typename I>
+    T& operator[](I i);
 
   private:
     float range_end_;

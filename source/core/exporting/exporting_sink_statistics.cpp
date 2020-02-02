@@ -6,12 +6,11 @@
 
 namespace exporting {
 
-Statistics::Statistics() noexcept = default;
+Statistics::Statistics() = default;
 
-Statistics::~Statistics() noexcept = default;
+Statistics::~Statistics() = default;
 
-void Statistics::write(image::Float4 const& image, uint32_t frame,
-                       thread::Pool& /*threads*/) noexcept {
+void Statistics::write(image::Float4 const& image, uint32_t frame, thread::Pool& /*threads*/) {
     logging::info("Frame: " + string::to_string(frame));
 
     float3 max_rgb;

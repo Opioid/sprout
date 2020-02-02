@@ -17,23 +17,23 @@
 namespace resource {
 
 template <typename T>
-Typed_cache<T>::Typed_cache(Provider<T>& provider) noexcept : provider_(provider) {}
+Typed_cache<T>::Typed_cache(Provider<T>& provider) : provider_(provider) {}
 
 template <typename T>
-Typed_cache<T>::~Typed_cache() noexcept {
+Typed_cache<T>::~Typed_cache() {
     for (auto r : resources_) {
         delete r;
     }
 }
 
 template <typename T>
-std::vector<T*> const& Typed_cache<T>::resources() const noexcept {
+std::vector<T*> const& Typed_cache<T>::resources() const {
     return resources_;
 }
 
 template <typename T>
 Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
-                                     Manager& manager) noexcept {
+                                     Manager& manager) {
     std::string resolved_name;
 
     return load(filename, options, manager, resolved_name);
@@ -41,7 +41,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
 
 template <typename T>
 Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
-                                     Manager& resources, std::string& resolved_name) noexcept {
+                                     Manager& resources, std::string& resolved_name) {
     auto const key = std::make_pair(filename, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
@@ -79,7 +79,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
 template <typename T>
 Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
                                      std::string const& source_name, Variants const& options,
-                                     Manager& resources) noexcept {
+                                     Manager& resources) {
     auto resource = provider_.load(data, source_name, options, resources);
     if (!resource) {
         return Resource_ptr<T>::Null();
@@ -101,7 +101,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const& options) noexcept {
+Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const& options) {
     auto const key = std::make_pair(filename, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
@@ -119,7 +119,7 @@ Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const&
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::get(uint32_t id) const noexcept {
+Resource_ptr<T> Typed_cache<T>::get(uint32_t id) const {
     if (id >= uint32_t(resources_.size())) {
         return Resource_ptr<T>::Null();
     }
@@ -128,7 +128,7 @@ Resource_ptr<T> Typed_cache<T>::get(uint32_t id) const noexcept {
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::store(T* resource) noexcept {
+Resource_ptr<T> Typed_cache<T>::store(T* resource) {
     resources_.push_back(resource);
 
     uint32_t const id = uint32_t(resources_.size()) - 1;
@@ -138,7 +138,7 @@ Resource_ptr<T> Typed_cache<T>::store(T* resource) noexcept {
 
 template <typename T>
 Resource_ptr<T> Typed_cache<T>::store(std::string const& name, Variants const& options,
-                                      T* resource) noexcept {
+                                      T* resource) {
     auto const key = std::make_pair(name, options);
 
     resources_.push_back(resource);
@@ -151,7 +151,7 @@ Resource_ptr<T> Typed_cache<T>::store(std::string const& name, Variants const& o
 }
 
 template <typename T>
-size_t Typed_cache<T>::num_bytes() const noexcept {
+size_t Typed_cache<T>::num_bytes() const {
     size_t num_bytes = 0;
 
     for (auto r : resources_) {
@@ -164,7 +164,7 @@ size_t Typed_cache<T>::num_bytes() const noexcept {
 }
 
 template <typename T>
-bool Typed_cache<T>::check_up_to_date(Entry& entry) const noexcept {
+bool Typed_cache<T>::check_up_to_date(Entry& entry) const {
     if (entry.generation == generation_ || entry.source_name.empty()) {
         return true;
     }

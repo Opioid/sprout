@@ -26,11 +26,11 @@ using Pipeline  = rendering::postprocessor::Pipeline;
 using Resources = resource::Manager;
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   Resources& resources) noexcept;
+                   Resources& resources);
 
-void comparison(std::vector<Item> const& items) noexcept;
+void comparison(std::vector<Item> const& items);
 
-int main(int argc, char* argv[]) noexcept {
+int main(int argc, char* argv[]) {
 #ifdef SU_DEBUG
     auto const total_start = std::chrono::high_resolution_clock::now();
 #endif
@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) noexcept {
 }
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   Resources& resources) noexcept {
+                   Resources& resources) {
     std::string error;
     auto const  root = json::parse(stream, error);
     if (!root) {
@@ -164,7 +164,7 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
     }
 }
 
-void comparison(std::vector<Item> const& items) noexcept {
+void comparison(std::vector<Item> const& items) {
     for (auto const& item : items) {
         int2 const d = item.image->dimensions_2();
 

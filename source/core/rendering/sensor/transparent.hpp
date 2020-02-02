@@ -8,30 +8,30 @@ namespace rendering::sensor {
 
 class Transparent : public Sensor {
   public:
-    Transparent(float exposure) noexcept;
+    Transparent(float exposure);
 
-    ~Transparent() noexcept override;
+    ~Transparent() override;
 
-    void set_layer(int32_t layer) noexcept final;
+    void set_layer(int32_t layer) final;
 
-    void clear(float weight) noexcept final;
+    void clear(float weight) final;
 
-    void set_weights(float weight) noexcept final;
+    void set_weights(float weight) final;
 
-    bool has_alpha_transparency() const noexcept final;
+    bool has_alpha_transparency() const final;
 
   protected:
-    void add_pixel(int2 pixel, float4 const& color, float weight) noexcept final;
+    void add_pixel(int2 pixel, float4 const& color, float weight) final;
 
-    void add_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept final;
+    void add_pixel_atomic(int2 pixel, float4 const& color, float weight) final;
 
-    void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) noexcept final;
+    void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) final;
 
-    void resolve(int32_t begin, int32_t end, image::Float4& target) const noexcept final;
+    void resolve(int32_t begin, int32_t end, image::Float4& target) const final;
 
-    void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const noexcept final;
+    void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const final;
 
-    void on_resize(int2 dimensions, int32_t num_layers) noexcept override;
+    void on_resize(int2 dimensions, int32_t num_layers) override;
 
     struct Pixel {
         float4 color;

@@ -6,7 +6,7 @@ void logging_post(uint32_t type, char const* text);
 void progress_start(uint32_t resolution);
 void progress_tick();
 
-int main(int /*argc*/, char* /*argv*/[]) noexcept {
+int main(int /*argc*/, char* /*argv*/[]) {
     std::cout << "sprout capi test" << std::endl;
 
     su_init(false);

@@ -7,11 +7,11 @@
 
 namespace scene::material::display {
 
-float3 const& Sample::base_shading_normal() const noexcept {
+float3 const& Sample::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -33,7 +33,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const noexcept {
     return {n_dot_wi * ggx.reflection, ggx.pdf};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -55,11 +55,11 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const noexcept {
     return {ggx.reflection, ggx.pdf};
 }
 
-float3 Sample::radiance() const noexcept {
+float3 Sample::radiance() const {
     return emission_;
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -79,7 +79,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     result.wavelength = 0.f;
 }
 
-void Sample::set(float3 const& radiance, float f0, float alpha) noexcept {
+void Sample::set(float3 const& radiance, float f0, float alpha) {
     emission_ = radiance;
 
     f0_ = f0;

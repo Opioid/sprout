@@ -10,11 +10,11 @@
 
 namespace procedural::sky {
 
-Sky::Sky() noexcept = default;
+Sky::Sky() = default;
 
-Sky::~Sky() noexcept = default;
+Sky::~Sky() = default;
 
-void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) noexcept {
+void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) {
     sky_ = sky;
     sun_ = sun;
 
@@ -25,7 +25,7 @@ void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) noexcept {
     scene.prop_set_world_transformation(sky, transformation);
 }
 
-void Sky::set_parameters(json::Value const& parameters, Scene& scene) noexcept {
+void Sky::set_parameters(json::Value const& parameters, Scene& scene) {
     for (auto& n : parameters.GetObject()) {
         if ("sun" == n.name) {
             float3 const angles = json::read_float3(n.value, "rotation", float3(0.f));
@@ -42,11 +42,11 @@ void Sky::set_parameters(json::Value const& parameters, Scene& scene) noexcept {
     private_update(scene);
 }
 
-Model& Sky::model() noexcept {
+Model& Sky::model() {
     return model_;
 }
 
-float3 Sky::sun_wi(float v) const noexcept {
+float3 Sky::sun_wi(float v) const {
     float const y = (2.f * v) - 1.f;
 
     float3 const ls = float3(0.f, y * Model::radius(), 0.f);
@@ -56,7 +56,7 @@ float3 Sky::sun_wi(float v) const noexcept {
     return normalize(ws - sun_rotation_.r[2]);
 }
 
-float Sky::sun_v(float3 const& wi) const noexcept {
+float Sky::sun_v(float3 const& wi) const {
     float3 const k = wi - sun_rotation_.r[2];
 
     float const c = dot(sun_rotation_.r[1], k) / Model::radius();
@@ -64,7 +64,7 @@ float Sky::sun_v(float3 const& wi) const noexcept {
     return std::max((c + 1.f) * 0.5f, 0.f);
 }
 
-bool Sky::sky_changed_since_last_check() noexcept {
+bool Sky::sky_changed_since_last_check() {
     bool const sky_changed = sky_changed_;
 
     sky_changed_ = false;
@@ -72,7 +72,7 @@ bool Sky::sky_changed_since_last_check() noexcept {
     return sky_changed;
 }
 
-bool Sky::sun_changed_since_last_check() noexcept {
+bool Sky::sun_changed_since_last_check() {
     bool const sun_changed = sun_changed_;
 
     sun_changed_ = false;
@@ -80,7 +80,7 @@ bool Sky::sun_changed_since_last_check() noexcept {
     return sun_changed;
 }
 
-void Sky::update(Scene& scene) noexcept {
+void Sky::update(Scene& scene) {
     scene::prop::Prop* const e = scene.prop(prop_);
 
     scene::prop::Prop* const sky = scene.prop(sky_);
@@ -97,7 +97,7 @@ void Sky::update(Scene& scene) noexcept {
     //    }
 }
 
-void Sky::private_update(Scene& scene) noexcept {
+void Sky::private_update(Scene& scene) {
     model_.set_sun_direction(sun_rotation_.r[2]);
     model_.set_ground_albedo(ground_albedo_);
     model_.set_turbidity(turbidity_);

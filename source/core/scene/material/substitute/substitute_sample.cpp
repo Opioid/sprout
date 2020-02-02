@@ -7,15 +7,15 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const {
     return evaluate<false>(wi);
 }
 
-void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -36,12 +36,12 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
     result.wavelength = 0.f;
 }
 
-float3 Sample::radiance() const noexcept {
+float3 Sample::radiance() const {
     return base_.emission_;
 }
 
 template <bool Forward>
-bxdf::Result Sample::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample::evaluate(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }

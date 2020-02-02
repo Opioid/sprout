@@ -92,7 +92,7 @@ void Glare::init(Camera const& camera, thread::Pool& threads) {
 
     threads.run_range(
         [this, angle, wl_norm, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits](uint32_t id, int32_t begin,
-                                                                   int32_t end) {
+                                                                   int32_t end) noexcept {
             Init& init = inits[id];
 
             for (int32_t y = begin; y < end; ++y) {

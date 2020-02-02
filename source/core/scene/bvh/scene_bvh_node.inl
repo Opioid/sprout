@@ -7,37 +7,37 @@
 
 namespace scene::bvh {
 
-inline Node::Node() noexcept = default;
+inline Node::Node() = default;
 
-inline float3 Node::min() const noexcept {
+inline float3 Node::min() const {
     return float3(min_.v);
 }
 
-inline float3 Node::max() const noexcept {
+inline float3 Node::max() const {
     return float3(max_.v);
 }
 
-inline uint32_t Node::next() const noexcept {
+inline uint32_t Node::next() const {
     return min_.next_or_data;
 }
 
-inline uint8_t Node::axis() const noexcept {
+inline uint8_t Node::axis() const {
     return max_.axis;
 }
 
-inline uint8_t Node::num_primitives() const noexcept {
+inline uint8_t Node::num_primitives() const {
     return max_.num_primitives;
 }
 
-inline uint32_t Node::indices_start() const noexcept {
+inline uint32_t Node::indices_start() const {
     return min_.next_or_data;
 }
 
-inline uint32_t Node::indices_end() const noexcept {
+inline uint32_t Node::indices_end() const {
     return min_.next_or_data + uint32_t(max_.num_primitives);
 }
 
-inline void Node::set_aabb(float const* min, float const* max) noexcept {
+inline void Node::set_aabb(float const* min, float const* max) {
     min_.v[0] = min[0];
     min_.v[1] = min[1];
     min_.v[2] = min[2];
@@ -47,13 +47,13 @@ inline void Node::set_aabb(float const* min, float const* max) noexcept {
     max_.v[2] = max[2];
 }
 
-inline void Node::set_split_node(uint32_t next_node, uint8_t axis) noexcept {
+inline void Node::set_split_node(uint32_t next_node, uint8_t axis) {
     min_.next_or_data   = next_node;
     max_.axis           = axis;
     max_.num_primitives = 0;
 }
 
-inline void Node::set_leaf_node(uint32_t start_primitive, uint8_t num_primitives) noexcept {
+inline void Node::set_leaf_node(uint32_t start_primitive, uint8_t num_primitives) {
     min_.next_or_data   = start_primitive;
     max_.num_primitives = num_primitives;
 }
@@ -143,7 +143,7 @@ inline bool Node::intersect_p(math::ray const& ray) const {
 // I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
 inline bool Node::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_inv_direction,
-                              scalar const& ray_min_t, scalar const& ray_max_t) const noexcept {
+                              scalar const& ray_min_t, scalar const& ray_max_t) const {
     Simd3f const bb_min = Simd3f::create_from_3(min_.v);
     Simd3f const bb_max = Simd3f::create_from_3(max_.v);
 

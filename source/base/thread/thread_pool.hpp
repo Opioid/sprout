@@ -19,46 +19,52 @@ class Pool {
     using Range_program    = std::function<void(uint32_t, int32_t, int32_t)>;
     using Async_program    = std::function<void()>;
 
-    Pool(uint32_t num_threads) noexcept;
+    Pool(uint32_t num_threads);
 
-    ~Pool() noexcept;
+    ~Pool();
 
-    uint32_t num_threads() const noexcept;
+    uint32_t num_threads() const;
 
-    void run_parallel(Parallel_program&& program) noexcept;
+    void run_parallel(Parallel_program&& program);
 
-    void run_range(Range_program&& program, int32_t begin, int32_t end) noexcept;
+    void run_range(Range_program&& program, int32_t begin, int32_t end);
 
-    void run_async(Async_program&& program) noexcept;
+    void run_async(Async_program&& program);
 
-    void wait_async() noexcept;
+    void wait_async();
 
-    static uint32_t num_threads(int32_t request) noexcept;
+    static uint32_t num_threads(int32_t request);
 
   private:
-    void wake_all() noexcept;
-    void wake_all(int32_t begin, int32_t end) noexcept;
+    void wake_all();
+    void wake_all(int32_t begin, int32_t end);
 
-    void wake_async() noexcept;
+    void wake_async();
 
-    void wait_all() noexcept;
+    void wait_all();
 
     struct Unique {
-        int32_t                 begin;
-        int32_t                 end;
+        int32_t begin;
+        int32_t end;
+
         std::condition_variable wake_signal;
         std::condition_variable done_signal;
-        std::mutex              mutex;
-        bool                    wake = false;
+
+        std::mutex mutex;
+
+        bool wake = false;
     };
 
     struct Async {
-        Async_program           program;
+        Async_program program;
+
         std::condition_variable wake_signal;
         std::condition_variable done_signal;
-        std::mutex              mutex;
-        bool                    wake = false;
-        bool                    quit = false;
+
+        std::mutex mutex;
+
+        bool wake = false;
+        bool quit = false;
     };
 
     uint32_t num_threads_;
@@ -86,9 +92,9 @@ class Pool {
 
     std::thread async_thread_;
 
-    void loop(uint32_t id) noexcept;
+    void loop(uint32_t id);
 
-    static void async_loop(Async& async) noexcept;
+    static void async_loop(Async& async);
 };
 
 }  // namespace thread

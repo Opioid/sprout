@@ -19,21 +19,21 @@ namespace scene::prop {
 
 using Transformation = entity::Composed_transformation;
 
-Prop::Prop() noexcept = default;
+Prop::Prop() = default;
 
-Prop::~Prop() noexcept = default;
+Prop::~Prop() = default;
 
-void Prop::set_visible_in_shadow(bool value) noexcept {
+void Prop::set_visible_in_shadow(bool value) {
     properties_.set(Property::Visible_in_shadow, value);
 }
 
-void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept {
+void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
     properties_.set(Property::Visible_in_camera, in_camera);
     properties_.set(Property::Visible_in_reflection, in_reflection);
     properties_.set(Property::Visible_in_shadow, in_shadow);
 }
 
-void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
+void Prop::configure(Shape_ptr shape, Material_ptr const* materials) {
     shape_ = shape.id;
 
     properties_.clear();
@@ -59,7 +59,7 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) noexcept {
     }
 }
 
-void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& scene) noexcept {
+void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& scene) {
     Shape const* shape = scene.prop_shape(self);
 
     properties_.set(Property::Test_AABB, shape->is_finite());
@@ -68,7 +68,7 @@ void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& 
 }
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
-                     shape::Intersection& intersection) const noexcept {
+                     shape::Intersection& intersection) const {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -89,7 +89,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
 }
 
 bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
-                         shape::Intersection& intersection) const noexcept {
+                         shape::Intersection& intersection) const {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -109,8 +109,7 @@ bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
                                                  intersection);
 }
 
-bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const
-    noexcept {
+bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const {
     //	if (!visible(ray.depth)) {
     //		return false;
     //	}
@@ -133,7 +132,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Norma
     return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(), normals);
 }
 
-bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const noexcept {
+bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const {
     if (!visible_in_shadow()) {
         return false;
     }
@@ -152,7 +151,7 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) cons
     return scene.prop_shape(self)->intersect_p(ray, transformation, worker.node_stack());
 }
 
-bool Prop::visible(uint32_t ray_depth) const noexcept {
+bool Prop::visible(uint32_t ray_depth) const {
     if (0 == ray_depth) {
         if (!properties_.is(Property::Visible_in_camera)) {
             return false;
@@ -166,8 +165,7 @@ bool Prop::visible(uint32_t ray_depth) const noexcept {
     return true;
 }
 
-float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const
-    noexcept {
+float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const {
     if (!has_masked_material()) {
         return intersect_p(self, ray, worker) ? 1.f : 0.f;
     }
@@ -189,7 +187,7 @@ float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& 
 }
 
 bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
-                           float3& ta) const noexcept {
+                           float3& ta) const {
     if (!has_tinted_shadow()) {
         float const o = opacity(self, ray, filter, worker);
 
@@ -215,15 +213,15 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker 
     return scene.prop_shape(self)->thin_absorption(ray, transformation, self, filter, worker, ta);
 }
 
-bool Prop::has_masked_material() const noexcept {
+bool Prop::has_masked_material() const {
     return properties_.is(Property::Masked_material);
 }
 
-bool Prop::has_tinted_shadow() const noexcept {
+bool Prop::has_tinted_shadow() const {
     return properties_.is(Property::Tinted_shadow);
 }
 
-size_t Prop::num_bytes() const noexcept {
+size_t Prop::num_bytes() const {
     return sizeof(*this);
 }
 

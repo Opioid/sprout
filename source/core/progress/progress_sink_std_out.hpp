@@ -9,13 +9,13 @@ namespace progress {
 
 class Std_out : public Sink {
   public:
-    void start(uint32_t resolution) noexcept final {
+    void start(uint32_t resolution) final {
         resolution_ = resolution;
         progress_   = 0;
         threshold_  = Step;
     }
 
-    void tick() noexcept final {
+    void tick() final {
         if (progress_ >= resolution_) {
             return;
         }

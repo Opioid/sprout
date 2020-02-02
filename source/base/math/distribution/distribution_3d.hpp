@@ -10,25 +10,25 @@ class Distribution_3D {
   public:
     using Distribution_impl = Distribution_2D::Distribution_impl;
 
-    Distribution_3D() noexcept;
+    Distribution_3D();
 
-    ~Distribution_3D() noexcept;
+    ~Distribution_3D();
 
-    Distribution_2D* allocate(uint32_t num) noexcept;
+    Distribution_2D* allocate(uint32_t num);
 
-    void init() noexcept;
+    void init();
 
-    float integral() const noexcept;
+    float integral() const;
 
     struct Continuous {
         float3 uvw;
         float  pdf;
     };
-    Continuous sample_continuous(float3 const& r3) const noexcept;
+    Continuous sample_continuous(float3 const& r3) const;
 
-    float pdf(float3 const& uvw) const noexcept;
+    float pdf(float3 const& uvw) const;
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     Distribution_impl marginal_;

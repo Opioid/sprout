@@ -42,10 +42,10 @@
 
 #ifdef SU_DEBUG
 static void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
-                                   scene::Scene const& scene) noexcept;
+                                   scene::Scene const& scene);
 #endif
 
-int main(int argc, char* argv[]) noexcept {
+int main(int argc, char* argv[]) {
     using namespace scene;
 
     //	scene::material::substitute::testing::test();
@@ -204,7 +204,7 @@ int main(int argc, char* argv[]) noexcept {
 
 #ifdef SU_DEBUG
 void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
-                            scene::Scene const& scene) noexcept {
+                            scene::Scene const& scene) {
     logging::verbose("Memory consumption:");
 
     size_t const image_num_bytes = manager.num_bytes<image::Image>();

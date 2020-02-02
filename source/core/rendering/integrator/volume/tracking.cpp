@@ -32,8 +32,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
                                                        float minorant_mu_t, float majorant_mu_t,
                                                        Tracking::Material const& material,
                                                        float srs, Tracking::Filter filter,
-                                                       rnd::Generator& rng,
-                                                       Worker&         worker) noexcept {
+                                                       rnd::Generator& rng, Worker& worker) {
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t - ray.min_t, minorant_mu_t);
 
@@ -84,7 +83,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
 static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tracking::CM const& cm,
                                         Tracking::Material const& material, float srs,
                                         Tracking::Filter filter, rnd::Generator& rng,
-                                        Worker& worker) noexcept {
+                                        Worker& worker) {
     float const mt = cm.majorant_mu_t();
 
     if (mt < Tracking::Min_mt) {
@@ -137,8 +136,7 @@ static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tra
     }
 }
 
-bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker,
-                             float3& tr) noexcept {
+bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker, float3& tr) {
     SOFT_ASSERT(!worker.interface_stack().empty());
 
     auto const interface = worker.interface_stack().top();
@@ -201,7 +199,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm,
                                           Tracking::Material const& material, float srs,
                                           Tracking::Filter filter, rnd::Generator& rng,
-                                          Worker& worker, float& t_out, float3& w) noexcept {
+                                          Worker& worker, float& t_out, float3& w) {
     float const d = ray.max_t;
 
     float const mt  = cm.majorant_mu_t();
@@ -282,7 +280,7 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
 
 bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                         Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
-                        float3& w) noexcept {
+                        float3& w) {
     float const mt = cm.majorant_mu_t();
 
     if (mt < Min_mt) {
@@ -346,7 +344,7 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
 
 Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                          Filter filter, rnd::Generator& rng, Worker& worker, float& t_out,
-                         float3& w, float3& li) noexcept {
+                         float3& w, float3& li) {
     float const mt = cm.majorant_mu_t();
 
     if (mt < Min_mt) {
@@ -418,7 +416,7 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
 }
 
 bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
-                        float3& w) noexcept {
+                        float3& w) {
     float3 const mu_t = mu.a + mu.s;
 
     float const mt  = max_component(mu_t);
@@ -467,7 +465,7 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
 }
 
 Event Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
-                         float3& w, float3& li) noexcept {
+                         float3& w, float3& li) {
     CC const& mu = cce.cc;
 
     float3 const mu_t = mu.a + mu.s;

@@ -12,7 +12,7 @@
 
 namespace scene::shape::triangle::bvh {
 
-Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold) noexcept
+Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold)
     : Builder_base(num_slices, sweep_threshold) {}
 
 void Builder_SAH::assign(Build_node* node, References const& references) {

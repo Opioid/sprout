@@ -7,38 +7,38 @@
 
 namespace scene::material::fresnel {
 
-static inline float schlick_f0(float n0, float n1) noexcept {
+static inline float schlick_f0(float n0, float n1) {
     float const t = (n0 - n1) / (n0 + n1);
     return t * t;
 }
 
-static inline float schlick(float wo_dot_h, float f0) noexcept {
+static inline float schlick(float wo_dot_h, float f0) {
     return f0 + pow5(1.f - wo_dot_h) * (1.f - f0);
 }
 
-static inline float3 schlick(float wo_dot_h, float3 const& f0) noexcept {
+static inline float3 schlick(float wo_dot_h, float3 const& f0) {
     return f0 + pow5(1.f - wo_dot_h) * (1.f - f0);
 }
 
-static inline float lazanyi_schlick_a(float f0, float f82) noexcept {
+static inline float lazanyi_schlick_a(float f0, float f82) {
     float constexpr cos_theta_max = 1.f / 7.f;
 
     return (f0 + (1.f - f0) * pow5(1.f - cos_theta_max) - f82) /
            (cos_theta_max * pow6(1.f - cos_theta_max));
 }
 
-static inline float3 lazanyi_schlick_a(float3 const& f0, float3 const& f82) noexcept {
+static inline float3 lazanyi_schlick_a(float3 const& f0, float3 const& f82) {
     float constexpr cos_theta_max = 1.f / 7.f;
 
     return (f0 + pow5(1.f - cos_theta_max) * (1.f - f0) - f82) /
            (cos_theta_max * pow6(1.f - cos_theta_max));
 }
 
-static inline float3 lazanyi_schlick(float wo_dot_h, float3 const& f0, float3 const& a) noexcept {
+static inline float3 lazanyi_schlick(float wo_dot_h, float3 const& f0, float3 const& a) {
     return schlick(wo_dot_h, f0) - wo_dot_h * pow6(1.f - wo_dot_h) * a;
 }
 
-static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& k) noexcept {
+static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& k) {
     float3 const tmp_f = eta * eta + k * k;
 
     float const  wo_dot_h2 = wo_dot_h * wo_dot_h;
@@ -52,8 +52,7 @@ static inline float3 conductor(float wo_dot_h, float3 const& eta, float3 const& 
     return 0.5f * (r_p + r_o);
 }
 
-static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i,
-                               float eta_t) noexcept {
+static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
     float const t0 = eta_t * cos_theta_i;
     float const t1 = eta_i * cos_theta_t;
 
@@ -67,7 +66,7 @@ static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i
     return 0.5f * (r_p * r_p + r_o * r_o);
 }
 
-static inline float dielectric_reflect(float cos_theta_i, float eta_i, float eta_t) noexcept {
+static inline float dielectric_reflect(float cos_theta_i, float eta_i, float eta_t) {
     float const sin_theta_i = std::sqrt(std::max(0.f, 1.f - cos_theta_i * cos_theta_i));
     float const sin_theta_t = eta_i / eta_t * sin_theta_i;
     float const sint2       = sin_theta_t * sin_theta_t;
@@ -78,27 +77,27 @@ static inline float dielectric_reflect(float cos_theta_i, float eta_i, float eta
 }
 
 // Amplitude reflection coefficient (s-polarized)
-static inline float rs(float n1, float n2, float cosI, float cosT) noexcept {
+static inline float rs(float n1, float n2, float cosI, float cosT) {
     return (n1 * cosI - n2 * cosT) / (n1 * cosI + n2 * cosT);
 }
 
 // Amplitude reflection coefficient (p-polarized)
-static inline float rp(float n1, float n2, float cosI, float cosT) noexcept {
+static inline float rp(float n1, float n2, float cosI, float cosT) {
     return (n2 * cosI - n1 * cosT) / (n1 * cosT + n2 * cosI);
 }
 
 // Amplitude transmission coefficient (s-polarized)
-static inline float ts(float n1, float n2, float cosI, float cosT) noexcept {
+static inline float ts(float n1, float n2, float cosI, float cosT) {
     return 2.f * n1 * cosI / (n1 * cosI + n2 * cosT);
 }
 
 // Amplitude transmission coefficient (p-polarized)
-static inline float tp(float n1, float n2, float cosI, float cosT) noexcept {
+static inline float tp(float n1, float n2, float cosI, float cosT) {
     return 2.f * n1 * cosI / (n1 * cosT + n2 * cosI);
 }
 
 static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
-                              float internal_ior, float thickness) noexcept {
+                              float internal_ior, float thickness) {
     // Precompute the reflection phase changes (depends on IOR)
     float delta10 = (thinfilm_ior < external_ior) ? Pi : 0.f;
     float delta12 = (thinfilm_ior < internal_ior) ? Pi : 0.f;
@@ -147,57 +146,56 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
     return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
-inline Schlick1::Schlick1(float f0) noexcept : f0_(f0) {}
+inline Schlick1::Schlick1(float f0) : f0_(f0) {}
 
-inline float Schlick1::operator()(float wo_dot_h) const noexcept {
+inline float Schlick1::operator()(float wo_dot_h) const {
     return schlick(wo_dot_h, f0_);
 }
 
-inline Schlick::Schlick(float f0) noexcept : f0_(f0) {}
+inline Schlick::Schlick(float f0) : f0_(f0) {}
 
-inline Schlick::Schlick(float3 const& f0) noexcept : f0_(f0) {}
+inline Schlick::Schlick(float3 const& f0) : f0_(f0) {}
 
-inline float3 Schlick::operator()(float wo_dot_h) const noexcept {
+inline float3 Schlick::operator()(float wo_dot_h) const {
     return schlick(wo_dot_h, f0_);
 }
 
-inline Lazanyi_schlick::Lazanyi_schlick(float f0, float a) noexcept : f0_(f0), a_(a) {}
+inline Lazanyi_schlick::Lazanyi_schlick(float f0, float a) : f0_(f0), a_(a) {}
 
-inline Lazanyi_schlick::Lazanyi_schlick(float3 const& f0, float3 const& a) noexcept
-    : f0_(f0), a_(a) {}
+inline Lazanyi_schlick::Lazanyi_schlick(float3 const& f0, float3 const& a) : f0_(f0), a_(a) {}
 
-inline float3 Lazanyi_schlick::operator()(float wo_dot_h) const noexcept {
+inline float3 Lazanyi_schlick::operator()(float wo_dot_h) const {
     return lazanyi_schlick(wo_dot_h, f0_, a_);
 }
 
 inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior, float internal_ior,
-                          float thickness) noexcept
+                          float thickness)
     : external_ior_(external_ior),
       thinfilm_ior_(thinfilm_ior),
       internal_ior_(internal_ior),
       thickness_(thickness) {}
 
-inline float3 Thinfilm::operator()(float wo_dot_h) const noexcept {
+inline float3 Thinfilm::operator()(float wo_dot_h) const {
     return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
 }
 
-inline Dielectric::Dielectric(float eta_i, float eta_t) noexcept : eta_i_(eta_i), eta_t_(eta_t) {}
+inline Dielectric::Dielectric(float eta_i, float eta_t) : eta_i_(eta_i), eta_t_(eta_t) {}
 
-inline float3 Dielectric::operator()(float wo_dot_h) const noexcept {
+inline float3 Dielectric::operator()(float wo_dot_h) const {
     return float3(dielectric_reflect(wo_dot_h, eta_i_, eta_t_));
 }
 
-inline Conductor::Conductor(float3 const& eta, float3 const& k) noexcept : eta_(eta), k_(k) {}
+inline Conductor::Conductor(float3 const& eta, float3 const& k) : eta_(eta), k_(k) {}
 
-inline float3 Conductor::operator()(float wo_dot_h) const noexcept {
+inline float3 Conductor::operator()(float wo_dot_h) const {
     return conductor(wo_dot_h, eta_, k_);
 }
 
-inline Constant::Constant(float f) noexcept : f_(f) {}
+inline Constant::Constant(float f) : f_(f) {}
 
-inline Constant::Constant(float3 const& f) noexcept : f_(f) {}
+inline Constant::Constant(float3 const& f) : f_(f) {}
 
-inline float3 Constant::operator()(float /*wo_dot_h*/) const noexcept {
+inline float3 Constant::operator()(float /*wo_dot_h*/) const {
     return f_;
 }
 

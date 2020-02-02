@@ -18,22 +18,22 @@
 
 namespace scene::shape {
 
-Disk::Disk() noexcept = default;
+Disk::Disk() = default;
 
-float3 Disk::object_to_texture_point(float3 const& p) const noexcept {
+float3 Disk::object_to_texture_point(float3 const& p) const {
     return (p - float3(-1.f)) * (1.f / float3(2.f, 2.f, 0.2f));
 }
 
-float3 Disk::object_to_texture_vector(float3 const& v) const noexcept {
+float3 Disk::object_to_texture_vector(float3 const& v) const {
     return v * (1.f / float3(2.f, 2.f, 0.2f));
 }
 
-AABB Disk::transformed_aabb(float4x4 const& m) const noexcept {
+AABB Disk::transformed_aabb(float4x4 const& m) const {
     return AABB(float3(-1.f, -1.f, -0.1f), float3(1.f, 1.f, 0.1f)).transform(m);
 }
 
 bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                     Intersection& intersection) const noexcept {
+                     Intersection& intersection) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float const d     = dot(normal, transformation.position);
@@ -75,7 +75,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 }
 
 bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                         Intersection& intersection) const noexcept {
+                         Intersection& intersection) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -115,7 +115,7 @@ bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 }
 
 bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                     Normals& normals) const noexcept {
+                     Normals& normals) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -144,7 +144,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 }
 
 bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
-                       Node_stack& /*node_stack*/) const noexcept {
+                       Node_stack& /*node_stack*/) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -168,7 +168,7 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Disk::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                    Filter filter, Worker const& worker) const noexcept {
+                    Filter filter, Worker const& worker) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -197,7 +197,7 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation, uint32
 }
 
 bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                           Filter filter, Worker const& worker, float3& ta) const noexcept {
+                           Filter filter, Worker const& worker, float3& ta) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -231,7 +231,7 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
 
 bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
                   float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
+                  Node_stack& /*node_stack*/, Sample_to& sample) const {
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = sample_disk_concentric(r2);
 
@@ -268,7 +268,7 @@ bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float area,
                   bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
                   float2       importance_uv, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                  Sample_from& sample) const noexcept {
+                  Sample_from& sample) const {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
     float2 const xy = sample_disk_concentric(r0);
 
@@ -288,7 +288,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
 
 float Disk::pdf(Ray const&            ray, Intersection const& /*intersection*/,
                 Transformation const& transformation, float area, bool two_sided,
-                bool /*total_sphere*/) const noexcept {
+                bool /*total_sphere*/) const {
     float3 const normal = transformation.rotation.r[2];
 
     float c = -dot(normal, ray.direction);
@@ -302,47 +302,47 @@ float Disk::pdf(Ray const&            ray, Intersection const& /*intersection*/,
 }
 
 float Disk::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
-                       Transformation const& /*transformation*/, float /*volume*/) const noexcept {
+                       Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
 
 bool Disk::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                  Sample_to& /*sample*/) const noexcept {
+                  Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Disk::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
                   Transformation const& /*transformation*/, float /*volume*/,
-                  Sample_to& /*sample*/) const noexcept {
+                  Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Disk::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                   float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
-                  AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
+                  AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
 float Disk::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
                    Transformation const& /*transformation*/, float /*area*/,
-                   bool /*two_sided*/) const noexcept {
+                   bool /*two_sided*/) const {
     return 0.f;
 }
 
-float Disk::uv_weight(float2 /*uv*/) const noexcept {
+float Disk::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Disk::area(uint32_t /*part*/, float3 const& scale) const noexcept {
+float Disk::area(uint32_t /*part*/, float3 const& scale) const {
     return Pi * scale[0] * scale[0];
 }
 
-float Disk::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+float Disk::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
 }
 
-size_t Disk::num_bytes() const noexcept {
+size_t Disk::num_bytes() const {
     return sizeof(*this);
 }
 

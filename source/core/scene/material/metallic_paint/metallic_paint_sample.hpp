@@ -7,22 +7,22 @@ namespace scene::material::metallic_paint {
 
 class Sample : public material::Sample {
   public:
-    float3 const& base_shading_normal() const noexcept final;
+    float3 const& base_shading_normal() const final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
 
     struct Base_layer : material::Layer {
-        void set(float3 const& color_a, float3 const& color_b, float alpha) noexcept;
+        void set(float3 const& color_a, float3 const& color_b, float alpha);
 
         template <bool Forward>
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                              float wo_dot_h) const noexcept;
+                              float wo_dot_h) const;
 
-        void sample(float3 const& wo, Sampler& sampler, bxdf::Sample& result) const noexcept;
+        void sample(float3 const& wo, Sampler& sampler, bxdf::Sample& result) const;
 
         float3 color_a_;
         float3 color_b_;
@@ -31,14 +31,14 @@ class Sample : public material::Sample {
     };
 
     struct Flakes_layer : material::Layer {
-        void set(float3 const& ior, float3 const& absorption, float alpha, float weight) noexcept;
+        void set(float3 const& ior, float3 const& absorption, float alpha, float weight);
 
         template <bool Forward>
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                              float3& fresnel_result) const noexcept;
+                              float3& fresnel_result) const;
 
         void sample(float3 const& wo, Sampler& sampler, float3& fresnel_result,
-                    bxdf::Sample& result) const noexcept;
+                    bxdf::Sample& result) const;
 
         float3 ior_;
         float3 absorption_;

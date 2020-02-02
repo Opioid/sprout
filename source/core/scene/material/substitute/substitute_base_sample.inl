@@ -14,7 +14,7 @@ namespace scene::material::substitute {
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::set(float3 const& color, float3 const& emission, float f0, float alpha,
-                                float metallic, bool avoid_caustics) noexcept {
+                                float metallic, bool avoid_caustics) {
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
@@ -33,7 +33,7 @@ template <typename Diffuse>
 template <bool Forward>
 bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const& wo,
                                                   float3 const& h, float wo_dot_h,
-                                                  Layer const& layer) const noexcept {
+                                                  Layer const& layer) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -72,7 +72,7 @@ template <typename Diffuse>
 template <bool Forward>
 bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 const& wo,
                                                         float3 const& h, float wo_dot_h,
-                                                        Layer const& layer) const noexcept {
+                                                        Layer const& layer) const {
     if (avoid_caustics_ && alpha_ <= ggx::Min_alpha) {
         return {float3(0.f), 0.f};
     }
@@ -101,8 +101,7 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
-                                           bool avoid_caustics, bxdf::Sample& result) const
-    noexcept {
+                                           bool avoid_caustics, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float2 const xi = sampler.generate_sample_2D();
@@ -131,7 +130,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
-                                         bxdf::Sample& result) const noexcept {
+                                         bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -152,8 +151,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, Layer const& layer,
-                                              Sampler& sampler, bxdf::Sample& result) const
-    noexcept {
+                                              Sampler& sampler, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -168,8 +166,7 @@ void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, Layer const& lay
 }
 
 template <typename Diffuse>
-float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const
-    noexcept {
+float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const {
     // I think this is what we have to weigh lambert with if it is added to a microfacet BRDF.
     // At the moment this is only used with the "translucent" material,
     // which is kind of hacky anyway.
@@ -182,7 +179,7 @@ float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_d
     return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
 }
 
-inline float3 const& Sample_base::base_shading_normal() const noexcept {
+inline float3 const& Sample_base::base_shading_normal() const {
     return layer_.n_;
 }
 

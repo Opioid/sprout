@@ -11,7 +11,7 @@
 namespace exporting {
 
 Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion,
-               uint32_t framerate) noexcept
+               uint32_t framerate)
     : Srgb(error_diffusion) {
     // -i - tells it to read frames from stdin
     std::ostringstream cmd;
@@ -30,7 +30,7 @@ Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusio
 #endif
 }
 
-Ffmpeg::~Ffmpeg() noexcept {
+Ffmpeg::~Ffmpeg() {
     if (stream_) {
 #ifdef WIN32
         _pclose(stream_);
@@ -40,7 +40,7 @@ Ffmpeg::~Ffmpeg() noexcept {
     }
 }
 
-void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool& threads) noexcept {
+void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool& threads) {
     if (!stream_) {
         return;
     }
@@ -51,9 +51,9 @@ void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool&
 
     resize(num_pixels);
 
-    threads.run_range(
-        [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
-        0, d[1]);
+    threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                     int32_t end) noexcept { to_sRGB(image, begin, end); },
+                      0, d[1]);
 
     fwrite(rgb_, sizeof(byte3) * size_t(d[0] * d[1]), 1, stream_);
 }

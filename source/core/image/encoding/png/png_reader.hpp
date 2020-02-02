@@ -14,7 +14,7 @@ namespace encoding::png {
 class Reader {
   public:
     static Image* read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
-                       bool invert) noexcept;
+                       bool invert);
 };
 
 }  // namespace encoding::png

@@ -17,9 +17,9 @@ class Postprocessor {
   public:
     using Camera = scene::camera::Camera;
 
-    Postprocessor(uint32_t num_passes = 1) noexcept;
+    Postprocessor(uint32_t num_passes = 1);
 
-    virtual ~Postprocessor() noexcept;
+    virtual ~Postprocessor();
 
     virtual void init(Camera const& camera, thread::Pool& threads) = 0;
 

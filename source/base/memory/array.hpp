@@ -10,52 +10,52 @@ namespace memory {
 template <typename T>
 class Array {
   public:
-    Array() noexcept;
+    Array();
 
-    Array(uint32_t size) noexcept;
+    Array(uint32_t size);
 
-    Array(uint32_t size, T const& def) noexcept;
+    Array(uint32_t size, T const& def);
 
-    Array(std::initializer_list<T> list) noexcept;
+    Array(std::initializer_list<T> list);
 
-    Array(Array&& other) noexcept;
+    Array(Array&& other);
 
-    ~Array() noexcept;
+    ~Array();
 
-    bool empty() const noexcept;
+    bool empty() const;
 
-    bool full() const noexcept;
+    bool full() const;
 
-    uint32_t capacity() const noexcept;
+    uint32_t capacity() const;
 
-    uint32_t size() const noexcept;
+    uint32_t size() const;
 
-    T const* data() const noexcept;
-    T*       data() noexcept;
+    T const* data() const;
+    T*       data();
 
-    void operator=(Array&& other) noexcept;
+    void operator=(Array&& other);
 
-    void clear() noexcept;
+    void clear();
 
-    void release() noexcept;
+    void release();
 
-    void resize(uint32_t size) noexcept;
+    void resize(uint32_t size);
 
-    void reserve(uint32_t capacity) noexcept;
+    void reserve(uint32_t capacity);
 
-    void push_back(T const& v) noexcept;
+    void push_back(T const& v);
 
-    T const& operator[](uint32_t i) const noexcept;
-    T&       operator[](uint32_t i) noexcept;
+    T const& operator[](uint32_t i) const;
+    T&       operator[](uint32_t i);
 
-    T const* begin() const noexcept;
-    T*       begin() noexcept;
+    T const* begin() const;
+    T*       begin();
 
-    T const* end() const noexcept;
-    T*       end() noexcept;
+    T const* end() const;
+    T*       end();
 
   private:
-    void allocate(uint32_t capacity) noexcept;
+    void allocate(uint32_t capacity);
 
     uint32_t capacity_;
     uint32_t size_;
@@ -66,52 +66,52 @@ class Array {
 template <typename T>
 class Concurrent_array {
   public:
-    Concurrent_array() noexcept;
+    Concurrent_array();
 
-    Concurrent_array(uint32_t size) noexcept;
+    Concurrent_array(uint32_t size);
 
-    Concurrent_array(uint32_t size, T const& def) noexcept;
+    Concurrent_array(uint32_t size, T const& def);
 
-    Concurrent_array(std::initializer_list<T> list) noexcept;
+    Concurrent_array(std::initializer_list<T> list);
 
-    Concurrent_array(Concurrent_array&& other) noexcept;
+    Concurrent_array(Concurrent_array&& other);
 
-    ~Concurrent_array() noexcept;
+    ~Concurrent_array();
 
-    bool empty() const noexcept;
+    bool empty() const;
 
-    bool full() const noexcept;
+    bool full() const;
 
-    uint32_t capacity() const noexcept;
+    uint32_t capacity() const;
 
-    uint32_t size() const noexcept;
+    uint32_t size() const;
 
-    T const* data() const noexcept;
-    T*       data() noexcept;
+    T const* data() const;
+    T*       data();
 
-    void operator=(Concurrent_array&& other) noexcept;
+    void operator=(Concurrent_array&& other);
 
-    void clear() noexcept;
+    void clear();
 
-    void release() noexcept;
+    void release();
 
-    void resize(uint32_t capacity) noexcept;
+    void resize(uint32_t capacity);
 
-    void reserve(uint32_t capacity) noexcept;
+    void reserve(uint32_t capacity);
 
-    void push_back(T const& v) noexcept;
+    void push_back(T const& v);
 
-    T const& operator[](uint32_t i) const noexcept;
-    T&       operator[](uint32_t i) noexcept;
+    T const& operator[](uint32_t i) const;
+    T&       operator[](uint32_t i);
 
-    T const* begin() const noexcept;
-    T*       begin() noexcept;
+    T const* begin() const;
+    T*       begin();
 
-    T const* end() const noexcept;
-    T*       end() noexcept;
+    T const* end() const;
+    T*       end();
 
   private:
-    void allocate(uint32_t capacity) noexcept;
+    void allocate(uint32_t capacity);
 
     uint32_t capacity_;
 

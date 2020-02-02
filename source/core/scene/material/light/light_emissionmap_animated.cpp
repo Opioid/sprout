@@ -9,14 +9,13 @@
 
 namespace scene::material::light {
 
-Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings,
-                                           bool                    two_sided) noexcept
+Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided)
     : Emissionmap(sampler_settings, two_sided), element_(-1) {}
 
-Emissionmap_animated::~Emissionmap_animated() noexcept = default;
+Emissionmap_animated::~Emissionmap_animated() = default;
 
 void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /*frame_length*/,
-                                    thread::Pool& /*threads*/, Scene const& scene) noexcept {
+                                    thread::Pool& /*threads*/, Scene const& scene) {
     uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
 
     int32_t const element = int32_t((start / (animation_duration_ / num_elements)) % num_elements);
@@ -30,7 +29,7 @@ void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /
 material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
                                                      Sampler& /*sampler*/,
-                                                     Worker const& worker) const noexcept {
+                                                     Worker const& worker) const {
     auto& sample = worker.sample<Sample>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -45,13 +44,13 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
 }
 
 float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                               Filter filter, Worker const& worker) const noexcept {
+                                               Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_factor_ * emission_map_.sample_3(worker, sampler, uv, element_);
 }
 
 float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
-                                    Worker const& worker) const noexcept {
+                                    Worker const& worker) const {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);
         return mask_.sample_1(worker, sampler, uv, element_);
@@ -63,7 +62,7 @@ float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
 void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,
                                             Transformation const& /*transformation*/,
                                             float /*area*/, bool importance_sampling,
-                                            thread::Pool& threads, Scene const& scene) noexcept {
+                                            thread::Pool& threads, Scene const& scene) {
     uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
 
     int32_t const element = int32_t((time / (animation_duration_ / num_elements)) % num_elements);
@@ -77,18 +76,18 @@ void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*
     prepare_sampling_internal(shape, element, importance_sampling, threads, scene);
 }
 
-bool Emissionmap_animated::is_animated() const noexcept {
+bool Emissionmap_animated::is_animated() const {
     return true;
 }
 
 void Emissionmap_animated::set_emission_map(Texture_adapter const& emission_map,
-                                            uint64_t               animation_duration) noexcept {
+                                            uint64_t               animation_duration) {
     emission_map_ = emission_map;
 
     animation_duration_ = animation_duration;
 }
 
-size_t Emissionmap_animated::num_bytes() const noexcept {
+size_t Emissionmap_animated::num_bytes() const {
     return sizeof(*this);
 }
 

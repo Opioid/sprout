@@ -10,18 +10,15 @@ namespace scene::material::substitute {
 
 using Clearcoat_no_lambert = Sample_coating<coating::Clearcoat_layer, disney::Isotropic_no_lambert>;
 
-bxdf::Result Sample_coating_subsurface::evaluate_f(float3 const& wi, bool include_back) const
-    noexcept {
+bxdf::Result Sample_coating_subsurface::evaluate_f(float3 const& wi, bool include_back) const {
     return evaluate<true>(wi, include_back);
 }
 
-bxdf::Result Sample_coating_subsurface::evaluate_b(float3 const& wi, bool include_back) const
-    noexcept {
+bxdf::Result Sample_coating_subsurface::evaluate_b(float3 const& wi, bool include_back) const {
     return evaluate<false>(wi, include_back);
 }
 
-void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
-    noexcept {
+void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (1.f == base_.metallic_) {
         Clearcoat_no_lambert::sample(sampler, result);
         return;
@@ -116,12 +113,11 @@ void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& 
     result.wavelength = 0.f;
 }
 
-bool Sample_coating_subsurface::evaluates_back(bool previously, bool same_side) const noexcept {
+bool Sample_coating_subsurface::evaluates_back(bool previously, bool same_side) const {
     return previously | same_side;
 }
 
-void Sample_coating_subsurface::set_volumetric(float anisotropy, float ior,
-                                               float ior_outside) noexcept {
+void Sample_coating_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) {
     anisotropy_ = anisotropy;
 
     ior_.eta_t = ior;
@@ -129,8 +125,7 @@ void Sample_coating_subsurface::set_volumetric(float anisotropy, float ior,
 }
 
 template <bool Forward>
-bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_back) const
-    noexcept {
+bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_back) const {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }
@@ -187,8 +182,7 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
     return result;
 }
 
-void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result) const
-    noexcept {
+void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = float3(1.f);
         result.wi         = -wo_;
@@ -215,13 +209,12 @@ void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample&
     result.type.set(bxdf::Type::Caustic);
 }
 
-float3 const& Sample_coating_subsurface_volumetric::base_shading_normal() const noexcept {
+float3 const& Sample_coating_subsurface_volumetric::base_shading_normal() const {
     return layer_.n_;
 }
 
 bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,
-                                                              bool /*include_back*/) const
-    noexcept {
+                                                              bool /*include_back*/) const {
     bxdf::Result result = volumetric::Sample::evaluate_f(wi, true);
 
     float3 const a = attenuation(wi);
@@ -232,8 +225,7 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,
 }
 
 bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
-                                                              bool /*include_back*/) const
-    noexcept {
+                                                              bool /*include_back*/) const {
     bxdf::Result result = volumetric::Sample::evaluate_b(wi, true);
 
     float3 const a = attenuation(wi);
@@ -244,11 +236,11 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
 }
 
 bool Sample_coating_subsurface_volumetric::evaluates_back(bool /*previously*/,
-                                                          bool /*same_side*/) const noexcept {
+                                                          bool /*same_side*/) const {
     return false;
 }
 
-float3 Sample_coating_subsurface_volumetric::attenuation(float3 const& wi) const noexcept {
+float3 Sample_coating_subsurface_volumetric::attenuation(float3 const& wi) const {
     float const n_dot_wi = coating_.clamp_n_dot(wi);
 
     float3 const attenuation = coating_.attenuation(n_dot_wi);

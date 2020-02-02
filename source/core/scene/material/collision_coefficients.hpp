@@ -16,17 +16,17 @@ struct CCE {
 };
 
 struct alignas(16) CM {
-    CM() noexcept;
-    CM(float x) noexcept;
-    CM(float min, float max) noexcept;
-    CM(CC const& cc) noexcept;
+    CM();
+    CM(float x);
+    CM(float min, float max);
+    CM(CC const& cc);
 
-    float minorant_mu_t() const noexcept;
-    float majorant_mu_t() const noexcept;
+    float minorant_mu_t() const;
+    float majorant_mu_t() const;
 
-    bool is_empty() const noexcept;
+    bool is_empty() const;
 
-    void add(CC const& cc) noexcept;
+    void add(CC const& cc);
 
     float minorant_mu_a;
     float minorant_mu_s;

@@ -4,21 +4,20 @@
 
 namespace math {
 
-Frustum::Frustum() noexcept = default;
+Frustum::Frustum() = default;
 
-Frustum::Frustum(Plane const& left, Plane const& right, Plane const& top,
-                 Plane const& bottom) noexcept {
+Frustum::Frustum(Plane const& left, Plane const& right, Plane const& top, Plane const& bottom) {
     planes_[0] = left;
     planes_[1] = right;
     planes_[2] = top;
     planes_[3] = bottom;
 }
 
-Frustum::Frustum(float4x4 const& combo_matrix) noexcept {
+Frustum::Frustum(float4x4 const& combo_matrix) {
     set_from_matrix(combo_matrix);
 }
 
-void Frustum::set_from_matrix(float4x4 const& combo_matrix) noexcept {
+void Frustum::set_from_matrix(float4x4 const& combo_matrix) {
     // Left clipping plane
     planes_[0][0] = combo_matrix.r[0][3] + combo_matrix.r[0][0];
     planes_[0][1] = combo_matrix.r[1][3] + combo_matrix.r[1][0];
@@ -69,7 +68,7 @@ void Frustum::set_from_matrix(float4x4 const& combo_matrix) noexcept {
     planes_[5] = plane::normalize(planes_[5]);
 }
 
-bool Frustum::intersect(float3 const& p, float radius) const noexcept {
+bool Frustum::intersect(float3 const& p, float radius) const {
     for (uint32_t i = 0; i < 4; ++i) {
         if (plane::dot(planes_[i], p) < -radius) {
             return false;
@@ -79,7 +78,7 @@ bool Frustum::intersect(float3 const& p, float radius) const noexcept {
     return true;
 }
 
-AABB Frustum::calculate_aabb() const noexcept {
+AABB Frustum::calculate_aabb() const {
     float3 points[3];
 
     points[0] = plane::intersection(planes_[0], planes_[2], planes_[3]);  // Left  Bottom  Far

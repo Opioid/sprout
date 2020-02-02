@@ -12,7 +12,7 @@
 
 namespace image::encoding::json {
 
-Image* Reader::read(std::istream& stream, std::string const& filename) noexcept {
+Image* Reader::read(std::istream& stream, std::string const& filename) {
     Json_handler handler;
 
     rapidjson::IStreamWrapper json_stream(stream);

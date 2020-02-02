@@ -10,13 +10,13 @@
 
 namespace scene::material::display {
 
-Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_sided) noexcept
+Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_sided)
     : light::Emissionmap(sampler_settings, two_sided) {}
 
 material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*ray*/,
                                             Renderstate const& rs, Filter filter,
                                             sampler::Sampler& /*sampler*/,
-                                            Worker const& worker) const noexcept {
+                                            Worker const& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -32,21 +32,21 @@ material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*
     return sample;
 }
 
-float Emissionmap::ior() const noexcept {
+float Emissionmap::ior() const {
     return ior_;
 }
 
-size_t Emissionmap::num_bytes() const noexcept {
+size_t Emissionmap::num_bytes() const {
     return sizeof(*this);
 }
 
-void Emissionmap::set_roughness(float roughness) noexcept {
+void Emissionmap::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
 }
 
-void Emissionmap::set_ior(float ior) noexcept {
+void Emissionmap::set_ior(float ior) {
     ior_ = ior;
     f0_  = fresnel::schlick_f0(1.f, ior);
 }

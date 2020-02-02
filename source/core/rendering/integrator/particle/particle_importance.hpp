@@ -18,22 +18,22 @@ namespace rendering::integrator::particle {
 
 class Importance {
   public:
-    Importance() noexcept;
+    Importance();
 
-    ~Importance() noexcept;
+    ~Importance();
 
-    void increment(float2 uv, float weight) noexcept;
+    void increment(float2 uv, float weight);
 
-    Distribution_2D const& distribution() const noexcept;
+    Distribution_2D const& distribution() const;
 
-    float denormalization_factor() const noexcept;
+    float denormalization_factor() const;
 
-    void prepare_sampling(uint32_t id, float* buffer, thread::Pool& threads) noexcept;
+    void prepare_sampling(uint32_t id, float* buffer, thread::Pool& threads);
 
     static int32_t constexpr Dimensions = 256;
 
   private:
-    void filter(float* buffer, thread::Pool& threads) const noexcept;
+    void filter(float* buffer, thread::Pool& threads) const;
 
     struct Weight {
         float w;
@@ -48,23 +48,23 @@ class Importance {
 
 class Importance_cache {
   public:
-    Importance_cache() noexcept;
+    Importance_cache();
 
-    ~Importance_cache() noexcept;
+    ~Importance_cache();
 
-    void init(scene::Scene const& scene) noexcept;
+    void init(scene::Scene const& scene);
 
-    void set_eye_position(float3 const& eye) noexcept;
+    void set_eye_position(float3 const& eye);
 
-    void set_training(bool training) noexcept;
+    void set_training(bool training);
 
-    void prepare_sampling(thread::Pool& threads) noexcept;
+    void prepare_sampling(thread::Pool& threads);
 
-    void increment(uint32_t light_id, float2 uv) noexcept;
+    void increment(uint32_t light_id, float2 uv);
 
-    void increment(uint32_t light_id, float2 uv, float3 const& p) noexcept;
+    void increment(uint32_t light_id, float2 uv, float3 const& p);
 
-    Importance const& importance(uint32_t light_id) const noexcept;
+    Importance const& importance(uint32_t light_id) const;
 
   private:
     float3 eye_;

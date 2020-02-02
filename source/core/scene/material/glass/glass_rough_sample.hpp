@@ -7,16 +7,16 @@ namespace scene::material::glass {
 
 class Sample_rough final : public material::Sample {
   public:
-    float3 const& base_shading_normal() const noexcept final;
+    float3 const& base_shading_normal() const final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept final;
+    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
 
     void set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
-             bool avoid_caustics) noexcept;
+             bool avoid_caustics);
 
     Layer layer_;
 
@@ -31,7 +31,7 @@ class Sample_rough final : public material::Sample {
 
   private:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi) const noexcept;
+    bxdf::Result evaluate(float3 const& wi) const;
 };
 
 }  // namespace scene::material::glass

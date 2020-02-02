@@ -3,13 +3,13 @@
 
 namespace logging {
 
-static std::string resolve(std::string const& text, float a) noexcept {
+static std::string resolve(std::string const& text, float a) {
     auto const i = text.find("%f");
 
     return text.substr(0, i) + string::to_string(a) + text.substr(i + 2);
 }
 
-static std::string resolve(std::string const& text, std::string const& a) noexcept {
+static std::string resolve(std::string const& text, std::string const& a) {
     auto const i = text.find("%S");
 
     return text.substr(0, i) + "\"" + a + "\"" + text.substr(i + 2);
@@ -17,7 +17,7 @@ static std::string resolve(std::string const& text, std::string const& a) noexce
 
 Log::~Log() = default;
 
-void Log::post(Type type, std::string const& text) noexcept {
+void Log::post(Type type, std::string const& text) {
     if (0 == current_entry_) {
         internal_post(type, text);
     } else {
@@ -36,15 +36,15 @@ void Log::post(Type type, std::string const& text) noexcept {
     }
 }
 
-void Log::post(Type type, std::string const& text, float a) noexcept {
+void Log::post(Type type, std::string const& text, float a) {
     post(type, resolve(text, a));
 }
 
-void Log::post(Type type, std::string const& text, std::string const& a) noexcept {
+void Log::post(Type type, std::string const& text, std::string const& a) {
     post(type, resolve(text, a));
 }
 
-void Log::push(Type type, std::string const& text) noexcept {
+void Log::push(Type type, std::string const& text) {
     if (Num_entries == current_entry_) {
         post(type);
     }
@@ -56,7 +56,7 @@ void Log::push(Type type, std::string const& text) noexcept {
     ++current_entry_;
 }
 
-void Log::push(Type type, std::string const& text, std::string const& a) noexcept {
+void Log::push(Type type, std::string const& text, std::string const& a) {
     push(type, resolve(text, a));
 }
 

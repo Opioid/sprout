@@ -5,9 +5,9 @@
 
 namespace platform {
 
-std::string build() noexcept;
+std::string build();
 
-std::string revision() noexcept;
+std::string revision();
 }  // namespace platform
 
 #endif

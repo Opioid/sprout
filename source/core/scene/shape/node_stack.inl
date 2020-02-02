@@ -7,28 +7,28 @@
 
 namespace scene::shape {
 
-inline Node_stack::Node_stack(uint32_t size) noexcept
+inline Node_stack::Node_stack(uint32_t size)
     : num_elements_(size), stack_(memory::allocate_aligned<uint32_t>(size)) {}
 
-inline Node_stack::~Node_stack() noexcept {
+inline Node_stack::~Node_stack() {
     memory::free_aligned(stack_);
 }
 
-inline bool Node_stack::empty() const noexcept {
+inline bool Node_stack::empty() const {
     return 0 == end_;
 }
 
-inline void Node_stack::clear() noexcept {
+inline void Node_stack::clear() {
     end_ = 0;
 }
 
-inline void Node_stack::push(uint32_t value) noexcept {
+inline void Node_stack::push(uint32_t value) {
     SOFT_ASSERT(end_ < num_elements_);
 
     stack_[end_++] = value;
 }
 
-inline uint32_t Node_stack::pop() noexcept {
+inline uint32_t Node_stack::pop() {
     return stack_[--end_];
 }
 

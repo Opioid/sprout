@@ -9,7 +9,7 @@
 namespace scene::material::coating {
 
 void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float ior, float f0,
-                    float alpha, float weight) noexcept {
+                    float alpha, float weight) {
     absorption_coefficient_ = absorption_coefficient;
 
     thickness_ = thickness;
@@ -23,13 +23,13 @@ void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float
     weight_ = weight;
 }
 
-float3 Clearcoat::attenuation(float n_dot_wo) const noexcept {
+float3 Clearcoat::attenuation(float n_dot_wo) const {
     float const d = thickness_ * (1.f / n_dot_wo);
 
     return rendering::attenuation(d, absorption_coefficient_);
 }
 
-float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const noexcept {
+float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const {
     float const f = weight_ * fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_);
 
     float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
@@ -42,7 +42,7 @@ float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const noexcept {
 }
 
 Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                             Layer const& layer, bool avoid_caustics) const noexcept {
+                             Layer const& layer, bool avoid_caustics) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -65,7 +65,7 @@ Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h
 }
 
 Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                             Layer const& layer, bool avoid_caustics) const noexcept {
+                             Layer const& layer, bool avoid_caustics) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -88,7 +88,7 @@ Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h
 }
 
 void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
-                       bxdf::Sample& result) const noexcept {
+                       bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -105,19 +105,19 @@ void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, f
     result.reflection *= ep * weight_ * n_dot_wi;
 }
 
-void Thinfilm::set(float ior, float ior_internal, float alpha, float thickness) noexcept {
+void Thinfilm::set(float ior, float ior_internal, float alpha, float thickness) {
     ior_          = ior;
     ior_internal_ = ior_internal;
     alpha_        = alpha;
     thickness_    = thickness;
 }
 
-float3 Thinfilm::attenuation(float /*n_dot*/) const noexcept {
+float3 Thinfilm::attenuation(float /*n_dot*/) const {
     return float3(1.f);
 }
 
 Result Thinfilm::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                            Layer const& layer, bool /*avoid_caustics*/) const noexcept {
+                            Layer const& layer, bool /*avoid_caustics*/) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -135,7 +135,7 @@ Result Thinfilm::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h,
 }
 
 Result Thinfilm::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                            Layer const& layer, bool /*avoid_caustics*/) const noexcept {
+                            Layer const& layer, bool /*avoid_caustics*/) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -153,7 +153,7 @@ Result Thinfilm::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h,
 }
 
 void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
-                      bxdf::Sample& result) const noexcept {
+                      bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Thinfilm const thinfilm(1.f, ior_, ior_internal_, thickness_);

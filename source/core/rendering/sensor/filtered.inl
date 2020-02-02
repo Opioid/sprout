@@ -8,27 +8,26 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::Filtered(float exposure, Clamp const& clamp, F&& filter) noexcept
+Filtered<Base, Clamp, F>::Filtered(float exposure, Clamp const& clamp, F&& filter)
     : Base(exposure), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::~Filtered() noexcept = default;
+Filtered<Base, Clamp, F>::~Filtered() = default;
 
 template <class Base, class Clamp, class F>
-int32_t Filtered<Base, Clamp, F>::filter_radius_int() const noexcept {
+int32_t Filtered<Base, Clamp, F>::filter_radius_int() const {
     return int32_t(std::ceil(filter_.radius()));
 }
 
 template <class Base, class Clamp, class F>
-int4 Filtered<Base, Clamp, F>::isolated_tile(int4 const& tile) const noexcept {
+int4 Filtered<Base, Clamp, F>::isolated_tile(int4 const& tile) const {
     int32_t const r = filter_radius_int();
     return tile + int4(r, r, -r, -r);
 }
 
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 const& color,
-                                            int4 const& isolated_bounds,
-                                            int4 const& bounds) noexcept {
+                                            int4 const& isolated_bounds, int4 const& bounds) {
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
         if ((uint32_t(pixel[0] - isolated_bounds[0]) <= uint32_t(isolated_bounds[2])) &
@@ -42,7 +41,7 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 con
 
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 const& color,
-                                            int4 const& bounds) noexcept {
+                                            int4 const& bounds) {
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
         Base::splat_pixel_atomic(pixel, color, weight);
@@ -52,7 +51,7 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 con
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset,
                                               float4 const& color, int4 const& isolated_bounds,
-                                              int4 const& bounds) noexcept {
+                                              int4 const& bounds) {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
@@ -70,7 +69,7 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset,
-                                              float4 const& color, int4 const& bounds) noexcept {
+                                              float4 const& color, int4 const& bounds) {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
@@ -82,12 +81,12 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 }
 
 template <class Base, class Clamp, class F>
-Filtered_1p0<Base, Clamp, F>::Filtered_1p0(float exposure, Clamp const& clamp, F&& filter) noexcept
+Filtered_1p0<Base, Clamp, F>::Filtered_1p0(float exposure, Clamp const& clamp, F&& filter)
     : Filtered_base(exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              int4 const& isolated, int4 const& bounds) noexcept {
+                                              int4 const& isolated, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = bounds[0] + sample.pixel[0];
@@ -122,7 +121,7 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
 template <class Base, class Clamp, class F>
 void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
-                                                int4 const& bounds) noexcept {
+                                                int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = bounds[0] + sample.pixel[0];
@@ -156,12 +155,12 @@ void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_2p0<Base, Clamp, F>::Filtered_2p0(float exposure, Clamp const& clamp, F&& filter) noexcept
+Filtered_2p0<Base, Clamp, F>::Filtered_2p0(float exposure, Clamp const& clamp, F&& filter)
     : Filtered_base(exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              int4 const& isolated, int4 const& bounds) noexcept {
+                                              int4 const& isolated, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = bounds[0] + sample.pixel[0];
@@ -220,7 +219,7 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
 template <class Base, class Clamp, class F>
 void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
-                                                int4 const& bounds) noexcept {
+                                                int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = bounds[0] + sample.pixel[0];
@@ -278,12 +277,12 @@ void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_inf<Base, Clamp, F>::Filtered_inf(float exposure, Clamp const& clamp, F&& filter) noexcept
+Filtered_inf<Base, Clamp, F>::Filtered_inf(float exposure, Clamp const& clamp, F&& filter)
     : Filtered_base(exposure, clamp, std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              int4 const& isolated, int4 const& bounds) noexcept {
+                                              int4 const& isolated, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const px = bounds[0] + sample.pixel[0];
@@ -307,7 +306,7 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
 template <class Base, class Clamp, class F>
 void Filtered_inf<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
-                                                int4 const& bounds) noexcept {
+                                                int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const px = bounds[0] + sample.pixel[0];

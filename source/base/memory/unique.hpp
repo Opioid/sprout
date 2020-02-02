@@ -6,28 +6,28 @@ namespace memory {
 template <class T>
 class Unique_ptr {
   public:
-    Unique_ptr() noexcept;
+    Unique_ptr();
 
-    explicit Unique_ptr(T* value) noexcept;
+    explicit Unique_ptr(T* value);
 
     Unique_ptr(Unique_ptr&& other) noexcept;
 
-    ~Unique_ptr() noexcept;
+    ~Unique_ptr();
 
-    operator bool() const noexcept;
+    operator bool() const;
 
-    bool operator!() const noexcept;
+    bool operator!() const;
 
-    Unique_ptr<T>& operator=(Unique_ptr other) noexcept;
+    Unique_ptr<T>& operator=(Unique_ptr other);
 
-    T const& operator*() const noexcept;
-    T&       operator*() noexcept;
+    T const& operator*() const;
+    T&       operator*();
 
-    T const* operator->() const noexcept;
+    T const* operator->() const;
 
-    T* operator->() noexcept;
+    T* operator->();
 
-    T* release() noexcept;
+    T* release();
 
   private:
     T* value_;

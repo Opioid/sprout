@@ -1,14 +1,15 @@
 #include "sensor_mitchell.hpp"
-#include <algorithm>
 #include "base/math/interpolated_function_1d.inl"
 #include "math/vector3.inl"
+
+#include <algorithm>
 
 namespace rendering::sensor::filter {
 
 struct Functor {
-    Functor(float b, float c) noexcept : b_(b), c_(c) {}
+    Functor(float b, float c) : b_(b), c_(c) {}
 
-    float operator()(float x) const noexcept {
+    float operator()(float x) const {
         x *= 2.f;
 
         float const xx = x * x;
@@ -28,7 +29,7 @@ struct Functor {
     float c_;
 };
 
-Mitchell::Mitchell(float radius, float b, float c) noexcept
+Mitchell::Mitchell(float radius, float b, float c)
     : radius_(radius),
       radius_inv_(1.f / radius),
       mitchell_(0.f, 1.f, 16, Functor(b, c)),
@@ -40,19 +41,19 @@ Mitchell::Mitchell(Mitchell&& other) noexcept
       radius_inv_(other.radius_inv_),
       mitchell_(std::move(other.mitchell_)) {}
 
-float Mitchell::radius() const noexcept {
+float Mitchell::radius() const {
     return radius_;
 }
 
-float Mitchell::evaluate(float d) const noexcept {
+float Mitchell::evaluate(float d) const {
     return mitchell(d * radius_inv_);
 }
 
-float Mitchell::evaluate(float2 p) const noexcept {
+float Mitchell::evaluate(float2 p) const {
     return mitchell(p[0] * radius_inv_) * mitchell(p[1] * radius_inv_);
 }
 
-float Mitchell::mitchell(float x) const noexcept {
+float Mitchell::mitchell(float x) const {
     x = std::abs(2.f * x);
 
     float const xx = x * x;

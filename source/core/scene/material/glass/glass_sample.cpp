@@ -12,19 +12,19 @@
 
 namespace scene::material::glass {
 
-float3 const& Sample::base_shading_normal() const noexcept {
+float3 const& Sample::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const {
     return {float3(0.f), 0.f};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const {
     return {float3(0.f), 0.f};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float const p = sampler.generate_sample_1D();
 
     sample(ior_, p, result);
@@ -32,13 +32,13 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexc
     result.wavelength = 0.f;
 }
 
-void Sample::set(float3 const& refraction_color, float ior, float ior_outside) noexcept {
+void Sample::set(float3 const& refraction_color, float ior, float ior_outside) {
     color_       = refraction_color;
     ior_         = ior;
     ior_outside_ = ior_outside;
 }
 
-void Sample::sample(float ior, float p, bxdf::Sample& result) const noexcept {
+void Sample::sample(float ior, float p, bxdf::Sample& result) const {
     float3 n = layer_.n_;
 
     float eta_i = ior_outside_;
@@ -73,8 +73,7 @@ void Sample::sample(float ior, float p, bxdf::Sample& result) const noexcept {
     }
 }
 
-void Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                     bxdf::Sample& result) noexcept {
+void Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result) {
     result.reflection = float3(1.f);
     result.wi         = normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
@@ -84,7 +83,7 @@ void Sample::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
 }
 
 void Sample::refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                     float n_dot_t, float eta, bxdf::Sample& result) noexcept {
+                     float n_dot_t, float eta, bxdf::Sample& result) {
     result.reflection = color;
     result.wi         = normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;

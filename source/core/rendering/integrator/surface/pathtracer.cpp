@@ -22,7 +22,7 @@
 
 namespace rendering::integrator::surface {
 
-Pathtracer::Pathtracer(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
+Pathtracer::Pathtracer(rnd::Generator& rng, Settings const& settings, bool progressive)
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
@@ -39,11 +39,11 @@ Pathtracer::Pathtracer(rnd::Generator& rng, Settings const& settings, bool progr
     }
 }
 
-Pathtracer::~Pathtracer() noexcept {
+Pathtracer::~Pathtracer() {
     delete sampler_pool_;
 }
 
-void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
     for (auto s : material_samplers_) {
@@ -51,7 +51,7 @@ void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel)
     }
 }
 
-void Pathtracer::start_pixel() noexcept {
+void Pathtracer::start_pixel() {
     sampler_.start_pixel();
 
     for (auto& s : material_samplers_) {
@@ -60,7 +60,7 @@ void Pathtracer::start_pixel() noexcept {
 }
 
 float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
-                      Interface_stack const& initial_stack) noexcept {
+                      Interface_stack const& initial_stack) {
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
 
     float4 result = float4(0.f);
@@ -78,7 +78,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
     return result;
 }
 
-float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worker) noexcept {
+float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worker) {
     Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -194,7 +194,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
     return compose_alpha(result, throughput, transparent);
 }
 
-sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
         return *material_samplers_[bounce];
     }
@@ -203,13 +203,12 @@ sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) noexcept {
 }
 
 Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
-                                 uint32_t min_bounces, uint32_t max_bounces,
-                                 bool enable_caustics) noexcept
+                                 uint32_t min_bounces, uint32_t max_bounces, bool enable_caustics)
     : Typed_pool<Pathtracer>(num_integrators),
       settings_{num_samples, min_bounces, max_bounces, !enable_caustics},
       progressive_(progressive) {}
 
-Integrator* Pathtracer_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Pathtracer_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Pathtracer(rng, settings_, progressive_);

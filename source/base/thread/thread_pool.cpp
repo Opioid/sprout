@@ -9,7 +9,7 @@
 
 namespace thread {
 
-Pool::Pool(uint32_t num_threads) noexcept
+Pool::Pool(uint32_t num_threads)
     : num_threads_(num_threads),
       uniques_(new Unique[num_threads]),
       threads_(new std::thread[num_threads])
@@ -25,7 +25,7 @@ Pool::Pool(uint32_t num_threads) noexcept
     async_thread_ = std::thread(async_loop, std::ref(async_));
 }
 
-Pool::~Pool() noexcept {
+Pool::~Pool() {
     quit_ = true;
 
     wake_all();
@@ -44,11 +44,11 @@ Pool::~Pool() noexcept {
     delete[] uniques_;
 }
 
-uint32_t Pool::num_threads() const noexcept {
+uint32_t Pool::num_threads() const {
     return num_threads_;
 }
 
-void Pool::run_parallel(Parallel_program&& program) noexcept {
+void Pool::run_parallel(Parallel_program&& program) {
     parallel_program_ = program;
 
     range_program_ = nullptr;
@@ -58,7 +58,7 @@ void Pool::run_parallel(Parallel_program&& program) noexcept {
     wait_all();
 }
 
-void Pool::run_range(Range_program&& program, int32_t begin, int32_t end) noexcept {
+void Pool::run_range(Range_program&& program, int32_t begin, int32_t end) {
     range_program_ = program;
 
     parallel_program_ = nullptr;
@@ -68,7 +68,7 @@ void Pool::run_range(Range_program&& program, int32_t begin, int32_t end) noexce
     wait_all();
 }
 
-void Pool::run_async(Async_program&& program) noexcept {
+void Pool::run_async(Async_program&& program) {
     wait_async();
 
     async_.program = program;
@@ -76,12 +76,12 @@ void Pool::run_async(Async_program&& program) noexcept {
     wake_async();
 }
 
-void Pool::wait_async() noexcept {
+void Pool::wait_async() {
     std::unique_lock<std::mutex> lock(async_.mutex);
-    async_.done_signal.wait(lock, [this]() noexcept { return !async_.wake; });
+    async_.done_signal.wait(lock, [this]() { return !async_.wake; });
 }
 
-uint32_t Pool::num_threads(int32_t request) noexcept {
+uint32_t Pool::num_threads(int32_t request) {
     uint32_t const available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 
     if (request <= 0) {
@@ -93,7 +93,7 @@ uint32_t Pool::num_threads(int32_t request) noexcept {
     return std::min(available_threads, uint32_t(std::max(request, 1)));
 }
 
-void Pool::wake_all() noexcept {
+void Pool::wake_all() {
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
         auto& u = uniques_[i];
 
@@ -104,7 +104,7 @@ void Pool::wake_all() noexcept {
     }
 }
 
-void Pool::wake_all(int32_t begin, int32_t end) noexcept {
+void Pool::wake_all(int32_t begin, int32_t end) {
 #ifdef GRANULAR_TASKS
     float const   range     = float(end - begin);
     float const   num_tasks = float(tasks_.size());
@@ -142,28 +142,28 @@ void Pool::wake_all(int32_t begin, int32_t end) noexcept {
 #endif
 }
 
-void Pool::wake_async() noexcept {
+void Pool::wake_async() {
     std::unique_lock<std::mutex> lock(async_.mutex);
     async_.wake = true;
     lock.unlock();
     async_.wake_signal.notify_one();
 }
 
-void Pool::wait_all() noexcept {
+void Pool::wait_all() {
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
         auto& u = uniques_[i];
 
         std::unique_lock<std::mutex> lock(u.mutex);
-        u.done_signal.wait(lock, [&u]() noexcept { return !u.wake; });
+        u.done_signal.wait(lock, [&u]() { return !u.wake; });
     }
 }
 
-void Pool::loop(uint32_t id) noexcept {
+void Pool::loop(uint32_t id) {
     Unique& unique = uniques_[id];
 
     for (;;) {
         std::unique_lock<std::mutex> lock(unique.mutex);
-        unique.wake_signal.wait(lock, [&unique]() noexcept { return unique.wake; });
+        unique.wake_signal.wait(lock, [&unique]() { return unique.wake; });
 
         if (quit_) {
             break;
@@ -187,10 +187,10 @@ void Pool::loop(uint32_t id) noexcept {
     }
 }
 
-void Pool::async_loop(Async& async) noexcept {
+void Pool::async_loop(Async& async) {
     for (;;) {
         std::unique_lock<std::mutex> lock(async.mutex);
-        async.wake_signal.wait(lock, [&async]() noexcept { return async.wake; });
+        async.wake_signal.wait(lock, [&async]() { return async.wake; });
 
         if (async.quit) {
             break;

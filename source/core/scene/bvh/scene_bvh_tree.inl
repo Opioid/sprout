@@ -7,14 +7,14 @@
 
 namespace scene::bvh {
 
-inline Tree::Tree() noexcept = default;
+inline Tree::Tree() = default;
 
-inline Tree::~Tree() noexcept {
+inline Tree::~Tree() {
     memory::free_aligned(indices_);
     memory::free_aligned(nodes_);
 }
 
-inline bvh::Node* Tree::allocate_nodes(uint32_t num_nodes) noexcept {
+inline bvh::Node* Tree::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
@@ -25,7 +25,7 @@ inline bvh::Node* Tree::allocate_nodes(uint32_t num_nodes) noexcept {
     return nodes_;
 }
 
-inline void Tree::alllocate_indices(uint32_t num_indices) noexcept {
+inline void Tree::alllocate_indices(uint32_t num_indices) {
     if (num_indices != num_indices_) {
         num_indices_ = num_indices;
 

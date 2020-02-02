@@ -29,7 +29,8 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& cm,
     Splitter* splitters = new Splitter[threads.num_threads()];
 
     threads.run_range(
-        [splitters, grid, &texture, &cm, &num_cells](uint32_t id, int32_t begin, int32_t end) {
+        [splitters, grid, &texture, &cm, &num_cells](uint32_t id, int32_t begin,
+                                                     int32_t end) noexcept {
             Splitter& splitter = splitters[id];
 
             int32_t const area = num_cells[0] * num_cells[1];

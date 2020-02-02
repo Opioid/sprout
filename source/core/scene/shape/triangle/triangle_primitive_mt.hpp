@@ -12,10 +12,10 @@ namespace scene::shape::triangle {
 
 struct Triangle_MT {
     Triangle_MT(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c,
-                float bitangent_sign, uint32_t material_index) noexcept;
+                float bitangent_sign, uint32_t material_index);
 
     struct Vertex {
-        Vertex(const shape::Vertex& v) noexcept;
+        Vertex(const shape::Vertex& v);
 
         float3 p, n, t;
         float2 uv;
@@ -25,24 +25,24 @@ struct Triangle_MT {
     float    bitangent_sign;
     uint32_t material_index;
 
-    bool intersect(ray& ray, float2& uv) const noexcept;
+    bool intersect(ray& ray, float2& uv) const;
 
-    bool intersect_p(ray const& ray) const noexcept;
+    bool intersect_p(ray const& ray) const;
 
-    void interpolate(float2 uv, float3& p, float3& n, float2& tc) const noexcept;
+    void interpolate(float2 uv, float3& p, float3& n, float2& tc) const;
 
-    void interpolate(float2 uv, float3& p, float2& tc) const noexcept;
+    void interpolate(float2 uv, float3& p, float2& tc) const;
 
-    void interpolate(float2 uv, float3& p) const noexcept;
+    void interpolate(float2 uv, float3& p) const;
 
-    void interpolate_data(float2 uv, float3& n, float3& t, float2& tc) const noexcept;
+    void interpolate_data(float2 uv, float3& n, float3& t, float2& tc) const;
 
-    float2 interpolate_uv(float2 uv) const noexcept;
+    float2 interpolate_uv(float2 uv) const;
 
-    float3 normal() const noexcept;
+    float3 normal() const;
 
-    float area() const noexcept;
-    float area(float3 const& scale) const noexcept;
+    float area() const;
+    float area(float3 const& scale) const;
 };
 
 struct Shading_vertex_MT {
@@ -53,15 +53,14 @@ struct Shading_vertex_MT {
 };
 
 struct Shading_vertex_MTC {
-    Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv) noexcept;
+    Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv);
 
     float4 n_u;
     float4 t_v;
 };
 
 struct Vertex_MTC {
-    Vertex_MTC(packed_float3 const& p, packed_float3 const& n, packed_float3 const& t,
-               float2 uv) noexcept;
+    Vertex_MTC(packed_float3 const& p, packed_float3 const& n, packed_float3 const& t, float2 uv);
 
     float3 p;
     float4 n_u;

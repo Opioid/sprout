@@ -25,25 +25,23 @@ class BVH_wrapper {
   public:
     using Filter = material::Sampler_settings::Filter;
 
-    bvh::Tree& tree() noexcept;
+    bvh::Tree& tree();
 
-    void set_props(std::vector<uint32_t> const& infinite_props,
-                   std::vector<Prop> const&     props) noexcept;
+    void set_props(std::vector<uint32_t> const& infinite_props, std::vector<Prop> const& props);
 
-    AABB const& aabb() const noexcept;
+    AABB const& aabb() const;
 
-    bool intersect(Ray& ray, Worker const& worker, Intersection& intersection) const noexcept;
+    bool intersect(Ray& ray, Worker const& worker, Intersection& intersection) const;
 
-    bool intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const noexcept;
+    bool intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const;
 
-    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const noexcept;
+    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const;
 
-    bool intersect_p(Ray const& ray, Worker const& worker) const noexcept;
+    bool intersect_p(Ray const& ray, Worker const& worker) const;
 
-    bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const noexcept;
+    bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const;
 
-    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const
-        noexcept;
+    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const;
 
   private:
     bvh::Tree tree_;

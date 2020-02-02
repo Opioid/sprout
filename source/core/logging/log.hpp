@@ -9,20 +9,20 @@ class Log {
   public:
     enum class Type { Info, Warning, Error, Verbose };
 
-    virtual ~Log() noexcept;
+    virtual ~Log();
 
-    void post(Type type, std::string const& text = "") noexcept;
+    void post(Type type, std::string const& text = "");
 
-    void post(Type type, std::string const& text, float a) noexcept;
+    void post(Type type, std::string const& text, float a);
 
-    void post(Type type, std::string const& text, std::string const& a) noexcept;
+    void post(Type type, std::string const& text, std::string const& a);
 
-    void push(Type type, std::string const& text) noexcept;
+    void push(Type type, std::string const& text);
 
-    void push(Type type, std::string const& text, std::string const& a) noexcept;
+    void push(Type type, std::string const& text, std::string const& a);
 
   protected:
-    virtual void internal_post(Type type, std::string const& text) noexcept = 0;
+    virtual void internal_post(Type type, std::string const& text) = 0;
 
   private:
     struct Entry {

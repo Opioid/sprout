@@ -71,34 +71,33 @@ using Particle_pool  = rendering::integrator::particle::Lighttracer_pool;
 using Postprocessor  = rendering::postprocessor::Postprocessor;
 using Light_sampling = rendering::integrator::Light_sampling;
 
-static Sensor* load_sensor(json::Value const& sensor_value) noexcept;
+static Sensor* load_sensor(json::Value const& sensor_value);
 
 static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers,
-                                        bool progressive, uint32_t& num_samples_per_pixel) noexcept;
+                                        bool progressive, uint32_t& num_samples_per_pixel);
 
 static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
-                                             bool progressive, bool lighttracer) noexcept;
+                                             bool progressive, bool lighttracer);
 
 static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
-                                           bool progressive) noexcept;
+                                           bool progressive);
 
 static Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
                                                bool      surface_integrator,
-                                               uint32_t& num_particles_per_pixel) noexcept;
+                                               uint32_t& num_particles_per_pixel);
 
-static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept;
+static void load_photon_settings(json::Value const& value, Photon_settings& settings);
 
-static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexcept;
+static Postprocessor* load_tonemapper(json::Value const& tonemapper_value);
 
-static bool peek_stereoscopic(json::Value const& parameters_value) noexcept;
+static bool peek_stereoscopic(json::Value const& parameters_value);
 
-static memory::Array<exporting::Sink*> load_exporters(json::Value const& value,
-                                                      View const&        view) noexcept;
+static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, View const& view);
 
-static void load_light_sampling(json::Value const& value, Light_sampling& sampling) noexcept;
+static void load_light_sampling(json::Value const& value, Light_sampling& sampling);
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
-                  Scene& scene, Resources& resources) noexcept {
+                  Scene& scene, Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -199,7 +198,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     return true;
 }
 
-Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) noexcept {
+Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -325,10 +324,10 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) noexc
 }
 
 template <typename Filter>
-Filter load_filter(json::Value const& /*filter_value*/) noexcept;
+Filter load_filter(json::Value const& /*filter_value*/);
 
 template <>
-rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value) noexcept {
+rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value) {
     float radius = 1.f;
     float alpha  = 1.8f;
 
@@ -345,7 +344,7 @@ rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value)
 }
 
 template <>
-rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value) noexcept {
+rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value) {
     float radius = 2.f;
     float b      = 1.f / 3.f;
     float c      = 1.f / 3.f;
@@ -365,7 +364,7 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value)
 
 template <typename Base, typename Filter>
 static Sensor* make_filtered_sensor(float exposure, float3 const& clamp_max,
-                                    json::Value const& filter_value) noexcept {
+                                    json::Value const& filter_value) {
     using namespace rendering::sensor;
 
     bool const clamp = !any_negative(clamp_max);
@@ -403,7 +402,7 @@ static Sensor* make_filtered_sensor(float exposure, float3 const& clamp_max,
 
 enum class Sensor_filter_type { Undefined, Gaussian, Mitchell };
 
-static Sensor_filter_type read_filter_type(json::Value const& filter_value) noexcept {
+static Sensor_filter_type read_filter_type(json::Value const& filter_value) {
     for (auto& n : filter_value.GetObject()) {
         if ("Gaussian" == n.name) {
             return Sensor_filter_type::Gaussian;
@@ -421,7 +420,7 @@ static Sensor_filter_type read_filter_type(json::Value const& filter_value) noex
     return Sensor_filter_type::Undefined;
 }
 
-static Sensor* load_sensor(json::Value const& sensor_value) noexcept {
+static Sensor* load_sensor(json::Value const& sensor_value) {
     using namespace rendering::sensor;
     using namespace rendering::sensor::filter;
 
@@ -483,8 +482,7 @@ static Sensor* load_sensor(json::Value const& sensor_value) noexcept {
 }
 
 static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers,
-                                        bool      progressive,
-                                        uint32_t& num_samples_per_pixel) noexcept {
+                                        bool progressive, uint32_t& num_samples_per_pixel) {
     if (progressive) {
         num_samples_per_pixel = 1;
         return new sampler::Random_pool(num_workers);
@@ -509,7 +507,7 @@ static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_w
     return nullptr;
 }
 
-static bool peek_surface_integrator(json::Value const& integrator_value) noexcept {
+static bool peek_surface_integrator(json::Value const& integrator_value) {
     for (auto& n : integrator_value.GetObject()) {
         if ("surface" == n.name) {
             for (auto& s : n.value.GetObject()) {
@@ -548,7 +546,7 @@ static bool peek_surface_integrator(json::Value const& integrator_value) noexcep
 }
 
 void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
-                              bool progressive, View& view) noexcept {
+                              bool progressive, View& view) {
     if (auto const particle_node = integrator_value.FindMember("particle");
         integrator_value.MemberEnd() != particle_node) {
         bool const surface_integrator = peek_surface_integrator(integrator_value);
@@ -576,7 +574,7 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
 }
 
 static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
-                                             bool progressive, bool lighttracer) noexcept {
+                                             bool progressive, bool lighttracer) {
     using namespace rendering::integrator::surface;
 
     uint32_t const default_min_bounces = 4;
@@ -693,7 +691,7 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
 }
 
 static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
-                                           bool progressive) noexcept {
+                                           bool progressive) {
     using namespace rendering::integrator::volume;
 
     for (auto& n : value.GetObject()) {
@@ -725,7 +723,7 @@ static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t nu
 
 static Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
                                                bool      surface_integrator,
-                                               uint32_t& num_particles_per_pixel) noexcept {
+                                               uint32_t& num_particles_per_pixel) {
     using namespace rendering::integrator::particle;
 
     bool const indirect_caustics = json::read_bool(value, "indirect_caustics", true);
@@ -738,7 +736,7 @@ static Particle_pool* load_particle_integrator(json::Value const& value, uint32_
     return new Lighttracer_pool(num_workers, 1, max_bounces, indirect_caustics, full_light_path);
 }
 
-void Loader::set_default_integrators(uint32_t num_workers, bool progressive, View& view) noexcept {
+void Loader::set_default_integrators(uint32_t num_workers, bool progressive, View& view) {
     using namespace rendering::integrator;
 
     if (!view.surface_integrators && !view.lighttracers) {
@@ -764,7 +762,7 @@ void Loader::set_default_integrators(uint32_t num_workers, bool progressive, Vie
     }
 }
 
-static void load_photon_settings(json::Value const& value, Photon_settings& settings) noexcept {
+static void load_photon_settings(json::Value const& value, Photon_settings& settings) {
     settings.num_photons         = json::read_uint(value, "num_photons", 0);
     settings.max_bounces         = json::read_uint(value, "max_bounces", 4);
     settings.iteration_threshold = json::read_float(value, "iteration_threshold", 1.f);
@@ -775,7 +773,7 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
 }
 
 void Loader::load_postprocessors(json::Value const& pp_value, Resources& resources,
-                                 Pipeline& pipeline, int2 dimensions) noexcept {
+                                 Pipeline& pipeline, int2 dimensions) {
     if (!pp_value.IsArray()) {
         return;
     }
@@ -837,7 +835,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
     }
 }
 
-static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexcept {
+static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : tonemapper_value.GetObject()) {
@@ -871,13 +869,12 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) noexc
     return nullptr;
 }
 
-static bool peek_stereoscopic(json::Value const& parameters_value) noexcept {
+static bool peek_stereoscopic(json::Value const& parameters_value) {
     auto const export_node = parameters_value.FindMember("stereo");
     return parameters_value.MemberEnd() != export_node;
 }
 
-static memory::Array<exporting::Sink*> load_exporters(json::Value const& value,
-                                                      View const&        view) noexcept {
+static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, View const& view) {
     if (!view.camera) {
         return {};
     }
@@ -940,7 +937,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value,
     return exporters;
 }
 
-void Loader::set_default_exporter(Take& take) noexcept {
+void Loader::set_default_exporter(Take& take) {
     if (take.exporters.empty()) {
         bool const error_diffusion = false;
 
@@ -955,7 +952,7 @@ void Loader::set_default_exporter(Take& take) noexcept {
     }
 }
 
-static void load_light_sampling(json::Value const& value, Light_sampling& sampling) noexcept {
+static void load_light_sampling(json::Value const& value, Light_sampling& sampling) {
     auto const light_sampling_node = value.FindMember("light_sampling");
     if (value.MemberEnd() == light_sampling_node) {
         return;

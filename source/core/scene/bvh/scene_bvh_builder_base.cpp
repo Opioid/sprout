@@ -7,18 +7,18 @@
 
 namespace scene::bvh {
 
-Builder_base::Build_node::Build_node() noexcept = default;
+Builder_base::Build_node::Build_node() = default;
 
-Builder_base::Build_node::~Build_node() noexcept {
+Builder_base::Build_node::~Build_node() {
     delete children[0];
     delete children[1];
 }
 
-Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold) noexcept
+Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold)
     : num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
 void Builder_base::split(Build_node* node, References& references, AABB const& aabb,
-                         uint32_t max_primitives, uint32_t depth, thread::Pool& threads) noexcept {
+                         uint32_t max_primitives, uint32_t depth, thread::Pool& threads) {
     node->aabb = aabb;
 
     uint32_t const num_primitives = uint32_t(references.size());
@@ -71,7 +71,7 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
 
 Split_candidate Builder_base::splitting_plane(References const& references, AABB const& aabb,
                                               uint32_t depth, bool& exhausted,
-                                              thread::Pool& threads) noexcept {
+                                              thread::Pool& threads) {
     static uint8_t constexpr X = 0;
     static uint8_t constexpr Y = 1;
     static uint8_t constexpr Z = 2;
@@ -128,7 +128,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     } else {
         threads.run_range(
             [this, &references, aabb_surface_area](uint32_t /*id*/, int32_t sc_begin,
-                                                   int32_t sc_end) {
+                                                   int32_t sc_end) noexcept {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
                     split_candidates_[uint32_t(i)].evaluate(references, aabb_surface_area);
                 }
@@ -136,12 +136,14 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
             0, int32_t(split_candidates_.size()));
     }
 
-    size_t sc       = 0;
-    float  min_cost = split_candidates_[0].cost();
+    size_t sc = 0;
+
+    float min_cost = split_candidates_[0].cost();
 
     for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
         if (float const cost = split_candidates_[i].cost(); cost < min_cost) {
-            sc       = i;
+            sc = i;
+
             min_cost = cost;
         }
     }
@@ -154,7 +156,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     return sp;
 }
 
-void Builder_base::assign(Build_node* node, References const& references) noexcept {
+void Builder_base::assign(Build_node* node, References const& references) {
     size_t const num_references = references.size();
     node->primitives.resize(num_references);
     for (size_t i = 0; i < num_references; ++i) {
@@ -166,11 +168,11 @@ void Builder_base::assign(Build_node* node, References const& references) noexce
     node->end_index = num_references_;
 }
 
-bvh::Node& Builder_base::new_node() noexcept {
+bvh::Node& Builder_base::new_node() {
     return nodes_[current_node_++];
 }
 
-uint32_t Builder_base::current_node_index() const noexcept {
+uint32_t Builder_base::current_node_index() const {
     return current_node_;
 }
 

@@ -9,12 +9,12 @@
 
 namespace scene::prop {
 
-bvh::Tree& BVH_wrapper::tree() noexcept {
+bvh::Tree& BVH_wrapper::tree() {
     return tree_;
 }
 
 void BVH_wrapper::set_props(std::vector<uint32_t> const& infinite_props,
-                            std::vector<Prop> const&     props) noexcept {
+                            std::vector<Prop> const&     props) {
     num_infinite_props_ = uint32_t(infinite_props.size());
 
     infinite_props_ = infinite_props.data();
@@ -22,12 +22,11 @@ void BVH_wrapper::set_props(std::vector<uint32_t> const& infinite_props,
     props_ = props.data();
 }
 
-AABB const& BVH_wrapper::aabb() const noexcept {
+AABB const& BVH_wrapper::aabb() const {
     return tree_.aabb_;
 }
 
-bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& intersection) const
-    noexcept {
+bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& intersection) const {
     auto& node_stack = worker.node_stack();
 
     bool hit = false;
@@ -96,8 +95,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
     return hit;
 }
 
-bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const
-    noexcept {
+bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const {
     auto& node_stack = worker.node_stack();
 
     bool hit = false;
@@ -167,8 +165,7 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& in
     return hit;
 }
 
-bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const
-    noexcept {
+bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const {
     auto& node_stack = worker.node_stack();
 
     bool hit = false;
@@ -232,7 +229,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
     return hit;
 }
 
-bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const noexcept {
+bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -292,8 +289,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const noexce
     return false;
 }
 
-bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const
-    noexcept {
+bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -358,7 +354,7 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
 }
 
 bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                                  float3& ta) const noexcept {
+                                  float3& ta) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();

@@ -2,7 +2,7 @@
 
 namespace image::encoding::exr {
 
-int32_t Channel::byte_size() const noexcept {
+int32_t Channel::byte_size() const {
     switch (type) {
         case Type::Half:
             return 2;
@@ -14,7 +14,7 @@ int32_t Channel::byte_size() const noexcept {
     return 0;
 }
 
-int32_t num_scanlines_per_block(Compression compression) noexcept {
+int32_t num_scanlines_per_block(Compression compression) {
     switch (compression) {
         case Compression::Undefined:
             return 0;
@@ -34,7 +34,7 @@ int32_t num_scanlines_per_block(Compression compression) noexcept {
     return 0;
 }
 
-int32_t num_scanline_blocks(int32_t num_scanlines, Compression compression) noexcept {
+int32_t num_scanline_blocks(int32_t num_scanlines, Compression compression) {
     int32_t const pb = num_scanlines_per_block(compression);
 
     int32_t const x = num_scanlines / pb;

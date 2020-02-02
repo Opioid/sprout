@@ -21,21 +21,20 @@ struct Header {
     uint32_t height;
 };
 
-static Header read_header(std::istream& stream) noexcept;
+static Header read_header(std::istream& stream);
 
 template <class Image>
 static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-                            Image& image) noexcept;
+                            Image& image);
 
 template <class Image>
-static void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image,
-                        int32_t offset) noexcept;
+static void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image, int32_t offset);
 
 using image_float3 = packed_float3;
 
-static image_float3 rgbe_to_float3(uint8_t rgbe[4]) noexcept;
+static image_float3 rgbe_to_float3(uint8_t rgbe[4]);
 
-Image* Reader::read(std::istream& stream) noexcept {
+Image* Reader::read(std::istream& stream) {
     Header const header = read_header(stream);
 
     if (Invalid == header.width) {
@@ -67,7 +66,7 @@ Image* Reader::read(std::istream& stream) noexcept {
     return image;
 }
 
-Header read_header(std::istream& stream) noexcept {
+Header read_header(std::istream& stream) {
     std::string line;
     std::getline(stream, line);
     if ("#?" != line.substr(0, 2)) {
@@ -109,7 +108,7 @@ Header read_header(std::istream& stream) noexcept {
 
 template <class Image>
 static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-                            Image& image) noexcept {
+                            Image& image) {
     if (scanline_width < 8 || scanline_width > 0x7fff) {
         read_pixels(stream, scanline_width * num_scanlines, image, 0);
         return true;
@@ -210,7 +209,7 @@ static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint3
 }
 
 template <class Image>
-void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image, int32_t offset) noexcept {
+void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image, int32_t offset) {
     uint8_t rgbe[4];
 
     for (; num_pixels > 0; --num_pixels) {
@@ -226,7 +225,7 @@ void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image, int32_
     }
 }
 
-image_float3 rgbe_to_float3(uint8_t rgbe[4]) noexcept {
+image_float3 rgbe_to_float3(uint8_t rgbe[4]) {
     if (rgbe[3] > 0) {
         // nonzero pixel
         float const f = std::ldexp(1.f, int32_t(rgbe[3]) - (128 + 8));

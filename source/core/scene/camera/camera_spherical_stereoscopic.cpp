@@ -17,8 +17,7 @@
 
 namespace scene::camera {
 
-Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) noexcept
-    : Stereoscopic(resolution) {
+Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) : Stereoscopic(resolution) {
     float2 const fr(resolution);
     d_x_ = 1.f / fr[0];
     d_y_ = 1.f / fr[1];
@@ -28,24 +27,24 @@ Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) noexcept
                            int2(resolution[0], resolution[1] * 2) - int2(1));
 }
 
-uint32_t Spherical_stereoscopic::num_views() const noexcept {
+uint32_t Spherical_stereoscopic::num_views() const {
     return 2;
 }
 
-int2 Spherical_stereoscopic::sensor_dimensions() const noexcept {
+int2 Spherical_stereoscopic::sensor_dimensions() const {
     return view_bounds_[1].zw();
 }
 
-int4 Spherical_stereoscopic::view_bounds(uint32_t view) const noexcept {
+int4 Spherical_stereoscopic::view_bounds(uint32_t view) const {
     return view_bounds_[view];
 }
 
-float Spherical_stereoscopic::pixel_solid_angle() const noexcept {
+float Spherical_stereoscopic::pixel_solid_angle() const {
     return 1.f;
 }
 
 bool Spherical_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, uint32_t view,
-                                          Scene const& scene, Ray& ray) const noexcept {
+                                          Scene const& scene, Ray& ray) const {
     float2 const coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float const x = d_x_ * coordinates[0];
@@ -78,14 +77,13 @@ bool Spherical_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, 
 
 bool Spherical_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& /*p*/,
                                     Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                                    Scene const& /*scene*/, Sample_to& /*sample*/) const noexcept {
+                                    Scene const& /*scene*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-void Spherical_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
+void Spherical_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {}
 
-void Spherical_stereoscopic::set_parameter(std::string_view   name,
-                                           json::Value const& value) noexcept {
+void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
     if ("stereo" == name) {
         for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
             std::string const  node_name  = n->name.GetString();

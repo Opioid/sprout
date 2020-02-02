@@ -13,27 +13,27 @@
 
 namespace scene::prop {
 
-inline material::Material const* Interface::material(Worker const& worker) const noexcept {
+inline material::Material const* Interface::material(Worker const& worker) const {
     return worker.scene().prop_material(prop, part);
 }
 
-inline bool Interface::matches(Intersection const& intersection) const noexcept {
+inline bool Interface::matches(Intersection const& intersection) const {
     return (prop == intersection.prop) & (part == intersection.geo.part);
 }
 
-inline Interface_stack::Interface_stack() noexcept
+inline Interface_stack::Interface_stack()
     : stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
 
-inline Interface_stack::Interface_stack(Interface_stack const& other) noexcept
+inline Interface_stack::Interface_stack(Interface_stack const& other)
     : stack_(memory::allocate_aligned<Interface>(Num_entries)) {
     *this = other;
 }
 
-inline Interface_stack::~Interface_stack() noexcept {
+inline Interface_stack::~Interface_stack() {
     memory::free_aligned(stack_);
 }
 
-inline void Interface_stack::operator=(Interface_stack const& other) noexcept {
+inline void Interface_stack::operator=(Interface_stack const& other) {
     index_ = other.index_;
 
     for (int32_t i = 0, len = index_; i < len; ++i) {
@@ -41,7 +41,7 @@ inline void Interface_stack::operator=(Interface_stack const& other) noexcept {
     }
 }
 
-inline void Interface_stack::swap(Interface_stack& other) noexcept {
+inline void Interface_stack::swap(Interface_stack& other) {
     Interface* temp = stack_;
     stack_          = other.stack_;
     other.stack_    = temp;
@@ -49,11 +49,11 @@ inline void Interface_stack::swap(Interface_stack& other) noexcept {
     index_ = other.index_;
 }
 
-inline bool Interface_stack::empty() const noexcept {
+inline bool Interface_stack::empty() const {
     return 0 == index_;
 }
 
-inline bool Interface_stack::empty_or_scattering(Worker const& worker) const noexcept {
+inline bool Interface_stack::empty_or_scattering(Worker const& worker) const {
     if (0 == index_) {
         return true;
     }
@@ -62,11 +62,11 @@ inline bool Interface_stack::empty_or_scattering(Worker const& worker) const noe
     return material->ior() > 1.f;
 }
 
-inline void Interface_stack::clear() noexcept {
+inline void Interface_stack::clear() {
     index_ = 0;
 }
 
-inline Interface const* Interface_stack::top() const noexcept {
+inline Interface const* Interface_stack::top() const {
     if (index_ > 0) {
         return &stack_[index_ - 1];
     }
@@ -74,7 +74,7 @@ inline Interface const* Interface_stack::top() const noexcept {
     return nullptr;
 }
 
-inline float Interface_stack::top_ior(Worker const& worker) const noexcept {
+inline float Interface_stack::top_ior(Worker const& worker) const {
     if (index_ > 0) {
         return stack_[index_ - 1].material(worker)->ior();
     }
@@ -82,7 +82,7 @@ inline float Interface_stack::top_ior(Worker const& worker) const noexcept {
     return 1.f;
 }
 
-inline bool Interface_stack::top_is_vacuum(Worker const& worker) const noexcept {
+inline bool Interface_stack::top_is_vacuum(Worker const& worker) const {
     if (index_ > 0) {
         return 1.f == stack_[index_ - 1].material(worker)->ior();
     }
@@ -90,7 +90,7 @@ inline bool Interface_stack::top_is_vacuum(Worker const& worker) const noexcept 
     return true;
 }
 
-inline bool Interface_stack::top_is_straight(Worker const& worker) const noexcept {
+inline bool Interface_stack::top_is_straight(Worker const& worker) const {
     if (index_ > 0) {
         auto const material = stack_[index_ - 1].material(worker);
         return (1.f == material->ior()) | (!material->is_scattering_volume());
@@ -99,7 +99,7 @@ inline bool Interface_stack::top_is_straight(Worker const& worker) const noexcep
     return true;
 }
 
-inline void Interface_stack::push(Intersection const& intersection) noexcept {
+inline void Interface_stack::push(Intersection const& intersection) {
     SOFT_ASSERT(index_ < Num_entries - 1);
 
     if (index_ < Num_entries - 1) {
@@ -108,7 +108,7 @@ inline void Interface_stack::push(Intersection const& intersection) noexcept {
     }
 }
 
-inline bool Interface_stack::remove(Intersection const& intersection) noexcept {
+inline bool Interface_stack::remove(Intersection const& intersection) {
     int32_t const back = index_ - 1;
     for (int32_t i = back; i >= 0; --i) {
         if (stack_[i].matches(intersection)) {
@@ -124,8 +124,8 @@ inline bool Interface_stack::remove(Intersection const& intersection) noexcept {
     return false;
 }
 
-inline float Interface_stack::peek_ior(Intersection const& intersection, Worker const& worker) const
-    noexcept {
+inline float Interface_stack::peek_ior(Intersection const& intersection,
+                                       Worker const&       worker) const {
     if (index_ <= 1) {
         return 1.f;
     }
@@ -138,7 +138,7 @@ inline float Interface_stack::peek_ior(Intersection const& intersection, Worker 
     }
 }
 
-inline void Interface_stack::pop() noexcept {
+inline void Interface_stack::pop() {
     if (index_ > 0) {
         --index_;
     }

@@ -33,7 +33,7 @@ namespace image {
             return float4_.NAME(__VA_ARGS__);        \
     }
 
-char const* Image::identifier() noexcept {
+char const* Image::identifier() {
     return "Image";
 }
 
@@ -83,17 +83,17 @@ Image::~Image() {
     }
 }
 
-Image::Type Image::type() const noexcept {
+Image::Type Image::type() const {
     return type_;
 }
 
-Description const& Image::description() const noexcept {
+Description const& Image::description() const {
     IMAGE_DELEGATE(description)
 
     return byte1_.description();
 }
 
-char* Image::data() const noexcept {
+char* Image::data() const {
     switch (type_) {
         case Type::Byte1:
             return reinterpret_cast<char*>(byte1_.data());
@@ -120,87 +120,87 @@ char* Image::data() const noexcept {
     return reinterpret_cast<char*>(byte1_.data());
 }
 
-Byte1 const& Image::byte1() const noexcept {
+Byte1 const& Image::byte1() const {
     return byte1_;
 }
 
-Byte2 const& Image::byte2() const noexcept {
+Byte2 const& Image::byte2() const {
     return byte2_;
 }
 
-Byte3 const& Image::byte3() const noexcept {
+Byte3 const& Image::byte3() const {
     return byte3_;
 }
 
-Byte4 const& Image::byte4() const noexcept {
+Byte4 const& Image::byte4() const {
     return byte4_;
 }
 
-Short3 const& Image::short3() const noexcept {
+Short3 const& Image::short3() const {
     return short3_;
 }
 
-Float1 const& Image::float1() const noexcept {
+Float1 const& Image::float1() const {
     return float1_;
 }
 
-Float1_sparse const& Image::float1_sparse() const noexcept {
+Float1_sparse const& Image::float1_sparse() const {
     return float1_sparse_;
 }
 
-Float2 const& Image::float2() const noexcept {
+Float2 const& Image::float2() const {
     return float2_;
 }
 
-Float3 const& Image::float3() const noexcept {
+Float3 const& Image::float3() const {
     return float3_;
 }
 
-Float4 const& Image::float4() const noexcept {
+Float4 const& Image::float4() const {
     return float4_;
 }
 
-Byte1& Image::byte1() noexcept {
+Byte1& Image::byte1() {
     return byte1_;
 }
 
-Byte2& Image::byte2() noexcept {
+Byte2& Image::byte2() {
     return byte2_;
 }
 
-Byte3& Image::byte3() noexcept {
+Byte3& Image::byte3() {
     return byte3_;
 }
 
-Byte4& Image::byte4() noexcept {
+Byte4& Image::byte4() {
     return byte4_;
 }
 
-Short3& Image::short3() noexcept {
+Short3& Image::short3() {
     return short3_;
 }
 
-Float1& Image::float1() noexcept {
+Float1& Image::float1() {
     return float1_;
 }
 
-Float1_sparse& Image::float1_sparse() noexcept {
+Float1_sparse& Image::float1_sparse() {
     return float1_sparse_;
 }
 
-Float2& Image::float2() noexcept {
+Float2& Image::float2() {
     return float2_;
 }
 
-Float3& Image::float3() noexcept {
+Float3& Image::float3() {
     return float3_;
 }
 
-Float4& Image::float4() noexcept {
+Float4& Image::float4() {
     return float4_;
 }
 
-size_t Image::num_bytes() const noexcept {
+size_t Image::num_bytes() const {
     IMAGE_DELEGATE(num_bytes)
 
     return 0;

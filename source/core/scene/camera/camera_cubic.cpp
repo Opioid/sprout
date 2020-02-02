@@ -13,7 +13,7 @@
 
 namespace scene::camera {
 
-Cubic::Cubic(Layout layout, int2 resolution) noexcept : Camera(int2(resolution[0], resolution[1])) {
+Cubic::Cubic(Layout layout, int2 resolution) : Camera(int2(resolution[0], resolution[1])) {
     float f = float(resolution[0]);
 
     left_top_ = float3(-1.f, 1.f, 1.f);
@@ -62,24 +62,24 @@ Cubic::Cubic(Layout layout, int2 resolution) noexcept : Camera(int2(resolution[0
     math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 }
 
-uint32_t Cubic::num_views() const noexcept {
+uint32_t Cubic::num_views() const {
     return 6;
 }
 
-int2 Cubic::sensor_dimensions() const noexcept {
+int2 Cubic::sensor_dimensions() const {
     return sensor_dimensions_;
 }
 
-int4 Cubic::view_bounds(uint32_t view) const noexcept {
+int4 Cubic::view_bounds(uint32_t view) const {
     return view_bounds_[view];
 }
 
-float Cubic::pixel_solid_angle() const noexcept {
+float Cubic::pixel_solid_angle() const {
     return 1.f;
 }
 
 bool Cubic::generate_ray(Sample const& sample, uint32_t frame, uint32_t view, Scene const& scene,
-                         Ray& ray) const noexcept {
+                         Ray& ray) const {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
@@ -99,12 +99,12 @@ bool Cubic::generate_ray(Sample const& sample, uint32_t frame, uint32_t view, Sc
 
 bool Cubic::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& /*p*/,
                    Sampler& /*sampler*/, uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
-                   Sample_to& /*sample*/) const noexcept {
+                   Sample_to& /*sample*/) const {
     return false;
 }
 
-void Cubic::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
+void Cubic::on_update(uint64_t /*time*/, Worker& /*worker*/) {}
 
-void Cubic::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
+void Cubic::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 
 }  // namespace scene::camera

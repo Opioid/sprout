@@ -12,22 +12,22 @@
 
 namespace image::encoding::png {
 
-Writer::Writer(bool error_diffusion) noexcept : Srgb(error_diffusion) {}
+Writer::Writer(bool error_diffusion) : Srgb(error_diffusion) {}
 
-std::string Writer::file_extension() const noexcept {
+std::string Writer::file_extension() const {
     return "png";
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept {
+bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
     auto const d = image.description().dimensions_2();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
 
     resize(num_pixels);
 
-    threads.run_range(
-        [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
-        0, d[1]);
+    threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                     int32_t end) noexcept { to_sRGB(image, begin, end); },
+                      0, d[1]);
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, d[0], d[1], 3, &buffer_len);
@@ -43,7 +43,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value, thread::Pool& threads) noexcept {
+                           float max_value, thread::Pool& threads) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -56,7 +56,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     float const im = max_value > 0.f ? 1.f / max_value : 1.f;
 
     threads.run_range(
-        [this, data, im](uint32_t /*id*/, int32_t begin, int32_t end) {
+        [this, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 float const n = data[i] * im;
 
@@ -82,7 +82,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     return true;
 }
 
-bool Writer::write(std::string_view name, Byte3 const& image) noexcept {
+bool Writer::write(std::string_view name, Byte3 const& image) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -105,7 +105,7 @@ bool Writer::write(std::string_view name, Byte3 const& image) noexcept {
     return true;
 }
 
-bool Writer::write(std::string_view name, Byte1 const& image) noexcept {
+bool Writer::write(std::string_view name, Byte1 const& image) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -129,7 +129,7 @@ bool Writer::write(std::string_view name, Byte1 const& image) noexcept {
 }
 
 bool Writer::write(std::string_view name, float const* data, int2 dimensions, float scale,
-                   bool srgb) noexcept {
+                   bool srgb) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -166,8 +166,7 @@ bool Writer::write(std::string_view name, float const* data, int2 dimensions, fl
     return true;
 }
 
-bool Writer::write(std::string_view name, float2 const* data, int2 dimensions,
-                   float scale) noexcept {
+bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, float scale) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -198,8 +197,7 @@ bool Writer::write(std::string_view name, float2 const* data, int2 dimensions,
     return true;
 }
 
-bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimensions,
-                   float scale) noexcept {
+bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimensions, float scale) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -231,7 +229,7 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
     return true;
 }
 
-bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions) noexcept {
+bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -272,7 +270,7 @@ bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dim
     return true;
 }
 
-bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions) noexcept {
+bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions) {
     uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
     float max_value = 0.f;
@@ -284,7 +282,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value) noexcept {
+                           float max_value) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -320,24 +318,23 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     return true;
 }
 
-Writer_alpha::Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha) noexcept
+Writer_alpha::Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha)
     : Srgb_alpha(error_diffusion, pre_multiplied_alpha) {}
 
-std::string Writer_alpha::file_extension() const noexcept {
+std::string Writer_alpha::file_extension() const {
     return "png";
 }
 
-bool Writer_alpha::write(std::ostream& stream, Float4 const& image,
-                         thread::Pool& threads) noexcept {
+bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
     auto const d = image.description().dimensions_2();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
 
     resize(num_pixels);
 
-    threads.run_range(
-        [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) { to_sRGB(image, begin, end); },
-        0, d[1]);
+    threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                     int32_t end) noexcept { to_sRGB(image, begin, end); },
+                      0, d[1]);
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d[0], d[1], 4, &buffer_len);

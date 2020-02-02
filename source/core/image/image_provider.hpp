@@ -10,12 +10,12 @@ class Image;
 
 class Provider final : public resource::Provider<Image> {
   public:
-    Provider() noexcept;
+    Provider();
 
-    ~Provider() noexcept final;
+    ~Provider() final;
 
     Image* load(std::string const& filename, Variants const& options, Resources& resources,
-                std::string& resolved_name) noexcept final;
+                std::string& resolved_name) final;
 
     struct Description {
         enum class Pixel_type { Byte = 0, Short, Float };
@@ -34,11 +34,11 @@ class Provider final : public resource::Provider<Image> {
     };
 
     Image* load(void const* data, std::string const& source_name, Variants const& options,
-                Resources& resources) noexcept final;
+                Resources& resources) final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    size_t num_bytes(Image const* resource) const noexcept final;
+    size_t num_bytes(Image const* resource) const final;
 
   private:
     procedural::flakes::Provider flakes_provider_;

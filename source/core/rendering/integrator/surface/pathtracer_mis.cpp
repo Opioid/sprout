@@ -24,8 +24,7 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, Settings const& settings,
-                               bool progressive) noexcept
+Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive)
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
@@ -51,7 +50,7 @@ Pathtracer_MIS::~Pathtracer_MIS() {
     delete sampler_pool_;
 }
 
-void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept {
+void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 
     for (auto s : material_samplers_) {
@@ -73,7 +72,7 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
     }
 }
 
-void Pathtracer_MIS::start_pixel() noexcept {
+void Pathtracer_MIS::start_pixel() {
     sampler_.start_pixel();
 
     for (auto s : material_samplers_) {
@@ -86,7 +85,7 @@ void Pathtracer_MIS::start_pixel() noexcept {
 }
 
 float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
-                          Interface_stack const& initial_stack) noexcept {
+                          Interface_stack const& initial_stack) {
     float4 li(0.f);
     float3 photon_li(0.f);
 
@@ -121,7 +120,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker,
 }
 
 Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& intersection,
-                                                 Worker& worker, bool integrate_photons) noexcept {
+                                                 Worker& worker, bool integrate_photons) {
     uint32_t const max_bounces = settings_.max_bounces;
 
     Filter filter = Filter::Undefined;
@@ -302,7 +301,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
                                      Material_sample const& material_sample, bool evaluate_back,
-                                     Filter filter, Worker& worker) noexcept {
+                                     Filter filter, Worker& worker) {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -350,7 +349,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
                                       float3 const& p, uint32_t sampler_dimension,
                                       bool evaluate_back, Intersection const& intersection,
                                       Material_sample const& material_sample, Filter filter,
-                                      Worker& worker) noexcept {
+                                      Worker& worker) {
     // Light source importance sample
     shape::Sample_to light_sample;
     if (!light.sample(p, material_sample.geometric_normal(), history.time,
@@ -383,7 +382,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 float3 Pathtracer_MIS::evaluate_light(Ray const& ray, float3 const& geo_n,
                                       Intersection const& intersection, Bxdf_sample sample_result,
                                       bool treat_as_singular, bool is_translucent, Filter filter,
-                                      Worker& worker, bool& pure_emissive) noexcept {
+                                      Worker& worker, bool& pure_emissive) {
     uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_area_light(light_id)) {
         pure_emissive = false;
@@ -435,7 +434,7 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, float3 const& geo_n,
 float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
                                              Intersection const& intersection, float bxdf_pdf,
                                              bool treat_as_singular, bool is_translucent,
-                                             Worker& worker) const noexcept {
+                                             Worker& worker) const {
     uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_light(light_id)) {
         return float3(0.f);
@@ -464,7 +463,7 @@ float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
     return weight * vli;
 }
 
-sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
         return *material_samplers_[bounce];
     }
@@ -472,7 +471,7 @@ sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) noexcept {
     return sampler_;
 }
 
-sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
         return *light_samplers_[bounce];
     }
@@ -483,14 +482,13 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) noexcept {
 Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progressive,
                                          uint32_t num_samples, uint32_t min_bounces,
                                          uint32_t max_bounces, Light_sampling light_sampling,
-                                         bool enable_caustics,
-                                         bool photons_only_through_specular) noexcept
+                                         bool enable_caustics, bool photons_only_through_specular)
     : Typed_pool<Pathtracer_MIS>(num_integrators),
       settings_{num_samples,    min_bounces,      max_bounces,
                 light_sampling, !enable_caustics, !photons_only_through_specular},
       progressive_(progressive) {}
 
-Integrator* Pathtracer_MIS_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* Pathtracer_MIS_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Pathtracer_MIS(rng, settings_, progressive_);

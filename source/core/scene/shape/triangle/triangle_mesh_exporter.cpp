@@ -14,7 +14,7 @@
 
 namespace scene::shape::triangle {
 
-static void newline(std::ostream& stream, uint32_t num_tabs) noexcept {
+static void newline(std::ostream& stream, uint32_t num_tabs) {
     stream << std::endl;
 
     for (uint32_t i = 0; i < num_tabs; ++i) {
@@ -22,11 +22,11 @@ static void newline(std::ostream& stream, uint32_t num_tabs) noexcept {
     }
 }
 
-static void binary_tag(std::ostream& stream, uint64_t offset, uint64_t size) noexcept {
+static void binary_tag(std::ostream& stream, uint64_t offset, uint64_t size) {
     stream << R"("binary":{"offset":)" << offset << R"(,"size":)" << size << "}";
 }
 
-void Exporter::write(std::string const& filename, Json_handler& handler) noexcept {
+void Exporter::write(std::string const& filename, Json_handler& handler) {
     std::string const out_name = string::extract_filename(filename) + ".sub";
 
     std::cout << "Export " << out_name << std::endl;
@@ -374,7 +374,7 @@ struct Cluster {
     }
 
     bool insert_if_fits(uint32_t mat, Index_triangle const& triangle, uint32_t index_id,
-                        std::vector<Vertex> const& vertices) noexcept {
+                        std::vector<Vertex> const& vertices) {
         if (mat != material) {
             return false;
         }
@@ -397,7 +397,7 @@ struct Cluster {
         return false;
     }
 
-    bool in_range(uint32_t start, uint32_t num_indices) const noexcept {
+    bool in_range(uint32_t start, uint32_t num_indices) const {
         uint32_t const end = start + num_indices;
 
         for (uint32_t const i : index_ids) {
@@ -420,7 +420,7 @@ struct Cluster {
     float3 center = float3(0.f);
 };
 
-void Exporter::write_json(std::string const& filename, Json_handler& handler) noexcept {
+void Exporter::write_json(std::string const& filename, Json_handler& handler) {
     // 80, 99, 100, 101, 102, 103
 
     std::vector<uint32_t> lms = {80, 99, 100, 101, 102, 103};

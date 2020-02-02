@@ -12,19 +12,19 @@
 
 namespace scene::material::glass {
 
-float3 const& Sample_thin::base_shading_normal() const noexcept {
+float3 const& Sample_thin::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample_thin::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_thin::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const {
     return {float3(0.f), 0.f};
 }
 
-bxdf::Result Sample_thin::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_thin::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const {
     return {float3(0.f), 0.f};
 }
 
-void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     // Thin material is always double sided, so no need to check hemisphere.
 
     float3 const n = layer_.n_;
@@ -63,12 +63,12 @@ void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const 
     result.wavelength = 0.f;
 }
 
-bool Sample_thin::is_translucent() const noexcept {
+bool Sample_thin::is_translucent() const {
     return true;
 }
 
 void Sample_thin::set(float3 const& refraction_color, float3 const& absorption_coefficient,
-                      float ior, float ior_outside, float thickness) noexcept {
+                      float ior, float ior_outside, float thickness) {
     color_                  = refraction_color;
     absorption_coefficient_ = absorption_coefficient;
     ior_                    = ior;
@@ -76,8 +76,7 @@ void Sample_thin::set(float3 const& refraction_color, float3 const& absorption_c
     thickness_              = thickness;
 }
 
-void Sample_thin::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
-                          bxdf::Sample& result) noexcept {
+void Sample_thin::reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result) {
     result.reflection = float3(1.f);
     result.wi         = normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
@@ -86,7 +85,7 @@ void Sample_thin::reflect(float3 const& wo, float3 const& n, float n_dot_wo,
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 }
 
-void Sample_thin::refract(float3 const& wo, float3 const& color, bxdf::Sample& result) noexcept {
+void Sample_thin::refract(float3 const& wo, float3 const& color, bxdf::Sample& result) {
     result.reflection = color;
     result.wi         = -wo;
     result.pdf        = 1.f;

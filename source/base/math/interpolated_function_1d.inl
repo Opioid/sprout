@@ -8,7 +8,7 @@
 namespace math {
 
 template <typename T>
-Interpolated_function_1D<T>::Interpolated_function_1D() noexcept = default;
+Interpolated_function_1D<T>::Interpolated_function_1D() = default;
 
 template <typename T>
 Interpolated_function_1D<T>::Interpolated_function_1D(Interpolated_function_1D&& other) noexcept
@@ -23,7 +23,7 @@ Interpolated_function_1D<T>::Interpolated_function_1D(Interpolated_function_1D&&
 template <typename T>
 template <typename F>
 Interpolated_function_1D<T>::Interpolated_function_1D(float range_begin, float range_end,
-                                                      uint32_t num_samples, F f) noexcept
+                                                      uint32_t num_samples, F f)
     : range_end_(range_end),
       num_samples_(num_samples),
       back_(num_samples - 1),
@@ -41,13 +41,13 @@ Interpolated_function_1D<T>::Interpolated_function_1D(float range_begin, float r
 }
 
 template <typename T>
-Interpolated_function_1D<T>::~Interpolated_function_1D() noexcept {
+Interpolated_function_1D<T>::~Interpolated_function_1D() {
     memory::free_aligned(samples_);
 }
 
 template <typename T>
 void Interpolated_function_1D<T>::allocate(float range_begin, float range_end,
-                                           uint32_t num_samples) noexcept {
+                                           uint32_t num_samples) {
     if (num_samples_ != num_samples) {
         memory::free_aligned(samples_);
 
@@ -69,7 +69,7 @@ void Interpolated_function_1D<T>::allocate(float range_begin, float range_end,
 
 template <typename T>
 void Interpolated_function_1D<T>::from_array(float range_begin, float range_end,
-                                             uint32_t num_samples, T const t[]) noexcept {
+                                             uint32_t num_samples, T const t[]) {
     allocate(range_begin, range_end, num_samples);
 
     for (uint32_t i = 0; i < num_samples; ++i) {
@@ -78,14 +78,14 @@ void Interpolated_function_1D<T>::from_array(float range_begin, float range_end,
 }
 
 template <typename T>
-void Interpolated_function_1D<T>::scale(T s) noexcept {
+void Interpolated_function_1D<T>::scale(T s) {
     for (uint32_t i = 0, len = num_samples_; i < len; ++i) {
         samples_[i] *= s;
     }
 }
 
 template <typename T>
-T Interpolated_function_1D<T>::operator()(float x) const noexcept {
+T Interpolated_function_1D<T>::operator()(float x) const {
     x = std::min(x, range_end_);
 
     float const o = x * inverse_interval_;
@@ -99,13 +99,13 @@ T Interpolated_function_1D<T>::operator()(float x) const noexcept {
 
 template <typename T>
 template <typename I>
-T const& Interpolated_function_1D<T>::operator[](I i) const noexcept {
+T const& Interpolated_function_1D<T>::operator[](I i) const {
     return samples_[i];
 }
 
 template <typename T>
 template <typename I>
-T& Interpolated_function_1D<T>::operator[](I i) noexcept {
+T& Interpolated_function_1D<T>::operator[](I i) {
     return samples_[i];
 }
 

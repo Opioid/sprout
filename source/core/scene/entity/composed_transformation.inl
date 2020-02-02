@@ -8,7 +8,7 @@
 
 namespace scene::entity {
 
-inline void Composed_transformation::set(math::Transformation const& t) noexcept {
+inline void Composed_transformation::set(math::Transformation const& t) {
     float3x3 const rot = quaternion::create_matrix3x3(t.rotation);
 
     float4x4 const otw = compose(rot, t.scale, t.position);
@@ -24,40 +24,40 @@ inline void Composed_transformation::set(math::Transformation const& t) noexcept
     position = t.position;
 }
 
-inline float Composed_transformation::scale_x() const noexcept {
+inline float Composed_transformation::scale_x() const {
     return rotation.r[0][3];
 }
 
-inline float Composed_transformation::scale_y() const noexcept {
+inline float Composed_transformation::scale_y() const {
     return rotation.r[1][3];
 }
 
-inline float Composed_transformation::scale_z() const noexcept {
+inline float Composed_transformation::scale_z() const {
     return rotation.r[2][3];
 }
 
-inline float2 Composed_transformation::scale_xy() const noexcept {
+inline float2 Composed_transformation::scale_xy() const {
     return float2(rotation.r[0][3], rotation.r[1][3]);
 }
 
-inline float3 Composed_transformation::scale() const noexcept {
+inline float3 Composed_transformation::scale() const {
     return float3(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
 }
 
-inline float4x4 Composed_transformation::object_to_world() const noexcept {
+inline float4x4 Composed_transformation::object_to_world() const {
     float3 const s(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
     return compose(rotation, s, position);
 }
 
-inline float3 Composed_transformation::world_to_object_point(float3 const& p) const noexcept {
+inline float3 Composed_transformation::world_to_object_point(float3 const& p) const {
     return transform_point(world_to_object, p);
 }
 
-inline float3 Composed_transformation::world_to_object_vector(float3 const& v) const noexcept {
+inline float3 Composed_transformation::world_to_object_vector(float3 const& v) const {
     return transform_vector(world_to_object, v);
 }
 
-inline float3 Composed_transformation::object_to_world_point(float3 const& v) const noexcept {
+inline float3 Composed_transformation::object_to_world_point(float3 const& v) const {
     return Vector3f_a(
         rotation.r[0][3] *
                 (v[0] * rotation.r[0][0] + v[1] * rotation.r[1][0] + v[2] * rotation.r[2][0]) +
@@ -70,7 +70,7 @@ inline float3 Composed_transformation::object_to_world_point(float3 const& v) co
             position[2]);
 }
 
-inline float3 Composed_transformation::object_to_world_vector(float3 const& v) const noexcept {
+inline float3 Composed_transformation::object_to_world_vector(float3 const& v) const {
     return Vector3f_a(
         rotation.r[0][3] *
             (v[0] * rotation.r[0][0] + v[1] * rotation.r[1][0] + v[2] * rotation.r[2][0]),

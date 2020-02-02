@@ -8,30 +8,30 @@ namespace image::texture {
 template <typename T>
 class Float1_t {
   public:
-    Float1_t(T const& image) noexcept;
+    Float1_t(T const& image);
 
-    T const& image() const noexcept;
+    T const& image() const;
 
-    float  at_1(int32_t i) const noexcept;
-    float3 at_3(int32_t i) const noexcept;
+    float  at_1(int32_t i) const;
+    float3 at_3(int32_t i) const;
 
-    float  at_1(int32_t x, int32_t y) const noexcept;
-    float2 at_2(int32_t x, int32_t y) const noexcept;
-    float3 at_3(int32_t x, int32_t y) const noexcept;
-    float4 at_4(int32_t x, int32_t y) const noexcept;
+    float  at_1(int32_t x, int32_t y) const;
+    float2 at_2(int32_t x, int32_t y) const;
+    float3 at_3(int32_t x, int32_t y) const;
+    float4 at_4(int32_t x, int32_t y) const;
 
-    void gather_1(int4 const& xy_xy1, float c[4]) const noexcept;
-    void gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept;
-    void gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept;
+    void gather_1(int4 const& xy_xy1, float c[4]) const;
+    void gather_2(int4 const& xy_xy1, float2 c[4]) const;
+    void gather_3(int4 const& xy_xy1, float3 c[4]) const;
 
-    float  at_element_1(int32_t x, int32_t y, int32_t element) const noexcept;
-    float2 at_element_2(int32_t x, int32_t y, int32_t element) const noexcept;
-    float3 at_element_3(int32_t x, int32_t y, int32_t element) const noexcept;
+    float  at_element_1(int32_t x, int32_t y, int32_t element) const;
+    float2 at_element_2(int32_t x, int32_t y, int32_t element) const;
+    float3 at_element_3(int32_t x, int32_t y, int32_t element) const;
 
-    float  at_1(int32_t x, int32_t y, int32_t z) const noexcept;
-    float2 at_2(int32_t x, int32_t y, int32_t z) const noexcept;
-    float3 at_3(int32_t x, int32_t y, int32_t z) const noexcept;
-    float4 at_4(int32_t x, int32_t y, int32_t z) const noexcept;
+    float  at_1(int32_t x, int32_t y, int32_t z) const;
+    float2 at_2(int32_t x, int32_t y, int32_t z) const;
+    float3 at_3(int32_t x, int32_t y, int32_t z) const;
+    float4 at_4(int32_t x, int32_t y, int32_t z) const;
 
   private:
     T const& image_;

@@ -20,53 +20,51 @@ class Isotropic {
   public:
     template <typename Fresnel>
     static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, Fresnel const& fresnel) noexcept;
+                                   float alpha, Fresnel const& fresnel);
 
     template <typename Fresnel>
     static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, Fresnel const& fresnel,
-                                   float3& fresnel_result) noexcept;
+                                   float alpha, Fresnel const& fresnel, float3& fresnel_result);
 
     template <typename Fresnel>
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         Fresnel const& fresnel, float2 xi, bxdf::Sample& result) noexcept;
+                         Fresnel const& fresnel, float2 xi, bxdf::Sample& result);
 
     template <typename Fresnel>
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
                          Fresnel const& fresnel, float2 xi, float3& fresnel_result,
-                         bxdf::Sample& result) noexcept;
+                         bxdf::Sample& result);
 
     template <typename Fresnel>
     static bxdf::Result refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
                                    float n_dot_h, float alpha, IoR const& ior,
-                                   Fresnel const& fresnel) noexcept;
+                                   Fresnel const& fresnel);
 
     template <typename Fresnel>
     static float refract(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         IoR const& ior, Fresnel const& fresnel, float2 xi,
-                         bxdf::Sample& result) noexcept;
+                         IoR const& ior, Fresnel const& fresnel, float2 xi, bxdf::Sample& result);
 
     static float3 sample(float3 const& wo, Layer const& layer, float alpha, float2 xi,
-                         float& n_dot_h) noexcept;
+                         float& n_dot_h);
 
     static float reflect(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
                          float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,
-                         bxdf::Sample& result) noexcept;
+                         bxdf::Sample& result);
 
     static float refract(float3 const& wo, float3 const& h, float n_dot_wo, float n_dot_h,
                          float wi_dot_h, float wo_dot_h, Layer const& layer, float alpha,
-                         IoR const& ior, bxdf::Sample& result) noexcept;
+                         IoR const& ior, bxdf::Sample& result);
 };
 
 class Anisotropic {
   public:
     template <typename Layer, typename Fresnel>
     static bxdf::Result reflection(float3 const& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-                                   Layer const& layer, Fresnel const& fresnel) noexcept;
+                                   Layer const& layer, Fresnel const& fresnel);
 
     template <typename Layer, typename Fresnel>
     static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
-                         Fresnel const& fresnel, float2 xi, bxdf::Sample& result) noexcept;
+                         Fresnel const& fresnel, float2 xi, bxdf::Sample& result);
 };
 
 }  // namespace ggx

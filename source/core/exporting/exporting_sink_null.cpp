@@ -2,11 +2,10 @@
 
 namespace exporting {
 
-Null::Null() noexcept = default;
+Null::Null() = default;
 
-Null::~Null() noexcept = default;
+Null::~Null() = default;
 
-void Null::write(image::Float4 const& /*image*/, uint32_t /*frame*/,
-                 thread::Pool& /*threads*/) noexcept {}
+void Null::write(image::Float4 const& /*image*/, uint32_t /*frame*/, thread::Pool& /*threads*/) {}
 
 }  // namespace exporting

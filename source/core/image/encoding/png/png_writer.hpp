@@ -8,44 +8,43 @@ namespace image::encoding::png {
 
 class Writer : public image::Writer, Srgb {
   public:
-    Writer(bool error_diffusion) noexcept;
+    Writer(bool error_diffusion);
 
-    std::string file_extension() const noexcept final;
+    std::string file_extension() const final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
 
     bool write_heatmap(std::string_view name, float const* data, int2 dimensions, float max_value,
-                       thread::Pool& threads) noexcept;
+                       thread::Pool& threads);
 
-    static bool write(std::string_view name, Byte3 const& image) noexcept;
+    static bool write(std::string_view name, Byte3 const& image);
 
-    static bool write(std::string_view name, Byte1 const& image) noexcept;
+    static bool write(std::string_view name, Byte1 const& image);
 
     static bool write(std::string_view name, float const* data, int2 dimensions, float scale = 1.f,
-                      bool srgb = false) noexcept;
+                      bool srgb = false);
 
     static bool write(std::string_view name, float2 const* data, int2 dimensions,
-                      float scale = 1.f) noexcept;
+                      float scale = 1.f);
 
     static bool write(std::string_view name, packed_float3 const* data, int2 dimensions,
-                      float scale = 1.f) noexcept;
+                      float scale = 1.f);
 
-    static bool write_heatmap(std::string_view name, uint32_t const* data,
-                              int2 dimensions) noexcept;
+    static bool write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions);
 
-    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions) noexcept;
+    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions);
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                              float max_value) noexcept;
+                              float max_value);
 };
 
 class Writer_alpha : public image::Writer, Srgb_alpha {
   public:
-    Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha) noexcept;
+    Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha);
 
-    std::string file_extension() const noexcept final;
+    std::string file_extension() const final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) noexcept final;
+    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
 };
 
 }  // namespace image::encoding::png

@@ -9,7 +9,7 @@ namespace op {
 
 void write_difference_report_html(std::vector<Item> const&            items,
                                   std::vector<Difference_item> const& dif_items, float max_dif,
-                                  std::ostream& stream) noexcept {
+                                  std::ostream& stream) {
     stream << "<!DOCTYPE html>\n";
     stream << "<html>\n";
 

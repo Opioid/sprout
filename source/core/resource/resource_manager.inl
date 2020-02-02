@@ -9,7 +9,7 @@
 namespace resource {
 
 template <typename T>
-std::vector<T*> const& Manager::register_provider(Provider<T>& provider) noexcept {
+std::vector<T*> const& Manager::register_provider(Provider<T>& provider) {
     std::string const id = T::identifier();
 
     if (auto old = caches_.find(id); caches_.end() != old) {
@@ -24,7 +24,7 @@ std::vector<T*> const& Manager::register_provider(Provider<T>& provider) noexcep
 }
 
 template <typename T>
-Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options) noexcept {
+Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options) {
     if (filename.empty()) {
         return Resource_ptr<T>::Null();
     }
@@ -41,7 +41,7 @@ Resource_ptr<T> Manager::load(std::string const& filename, Variants const& optio
 
 template <typename T>
 Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options,
-                              std::string& resolved_name) noexcept {
+                              std::string& resolved_name) {
     if (filename.empty()) {
         return Resource_ptr<T>::Null();
     }
@@ -58,7 +58,7 @@ Resource_ptr<T> Manager::load(std::string const& filename, Variants const& optio
 
 template <typename T>
 Resource_ptr<T> Manager::load(std::string const& name, void const* data,
-                              std::string const& source_name, Variants const& options) noexcept {
+                              std::string const& source_name, Variants const& options) {
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
@@ -70,7 +70,7 @@ Resource_ptr<T> Manager::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-Resource_ptr<T> Manager::get(std::string const& filename, Variants const& options) noexcept {
+Resource_ptr<T> Manager::get(std::string const& filename, Variants const& options) {
     if (filename.empty()) {
         return Resource_ptr<T>::Null();
     }
@@ -86,7 +86,7 @@ Resource_ptr<T> Manager::get(std::string const& filename, Variants const& option
 }
 
 template <typename T>
-Resource_ptr<T> Manager::get(uint32_t id) const noexcept {
+Resource_ptr<T> Manager::get(uint32_t id) const {
     Typed_cache<T> const* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
@@ -98,7 +98,7 @@ Resource_ptr<T> Manager::get(uint32_t id) const noexcept {
 }
 
 template <typename T>
-Resource_ptr<T> Manager::store(T* resource) noexcept {
+Resource_ptr<T> Manager::store(T* resource) {
     if (!resource) {
         return Resource_ptr<T>::Null();
     }
@@ -114,8 +114,7 @@ Resource_ptr<T> Manager::store(T* resource) noexcept {
 }
 
 template <typename T>
-Resource_ptr<T> Manager::store(std::string const& name, T* resource,
-                               Variants const& options) noexcept {
+Resource_ptr<T> Manager::store(std::string const& name, T* resource, Variants const& options) {
     if (name.empty() || !resource) {
         return Resource_ptr<T>::Null();
     }
@@ -131,7 +130,7 @@ Resource_ptr<T> Manager::store(std::string const& name, T* resource,
 }
 
 template <typename T>
-size_t Manager::num_bytes() const noexcept {
+size_t Manager::num_bytes() const {
     Typed_cache<T> const* cache = typed_cache<T>();
     if (!cache) {
         return 0;
@@ -141,7 +140,7 @@ size_t Manager::num_bytes() const noexcept {
 }
 
 template <typename T>
-Typed_cache<T> const* Manager::typed_cache() const noexcept {
+Typed_cache<T> const* Manager::typed_cache() const {
     auto const cache = caches_.find(T::identifier());
 
     if (caches_.end() == cache) {
@@ -152,7 +151,7 @@ Typed_cache<T> const* Manager::typed_cache() const noexcept {
 }
 
 template <typename T>
-Typed_cache<T>* Manager::typed_cache() noexcept {
+Typed_cache<T>* Manager::typed_cache() {
     auto cache = caches_.find(T::identifier());
 
     if (caches_.end() == cache) {

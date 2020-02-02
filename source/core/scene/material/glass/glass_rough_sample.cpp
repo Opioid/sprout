@@ -13,19 +13,19 @@
 
 namespace scene::material::glass {
 
-float3 const& Sample_rough::base_shading_normal() const noexcept {
+float3 const& Sample_rough::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample_rough::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_rough::evaluate_f(float3 const& wi, bool /*include_back*/) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_rough::evaluate_b(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_rough::evaluate_b(float3 const& wi, bool /*include_back*/) const {
     return evaluate<false>(wi);
 }
 
-void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = color_;
         result.wi         = -wo_;
@@ -96,7 +96,7 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 }
 
 void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
-                       bool avoid_caustics) noexcept {
+                       bool avoid_caustics) {
     color_ = refraction_color;
 
     f0_ = fresnel::schlick_f0(ior, ior_outside);
@@ -110,7 +110,7 @@ void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outs
 }
 
 template <bool Forward>
-bxdf::Result Sample_rough::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }

@@ -40,59 +40,57 @@ class Prop {
     using Shape        = shape::Shape;
     using Shape_ptr    = resource::Resource_ptr<Shape>;
 
-    Prop() noexcept;
+    Prop();
 
-    ~Prop() noexcept;
+    ~Prop();
 
-    uint32_t shape() const noexcept;
+    uint32_t shape() const;
 
-    void configure(Shape_ptr shape, Material_ptr const* materials) noexcept;
+    void configure(Shape_ptr shape, Material_ptr const* materials);
 
-    void configure_animated(uint32_t self, bool local_animation, Scene const& scene) noexcept;
+    void configure_animated(uint32_t self, bool local_animation, Scene const& scene);
 
-    bool has_local_animation() const noexcept;
+    bool has_local_animation() const;
 
-    bool has_no_parent() const noexcept;
+    bool has_no_parent() const;
 
-    void set_has_parent() noexcept;
+    void set_has_parent();
 
-    bool visible_in_camera() const noexcept;
+    bool visible_in_camera() const;
 
-    bool visible_in_reflection() const noexcept;
+    bool visible_in_reflection() const;
 
-    bool visible_in_shadow() const noexcept;
+    bool visible_in_shadow() const;
 
-    void set_visible_in_shadow(bool value) noexcept;
+    void set_visible_in_shadow(bool value);
 
-    void set_visibility(bool in_camera, bool in_reflection, bool in_shadow) noexcept;
+    void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
-    void morph(uint32_t self, thread::Pool& threads, Scene const& scene) noexcept;
+    void morph(uint32_t self, thread::Pool& threads, Scene const& scene);
 
     bool intersect(uint32_t self, Ray& ray, Worker const& worker,
-                   shape::Intersection& intersection) const noexcept;
+                   shape::Intersection& intersection) const;
 
     bool intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
-                       shape::Intersection& intersection) const noexcept;
+                       shape::Intersection& intersection) const;
 
-    bool intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const
-        noexcept;
+    bool intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const;
 
-    bool intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const noexcept;
+    bool intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const;
 
-    float opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const
-        noexcept;
+    float opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const;
 
     bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
-                         float3& ta) const noexcept;
+                         float3& ta) const;
 
-    bool has_masked_material() const noexcept;
+    bool has_masked_material() const;
 
-    bool has_tinted_shadow() const noexcept;
+    bool has_tinted_shadow() const;
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
-    bool visible(uint32_t ray_depth) const noexcept;
+    bool visible(uint32_t ray_depth) const;
 
     enum class Property {
         Visible_in_camera     = 1 << 0,
@@ -116,7 +114,7 @@ struct Prop_ptr {
 
     uint32_t id;
 
-    static Prop_ptr constexpr Null() noexcept {
+    static Prop_ptr constexpr Null() {
         return {nullptr, prop::Null};
     }
 };

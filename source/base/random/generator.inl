@@ -6,13 +6,13 @@
 
 namespace rnd {
 
-inline Generator::Generator() noexcept = default;
+inline Generator::Generator() = default;
 
-inline Generator::Generator(uint64_t state, uint64_t sequence) noexcept {
+inline Generator::Generator(uint64_t state, uint64_t sequence) {
     start(state, sequence);
 }
 
-inline void Generator::start(uint64_t state, uint64_t sequence) noexcept {
+inline void Generator::start(uint64_t state, uint64_t sequence) {
     state_ = 0;
     inc_   = (sequence << 1u) | 1u;
 
@@ -21,17 +21,17 @@ inline void Generator::start(uint64_t state, uint64_t sequence) noexcept {
     random_uint();
 }
 
-inline uint32_t Generator::random_uint() noexcept {
+inline uint32_t Generator::random_uint() {
     return advance_pcg32();
 }
 
-static inline float uint_as_float(uint32_t x) noexcept {
+static inline float uint_as_float(uint32_t x) {
     float f;
     std::memcpy(&f, &x, sizeof(float));
     return f;
 }
 
-inline float Generator::random_float() noexcept {
+inline float Generator::random_float() {
     uint32_t bits = advance_pcg32();
 
     bits &= 0x007FFFFFu;
@@ -42,7 +42,7 @@ inline float Generator::random_float() noexcept {
     //   return 2.3283064365386963e-10f * float(bits);
 }
 
-inline uint32_t Generator::advance_pcg32() noexcept {
+inline uint32_t Generator::advance_pcg32() {
     uint64_t const old = state_;
 
     // Advance internal state

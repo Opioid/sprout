@@ -9,7 +9,7 @@
 namespace math {
 
 template <typename T>
-Interpolated_function_3D<T>::Interpolated_function_3D() noexcept = default;
+Interpolated_function_3D<T>::Interpolated_function_3D() = default;
 
 template <typename T>
 Interpolated_function_3D<T>::Interpolated_function_3D(Interpolated_function_3D&& other) noexcept
@@ -24,19 +24,18 @@ Interpolated_function_3D<T>::Interpolated_function_3D(Interpolated_function_3D&&
 template <typename T>
 Interpolated_function_3D<T>::Interpolated_function_3D(float3 const& range_begin,
                                                       float3 const& range_end,
-                                                      uint3 const&  num_samples,
-                                                      T const       t[]) noexcept {
+                                                      uint3 const& num_samples, T const t[]) {
     from_array(range_begin, range_end, num_samples, t);
 }
 
 template <typename T>
-Interpolated_function_3D<T>::~Interpolated_function_3D() noexcept {
+Interpolated_function_3D<T>::~Interpolated_function_3D() {
     memory::free_aligned(samples_);
 }
 
 template <typename T>
 void Interpolated_function_3D<T>::from_array(float3 const& range_begin, float3 const& range_end,
-                                             uint3 const& num_samples, T const t[]) noexcept {
+                                             uint3 const& num_samples, T const t[]) {
     uint32_t const volume = num_samples[0] * num_samples[1] * num_samples[2];
 
     if (num_samples_[0] * num_samples_[1] * num_samples_[2] != volume) {
@@ -63,14 +62,14 @@ void Interpolated_function_3D<T>::from_array(float3 const& range_begin, float3 c
 }
 
 template <typename T>
-void Interpolated_function_3D<T>::scale(T s) noexcept {
+void Interpolated_function_3D<T>::scale(T s) {
     for (uint32_t i = 0, len = num_samples_[0] * num_samples_[1] * num_samples_[2]; i < len; ++i) {
         samples_[i] *= s;
     }
 }
 
 template <typename T>
-T Interpolated_function_3D<T>::operator()(float x, float y, float z) const noexcept {
+T Interpolated_function_3D<T>::operator()(float x, float y, float z) const {
     x = std::min(x, range_end_[0]);
     y = std::min(y, range_end_[1]);
     z = std::min(y, range_end_[1]);

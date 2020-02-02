@@ -6,49 +6,48 @@
 
 namespace scene::material {
 
-static inline float van_de_hulst(float g, float gs) noexcept {
+static inline float van_de_hulst(float g, float gs) {
     return (1.f - g) / (1 - gs);
 }
 
-static inline CC constexpr operator*(float s, CC const& cc) noexcept {
+static inline CC constexpr operator*(float s, CC const& cc) {
     return {s * cc.a, s * cc.s};
 }
 
-inline CM::CM() noexcept = default;
+inline CM::CM() = default;
 
-inline CM::CM(float x) noexcept
-    : minorant_mu_a(x), minorant_mu_s(x), majorant_mu_a(x), majorant_mu_s(x) {}
+inline CM::CM(float x) : minorant_mu_a(x), minorant_mu_s(x), majorant_mu_a(x), majorant_mu_s(x) {}
 
-inline CM::CM(float min, float max) noexcept
+inline CM::CM(float min, float max)
     : minorant_mu_a(min), minorant_mu_s(min), majorant_mu_a(max), majorant_mu_s(max) {}
 
-inline CM::CM(CC const& cc) noexcept {
+inline CM::CM(CC const& cc) {
     minorant_mu_a = min_component(cc.a);
     minorant_mu_s = min_component(cc.s);
     majorant_mu_a = max_component(cc.a);
     majorant_mu_s = max_component(cc.s);
 }
 
-inline float CM::minorant_mu_t() const noexcept {
+inline float CM::minorant_mu_t() const {
     return minorant_mu_a + minorant_mu_s;
 }
 
-inline float CM::majorant_mu_t() const noexcept {
+inline float CM::majorant_mu_t() const {
     return majorant_mu_a + majorant_mu_s;
 }
 
-inline bool CM::is_empty() const noexcept {
+inline bool CM::is_empty() const {
     return 0.f == majorant_mu_a && 0.f == majorant_mu_s;
 }
 
-inline void CM::add(CC const& cc) noexcept {
+inline void CM::add(CC const& cc) {
     minorant_mu_a = std::min(minorant_mu_a, min_component(cc.a));
     minorant_mu_s = std::min(minorant_mu_s, min_component(cc.s));
     majorant_mu_a = std::max(majorant_mu_a, max_component(cc.a));
     majorant_mu_s = std::max(majorant_mu_s, max_component(cc.s));
 }
 
-static inline float3 extinction_coefficient(float3 const& color, float distance) noexcept {
+static inline float3 extinction_coefficient(float3 const& color, float distance) {
     float3 const ca = clamp(color, 0.001f, 0.99f);
 
     float3 const a = log(ca);
@@ -56,7 +55,7 @@ static inline float3 extinction_coefficient(float3 const& color, float distance)
     return -a / distance;
 }
 
-static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance) noexcept {
+static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance) {
     float3 const mu_t = extinction_coefficient(ac, distance);
 
     float3 const root = sqrt(9.59217f + 41.6898f * ssc + 17.71226f * ssc * ssc);
@@ -70,7 +69,7 @@ static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance
     return {mu_a, mu_t - mu_a};
 }
 
-static inline CC attenuation(float3 const& color, float distance) noexcept {
+static inline CC attenuation(float3 const& color, float distance) {
     return attenuation(color, color, distance);
 }
 
@@ -78,7 +77,7 @@ static inline CC attenuation(float3 const& color, float distance) noexcept {
 // https://disney-animation.s3.amazonaws.com/uploads/production/publication_asset/153/asset/siggraph2016SSS.pdf
 // But looks wrong (Well, the emily head looks better with the above)?!
 
-static inline CC disney_attenuation(float3 const& color, float distance) noexcept {
+static inline CC disney_attenuation(float3 const& color, float distance) {
     float3 const a  = color;
     float3 const a2 = a * a;
     float3 const a3 = a2 * a;

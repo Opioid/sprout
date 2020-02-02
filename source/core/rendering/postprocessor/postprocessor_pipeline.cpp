@@ -8,19 +8,19 @@
 
 namespace rendering::postprocessor {
 
-Pipeline::Pipeline() noexcept : scratch_(image::Description()) {}
+Pipeline::Pipeline() : scratch_(image::Description()) {}
 
-Pipeline::~Pipeline() noexcept {
+Pipeline::~Pipeline() {
     for (auto pp : postprocessors_) {
         delete pp;
     }
 }
 
-bool Pipeline::empty() const noexcept {
+bool Pipeline::empty() const {
     return postprocessors_.empty();
 }
 
-void Pipeline::clear() noexcept {
+void Pipeline::clear() {
     for (auto pp : postprocessors_) {
         delete pp;
     }
@@ -28,17 +28,17 @@ void Pipeline::clear() noexcept {
     postprocessors_.clear();
 }
 
-void Pipeline::reserve(uint32_t num_pps) noexcept {
+void Pipeline::reserve(uint32_t num_pps) {
     postprocessors_.reserve(num_pps);
 }
 
-void Pipeline::add(Postprocessor* pp) noexcept {
+void Pipeline::add(Postprocessor* pp) {
     if (pp) {
         postprocessors_.push_back(pp);
     }
 }
 
-void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& threads) noexcept {
+void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& threads) {
     if (postprocessors_.empty()) {
         return;
     }
@@ -50,7 +50,7 @@ void Pipeline::init(scene::camera::Camera const& camera, thread::Pool& threads) 
     }
 }
 
-bool Pipeline::has_alpha_transparency(bool alpha_in) const noexcept {
+bool Pipeline::has_alpha_transparency(bool alpha_in) const {
     for (auto const pp : postprocessors_) {
         alpha_in = pp->alpha_out(alpha_in);
     }
@@ -58,8 +58,7 @@ bool Pipeline::has_alpha_transparency(bool alpha_in) const noexcept {
     return alpha_in;
 }
 
-void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target,
-                    thread::Pool& threads) noexcept {
+void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) {
     if (postprocessors_.empty()) {
         sensor.resolve(threads, target);
     } else {
@@ -71,7 +70,7 @@ void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target,
     }
 }
 
-void Pipeline::apply(image::Float4& target, thread::Pool& threads) noexcept {
+void Pipeline::apply(image::Float4& target, thread::Pool& threads) {
     image::Float4* targets[2] = {&scratch_, &target};
 
     target.copy(scratch_);
@@ -86,8 +85,7 @@ void Pipeline::apply(image::Float4& target, thread::Pool& threads) noexcept {
     }
 }
 
-void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target,
-                     thread::Pool& threads) noexcept {
+void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) {
     if (postprocessors_.empty()) {
         sensor.resolve(threads, target);
     } else {
@@ -111,7 +109,7 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target,
 }
 
 void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
-                                thread::Pool& threads) noexcept {
+                                thread::Pool& threads) {
     if (postprocessors_.empty()) {
         sensor.resolve_accumulate(threads, target);
     } else {

@@ -10,14 +10,13 @@
 
 namespace scene::material::metal {
 
-Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings,
-                                       bool                    two_sided) noexcept
+Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    sampler::Sampler& /*sampler*/,
-                                                   Worker const& worker) const noexcept {
+                                                   Worker const& worker) const {
     auto& sample = worker.sample<Sample_isotropic>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -36,48 +35,47 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
     return sample;
 }
 
-float Material_isotropic::ior() const noexcept {
+float Material_isotropic::ior() const {
     return ior_[0];
 }
 
-bool Material_isotropic::is_caustic() const noexcept {
+bool Material_isotropic::is_caustic() const {
     return alpha_ <= ggx::Min_alpha;
 }
 
-size_t Material_isotropic::num_bytes() const noexcept {
+size_t Material_isotropic::num_bytes() const {
     return sizeof(*this);
 }
 
-void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) noexcept {
+void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Material_isotropic::set_ior(float3 const& ior) noexcept {
+void Material_isotropic::set_ior(float3 const& ior) {
     ior_ = ior;
 }
 
-void Material_isotropic::set_absorption(float3 const& absorption) noexcept {
+void Material_isotropic::set_absorption(float3 const& absorption) {
     absorption_ = absorption;
 }
 
-void Material_isotropic::set_roughness(float roughness) noexcept {
+void Material_isotropic::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
 }
 
-size_t Material_isotropic::sample_size() noexcept {
+size_t Material_isotropic::sample_size() {
     return sizeof(Sample_isotropic);
 }
 
-Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings,
-                                           bool                    two_sided) noexcept
+Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
                                                      sampler::Sampler& /*sampler*/,
-                                                     Worker const& worker) const noexcept {
+                                                     Worker const& worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -103,39 +101,39 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
     return sample;
 }
 
-float Material_anisotropic::ior() const noexcept {
+float Material_anisotropic::ior() const {
     return ior_[0];
 }
 
-bool Material_anisotropic::is_caustic() const noexcept {
+bool Material_anisotropic::is_caustic() const {
     return roughness_[0] <= ggx::Min_roughness || roughness_[1] <= ggx::Min_roughness;
 }
 
-size_t Material_anisotropic::num_bytes() const noexcept {
+size_t Material_anisotropic::num_bytes() const {
     return sizeof(*this);
 }
 
-void Material_anisotropic::set_normal_map(Texture_adapter const& normal_map) noexcept {
+void Material_anisotropic::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(Texture_adapter const& direction_map) noexcept {
+void Material_anisotropic::set_direction_map(Texture_adapter const& direction_map) {
     direction_map_ = direction_map;
 }
 
-void Material_anisotropic::set_ior(float3 const& ior) noexcept {
+void Material_anisotropic::set_ior(float3 const& ior) {
     ior_ = ior;
 }
 
-void Material_anisotropic::set_absorption(float3 const& absorption) noexcept {
+void Material_anisotropic::set_absorption(float3 const& absorption) {
     absorption_ = absorption;
 }
 
-void Material_anisotropic::set_roughness(float2 roughness) noexcept {
+void Material_anisotropic::set_roughness(float2 roughness) {
     roughness_ = float2(ggx::clamp_roughness(roughness[0]), ggx::clamp_roughness(roughness[1]));
 }
 
-size_t Material_anisotropic::sample_size() noexcept {
+size_t Material_anisotropic::sample_size() {
     return sizeof(Sample_anisotropic);
 }
 

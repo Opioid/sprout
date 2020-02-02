@@ -6,16 +6,15 @@
 namespace math {
 
 template <typename T>
-Distribution_t_2D<T>::Distribution_t_2D() noexcept : conditional_size_(0), conditional_(nullptr) {}
+Distribution_t_2D<T>::Distribution_t_2D() : conditional_size_(0), conditional_(nullptr) {}
 
 template <typename T>
-Distribution_t_2D<T>::~Distribution_t_2D() noexcept {
+Distribution_t_2D<T>::~Distribution_t_2D() {
     memory::destroy_aligned(conditional_, conditional_size_);
 }
 
 template <typename T>
-typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::allocate(
-    uint32_t num) noexcept {
+typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::allocate(uint32_t num) {
     if (conditional_size_ != num) {
         memory::destroy_aligned(conditional_, conditional_size_);
 
@@ -27,17 +26,17 @@ typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::allocate
 }
 
 template <typename T>
-typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::conditional() noexcept {
+typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::conditional() {
     return conditional_;
 }
 
 template <typename T>
-bool Distribution_t_2D<T>::empty() const noexcept {
+bool Distribution_t_2D<T>::empty() const {
     return 0 == conditional_size_;
 }
 
 template <typename T>
-void Distribution_t_2D<T>::init() noexcept {
+void Distribution_t_2D<T>::init() {
     uint32_t const num_conditional = conditional_size_;
 
     float* integrals = memory::allocate_aligned<float>(num_conditional);
@@ -55,13 +54,12 @@ void Distribution_t_2D<T>::init() noexcept {
 }
 
 template <typename T>
-float Distribution_t_2D<T>::integral() const noexcept {
+float Distribution_t_2D<T>::integral() const {
     return marginal_.integral();
 }
 
 template <typename T>
-typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuous(float2 r2) const
-    noexcept {
+typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuous(float2 r2) const {
     auto const v = marginal_.sample_continuous(r2[1]);
 
     uint32_t const i = uint32_t(v.offset * conditional_sizef_);
@@ -73,7 +71,7 @@ typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuou
 }
 
 template <typename T>
-float Distribution_t_2D<T>::pdf(float2 uv) const noexcept {
+float Distribution_t_2D<T>::pdf(float2 uv) const {
     float const v_pdf = marginal_.pdf(uv[1]);
 
     uint32_t const i = uint32_t(uv[1] * conditional_sizef_);
@@ -85,7 +83,7 @@ float Distribution_t_2D<T>::pdf(float2 uv) const noexcept {
 }
 
 template <typename T>
-size_t Distribution_t_2D<T>::num_bytes() const noexcept {
+size_t Distribution_t_2D<T>::num_bytes() const {
     size_t num_bytes = 0;
 
     for (int32_t i = 0, len = conditional_size_; i < len; ++i) {

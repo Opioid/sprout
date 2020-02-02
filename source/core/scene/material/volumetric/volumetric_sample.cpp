@@ -7,29 +7,29 @@
 
 namespace scene::material::volumetric {
 
-static inline float phase_hg(float cos_theta, float g) noexcept {
+static inline float phase_hg(float cos_theta, float g) {
     float const gg    = g * g;
     float const denom = 1.f + gg + 2.f * g * cos_theta;
     return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
 }
 
-float3 const& Sample::base_shading_normal() const noexcept {
+float3 const& Sample::base_shading_normal() const {
     return geo_n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
 }
 
-void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
     float2 const r2 = sampler.generate_sample_2D();
 
     float4 const ps = sample(wo_, r2);
@@ -41,11 +41,11 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const noexcept {
     result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 
-bool Sample::is_translucent() const noexcept {
+bool Sample::is_translucent() const {
     return true;
 }
 
-bool Sample::evaluates_back(bool previously, bool /*same_side*/) const noexcept {
+bool Sample::evaluates_back(bool previously, bool /*same_side*/) const {
     return previously;
 }
 
@@ -53,14 +53,14 @@ void Sample::set(float anisotropy) {
     anisotropy_ = anisotropy;
 }
 
-float Sample::phase(float3 const& wo, float3 const& wi) const noexcept {
+float Sample::phase(float3 const& wo, float3 const& wi) const {
     float const g = anisotropy_;
     return phase_hg(dot(wo, wi), g);
     //	float const k = 1.55f * g - (0.55f * g) * (g * g);
     //	return phase_schlick(dot(wo, wi), k);
 }
 
-float4 Sample::sample(float3 const& wo, float2 r2) const noexcept {
+float4 Sample::sample(float3 const& wo, float2 r2) const {
     float const g = anisotropy_;
 
     float cos_theta;

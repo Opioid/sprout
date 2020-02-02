@@ -10,17 +10,17 @@ struct AABB;
 
 class Frustum {
   public:
-    Frustum() noexcept;
+    Frustum();
 
-    Frustum(Plane const& left, Plane const& right, Plane const& top, Plane const& bottom) noexcept;
+    Frustum(Plane const& left, Plane const& right, Plane const& top, Plane const& bottom);
 
-    Frustum(float4x4 const& combo_matrix) noexcept;
+    Frustum(float4x4 const& combo_matrix);
 
-    void set_from_matrix(float4x4 const& combo_matrix) noexcept;
+    void set_from_matrix(float4x4 const& combo_matrix);
 
-    bool intersect(float3 const& p, float radius) const noexcept;
+    bool intersect(float3 const& p, float radius) const;
 
-    AABB calculate_aabb() const noexcept;
+    AABB calculate_aabb() const;
 
   private:
     Plane planes_[6];

@@ -20,7 +20,7 @@ class alignas(64) Image {
         Float4
     };
 
-    static char const* identifier() noexcept;
+    static char const* identifier();
 
     Image(Byte1&& image) noexcept;
     Image(Byte2&& image) noexcept;
@@ -35,35 +35,35 @@ class alignas(64) Image {
 
     ~Image();
 
-    Type type() const noexcept;
+    Type type() const;
 
-    Description const& description() const noexcept;
+    Description const& description() const;
 
-    char* data() const noexcept;
+    char* data() const;
 
-    Byte1 const&         byte1() const noexcept;
-    Byte2 const&         byte2() const noexcept;
-    Byte3 const&         byte3() const noexcept;
-    Byte4 const&         byte4() const noexcept;
-    Short3 const&        short3() const noexcept;
-    Float1 const&        float1() const noexcept;
-    Float1_sparse const& float1_sparse() const noexcept;
-    Float2 const&        float2() const noexcept;
-    Float3 const&        float3() const noexcept;
-    Float4 const&        float4() const noexcept;
+    Byte1 const&         byte1() const;
+    Byte2 const&         byte2() const;
+    Byte3 const&         byte3() const;
+    Byte4 const&         byte4() const;
+    Short3 const&        short3() const;
+    Float1 const&        float1() const;
+    Float1_sparse const& float1_sparse() const;
+    Float2 const&        float2() const;
+    Float3 const&        float3() const;
+    Float4 const&        float4() const;
 
-    Byte1&         byte1() noexcept;
-    Byte2&         byte2() noexcept;
-    Byte3&         byte3() noexcept;
-    Byte4&         byte4() noexcept;
-    Short3&        short3() noexcept;
-    Float1&        float1() noexcept;
-    Float1_sparse& float1_sparse() noexcept;
-    Float2&        float2() noexcept;
-    Float3&        float3() noexcept;
-    Float4&        float4() noexcept;
+    Byte1&         byte1();
+    Byte2&         byte2();
+    Byte3&         byte3();
+    Byte4&         byte4();
+    Short3&        short3();
+    Float1&        float1();
+    Float1_sparse& float1_sparse();
+    Float2&        float2();
+    Float3&        float3();
+    Float4&        float4();
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     Type const type_;

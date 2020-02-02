@@ -18,20 +18,20 @@ class alignas(64) Whitted final : public Integrator {
         float    num_light_samples_reciprocal;
     };
 
-    Whitted(rnd::Generator& rng, Settings const& settings) noexcept;
+    Whitted(rnd::Generator& rng, Settings const& settings);
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() noexcept final;
+    void start_pixel() final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept final;
+              Interface_stack const& initial_stack) final;
 
   private:
-    float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker) noexcept;
+    float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker);
 
     float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                 Material_sample const& material_sample, Worker& worker) noexcept;
+                                 Material_sample const& material_sample, Worker& worker);
 
     Settings const settings_;
 
@@ -40,9 +40,9 @@ class alignas(64) Whitted final : public Integrator {
 
 class Whitted_pool final : public Typed_pool<Whitted> {
   public:
-    Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples) noexcept;
+    Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
 
   private:
     Whitted::Settings settings_;

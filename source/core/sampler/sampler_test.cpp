@@ -40,7 +40,7 @@ void render_quad(std::string const& name, Sampler& sampler, float2 center, Rende
                  Byte3& target);
 
 // https://drive.google.com/file/d/1J-183vt4BrN9wmqItECIjjLIKwm29qSg/view
-static inline float2 sample_triangle_uniform_heitz(float2 uv) noexcept {
+static inline float2 sample_triangle_uniform_heitz(float2 uv) {
     float2 t = 0.5f * uv;
 
     float const offset = t[1] - t[0];
@@ -55,7 +55,7 @@ static inline float2 sample_triangle_uniform_heitz(float2 uv) noexcept {
 }
 
 // https://pharr.org/matt/blog/2019/02/27/triangle-sampling-1.html
-static inline float2 sample_triangle_uniform(float u) noexcept {
+static inline float2 sample_triangle_uniform(float u) {
     uint32_t const ui = uint32_t(u * (1ull << 32));
 
     float2 a(1.f, 0.f);

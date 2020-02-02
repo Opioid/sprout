@@ -21,10 +21,10 @@ class Extension_provider {
     using Prop_ptr  = prop::Prop_ptr;
     using Resources = resource::Manager;
 
-    virtual ~Extension_provider() noexcept = default;
+    virtual ~Extension_provider() = default;
 
     virtual uint32_t create_extension(json::Value const& extension_value, std::string const& name,
-                                      Scene& scene, Resources& resources) noexcept = 0;
+                                      Scene& scene, Resources& resources) = 0;
 };
 
 }  // namespace scene

@@ -9,13 +9,13 @@
 
 namespace scene::material::light {
 
-Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided) noexcept
+Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray*/,
                                          Renderstate const& rs, Filter /*filter*/,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker) const
-    noexcept {
+                                         sampler::Sampler& /*sampler*/,
+                                         Worker const& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -26,11 +26,11 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
 }
 
 float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float area,
-                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
+                                   Filter /*filter*/, Worker const& /*worker*/) const {
     return emittance_.radiance(area);
 }
 
-float3 Constant::average_radiance(float area, Scene const& /*scene*/) const noexcept {
+float3 Constant::average_radiance(float area, Scene const& /*scene*/) const {
     float3 const radiance = emittance_.radiance(area);
 
     if (is_two_sided()) {
@@ -40,23 +40,23 @@ float3 Constant::average_radiance(float area, Scene const& /*scene*/) const noex
     return radiance;
 }
 
-float Constant::ior() const noexcept {
+float Constant::ior() const {
     return 1.5f;
 }
 
-bool Constant::has_emission_map() const noexcept {
+bool Constant::has_emission_map() const {
     return false;
 }
 
-size_t Constant::num_bytes() const noexcept {
+size_t Constant::num_bytes() const {
     return sizeof(*this);
 }
 
-::light::Emittance& Constant::emittance() noexcept {
+::light::Emittance& Constant::emittance() {
     return emittance_;
 }
 
-size_t Constant::sample_size() noexcept {
+size_t Constant::sample_size() {
     return sizeof(Sample);
 }
 

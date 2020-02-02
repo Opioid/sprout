@@ -8,21 +8,21 @@ namespace math {
 template <typename T>
 class Interpolated_function_3D {
   public:
-    Interpolated_function_3D() noexcept;
+    Interpolated_function_3D();
 
     Interpolated_function_3D(Interpolated_function_3D&& other) noexcept;
 
     Interpolated_function_3D(float3 const& range_begin, float3 const& range_end,
-                             uint3 const& num_samples, T const t[]) noexcept;
+                             uint3 const& num_samples, T const t[]);
 
-    ~Interpolated_function_3D() noexcept;
+    ~Interpolated_function_3D();
 
     void from_array(float3 const& range_begin, float3 const& range_end, uint3 const& num_samples,
-                    T const t[]) noexcept;
+                    T const t[]);
 
-    void scale(T s) noexcept;
+    void scale(T s);
 
-    T operator()(float x, float y, float z) const noexcept;
+    T operator()(float x, float y, float z) const;
 
   private:
     float3 range_end_;

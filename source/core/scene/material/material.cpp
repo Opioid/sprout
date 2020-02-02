@@ -10,68 +10,66 @@
 
 namespace scene::material {
 
-char const* Material::identifier() noexcept {
+char const* Material::identifier() {
     return "Material";
 }
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : sampler_key_(sampler_settings.key()), two_sided_(two_sided) {}
 
-Material::~Material() noexcept = default;
+Material::~Material() = default;
 
-void Material::set_mask(Texture_adapter const& mask) noexcept {
+void Material::set_mask(Texture_adapter const& mask) {
     mask_ = mask;
 }
 
-void Material::set_parameters(json::Value const& parameters) noexcept {
+void Material::set_parameters(json::Value const& parameters) {
     for (auto const& n : parameters.GetObject()) {
         set_parameter(n.name.GetString(), n.value);
     }
 }
 
-void Material::compile(thread::Pool& /*threads*/, Scene const& /*scene*/) noexcept {}
+void Material::compile(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
 
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
-                        thread::Pool& /*threads*/, Scene const& /*scene*/) noexcept {}
+                        thread::Pool& /*threads*/, Scene const& /*scene*/) {}
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*area*/,
-                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
+                                   Filter /*filter*/, Worker const& /*worker*/) const {
     return float3(0.f);
 }
 
 float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, float /*volume*/,
-                                   Filter /*filter*/, Worker const& /*worker*/) const noexcept {
+                                   Filter /*filter*/, Worker const& /*worker*/) const {
     return float3(0.f);
 }
 
-float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const noexcept {
+float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const {
     return float3(0.f);
 }
 
-bool Material::has_emission_map() const noexcept {
+bool Material::has_emission_map() const {
     return false;
 }
 
-Material::Sample_2D Material::radiance_sample(float2 r2) const noexcept {
+Material::Sample_2D Material::radiance_sample(float2 r2) const {
     return {r2, 1.f};
 }
 
-float Material::emission_pdf(float2 /*uv*/, Filter /*filter*/, Worker const& /*worker*/) const
-    noexcept {
+float Material::emission_pdf(float2 /*uv*/, Filter /*filter*/, Worker const& /*worker*/) const {
     return 1.f;
 }
 
-Material::Sample_3D Material::radiance_sample(float3 const& r3) const noexcept {
+Material::Sample_3D Material::radiance_sample(float3 const& r3) const {
     return {r3, 1.f};
 }
 
 float Material::emission_pdf(float3 const& /*uvw*/, Filter /*filter*/,
-                             Worker const& /*worker*/) const noexcept {
+                             Worker const& /*worker*/) const {
     return 1.f;
 }
 
-float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker const& worker) const
-    noexcept {
+float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker const& worker) const {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key_, filter);
         return mask_.sample_1(worker, sampler, uv);
@@ -81,94 +79,93 @@ float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker cons
 }
 
 float3 Material::thin_absorption(float3 const& /*wi*/, float3 const& /*n*/, float2 uv,
-                                 uint64_t time, Filter filter, Worker const& worker) const
-    noexcept {
+                                 uint64_t time, Filter filter, Worker const& worker) const {
     return float3(1.f - opacity(uv, time, filter, worker));
 }
 
 float Material::volume_border_hack(float3 const& /*wi*/, float3 const& /*n*/,
-                                   Worker const& /*worker*/) const noexcept {
+                                   Worker const& /*worker*/) const {
     return 1.f;
 }
 
 float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                        Worker const& /*worker*/) const noexcept {
+                                        Worker const& /*worker*/) const {
     return float3(0.f);
 }
 
-CC Material::collision_coefficients() const noexcept {
+CC Material::collision_coefficients() const {
     return {float3(0.f), float3(0.f)};
 }
 
 CC Material::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
-                                    Worker const& /*worker*/) const noexcept {
+                                    Worker const& /*worker*/) const {
     return {float3(0.f), float3(0.f)};
 }
 
 CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
-                                    Worker const& /*worker*/) const noexcept {
+                                    Worker const& /*worker*/) const {
     return {float3(0.f), float3(0.f)};
 }
 
-CCE Material::collision_coefficients_emission() const noexcept {
+CCE Material::collision_coefficients_emission() const {
     return {{float3(0.f), float3(0.f)}, float3(0.f)};
 }
 
 CCE Material::collision_coefficients_emission(float3 const& /*uvw*/, Filter /*filter*/,
-                                              Worker const& /*worker*/) const noexcept {
+                                              Worker const& /*worker*/) const {
     return {{float3(0.f), float3(0.f)}, float3(0.f)};
 }
 
-CM Material::control_medium() const noexcept {
+CM Material::control_medium() const {
     return CM(0.f);
 }
 
-volumetric::Gridtree const* Material::volume_tree() const noexcept {
+volumetric::Gridtree const* Material::volume_tree() const {
     return nullptr;
 }
 
-float Material::similarity_relation_scale(uint32_t /*depth*/) const noexcept {
+float Material::similarity_relation_scale(uint32_t /*depth*/) const {
     return 1.f;
 }
 
-bool Material::is_heterogeneous_volume() const noexcept {
+bool Material::is_heterogeneous_volume() const {
     return false;
 }
 
-bool Material::is_textured_volume() const noexcept {
+bool Material::is_textured_volume() const {
     return false;
 }
 
-bool Material::is_scattering_volume() const noexcept {
+bool Material::is_scattering_volume() const {
     return false;
 }
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                 Transformation const& /*transformation*/, float /*extent*/,
                                 bool /*importance_sampling*/, thread::Pool& /*threads*/,
-                                Scene const& /*scene*/) noexcept {}
+                                Scene const& /*scene*/) {}
 
-bool Material::is_animated() const noexcept {
+bool Material::is_animated() const {
     return false;
 }
 
-bool Material::has_tinted_shadow() const noexcept {
+bool Material::has_tinted_shadow() const {
     return false;
 }
 
-uint32_t Material::sampler_key() const noexcept {
+uint32_t Material::sampler_key() const {
     return sampler_key_;
 }
 
-bool Material::is_caustic() const noexcept {
+bool Material::is_caustic() const {
     return false;
 }
 
-bool Material::is_masked() const noexcept {
+bool Material::is_masked() const {
     return mask_.is_valid();
 }
 
-bool Material::is_emissive(Scene const& scene) const noexcept {
+bool Material::is_emissive(Scene const& scene) const {
     if (has_emission_map()) {
         return true;
     }
@@ -177,15 +174,15 @@ bool Material::is_emissive(Scene const& scene) const noexcept {
     return any_greater_zero(e);
 }
 
-bool Material::is_two_sided() const noexcept {
+bool Material::is_two_sided() const {
     return two_sided_;
 }
 
-void Material::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
+void Material::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 
 float3 Material::rainbow_[Num_bands + 1];
 
-void Material::init_rainbow() noexcept {
+void Material::init_rainbow() {
     Spectrum::init(400.f, 700.f);
 
     float3 sum_rgb(0.f);
@@ -233,7 +230,7 @@ void Material::init_rainbow() noexcept {
     */
 }
 
-float3 Material::spectrum_at_wavelength(float lambda, float value) noexcept {
+float3 Material::spectrum_at_wavelength(float lambda, float value) {
     float const start = Spectrum::start_wavelength();
     float const end   = Spectrum::end_wavelength();
     float const nb    = float(Num_bands);

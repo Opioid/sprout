@@ -15,7 +15,7 @@
 
 namespace scene::material::glass {
 
-void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     float3 weight;
     float  wavelength = wavelength_;
 
@@ -62,7 +62,7 @@ void Sample_dispersion::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
     result.wavelength = wavelength;
 }
 
-void Sample_dispersion::set_dispersion(float abbe, float wavelength) noexcept {
+void Sample_dispersion::set_dispersion(float abbe, float wavelength) {
     abbe_       = abbe;
     wavelength_ = wavelength;
 }

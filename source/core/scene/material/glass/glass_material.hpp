@@ -7,28 +7,27 @@ namespace scene::material::glass {
 
 class alignas(64) Glass : public Material {
   public:
-    Glass(Sampler_settings const& sampler_settings) noexcept;
+    Glass(Sampler_settings const& sampler_settings);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept override;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const override;
 
-    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const
-        noexcept final;
+    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
 
-    float ior() const noexcept final;
+    float ior() const final;
 
-    size_t num_bytes() const noexcept override;
+    size_t num_bytes() const override;
 
-    void set_normal_map(Texture_adapter const& normal_map) noexcept;
+    void set_normal_map(Texture_adapter const& normal_map);
 
-    void set_refraction_color(float3 const& color) noexcept;
-    void set_attenuation(float3 const& absorption_color, float distance) noexcept;
-    void set_ior(float ior) noexcept;
+    void set_refraction_color(float3 const& color);
+    void set_attenuation(float3 const& absorption_color, float distance);
+    void set_ior(float ior);
 
-    bool is_caustic() const noexcept final;
+    bool is_caustic() const final;
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 
   protected:
     Texture_adapter normal_map_;

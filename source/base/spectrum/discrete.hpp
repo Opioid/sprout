@@ -9,32 +9,32 @@ namespace spectrum {
 template <int32_t N>
 class Discrete_spectral_power_distribution {
   public:
-    Discrete_spectral_power_distribution() noexcept = default;
+    Discrete_spectral_power_distribution() = default;
 
-    Discrete_spectral_power_distribution(float s) noexcept;
+    Discrete_spectral_power_distribution(float s);
 
-    Discrete_spectral_power_distribution(Interpolated const& interpolated) noexcept;
+    Discrete_spectral_power_distribution(Interpolated const& interpolated);
 
-    Discrete_spectral_power_distribution(float3 const& rgb) noexcept;
+    Discrete_spectral_power_distribution(float3 const& rgb);
 
-    float constexpr value(int32_t bin) const noexcept;
+    float constexpr value(int32_t bin) const;
 
-    void set_bin(int32_t bin, float value) noexcept;
+    void set_bin(int32_t bin, float value);
 
-    void set_at_wavelength(float lambda, float value) noexcept;
+    void set_at_wavelength(float lambda, float value);
 
-    float3 constexpr XYZ() const noexcept;
+    float3 constexpr XYZ() const;
 
-    float3 constexpr normalized_XYZ() const noexcept;
+    float3 constexpr normalized_XYZ() const;
 
-    static void init(float start_wavelength = 380.f, float end_wavelength = 720.f) noexcept;
+    static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
 
-    static int32_t constexpr num_bands() noexcept;
+    static int32_t constexpr num_bands();
 
-    static float constexpr wavelength_center(int32_t bin) noexcept;
+    static float constexpr wavelength_center(int32_t bin);
 
-    static float constexpr start_wavelength() noexcept;
-    static float constexpr end_wavelength() noexcept;
+    static float constexpr start_wavelength();
+    static float constexpr end_wavelength();
 
   private:
     alignas(16) float values_[N];
@@ -56,15 +56,15 @@ class Discrete_spectral_power_distribution {
     template <int32_t J>
     friend Discrete_spectral_power_distribution<J>& operator+=(
         Discrete_spectral_power_distribution<J>&       a,
-        Discrete_spectral_power_distribution<J> const& b) noexcept;
+        Discrete_spectral_power_distribution<J> const& b);
 
     template <int32_t J>
     friend Discrete_spectral_power_distribution<J>& operator*=(
-        Discrete_spectral_power_distribution<J>& a, float s) noexcept;
+        Discrete_spectral_power_distribution<J>& a, float s);
 
     template <int32_t J>
     friend Discrete_spectral_power_distribution<J> operator*(
-        float s, Discrete_spectral_power_distribution<J> const& v) noexcept;
+        float s, Discrete_spectral_power_distribution<J> const& v);
 };
 
 }  // namespace spectrum

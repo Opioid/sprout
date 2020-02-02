@@ -13,30 +13,30 @@
 
 namespace scene::camera {
 
-Spherical::Spherical(int2 resolution) noexcept : Camera(resolution) {
+Spherical::Spherical(int2 resolution) : Camera(resolution) {
     float2 fr(resolution);
     d_x_ = 1.f / fr[0];
     d_y_ = 1.f / fr[1];
 }
 
-uint32_t Spherical::num_views() const noexcept {
+uint32_t Spherical::num_views() const {
     return 1;
 }
 
-int2 Spherical::sensor_dimensions() const noexcept {
+int2 Spherical::sensor_dimensions() const {
     return resolution_;
 }
 
-int4 Spherical::view_bounds(uint32_t /*view*/) const noexcept {
+int4 Spherical::view_bounds(uint32_t /*view*/) const {
     return int4(int2(0, 0), resolution_ - int2(1, 1));
 }
 
-float Spherical::pixel_solid_angle() const noexcept {
+float Spherical::pixel_solid_angle() const {
     return 1.f;
 }
 
 bool Spherical::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*view*/,
-                             Scene const& scene, Ray& ray) const noexcept {
+                             Scene const& scene, Ray& ray) const {
     float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
     float x = d_x_ * coordinates[0];
@@ -64,12 +64,12 @@ bool Spherical::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*vi
 
 bool Spherical::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& /*p*/,
                        Sampler& /*sampler*/, uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
-                       Sample_to& /*sample*/) const noexcept {
+                       Sample_to& /*sample*/) const {
     return false;
 }
 
-void Spherical::on_update(uint64_t /*time*/, Worker& /*worker*/) noexcept {}
+void Spherical::on_update(uint64_t /*time*/, Worker& /*worker*/) {}
 
-void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) noexcept {}
+void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 
 }  // namespace scene::camera

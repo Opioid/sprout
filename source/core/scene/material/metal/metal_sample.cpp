@@ -7,19 +7,19 @@
 
 namespace scene::material::metal {
 
-float3 const& Sample_isotropic::base_shading_normal() const noexcept {
+float3 const& Sample_isotropic::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_isotropic::evaluate_b(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_isotropic::evaluate_b(float3 const& wi, bool /*include_back*/) const {
     return evaluate<false>(wi);
 }
 
-void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -39,7 +39,7 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) c
 }
 
 void Sample_isotropic::set(float3 const& ior, float3 const& absorption, float alpha,
-                           bool avoid_caustics) noexcept {
+                           bool avoid_caustics) {
     ior_            = ior;
     absorption_     = absorption;
     alpha_          = alpha;
@@ -47,7 +47,7 @@ void Sample_isotropic::set(float3 const& ior, float3 const& absorption, float al
 }
 
 template <bool Forward>
-bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
     if (!same_hemisphere(wo_) || (avoid_caustics_ && alpha_ <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
@@ -73,21 +73,19 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const noexcept {
     }
 }
 
-float3 const& Sample_anisotropic::base_shading_normal() const noexcept {
+float3 const& Sample_anisotropic::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const
-    noexcept {
+bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi, bool /*include_back*/) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_anisotropic::evaluate_b(float3 const& wi, bool /*include_back*/) const
-    noexcept {
+bxdf::Result Sample_anisotropic::evaluate_b(float3 const& wi, bool /*include_back*/) const {
     return evaluate<false>(wi);
 }
 
-void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -106,7 +104,7 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result)
 }
 
 template <bool Forward>
-bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const noexcept {
+bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -131,7 +129,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const noexcept {
 }
 
 void Sample_anisotropic::PLayer::set(float3 const& ior, float3 const& absorption,
-                                     float2 roughness) noexcept {
+                                     float2 roughness) {
     ior_        = ior;
     absorption_ = absorption;
 

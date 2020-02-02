@@ -15,11 +15,11 @@ namespace light {
 class Light;
 
 struct Build_node {
-    Build_node() noexcept;
+    Build_node();
 
-    ~Build_node() noexcept;
+    ~Build_node();
 
-    void gather(uint32_t const* orders) noexcept;
+    void gather(uint32_t const* orders);
 
     float3 center;
 
@@ -35,9 +35,9 @@ struct Build_node {
 
 class Tree {
   public:
-    Tree() noexcept;
+    Tree();
 
-    ~Tree() noexcept;
+    ~Tree();
 
     struct Result {
         uint32_t id;
@@ -45,7 +45,7 @@ class Tree {
     };
 
     struct Node {
-        float weight(float3 const& p, float3 const& n, bool total_sphere) const noexcept;
+        float weight(float3 const& p, float3 const& n, bool total_sphere) const;
 
         float3 center;
 
@@ -58,12 +58,11 @@ class Tree {
         uint32_t next_or_light;
     };
 
-    Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const
-        noexcept;
+    Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
 
-    float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id) const noexcept;
+    float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id) const;
 
-    void allocate(uint32_t num_finite_lights, uint32_t num_infinite_lights) noexcept;
+    void allocate(uint32_t num_finite_lights, uint32_t num_infinite_lights);
 
     float infinite_weight_;
     float infinite_guard_;
@@ -84,15 +83,15 @@ class Tree {
 
 class Tree_builder {
   public:
-    void build(Tree& tree, Scene const& scene) noexcept;
+    void build(Tree& tree, Scene const& scene);
 
   private:
     using Lights = std::vector<uint32_t>;
 
     void split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights& lights,
-               Scene const& scene) noexcept;
+               Scene const& scene);
 
-    void serialize(Build_node* node) noexcept;
+    void serialize(Build_node* node);
 
     Tree::Node* nodes_;
 

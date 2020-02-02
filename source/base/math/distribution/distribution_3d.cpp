@@ -4,13 +4,13 @@
 
 namespace math {
 
-Distribution_3D::Distribution_3D() noexcept : conditional_size_(0), conditional_(nullptr) {}
+Distribution_3D::Distribution_3D() : conditional_size_(0), conditional_(nullptr) {}
 
-Distribution_3D::~Distribution_3D() noexcept {
+Distribution_3D::~Distribution_3D() {
     memory::destroy_aligned(conditional_, conditional_size_);
 }
 
-Distribution_2D* Distribution_3D::allocate(uint32_t num) noexcept {
+Distribution_2D* Distribution_3D::allocate(uint32_t num) {
     if (conditional_size_ != num) {
         memory::destroy_aligned(conditional_, conditional_size_);
 
@@ -21,7 +21,7 @@ Distribution_2D* Distribution_3D::allocate(uint32_t num) noexcept {
     return conditional_;
 }
 
-void Distribution_3D::init() noexcept {
+void Distribution_3D::init() {
     uint32_t const num_conditional = conditional_size_;
 
     float* integrals = memory::allocate_aligned<float>(num_conditional);
@@ -38,11 +38,11 @@ void Distribution_3D::init() noexcept {
     memory::free_aligned(integrals);
 }
 
-float Distribution_3D::integral() const noexcept {
+float Distribution_3D::integral() const {
     return marginal_.integral();
 }
 
-Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3) const noexcept {
+Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3) const {
     auto const w = marginal_.sample_continuous(r3[2]);
 
     uint32_t const i = uint32_t(w.offset * conditional_sizef_);
@@ -53,7 +53,7 @@ Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3)
     return {float3(uv.uv, w.offset), uv.pdf * w.pdf};
 }
 
-float Distribution_3D::pdf(float3 const& uvw) const noexcept {
+float Distribution_3D::pdf(float3 const& uvw) const {
     float const w_pdf = marginal_.pdf(uvw[2]);
 
     uint32_t const i = uint32_t(uvw[2] * conditional_sizef_);
@@ -64,7 +64,7 @@ float Distribution_3D::pdf(float3 const& uvw) const noexcept {
     return uv_pdf * w_pdf;
 }
 
-size_t Distribution_3D::num_bytes() const noexcept {
+size_t Distribution_3D::num_bytes() const {
     size_t num_bytes = 0;
 
     for (int32_t i = 0, len = conditional_size_; i < len; ++i) {

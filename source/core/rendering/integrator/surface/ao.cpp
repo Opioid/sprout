@@ -14,30 +14,30 @@
 
 namespace rendering::integrator::surface {
 
-static sampler::Sampler* create_sampler(rnd::Generator& rng, bool progressive) noexcept {
+static sampler::Sampler* create_sampler(rnd::Generator& rng, bool progressive) {
     if (progressive) {
         return new sampler::Random(rng);
     }
     return new sampler::Golden_ratio(rng);
 }
 
-AO::AO(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
+AO::AO(rnd::Generator& rng, Settings const& settings, bool progressive)
     : Integrator(rng), settings_(settings), sampler_(create_sampler(rng, progressive)) {}
 
-AO::~AO() noexcept {
+AO::~AO() {
     delete sampler_;
 }
 
-void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 
-void AO::start_pixel() noexcept {
+void AO::start_pixel() {
     sampler_->start_pixel();
 }
 
 float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept {
+              Interface_stack const& initial_stack) {
     worker.reset_interface_stack(initial_stack);
 
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
@@ -76,14 +76,13 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, result, result, 1.f);
 }
 
-AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
-                 float radius) noexcept
+AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius)
     : Typed_pool<AO>(num_integrators), progressive_(progressive) {
     settings_.num_samples = num_samples;
     settings_.radius      = radius;
 }
 
-Integrator* AO_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* AO_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) AO(rng, settings_, progressive_);

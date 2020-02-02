@@ -22,7 +22,7 @@
 
 namespace rendering::integrator::surface {
 
-PM::PM(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
+PM::PM(rnd::Generator& rng, Settings const& settings, bool progressive)
     : Integrator(rng),
       settings_(settings),
       sampler_(rng),
@@ -39,11 +39,11 @@ PM::PM(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept
     }
 }
 
-PM::~PM() noexcept {
+PM::~PM() {
     delete sampler_pool_;
 }
 
-void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcept {
+void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     for (auto s : material_samplers_) {
@@ -51,7 +51,7 @@ void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) noexcep
     }
 }
 
-void PM::start_pixel() noexcept {
+void PM::start_pixel() {
     sampler_.start_pixel();
 
     for (auto s : material_samplers_) {
@@ -60,7 +60,7 @@ void PM::start_pixel() noexcept {
 }
 
 float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept {
+              Interface_stack const& initial_stack) {
     static uint32_t constexpr Max_bounces = 16;
 
     worker.reset_interface_stack(initial_stack);
@@ -148,7 +148,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
     return float4(result, 1.f);
 }
 
-sampler::Sampler& PM::material_sampler(uint32_t bounce) noexcept {
+sampler::Sampler& PM::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
         return *material_samplers_[bounce];
     }
@@ -157,12 +157,12 @@ sampler::Sampler& PM::material_sampler(uint32_t bounce) noexcept {
 }
 
 PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces,
-                 uint32_t max_bounces, bool photons_only_through_specular) noexcept
+                 uint32_t max_bounces, bool photons_only_through_specular)
     : Typed_pool<PM>(num_integrators),
       settings_{min_bounces, max_bounces, !photons_only_through_specular},
       progressive_(progressive) {}
 
-Integrator* PM_pool::get(uint32_t id, rnd::Generator& rng) const noexcept {
+Integrator* PM_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) PM(rng, settings_, progressive_);

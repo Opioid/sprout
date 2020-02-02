@@ -19,9 +19,9 @@ struct Intersection;
 class Prop;
 
 struct Interface {
-    material::Material const* material(Worker const& worker) const noexcept;
+    material::Material const* material(Worker const& worker) const;
 
-    bool matches(Intersection const& intersection) const noexcept;
+    bool matches(Intersection const& intersection) const;
 
     uint32_t prop;
     uint32_t part;
@@ -30,36 +30,36 @@ struct Interface {
 
 class Interface_stack {
   public:
-    Interface_stack() noexcept;
+    Interface_stack();
 
-    Interface_stack(Interface_stack const& other) noexcept;
+    Interface_stack(Interface_stack const& other);
 
-    ~Interface_stack() noexcept;
+    ~Interface_stack();
 
-    void operator=(Interface_stack const& other) noexcept;
+    void operator=(Interface_stack const& other);
 
-    void swap(Interface_stack& other) noexcept;
+    void swap(Interface_stack& other);
 
-    bool empty() const noexcept;
+    bool empty() const;
 
-    bool empty_or_scattering(Worker const& worker) const noexcept;
+    bool empty_or_scattering(Worker const& worker) const;
 
-    void clear() noexcept;
+    void clear();
 
-    Interface const* top() const noexcept;
+    Interface const* top() const;
 
-    float top_ior(Worker const& worker) const noexcept;
+    float top_ior(Worker const& worker) const;
 
-    bool top_is_vacuum(Worker const& worker) const noexcept;
-    bool top_is_straight(Worker const& worker) const noexcept;
+    bool top_is_vacuum(Worker const& worker) const;
+    bool top_is_straight(Worker const& worker) const;
 
-    void push(Intersection const& intersection) noexcept;
+    void push(Intersection const& intersection);
 
-    bool remove(Intersection const& intersection) noexcept;
+    bool remove(Intersection const& intersection);
 
-    float peek_ior(Intersection const& intersection, Worker const& worker) const noexcept;
+    float peek_ior(Intersection const& intersection, Worker const& worker) const;
 
-    void pop() noexcept;
+    void pop();
 
   private:
     static int32_t constexpr Num_entries = 16;

@@ -2,12 +2,12 @@
 
 namespace rendering::integrator::surface {
 
-Integrator::Integrator(rnd::Generator& rng) noexcept : integrator::Integrator(rng) {}
+Integrator::Integrator(rnd::Generator& rng) : integrator::Integrator(rng) {}
 
-Integrator::~Integrator() noexcept = default;
+Integrator::~Integrator() = default;
 
-Pool::Pool(uint32_t num_integrators) noexcept : num_integrators_(num_integrators) {}
+Pool::Pool(uint32_t num_integrators) : num_integrators_(num_integrators) {}
 
-Pool::~Pool() noexcept = default;
+Pool::~Pool() = default;
 
 }  // namespace rendering::integrator::surface

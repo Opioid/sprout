@@ -50,28 +50,26 @@ class alignas(64) Lighttracer final : public Integrator {
         bool full_light_path;
     };
 
-    Lighttracer(rnd::Generator& rng, Settings const& settings) noexcept;
+    Lighttracer(rnd::Generator& rng, Settings const& settings);
 
-    ~Lighttracer() noexcept final;
+    ~Lighttracer() final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() noexcept final;
+    void start_pixel() final;
 
     void li(uint32_t frame, int4 const& bounds, Worker& worker,
-            Interface_stack const& initial_stack) noexcept;
+            Interface_stack const& initial_stack);
 
   private:
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                            Light const*& light_out, uint32_t& light_id,
-                            Sample_from& light_sample) noexcept;
+                            Light const*& light_out, uint32_t& light_id, Sample_from& light_sample);
 
     bool direct_camera(Camera const& camera, int4 const& bounds, float3 const& radiance,
                        Ray const& history, Intersection const& intersection,
-                       Material_sample const& material_sample, Filter filter,
-                       Worker& worker) noexcept;
+                       Material_sample const& material_sample, Filter filter, Worker& worker);
 
-    sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
+    sampler::Sampler& material_sampler(uint32_t bounce);
 
     Settings const settings_;
 
@@ -86,13 +84,13 @@ class alignas(64) Lighttracer final : public Integrator {
 class Lighttracer_pool final {
   public:
     Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
-                     bool indirect_caustics, bool full_light_path) noexcept;
+                     bool indirect_caustics, bool full_light_path);
 
-    ~Lighttracer_pool() noexcept;
+    ~Lighttracer_pool();
 
-    Lighttracer* get(uint32_t id, rnd::Generator& rng) const noexcept;
+    Lighttracer* get(uint32_t id, rnd::Generator& rng) const;
 
-    uint32_t max_sample_depth() const noexcept;
+    uint32_t max_sample_depth() const;
 
   private:
     uint32_t num_integrators_;

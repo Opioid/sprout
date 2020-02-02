@@ -12,7 +12,7 @@
 namespace testing {
 
 struct scalar {
-    scalar() noexcept = default;
+    scalar() = default;
 
     scalar(__m128 m) : s(m) {}
 
@@ -21,28 +21,28 @@ struct scalar {
     __m128 s;
 };
 
-scalar operator*(scalar const& a, scalar const& b) noexcept {
+scalar operator*(scalar const& a, scalar const& b) {
     return _mm_mul_ps(a.s, b.s);
 }
 
-scalar operator+(scalar const& a, scalar const& b) noexcept {
+scalar operator+(scalar const& a, scalar const& b) {
     return _mm_add_ps(a.s, b.s);
 }
 
-static inline scalar rsqrt(scalar x) noexcept {
+static inline scalar rsqrt(scalar x) {
     scalar res  = _mm_rsqrt_ps(x.s);
     scalar muls = _mm_mul_ps(_mm_mul_ps(x.s, res.s), res.s);
     return _mm_mul_ps(_mm_mul_ps(simd::Half, res.s), _mm_sub_ps(simd::Three, muls.s));
 }
 
 struct vec3 {
-    vec3() noexcept = default;
+    vec3() = default;
 
-    vec3(__m128 m) noexcept : v(m) {}
+    vec3(__m128 m) : v(m) {}
 
-    vec3(float s) noexcept : v(_mm_set1_ps(s)) {}
+    vec3(float s) : v(_mm_set1_ps(s)) {}
 
-    //    vec3(float sx, float sy, float sz) noexcept {
+    //    vec3(float sx, float sy, float sz)  {
     //        __m128 x  = _mm_load_ss(&sx);
     //        __m128 y  = _mm_load_ss(&sy);
     //        __m128 z  = _mm_load_ss(&sz);
@@ -50,28 +50,28 @@ struct vec3 {
     //        v         = _mm_movelh_ps(xy, z);
     //    }
 
-    vec3(float sx, float sy, float sz) noexcept : v(_mm_set_ps(0.f, sz, sy, sx)) {}
+    vec3(float sx, float sy, float sz) : v(_mm_set_ps(0.f, sz, sy, sx)) {}
 
     __m128 v;
 };
 
-vec3 operator*(scalar const& s, vec3 const& v) noexcept {
+vec3 operator*(scalar const& s, vec3 const& v) {
     return _mm_mul_ps(s.s, v.v);
 }
 
-vec3 operator/(vec3 const& v, scalar const& s) noexcept {
+vec3 operator/(vec3 const& v, scalar const& s) {
     return _mm_div_ps(v.v, s.s);
 }
 
-vec3 operator*(vec3 const& a, vec3 const& b) noexcept {
+vec3 operator*(vec3 const& a, vec3 const& b) {
     return _mm_mul_ps(a.v, b.v);
 }
 
-vec3 operator+(vec3 const& a, vec3 const& b) noexcept {
+vec3 operator+(vec3 const& a, vec3 const& b) {
     return _mm_add_ps(a.v, b.v);
 }
 
-scalar dot(vec3 const& a, vec3 const& b) noexcept {
+scalar dot(vec3 const& a, vec3 const& b) {
     vec3   mul  = _mm_mul_ps(a.v, b.v);
     vec3   shuf = _mm_movehdup_ps(mul.v);
     scalar sums = _mm_add_ss(mul.v, shuf.v);
@@ -81,7 +81,7 @@ scalar dot(vec3 const& a, vec3 const& b) noexcept {
     return SU_PERMUTE_PS(d.s, _MM_SHUFFLE(0, 0, 0, 0));
 }
 
-vec3 cross(vec3 const& a, vec3 const& b) noexcept {
+vec3 cross(vec3 const& a, vec3 const& b) {
     vec3 tmp0 = _mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(3, 0, 2, 1));
     vec3 tmp1 = _mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(3, 0, 2, 1));
 
@@ -97,7 +97,7 @@ static inline vec3 normalize(vec3 v) {
     return rsqrt(dot(v, v)) * v;
 }
 
-void vector() noexcept {
+void vector() {
     std::cout << "vector" << std::endl;
 
     size_t constexpr Num_iterations = 1024 * 1024 * 10;

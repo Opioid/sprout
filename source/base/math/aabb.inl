@@ -8,44 +8,43 @@
 
 namespace math {
 
-inline AABB::AABB() noexcept = default;
+inline AABB::AABB() = default;
 
-inline constexpr AABB::AABB(float3 const& min, float3 const& max) noexcept : bounds{min, max} {}
+inline constexpr AABB::AABB(float3 const& min, float3 const& max) : bounds{min, max} {}
 
-inline AABB::AABB(Simd3f const& min, Simd3f const& max) noexcept
-    : bounds{float3(min), float3(max)} {}
+inline AABB::AABB(Simd3f const& min, Simd3f const& max) : bounds{float3(min), float3(max)} {}
 
-inline float3 const& AABB::min() const noexcept {
+inline float3 const& AABB::min() const {
     return bounds[0];
 }
 
-inline float3 const& AABB::max() const noexcept {
+inline float3 const& AABB::max() const {
     return bounds[1];
 }
 
-inline float3 AABB::position() const noexcept {
+inline float3 AABB::position() const {
     return 0.5f * (bounds[0] + bounds[1]);
 }
 
-inline float3 AABB::halfsize() const noexcept {
+inline float3 AABB::halfsize() const {
     return 0.5f * (bounds[1] - bounds[0]);
 }
 
-inline float3 AABB::extent() const noexcept {
+inline float3 AABB::extent() const {
     return bounds[1] - bounds[0];
 }
 
-inline float AABB::surface_area() const noexcept {
+inline float AABB::surface_area() const {
     float3 const d = bounds[1] - bounds[0];
     return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);
 }
 
-inline float AABB::volume() const noexcept {
+inline float AABB::volume() const {
     float3 const d = bounds[1] - bounds[0];
     return d[0] * d[1] * d[2];
 }
 
-inline bool AABB::intersect(float3 const& p) const noexcept {
+inline bool AABB::intersect(float3 const& p) const {
     if (p[0] >= bounds[0][0] && p[0] <= bounds[1][0] && p[1] >= bounds[0][1] &&
         p[1] <= bounds[1][1] && p[2] >= bounds[0][2] && p[2] <= bounds[1][2]) {
         return true;
@@ -57,7 +56,7 @@ inline bool AABB::intersect(float3 const& p) const noexcept {
 // This test is presented in the paper
 // "An Efficient and Robust ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
-inline bool AABB::intersect_p(ray const& ray) const noexcept {
+inline bool AABB::intersect_p(ray const& ray) const {
     /*	int8_t sign_0 = ray.signs[0];
             float min_t = (bounds[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
             float max_t = (bounds[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
@@ -131,7 +130,7 @@ inline bool AABB::intersect_p(ray const& ray) const noexcept {
                  _mm_comige_ss(max_t.v, min_t.v));
 }
 
-inline bool AABB::intersect_p(ray const& ray, float& hit_t) const noexcept {
+inline bool AABB::intersect_p(ray const& ray, float& hit_t) const {
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t);
@@ -176,7 +175,7 @@ inline bool AABB::intersect_p(ray const& ray, float& hit_t) const noexcept {
                  _mm_comige_ss(max_t.v, min_t.v));
 }
 
-inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const noexcept {
+inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const {
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t);
@@ -221,7 +220,7 @@ inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const noexcept 
                  _mm_comige_ss(ray_max_t.v, min_t.v) & _mm_comige_ss(max_t.v, min_t.v));
 }
 
-inline float3 AABB::normal(float3 const& p) const noexcept {
+inline float3 AABB::normal(float3 const& p) const {
     float3 const local_point = p - position();
 
     float3 const size = halfsize();
@@ -236,34 +235,34 @@ inline float3 AABB::normal(float3 const& p) const noexcept {
     return normal;
 }
 
-inline void AABB::set_min_max(float3 const& min, float3 const& max) noexcept {
+inline void AABB::set_min_max(float3 const& min, float3 const& max) {
     bounds[0] = min;
     bounds[1] = max;
 }
 
-inline void AABB::set_min_max(Simd3f const& min, Simd3f const& max) noexcept {
+inline void AABB::set_min_max(Simd3f const& min, Simd3f const& max) {
     bounds[0] = float3(min);
     bounds[1] = float3(max);
 }
 
-inline void AABB::insert(float3 const& p) noexcept {
+inline void AABB::insert(float3 const& p) {
     bounds[0] = math::min(p, bounds[0]);
     bounds[1] = math::max(p, bounds[1]);
 }
 
-inline void AABB::scale(float x) noexcept {
+inline void AABB::scale(float x) {
     float3 const v = x * halfsize();
     bounds[0] -= v;
     bounds[1] += v;
 }
 
-inline void AABB::add(float x) noexcept {
+inline void AABB::add(float x) {
     float3 const v(x);
     bounds[0] -= v;
     bounds[1] += v;
 }
 
-inline AABB AABB::transform(float4x4 const& m) const noexcept {
+inline AABB AABB::transform(float4x4 const& m) const {
     float3 const mx = m.x();
     float3 const xa = bounds[0][0] * mx;
     float3 const xb = bounds[1][0] * mx;
@@ -282,7 +281,7 @@ inline AABB AABB::transform(float4x4 const& m) const noexcept {
                 (math::max(xa, xb) + math::max(ya, yb)) + (math::max(za, zb) + mw));
 }
 
-inline AABB AABB::transform_transposed(float3x3 const& m) const noexcept {
+inline AABB AABB::transform_transposed(float3x3 const& m) const {
     /*
         float3 const mx(m.r[0][0], m.r[1][0], m.r[2][0]);
         float3 const xa = bounds[0][0] * mx;
@@ -322,57 +321,56 @@ inline AABB AABB::transform_transposed(float3x3 const& m) const noexcept {
     return AABB(p - halfsize, p + halfsize);
 }
 
-inline AABB AABB::merge(AABB const& other) const noexcept {
+inline AABB AABB::merge(AABB const& other) const {
     return AABB(math::min(bounds[0], other.bounds[0]), math::max(bounds[1], other.bounds[1]));
 }
 
-inline AABB AABB::intersection(AABB const& other) const noexcept {
+inline AABB AABB::intersection(AABB const& other) const {
     return AABB(math::max(bounds[0], other.bounds[0]), math::min(bounds[1], other.bounds[1]));
 }
 
-inline void AABB::merge_assign(AABB const& other) noexcept {
+inline void AABB::merge_assign(AABB const& other) {
     bounds[0] = math::min(bounds[0], other.bounds[0]);
     bounds[1] = math::max(bounds[1], other.bounds[1]);
 }
 
-inline void AABB::clip_min(float d, uint8_t axis) noexcept {
+inline void AABB::clip_min(float d, uint8_t axis) {
     bounds[0].v[axis] = std::max(d, bounds[0][axis]);
 }
 
-inline void AABB::clip_max(float d, uint8_t axis) noexcept {
+inline void AABB::clip_max(float d, uint8_t axis) {
     bounds[1].v[axis] = std::min(d, bounds[1][axis]);
 }
 
-inline bool AABB::operator==(AABB const& other) const noexcept {
+inline bool AABB::operator==(AABB const& other) const {
     return bounds[0] == other.bounds[0] && bounds[1] == other.bounds[1];
 }
 
-inline constexpr AABB AABB::empty() noexcept {
+inline constexpr AABB AABB::empty() {
     float constexpr max = std::numeric_limits<float>::max();
     return AABB(float3(max), float3(-max));
 }
 
-inline constexpr AABB AABB::infinite() noexcept {
+inline constexpr AABB AABB::infinite() {
     float constexpr max = std::numeric_limits<float>::max();
     return AABB(float3(-max), float3(max));
 }
 
-inline Simd_AABB::Simd_AABB() noexcept = default;
+inline Simd_AABB::Simd_AABB() = default;
 
-inline Simd_AABB::Simd_AABB(AABB const& box) noexcept
-    : min(Simd3f(box.min().v)), max(Simd3f(box.max().v)) {}
+inline Simd_AABB::Simd_AABB(AABB const& box) : min(Simd3f(box.min().v)), max(Simd3f(box.max().v)) {}
 
-inline Simd_AABB::Simd_AABB(float const* min, float const* max) noexcept
+inline Simd_AABB::Simd_AABB(float const* min, float const* max)
     : min(Simd3f::create_from_3(min)), max(Simd3f::create_from_3(max)) {}
 
-inline Simd_AABB::Simd_AABB(Simd3f const& min, Simd3f const& max) noexcept : min(min), max(max) {}
+inline Simd_AABB::Simd_AABB(Simd3f const& min, Simd3f const& max) : min(min), max(max) {}
 
-inline void Simd_AABB::merge_assign(Simd_AABB const& other) noexcept {
+inline void Simd_AABB::merge_assign(Simd_AABB const& other) {
     min = math::min(min, other.min);
     max = math::max(max, other.max);
 }
 
-inline void Simd_AABB::merge_assign(Simd3f const& other_min, Simd3f const& other_max) noexcept {
+inline void Simd_AABB::merge_assign(Simd3f const& other_min, Simd3f const& other_max) {
     min = math::min(min, other_min);
     max = math::max(max, other_max);
 }

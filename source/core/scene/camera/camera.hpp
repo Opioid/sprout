@@ -44,57 +44,57 @@ class Camera {
     using Sampler        = sampler::Sampler;
     using Sensor         = rendering::sensor::Sensor;
 
-    Camera(int2 resolution) noexcept;
+    Camera(int2 resolution);
 
-    virtual ~Camera() noexcept;
+    virtual ~Camera();
 
-    void init(uint32_t entity) noexcept;
+    void init(uint32_t entity);
 
-    uint32_t entity() const noexcept;
+    uint32_t entity() const;
 
-    virtual uint32_t num_views() const noexcept = 0;
+    virtual uint32_t num_views() const = 0;
 
-    virtual int2 sensor_dimensions() const noexcept = 0;
+    virtual int2 sensor_dimensions() const = 0;
 
-    virtual int4 view_bounds(uint32_t view) const noexcept = 0;
+    virtual int4 view_bounds(uint32_t view) const = 0;
 
-    virtual float pixel_solid_angle() const noexcept = 0;
+    virtual float pixel_solid_angle() const = 0;
 
-    void update(Scene& scene, uint64_t time, Worker& worker) noexcept;
+    void update(Scene& scene, uint64_t time, Worker& worker);
 
     virtual bool generate_ray(Sample const& sample, uint32_t frame, uint32_t view,
-                              Scene const& scene, Ray& ray) const noexcept = 0;
+                              Scene const& scene, Ray& ray) const = 0;
 
     virtual bool sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
-                        uint32_t sampler_dimension, Scene const& scene, Sample_to& sample) const
-        noexcept = 0;
+                        uint32_t sampler_dimension, Scene const& scene,
+                        Sample_to& sample) const = 0;
 
-    virtual Frustum frustum() const noexcept;
+    virtual Frustum frustum() const;
 
-    void set_parameters(json::Value const& parameters) noexcept;
+    void set_parameters(json::Value const& parameters);
 
-    int2 resolution() const noexcept;
+    int2 resolution() const;
 
-    void set_resolution(int2 resolution) noexcept;
+    void set_resolution(int2 resolution);
 
-    Sensor& sensor() const noexcept;
+    Sensor& sensor() const;
 
-    void set_sensor(Sensor* sensor) noexcept;
+    void set_sensor(Sensor* sensor);
 
-    prop::Interface_stack const& interface_stack() const noexcept;
+    prop::Interface_stack const& interface_stack() const;
 
-    uint64_t frame_step() const noexcept;
+    uint64_t frame_step() const;
 
-    uint64_t frame_duration() const noexcept;
+    uint64_t frame_duration() const;
 
-    uint64_t absolute_time(uint32_t frame, float frame_delta) const noexcept;
+    uint64_t absolute_time(uint32_t frame, float frame_delta) const;
 
   protected:
-    virtual void on_update(uint64_t time, Worker& worker) noexcept = 0;
+    virtual void on_update(uint64_t time, Worker& worker) = 0;
 
-    virtual void set_parameter(std::string_view name, json::Value const& value) noexcept = 0;
+    virtual void set_parameter(std::string_view name, json::Value const& value) = 0;
 
-    static Ray create_ray(float3 const& origin, float3 const& direction, uint64_t time) noexcept;
+    static Ray create_ray(float3 const& origin, float3 const& direction, uint64_t time);
 
     uint32_t entity_ = 0xFFFFFFFF;
 

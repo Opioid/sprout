@@ -20,7 +20,7 @@ Camera_worker::Camera_worker(uint32_t max_sample_size, Tile_queue const& tiles,
     : Worker(max_sample_size), tiles_(tiles), ranges_(ranges) {}
 
 void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
-                           uint32_t num_samples) noexcept {
+                           uint32_t num_samples) {
     scene::camera::Camera const& camera = *camera_;
 
     int4 bounds = camera.view_bounds(view);
@@ -61,7 +61,7 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
 }
 
 void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t iteration, uint32_t segment,
-                              ulong2 const& range) noexcept {
+                              ulong2 const& range) {
     scene::camera::Camera const& camera = *camera_;
 
     uint32_t const range_index = ranges_.index(range, segment);

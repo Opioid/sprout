@@ -7,25 +7,25 @@ namespace scene::material::metal {
 
 class alignas(64) Material_isotropic : public Material {
   public:
-    Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept final;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const final;
 
-    float ior() const noexcept final;
+    float ior() const final;
 
-    bool is_caustic() const noexcept final;
+    bool is_caustic() const final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    void set_normal_map(Texture_adapter const& normal_map) noexcept;
+    void set_normal_map(Texture_adapter const& normal_map);
 
-    void set_ior(float3 const& ior) noexcept;
-    void set_absorption(float3 const& absorption) noexcept;
-    void set_roughness(float roughness) noexcept;
+    void set_ior(float3 const& ior);
+    void set_absorption(float3 const& absorption);
+    void set_roughness(float roughness);
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 
   protected:
     Texture_adapter normal_map_;
@@ -38,26 +38,26 @@ class alignas(64) Material_isotropic : public Material {
 
 class alignas(64) Material_anisotropic : public Material {
   public:
-    Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided) noexcept;
+    Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker const& worker) const
-        noexcept final;
+                                   Filter filter, Sampler& sampler,
+                                   Worker const& worker) const final;
 
-    float ior() const noexcept final;
+    float ior() const final;
 
-    bool is_caustic() const noexcept final;
+    bool is_caustic() const final;
 
-    size_t num_bytes() const noexcept final;
+    size_t num_bytes() const final;
 
-    void set_normal_map(Texture_adapter const& normal_map) noexcept;
-    void set_direction_map(Texture_adapter const& direction_map) noexcept;
+    void set_normal_map(Texture_adapter const& normal_map);
+    void set_direction_map(Texture_adapter const& direction_map);
 
-    void set_ior(float3 const& ior) noexcept;
-    void set_absorption(float3 const& absorption) noexcept;
-    void set_roughness(float2 roughness) noexcept;
+    void set_ior(float3 const& ior);
+    void set_absorption(float3 const& absorption);
+    void set_roughness(float2 roughness);
 
-    static size_t sample_size() noexcept;
+    static size_t sample_size();
 
   protected:
     Texture_adapter normal_map_;

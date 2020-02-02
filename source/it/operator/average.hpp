@@ -16,7 +16,7 @@ struct Item;
 
 namespace op {
 uint32_t average(std::vector<Item> const& items, it::options::Options const& options,
-                 thread::Pool& threads) noexcept;
+                 thread::Pool& threads);
 }
 
 #endif

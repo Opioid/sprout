@@ -5,7 +5,7 @@
 
 namespace rendering::sensor::filter {
 
-Gaussian::Gaussian(float radius, float alpha) noexcept
+Gaussian::Gaussian(float radius, float alpha)
     : radius_(radius),
       gaussian_(0.f, radius * radius, 16, math::filter::Gaussian_functor(radius * radius, alpha))
 /*      exp_(std::exp(-alpha * radius * radius)),
@@ -18,23 +18,23 @@ Gaussian::Gaussian(float radius, float alpha) noexcept
 Gaussian::Gaussian(Gaussian&& other) noexcept
     : radius_(other.radius_), gaussian_(std::move(other.gaussian_)) {}
 
-float Gaussian::radius() const noexcept {
+float Gaussian::radius() const {
     return radius_;
 }
 
-float Gaussian::evaluate(float d) const noexcept {
+float Gaussian::evaluate(float d) const {
     return gaussian_(d * d);
 
     //	return gaussian(d);
 }
 
-float Gaussian::evaluate(float2 p) const noexcept {
+float Gaussian::evaluate(float2 p) const {
     return gaussian_(p[0] * p[0]) * gaussian_(p[1] * p[1]);
 
     //	return gaussian(p.x) * gaussian(p.y);
 }
 
-float Gaussian::integral(uint32_t num_samples) const noexcept {
+float Gaussian::integral(uint32_t num_samples) const {
     // The function is symmetric; so integrate one half, then double the result
     float const interval = radius_ / float(num_samples);
 

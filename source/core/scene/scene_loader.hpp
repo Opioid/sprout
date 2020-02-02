@@ -73,31 +73,29 @@ class Loader {
     using Materials    = memory::Array<Material_ptr>;
     using Resources    = resource::Manager;
 
-    Loader(Resources& resources, Material* fallback_material) noexcept;
+    Loader(Resources& resources, Material* fallback_material);
 
-    ~Loader() noexcept;
+    ~Loader();
 
     bool load(std::string const& filename, std::string_view take_name, take::Take const& take,
-              Scene& scene) noexcept;
+              Scene& scene);
 
-    void register_extension_provider(std::string const&  name,
-                                     Extension_provider* provider) noexcept;
+    void register_extension_provider(std::string const& name, Extension_provider* provider);
 
-    void register_mesh_generator(std::string const&          name,
-                                 shape::triangle::Generator* generator) noexcept;
+    void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
 
-    Shape_ptr canopy() noexcept;
-    Shape_ptr distant_sphere() noexcept;
-    Shape_ptr cube() noexcept;
-    Shape_ptr null_shape() noexcept;
+    Shape_ptr canopy();
+    Shape_ptr distant_sphere();
+    Shape_ptr cube();
+    Shape_ptr null_shape();
 
-    void create_light(uint32_t prop_id, Scene& scene) noexcept;
+    void create_light(uint32_t prop_id, Scene& scene);
 
-    Materials& materials_buffer() noexcept;
+    Materials& materials_buffer();
 
-    Material_ptr fallback_material() const noexcept;
+    Material_ptr fallback_material() const;
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     struct Local_materials {
@@ -107,33 +105,32 @@ class Loader {
     };
 
     bool load(std::string const& filename, std::string_view take_mount_folder, uint32_t parent_id,
-              math::Transformation const& parent_transformation, Scene& scene) noexcept;
+              math::Transformation const& parent_transformation, Scene& scene);
 
     void read_materials(json::Value const& materials_value, std::string const& source_name,
-                        Local_materials& local_materials) const noexcept;
+                        Local_materials& local_materials) const;
 
     void load_entities(json::Value const& entities_value, uint32_t parent_id,
                        math::Transformation const& parent_transformation,
-                       Local_materials const& local_materials, Scene& scene) noexcept;
+                       Local_materials const& local_materials, Scene& scene);
 
-    static void set_visibility(uint32_t prop, json::Value const& visibility_value,
-                               Scene& scene) noexcept;
+    static void set_visibility(uint32_t prop, json::Value const& visibility_value, Scene& scene);
 
     uint32_t load_prop(json::Value const& prop_value, std::string const& name,
-                       Local_materials const& local_materials, Scene& scene) noexcept;
+                       Local_materials const& local_materials, Scene& scene);
 
     uint32_t load_extension(std::string const& type, json::Value const& extension_value,
-                            std::string const& name, Scene& scene) noexcept;
+                            std::string const& name, Scene& scene);
 
-    Shape_ptr load_shape(json::Value const& shape_value) noexcept;
+    Shape_ptr load_shape(json::Value const& shape_value);
 
-    Shape_ptr shape(std::string const& type, json::Value const& shape_value) const noexcept;
+    Shape_ptr shape(std::string const& type, json::Value const& shape_value) const;
 
     void load_materials(json::Value const& materials_value, Local_materials const& local_materials,
-                        Scene& scene, Materials& materials) const noexcept;
+                        Scene& scene, Materials& materials) const;
 
     Material_ptr load_material(std::string const& name, Local_materials const& local_materials,
-                               Scene& scene) const noexcept;
+                               Scene& scene) const;
 
     resource::Manager& resource_manager_;
 

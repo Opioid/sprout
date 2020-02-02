@@ -8,19 +8,19 @@ namespace scene::material::substitute {
 
 class alignas(64) Sample : public Sample_base {
   public:
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const noexcept final;
+    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
 
-    void sample(Sampler& sampler, bxdf::Sample& result) const noexcept final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
-    float3 radiance() const noexcept final;
+    float3 radiance() const final;
 
     Base_closure<disney::Isotropic> base_;
 
   private:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi) const noexcept;
+    bxdf::Result evaluate(float3 const& wi) const;
 };
 
 }  // namespace scene::material::substitute

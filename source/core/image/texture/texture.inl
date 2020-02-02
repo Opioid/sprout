@@ -9,7 +9,7 @@
 namespace image::texture {
 
 #define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                                  \
-    inline Texture::Texture(TYPE const& texture) noexcept                  \
+    inline Texture::Texture(TYPE const& texture)                           \
         : type_(Type::TYPE),                                               \
           back_(texture.image().description().dimensions_3() - 1),         \
           dimensions_float_(texture.image().description().dimensions_3()), \
@@ -56,7 +56,7 @@ TEXTURE_CONSTRUCTOR(Float3, float3_)
             return float3_.NAME(__VA_ARGS__);        \
     }
 
-inline int32_t Texture::num_channels() const noexcept {
+inline int32_t Texture::num_channels() const {
     switch (type_) {
         case Type::Byte1_unorm:
         case Type::Float1:
@@ -79,131 +79,131 @@ inline int32_t Texture::num_channels() const noexcept {
     return 0;
 }
 
-inline int32_t Texture::num_elements() const noexcept {
+inline int32_t Texture::num_elements() const {
     TEXTURE_DELEGATE(image().description().num_elements)
 
     return 0;
 }
 
-inline int32_t Texture::volume() const noexcept {
+inline int32_t Texture::volume() const {
     TEXTURE_DELEGATE(image().description().volume)
 
     return 0;
 }
 
-inline int2 Texture::dimensions_2() const noexcept {
+inline int2 Texture::dimensions_2() const {
     TEXTURE_DELEGATE(image().description().dimensions_2)
 
     return int2(0);
 }
 
-inline int3 const& Texture::dimensions_3() const noexcept {
+inline int3 const& Texture::dimensions_3() const {
     TEXTURE_DELEGATE(image().description().dimensions_3)
 
     return byte1_unorm_.image().description().dimensions_3();
 }
 
-inline int2 Texture::back_2() const noexcept {
+inline int2 Texture::back_2() const {
     return back_.xy();
 }
 
-inline int3 const& Texture::back_3() const noexcept {
+inline int3 const& Texture::back_3() const {
     return back_;
 }
 
-inline float2 Texture::dimensions_float2() const noexcept {
+inline float2 Texture::dimensions_float2() const {
     return dimensions_float_.xy();
 }
 
-inline float3 const& Texture::dimensions_float3() const noexcept {
+inline float3 const& Texture::dimensions_float3() const {
     return dimensions_float_;
 }
 
-inline float Texture::at_1(int32_t i) const noexcept {
+inline float Texture::at_1(int32_t i) const {
     TEXTURE_DELEGATE(at_1, i)
 
     return 0.f;
 }
 
-inline float3 Texture::at_3(int32_t i) const noexcept {
+inline float3 Texture::at_3(int32_t i) const {
     TEXTURE_DELEGATE(at_3, i)
 
     return float3(0.f);
 }
 
-inline float Texture::at_1(int32_t x, int32_t y) const noexcept {
+inline float Texture::at_1(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_1, x, y)
 
     return 0.f;
 }
 
-inline float2 Texture::at_2(int32_t x, int32_t y) const noexcept {
+inline float2 Texture::at_2(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_2, x, y)
 
     return float2(0.f);
 }
 
-inline float3 Texture::at_3(int32_t x, int32_t y) const noexcept {
+inline float3 Texture::at_3(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_3, x, y)
 
     return float3(0.f);
 }
 
-inline float4 Texture::at_4(int32_t x, int32_t y) const noexcept {
+inline float4 Texture::at_4(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_4, x, y)
 
     return float4(0.f);
 }
 
-inline void Texture::gather_1(int4 const& xy_xy1, float c[4]) const noexcept {
+inline void Texture::gather_1(int4 const& xy_xy1, float c[4]) const {
     TEXTURE_DELEGATE(gather_1, xy_xy1, c)
 }
 
-inline void Texture::gather_2(int4 const& xy_xy1, float2 c[4]) const noexcept {
+inline void Texture::gather_2(int4 const& xy_xy1, float2 c[4]) const {
     TEXTURE_DELEGATE(gather_2, xy_xy1, c)
 }
 
-inline void Texture::gather_3(int4 const& xy_xy1, float3 c[4]) const noexcept {
+inline void Texture::gather_3(int4 const& xy_xy1, float3 c[4]) const {
     TEXTURE_DELEGATE(gather_3, xy_xy1, c)
 }
 
-inline float Texture::at_element_1(int32_t x, int32_t y, int32_t element) const noexcept {
+inline float Texture::at_element_1(int32_t x, int32_t y, int32_t element) const {
     TEXTURE_DELEGATE(at_element_1, x, y, element)
 
     return 0.f;
 }
 
-inline float2 Texture::at_element_2(int32_t x, int32_t y, int32_t element) const noexcept {
+inline float2 Texture::at_element_2(int32_t x, int32_t y, int32_t element) const {
     TEXTURE_DELEGATE(at_element_2, x, y, element)
 
     return float2(0.f);
 }
 
-inline float3 Texture::at_element_3(int32_t x, int32_t y, int32_t element) const noexcept {
+inline float3 Texture::at_element_3(int32_t x, int32_t y, int32_t element) const {
     TEXTURE_DELEGATE(at_element_3, x, y, element)
 
     return float3(0.);
 }
 
-inline float Texture::at_1(int32_t x, int32_t y, int32_t z) const noexcept {
+inline float Texture::at_1(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_1, x, y, z)
 
     return 0.f;
 }
 
-inline float2 Texture::at_2(int32_t x, int32_t y, int32_t z) const noexcept {
+inline float2 Texture::at_2(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_2, x, y, z)
 
     return float2(0.);
 }
 
-inline float3 Texture::at_3(int32_t x, int32_t y, int32_t z) const noexcept {
+inline float3 Texture::at_3(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_3, x, y, z)
 
     return float3(0.f);
 }
 
-inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const noexcept {
+inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_4, x, y, z)
 
     return float4(0.f);

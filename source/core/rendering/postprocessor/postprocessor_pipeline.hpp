@@ -25,30 +25,30 @@ class Postprocessor;
 
 class Pipeline {
   public:
-    Pipeline() noexcept;
+    Pipeline();
 
-    ~Pipeline() noexcept;
+    ~Pipeline();
 
-    bool empty() const noexcept;
+    bool empty() const;
 
-    void clear() noexcept;
+    void clear();
 
-    void reserve(uint32_t num_pps) noexcept;
+    void reserve(uint32_t num_pps);
 
-    void add(Postprocessor* pp) noexcept;
+    void add(Postprocessor* pp);
 
-    void init(scene::camera::Camera const& camera, thread::Pool& threads) noexcept;
+    void init(scene::camera::Camera const& camera, thread::Pool& threads);
 
-    bool has_alpha_transparency(bool alpha_in) const noexcept;
+    bool has_alpha_transparency(bool alpha_in) const;
 
-    void seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) noexcept;
+    void seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads);
 
-    void apply(image::Float4& target, thread::Pool& threads) noexcept;
+    void apply(image::Float4& target, thread::Pool& threads);
 
-    void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) noexcept;
+    void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads);
 
     void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
-                          thread::Pool& threads) noexcept;
+                          thread::Pool& threads);
 
   private:
     image::Float4 scratch_;

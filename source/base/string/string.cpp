@@ -5,11 +5,11 @@
 
 namespace string {
 
-bool is_space(char c) noexcept {
+bool is_space(char c) {
     return std::isspace(int32_t(c)) != 0;
 }
 
-bool is_json(std::string_view text) noexcept {
+bool is_json(std::string_view text) {
     auto const it = text.find_first_not_of(" \t");
 
     if (std::string::npos != it) {
@@ -19,14 +19,14 @@ bool is_json(std::string_view text) noexcept {
     return false;
 }
 
-void trim(std::string& text) noexcept {
+void trim(std::string& text) {
     auto const begin = std::find_if_not(text.begin(), text.end(), is_space);
     auto const end   = std::find_if_not(text.rbegin(), text.rend(), is_space).base();
 
     text.assign(begin, end);
 }
 
-std::string_view parent_directory(std::string_view filename) noexcept {
+std::string_view parent_directory(std::string_view filename) {
     if (filename.empty()) {
         return filename;
     }
@@ -35,28 +35,28 @@ std::string_view parent_directory(std::string_view filename) noexcept {
     return filename.substr(0, i + 1);
 }
 
-std::string_view suffix(std::string_view filename) noexcept {
+std::string_view suffix(std::string_view filename) {
     size_t const i = filename.find_last_of('.');
     return filename.substr(i + 1, std::string::npos);
 }
 
-std::string copy_suffix(std::string const& filename) noexcept {
+std::string copy_suffix(std::string const& filename) {
     size_t const i = filename.find_last_of('.');
     return filename.substr(i + 1, std::string::npos);
 }
 
-std::string_view presuffix(std::string_view filename) noexcept {
+std::string_view presuffix(std::string_view filename) {
     size_t const i = filename.find_last_of('.');
     size_t const j = filename.substr(0, i).find_last_of('.') + 1;
     return filename.substr(j, i - j);
 }
 
-std::string extract_filename(std::string const& filename) noexcept {
+std::string extract_filename(std::string const& filename) {
     size_t const i = filename.find_last_of('/') + 1;
     return filename.substr(i, filename.find_first_of('.') - i);
 }
 
-std::string print_bytes(size_t num_bytes) noexcept {
+std::string print_bytes(size_t num_bytes) {
     std::ostringstream stream;
 
     stream << std::fixed << std::setprecision(2);

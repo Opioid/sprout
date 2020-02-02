@@ -16,17 +16,16 @@ class Unfiltered final : public Base {
     using Sample    = sampler::Camera_sample;
     using Sample_to = sampler::Camera_sample_to;
 
-    Unfiltered(float exposure, Clamp const& clamp) noexcept;
+    Unfiltered(float exposure, Clamp const& clamp);
 
-    int32_t filter_radius_int() const noexcept final;
+    int32_t filter_radius_int() const final;
 
-    int4 isolated_tile(int4 const& tile) const noexcept final;
+    int4 isolated_tile(int4 const& tile) const final;
 
     void add_sample(Sample const& sample, float4 const& color, int4 const& isolated,
-                    int4 const& bounds) noexcept final;
+                    int4 const& bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color,
-                      int4 const& bounds) noexcept final;
+    void splat_sample(Sample_to const& sample, float4 const& color, int4 const& bounds) final;
 
   private:
     Clamp clamp_;

@@ -7,17 +7,17 @@ namespace scene::shape {
 
 class Node_stack {
   public:
-    Node_stack(uint32_t size) noexcept;
+    Node_stack(uint32_t size);
 
-    ~Node_stack() noexcept;
+    ~Node_stack();
 
-    bool empty() const noexcept;
+    bool empty() const;
 
-    void clear() noexcept;
+    void clear();
 
-    void push(uint32_t value) noexcept;
+    void push(uint32_t value);
 
-    uint32_t pop() noexcept;
+    uint32_t pop();
 
   private:
     [[maybe_unused]] uint32_t num_elements_;

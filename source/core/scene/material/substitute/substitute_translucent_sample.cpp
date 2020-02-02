@@ -10,15 +10,15 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_translucent::evaluate_f(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_translucent::evaluate_f(float3 const& wi, bool include_back) const {
     return evaluate<true>(wi, include_back);
 }
 
-bxdf::Result Sample_translucent::evaluate_b(float3 const& wi, bool include_back) const noexcept {
+bxdf::Result Sample_translucent::evaluate_b(float3 const& wi, bool include_back) const {
     return evaluate<false>(wi, include_back);
 }
 
-void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const noexcept {
+void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
     float const p = sampler.generate_sample_1D();
@@ -58,12 +58,12 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result)
     }
 }
 
-bool Sample_translucent::is_translucent() const noexcept {
+bool Sample_translucent::is_translucent() const {
     return thickness_ > 0.f;
 }
 
 void Sample_translucent::set_transluceny(float3 const& diffuse_color, float thickness,
-                                         float attenuation_distance) noexcept {
+                                         float attenuation_distance) {
     thickness_ = thickness;
 
     if (thickness > 0.f) {
@@ -72,7 +72,7 @@ void Sample_translucent::set_transluceny(float3 const& diffuse_color, float thic
 }
 
 template <bool Forward>
-bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool /*include_back*/) const noexcept {
+bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool /*include_back*/) const {
     // No side check needed because the material is two-sided by definition.
 
     // This is a bit complicated to explain:

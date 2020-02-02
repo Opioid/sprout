@@ -19,6 +19,6 @@ struct Item {
     Texture const* image;
 };
 
-bool any_has_alpha_channel(std::vector<Item> const& items) noexcept;
+bool any_has_alpha_channel(std::vector<Item> const& items);
 
 #endif

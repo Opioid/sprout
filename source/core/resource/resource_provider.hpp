@@ -17,19 +17,19 @@ class Provider {
     using Variants  = memory::Variant_map;
     using Resources = Manager;
 
-    Provider() noexcept;
+    Provider();
 
-    virtual ~Provider() noexcept;
+    virtual ~Provider();
 
     virtual T* load(std::string const& filename, Variants const& options, Resources& resources,
-                    std::string& resolved_name) noexcept = 0;
+                    std::string& resolved_name) = 0;
 
     virtual T* load(void const* data, std::string const& source_name, Variants const& options,
-                    Resources& resources) noexcept = 0;
+                    Resources& resources) = 0;
 
-    virtual size_t num_bytes() const noexcept = 0;
+    virtual size_t num_bytes() const = 0;
 
-    virtual size_t num_bytes(T const* resource) const noexcept = 0;
+    virtual size_t num_bytes(T const* resource) const = 0;
 };
 
 }  // namespace resource

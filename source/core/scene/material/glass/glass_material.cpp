@@ -10,12 +10,11 @@
 
 namespace scene::material::glass {
 
-Glass::Glass(Sampler_settings const& sampler_settings) noexcept
-    : Material(sampler_settings, false) {}
+Glass::Glass(Sampler_settings const& sampler_settings) : Material(sampler_settings, false) {}
 
 material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
                                       Filter        filter, sampler::Sampler& /*sampler*/,
-                                      Worker const& worker) const noexcept {
+                                      Worker const& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -35,27 +34,27 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
 }
 
 float3 Glass::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                     Worker const& /*worker*/) const noexcept {
+                                     Worker const& /*worker*/) const {
     return absorption_coefficient_;
 }
 
-float Glass::ior() const noexcept {
+float Glass::ior() const {
     return ior_;
 }
 
-size_t Glass::num_bytes() const noexcept {
+size_t Glass::num_bytes() const {
     return sizeof(*this);
 }
 
-void Glass::set_normal_map(Texture_adapter const& normal_map) noexcept {
+void Glass::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Glass::set_refraction_color(float3 const& color) noexcept {
+void Glass::set_refraction_color(float3 const& color) {
     refraction_color_ = color;
 }
 
-void Glass::set_attenuation(float3 const& absorption_color, float distance) noexcept {
+void Glass::set_attenuation(float3 const& absorption_color, float distance) {
     absorption_color_ = absorption_color;
 
     absorption_coefficient_ = extinction_coefficient(absorption_color, distance);
@@ -63,15 +62,15 @@ void Glass::set_attenuation(float3 const& absorption_color, float distance) noex
     attenuation_distance_ = distance;
 }
 
-void Glass::set_ior(float ior) noexcept {
+void Glass::set_ior(float ior) {
     ior_ = ior;
 }
 
-bool Glass::is_caustic() const noexcept {
+bool Glass::is_caustic() const {
     return true;
 }
 
-size_t Glass::sample_size() noexcept {
+size_t Glass::sample_size() {
     return sizeof(Sample);
 }
 

@@ -11,27 +11,26 @@ namespace scene::material::substitute {
 
 template <typename Coating>
 Material_coating<Coating>::Material_coating(Sampler_settings const& sampler_settings,
-                                            bool                    two_sided) noexcept
+                                            bool                    two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 template <typename Coating>
-size_t Material_coating<Coating>::num_bytes() const noexcept {
+size_t Material_coating<Coating>::num_bytes() const {
     return sizeof(*this);
 }
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_thickness_map(
-    Texture_adapter const& thickness_map) noexcept {
+void Material_coating<Coating>::set_coating_thickness_map(Texture_adapter const& thickness_map) {
     coating_thickness_map_ = thickness_map;
 }
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_normal_map(Texture_adapter const& normal_map) noexcept {
+void Material_coating<Coating>::set_coating_normal_map(Texture_adapter const& normal_map) {
     coating_normal_map_ = normal_map;
 }
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_thickness(float thickness) noexcept {
+void Material_coating<Coating>::set_coating_thickness(float thickness) {
     coating_.thickness = thickness;
 }
 
@@ -39,8 +38,7 @@ template <typename Coating>
 template <typename Sample>
 void Material_coating<Coating>::set_coating_basis(float3 const& wo, Renderstate const& rs,
                                                   Texture_sampler_2D const& sampler,
-                                                  Worker const& worker, Sample& sample) const
-    noexcept {
+                                                  Worker const& worker, Sample& sample) const {
     if (Material_base::normal_map_ == coating_normal_map_) {
         sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
     } else if (coating_normal_map_.is_valid()) {

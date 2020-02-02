@@ -11,23 +11,23 @@ namespace rendering::integrator::volume {
 
 class alignas(64) Tracking_multi final : public Integrator {
   public:
-    Tracking_multi(rnd::Generator& rng) noexcept;
+    Tracking_multi(rnd::Generator& rng);
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() noexcept final;
+    void start_pixel() final;
 
-    bool transmittance(Ray const& ray, Worker& worker, float3& tr) noexcept final;
+    bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
 
     Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
-                    float3& tr) noexcept final;
+                    float3& tr) final;
 };
 
 class Tracking_multi_pool final : public Typed_pool<Tracking_multi> {
   public:
-    Tracking_multi_pool(uint32_t num_integrators) noexcept;
+    Tracking_multi_pool(uint32_t num_integrators);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
 };
 
 }  // namespace rendering::integrator::volume

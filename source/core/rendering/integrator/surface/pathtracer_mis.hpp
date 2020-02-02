@@ -21,16 +21,16 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool photons_not_only_through_specular;
     };
 
-    Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive) noexcept;
+    Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive);
 
     ~Pathtracer_MIS() final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) noexcept final;
+    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() noexcept final;
+    void start_pixel() final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) noexcept final;
+              Interface_stack const& initial_stack) final;
 
   private:
     struct Result {
@@ -40,30 +40,28 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool split_photon;
     };
 
-    Result integrate(Ray& ray, Intersection& intersection, Worker& worker,
-                     bool integrate_photons) noexcept;
+    Result integrate(Ray& ray, Intersection& intersection, Worker& worker, bool integrate_photons);
 
     float3 sample_lights(Ray const& ray, Intersection& intersection,
                          Material_sample const& material_sample, bool evaluate_back, Filter filter,
-                         Worker& worker) noexcept;
+                         Worker& worker);
 
     float3 evaluate_light(Light const& light, float light_weight, Ray const& history,
                           float3 const& p, uint32_t sampler_dimension, bool evaluate_back,
                           Intersection const& intersection, Material_sample const& material_sample,
-                          Filter filter, Worker& worker) noexcept;
+                          Filter filter, Worker& worker);
 
     float3 evaluate_light(Ray const& ray, float3 const& geo_n, Intersection const& intersection,
                           Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
-                          Filter filter, Worker& worker, bool& pure_emissive) noexcept;
+                          Filter filter, Worker& worker, bool& pure_emissive);
 
     float3 evaluate_light_volume(float3 const& vli, Ray const& ray,
                                  Intersection const& intersection, float bxdf_pdf,
-                                 bool treat_as_singular, bool is_translucent, Worker& worker) const
-        noexcept;
+                                 bool treat_as_singular, bool is_translucent, Worker& worker) const;
 
-    sampler::Sampler& material_sampler(uint32_t bounce) noexcept;
+    sampler::Sampler& material_sampler(uint32_t bounce);
 
-    sampler::Sampler& light_sampler(uint32_t bounce) noexcept;
+    sampler::Sampler& light_sampler(uint32_t bounce);
 
     Settings const settings_;
 
@@ -82,9 +80,9 @@ class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
   public:
     Pathtracer_MIS_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
                         uint32_t min_bounces, uint32_t max_bounces, Light_sampling light_sampling,
-                        bool enable_caustics, bool photons_only_through_specular) noexcept;
+                        bool enable_caustics, bool photons_only_through_specular);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const noexcept final;
+    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
 
   private:
     Pathtracer_MIS::Settings settings_;

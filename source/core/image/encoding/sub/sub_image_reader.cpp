@@ -10,7 +10,7 @@
 
 namespace image::encoding::sub {
 
-static bool read_image_type(json::Value const& value, Image::Type& type) noexcept {
+static bool read_image_type(json::Value const& value, Image::Type& type) {
     if (auto const node = value.FindMember("type"); value.MemberEnd() != node) {
         if ("Byte1" == node->value) {
             type = Image::Type::Byte1;
@@ -26,7 +26,7 @@ static bool read_image_type(json::Value const& value, Image::Type& type) noexcep
     return false;
 }
 
-Image* Reader::read(std::istream& stream) noexcept {
+Image* Reader::read(std::istream& stream) {
     stream.seekg(4);
 
     uint64_t json_size = 0;

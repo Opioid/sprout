@@ -3,7 +3,7 @@
 
 namespace scene::material::ggx {
 
-void integrate() noexcept;
+void integrate();
 
 }
 

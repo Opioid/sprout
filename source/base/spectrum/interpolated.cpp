@@ -4,8 +4,7 @@
 
 namespace spectrum {
 
-Interpolated::Interpolated(uint32_t len, float const* wavelengths,
-                           float const* intensities) noexcept
+Interpolated::Interpolated(uint32_t len, float const* wavelengths, float const* intensities)
     : num_elements_(len),
       wavelengths_(memory::allocate_aligned<float>(len)),
       intensities_(memory::allocate_aligned<float>(len)) {
@@ -13,20 +12,20 @@ Interpolated::Interpolated(uint32_t len, float const* wavelengths,
     std::copy(intensities, intensities + len, intensities_);
 }
 
-Interpolated::~Interpolated() noexcept {
+Interpolated::~Interpolated() {
     memory::free_aligned(intensities_);
     memory::free_aligned(wavelengths_);
 }
 
-float Interpolated::start_wavelength() const noexcept {
+float Interpolated::start_wavelength() const {
     return wavelengths_[0];
 }
 
-float Interpolated::end_wavelength() const noexcept {
+float Interpolated::end_wavelength() const {
     return wavelengths_[num_elements_ - 1];
 }
 
-float Interpolated::evaluate(float wl) const noexcept {
+float Interpolated::evaluate(float wl) const {
     auto const result = std::equal_range(wavelengths_, wavelengths_ + num_elements_, wl);
 
     uint32_t const index = uint32_t(result.first - wavelengths_);
@@ -44,7 +43,7 @@ float Interpolated::evaluate(float wl) const noexcept {
     return intensities_[index];
 }
 
-float Interpolated::integrate(float a, float b) const noexcept {
+float Interpolated::integrate(float a, float b) const {
     uint32_t const len = num_elements_;
     if (len < 2) {
         return 0.f;

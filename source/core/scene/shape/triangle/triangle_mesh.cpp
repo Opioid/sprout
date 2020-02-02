@@ -21,18 +21,18 @@
 
 namespace scene::shape::triangle {
 
-Mesh::Mesh() noexcept : distributions_(nullptr), part_materials_(nullptr) {}
+Mesh::Mesh() : distributions_(nullptr), part_materials_(nullptr) {}
 
-Mesh::~Mesh() noexcept {
+Mesh::~Mesh() {
     memory::free_aligned(part_materials_);
     memory::destroy_aligned(distributions_, tree_.num_parts());
 }
 
-Tree& Mesh::tree() noexcept {
+Tree& Mesh::tree() {
     return tree_;
 }
 
-void Mesh::allocate_parts(uint32_t num_parts) noexcept {
+void Mesh::allocate_parts(uint32_t num_parts) {
     tree_.allocate_parts(num_parts);
 
     distributions_ = memory::construct_array_aligned<Distribution>(num_parts);
@@ -40,27 +40,27 @@ void Mesh::allocate_parts(uint32_t num_parts) noexcept {
     part_materials_ = memory::allocate_aligned<uint32_t>(num_parts);
 }
 
-void Mesh::set_material_for_part(uint32_t part, uint32_t material) noexcept {
+void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
     part_materials_[part] = material;
 }
 
-float3 Mesh::object_to_texture_point(float3 const& p) const noexcept {
+float3 Mesh::object_to_texture_point(float3 const& p) const {
     return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
 }
 
-float3 Mesh::object_to_texture_vector(float3 const& v) const noexcept {
+float3 Mesh::object_to_texture_vector(float3 const& v) const {
     return v / tree_.aabb().extent();
 }
 
-AABB Mesh::transformed_aabb(float4x4 const& m) const noexcept {
+AABB Mesh::transformed_aabb(float4x4 const& m) const {
     return tree_.aabb().transform(m);
 }
 
-uint32_t Mesh::num_parts() const noexcept {
+uint32_t Mesh::num_parts() const {
     return tree_.num_parts();
 }
 
-uint32_t Mesh::num_materials() const noexcept {
+uint32_t Mesh::num_materials() const {
     uint32_t id = 0;
 
     for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
@@ -70,12 +70,12 @@ uint32_t Mesh::num_materials() const noexcept {
     return id + 1;
 }
 
-uint32_t Mesh::part_id_to_material_id(uint32_t part) const noexcept {
+uint32_t Mesh::part_id_to_material_id(uint32_t part) const {
     return part_materials_[part];
 }
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                     shape::Intersection& intersection) const noexcept {
+                     shape::Intersection& intersection) const {
     /*
     math::ray tray(
         transform_point(transformation.world_to_object, ray.origin),
@@ -186,7 +186,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 }
 
 bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                         shape::Intersection& intersection) const noexcept {
+                         shape::Intersection& intersection) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin);
@@ -235,7 +235,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 }
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                     Normals& normals) const noexcept {
+                     Normals& normals) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f ray_origin(ray.origin);
@@ -275,7 +275,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 }
 
 bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
-                       Node_stack& node_stack) const noexcept {
+                       Node_stack& node_stack) const {
     //	ray tray;
     //	tray.origin = transform_point(ray.origin, transformation.world_to_object);
     //	tray.set_direction(transform_vector(ray.direction, transformation.world_to_object));
@@ -305,7 +305,7 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                    Filter filter, Worker const& worker) const noexcept {
+                    Filter filter, Worker const& worker) const {
     math::ray tray;
     tray.origin = transformation.world_to_object_point(ray.origin);
     tray.set_direction(transformation.world_to_object_vector(ray.direction));
@@ -316,7 +316,7 @@ float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32
 }
 
 bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                           Filter filter, Worker const& worker, float3& ta) const noexcept {
+                           Filter filter, Worker const& worker, float3& ta) const {
     math::ray tray;
     tray.origin = transformation.world_to_object_point(ray.origin);
     tray.set_direction(transformation.world_to_object_vector(ray.direction));
@@ -328,7 +328,7 @@ bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
 
 bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
                   bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& /*node_stack*/, Sample_to& sample) const noexcept {
+                  Node_stack& /*node_stack*/, Sample_to& sample) const {
     float const  r  = sampler.generate_sample_1D(sampler_dimension);
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     auto const   s  = distributions_[part].sample(r);
@@ -367,7 +367,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
 bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
                   bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
                   float2       importance_uv, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                  Sample_from& sample) const noexcept {
+                  Sample_from& sample) const {
     float const r = sampler.generate_sample_1D(sampler_dimension);
     auto const  s = distributions_[part].sample(r);
 
@@ -395,7 +395,7 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
 
 float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
                 Transformation const& /*transformation*/, float area, bool two_sided,
-                bool /*total_sphere*/) const noexcept {
+                bool /*total_sphere*/) const {
     float c = -dot(intersection.geo_n, ray.direction);
 
     if (two_sided) {
@@ -407,57 +407,57 @@ float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
 }
 
 float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
-                       Transformation const& /*transformation*/, float /*area*/) const noexcept {
+                       Transformation const& /*transformation*/, float /*area*/) const {
     return 0.f;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                  Sample_to& /*sample*/) const noexcept {
+                  Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
                   Transformation const& /*transformation*/, float /*volume*/,
-                  Sample_to& /*sample*/) const noexcept {
+                  Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
                   float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
-                  AABB const& /*bounds*/, Sample_from& /*sample*/) const noexcept {
+                  AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
 float Mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
                    Transformation const& /*transformation*/, float /*area*/,
-                   bool /*two_sided*/) const noexcept {
+                   bool /*two_sided*/) const {
     return 0.f;
 }
 
-float Mesh::uv_weight(float2 /*uv*/) const noexcept {
+float Mesh::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Mesh::area(uint32_t part, float3 const& scale) const noexcept {
+float Mesh::area(uint32_t part, float3 const& scale) const {
     // HACK: This only really works for uniform scales!
     return distributions_[part].distribution.integral() * (scale[0] * scale[1]);
 }
 
-float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const noexcept {
+float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     // HACK: This only really works for uniform scales!
     return 1.f;
 }
 
-bool Mesh::is_complex() const noexcept {
+bool Mesh::is_complex() const {
     return true;
 }
 
-bool Mesh::is_analytical() const noexcept {
+bool Mesh::is_analytical() const {
     return false;
 }
 
-void Mesh::prepare_sampling(uint32_t part) noexcept {
+void Mesh::prepare_sampling(uint32_t part) {
     if (distributions_[part].empty()) {
         auto& d = distributions_[part];
 
@@ -477,11 +477,11 @@ void Mesh::prepare_sampling(uint32_t part) noexcept {
     }
 }
 
-float3 Mesh::center(uint32_t part) const noexcept {
+float3 Mesh::center(uint32_t part) const {
     return distributions_[part].center;
 }
 
-size_t Mesh::num_bytes() const noexcept {
+size_t Mesh::num_bytes() const {
     size_t num_bytes = 0;
 
     for (uint32_t i = 0, len = tree_.num_parts(); i < len; ++i) {
@@ -495,7 +495,7 @@ Mesh::Distribution::~Distribution() {
     memory::free_aligned(triangle_mapping);
 }
 
-void Mesh::Distribution::init(uint32_t part, const Tree& tree) noexcept {
+void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
     uint32_t const num = tree.num_triangles(part);
 
     memory::Buffer<float> areas(num);
@@ -517,16 +517,16 @@ void Mesh::Distribution::init(uint32_t part, const Tree& tree) noexcept {
     distribution.init(areas, num_triangles);
 }
 
-bool Mesh::Distribution::empty() const noexcept {
+bool Mesh::Distribution::empty() const {
     return nullptr == triangle_mapping;
 }
 
-Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r) const noexcept {
+Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r) const {
     auto const result = distribution.sample_discrete(r);
     return {triangle_mapping[result.offset], result.pdf};
 }
 
-size_t Mesh::Distribution::num_bytes() const noexcept {
+size_t Mesh::Distribution::num_bytes() const {
     return sizeof(*this) + num_triangles * sizeof(uint32_t) + distribution.num_bytes();
 }
 

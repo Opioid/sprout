@@ -13,9 +13,9 @@ namespace image::filter {
 template <typename T>
 class Gaussian {
   public:
-    Gaussian(float radius, float alpha) noexcept;
+    Gaussian(float radius, float alpha);
 
-    void apply(Typed_image<T>& target, thread::Pool& threads) noexcept;
+    void apply(Typed_image<T>& target, thread::Pool& threads);
 
   private:
     Typed_image<T> scratch_;

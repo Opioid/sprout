@@ -9,95 +9,95 @@ class Texture;
 
 class Sampler_2D {
   public:
-    virtual ~Sampler_2D() noexcept;
+    virtual ~Sampler_2D();
 
-    virtual float  sample_1(Texture const& texture, float2 uv) const noexcept = 0;
-    virtual float2 sample_2(Texture const& texture, float2 uv) const noexcept = 0;
-    virtual float3 sample_3(Texture const& texture, float2 uv) const noexcept = 0;
+    virtual float  sample_1(Texture const& texture, float2 uv) const = 0;
+    virtual float2 sample_2(Texture const& texture, float2 uv) const = 0;
+    virtual float3 sample_3(Texture const& texture, float2 uv) const = 0;
 
-    virtual float  sample_1(Texture const& texture, float2 uv, int32_t element) const noexcept = 0;
-    virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element) const noexcept = 0;
-    virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element) const noexcept = 0;
+    virtual float  sample_1(Texture const& texture, float2 uv, int32_t element) const = 0;
+    virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element) const = 0;
+    virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element) const = 0;
 
-    virtual float2 address(float2 uv) const noexcept = 0;
+    virtual float2 address(float2 uv) const = 0;
 };
 
 template <typename Address_mode_U, typename Address_mode_V>
 class Nearest_2D final : public Sampler_2D {
   public:
-    float  sample_1(Texture const& texture, float2 uv) const noexcept final;
-    float2 sample_2(Texture const& texture, float2 uv) const noexcept final;
-    float3 sample_3(Texture const& texture, float2 uv) const noexcept final;
+    float  sample_1(Texture const& texture, float2 uv) const final;
+    float2 sample_2(Texture const& texture, float2 uv) const final;
+    float3 sample_3(Texture const& texture, float2 uv) const final;
 
-    float sample_1(Texture const& texture, float2 uv, int32_t element) const noexcept final;
+    float sample_1(Texture const& texture, float2 uv, int32_t element) const final;
 
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const noexcept final;
+    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
 
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const noexcept final;
+    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
 
-    float2 address(float2 uv) const noexcept final;
+    float2 address(float2 uv) const final;
 
   private:
-    static int2 map(Texture const& texture, float2 uv) noexcept;
+    static int2 map(Texture const& texture, float2 uv);
 };
 
 template <typename Address_U, typename Address_V>
 class Linear_2D : public Sampler_2D {
   public:
-    float  sample_1(Texture const& texture, float2 uv) const noexcept final;
-    float2 sample_2(Texture const& texture, float2 uv) const noexcept final;
-    float3 sample_3(Texture const& texture, float2 uv) const noexcept final;
+    float  sample_1(Texture const& texture, float2 uv) const final;
+    float2 sample_2(Texture const& texture, float2 uv) const final;
+    float3 sample_3(Texture const& texture, float2 uv) const final;
 
-    float sample_1(Texture const& texture, float2 uv, int32_t element) const noexcept final;
+    float sample_1(Texture const& texture, float2 uv, int32_t element) const final;
 
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const noexcept final;
+    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
 
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const noexcept final;
+    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
 
-    float2 address(float2 uv) const noexcept final;
+    float2 address(float2 uv) const final;
 
   private:
-    static float2 map(Texture const& texture, float2 uv, int4& xy_xy1) noexcept;
+    static float2 map(Texture const& texture, float2 uv, int4& xy_xy1);
 };
 
 class Sampler_3D {
   public:
-    virtual ~Sampler_3D() noexcept;
+    virtual ~Sampler_3D();
 
-    virtual float  sample_1(Texture const& texture, float3 const& uvw) const noexcept = 0;
-    virtual float2 sample_2(Texture const& texture, float3 const& uvw) const noexcept = 0;
-    virtual float3 sample_3(Texture const& texture, float3 const& uvw) const noexcept = 0;
-    virtual float4 sample_4(Texture const& texture, float3 const& uvw) const noexcept = 0;
+    virtual float  sample_1(Texture const& texture, float3 const& uvw) const = 0;
+    virtual float2 sample_2(Texture const& texture, float3 const& uvw) const = 0;
+    virtual float3 sample_3(Texture const& texture, float3 const& uvw) const = 0;
+    virtual float4 sample_4(Texture const& texture, float3 const& uvw) const = 0;
 
-    virtual float3 address(float3 const& uvw) const noexcept = 0;
+    virtual float3 address(float3 const& uvw) const = 0;
 };
 
 template <typename Address_mode>
 class Nearest_3D : public Sampler_3D {
   public:
-    float  sample_1(Texture const& texture, float3 const& uvw) const noexcept final;
-    float2 sample_2(Texture const& texture, float3 const& uvw) const noexcept final;
-    float3 sample_3(Texture const& texture, float3 const& uvw) const noexcept final;
-    float4 sample_4(Texture const& texture, float3 const& uvw) const noexcept final;
+    float  sample_1(Texture const& texture, float3 const& uvw) const final;
+    float2 sample_2(Texture const& texture, float3 const& uvw) const final;
+    float3 sample_3(Texture const& texture, float3 const& uvw) const final;
+    float4 sample_4(Texture const& texture, float3 const& uvw) const final;
 
-    float3 address(float3 const& uvw) const noexcept final;
+    float3 address(float3 const& uvw) const final;
 
   private:
-    static int3 map(Texture const& texture, float3 const& uvw) noexcept;
+    static int3 map(Texture const& texture, float3 const& uvw);
 };
 
 template <typename Address_mode>
 class Linear_3D : public Sampler_3D {
   public:
-    float  sample_1(Texture const& texture, float3 const& uvw) const noexcept final;
-    float2 sample_2(Texture const& texture, float3 const& uvw) const noexcept final;
-    float3 sample_3(Texture const& texture, float3 const& uvw) const noexcept final;
-    float4 sample_4(Texture const& texture, float3 const& uvw) const noexcept final;
+    float  sample_1(Texture const& texture, float3 const& uvw) const final;
+    float2 sample_2(Texture const& texture, float3 const& uvw) const final;
+    float3 sample_3(Texture const& texture, float3 const& uvw) const final;
+    float4 sample_4(Texture const& texture, float3 const& uvw) const final;
 
-    float3 address(float3 const& uvw) const noexcept final;
+    float3 address(float3 const& uvw) const final;
 
   private:
-    static float3 map(Texture const& texture, float3 const& uvw, int3& xyz, int3& xyz1) noexcept;
+    static float3 map(Texture const& texture, float3 const& uvw, int3& xyz, int3& xyz1);
 };
 
 struct Address_mode_clamp;

@@ -6,25 +6,25 @@
 
 namespace scene::shape::triangle {
 
-const std::vector<Index_triangle>& Morph_target_collection::triangles() const noexcept {
+const std::vector<Index_triangle>& Morph_target_collection::triangles() const {
     return triangles_;
 }
 
-std::vector<Index_triangle>& Morph_target_collection::triangles() noexcept {
+std::vector<Index_triangle>& Morph_target_collection::triangles() {
     return triangles_;
 }
 
-void Morph_target_collection::add_swap_vertices(std::vector<Vertex>& vertices) noexcept {
+void Morph_target_collection::add_swap_vertices(std::vector<Vertex>& vertices) {
     morph_targets_.emplace_back(std::vector<Vertex>());
     morph_targets_.back().swap(vertices);
 }
 
-uint32_t Morph_target_collection::num_vertices() const noexcept {
+uint32_t Morph_target_collection::num_vertices() const {
     return uint32_t(morph_targets_[0].size());
 }
 
 void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads,
-                                    Vertex* vertices) noexcept {
+                                    Vertex* vertices) {
     struct Args {
         Vertex const* va;
         Vertex const* vb;

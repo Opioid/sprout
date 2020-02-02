@@ -40,28 +40,27 @@ class Mapper : public Integrator {
         bool full_light_path;
     };
 
-    Mapper(rnd::Generator& rng, Settings const& settings) noexcept;
+    Mapper(rnd::Generator& rng, Settings const& settings);
 
-    ~Mapper() noexcept override;
+    ~Mapper() override;
 
-    void prepare(Scene const& scene, uint32_t num_photons) noexcept final;
+    void prepare(Scene const& scene, uint32_t num_photons) final;
 
-    void start_pixel() noexcept final;
+    void start_pixel() final;
 
     uint32_t bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t iteration,
-                  Worker& worker) noexcept;
+                  Worker& worker);
 
-    void export_importances() const noexcept;
+    void export_importances() const;
 
   private:
     uint32_t trace_photon(uint32_t frame, AABB const& bounds, Frustum const& frustum,
                           bool infinite_world, bool caustics_only, Worker& worker,
                           uint32_t max_photons, Photon* photons, uint32_t& num_photons,
-                          uint32_t& light_id, Sample_from& light_sample) noexcept;
+                          uint32_t& light_id, Sample_from& light_sample);
 
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                            Light& light_out, uint32_t& light_id,
-                            Sample_from& light_sample) noexcept;
+                            Light& light_out, uint32_t& light_id, Sample_from& light_sample);
 
     Settings const settings_;
 

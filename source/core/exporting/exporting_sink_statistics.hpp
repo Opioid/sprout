@@ -11,11 +11,11 @@ namespace exporting {
 
 class Statistics : public Sink {
   public:
-    Statistics() noexcept;
+    Statistics();
 
-    ~Statistics() noexcept final;
+    ~Statistics() final;
 
-    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) noexcept final;
+    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) final;
 };
 
 }  // namespace exporting

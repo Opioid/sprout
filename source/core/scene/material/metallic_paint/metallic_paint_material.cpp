@@ -13,13 +13,13 @@
 
 namespace scene::material::metallic_paint {
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided) noexcept
+Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
-                                         Renderstate const& rs, Filter                filter,
-                                         sampler::Sampler& /*sampler*/, Worker const& worker) const
-    noexcept {
+                                         Renderstate const& rs, Filter filter,
+                                         sampler::Sampler& /*sampler*/,
+                                         Worker const& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -61,66 +61,66 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-float Material::ior() const noexcept {
+float Material::ior() const {
     return ior_;
 }
 
-size_t Material::num_bytes() const noexcept {
+size_t Material::num_bytes() const {
     return sizeof(*this);
 }
 
-void Material::set_color(float3 const& a, float3 const& b) noexcept {
+void Material::set_color(float3 const& a, float3 const& b) {
     color_a_ = a;
     color_b_ = b;
 }
 
-void Material::set_roughness(float roughness) noexcept {
+void Material::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
 }
 
-void Material::set_flakes_mask(Texture_adapter const& mask) noexcept {
+void Material::set_flakes_mask(Texture_adapter const& mask) {
     flakes_mask_ = mask;
 }
 
-void Material::set_flakes_normal_map(Texture_adapter const& normal_map) noexcept {
+void Material::set_flakes_normal_map(Texture_adapter const& normal_map) {
     flakes_normal_map_ = normal_map;
 }
 
-void Material::set_flakes_ior(float3 const& ior) noexcept {
+void Material::set_flakes_ior(float3 const& ior) {
     flakes_ior_ = ior;
 }
 
-void Material::set_flakes_absorption(float3 const& absorption) noexcept {
+void Material::set_flakes_absorption(float3 const& absorption) {
     flakes_absorption_ = absorption;
 }
 
-void Material::set_flakes_roughness(float roughness) noexcept {
+void Material::set_flakes_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     flakes_alpha_ = r * r;
 }
 
-void Material::set_coating_thickness(float thickness) noexcept {
+void Material::set_coating_thickness(float thickness) {
     coating_.thickness = thickness;
 }
 
-void Material::set_coating_attenuation(float3 const& absorption_color, float distance) noexcept {
+void Material::set_coating_attenuation(float3 const& absorption_color, float distance) {
     coating_.absorption_coefficient = extinction_coefficient(absorption_color, distance);
 }
 
-void Material::set_coating_ior(float ior) noexcept {
+void Material::set_coating_ior(float ior) {
     coating_.ior = ior;
 }
 
-void Material::set_coating_roughness(float roughness) noexcept {
+void Material::set_coating_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     coating_.alpha = r * r;
 }
 
-size_t Material::sample_size() noexcept {
+size_t Material::sample_size() {
     return sizeof(Sample);
 }
 

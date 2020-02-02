@@ -15,17 +15,17 @@ class Provider;
 
 namespace procedural::sky {
 
-void init(scene::Loader& loader, scene::material::Provider& material_provider) noexcept;
+void init(scene::Loader& loader, scene::material::Provider& material_provider);
 
 class Provider : public scene::Extension_provider {
   public:
-    ~Provider() noexcept final;
+    ~Provider() final;
 
-    void set_scene_loader(scene::Loader& loader) noexcept;
-    void set_material_provider(scene::material::Provider& provider) noexcept;
+    void set_scene_loader(scene::Loader& loader);
+    void set_material_provider(scene::material::Provider& provider);
 
     uint32_t create_extension(json::Value const& extension_value, std::string const& name,
-                              scene::Scene& scene, Resources& resources) noexcept final;
+                              scene::Scene& scene, Resources& resources) final;
 
   private:
     scene::Loader*             scene_loader_      = nullptr;

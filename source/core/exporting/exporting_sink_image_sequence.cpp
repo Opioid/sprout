@@ -7,15 +7,14 @@
 
 namespace exporting {
 
-Image_sequence::Image_sequence(std::string filename, image::Writer* writer) noexcept
+Image_sequence::Image_sequence(std::string filename, image::Writer* writer)
     : filename_(std::move(filename)), writer_(writer) {}
 
-Image_sequence::~Image_sequence() noexcept {
+Image_sequence::~Image_sequence() {
     delete writer_;
 }
 
-void Image_sequence::write(image::Float4 const& image, uint32_t frame,
-                           thread::Pool& threads) noexcept {
+void Image_sequence::write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) {
     std::ofstream stream(filename_ + string::to_string(frame, 6) + "." + writer_->file_extension(),
                          std::ios::binary);
     if (!stream) {

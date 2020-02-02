@@ -9,14 +9,14 @@
 
 namespace scene::material::volumetric {
 
-Gridtree::Gridtree() noexcept : num_nodes_(0), num_data_(0), nodes_(nullptr), data_(nullptr) {}
+Gridtree::Gridtree() : num_nodes_(0), num_data_(0), nodes_(nullptr), data_(nullptr) {}
 
-Gridtree::~Gridtree() noexcept {
+Gridtree::~Gridtree() {
     memory::free_aligned(data_);
     memory::free_aligned(nodes_);
 }
 
-Node* Gridtree::allocate_nodes(uint32_t num_nodes) noexcept {
+Node* Gridtree::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
@@ -27,7 +27,7 @@ Node* Gridtree::allocate_nodes(uint32_t num_nodes) noexcept {
     return nodes_;
 }
 
-CM* Gridtree::allocate_data(uint32_t num_data) noexcept {
+CM* Gridtree::allocate_data(uint32_t num_data) {
     if (num_data != num_data_) {
         num_data_ = num_data;
 
@@ -38,7 +38,7 @@ CM* Gridtree::allocate_data(uint32_t num_data) noexcept {
     return data_;
 }
 
-void Gridtree::set_dimensions(int3 const& dimensions, int3 const& num_cells) noexcept {
+void Gridtree::set_dimensions(int3 const& dimensions, int3 const& num_cells) {
     dimensions_ = dimensions;
 
     num_cells_ = uint3(num_cells);
@@ -46,11 +46,11 @@ void Gridtree::set_dimensions(int3 const& dimensions, int3 const& num_cells) noe
     inv_dimensions_ = 1.f / float3(dimensions);
 }
 
-bool Gridtree::is_valid() const noexcept {
+bool Gridtree::is_valid() const {
     return nullptr != nodes_;
 }
 
-bool Gridtree::intersect(ray& ray, CM& data) const noexcept {
+bool Gridtree::intersect(ray& ray, CM& data) const {
     float3 const p = ray.point(ray.min_t);
 
     int3 const c = int3(float3(dimensions_) * p);
@@ -126,7 +126,7 @@ bool Gridtree::intersect(ray& ray, CM& data) const noexcept {
     return true;
 }
 
-size_t Gridtree::num_bytes() const noexcept {
+size_t Gridtree::num_bytes() const {
     return sizeof(*this) + num_nodes_ * sizeof(Node) + num_data_ * sizeof(CM);
 }
 

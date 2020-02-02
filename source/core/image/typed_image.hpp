@@ -7,21 +7,21 @@
 namespace image {
 
 struct Description {
-    Description() noexcept;
-    Description(int2 dimensions, int32_t num_elements = 1) noexcept;
-    Description(int3 const& dimensions, int32_t num_elements = 1) noexcept;
+    Description();
+    Description(int2 dimensions, int32_t num_elements = 1);
+    Description(int3 const& dimensions, int32_t num_elements = 1);
 
-    uint64_t num_pixels() const noexcept;
+    uint64_t num_pixels() const;
 
-    int2 dimensions_2() const noexcept;
+    int2 dimensions_2() const;
 
-    int3 const& dimensions_3() const noexcept;
+    int3 const& dimensions_3() const;
 
-    int32_t area() const noexcept;
+    int32_t area() const;
 
-    int32_t volume() const noexcept;
+    int32_t volume() const;
 
-    int32_t num_elements() const noexcept;
+    int32_t num_elements() const;
 
     int3 dimensions_;
 
@@ -31,55 +31,55 @@ struct Description {
 template <typename T>
 class alignas(16) Typed_image {
   public:
-    Typed_image() noexcept;
+    Typed_image();
 
-    Typed_image(Description const& description) noexcept;
+    Typed_image(Description const& description);
 
     Typed_image(Typed_image&& other) noexcept;
 
-    ~Typed_image() noexcept;
+    ~Typed_image();
 
-    Description const& description() const noexcept;
+    Description const& description() const;
 
-    int2 coordinates_2(int32_t index) const noexcept;
+    int2 coordinates_2(int32_t index) const;
 
-    void resize(Description const& description) noexcept;
+    void resize(Description const& description);
 
-    void clear(T v) noexcept;
+    void clear(T v);
 
-    T load(int32_t index) const noexcept;
+    T load(int32_t index) const;
 
-    T* address(int32_t index) const noexcept;
+    T* address(int32_t index) const;
 
-    void store(int32_t index, T v) noexcept;
+    void store(int32_t index, T v);
 
-    T const& at(int32_t index) const noexcept;
+    T const& at(int32_t index) const;
 
-    T load(int32_t x, int32_t y) const noexcept;
+    T load(int32_t x, int32_t y) const;
 
-    void store(int32_t x, int32_t y, T v) noexcept;
+    void store(int32_t x, int32_t y, T v);
 
-    T load_element(int32_t x, int32_t y, int32_t element) const noexcept;
+    T load_element(int32_t x, int32_t y, int32_t element) const;
 
-    T const& at(int32_t x, int32_t y) const noexcept;
+    T const& at(int32_t x, int32_t y) const;
 
-    T const& at_element(int32_t x, int32_t y, int32_t element) const noexcept;
+    T const& at_element(int32_t x, int32_t y, int32_t element) const;
 
-    T load(int32_t x, int32_t y, int32_t z) const noexcept;
+    T load(int32_t x, int32_t y, int32_t z) const;
 
-    T const& at(int32_t x, int32_t y, int32_t z) const noexcept;
+    T const& at(int32_t x, int32_t y, int32_t z) const;
 
-    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const noexcept;
+    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
-    void gather(int4 const& xy_xy1, T c[4]) const noexcept;
+    void gather(int4 const& xy_xy1, T c[4]) const;
 
-    void square_transpose() noexcept;
+    void square_transpose();
 
-    T* data() const noexcept;
+    T* data() const;
 
-    void copy(Typed_image& destination) const noexcept;
+    void copy(Typed_image& destination) const;
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
     Description description_;
@@ -90,42 +90,42 @@ class alignas(16) Typed_image {
 template <typename T>
 class Typed_sparse_image {
   public:
-    Typed_sparse_image(Description const& description) noexcept;
+    Typed_sparse_image(Description const& description);
 
     Typed_sparse_image(Typed_sparse_image&& other) noexcept;
 
-    ~Typed_sparse_image() noexcept;
+    ~Typed_sparse_image();
 
-    Description const& description() const noexcept;
+    Description const& description() const;
 
-    T load(int64_t index) const noexcept;
+    T load(int64_t index) const;
 
-    void store_sequentially(int64_t index, T v) noexcept;
+    void store_sequentially(int64_t index, T v);
 
-    T const& at(int64_t index) const noexcept;
+    T const& at(int64_t index) const;
 
-    T load(int32_t x, int32_t y) const noexcept;
+    T load(int32_t x, int32_t y) const;
 
-    void store(int32_t x, int32_t y, T v) noexcept;
+    void store(int32_t x, int32_t y, T v);
 
-    T load_element(int32_t x, int32_t y, int32_t element) const noexcept;
+    T load_element(int32_t x, int32_t y, int32_t element) const;
 
-    T const& at(int32_t x, int32_t y) const noexcept;
+    T const& at(int32_t x, int32_t y) const;
 
-    T const& at_element(int32_t x, int32_t y, int32_t element) const noexcept;
+    T const& at_element(int32_t x, int32_t y, int32_t element) const;
 
-    T load(int32_t x, int32_t y, int32_t z) const noexcept;
+    T load(int32_t x, int32_t y, int32_t z) const;
 
-    T const& at(int32_t x, int32_t y, int32_t z) const noexcept;
+    T const& at(int32_t x, int32_t y, int32_t z) const;
 
-    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const noexcept;
+    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
-    void gather(int4 const& xy_xy1, T c[4]) const noexcept;
+    void gather(int4 const& xy_xy1, T c[4]) const;
 
-    size_t num_bytes() const noexcept;
+    size_t num_bytes() const;
 
   private:
-    int3 coordinates_3(int64_t index) const noexcept;
+    int3 coordinates_3(int64_t index) const;
 
     static int32_t constexpr Log2_cell_dim = 4;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;

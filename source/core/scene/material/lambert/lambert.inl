@@ -13,8 +13,7 @@
 
 namespace scene::material::lambert {
 
-inline bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
-                                          Layer const& layer) noexcept {
+inline bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi, Layer const& layer) {
     float3 const reflection = Pi_inv * color;
 
     float const pdf = n_dot_wi * Pi_inv;
@@ -27,7 +26,7 @@ inline bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi,
 }
 
 inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
-                                bxdf::Sample& result) noexcept {
+                                bxdf::Sample& result) {
     float2 const s2d = sampler.generate_sample_2D();
 
     float3 const is = sample_hemisphere_cosine(s2d);

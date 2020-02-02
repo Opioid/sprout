@@ -10,7 +10,7 @@ namespace op {
 
 void write_difference_report_org(std::vector<Item> const&            items,
                                  std::vector<Difference_item> const& dif_items, float max_dif,
-                                 std::ostream& stream) noexcept {
+                                 std::ostream& stream) {
     stream << "* Difference " << items[0].name << "\n\n";
 
     stream << "** Summary\n\n";
@@ -33,7 +33,7 @@ void write_difference_report_org(std::vector<Item> const&            items,
 
 void write_difference_summary_org(std::vector<Item> const&            items,
                                   std::vector<Difference_item> const& dif_items, float max_dif,
-                                  std::ostream& stream) noexcept {
+                                  std::ostream& stream) {
     stream << "Max difference: " << max_dif << "\n\n";
 
     size_t max_name_len = 0;

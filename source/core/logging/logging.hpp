@@ -7,25 +7,25 @@ namespace logging {
 
 class Log;
 
-void init(Log* l) noexcept;
+void init(Log* l);
 
-void info(std::string const& text) noexcept;
-void info(std::string const& text, float a) noexcept;
-void info(std::string const& text, std::string const& a) noexcept;
+void info(std::string const& text);
+void info(std::string const& text, float a);
+void info(std::string const& text, std::string const& a);
 
-void warning(std::string const& text) noexcept;
-void warning(std::string const& text, std::string const& a) noexcept;
+void warning(std::string const& text);
+void warning(std::string const& text, std::string const& a);
 
-void error(std::string const& text) noexcept;
-void error(std::string const& text, std::string const& a) noexcept;
+void error(std::string const& text);
+void error(std::string const& text, std::string const& a);
 
-void push_error(std::string const& text) noexcept;
-void push_error(std::string const& text, std::string const& a) noexcept;
+void push_error(std::string const& text);
+void push_error(std::string const& text, std::string const& a);
 
 #ifdef SU_DEBUG
 
-void verbose(std::string const& text) noexcept;
-void verbose(std::string const& text, std::string const& a) noexcept;
+void verbose(std::string const& text);
+void verbose(std::string const& text, std::string const& a);
 
 #endif
 

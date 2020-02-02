@@ -43,13 +43,13 @@ namespace progress {
 
 class C : public Sink {
   public:
-    void start(uint32_t resolution) noexcept final {
+    void start(uint32_t resolution) final {
         if (start_) {
             start_(resolution);
         }
     }
 
-    void tick() noexcept final {
+    void tick() final {
         if (tick_) {
             tick_();
         }
@@ -62,7 +62,7 @@ class C : public Sink {
 }  // namespace progress
 
 struct Engine {
-    Engine(bool progressive) noexcept
+    Engine(bool progressive)
         : threads(thread::Pool::num_threads(0)),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
@@ -126,11 +126,11 @@ static Engine* engine = nullptr;
         return RESULT;                             \
     }
 
-char const* su_platform_revision() noexcept {
+char const* su_platform_revision() {
     return platform::revision().c_str();
 }
 
-int32_t su_init(bool progressive) noexcept {
+int32_t su_init(bool progressive) {
     if (engine) {
         return -1;
     }
@@ -142,14 +142,14 @@ int32_t su_init(bool progressive) noexcept {
     return 0;
 }
 
-int32_t su_release() noexcept {
+int32_t su_release() {
     delete engine;
     engine = nullptr;
 
     return 0;
 }
 
-int32_t su_mount(char const* folder) noexcept {
+int32_t su_mount(char const* folder) {
     ASSERT_ENGINE(-1)
 
     engine->resources.filesystem().push_mount(folder);
@@ -157,7 +157,7 @@ int32_t su_mount(char const* folder) noexcept {
     return 0;
 }
 
-int32_t su_clear() noexcept {
+int32_t su_clear() {
     ASSERT_ENGINE(-1)
 
     engine->take.clear();
@@ -168,7 +168,7 @@ int32_t su_clear() noexcept {
     return 0;
 }
 
-int32_t su_load_take(char const* string) noexcept {
+int32_t su_load_take(char const* string) {
     ASSERT_ENGINE(-1)
 
     bool success = true;
@@ -201,7 +201,7 @@ int32_t su_load_take(char const* string) noexcept {
     return success ? 0 : -2;
 }
 
-int32_t su_create_defaults() noexcept {
+int32_t su_create_defaults() {
     ASSERT_ENGINE(-1)
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
@@ -220,7 +220,7 @@ int32_t su_create_defaults() noexcept {
     return 0;
 }
 
-uint32_t su_create_camera(char const* string) noexcept {
+uint32_t su_create_camera(char const* string) {
     ASSERT_ENGINE(prop::Null)
 
     ASSERT_PARSE(string, prop::Null)
@@ -238,7 +238,7 @@ uint32_t su_create_camera(char const* string) noexcept {
     return prop::Null;
 }
 
-uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov) noexcept {
+uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov) {
     ASSERT_ENGINE(prop::Null)
 
     engine->take.view.clear();
@@ -270,7 +270,7 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
     return prop_id;
 }
 
-int32_t su_camera_set_resolution(uint32_t width, uint32_t height) noexcept {
+int32_t su_camera_set_resolution(uint32_t width, uint32_t height) {
     ASSERT_ENGINE(-1)
 
     scene::camera::Camera* camera = engine->take.view.camera;
@@ -284,7 +284,7 @@ int32_t su_camera_set_resolution(uint32_t width, uint32_t height) noexcept {
     return 0;
 }
 
-int32_t su_create_sampler(uint32_t num_samples) noexcept {
+int32_t su_create_sampler(uint32_t num_samples) {
     ASSERT_ENGINE(-1)
 
     engine->take.view.num_samples_per_pixel = num_samples;
@@ -304,7 +304,7 @@ int32_t su_create_sampler(uint32_t num_samples) noexcept {
     return 0;
 }
 
-int32_t su_create_integrators(char const* string) noexcept {
+int32_t su_create_integrators(char const* string) {
     ASSERT_ENGINE(-1)
 
     ASSERT_PARSE(string, 0)
@@ -320,7 +320,7 @@ int32_t su_create_integrators(char const* string) noexcept {
 
 uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
                          uint32_t height, uint32_t depth, uint32_t num_elements, uint32_t stride,
-                         char const* data) noexcept {
+                         char const* data) {
     ASSERT_ENGINE(resource::Null)
 
     int3 const dimensions(width, height, std::max(depth, 1u));
@@ -335,7 +335,7 @@ uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t wi
     return engine->resources.load<image::Image>("", desc_data).id;
 }
 
-uint32_t su_create_material(char const* string) noexcept {
+uint32_t su_create_material(char const* string) {
     ASSERT_ENGINE(resource::Null)
 
     ASSERT_PARSE(string, resource::Null)
@@ -354,7 +354,7 @@ uint32_t su_create_material(char const* string) noexcept {
     return material.id;
 }
 
-uint32_t su_create_material_from_file(char const* filename) noexcept {
+uint32_t su_create_material_from_file(char const* filename) {
     ASSERT_ENGINE(resource::Null)
 
     auto const material = engine->resources.load<material::Material>(filename);
@@ -373,7 +373,7 @@ uint32_t su_create_triangle_mesh_async(uint32_t num_triangles, uint32_t num_vert
                                        uint32_t tangents_stride, float const* tangents,
                                        uint32_t uvs_stride, float const* uvs,
                                        uint32_t const* indices, uint32_t num_parts,
-                                       uint32_t const* parts) noexcept {
+                                       uint32_t const* parts) {
     ASSERT_ENGINE(resource::Null)
 
     using Description = shape::triangle::Provider::Description;
@@ -397,7 +397,7 @@ uint32_t su_create_triangle_mesh_async(uint32_t num_triangles, uint32_t num_vert
     return engine->resources.load<shape::Shape>("", desc_data).id;
 }
 
-uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept {
+uint32_t su_create_triangle_mesh_from_file(char const* filename) {
     ASSERT_ENGINE(resource::Null)
 
     auto const mesh = engine->resources.load<shape::Shape>(filename);
@@ -410,8 +410,7 @@ uint32_t su_create_triangle_mesh_from_file(char const* filename) noexcept {
     return mesh.id;
 }
 
-uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
-                        uint32_t const* materials) noexcept {
+uint32_t su_create_prop(uint32_t shape, uint32_t num_materials, uint32_t const* materials) {
     ASSERT_ENGINE(prop::Null)
 
     auto const shape_ptr = engine->resources.get<shape::Shape>(shape);
@@ -446,7 +445,7 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials,
     return engine->scene.create_prop(shape_ptr, materials_buffer.data());
 }
 
-int32_t su_create_light(uint32_t entity) noexcept {
+int32_t su_create_light(uint32_t entity) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
@@ -458,7 +457,7 @@ int32_t su_create_light(uint32_t entity) noexcept {
     return 0;
 }
 
-uint32_t su_camera_entity() noexcept {
+uint32_t su_camera_entity() {
     ASSERT_ENGINE(prop::Null)
 
     if (!engine->take.view.camera) {
@@ -468,7 +467,7 @@ uint32_t su_camera_entity() noexcept {
     return engine->take.view.camera->entity();
 }
 
-int32_t su_camera_sensor_dimensions(int32_t* dimensions) noexcept {
+int32_t su_camera_sensor_dimensions(int32_t* dimensions) {
     ASSERT_ENGINE(-1)
 
     if (!engine->take.view.camera) {
@@ -483,7 +482,7 @@ int32_t su_camera_sensor_dimensions(int32_t* dimensions) noexcept {
     return 0;
 }
 
-int32_t su_entity_allocate_frames(uint32_t entity) noexcept {
+int32_t su_entity_allocate_frames(uint32_t entity) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
@@ -495,7 +494,7 @@ int32_t su_entity_allocate_frames(uint32_t entity) noexcept {
     return 0;
 }
 
-int32_t su_entity_transformation(uint32_t entity, float* transformation) noexcept {
+int32_t su_entity_transformation(uint32_t entity, float* transformation) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
@@ -509,7 +508,7 @@ int32_t su_entity_transformation(uint32_t entity, float* transformation) noexcep
     return 0;
 }
 
-int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) noexcept {
+int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
@@ -532,7 +531,7 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
 }
 
 int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame,
-                                           float const* transformation) noexcept {
+                                           float const* transformation) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity || engine->scene.num_interpolation_frames() <= frame) {
@@ -554,7 +553,7 @@ int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame,
     return 0;
 }
 
-int32_t su_render() noexcept {
+int32_t su_render() {
     ASSERT_ENGINE(-1)
 
     engine->threads.wait_async();
@@ -570,7 +569,7 @@ int32_t su_render() noexcept {
     return 0;
 }
 
-int32_t su_render_frame(uint32_t frame) noexcept {
+int32_t su_render_frame(uint32_t frame) {
     ASSERT_ENGINE(-1)
 
     engine->threads.wait_async();
@@ -586,7 +585,7 @@ int32_t su_render_frame(uint32_t frame) noexcept {
     return 0;
 }
 
-int32_t su_export_frame(uint32_t frame) noexcept {
+int32_t su_export_frame(uint32_t frame) {
     ASSERT_ENGINE(-1)
 
     engine->driver.export_frame(frame, engine->take.exporters);
@@ -594,7 +593,7 @@ int32_t su_export_frame(uint32_t frame) noexcept {
     return 0;
 }
 
-int32_t su_start_render_frame(uint32_t frame) noexcept {
+int32_t su_start_render_frame(uint32_t frame) {
     ASSERT_ENGINE(-1)
 
     if (!engine->valid) {
@@ -612,7 +611,7 @@ int32_t su_start_render_frame(uint32_t frame) noexcept {
     return 0;
 }
 
-int32_t su_render_iteration() noexcept {
+int32_t su_render_iteration() {
     ASSERT_ENGINE(-1)
 
     if (!engine->valid) {
@@ -627,7 +626,7 @@ int32_t su_render_iteration() noexcept {
 }
 
 int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint32_t num_channels,
-                            uint8_t* destination) noexcept {
+                            uint8_t* destination) {
     ASSERT_ENGINE(-1)
 
     image::Float4 const& buffer = engine->driver.target();
@@ -647,7 +646,7 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
                               std::min(d[0], int32_t(width))};
 
         engine->threads.run_range(
-            [&parameters](uint32_t /*id*/, int32_t begin, int32_t end) {
+            [&parameters](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
                 image::Float4 const& source = parameters.source;
 
                 byte3* target = parameters.target;
@@ -686,10 +685,10 @@ namespace logging {
 
 class C : public Log {
   public:
-    C(Post post) noexcept : post_(post) {}
+    C(Post post) : post_(post) {}
 
   private:
-    void internal_post(Type type, std::string const& text) noexcept final {
+    void internal_post(Type type, std::string const& text) final {
         post_(uint32_t(type), text.c_str());
     }
 
@@ -698,7 +697,7 @@ class C : public Log {
 
 }  // namespace logging
 
-int32_t su_register_log(Post post) noexcept {
+int32_t su_register_log(Post post) {
     if (!post) {
         return -1;
     }
@@ -708,7 +707,7 @@ int32_t su_register_log(Post post) noexcept {
     return 0;
 }
 
-int32_t su_register_progress(Progress_start start, Progress_tick tick) noexcept {
+int32_t su_register_progress(Progress_start start, Progress_tick tick) {
     ASSERT_ENGINE(-1)
 
     engine->progressor.start_ = start;

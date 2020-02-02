@@ -17,28 +17,28 @@ struct Vertex {
 
     uint8_t pad[3];
 
-    static size_t unpadded_size() noexcept;
+    static size_t unpadded_size();
 };
 
 class Vertex_stream {
   public:
-    Vertex_stream(uint32_t num_vertices) noexcept;
+    Vertex_stream(uint32_t num_vertices);
 
-    uint32_t num_vertices() const noexcept;
+    uint32_t num_vertices() const;
 
-    virtual ~Vertex_stream() noexcept;
+    virtual ~Vertex_stream();
 
-    virtual void release() noexcept = 0;
+    virtual void release() = 0;
 
-    virtual float3 p(uint32_t i) const noexcept = 0;
+    virtual float3 p(uint32_t i) const = 0;
 
-    virtual float3 n(uint32_t i) const noexcept = 0;
+    virtual float3 n(uint32_t i) const = 0;
 
-    virtual float3 t(uint32_t i) const noexcept = 0;
+    virtual float3 t(uint32_t i) const = 0;
 
-    virtual float2 uv(uint32_t i) const noexcept = 0;
+    virtual float2 uv(uint32_t i) const = 0;
 
-    virtual uint8_t bitangent_sign(uint32_t i) const noexcept = 0;
+    virtual uint8_t bitangent_sign(uint32_t i) const = 0;
 
   private:
     uint32_t num_vertices_;
@@ -46,19 +46,19 @@ class Vertex_stream {
 
 class Vertex_stream_interleaved final : public Vertex_stream {
   public:
-    Vertex_stream_interleaved(uint32_t num_vertices, Vertex const* vertices) noexcept;
+    Vertex_stream_interleaved(uint32_t num_vertices, Vertex const* vertices);
 
-    void release() noexcept final;
+    void release() final;
 
-    float3 p(uint32_t i) const noexcept final;
+    float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const noexcept final;
+    float3 n(uint32_t i) const final;
 
-    float3 t(uint32_t i) const noexcept final;
+    float3 t(uint32_t i) const final;
 
-    float2 uv(uint32_t i) const noexcept final;
+    float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const noexcept final;
+    uint8_t bitangent_sign(uint32_t i) const final;
 
   private:
     Vertex const* vertices_;
@@ -67,19 +67,19 @@ class Vertex_stream_interleaved final : public Vertex_stream {
 class Vertex_stream_separate final : public Vertex_stream {
   public:
     Vertex_stream_separate(uint32_t num_vertices, packed_float3 const* p, packed_float3 const* n,
-                           packed_float3 const* t, float2 const* uv, uint8_t const* bts) noexcept;
+                           packed_float3 const* t, float2 const* uv, uint8_t const* bts);
 
-    void release() noexcept final;
+    void release() final;
 
-    float3 p(uint32_t i) const noexcept final;
+    float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const noexcept final;
+    float3 n(uint32_t i) const final;
 
-    float3 t(uint32_t i) const noexcept final;
+    float3 t(uint32_t i) const final;
 
-    float2 uv(uint32_t i) const noexcept final;
+    float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const noexcept final;
+    uint8_t bitangent_sign(uint32_t i) const final;
 
   private:
     packed_float3 const* p_;
@@ -92,19 +92,19 @@ class Vertex_stream_separate final : public Vertex_stream {
 class Vertex_stream_separate_compact final : public Vertex_stream {
   public:
     Vertex_stream_separate_compact(uint32_t num_vertices, packed_float3 const* p,
-                                   packed_float3 const* n) noexcept;
+                                   packed_float3 const* n);
 
-    void release() noexcept final;
+    void release() final;
 
-    float3 p(uint32_t i) const noexcept final;
+    float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const noexcept final;
+    float3 n(uint32_t i) const final;
 
-    float3 t(uint32_t i) const noexcept final;
+    float3 t(uint32_t i) const final;
 
-    float2 uv(uint32_t i) const noexcept final;
+    float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const noexcept final;
+    uint8_t bitangent_sign(uint32_t i) const final;
 
   private:
     packed_float3 const* p_;
@@ -116,19 +116,19 @@ class Vertex_stream_CAPI final : public Vertex_stream {
     Vertex_stream_CAPI(uint32_t num_vertices, uint32_t positions_stride, uint32_t normals_stride,
                        uint32_t tangents_stride, uint32_t texture_coordinates_stride,
                        float const* positions, float const* normals, float const* tangents,
-                       float const* texture_coordinates) noexcept;
+                       float const* texture_coordinates);
 
-    void release() noexcept final;
+    void release() final;
 
-    float3 p(uint32_t i) const noexcept final;
+    float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const noexcept final;
+    float3 n(uint32_t i) const final;
 
-    float3 t(uint32_t i) const noexcept final;
+    float3 t(uint32_t i) const final;
 
-    float2 uv(uint32_t i) const noexcept final;
+    float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const noexcept final;
+    uint8_t bitangent_sign(uint32_t i) const final;
 
   private:
     uint32_t positions_stride_;

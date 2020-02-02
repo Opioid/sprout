@@ -32,37 +32,37 @@ class Grid {
     using Intersection    = scene::prop::Intersection;
     using Material_sample = scene::material::Sample;
 
-    Grid() noexcept;
+    Grid();
 
-    ~Grid() noexcept;
+    ~Grid();
 
-    void init(float search_radius, float grid_cell_factor, bool check_disk) noexcept;
+    void init(float search_radius, float grid_cell_factor, bool check_disk);
 
-    void resize(AABB const& aabb) noexcept;
+    void resize(AABB const& aabb);
 
-    void init_cells(uint32_t num_photons, Photon* photons) noexcept;
+    void init_cells(uint32_t num_photons, Photon* photons);
 
     uint32_t reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                             thread::Pool& threads) noexcept;
+                             thread::Pool& threads);
 
-    void set_num_paths(uint64_t num_paths) noexcept;
+    void set_num_paths(uint64_t num_paths);
 
     float3 li(Intersection const& intersection, Material_sample const& sample,
-              scene::Worker const& worker) const noexcept;
+              scene::Worker const& worker) const;
 
   private:
-    uint32_t reduce(float merge_radius, int32_t begin, int32_t end) noexcept;
+    uint32_t reduce(float merge_radius, int32_t begin, int32_t end);
 
-    int32_t map1(float3 const& v) const noexcept;
+    int32_t map1(float3 const& v) const;
 
-    int3 map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const noexcept;
+    int3 map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const;
 
     struct Adjacency {
         uint32_t num_cells;
         int2     cells[4];
     };
 
-    void adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const noexcept;
+    void adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const;
 
     uint32_t num_photons_;
     Photon*  photons_;
