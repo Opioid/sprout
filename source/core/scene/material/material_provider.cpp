@@ -461,17 +461,19 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
     Sampler_settings sampler_settings;
 
     std::string quantity;
-    float3      color(1.f);
-    float       value = 1.f;
 
+    float3 color(1.f);
     float3 radiance(10.f);
-    float  emission_factor = 1.f;
+
+    float value           = 1.f;
+    float emission_factor = 1.f;
 
     uint64_t animation_duration = 0;
 
     Texture_adapter emission_map;
     Texture_adapter mask;
-    bool            two_sided = false;
+
+    bool two_sided = false;
 
     for (auto const& n : light_value.GetObject()) {
         if ("emission" == n.name) {
@@ -522,6 +524,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
             material->set_emission_factor(emission_factor);
             return material;
         }
+
         auto material = new light::Emissionmap(sampler_settings, two_sided);
         material->set_mask(mask);
         material->set_emission_map(emission_map);

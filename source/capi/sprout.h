@@ -1,11 +1,23 @@
 #ifndef SU_CAPI_SPROUT_H
 #define SU_CAPI_SPROUT_H
 
-#include "visibility.h"
-
-#include <cstdint>
-
+#ifdef __cplusplus
 extern "C" {
+#endif
+
+#include <stdint.h>
+
+#if defined _WIN32
+#   ifdef SU_LIBRARY_EXPORTS
+#       define SU_LIBRARY_API __declspec(dllexport)
+#   else
+#       define SU_LIBRARY_API __declspec(dllimport)
+#   endif
+#else
+#   define SU_LIBRARY_API __attribute__ ((visibility ("default")))
+#endif
+
+#define SU_RESOURCE_NULL 0xFFFFFFFF
 
 #define SU_SHAPE_CANOPY 0
 #define SU_SHAPE_CUBE 1
@@ -17,7 +29,7 @@ extern "C" {
 #define SU_SHAPE_SPHERE 7
 
 #define SU_UINT8 0
-#define SU_FLOAT32 1
+#define SU_FLOAT32 2
 
 #define SU_LOG_INFO 0
 #define SU_LOG_WARNING 1
@@ -111,6 +123,8 @@ typedef void (*Progress_tick)();
 
 SU_LIBRARY_API int32_t su_register_progress(Progress_start start, Progress_tick tick) ;
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif

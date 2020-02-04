@@ -1,4 +1,4 @@
-add_library(capi SHARED "capi.cpp" "sprout.h" "visibility.h")
+add_library(capi SHARED "capi.cpp" "sprout.h")
 
 set_target_properties(capi PROPERTIES OUTPUT_NAME "sprout")
 
@@ -13,8 +13,6 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(capi PRIVATE base core extension Threads::Threads)
 
-if (WIN32)
-	target_link_libraries(capi PRIVATE ws2_32)
-else ()
-    target_link_libraries(capi PRIVATE stdc++fs)
+if (NOT WIN32)
+    target_link_libraries(cli PRIVATE stdc++fs)
 endif()

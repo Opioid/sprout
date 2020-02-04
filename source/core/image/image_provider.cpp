@@ -147,6 +147,16 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
 
     if (stride == pixel_width) {
         std::copy(source_data, source_data + num_pixels * uint64_t(pixel_width), image_data);
+
+        // Flip Y
+        //        int2 const d = image->description().dimensions_2();
+
+        //        int32_t const row = d[0] * int32_t(pixel_width);
+
+        //        for (int32_t y = d[1] - 1, iy = 0; y >= 0; --y, ++iy) {
+        //            char const* source_row = source_data + y * row;
+        //            std::copy(source_row, source_row + row, image_data + iy * row);
+        //        }
     } else {
         for (uint64_t i = 0; i < num_pixels;
              ++i, source_data += stride, image_data += pixel_width) {
