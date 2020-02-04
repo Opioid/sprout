@@ -14,5 +14,5 @@ find_package(Threads REQUIRED)
 target_link_libraries(capi PRIVATE base core extension Threads::Threads)
 
 if (NOT WIN32)
-    target_link_libraries(cli PRIVATE stdc++fs)
+    target_link_libraries(capi PRIVATE stdc++fs)
 endif()
