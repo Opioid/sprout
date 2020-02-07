@@ -62,6 +62,8 @@ bool handle_all(std::string const& command, std::string const& parameter, Option
 bool handle(std::string const& command, std::string const& parameter, Options& result) {
     if ("help" == command || "h" == command) {
         help();
+    } else if ("add" == command) {
+        result.op = Options::Operator::Add;
     } else if ("average" == command || "a" == command) {
         result.op = Options::Operator::Average;
     } else if ("cat" == command || "c" == command) {
@@ -126,6 +128,7 @@ Usage:
   it [OPTION...]
 
   -h, --help                  Print help.
+      --add                   Calculate the average of an image.
   -a, --average               Calculate the average of an image.
   -c, --cat      int?         Concatenate multiple images and save as
                               a single image.

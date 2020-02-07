@@ -9,7 +9,7 @@
 namespace it::options {
 
 struct Options {
-    enum class Operator { Average, Cat, Diff, Undefined };
+    enum class Operator { Add, Average, Cat, Diff, Undefined };
 
     Operator op = Operator::Undefined;
 

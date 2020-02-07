@@ -14,6 +14,7 @@
 #include "core/resource/resource_manager.inl"
 #include "core/take/take_loader.hpp"
 #include "item.hpp"
+#include "operator/add.hpp"
 #include "operator/average.hpp"
 #include "operator/concatenate.hpp"
 #include "operator/difference.hpp"
@@ -110,7 +111,12 @@ int main(int argc, char* argv[]) {
         op::statistics(items, args, resources.threads());
     }
 
-    if (Options::Operator::Average == args.op) {
+    if (Options::Operator::Add == args.op) {
+        if (uint32_t const num = op::add(items, args, resources.threads()); num) {
+            LOGGING_VERBOSE("add " + string::to_string(num) + " images in " +
+                            string::to_string(chrono::seconds_since(total_start)) + " s");
+        }
+    } else if (Options::Operator::Average == args.op) {
         if (uint32_t const num = op::average(items, args, resources.threads()); num) {
             LOGGING_VERBOSE("average " + string::to_string(num) + " images in " +
                             string::to_string(chrono::seconds_since(total_start)) + " s");
