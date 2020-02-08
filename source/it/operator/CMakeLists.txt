@@ -14,6 +14,8 @@ target_sources(it
     "difference_report_org.hpp"
     "difference.cpp"
     "difference.hpp"
+    "operator_helper.cpp"
+    "operator_helper.hpp"
     "operator_helper.inl"
     "statistics.cpp"
     "statistics.hpp"

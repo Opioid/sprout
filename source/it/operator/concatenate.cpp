@@ -1,16 +1,12 @@
 #include "concatenate.hpp"
-#include "base/string/string.hpp"
-#include "core/image/encoding/exr/exr_writer.hpp"
-#include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/image/typed_image.hpp"
 #include "core/logging/logging.hpp"
 #include "core/scene/camera/camera_perspective.hpp"
 #include "item.hpp"
+#include "operator_helper.hpp"
 #include "options/options.hpp"
 #include "rendering/postprocessor/postprocessor_pipeline.hpp"
-
-#include <fstream>
 
 namespace op {
 
@@ -69,26 +65,9 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
         pipeline.apply(target, threads);
     }
 
-    std::string const name = items[0].name_out.empty()
-                                 ? ("concat." + string::copy_suffix(items[0].name))
-                                 : items[0].name_out;
+    std::string const name = name_out(items, "concat");
 
-    bool const exr = "exr" == string::suffix(name);
-
-    std::ofstream stream(name, std::ios::binary);
-
-    if (exr) {
-        encoding::exr::Writer writer(alpha);
-        writer.write(stream, target, threads);
-    } else {
-        if (alpha) {
-            encoding::png::Writer_alpha writer(false, false);
-            writer.write(stream, target, threads);
-        } else {
-            encoding::png::Writer writer(false);
-            writer.write(stream, target, threads);
-        }
-    }
+    write(target, name, alpha, threads);
 
     return uint32_t(items.size());
 }

@@ -1,6 +1,8 @@
 #ifndef SU_IT_ITEM_HPP
 #define SU_IT_ITEM_HPP
 
+#include "base/math/vector2.hpp"
+
 #include <string>
 #include <vector>
 
@@ -20,5 +22,9 @@ struct Item {
 };
 
 bool any_has_alpha_channel(std::vector<Item> const& items);
+
+int2 max_dimensions_2(std::vector<Item> const& items);
+
+std::string name_out(std::vector<Item> const& items, std::string const& default_name);
 
 #endif
