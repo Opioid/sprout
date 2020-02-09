@@ -7,19 +7,21 @@
 namespace image::encoding {
 
 Srgb::Srgb(bool error_diffusion)
-    : rgb_(nullptr), num_pixels_(0), error_diffusion_(error_diffusion) {}
+    : rgb_(nullptr), num_bytes_(0), error_diffusion_(error_diffusion) {}
 
 Srgb::~Srgb() {
     delete[] rgb_;
 }
 
 void Srgb::resize(uint32_t num_pixels) {
-    if (num_pixels > num_pixels_) {
+    uint32_t const num_bytes = num_pixels * sizeof(byte3);
+
+    if (num_bytes > num_bytes_) {
         delete[] rgb_;
 
         rgb_ = new byte3[num_pixels];
 
-        num_pixels_ = num_pixels;
+        num_bytes_ = num_bytes;
     }
 }
 
@@ -60,7 +62,7 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
 
 Srgb_alpha::Srgb_alpha(bool error_diffusion, bool pre_multiplied_alpha)
     : rgba_(nullptr),
-      num_pixels_(0),
+      num_bytes_(0),
       error_diffusion_(error_diffusion),
       pre_multiplied_alpha_(pre_multiplied_alpha) {}
 
@@ -69,12 +71,14 @@ Srgb_alpha::~Srgb_alpha() {
 }
 
 void Srgb_alpha::resize(uint32_t num_pixels) {
-    if (num_pixels > num_pixels_) {
+    uint32_t const num_bytes = num_pixels * sizeof(byte4);
+
+    if (num_bytes > num_bytes_) {
         delete[] rgba_;
 
         rgba_ = new byte4[num_pixels];
 
-        num_pixels_ = num_pixels;
+        num_bytes_ = num_bytes;
     }
 }
 

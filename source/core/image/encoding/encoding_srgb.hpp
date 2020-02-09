@@ -20,7 +20,7 @@ class Srgb {
   protected:
     byte3* rgb_;
 
-    uint32_t num_pixels_;
+    uint32_t num_bytes_;
 
     bool error_diffusion_;
 };
@@ -40,7 +40,7 @@ class Srgb_alpha {
   protected:
     byte4* rgba_;
 
-    uint32_t num_pixels_;
+    uint32_t num_bytes_;
 
     bool error_diffusion_;
 
