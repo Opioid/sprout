@@ -44,6 +44,7 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
                 float3 const color = spectrum::linear_to_gamma_sRGB(image.at(i).xyz());
 
                 float3 const cf = 255.f * color;
+
                 byte3 const  ci = byte3(cf + error + 0.5f);
 
                 error += cf - float3(ci);
@@ -103,6 +104,7 @@ void Srgb_alpha::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
                 float4 const color = spectrum::linear_to_gamma_sRGB(linear);
 
                 float4 const cf = 255.f * color;
+
                 byte4 const  ci = byte4(cf + error + 0.5f);
 
                 error += cf - float4(ci);
