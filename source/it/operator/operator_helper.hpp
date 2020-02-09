@@ -11,7 +11,7 @@ class Pool;
 
 namespace op {
 
-void write(image::Float4 const& image, std::string const& name, bool alpha, thread::Pool& threads);
+bool write(image::Float4 const& image, std::string const& name, bool alpha, thread::Pool& threads);
 
 }
 
