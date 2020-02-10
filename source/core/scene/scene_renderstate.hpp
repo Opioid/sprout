@@ -17,10 +17,12 @@ struct Renderstate {
                       v[0] * t[2] + v[1] * b[2]);
     }
 
-    float3 p;        // posisition in world space
-    float3 t, b, n;  // interpolated tangent frame in world space
-    float3 geo_n;    // geometry normal in world space
-    float2 uv;       // texture coordinates
+    float3 p;      // position in world space
+    float3 t;      // interpolated tangent frame in world space
+    float3 b;      // ...
+    float3 n;      // ...
+    float3 geo_n;  // geometry normal in world space
+    float2 uv;     // texture coordinates
 
     float ior;
 
