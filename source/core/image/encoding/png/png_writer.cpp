@@ -12,7 +12,7 @@
 
 namespace image::encoding::png {
 
-Writer::Writer(bool error_diffusion) : Srgb(error_diffusion) {}
+Writer::Writer(bool error_diffusion) : Srgb(error_diffusion, false, false) {}
 
 std::string Writer::file_extension() const {
     return "png";
@@ -30,7 +30,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
                       0, d[1]);
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, d[0], d[1], 3, &buffer_len);
+    void* png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], 3, &buffer_len);
     if (!png_buffer) {
         return false;
     }
@@ -57,19 +57,21 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
 
     threads.run_range(
         [this, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+
             for (int32_t i = begin; i < end; ++i) {
                 float const n = data[i] * im;
 
                 float3 const hm = spectrum::heatmap(n);
 
-                rgb_[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
+                rgb[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
             }
         },
         0, dimensions[0] * dimensions[1]);
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb_, dimensions[0], dimensions[1],
-                                                               3, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, dimensions[0],
+                                                               dimensions[1], 3, &buffer_len);
 
     if (!png_buffer) {
         return false;
@@ -319,7 +321,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
 }
 
 Writer_alpha::Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha)
-    : Srgb_alpha(error_diffusion, pre_multiplied_alpha) {}
+    : Srgb(error_diffusion, true, pre_multiplied_alpha) {}
 
 std::string Writer_alpha::file_extension() const {
     return "png";
@@ -337,7 +339,7 @@ bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool
                       0, d[1]);
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d[0], d[1], 4, &buffer_len);
+    void* png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], 4, &buffer_len);
 
     if (!png_buffer) {
         return false;

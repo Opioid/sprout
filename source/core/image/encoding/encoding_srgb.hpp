@@ -7,42 +7,22 @@ namespace image::encoding {
 
 class Srgb {
   public:
-    Srgb(bool error_diffusion);
+    Srgb(bool error_diffusion, bool alpha, bool pre_multiplied_alpha);
 
     ~Srgb();
 
     void resize(uint32_t num_pixels);
 
-    byte3 const* data() const;
-
     void to_sRGB(Float4 const& image, int32_t begin, int32_t end);
 
   protected:
-    byte3* rgb_;
+    char* buffer_;
 
     uint32_t num_bytes_;
 
     bool error_diffusion_;
-};
 
-class Srgb_alpha {
-  public:
-    Srgb_alpha(bool error_diffusion, bool pre_multiplied_alpha);
-
-    ~Srgb_alpha();
-
-    void resize(uint32_t num_pixels);
-
-    byte4 const* data() const;
-
-    void to_sRGB(Float4 const& image, int32_t begin, int32_t end);
-
-  protected:
-    byte4* rgba_;
-
-    uint32_t num_bytes_;
-
-    bool error_diffusion_;
+    bool alpha_;
 
     bool pre_multiplied_alpha_;
 };

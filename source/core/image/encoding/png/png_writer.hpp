@@ -38,7 +38,7 @@ class Writer : public image::Writer, Srgb {
                               float max_value);
 };
 
-class Writer_alpha : public image::Writer, Srgb_alpha {
+class Writer_alpha : public image::Writer, Srgb {
   public:
     Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha);
 
