@@ -26,12 +26,7 @@ bool write(Float4 const& image, std::string const& name, bool alpha, thread::Poo
         return writer.write(stream, image, threads);
     }
 
-    if (alpha) {
-        encoding::png::Writer_alpha writer(false, false);
-        return writer.write(stream, image, threads);
-    }
-
-    encoding::png::Writer writer(false);
+    encoding::png::Writer writer(false, alpha, false);
     return writer.write(stream, image, threads);
 }
 

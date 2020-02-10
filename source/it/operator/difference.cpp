@@ -73,7 +73,7 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     }
 
     if (!options.no_export) {
-        encoding::png::Writer writer(false);
+        encoding::png::Writer writer(false, false, false);
 
         if (options.max_dif > 0.f) {
             max_dif = options.max_dif;

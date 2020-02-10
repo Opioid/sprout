@@ -12,7 +12,8 @@
 
 namespace image::encoding::png {
 
-Writer::Writer(bool error_diffusion) : Srgb(error_diffusion, false, false) {}
+Writer::Writer(bool error_diffusion, bool alpha, bool pre_multiplied_alpha)
+    : Srgb(error_diffusion, alpha, pre_multiplied_alpha) {}
 
 std::string Writer::file_extension() const {
     return "png";
@@ -29,50 +30,11 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
                                      int32_t end) noexcept { to_sRGB(image, begin, end); },
                       0, d[1]);
 
-    size_t buffer_len = 0;
-    void* png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], 3, &buffer_len);
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value, thread::Pool& threads) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const num_pixels = uint32_t(dimensions[0] * dimensions[1]);
-
-    resize(num_pixels);
-
-    float const im = max_value > 0.f ? 1.f / max_value : 1.f;
-
-    threads.run_range(
-        [this, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            byte3* rgb = reinterpret_cast<byte3*>(buffer_);
-
-            for (int32_t i = begin; i < end; ++i) {
-                float const n = data[i] * im;
-
-                float3 const hm = spectrum::heatmap(n);
-
-                rgb[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
-            }
-        },
-        0, dimensions[0] * dimensions[1]);
+    int32_t const num_channels = alpha() ? 4 : 3;
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, dimensions[0],
-                                                               dimensions[1], 3, &buffer_len);
-
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], num_channels,
+                                                               &buffer_len);
     if (!png_buffer) {
         return false;
     }
@@ -290,12 +252,12 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         return false;
     }
 
-    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
+    uint32_t const num_pixels = uint32_t(dimensions[0] * dimensions[1]);
 
-    byte3* bytes = memory::allocate_aligned<byte3>(area);
+    byte3* bytes = memory::allocate_aligned<byte3>(num_pixels);
 
     float const im = max_value > 0.f ? 1.f / max_value : 1.f;
-    for (uint32_t i = 0; i < area; ++i) {
+    for (uint32_t i = 0; i < num_pixels; ++i) {
         float const n = data[i] * im;
 
         float3 const hm = spectrum::heatmap(n);
@@ -320,26 +282,36 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     return true;
 }
 
-Writer_alpha::Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha)
-    : Srgb(error_diffusion, true, pre_multiplied_alpha) {}
+bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                           float max_value, thread::Pool& threads) {
+    std::ofstream stream(name.data(), std::ios::binary);
+    if (!stream) {
+        return false;
+    }
 
-std::string Writer_alpha::file_extension() const {
-    return "png";
-}
+    uint32_t const num_pixels = uint32_t(dimensions[0] * dimensions[1]);
 
-bool Writer_alpha::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
-    auto const d = image.description().dimensions_2();
+    byte3* bytes = memory::allocate_aligned<byte3>(num_pixels);
 
-    uint32_t const num_pixels = uint32_t(d[0] * d[1]);
+    float const im = max_value > 0.f ? 1.f / max_value : 1.f;
 
-    resize(num_pixels);
+    threads.run_range(
+        [bytes, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t i = begin; i < end; ++i) {
+                float const n = data[i] * im;
 
-    threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
-                                     int32_t end) noexcept { to_sRGB(image, begin, end); },
-                      0, d[1]);
+                float3 const hm = spectrum::heatmap(n);
+
+                bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
+            }
+        },
+        0, dimensions[0] * dimensions[1]);
 
     size_t buffer_len = 0;
-    void* png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], 4, &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
+                                                               3, &buffer_len);
+
+    memory::free_aligned(bytes);
 
     if (!png_buffer) {
         return false;

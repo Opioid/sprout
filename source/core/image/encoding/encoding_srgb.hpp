@@ -11,7 +11,11 @@ class Srgb {
 
     ~Srgb();
 
+    bool alpha() const;
+
     void resize(uint32_t num_pixels);
+
+    char* data();
 
     void to_sRGB(Float4 const& image, int32_t begin, int32_t end);
 

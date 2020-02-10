@@ -908,11 +908,9 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
                 bool const pre_multiplied_alpha = json::read_bool(n.value, "pre_multiplied_alpha",
                                                                   true);
 
-                if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
-                    writer = new png::Writer_alpha(error_diffusion, pre_multiplied_alpha);
-                } else {
-                    writer = new png::Writer(error_diffusion);
-                }
+                bool const alpha = view.pipeline.has_alpha_transparency(transparent_sensor);
+
+                writer = new png::Writer(error_diffusion, alpha, pre_multiplied_alpha);
             }
 
             exporters.push_back(new exporting::Image_sequence("output_", writer));
@@ -943,7 +941,7 @@ void Loader::set_default_exporter(Take& take) {
 
         using namespace image;
 
-        Writer* writer = new encoding::png::Writer(error_diffusion);
+        Writer* writer = new encoding::png::Writer(error_diffusion, false, false);
 
         take.exporters.reserve(1);
         take.exporters.push_back(new exporting::Image_sequence("output_", writer));

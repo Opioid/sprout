@@ -8,14 +8,11 @@ namespace image::encoding::png {
 
 class Writer : public image::Writer, Srgb {
   public:
-    Writer(bool error_diffusion);
+    Writer(bool error_diffusion, bool alpha, bool pre_multiplied_alpha);
 
     std::string file_extension() const final;
 
     bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
-
-    bool write_heatmap(std::string_view name, float const* data, int2 dimensions, float max_value,
-                       thread::Pool& threads);
 
     static bool write(std::string_view name, Byte3 const& image);
 
@@ -36,15 +33,9 @@ class Writer : public image::Writer, Srgb {
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
                               float max_value);
-};
 
-class Writer_alpha : public image::Writer, Srgb {
-  public:
-    Writer_alpha(bool error_diffusion, bool pre_multiplied_alpha);
-
-    std::string file_extension() const final;
-
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
+    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                              float max_value, thread::Pool& threads);
 };
 
 }  // namespace image::encoding::png

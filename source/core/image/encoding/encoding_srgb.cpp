@@ -17,6 +17,10 @@ Srgb::~Srgb() {
     delete[] buffer_;
 }
 
+bool Srgb::alpha() const {
+    return alpha_;
+}
+
 void Srgb::resize(uint32_t num_pixels) {
     uint32_t const num_bytes = num_pixels * (alpha_ ? sizeof(byte4) : sizeof(byte3));
 
@@ -31,6 +35,10 @@ void Srgb::resize(uint32_t num_pixels) {
 
 static inline float golden_ratio(int32_t n) {
     return frac(float(n) * 0.618033988749894f);
+}
+
+char* Srgb::data() {
+    return buffer_;
 }
 
 void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
