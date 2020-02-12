@@ -54,6 +54,8 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
                 for (int32_t x = 0; x < d[0]; ++x, ++i) {
                     float4 linear = image.at(i);
 
+                    linear[3] = std::min(linear[3], 1.f);
+
                     if (!pre_multiplied_alpha_ && linear[3] > 0.f) {
                         linear = float4(linear.xyz() / linear[3], linear[3]);
                     }
@@ -72,6 +74,8 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
         } else {
             for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
                 float4 linear = image.at(i);
+
+                linear[3] = std::min(linear[3], 1.f);
 
                 if (!pre_multiplied_alpha_ && linear[3] > 0.f) {
                     linear = float4(linear.xyz() / linear[3], linear[3]);
