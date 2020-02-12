@@ -131,6 +131,11 @@ int main(int argc, char* argv[]) {
             LOGGING_VERBOSE("cat " + string::to_string(num) + " images in " +
                             string::to_string(chrono::seconds_since(total_start)) + " s");
         }
+    } else if (Options::Operator::Sub == args.op) {
+        if (uint32_t const num = op::sub(items, args, resources.threads()); num) {
+            LOGGING_VERBOSE("subtract " + string::to_string(num) + " images in " +
+                            string::to_string(chrono::seconds_since(total_start)) + " s");
+        }
     }
 
     //   comparison(items);

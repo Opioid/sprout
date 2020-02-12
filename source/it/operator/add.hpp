@@ -17,6 +17,9 @@ struct Item;
 namespace op {
 uint32_t add(std::vector<Item> const& items, it::options::Options const& options,
              thread::Pool& threads);
+
+uint32_t sub(std::vector<Item> const& items, it::options::Options const& options,
+             thread::Pool& threads);
 }
 
 #endif

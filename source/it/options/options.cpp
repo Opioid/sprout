@@ -90,6 +90,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.report = parameter.empty() ? "." : parameter;
     } else if ("stats" == command || "s" == command) {
         result.statistics = parameter.empty() ? "." : parameter;
+    } else if ("sub" == command) {
+        result.op = Options::Operator::Sub;
     } else if ("take" == command) {
         result.take = parameter;
     } else if ("threads" == command || "t" == command) {
@@ -128,9 +130,10 @@ Usage:
   it [OPTION...]
 
   -h, --help                  Print help.
-      --add                   Calculate the average of an image.
+      --add                   Add a series of images and save as
+                              a single image.
   -a, --average               Calculate the average of an image.
-  -c, --cat      int?         Concatenate multiple images and save as
+  -c, --cat      int?         Concatenate a series of images and save as
                               a single image.
                               Optionally specify after how many images
                               a new row should be started.
@@ -157,6 +160,8 @@ Usage:
   -s, --stats    file?        Generate image statistics, including histogram.
                               Optionally the stats can be written to a file.
                               If no operator is specified, it defaults to stats.
+      --sub                   Subtract a series of images from the first image
+                              and save as a single image.
       --take     file/string  Path of the take file to render,
                               or json-string describing the take.
   -t, --threads  int          Specifies the number of threads used by it.
