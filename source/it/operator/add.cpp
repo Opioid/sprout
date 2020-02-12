@@ -46,15 +46,15 @@ uint32_t add(std::vector<Item> const& items, it::options::Options const& /*optio
 
 uint32_t sub(std::vector<Item> const& items, it::options::Options const& /*options*/,
              thread::Pool&            threads) {
-    int2 const d = max_dimensions_2(items);
+    int2 const d = items[0].image->dimensions_2();
 
     Float4 target = Float4(image::Description(d));
 
-    target.clear(float4(0.f, 0.f, 0.f, 1.f));
+    auto const image = items[0].image;
 
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
-            float4 a = target.at(x, y);
+            float4 a = image->at_4(x, y);
 
             for (auto const& i : items) {
                 int2 const db = i.image->dimensions_2();
