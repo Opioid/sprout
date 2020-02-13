@@ -50,20 +50,22 @@ uint32_t sub(std::vector<Item> const& items, it::options::Options const& /*optio
 
     Float4 target = Float4(image::Description(d));
 
-    auto const image = items[0].image;
+    auto const image0 = items[0].image;
 
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
-            float4 a = image->at_4(x, y);
+            float4 a = image0->at_4(x, y);
 
-            for (auto const& i : items) {
-                int2 const db = i.image->dimensions_2();
+            for (size_t i = 1, len = items.size(); i < len; ++i) {
+                auto const imagei = items[i].image;
+
+                int2 const db = imagei->dimensions_2();
 
                 if ((x >= db[0]) | (y >= db[1])) {
                     continue;
                 }
 
-                float4 const b = i.image->at_4(x, y);
+                float4 const b = imagei->at_4(x, y);
 
                 a = float4(max(a.xyz() - b.xyz(), 0.f), a[3]);
             }

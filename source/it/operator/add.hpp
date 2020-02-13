@@ -20,6 +20,6 @@ uint32_t add(std::vector<Item> const& items, it::options::Options const& options
 
 uint32_t sub(std::vector<Item> const& items, it::options::Options const& options,
              thread::Pool& threads);
-}
+}  // namespace op
 
 #endif
