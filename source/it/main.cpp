@@ -32,9 +32,7 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
 void comparison(std::vector<Item> const& items);
 
 int main(int argc, char* argv[]) {
-#ifdef SU_DEBUG
     auto const total_start = std::chrono::high_resolution_clock::now();
-#endif
 
     logging::init(new logging::Std_out);
 
@@ -113,28 +111,28 @@ int main(int argc, char* argv[]) {
 
     if (Options::Operator::Add == args.op) {
         if (uint32_t const num = op::add(items, args, resources.threads()); num) {
-            LOGGING_VERBOSE("add " + string::to_string(num) + " images in " +
-                            string::to_string(chrono::seconds_since(total_start)) + " s");
+            logging::info("add " + string::to_string(num) + " images in " +
+                          string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Average == args.op) {
         if (uint32_t const num = op::average(items, args, resources.threads()); num) {
-            LOGGING_VERBOSE("average " + string::to_string(num) + " images in " +
-                            string::to_string(chrono::seconds_since(total_start)) + " s");
+            logging::info("average " + string::to_string(num) + " images in " +
+                          string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Diff == args.op) {
         if (uint32_t const num = op::difference(items, args, resources.threads()); num) {
-            LOGGING_VERBOSE("diff " + string::to_string(num) + " images in " +
-                            string::to_string(chrono::seconds_since(total_start)) + " s");
+            logging::info("diff " + string::to_string(num) + " images in " +
+                          string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Cat == args.op) {
         if (uint32_t const num = op::concatenate(items, args, pipeline, resources.threads()); num) {
-            LOGGING_VERBOSE("cat " + string::to_string(num) + " images in " +
-                            string::to_string(chrono::seconds_since(total_start)) + " s");
+            logging::info("cat " + string::to_string(num) + " images in " +
+                          string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Sub == args.op) {
         if (uint32_t const num = op::sub(items, args, resources.threads()); num) {
-            LOGGING_VERBOSE("subtract " + string::to_string(num) + " images in " +
-                            string::to_string(chrono::seconds_since(total_start)) + " s");
+            logging::info("subtract " + string::to_string(num) + " images in " +
+                          string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     }
 
