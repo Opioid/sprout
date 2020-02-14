@@ -14,15 +14,13 @@ uint32_t add(std::vector<Item> const& items, it::options::Options const& /*optio
 
     Float4 target = Float4(image::Description(d));
 
-    target.clear(float4(0.f));
-
     threads.run_range(
         [&items, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             int2 const d = target.description().dimensions_2();
 
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < d[0]; ++x) {
-                    float4 a = target.at(x, y);
+                    float4 a(0.f);
 
                     for (auto const& i : items) {
                         int2 const db = i.image->dimensions_2();
