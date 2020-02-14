@@ -596,6 +596,8 @@ int32_t su_export_frame(uint32_t frame) {
 int32_t su_start_render_frame(uint32_t frame) {
     ASSERT_ENGINE(-1)
 
+    engine->threads.wait_async();
+
     if (!engine->valid) {
         return -2;
     }
