@@ -61,8 +61,6 @@ class Tree {
     uint32_t num_triangles() const;
     uint32_t num_triangles(uint32_t part) const;
 
-    bool intersect(ray& ray, Node_stack& node_stack, Intersectioni& intersection) const;
-
     bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
     bool intersect(ray& ray, Node_stack& node_stack) const;

@@ -34,8 +34,6 @@ class Node {
 
     void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives);
 
-    bool intersect_p(math::ray const& ray) const;
-
     bool intersect_p(Simd3f const& origin, Simd3f const& inv_direction, scalar const& min_t,
                      scalar const& max_t) const;
 

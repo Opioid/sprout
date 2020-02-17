@@ -104,42 +104,6 @@ inline bool Node::intersect_p(math::ray const& ray) const {
 }
 */
 
-inline bool Node::intersect_p(math::ray const& ray) const {
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar const ray_max_t(ray.min_t);
-
-    Simd3f const bb_min = Simd3f::create_from_3(min_.v);
-    Simd3f const bb_max = Simd3f::create_from_3(max_.v);
-
-    Simd3f const l1 = (bb_min - ray_origin) * ray_inv_direction;
-    Simd3f const l2 = (bb_max - ray_origin) * ray_inv_direction;
-
-    // the order we use for those min/max is vital to filter out
-    // NaNs that happens when an inv_dir is +/- inf and
-    // (box_min - pos) is 0. inf * 0 = NaN
-    Simd3f const filtered_l1a = math::min(l1, Simd3f(simd::Infinity));
-    Simd3f const filtered_l2a = math::min(l2, Simd3f(simd::Infinity));
-
-    Simd3f const filtered_l1b = math::max(l1, Simd3f(simd::Neg_infinity));
-    Simd3f const filtered_l2b = math::max(l2, Simd3f(simd::Neg_infinity));
-
-    // now that we're back on our feet, test those slabs.
-    Simd3f max_t = math::max(filtered_l1a, filtered_l2a);
-    Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
-
-    // unfold back. try to hide the latency of the shufps & co.
-    max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));
-    min_t = max_scalar(min_t, SU_ROTATE_LEFT(min_t.v));
-
-    max_t = min_scalar(max_t, SU_MUX_HIGH(max_t.v, max_t.v));
-    min_t = max_scalar(min_t, SU_MUX_HIGH(min_t.v, min_t.v));
-
-    return 0 != (_mm_comige_ss(max_t.v, ray_min_t.v) & _mm_comige_ss(ray_max_t.v, min_t.v) &
-                 _mm_comige_ss(max_t.v, min_t.v));
-}
-
 // I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
 inline bool Node::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_inv_direction,

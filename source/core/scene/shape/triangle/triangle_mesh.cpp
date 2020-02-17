@@ -200,7 +200,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
-    scalar ray_min_t(ray.min_t);
+    scalar const ray_min_t(ray.min_t);
     scalar ray_max_t(ray.max_t);
 
     if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
