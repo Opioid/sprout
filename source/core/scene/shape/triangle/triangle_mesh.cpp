@@ -201,7 +201,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     sign(ray_inv_direction, ray_signs);
 
     scalar const ray_min_t(ray.min_t);
-    scalar ray_max_t(ray.max_t);
+    scalar       ray_max_t(ray.max_t);
 
     if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
                                          ray_max_t, ray_signs, node_stack, pi)) {
@@ -306,22 +306,16 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 
 float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                     Filter filter, Worker const& worker) const {
-    math::ray tray;
-    tray.origin = transformation.world_to_object_point(ray.origin);
-    tray.set_direction(transformation.world_to_object_vector(ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+    math::ray tray(transformation.world_to_object_point(ray.origin),
+                   transformation.world_to_object_vector(ray.direction), ray.min_t, ray.max_t);
 
     return tree_.opacity(tray, ray.time, entity, filter, worker);
 }
 
 bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
                            Filter filter, Worker const& worker, float3& ta) const {
-    math::ray tray;
-    tray.origin = transformation.world_to_object_point(ray.origin);
-    tray.set_direction(transformation.world_to_object_vector(ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+    math::ray tray(transformation.world_to_object_point(ray.origin),
+                   transformation.world_to_object_vector(ray.direction), ray.min_t, ray.max_t);
 
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
@@ -352,9 +346,32 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
         c = std::abs(c);
     }
 
+    /*
     if (c <= Dot_min) {
+        Ray tray(p, dir, 0.f, 1000.f);
+
+        shape::Intersection intersection;
+
+        if (intersect_nsf(tray, transformation, node_stack, intersection)) {
+            float const myc = -dot(intersection.geo_n, dir);
+
+            if (myc <= Dot_min) {
+                return false;
+            }
+
+            float const mysl = squared_distance(p, intersection.p);
+
+            sample.wi  = dir;
+            sample.uvw = float3(intersection.uv);
+            sample.pdf = (2.f * Pi) * mysl / (myc *  area);
+            sample.t   = offset_b(tray.max_t);
+
+            return true;
+        }
+
         return false;
     }
+    */
 
     sample.wi  = dir;
     sample.uvw = float3(tc);
