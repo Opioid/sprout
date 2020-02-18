@@ -57,7 +57,7 @@ Image* Reader::read(std::istream& stream) {
     // Check signature
     stream.read(reinterpret_cast<char*>(header), Signature_size);
 
-    if (0 != memcmp(reinterpret_cast<const void*>(Signature), reinterpret_cast<void*>(header),
+    if (0 != memcmp(reinterpret_cast<const void*>(Signature), static_cast<void*>(header),
                     Signature_size)) {
         logging::push_error("Bad EXR signature");
         return nullptr;

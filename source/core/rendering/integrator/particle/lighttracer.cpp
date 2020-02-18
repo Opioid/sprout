@@ -278,7 +278,7 @@ Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounce
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
       settings_{min_bounces, max_bounces, indirect_caustics, full_light_path} {
-    std::memset(reinterpret_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
+    std::memset(static_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
 }
 
 Lighttracer_pool::~Lighttracer_pool() {
@@ -291,7 +291,7 @@ Lighttracer_pool::~Lighttracer_pool() {
 
 Lighttracer* Lighttracer_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Lighttracer(rng, settings_);
     }
 

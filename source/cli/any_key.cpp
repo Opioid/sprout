@@ -59,7 +59,7 @@ char read_key() {
     tcsetattr(STDIN_FILENO, TCSANOW, &settings);
 
     unsigned char keycodes[MAGIC_MAX_CHARS];
-    ssize_t const count = read(STDIN_FILENO, reinterpret_cast<void*>(keycodes), MAGIC_MAX_CHARS);
+    ssize_t const count = read(STDIN_FILENO, static_cast<void*>(keycodes), MAGIC_MAX_CHARS);
 
     tcsetattr(STDIN_FILENO, TCSANOW, &initial_settings);
 

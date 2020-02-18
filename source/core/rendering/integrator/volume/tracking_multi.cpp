@@ -474,7 +474,7 @@ Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators)
 
 Integrator* Tracking_multi_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Tracking_multi(rng);
     }
 

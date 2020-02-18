@@ -164,7 +164,7 @@ PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounce
 
 Integrator* PM_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) PM(rng, settings_, progressive_);
     }
 

@@ -210,7 +210,7 @@ Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, bool progressive, uin
 
 Integrator* Pathtracer_pool::get(uint32_t id, rnd::Generator& rng) const {
     if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, reinterpret_cast<void*>(&integrators_[id]), 4)) {
+        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Pathtracer(rng, settings_, progressive_);
     }
 

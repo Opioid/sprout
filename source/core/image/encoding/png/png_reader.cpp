@@ -100,7 +100,7 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
 
     stream.read(reinterpret_cast<char*>(signature), Signature_size);
 
-    if (0 != memcmp(reinterpret_cast<const void*>(Signature), reinterpret_cast<void*>(signature),
+    if (0 != memcmp(reinterpret_cast<const void*>(Signature), static_cast<void*>(signature),
                     Signature_size)) {
         logging::push_error("Bad PNG signature");
         return nullptr;
