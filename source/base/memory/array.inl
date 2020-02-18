@@ -30,7 +30,7 @@ Array<T>::Array(std::initializer_list<T> list)
 }
 
 template <typename T>
-Array<T>::Array(Array&& other)
+Array<T>::Array(Array&& other) noexcept
     : capacity_(other.capacity_), size_(other.size_), data_(other.data_) {
     other.capacity_ = 0;
     other.size_     = 0;
@@ -73,7 +73,7 @@ T* Array<T>::data() {
 }
 
 template <typename T>
-void Array<T>::operator=(Array&& other) {
+void Array<T>::operator=(Array&& other) noexcept {
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
     std::swap(data_, other.data_);
@@ -180,7 +180,7 @@ Concurrent_array<T>::Concurrent_array(std::initializer_list<T> list)
 }
 
 template <typename T>
-Concurrent_array<T>::Concurrent_array(Concurrent_array&& other)
+Concurrent_array<T>::Concurrent_array(Concurrent_array&& other) noexcept
     : capacity_(other.capacity_), size_(other.size_), data_(other.data_) {
     other.capacity_ = 0;
     other.size_     = 0;
@@ -223,7 +223,7 @@ T* Concurrent_array<T>::data() {
 }
 
 template <typename T>
-void Concurrent_array<T>::operator=(Concurrent_array&& other) {
+void Concurrent_array<T>::operator=(Concurrent_array&& other) noexcept {
     int32_t const tmp = size_;
     size_             = other.size_;
     other.size_       = tmp;

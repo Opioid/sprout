@@ -44,8 +44,8 @@ class Pool {
     void wait_all();
 
     struct Unique {
-        int32_t begin;
-        int32_t end;
+        int32_t begin = 0;
+        int32_t end   = 0;
 
         std::condition_variable wake_signal;
         std::condition_variable done_signal;

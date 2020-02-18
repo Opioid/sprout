@@ -391,7 +391,13 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size)  {
 // https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
 
 inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1D()
-    : lut_size_(0), cdf_size_(0), lut_(nullptr), cdf_(nullptr), integral_(-1.f) {}
+    : lut_size_(0),
+      cdf_size_(0),
+      lut_(nullptr),
+      cdf_(nullptr),
+      integral_(0.f),
+      size_(0.f),
+      lut_range_(0.f) {}
 
 inline Distribution_implicit_pdf_lut_lin_1D::~Distribution_implicit_pdf_lut_lin_1D() {
     memory::free_aligned(cdf_);
@@ -499,8 +505,10 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
     if (0.f == integral && 0.f != integral_) {
         memory::free_aligned(cdf_);
 
-        cdf_size_ = 3;
-        cdf_      = memory::allocate_aligned<float>(cdf_size_);
+        uint32_t const cdf_size = 3;
+
+        cdf_size_ = cdf_size;
+        cdf_      = memory::allocate_aligned<float>(cdf_size);
 
         cdf_[0] = 0.f;
         cdf_[1] = 1.f;

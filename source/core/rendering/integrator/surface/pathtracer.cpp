@@ -114,7 +114,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (material_sample.is_pure_emissive()) {
-            transparent &= !worker.scene().prop(intersection.prop)->visible_in_camera() &
+            transparent &= (!worker.scene().prop(intersection.prop)->visible_in_camera()) &
                            (ray.max_t >= scene::Ray_max_t);
             break;
         }

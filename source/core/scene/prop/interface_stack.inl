@@ -22,7 +22,7 @@ inline bool Interface::matches(Intersection const& intersection) const {
 }
 
 inline Interface_stack::Interface_stack()
-    : stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
+    : index_(0), stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
 
 inline Interface_stack::Interface_stack(Interface_stack const& other)
     : stack_(memory::allocate_aligned<Interface>(Num_entries)) {

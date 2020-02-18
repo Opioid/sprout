@@ -18,7 +18,7 @@ class Array {
 
     Array(std::initializer_list<T> list);
 
-    Array(Array&& other);
+    Array(Array&& other) noexcept;
 
     ~Array();
 
@@ -33,7 +33,7 @@ class Array {
     T const* data() const;
     T*       data();
 
-    void operator=(Array&& other);
+    void operator=(Array&& other) noexcept;
 
     void clear();
 
@@ -74,7 +74,7 @@ class Concurrent_array {
 
     Concurrent_array(std::initializer_list<T> list);
 
-    Concurrent_array(Concurrent_array&& other);
+    Concurrent_array(Concurrent_array&& other) noexcept;
 
     ~Concurrent_array();
 
@@ -89,7 +89,7 @@ class Concurrent_array {
     T const* data() const;
     T*       data();
 
-    void operator=(Concurrent_array&& other);
+    void operator=(Concurrent_array&& other) noexcept;
 
     void clear();
 

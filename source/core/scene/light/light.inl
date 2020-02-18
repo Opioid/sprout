@@ -22,7 +22,7 @@ using Sample_from    = shape::Sample_from;
 using Sampler        = sampler::Sampler;
 
 inline Light::Light(Type type, uint32_t prop, uint32_t part)
-    : type_(type), prop_(prop), part_(part) {}
+    : type_(type), prop_(prop), part_(part), extent_(0.f) {}
 
 inline float Light::area() const {
     return extent_;

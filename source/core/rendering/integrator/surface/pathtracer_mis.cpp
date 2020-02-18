@@ -279,7 +279,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             result_li += throughput * radiance;
 
             if (pure_emissive) {
-                transparent &= !worker.scene().prop(intersection.prop)->visible_in_camera() &
+                transparent &= (!worker.scene().prop(intersection.prop)->visible_in_camera()) &
                                (ray.max_t >= scene::Ray_max_t);
                 break;
             }

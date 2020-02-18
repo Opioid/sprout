@@ -74,6 +74,8 @@ struct Engine {
           scene_loader(resources, material_provider.create_fallback_material()),
           scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources),
           driver(threads, material::Provider::max_sample_size(), progressor),
+          frame(0),
+          frame_iteration(0),
           progressive(progressive),
           valid(false) {}
 
