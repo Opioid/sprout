@@ -256,41 +256,12 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& transforma
     return true;
 }
 
-bool Rectangle::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
+bool Rectangle::sample(uint32_t part, float3 const& p, Transformation const& transformation,
                        float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
                        Node_stack& /*node_stack*/, Sample_to& sample) const {
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
-    float2 const xy = 2.f * r2 - float2(1.f);
 
-    float3 const scale(transformation.scale_xy(), 1.f);
-
-    float3 const ls = float3(xy, 0.f);
-
-    float3 const ws = transformation.position +
-                      transform_vector(transformation.rotation, scale * ls);
-
-    float3 const axis = ws - p;
-
-    float const sl = squared_length(axis);
-    float const t  = std::sqrt(sl);
-
-    float3 const wi = axis / t;
-
-    float c = -dot(transformation.rotation.r[2], wi);
-
-    if (two_sided) {
-        c = std::abs(c);
-    }
-
-    if (c <= Dot_min) {
-        return false;
-    }
-
-    sample.wi  = wi;
-    sample.pdf = sl / (c * area);
-    sample.t   = offset_b(t);
-
-    return true;
+    return Rectangle::sample(part, p, r2, transformation, area, two_sided, sample);
 }
 
 bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, float area,
@@ -298,13 +269,9 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& transformation, 
                        float2 importance_uv, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
                        Sample_from& sample) const {
     float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
-    float2 const xy = 2.f * r0 - float2(1.f);
 
-    float3 const scale(transformation.scale_xy(), 1.f);
-
-    float3 const ls = float3(xy, 0.f);
-    float3 const ws = transformation.position +
-                      transform_vector(transformation.rotation, scale * ls);
+    float3 const ls(-2.f * r0 + 1.f, 0.f);
+    float3 const ws = transformation.object_to_world_point(ls);
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, transformation.rotation);
 
@@ -339,16 +306,16 @@ float Rectangle::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersecti
 bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv,
                        Transformation const& transformation, float area, bool two_sided,
                        Sample_to& sample) const {
-    float3 ls(-2.f * uv[0] + 1.f, -2.f * uv[1] + 1.f, 0.f);
-    float3 ws = transformation.object_to_world_point(ls);
+    float3 const ls(-2.f * uv + 1.f, 0.f);
+    float3 const ws = transformation.object_to_world_point(ls);
 
-    float3 axis = ws - p;
-    float  sl   = squared_length(axis);
-    float  d    = std::sqrt(sl);
+    float3 const axis = ws - p;
+    float const  sl   = squared_length(axis);
+    float const  t    = std::sqrt(sl);
 
-    float3 dir = axis / d;
+    float3 const dir = axis / t;
 
-    float3 wn = transformation.rotation.r[2];
+    float3 const wn = transformation.rotation.r[2];
 
     float c = -dot(wn, dir);
 
@@ -356,15 +323,14 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv,
         c = std::abs(c);
     }
 
-    if (c <= 0.f) {
+    if (c <= Dot_min) {
         return false;
     }
 
     sample.wi  = dir;
     sample.uvw = float3(uv);
-    sample.t   = d;
-    // sin_theta because of the uv weight
-    sample.pdf = sl / (c * area /** sin_theta*/);
+    sample.t   = offset_b(t);
+    sample.pdf = sl / (c * area);
 
     return true;
 }
