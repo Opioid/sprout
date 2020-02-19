@@ -127,7 +127,7 @@ bool Infinite_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& 
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& n,
                              Transformation const& transformation, float /*area*/,
                              bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                             Node_stack& /*node_stack*/, Sample_to& sample) const {
+                             Sample_to& sample) const {
     auto const [x, y] = orthonormal_basis(n);
 
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
@@ -152,7 +152,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
                              Transformation const& transformation, float /*area*/,
                              bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                             Node_stack& /*node_stack*/, Sample_to& sample) const {
+                             Sample_to& sample) const {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = math::sample_sphere_uniform(uv);
 
@@ -175,8 +175,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
 bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
                              float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
                              uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
-                             AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                             Sample_from& /*sample*/) const {
+                             AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 

@@ -190,7 +190,7 @@ bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transform
 
 bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
                   float /*area*/, bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                  Node_stack& /*node_stack*/, Sample_to& sample) const {
+                  Sample_to& sample) const {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = squared_length(axis);
     float const  radius              = transformation.scale_x();
@@ -218,14 +218,13 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 
 bool Cube::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
                   bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                  float2 /*importance_uv*/, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
-                  Sample_from& /*sample*/) const {
+                  float2 /*importance_uv*/, AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
 bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
                          float volume, Sampler& sampler, uint32_t sampler_dimension,
-                         Node_stack& /*node_stack*/, Sample_to& sample) const {
+                         Sample_to& sample) const {
     float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
     float const  r1 = sampler.generate_sample_1D(sampler_dimension);
 

@@ -160,14 +160,13 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*transformation*/,
                    float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                   uint32_t /*sampler_dimension*/, Node_stack& /*node_stack*/,
-                   Sample_to& /*sample*/) const {
+                   uint32_t /*sampler_dimension*/, Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
                    bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                   float2 /*importance_uv*/, AABB const& /*bounds*/, Node_stack& /*node_stack*/,
+                   float2 /*importance_uv*/, AABB const& /*bounds*/,
                    Sample_from& /*sample*/) const {
     return false;
 }

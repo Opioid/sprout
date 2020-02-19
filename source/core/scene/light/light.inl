@@ -53,12 +53,12 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 
 
     if (total_sphere) {
         if (!shape->sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
-                           worker.node_stack(), result)) {
+                           result)) {
             return false;
         }
     } else {
         if (!shape->sample(part, p, n, transformation, area, two_sided, sampler, sampler_dimension,
-                           worker.node_stack(), result)) {
+                           result)) {
             return false;
         }
 
@@ -105,8 +105,7 @@ static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, flo
                                  Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
                                  Sample_to& result) {
     if (!worker.scene().prop_shape(prop)->sample_volume(part, p, transformation, volume, sampler,
-                                                        sampler_dimension, worker.node_stack(),
-                                                        result)) {
+                                                        sampler_dimension, result)) {
         return false;
     }
 
@@ -207,7 +206,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 
     if (!worker.scene().prop_shape(prop)->sample(part, transformation, area, two_sided, sampler,
                                                  sampler_dimension, importance_uv, bounds,
-                                                 worker.node_stack(), result)) {
+                                                 result)) {
         return false;
     }
 
@@ -280,7 +279,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 
     if (!worker.scene().prop_shape(prop)->sample(part, transformation, area, two_sided, sampler,
                                                  sampler_dimension, importance_uv.uv, bounds,
-                                                 worker.node_stack(), result)) {
+                                                 result)) {
         return false;
     }
 

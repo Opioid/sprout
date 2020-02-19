@@ -80,21 +80,19 @@ class Shape {
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
                         Transformation const& transformation, float area, bool two_sided,
-                        Sampler& sampler, uint32_t sampler_dimension, Node_stack& node_stack,
-                        Sample_to& sample) const;
+                        Sampler& sampler, uint32_t sampler_dimension, Sample_to& sample) const;
 
     virtual bool sample(uint32_t part, float3 const& p, Transformation const& transformation,
                         float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                        Node_stack& node_stack, Sample_to& sample) const = 0;
+                        Sample_to& sample) const = 0;
 
     virtual bool sample_volume(uint32_t part, float3 const& p, Transformation const& transformation,
                                float volume, Sampler& sampler, uint32_t sampler_dimension,
-                               Node_stack& node_stack, Sample_to& sample) const;
+                               Sample_to& sample) const;
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
                         bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                        float2 importance_uv, AABB const& bounds, Node_stack& node_stack,
-                        Sample_from& sample) const = 0;
+                        float2 importance_uv, AABB const& bounds, Sample_from& sample) const = 0;
 
     // All pdf functions implicitely assume that the passed
     // ray/intersection/transformation combination actually lead to a hit.
@@ -131,7 +129,9 @@ class Shape {
     virtual float volume(uint32_t part, float3 const& scale) const = 0;
 
     virtual bool is_complex() const;
+
     virtual bool is_finite() const;
+
     virtual bool is_analytical() const;
 
     virtual void prepare_sampling(uint32_t part);
