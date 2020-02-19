@@ -46,22 +46,14 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
                                Node_stack& node_stack, shape::Intersection& intersection) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
-    Simd3f ray_origin(ray.origin);
-    ray_origin = transform_point(world_to_object, ray_origin);
-
-    Simd3f ray_direction(ray.direction);
-    ray_direction = transform_vector(world_to_object, ray_direction);
-
-    Simd3f ray_inv_direction = reciprocal(ray_direction);
-
-    alignas(16) uint32_t ray_signs[4];
-    math::sign(ray_inv_direction, ray_signs);
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
     scalar ray_min_t(ray.min_t);
     scalar ray_max_t(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
-                                         ray_max_t, ray_signs, node_stack, pi)) {
+    if (Intersection pi;
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
         ray.max_t = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
@@ -106,28 +98,36 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformation,
                                    Node_stack&          node_stack,
                                    shape::Intersection& intersection) const {
-    math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
-    Intersection pi;
-    if (tree_.intersect(tray, node_stack, pi)) {
-        ray.max_t = tray.max_t;
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
-        float3 p_w = ray.point(tray.max_t);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
-        float2 const uv = tree_.interpolate_triangle_uv(pi.u.v, pi.v.v, pi.index);
+    if (Intersection pi;
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        ray.max_t = ray_max_t.x();
 
-        float3 geo_n = tree_.triangle_normal(pi.index);
+        Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+
+        Simd4x4f const object_to_world(transformation.object_to_world());
+
+        Simd3f p_w = transform_point(object_to_world, p);
+
+        float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
+
+        Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
         uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-        float3 geo_n_w = transform_vector(transformation.rotation, geo_n);
+        Simd3x3f rotation(transformation.rotation);
 
-        intersection.p     = p_w;
-        intersection.geo_n = geo_n_w;
+        Simd3f geo_n_w = transform_vector(rotation, geo_n);
+
+        intersection.p     = float3(p_w);
+        intersection.geo_n = float3(geo_n_w);
         intersection.uv    = uv;
         intersection.part  = material_index;
 
@@ -138,15 +138,31 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
 }
 
 bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack, Normals& /*normals*/) const {
-    math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+                               Node_stack& node_stack, Normals& normals) const {
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
-    if (tree_.intersect(tray, node_stack)) {
-        ray.max_t = tray.max_t;
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
+
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
+
+    if (Intersection pi;
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        ray.max_t = ray_max_t.x();
+
+        Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
+
+        Simd3f geo_n = tree_.triangle_normal_v(pi.index);
+
+        Simd3x3f rotation(transformation.rotation);
+
+        Simd3f geo_n_w = transform_vector(rotation, geo_n);
+        Simd3f n_w     = transform_vector(rotation, n);
+
+        normals.geo_n = float3(geo_n_w);
+        normals.n     = float3(n_w);
+
         return true;
     }
 
@@ -155,22 +171,21 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 
 bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transformation,
                                  Node_stack& node_stack) const {
-    math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
-    return tree_.intersect_p(tray, node_stack);
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
+
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
+
+    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack);
 }
 
 float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                               Filter filter, Worker const& worker) const {
-    math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+    math::ray tray(transformation.world_to_object_point(ray.origin),
+                   transformation.world_to_object_vector(ray.direction), ray.min_t, ray.max_t);
 
     return tree_.opacity(tray, ray.time, entity, filter, worker);
 }
@@ -178,11 +193,8 @@ float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformati
 bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
                                      uint32_t entity, Filter filter, Worker const& worker,
                                      float3& ta) const {
-    math::ray tray;
-    tray.origin = transform_point(transformation.world_to_object, ray.origin);
-    tray.set_direction(transform_vector(transformation.world_to_object, ray.direction));
-    tray.min_t = ray.min_t;
-    tray.max_t = ray.max_t;
+    math::ray tray(transformation.world_to_object_point(ray.origin),
+                   transformation.world_to_object_vector(ray.direction), ray.min_t, ray.max_t);
 
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }

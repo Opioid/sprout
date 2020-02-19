@@ -126,22 +126,14 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
     Simd4x4f const world_to_object(transformation.world_to_object);
 
-    Simd3f ray_origin(ray.origin);
-    ray_origin = transform_point(world_to_object, ray_origin);
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
-    Simd3f ray_direction(ray.direction);
-    ray_direction = transform_vector(world_to_object, ray_direction);
+    scalar const ray_min_t(ray.min_t);
+    scalar       ray_max_t(ray.max_t);
 
-    Simd3f ray_inv_direction = reciprocal(ray_direction);
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
-
-    scalar ray_min_t(ray.min_t);
-    scalar ray_max_t(ray.max_t);
-
-    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
-                                         ray_max_t, ray_signs, node_stack, pi)) {
+    if (Intersection pi;
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
         ray.max_t = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
@@ -189,22 +181,14 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
                          shape::Intersection& intersection) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
-    Simd3f ray_origin(ray.origin);
-    ray_origin = transform_point(world_to_object, ray_origin);
-
-    Simd3f ray_direction(ray.direction);
-    ray_direction = transform_vector(world_to_object, ray_direction);
-
-    Simd3f ray_inv_direction = reciprocal(ray_direction);
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
     scalar const ray_min_t(ray.min_t);
     scalar       ray_max_t(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
-                                         ray_max_t, ray_signs, node_stack, pi)) {
+    if (Intersection pi;
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
         ray.max_t = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
@@ -238,22 +222,14 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
                      Normals& normals) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
-    Simd3f ray_origin(ray.origin);
-    ray_origin = transform_point(world_to_object, ray_origin);
-
-    Simd3f ray_direction(ray.direction);
-    ray_direction = transform_vector(world_to_object, ray_direction);
-
-    Simd3f const ray_inv_direction = reciprocal(ray_direction);
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
     scalar const ray_min_t(ray.min_t);
     scalar       ray_max_t(ray.max_t);
 
-    if (Intersection pi; tree_.intersect(ray_origin, ray_direction, ray_inv_direction, ray_min_t,
-                                         ray_max_t, ray_signs, node_stack, pi)) {
+    if (Intersection pi;
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
         ray.max_t = ray_max_t.x();
 
         Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
@@ -284,24 +260,15 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 
     //	return tree_.intersect_p(tray, node_stack);
 
-    Simd4x4f world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(transformation.world_to_object);
 
-    Simd3f ray_origin(ray.origin);
-    ray_origin = transform_point(world_to_object, ray_origin);
+    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
+    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
-    Simd3f ray_direction(ray.direction);
-    ray_direction = transform_vector(world_to_object, ray_direction);
+    scalar const ray_min_t(ray.min_t);
+    scalar const ray_max_t(ray.max_t);
 
-    Simd3f ray_inv_direction = reciprocal(ray_direction);
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
-
-    scalar ray_min_t(ray.min_t);
-    scalar ray_max_t(ray.max_t);
-
-    return tree_.intersect_p(ray_origin, ray_direction, ray_inv_direction, ray_min_t, ray_max_t,
-                             ray_signs, node_stack);
+    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack);
 }
 
 float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,

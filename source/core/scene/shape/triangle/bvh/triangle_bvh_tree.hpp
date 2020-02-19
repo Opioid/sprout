@@ -61,23 +61,20 @@ class Tree {
     uint32_t num_triangles() const;
     uint32_t num_triangles(uint32_t part) const;
 
-    bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const;
+    //    bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
-    bool intersect(ray& ray, Node_stack& node_stack) const;
+    //    bool intersect(ray& ray, Node_stack& node_stack) const;
 
-    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                   Simd3f const& ray_inv_direction, scalar const& ray_min_t, scalar& ray_max_t,
-                   uint32_t ray_signs[4], Node_stack& node_stack, Intersection& intersection) const;
+    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
+                   scalar& ray_max_t, Node_stack& node_stack, Intersection& intersection) const;
 
-    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                   Simd3f const& ray_inv_direction, scalar const& ray_min_t, scalar& ray_max_t,
-                   uint32_t ray_signs[4], Node_stack& node_stack) const;
+    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
+                   scalar& ray_max_t, Node_stack& node_stack) const;
 
-    bool intersect_p(ray const& ray, Node_stack& node_stack) const;
+    //    bool intersect_p(ray const& ray, Node_stack& node_stack) const;
 
-    bool intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                     Simd3f const& ray_inv_direction, scalar const& ray_min_t,
-                     scalar const& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack) const;
+    bool intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
+                     scalar const& ray_max_t, Node_stack& node_stack) const;
 
     float opacity(ray& ray, uint64_t time, uint32_t entity, Filter filter,
                   Worker const& worker) const;

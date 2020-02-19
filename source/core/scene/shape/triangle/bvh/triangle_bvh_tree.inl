@@ -61,7 +61,7 @@ template <typename Data>
 uint32_t Tree<Data>::num_triangles(uint32_t part) const {
     return num_part_triangles_[part];
 }
-
+/*
 template <typename Data>
 bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const {
     node_stack.push(0xFFFFFFFF);
@@ -162,12 +162,16 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const {
 
     return false;
 }
-
+*/
 template <typename Data>
 bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                           Simd3f const& ray_inv_direction, scalar const& ray_min_t,
-                           scalar& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack,
+                           scalar const& ray_min_t, scalar& ray_max_t, Node_stack& node_stack,
                            Intersection& intersection) const {
+    Simd3f const ray_inv_direction = reciprocal(ray_direction);
+
+    alignas(16) uint32_t ray_signs[4];
+    sign(ray_inv_direction, ray_signs);
+
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -214,8 +218,13 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
 
 template <typename Data>
 bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                           Simd3f const& ray_inv_direction, scalar const& ray_min_t,
-                           scalar& ray_max_t, uint32_t ray_signs[4], Node_stack& node_stack) const {
+                           scalar const& ray_min_t, scalar& ray_max_t,
+                           Node_stack& node_stack) const {
+    Simd3f const ray_inv_direction = reciprocal(ray_direction);
+
+    alignas(16) uint32_t ray_signs[4];
+    sign(ray_inv_direction, ray_signs);
+
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -253,7 +262,7 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
 
     return false;
 }
-
+/*
 template <typename Data>
 bool Tree<Data>::intersect_p(ray const& ray, Node_stack& node_stack) const {
     node_stack.push(0xFFFFFFFF);
@@ -293,12 +302,16 @@ bool Tree<Data>::intersect_p(ray const& ray, Node_stack& node_stack) const {
 
     return false;
 }
-
+*/
 template <typename Data>
 bool Tree<Data>::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                             Simd3f const& ray_inv_direction, scalar const& ray_min_t,
-                             scalar const& ray_max_t, uint32_t ray_signs[4],
+                             scalar const& ray_min_t, scalar const& ray_max_t,
                              Node_stack& node_stack) const {
+    Simd3f const ray_inv_direction = reciprocal(ray_direction);
+
+    alignas(16) uint32_t ray_signs[4];
+    sign(ray_inv_direction, ray_signs);
+
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
