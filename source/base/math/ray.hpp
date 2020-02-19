@@ -10,8 +10,6 @@ struct ray {
 
     ray(float3 const& origin, float3 const& direction, float min_t = 0.f, float max_t = 1.f);
 
-    ray(float3 const& origin, float3 const& direction, float min_t, float max_t, uint32_t depth);
-
     void set_direction(float3 const& v);
 
     float3 point(float t) const;
@@ -26,8 +24,6 @@ struct ray {
     float max_t;
 
     uint8_t signs[3];
-
-    uint32_t depth;
 };
 
 }  // namespace math

@@ -128,7 +128,7 @@ uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const {
 }
 
 Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) {
-    return Ray(origin, direction, 0.f, Ray_max_t, 0, time, 0.f);
+    return Ray(origin, direction, 0.f, Ray_max_t, 0, 0.f, time);
 }
 
 }  // namespace scene::camera

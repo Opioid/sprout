@@ -405,8 +405,8 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
         return float3(0.f);
     }
 
-    Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t, ray.depth, ray.time,
-                   ray.wavelength);
+    Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t, ray.depth, ray.wavelength,
+                   ray.time);
 
     float3 tr;
     if (!worker.transmitted(shadow_ray, float3(0.f), intersection, Filter::Nearest, tr)) {

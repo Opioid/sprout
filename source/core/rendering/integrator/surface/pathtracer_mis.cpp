@@ -358,8 +358,8 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
         return float3(0.f);
     }
 
-    Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t, history.depth, history.time,
-                   history.wavelength);
+    Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t, history.depth, history.wavelength,
+                   history.time);
 
     float3 tr;
     if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {

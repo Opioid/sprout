@@ -18,18 +18,6 @@ inline ray::ray(float3 const& origin, float3 const& direction, float min_t, floa
             inv_direction[1] < 0.f ? uint8_t(1u) : uint8_t(0u),
             inv_direction[2] < 0.f ? uint8_t(1u) : uint8_t(0u)} {}
 
-inline ray::ray(float3 const& origin, float3 const& direction, float min_t, float max_t,
-                uint32_t depth)
-    : origin(origin),
-      direction(direction),
-      inv_direction(reciprocal(direction)),
-      min_t(min_t),
-      max_t(max_t),
-      signs{inv_direction[0] < 0.f ? uint8_t(1u) : uint8_t(0u),
-            inv_direction[1] < 0.f ? uint8_t(1u) : uint8_t(0u),
-            inv_direction[2] < 0.f ? uint8_t(1u) : uint8_t(0u)},
-      depth(depth) {}
-
 inline void ray::set_direction(float3 const& v) {
     direction     = v;
     inv_direction = reciprocal(v);

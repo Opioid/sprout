@@ -240,7 +240,7 @@ void Perspective::update_focus(uint64_t time, Worker& worker) {
         auto const&    transformation = worker.scene().prop_transformation_at(entity_, time, temp);
 
         Ray ray(transformation.position, transformation.object_to_world_vector(direction), 0.f,
-                Ray_max_t, 0, time, 0.f);
+                Ray_max_t, 0, 0.f, time);
 
         prop::Intersection intersection;
         if (worker.intersect(ray, intersection)) {

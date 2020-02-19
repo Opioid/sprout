@@ -238,8 +238,8 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
         return false;
     }
 
-    Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.time,
-            history.wavelength);
+    Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.wavelength,
+            history.time);
 
     float3 tr;
     if (!worker.transmitted(ray, material_sample.wo(), intersection, filter, tr)) {
