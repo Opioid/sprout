@@ -72,13 +72,13 @@ void Camera::set_parameters(json::Value const& parameters) {
 
     for (auto& n : parameters.GetObject()) {
         if ("frame_step" == n.name) {
-            frame_step_ = uint64_t(float(scene::Units_per_second) * json::read_float(n.value));
+            frame_step_ = time(json::read_double(n.value));
         } else if ("frames_per_second" == n.name) {
-            float const fps = json::read_float(n.value);
-            if (0.f == fps) {
+            double const fps = json::read_double(n.value);
+            if (0. == fps) {
                 frame_step_ = 0;
             } else {
-                frame_step_ = scene::Units_per_second / uint64_t(fps);
+                frame_step_ = uint64_t(std::llrint(double(scene::Units_per_second) / fps));
             }
         } else if ("motion_blur" == n.name) {
             motion_blur = json::read_bool(n.value);

@@ -8,14 +8,16 @@
 
 namespace scene {
 
-float constexpr Ray_max_t = 1.e7f;
+// std::numeric_limits<float>::max();
+float constexpr Ray_max_t = 3.4028234663852886e+38f;
 
-float constexpr Almost_ray_max_t = Ray_max_t - 1.f;
+// std::nextafter(std::numeric_limits<float>::max(), 0.f);
+float constexpr Almost_ray_max_t = 3.4028232635611926e+38f;
 
 uint64_t constexpr Units_per_second = 705600000;
 
-static inline uint64_t constexpr time(double dtime) {
-    return uint64_t(double(Units_per_second) * dtime);
+static inline uint64_t time(double dtime) {
+    return uint64_t(std::llrint(double(Units_per_second) * dtime));
 }
 
 // The following block implements the ray offset technique described in
