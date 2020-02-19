@@ -8,16 +8,14 @@
 
 namespace scene {
 
-float constexpr Ray_max_t = 2.e6f;
+float constexpr Ray_max_t = 1.e7f;
 
-float constexpr Almost_ray_max_t = Ray_max_t - 0.08f;
+float constexpr Almost_ray_max_t = Ray_max_t - 1.f;
 
 uint64_t constexpr Units_per_second = 705600000;
 
-uint64_t constexpr Static_time = 0xffffffffffffffff;
-
 static inline uint64_t constexpr time(double dtime) {
-    return uint64_t(static_cast<double>(Units_per_second) * dtime);
+    return uint64_t(double(Units_per_second) * dtime);
 }
 
 // The following block implements the ray offset technique described in
@@ -52,13 +50,11 @@ static inline float3 offset_ray(float3 const& p, float3 const& n) {
 }
 
 static inline float offset_f(float t) {
-    return t < Origin ? t + Float_scale
-                      : int_as_float(float_as_int(t) + static_cast<int32_t>(Int_scale));
+    return t < Origin ? t + Float_scale : int_as_float(float_as_int(t) + int32_t(Int_scale));
 }
 
 static inline float offset_b(float t) {
-    return t < Origin ? t - Float_scale
-                      : int_as_float(float_as_int(t) - static_cast<int32_t>(Int_scale));
+    return t < Origin ? t - Float_scale : int_as_float(float_as_int(t) - int32_t(Int_scale));
 }
 
 }  // namespace scene

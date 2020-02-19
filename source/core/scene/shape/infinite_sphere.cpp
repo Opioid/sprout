@@ -131,7 +131,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
     auto const [x, y] = orthonormal_basis(n);
 
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
+    float3 const dir = sample_oriented_hemisphere_uniform(uv, x, y, n);
 
     sample.wi = dir;
 
