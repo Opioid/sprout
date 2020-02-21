@@ -4,8 +4,6 @@ target_sources(core
     "emission.hpp"
     "tracking_multi.cpp"
     "tracking_multi.hpp"
-    "tracking_multi_pre.cpp"
-    "tracking_multi_pre.hpp"
     "tracking_single.cpp"
     "tracking_single.hpp"
     "tracking.cpp"
