@@ -8,7 +8,7 @@ namespace math {
 struct ray {
     ray();
 
-    ray(float3 const& origin, float3 const& direction, float min_t = 0.f, float max_t = 1.f);
+    ray(float3 const& origin, float3 const& direction, float min_t, float max_t);
 
     void set_direction(float3 const& v);
 
