@@ -362,6 +362,9 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filte
     scalar       ray_max_t(ray.max_t);
     scalar const max_t = ray_max_t;
 
+    alignas(16) uint32_t ray_signs[4];
+    sign(ray_inv_direction, ray_signs);
+
     scalar u;
     scalar v;
 
@@ -371,7 +374,7 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filte
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
-                if (0 == ray.signs[node.axis()]) {
+                if (0 == ray_signs[node.axis()]) {
                     node_stack.push(node.next());
                     ++n;
                 } else {
@@ -424,6 +427,9 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
     scalar       ray_max_t(ray.max_t);
     scalar const max_t = ray_max_t;
 
+    alignas(16) uint32_t ray_signs[4];
+    sign(ray_inv_direction, ray_signs);
+
     scalar u;
     scalar v;
 
@@ -433,7 +439,7 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
-                if (0 == ray.signs[node.axis()]) {
+                if (0 == ray_signs[node.axis()]) {
                     node_stack.push(node.next());
                     ++n;
                 } else {

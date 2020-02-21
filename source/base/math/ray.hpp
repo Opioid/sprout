@@ -22,8 +22,6 @@ struct ray {
 
     float min_t;
     float max_t;
-
-    uint8_t signs[3];
 };
 
 }  // namespace math
