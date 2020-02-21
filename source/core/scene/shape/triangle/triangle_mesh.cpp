@@ -80,8 +80,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     math::ray tray(
         transform_point(transformation.world_to_object, ray.origin),
         transform_vector(transformation.world_to_object, ray.direction),
-        ray.min_t,
-        ray.max_t);
+        ray.min_t(),
+        ray.max_t());
 
     Intersectioni pi;
     if (tree_.intersect(tray, node_stack, pi)) {
@@ -129,12 +129,12 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
         tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
-        ray.max_t = ray_max_t.x();
+        ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
@@ -184,12 +184,12 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
         tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
-        ray.max_t = ray_max_t.x();
+        ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
@@ -225,12 +225,12 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
         tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
-        ray.max_t = ray_max_t.x();
+        ray.max_t() = ray_max_t.x();
 
         Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
 
@@ -265,8 +265,8 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
 
-    scalar const ray_min_t(ray.min_t);
-    scalar const ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar const ray_max_t(ray.max_t());
 
     return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack);
 }
@@ -274,7 +274,7 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
                     Filter filter, Worker const& worker) const {
     math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t, ray.max_t);
+                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.opacity(tray, ray.time, entity, filter, worker);
 }
@@ -282,7 +282,7 @@ float Mesh::opacity(Ray const& ray, Transformation const& transformation, uint32
 bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
                            Filter filter, Worker const& worker, float3& ta) const {
     math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t, ray.max_t);
+                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
@@ -358,7 +358,7 @@ float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
         c = std::abs(c);
     }
 
-    float const sl = ray.max_t * ray.max_t;
+    float const sl = ray.max_t() * ray.max_t();
     return sl / (c * area);
 }
 

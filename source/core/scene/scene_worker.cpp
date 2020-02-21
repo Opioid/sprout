@@ -30,28 +30,28 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera) {
 }
 
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) {
-    float const start_min_t = ray.min_t;
+    float const start_min_t = ray.min_t();
 
     float opacity = intersection.opacity(ray.time, filter, *this);
 
     while (opacity < 1.f) {
         if (opacity > 0.f && opacity > rng_.random_float()) {
-            ray.min_t = start_min_t;
+            ray.min_t() = start_min_t;
             return true;
         }
 
         // Slide along ray until opaque surface is found
-        ray.min_t = offset_f(ray.max_t);
-        ray.max_t = scene::Ray_max_t;
+        ray.min_t() = offset_f(ray.max_t());
+        ray.max_t() = scene::Ray_max_t;
         if (!intersect(ray, intersection)) {
-            ray.min_t = start_min_t;
+            ray.min_t() = start_min_t;
             return false;
         }
 
         opacity = intersection.opacity(ray.time, filter, *this);
     }
 
-    ray.min_t = start_min_t;
+    ray.min_t() = start_min_t;
     return true;
 }
 

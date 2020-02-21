@@ -34,7 +34,7 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 t = -transformation.rotation.r[0];
         float3 b = -transformation.rotation.r[1];
@@ -49,7 +49,7 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
 
         intersection.part = 0;
 
-        ray.max_t = hit_t;
+        ray.max_t() = hit_t;
         return true;
     }
 
@@ -65,7 +65,7 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 t = -transformation.rotation.r[0];
         float3 b = -transformation.rotation.r[1];
@@ -77,7 +77,7 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
 
         intersection.part = 0;
 
-        ray.max_t = hit_t;
+        ray.max_t() = hit_t;
         return true;
     }
 
@@ -93,8 +93,8 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
-        ray.max_t = hit_t;
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
+        ray.max_t() = hit_t;
 
         normals.geo_n = normal;
         normals.n     = normal;
@@ -114,7 +114,7 @@ bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    return (hit_t > ray.min_t) & (hit_t < ray.max_t);
+    return (hit_t > ray.min_t()) & (hit_t < ray.max_t());
 }
 
 float Plane::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
@@ -126,7 +126,7 @@ float Plane::opacity(Ray const& ray, Transformation const& transformation, uint3
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 
@@ -145,7 +145,7 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 

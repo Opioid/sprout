@@ -70,8 +70,8 @@ void Driver::render(scene::Scene& /*scene*/, const take::View& /*view*/,
 
                                     ray.set_direction(hs);
                                     ray.depth = 1;
-                                    ray.min_t = 0.01f;
-                                    ray.max_t = 10000.f;
+                                    ray.min_t() = 0.01f;
+                                    ray.max_t() = 10000.f;
 
                                     irradiance += worker.li(ray).xyz();
                             }

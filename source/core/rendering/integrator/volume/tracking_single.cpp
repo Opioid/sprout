@@ -190,14 +190,14 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         return Event::Abort;
     }
 
-    float const d = ray.max_t;
+    float const d = ray.max_t();
 
     // Not sure wether the first test still makes sense.
     // The second test avoids falsely reporting very long volume sections,
     // when in fact a very short intersection was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
-    if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t <= d) {
+    if (scene::offset_f(ray.min_t()) >= d || scene::Almost_ray_max_t <= d) {
         li = float3(0.f);
         tr = float3(1.f);
         return Event::Pass;
@@ -214,7 +214,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
         li = float3(0.f);
-        tr = attenuation(d - ray.min_t, mu_a);
+        tr = attenuation(d - ray.min_t(), mu_a);
         return Event::Pass;
     }
 
@@ -224,7 +224,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         auto const& tree = *material.volume_tree();
 
         float3 w(1.f);
-        for (; local_ray.min_t < d;) {
+        for (; local_ray.min_t() < d;) {
             if (Tracking::CM data; tree.intersect(local_ray, data)) {
                 if (float t; Tracking::tracking(local_ray, data, material, 1.f, filter, rng_,
                                                 worker, t, w)) {
@@ -234,8 +234,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
                 }
             }
 
-            local_ray.min_t = scene::offset_f(local_ray.max_t);
-            local_ray.max_t = d;
+            local_ray.min_t() = scene::offset_f(local_ray.max_t());
+            local_ray.max_t() = d;
         }
 
         li = float3(0.f);
@@ -250,12 +250,12 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        tr = exp(-(d - ray.min_t) * extinction);
+        tr = exp(-(d - ray.min_t()) * extinction);
 
         float const r = rng_.random_float();
         float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
-        float3 const p = ray.point(ray.min_t + t);
+        float3 const p = ray.point(ray.min_t() + t);
 
         float3 const l = direct_light(ray, p, intersection, worker);
 
@@ -267,7 +267,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        tr = exp(-(d - ray.min_t) * extinction);
+        tr = exp(-(d - ray.min_t()) * extinction);
 
         //     auto const light = worker.scene().random_light(rng_.random_float());
 
@@ -305,7 +305,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             float const r = material_sampler(ray.depth).generate_sample_1D(0);
             float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
 
-            float3 const p = ray.point(ray.min_t + t);
+            float3 const p = ray.point(ray.min_t() + t);
 
             float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
@@ -332,12 +332,12 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const scattering_albedo = mu.s / extinction;
 
-        tr = exp(-(d - ray.min_t) * extinction);
+        tr = exp(-(d - ray.min_t()) * extinction);
 
         float const rs = material_sampler(ray.depth).generate_sample_1D(0);
         float const ts = -std::log(1.f - rs * (1.f - average(tr))) / average(extinction);
 
-        float3 const ps = ray.point(ray.min_t + ts);
+        float3 const ps = ray.point(ray.min_t() + ts);
 
         float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
@@ -352,7 +352,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float const D = distance(closest_point, position);
 
-        float const theta_a = std::atan2(ray.min_t - delta, D);
+        float const theta_a = std::atan2(ray.min_t() - delta, D);
         float const theta_b = std::atan2(d - delta, D);
 
         float const r = material_sampler(ray.depth).generate_sample_1D(1);  // rng_.random_float();
@@ -366,7 +366,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
-        float3 const w = exp(-(sample_t - ray.min_t) * extinction);
+        float3 const w = exp(-(sample_t - ray.min_t()) * extinction);
 
         float3 const ds_l = direct_light(light.ref, light.pdf, ray, ps, intersection, worker);
 

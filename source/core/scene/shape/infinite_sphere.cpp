@@ -32,7 +32,7 @@ AABB Infinite_sphere::transformed_aabb(float4x4 const& /*m*/) const {
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transformation,
                                 Node_stack& /*node_stack*/, Intersection& intersection) const {
-    if (ray.max_t >= Ray_max_t) {
+    if (ray.max_t() >= Ray_max_t) {
         // This is nonsense
         intersection.t = transformation.rotation.r[0];
         intersection.b = transformation.rotation.r[1];
@@ -51,7 +51,7 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
         intersection.geo_n = n;
         intersection.part  = 0;
 
-        ray.max_t = Ray_max_t;
+        ray.max_t() = Ray_max_t;
 
         SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -63,7 +63,7 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
 
 bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
                                     Node_stack& /*node_stack*/, Intersection& intersection) const {
-    if (ray.max_t >= Ray_max_t) {
+    if (ray.max_t() >= Ray_max_t) {
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = normalize(xyz);
 
@@ -77,7 +77,7 @@ bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const&           tr
         intersection.geo_n = n;
         intersection.part  = 0;
 
-        ray.max_t = Ray_max_t;
+        ray.max_t() = Ray_max_t;
 
         SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -89,8 +89,8 @@ bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const&           tr
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& /*transformation*/,
                                 Node_stack& /*node_stack*/, Normals& normals) const {
-    if (ray.max_t >= Ray_max_t) {
-        ray.max_t = Ray_max_t;
+    if (ray.max_t() >= Ray_max_t) {
+        ray.max_t() = Ray_max_t;
 
         float3 const n = -ray.direction;
 

@@ -100,7 +100,7 @@ inline bool Node::intersect_p(math::ray const& ray) const {
                 max_t = max_tz;
         }
 
-        return min_t < ray.max_t && max_t > ray.min_t;
+        return min_t < ray.max_t() && max_t > ray.min_t();
 }
 */
 

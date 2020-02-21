@@ -32,7 +32,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&           transfo
 
     float const b = dot(n, ray.direction);
 
-    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
+    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
         return false;
     }
 
@@ -42,7 +42,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&           transfo
     if (det > 0.f) {
         float constexpr hit_t = Almost_ray_max_t;
 
-        ray.max_t = hit_t;
+        ray.max_t() = hit_t;
 
         intersection.p     = ray.point(hit_t);
         intersection.geo_n = n;
@@ -70,7 +70,7 @@ bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&           tra
 
     float const b = dot(n, ray.direction);
 
-    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
+    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
         return false;
     }
 
@@ -80,7 +80,7 @@ bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&           tra
     if (det > 0.f) {
         float constexpr hit_t = Almost_ray_max_t;
 
-        ray.max_t = hit_t;
+        ray.max_t() = hit_t;
 
         intersection.p     = ray.point(hit_t);
         intersection.geo_n = n;
@@ -105,7 +105,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformati
 
     float const b = dot(n, ray.direction);
 
-    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
+    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
         return false;
     }
 
@@ -113,7 +113,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformati
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
-        ray.max_t = Almost_ray_max_t;
+        ray.max_t() = Almost_ray_max_t;
 
         normals.geo_n = n;
         normals.n     = n;
@@ -130,7 +130,7 @@ bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transform
 
     float const b = dot(n, ray.direction);
 
-    if ((b > 0.f) | (ray.max_t < Ray_max_t)) {
+    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
         return false;
     }
 

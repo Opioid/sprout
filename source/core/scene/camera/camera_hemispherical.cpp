@@ -60,10 +60,10 @@ bool Hemispherical::generate_ray(Sample const& sample, uint32_t frame, uint32_t 
 
     ray.origin = transformation.position;
     ray.set_direction(transform_vector(transformation.rotation, dir));
-    ray.min_t = 0.f;
-    ray.max_t = Ray_max_t;
-    ray.time  = time;
-    ray.depth = 0;
+    ray.min_t() = 0.f;
+    ray.max_t() = Ray_max_t;
+    ray.time    = time;
+    ray.depth   = 0;
 
     return true;
 }

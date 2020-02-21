@@ -34,7 +34,7 @@ AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const {
 
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        Intersection& intersection) const {
-    if (ray.max_t >= Ray_max_t) {
+    if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
@@ -56,7 +56,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
         intersection.uv[0] = 0.5f * disk[0] + 0.5f;
         intersection.uv[1] = 0.5f * disk[1] + 0.5f;
 
-        ray.max_t = Ray_max_t;
+        ray.max_t() = Ray_max_t;
 
         SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -68,7 +68,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
 bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformation,
                            Node_stack& /*node_stack*/, Intersection& intersection) const {
-    if (ray.max_t >= Ray_max_t) {
+    if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
@@ -88,7 +88,7 @@ bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformat
         intersection.uv[0] = 0.5f * disk[0] + 0.5f;
         intersection.uv[1] = 0.5f * disk[1] + 0.5f;
 
-        ray.max_t = Ray_max_t;
+        ray.max_t() = Ray_max_t;
 
         SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -100,12 +100,12 @@ bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformat
 
 bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        Normals& normals) const {
-    if (ray.max_t >= Ray_max_t) {
+    if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
-        ray.max_t = Ray_max_t;
+        ray.max_t() = Ray_max_t;
 
         float3 const n = -ray.direction;
 

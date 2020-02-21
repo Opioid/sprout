@@ -3,7 +3,7 @@
 
 #include "aabb.hpp"
 #include "matrix4x4.inl"
-#include "ray.hpp"
+#include "ray.inl"
 #include "vector3.inl"
 
 namespace math {
@@ -93,12 +93,12 @@ inline bool AABB::intersect_p(ray const& ray) const {
                     max_t = max_tz;
             }
 
-            return min_t < ray.max_t && max_t > ray.min_t;*/
+            return min_t < ray.max_t() && max_t > ray.min_t();*/
 
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar const ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar const ray_max_t(ray.max_t());
 
     Simd3f const bb_min(bounds[0]);
     Simd3f const bb_max(bounds[1]);
@@ -133,8 +133,8 @@ inline bool AABB::intersect_p(ray const& ray) const {
 inline bool AABB::intersect_p(ray const& ray, float& hit_t) const {
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar const ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar const ray_max_t(ray.max_t());
 
     Simd3f const bb_min(bounds[0]);
     Simd3f const bb_max(bounds[1]);
@@ -165,7 +165,7 @@ inline bool AABB::intersect_p(ray const& ray, float& hit_t) const {
     float const min_out = min_t.x();
     float const max_out = max_t.x();
 
-    if (min_out < ray.min_t) {
+    if (min_out < ray.min_t()) {
         hit_t = max_out;
     } else {
         hit_t = min_out;
@@ -178,8 +178,8 @@ inline bool AABB::intersect_p(ray const& ray, float& hit_t) const {
 inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const {
     Simd3f const ray_origin(ray.origin);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar const ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar const ray_max_t(ray.max_t());
 
     Simd3f const bb_min(bounds[0]);
     Simd3f const bb_max(bounds[1]);
@@ -210,7 +210,7 @@ inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const {
     float const min_out = min_t.x();
     float const max_out = max_t.x();
 
-    if (min_out < ray.min_t) {
+    if (min_out < ray.min_t()) {
         hit_t = max_out;
     } else {
         hit_t = min_out;

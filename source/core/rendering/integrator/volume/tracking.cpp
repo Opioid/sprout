@@ -34,7 +34,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
                                                        float srs, Tracking::Filter filter,
                                                        rnd::Generator& rng, Worker& worker) {
     // Transmittance of the control medium
-    transmitted *= attenuation(ray.max_t - ray.min_t, minorant_mu_t);
+    transmitted *= attenuation(ray.max_t() - ray.min_t(), minorant_mu_t);
 
     if (all_less(transmitted, Tracking::Abort_epsilon)) {
         return false;
@@ -51,7 +51,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
 
     SOFT_ASSERT(std::isfinite(imt));
 
-    for (float t = ray.min_t, d = ray.max_t;;) {
+    for (float t = ray.min_t(), d = ray.max_t();;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -99,7 +99,7 @@ static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tra
 
     SOFT_ASSERT(std::isfinite(imt));
 
-    for (float t = ray.min_t, d = ray.max_t;;) {
+    for (float t = ray.min_t(), d = ray.max_t();;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -143,9 +143,9 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
     auto const& material = *interface->material(worker);
 
-    float const d = ray.max_t;
+    float const d = ray.max_t();
 
-    if (scene::offset_f(ray.min_t) >= d) {
+    if (scene::offset_f(ray.min_t()) >= d) {
         tr = float3(1.f);
         return true;
     }
@@ -158,7 +158,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
         float const srs = material.similarity_relation_scale(ray.depth);
 
         float3 w(1.f);
-        for (; local_ray.min_t < d;) {
+        for (; local_ray.min_t() < d;) {
             if (CM cm; tree.intersect(local_ray, cm)) {
                 cm.minorant_mu_s *= srs;
                 cm.majorant_mu_s *= srs;
@@ -169,10 +169,10 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
                 }
             }
 
-            SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t);
+            SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t());
 
-            local_ray.min_t = scene::offset_f(local_ray.max_t);
-            local_ray.max_t = d;
+            local_ray.min_t() = scene::offset_f(local_ray.max_t());
+            local_ray.max_t() = d;
         }
 
         tr = w;
@@ -184,7 +184,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
         float3 const mu_t = mu.a + mu.s;
 
-        tr = attenuation(d - ray.min_t, mu_t);
+        tr = attenuation(d - ray.min_t(), mu_t);
         return true;
     }
 
@@ -192,7 +192,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
 
     float3 const mu_t = mu.a + mu.s;
 
-    tr = attenuation(d - ray.min_t, mu_t);
+    tr = attenuation(d - ray.min_t(), mu_t);
     return true;
 }
 
@@ -200,7 +200,7 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
                                           Tracking::Material const& material, float srs,
                                           Tracking::Filter filter, rnd::Generator& rng,
                                           Worker& worker, float& t_out, float3& w) {
-    float const d = ray.max_t;
+    float const d = ray.max_t();
 
     float const mt  = cm.majorant_mu_t();
     float const imt = 1.f / mt;
@@ -216,7 +216,7 @@ static inline bool decomposition_tracking(ray const& ray, Tracking::CM const& cm
 
     float const factor = 1.f - cm_t * imt;
 
-    for (float t = ray.min_t;;) {
+    for (float t = ray.min_t();;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -299,7 +299,7 @@ bool Tracking::tracking(ray const& ray, CM const& cm, Material const& material, 
 
     float const imt = 1.f / mt;
 
-    for (float t = ray.min_t, d = ray.max_t;;) {
+    for (float t = ray.min_t(), d = ray.max_t();;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -357,7 +357,7 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
 
     float const imt = 1.f / mt;
 
-    for (float t = ray.min_t, d = ray.max_t;;) {
+    for (float t = ray.min_t(), d = ray.max_t();;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -426,7 +426,7 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
 
     float3 lw(1.f);
 
-    for (float t = ray.min_t, d = ray.max_t;;) {
+    for (float t = ray.min_t(), d = ray.max_t();;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {
@@ -477,7 +477,7 @@ Event Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, fl
 
     float3 lw(1.f);
 
-    for (float t = ray.min_t, d = ray.max_t;;) {
+    for (float t = ray.min_t(), d = ray.max_t();;) {
         float const r0 = rng.random_float();
         t -= std::log(1.f - r0) * imt;
         if (t > d) {

@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_TREE_INL
 
 #include "base/math/aabb.inl"
-#include "base/math/ray.hpp"
+#include "base/math/ray.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
@@ -72,8 +72,8 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& inter
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_direction(ray.direction.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
     scalar       u;
     scalar       v;
 
@@ -104,7 +104,7 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& inter
     }
 
     if (index != 0xFFFFFFFF) {
-        ray.max_t = ray_max_t.x();
+        ray.max_t() = ray_max_t.x();
 
         intersection.u = Simd3f(u);
         intersection.v = Simd3f(v);
@@ -126,8 +126,8 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const {
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_direction(ray.direction.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -156,7 +156,7 @@ bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const {
     }
 
     if (index != 0xFFFFFFFF) {
-        ray.max_t = ray_max_t.x();
+        ray.max_t() = ray_max_t.x();
         return true;
     }
 
@@ -271,8 +271,8 @@ bool Tree<Data>::intersect_p(ray const& ray, Node_stack& node_stack) const {
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_direction(ray.direction.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar const ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar const ray_max_t(ray.max_t());
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -358,8 +358,8 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filte
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_direction(ray.direction.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
     scalar const max_t = ray_max_t;
 
     alignas(16) uint32_t ray_signs[4];
@@ -423,8 +423,8 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_direction(ray.direction.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
     scalar const max_t = ray_max_t;
 
     alignas(16) uint32_t ray_signs[4];

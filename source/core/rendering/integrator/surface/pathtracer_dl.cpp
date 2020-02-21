@@ -115,7 +115,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         if (material_sample.is_pure_emissive()) {
             transparent &= (!worker.scene().prop(intersection.prop)->visible_in_camera()) &
-                           (ray.max_t >= scene::Ray_max_t);
+                           (ray.max_t() >= scene::Ray_max_t);
             break;
         }
 
@@ -150,10 +150,10 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         throughput *= sample_result.reflection / sample_result.pdf;
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
-            ray.min_t = scene::offset_f(ray.max_t);
+            ray.min_t() = scene::offset_f(ray.max_t());
         } else {
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t  = 0.f;
+            ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t() = 0.f;
 
             ray.set_direction(sample_result.wi);
 
@@ -164,7 +164,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             ++ray.depth;
         }
 
-        ray.max_t = scene::Ray_max_t;
+        ray.max_t() = scene::Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
@@ -219,7 +219,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
     Ray shadow_ray;
     shadow_ray.origin     = p;
-    shadow_ray.min_t      = 0.f;
+    shadow_ray.min_t()    = 0.f;
     shadow_ray.depth      = ray.depth;
     shadow_ray.time       = ray.time;
     shadow_ray.wavelength = ray.wavelength;
@@ -240,7 +240,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             }
 
             shadow_ray.set_direction(light_sample.wi);
-            shadow_ray.max_t = light_sample.t;
+            shadow_ray.max_t() = light_sample.t;
 
             float3 tr;
             if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
@@ -267,7 +267,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         }
 
         shadow_ray.set_direction(light_sample.wi);
-        shadow_ray.max_t = light_sample.t;
+        shadow_ray.max_t() = light_sample.t;
 
         float3 tr;
         if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {

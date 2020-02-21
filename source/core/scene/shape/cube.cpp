@@ -51,7 +51,7 @@ bool Cube::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    math::ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+    math::ray const local_ray(local_origin, local_dir, ray.min_t(), ray.max_t());
 
     AABB const aabb(float3(-1.f), float3(1.f));
 
@@ -60,11 +60,11 @@ bool Cube::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
         return false;
     }
 
-    if (hit_t > ray.max_t) {
+    if (hit_t > ray.max_t()) {
         return false;
     }
 
-    ray.max_t = hit_t;
+    ray.max_t() = hit_t;
 
     intersection.p = ray.point(hit_t);
 
@@ -88,7 +88,7 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    math::ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+    math::ray const local_ray(local_origin, local_dir, ray.min_t(), ray.max_t());
 
     AABB const aabb(float3(-1.f), float3(1.f));
 
@@ -97,11 +97,11 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         return false;
     }
 
-    if (hit_t > ray.max_t) {
+    if (hit_t > ray.max_t()) {
         return false;
     }
 
-    ray.max_t = hit_t;
+    ray.max_t() = hit_t;
 
     float3 const local_p = local_ray.point(hit_t);
 
@@ -124,7 +124,7 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
-    math::ray const local_ray(local_origin, local_dir, ray.min_t, ray.max_t);
+    math::ray const local_ray(local_origin, local_dir, ray.min_t(), ray.max_t());
 
     AABB const aabb(float3(-1.f), float3(1.f));
 
@@ -133,7 +133,7 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
         return false;
     }
 
-    if (hit_t > ray.max_t) {
+    if (hit_t > ray.max_t()) {
         return false;
     }
 
@@ -151,7 +151,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation, uint32
         float dist = std::sqrt(det);
         float t0   = b - dist;
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
+        if (t0 > ray.min_t() && t0 < ray.max_t()) {
             float3 n = normalize(ray.point(t0) - transformation.position);
 
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
@@ -165,7 +165,7 @@ float Cube::opacity(Ray const& ray, Transformation const& transformation, uint32
 
         float t1 = b + dist;
 
-        if (t1 > ray.min_t && t1 < ray.max_t) {
+        if (t1 > ray.min_t() && t1 < ray.max_t()) {
             float3 n = normalize(ray.point(t1) - transformation.position);
 
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
@@ -260,7 +260,7 @@ float Cube::pdf(Ray const&            ray, Intersection const& /*intersection*/,
 
 float Cube::pdf_volume(Ray const& ray, Intersection const& /*intersection*/,
                        Transformation const& /*transformation*/, float volume) const {
-    float const sl = ray.max_t * ray.max_t;
+    float const sl = ray.max_t() * ray.max_t();
     return sl / (volume);
 }
 
@@ -304,7 +304,7 @@ float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
 
     float const sin_theta = std::sin(intersection.uv[1] * Pi);
 
-    float const sl = ray.max_t * ray.max_t;
+    float const sl = ray.max_t() * ray.max_t();
     float const c  = -dot(intersection.geo_n, ray.direction);
     return sl / (c * area * sin_theta);
 }

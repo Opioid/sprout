@@ -41,7 +41,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     float const numer = dot(normal, ray.origin) - d;
     float const hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
         float  l = dot(k, k);
@@ -66,7 +66,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
-            ray.max_t = hit_t;
+            ray.max_t() = hit_t;
             return true;
         }
     }
@@ -83,7 +83,7 @@ bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
         float  l = dot(k, k);
@@ -106,7 +106,7 @@ bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
-            ray.max_t = hit_t;
+            ray.max_t() = hit_t;
             return true;
         }
     }
@@ -123,7 +123,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
         float  l = dot(k, k);
@@ -131,7 +131,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         float radius = transformation.scale_x();
 
         if (l <= radius * radius) {
-            ray.max_t = hit_t;
+            ray.max_t() = hit_t;
 
             normals.geo_n = normal;
             normals.n     = normal;
@@ -152,7 +152,7 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
         float  l = dot(k, k);
@@ -176,7 +176,7 @@ float Disk::opacity(Ray const& ray, Transformation const& transformation, uint32
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
         float  l = dot(k, k);
@@ -205,7 +205,7 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
         float  l = dot(k, k);
@@ -296,7 +296,7 @@ float Disk::pdf(Ray const&            ray, Intersection const& /*intersection*/,
         c = std::abs(c);
     }
 
-    float sl = ray.max_t * ray.max_t;
+    float sl = ray.max_t() * ray.max_t();
     return sl / (c * area);
 }
 

@@ -148,15 +148,15 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
 
             radiance *= sample_result.reflection / sample_result.pdf;
 
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t  = 0.f;
+            ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t() = 0.f;
             ray.set_direction(sample_result.wi);
             ++ray.depth;
         } else {
-            ray.min_t = scene::offset_f(ray.max_t);
+            ray.min_t() = scene::offset_f(ray.max_t());
         }
 
-        ray.max_t = scene::Ray_max_t;
+        ray.max_t() = scene::Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             auto const ior = worker.interface_change_ior(sample_result.wi, intersection);
@@ -209,8 +209,8 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
     ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);
     ray.set_direction(light_sample.dir);
-    ray.min_t      = 0.f;
-    ray.max_t      = scene::Ray_max_t;
+    ray.min_t()    = 0.f;
+    ray.max_t()    = scene::Ray_max_t;
     ray.depth      = 0;
     ray.time       = time;
     ray.wavelength = 0.f;

@@ -51,7 +51,7 @@ bool Gridtree::is_valid() const {
 }
 
 bool Gridtree::intersect(ray& ray, CM& data) const {
-    float3 const p = ray.point(ray.min_t);
+    float3 const p = ray.point(ray.min_t());
 
     int3 const c = int3(float3(dimensions_) * p);
 
@@ -107,11 +107,11 @@ bool Gridtree::intersect(ray& ray, CM& data) const {
                     float3(box.bounds[1]) * inv_dimensions_);
 
     if (float hit_t; boxf.intersect_inside(ray, hit_t)) {
-        if (ray.max_t > hit_t) {
-            ray.max_t = hit_t;
+        if (ray.max_t() > hit_t) {
+            ray.max_t() = hit_t;
         }
     } else {
-        ray.max_t = ray.min_t;
+        ray.max_t() = ray.min_t();
         return false;
     }
 

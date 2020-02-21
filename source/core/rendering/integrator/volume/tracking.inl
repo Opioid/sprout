@@ -22,7 +22,7 @@ inline math::ray texture_space_ray(scene::Ray const& ray, uint32_t entity,
     float3 const origin = shape->object_to_texture_point(local_origin);
     float3 const dir    = shape->object_to_texture_vector(local_dir);
 
-    return math::ray(origin, dir, ray.min_t, ray.max_t);
+    return math::ray(origin, dir, ray.min_t(), ray.max_t());
 }
 
 }  // namespace rendering::integrator::volume

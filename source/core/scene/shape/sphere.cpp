@@ -80,23 +80,23 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const dist = std::sqrt(discriminant);
         float const t0   = b - dist;
 
-        if ((t0 > ray.min_t) & (t0 < ray.max_t)) {
+        if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
             shape::intersect(t0, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
-            ray.max_t = t0;
+            ray.max_t() = t0;
             return true;
         }
 
         float const t1 = b + dist;
 
-        if ((t1 > ray.min_t) & (t1 < ray.max_t)) {
+        if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
             shape::intersect(t1, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
-            ray.max_t = t1;
+            ray.max_t() = t1;
             return true;
         }
     }
@@ -135,23 +135,23 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformat
         float const dist = std::sqrt(discriminant);
         float const t0   = b - dist;
 
-        if ((t0 > ray.min_t) & (t0 < ray.max_t)) {
+        if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
             shape::intersect_nsf(t0, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
-            ray.max_t = t0;
+            ray.max_t() = t0;
             return true;
         }
 
         float const t1 = b + dist;
 
-        if ((t1 > ray.min_t) & (t1 < ray.max_t)) {
+        if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
             shape::intersect_nsf(t1, ray, transformation, intersection);
 
             SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
-            ray.max_t = t1;
+            ray.max_t() = t1;
             return true;
         }
     }
@@ -173,8 +173,8 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const dist = std::sqrt(discriminant);
         float const t0   = b - dist;
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
-            ray.max_t = t0;
+        if (t0 > ray.min_t() && t0 < ray.max_t()) {
+            ray.max_t() = t0;
 
             float3 const p = ray.point(t0);
             float3 const n = normalize(p - transformation.position);
@@ -187,8 +187,8 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
         float const t1 = b + dist;
 
-        if (t1 > ray.min_t && t1 < ray.max_t) {
-            ray.max_t = t1;
+        if (t1 > ray.min_t() && t1 < ray.max_t()) {
+            ray.max_t() = t1;
 
             float3 const p = ray.point(t1);
             float3 const n = normalize(p - transformation.position);
@@ -217,13 +217,13 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
         float const dist = std::sqrt(discriminant);
         float const t0   = b - dist;
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
+        if (t0 > ray.min_t() && t0 < ray.max_t()) {
             return true;
         }
 
         float const t1 = b + dist;
 
-        if (t1 > ray.min_t && t1 < ray.max_t) {
+        if (t1 > ray.min_t() && t1 < ray.max_t()) {
             return true;
         }
     }
@@ -245,7 +245,7 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, uint
         float dist = std::sqrt(discriminant);
         float t0   = b - dist;
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
+        if (t0 > ray.min_t() && t0 < ray.max_t()) {
             float3 n = normalize(ray.point(t0) - transformation.position);
 
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
@@ -259,7 +259,7 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, uint
 
         float t1 = b + dist;
 
-        if (t1 > ray.min_t && t1 < ray.max_t) {
+        if (t1 > ray.min_t() && t1 < ray.max_t()) {
             float3 n = normalize(ray.point(t1) - transformation.position);
 
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
@@ -289,7 +289,7 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
         float dist = std::sqrt(discriminant);
         float t0   = b - dist;
 
-        if (t0 > ray.min_t && t0 < ray.max_t) {
+        if (t0 > ray.min_t() && t0 < ray.max_t()) {
             float3 n = normalize(ray.point(t0) - transformation.position);
 
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
@@ -305,7 +305,7 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
 
         float t1 = b + dist;
 
-        if (t1 > ray.min_t && t1 < ray.max_t) {
+        if (t1 > ray.min_t() && t1 < ray.max_t()) {
             float3 n = normalize(ray.point(t1) - transformation.position);
 
             float3 xyz = transform_vector_transposed(transformation.rotation, n);
@@ -464,7 +464,7 @@ float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersectio
 
     float const sin_theta = std::sin(intersection.uv[1] * Pi);
 
-    float const sl = ray.max_t * ray.max_t;
+    float const sl = ray.max_t() * ray.max_t();
     float const c  = -dot(intersection.geo_n, ray.direction);
     return sl / (c * area * sin_theta);
 }

@@ -150,7 +150,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
         interface_stack_.pop();
     }
 
-    float const ray_max_t = ray.max_t;
+    float const ray_max_t = ray.max_t();
 
     Ray tray = ray;
 
@@ -161,7 +161,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     for (;;) {
         bool const hit = scene_->intersect_volume(tray, *this, intersection);
 
-        SOFT_ASSERT(tray.max_t >= tray.min_t);
+        SOFT_ASSERT(tray.max_t() >= tray.min_t());
 
         if (!interface_stack_.empty()) {
             if (float3 tr; volume_integrator_->transmittance(tray, *this, tr)) {
@@ -181,10 +181,10 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
             interface_stack_.push(intersection);
         }
 
-        tray.min_t = scene::offset_f(tray.max_t);
-        tray.max_t = ray_max_t;
+        tray.min_t() = scene::offset_f(tray.max_t());
+        tray.max_t() = ray_max_t;
 
-        if (tray.min_t > tray.max_t) {
+        if (tray.min_t() > tray.max_t()) {
             break;
         }
     }
@@ -200,14 +200,14 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
     auto const& material = *intersection.material(*this);
 
     if (intersection.subsurface & (material.ior() > 1.f)) {
-        float const ray_max_t = ray.max_t;
+        float const ray_max_t = ray.max_t();
 
         if (scene::shape::Normals normals; intersect(ray, normals)) {
             if (float3 tr; volume_integrator_->transmittance(ray, *this, tr)) {
                 SOFT_ASSERT(all_finite_and_positive(tr));
 
-                ray.min_t = scene::offset_f(ray.max_t);
-                ray.max_t = ray_max_t;
+                ray.min_t() = scene::offset_f(ray.max_t());
+                ray.max_t() = ray_max_t;
 
                 if (scene_->thin_absorption(ray, filter, *this, tv)) {
                     float3 const wi = ray.direction;

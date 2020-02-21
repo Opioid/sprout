@@ -115,7 +115,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
         if (material_sample.is_pure_emissive()) {
             transparent &= (!worker.scene().prop(intersection.prop)->visible_in_camera()) &
-                           (ray.max_t >= scene::Ray_max_t);
+                           (ray.max_t() >= scene::Ray_max_t);
             break;
         }
 
@@ -154,10 +154,10 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         throughput *= sample_result.reflection / sample_result.pdf;
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
-            ray.min_t = scene::offset_f(ray.max_t);
+            ray.min_t() = scene::offset_f(ray.max_t());
         } else {
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t  = 0.f;
+            ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t() = 0.f;
 
             ray.set_direction(sample_result.wi);
 
@@ -168,7 +168,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             ++ray.depth;
         }
 
-        ray.max_t = scene::Ray_max_t;
+        ray.max_t() = scene::Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);

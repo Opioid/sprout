@@ -12,6 +12,12 @@ struct ray {
 
     void set_direction(float3 const& v);
 
+    float  min_t() const;
+    float& min_t();
+
+    float  max_t() const;
+    float& max_t();
+
     float3 point(float t) const;
 
     float length() const;
@@ -19,9 +25,6 @@ struct ray {
     float3 origin;
     float3 direction;
     float3 inv_direction;
-
-    float min_t;
-    float max_t;
 };
 
 }  // namespace math

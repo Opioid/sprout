@@ -52,14 +52,14 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         return Event::Abort;
     }
 
-    float const d = ray.max_t;
+    float const d = ray.max_t();
 
     // Not sure wether the first test still makes sense.
     // The second test avoids falsely reporting very long volume sections,
     // when in fact a very short intersection was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
-    if (scene::offset_f(ray.min_t) >= d || scene::Almost_ray_max_t <= d) {
+    if (scene::offset_f(ray.min_t()) >= d || scene::Almost_ray_max_t <= d) {
         li = float3(0.f);
         tr = float3(1.f);
         return Event::Pass;
@@ -76,7 +76,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
 
         li = float3(0.f);
-        tr = attenuation(d - ray.min_t, mu_a);
+        tr = attenuation(d - ray.min_t(), mu_a);
         return Event::Pass;
     }
 
@@ -94,7 +94,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         Event event = Event::Pass;
 
         if (material.is_emissive(worker.scene())) {
-            for (; local_ray.min_t < d;) {
+            for (; local_ray.min_t() < d;) {
                 if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
                     cm.minorant_mu_s *= srs;
                     cm.majorant_mu_s *= srs;
@@ -111,19 +111,19 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                     if (Event::Absorb == result) {
                         tr                 = w;
-                        ray.max_t          = t;
+                        ray.max_t()        = t;
                         intersection.geo.p = local_ray.point(t);
                         return Event::Absorb;
                     }
                 }
 
-                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t);
+                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t());
 
-                local_ray.min_t = scene::offset_f(local_ray.max_t);
-                local_ray.max_t = d;
+                local_ray.min_t() = scene::offset_f(local_ray.max_t());
+                local_ray.max_t() = d;
             }
         } else {
-            for (; local_ray.min_t < d;) {
+            for (; local_ray.min_t() < d;) {
                 if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
                     cm.minorant_mu_s *= srs;
                     cm.majorant_mu_s *= srs;
@@ -136,10 +136,10 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     }
                 }
 
-                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t);
+                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t());
 
-                local_ray.min_t = scene::offset_f(local_ray.max_t);
-                local_ray.max_t = d;
+                local_ray.min_t() = scene::offset_f(local_ray.max_t());
+                local_ray.max_t() = d;
             }
         }
 
@@ -170,9 +170,9 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         float const minorant_mu_t = cm.minorant_mu_t();
 
         float const rc  = rng_.random_float();
-        float const t_c = ray.min_t - std::log(1.f - rc) / minorant_mu_t;
+        float const t_c = ray.min_t() - std::log(1.f - rc) / minorant_mu_t;
 
-        if (t_c > ray.max_t) {
+        if (t_c > ray.max_t()) {
             set_scattering(intersection, interface, ray.point(t_c));
 
             li = float3(0.f);
@@ -194,7 +194,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
         float3 w(1.f);
 
-        for (float t = ray.min_t;;) {
+        for (float t = ray.min_t();;) {
             float const r0 = rng_.random_float();
             t -= std::log(1.f - r0) * imt;
             if (t > d) {
@@ -243,7 +243,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                 set_scattering(intersection, interface, ray.point(t));
                 event = Event::Scatter;
             } else if (Event::Absorb == result) {
-                ray.max_t = t;
+                ray.max_t() = t;
                 return Event::Absorb;
             }
 
@@ -423,7 +423,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                         float3 lw(1.f);
 
-                        for (float t = ray.min_t, d = ray.max_t;;) {
+                        for (float t = ray.min_t(), d = ray.max_t;;) {
                             float const r0 = rng_.random_float();
                             t -= std::log(1.f - r0) * imt;
                             if (t > d) {

@@ -39,10 +39,10 @@ inline bool Triangle_MT::intersect(ray& ray, float2& uv) const {
 
     float hit_t = dot(e2, qvec) * inv_det;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
-        ray.max_t = hit_t;
-        uv[0]     = u;
-        uv[1]     = v;
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
+        ray.max_t() = hit_t;
+        uv[0]       = u;
+        uv[1]       = v;
         return true;
     }
 
@@ -74,7 +74,7 @@ inline bool Triangle_MT::intersect_p(ray const& ray) const {
 
     float hit_t = dot(e2, qvec) * inv_det;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         return true;
     }
 
@@ -160,8 +160,8 @@ static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, 
 
     float hit_t = dot(e2, qvec) * inv_det;
 
-    //	if (hit_t > ray.min_t && hit_t < ray.max_t) {
-    //		ray.max_t = hit_t;
+    //	if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
+    //		ray.max_t() = hit_t;
     //		uv[0] = u;
     //		uv[1] = v;
     //		return true;
@@ -173,13 +173,13 @@ static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, 
     uint8_t cb = uint8_t(u < 1.f);
     uint8_t cc = uint8_t(v > 0.f);
     uint8_t cd = uint8_t(u + v < 1.f);
-    uint8_t ce = uint8_t(hit_t > ray.min_t);
-    uint8_t cf = uint8_t(hit_t < ray.max_t);
+    uint8_t ce = uint8_t(hit_t > ray.min_t());
+    uint8_t cf = uint8_t(hit_t < ray.max_t());
 
     if (0 != (ca & cb & cc & cd & ce & cf)) {
-        ray.max_t = hit_t;
-        uv[0]     = u;
-        uv[1]     = v;
+        ray.max_t() = hit_t;
+        uv[0]       = u;
+        uv[1]       = v;
         return true;
     }
 
@@ -287,7 +287,7 @@ static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c
 
             float hit_t = dot(e2, qvec) * inv_det;
 
-            if (hit_t > ray.min_t && hit_t < ray.max_t) {
+            if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
                     return true;
             }
 
@@ -315,8 +315,8 @@ static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c
     uint8_t cb = uint8_t(u < 1.f);
     uint8_t cc = uint8_t(v > 0.f);
     uint8_t cd = uint8_t(u + v < 1.f);
-    uint8_t ce = uint8_t(hit_t > ray.min_t);
-    uint8_t cf = uint8_t(hit_t < ray.max_t);
+    uint8_t ce = uint8_t(hit_t > ray.min_t());
+    uint8_t cf = uint8_t(hit_t < ray.max_t());
 
     return 0 != (ca & cb & cc & cd & ce & cf);
 }
@@ -554,10 +554,10 @@ inline bool intersect(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC
 
     float hit_t = dot(e2, qvec) * inv_det;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
-        ray.max_t = hit_t;
-        uv[0]     = u;
-        uv[1]     = v;
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
+        ray.max_t() = hit_t;
+        uv[0]       = u;
+        uv[1]       = v;
         return true;
     }
 
@@ -590,7 +590,7 @@ inline bool intersect_p(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_M
 
     float hit_t = dot(e2, qvec) * inv_det;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         return true;
     }
 

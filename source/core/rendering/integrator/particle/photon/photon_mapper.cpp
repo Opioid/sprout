@@ -199,9 +199,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 ++ray.depth;
             }
 
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t  = 0.f;
-            ray.max_t  = scene::Ray_max_t;
+            ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
+            ray.min_t() = 0.f;
+            ray.max_t() = scene::Ray_max_t;
 
             if (0.f == ray.wavelength) {
                 ray.wavelength = sample_result.wavelength;
@@ -221,7 +221,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 radiance *= eta * eta;
             }
 
-            ray.max_t = scene::Ray_max_t;
+            ray.max_t() = scene::Ray_max_t;
 
             if (!worker.interface_stack().empty()) {
                 float3     vli;
@@ -272,8 +272,8 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
 
     ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);
     ray.set_direction(light_sample.dir);
-    ray.min_t      = 0.f;
-    ray.max_t      = scene::Ray_max_t;
+    ray.min_t()    = 0.f;
+    ray.max_t()    = scene::Ray_max_t;
     ray.depth      = 0;
     ray.time       = time;
     ray.wavelength = 0.f;

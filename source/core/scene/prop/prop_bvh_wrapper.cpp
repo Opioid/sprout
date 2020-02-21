@@ -42,8 +42,8 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
 
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
@@ -75,7 +75,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
                 if (props[p].intersect(p, ray, worker, intersection.geo)) {
                     prop      = p;
                     hit       = true;
-                    ray_max_t = scalar(ray.max_t);
+                    ray_max_t = scalar(ray.max_t());
                 }
             }
         }
@@ -114,8 +114,8 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& in
 
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
@@ -147,7 +147,7 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& in
                 if (props[p].intersect_nsf(p, ray, worker, intersection.geo)) {
                     prop      = p;
                     hit       = true;
-                    ray_max_t = scalar(ray.max_t);
+                    ray_max_t = scalar(ray.max_t());
                 }
             }
         }
@@ -184,8 +184,8 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
 
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
@@ -216,7 +216,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
                 uint32_t const p = finite_props[i];
                 if (props[p].intersect(p, ray, worker, normals)) {
                     hit       = true;
-                    ray_max_t = scalar(ray.max_t);
+                    ray_max_t = scalar(ray.max_t());
                 }
             }
         }
@@ -248,8 +248,8 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const {
 
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
@@ -313,8 +313,8 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
 
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
@@ -381,8 +381,8 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& w
 
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t);
-    scalar       ray_max_t(ray.max_t);
+    scalar const ray_min_t(ray.min_t());
+    scalar       ray_max_t(ray.max_t());
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);

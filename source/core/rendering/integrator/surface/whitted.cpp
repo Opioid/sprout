@@ -44,10 +44,9 @@ float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
     //			result += throughput * shade(ray, intersection, worker);
     //		}
 
-    //		ray.min_t = ray.max_t + take_settings_.ray_offset_factor * intersection.geo.epsilon;
-    //		ray.max_t = scene::Ray_max_t;
-    //		if (!worker.intersect(ray, intersection)) {
-    //			return float4(result, spectrum::luminance(opacity));
+    //		ray.min_t() = ray.max_t + take_settings_.ray_offset_factor *
+    //intersection.geo.epsilon; 		ray.max_t() = scene::Ray_max_t; 		if (!worker.intersect(ray,
+    //intersection)) { 			return float4(result, spectrum::luminance(opacity));
     //		}
 
     //		throughput = (1.f - opacity) * intersection.thin_absorption(wo, ray.time,
@@ -89,10 +88,10 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     float3 result(0.f);
 
     Ray shadow_ray;
-    shadow_ray.origin = material_sample.offset_p(intersection.geo.p);
-    shadow_ray.min_t  = 0.f;
-    shadow_ray.depth  = ray.depth;
-    shadow_ray.time   = ray.time;
+    shadow_ray.origin  = material_sample.offset_p(intersection.geo.p);
+    shadow_ray.min_t() = 0.f;
+    shadow_ray.depth   = ray.depth;
+    shadow_ray.time    = ray.time;
 
     for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
         auto const& light = worker.scene().light(l);
@@ -101,7 +100,7 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                 light.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
                              material_sample.is_translucent(), sampler_, l, worker, light_sample)) {
                 shadow_ray.set_direction(light_sample.wi);
-                shadow_ray.max_t = light_sample.t;
+                shadow_ray.max_t() = light_sample.t;
 
                 float3 tr;
                 if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection,

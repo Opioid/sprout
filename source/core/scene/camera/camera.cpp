@@ -55,8 +55,8 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
                 interfaces_.push(intersection);
             }
 
-            ray.min_t = offset_f(ray.max_t);
-            ray.max_t = Ray_max_t;
+            ray.min_t() = offset_f(ray.max_t());
+            ray.max_t() = Ray_max_t;
         }
     }
 

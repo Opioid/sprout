@@ -38,7 +38,7 @@ bool Rectangle::intersect(Ray& ray, Transformation const&           transformati
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
 
@@ -66,7 +66,7 @@ bool Rectangle::intersect(Ray& ray, Transformation const&           transformati
 
         intersection.part = 0;
 
-        ray.max_t = hit_t;
+        ray.max_t() = hit_t;
         return true;
     }
 
@@ -82,7 +82,7 @@ bool Rectangle::intersect_nsf(Ray& ray, Transformation const&           transfor
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
 
@@ -107,7 +107,7 @@ bool Rectangle::intersect_nsf(Ray& ray, Transformation const&           transfor
 
         intersection.part = 0;
 
-        ray.max_t = hit_t;
+        ray.max_t() = hit_t;
         return true;
     }
 
@@ -123,7 +123,7 @@ bool Rectangle::intersect(Ray& ray, Transformation const&      transformation,
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
 
@@ -141,7 +141,7 @@ bool Rectangle::intersect(Ray& ray, Transformation const&      transformation,
             return false;
         }
 
-        ray.max_t = hit_t;
+        ray.max_t() = hit_t;
 
         normals.geo_n = normal;
         normals.n     = normal;
@@ -161,7 +161,7 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
 
@@ -191,7 +191,7 @@ float Rectangle::opacity(Ray const& ray, Transformation const& transformation, u
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
 
@@ -226,7 +226,7 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& transforma
     float numer = dot(normal, ray.origin) - d;
     float hit_t = numer / denom;
 
-    if (hit_t > ray.min_t && hit_t < ray.max_t) {
+    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float3 k = p - transformation.position;
 
@@ -293,7 +293,7 @@ float Rectangle::pdf(Ray const&            ray, Intersection const& /*intersecti
         c = std::abs(c);
     }
 
-    float const sl = ray.max_t * ray.max_t;
+    float const sl = ray.max_t() * ray.max_t();
     return sl / (c * area);
 }
 
