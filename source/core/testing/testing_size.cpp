@@ -75,8 +75,8 @@ void size() {
 
     print_size<scene::entity::Composed_transformation>("Composed_transformation", 128);
 
-    print_size<ray>("ray", 64);
-    print_size<scene::Ray>("scene::Ray", 80);
+    print_size<ray>("ray", 48);
+    print_size<scene::Ray>("scene::Ray", 64);
 
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
