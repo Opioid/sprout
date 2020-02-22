@@ -46,8 +46,25 @@ namespace scene::material {
 using Texture       = image::texture::Texture;
 using Texture_usage = image::texture::Provider::Usage;
 using Resources     = resource::Manager;
+using Variants      = memory::Variant_map;
+
+static Material* load_cloth(json::Value const& cloth_value, Resources& resources);
+
+static Material* load_debug(json::Value const& debug_value, Resources& resources);
+
+static Material* load_display(json::Value const& display_value, Resources& resources);
+
+static Material* load_glass(json::Value const& glass_value, Resources& resources);
+
+static Material* load_light(json::Value const& light_value, Resources& resources);
+
+static Material* load_metal(json::Value const& metal_value, Resources& resources);
+
+static Material* load_metallic_paint(json::Value const& paint_value, Resources& resources);
 
 static Material* load_substitute(json::Value const& substitute_value, Resources& resources);
+
+static Material* load_volumetric(json::Value const& volumetric_value, Resources& resources);
 
 struct Texture_description {
     std::string filename;
@@ -192,14 +209,15 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
     return material;
 }
 
-Material* Provider::load_cloth(json::Value const& cloth_value, Resources& resources) {
+Material* load_cloth(json::Value const& cloth_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
     Texture_adapter normal_map;
     Texture_adapter mask;
 
-    bool   two_sided = false;
+    bool two_sided = false;
+
     float3 color(0.75f, 0.75f, 0.75f);
 
     for (auto const& n : cloth_value.GetObject()) {
@@ -215,7 +233,7 @@ Material* Provider::load_cloth(json::Value const& cloth_value, Resources& resour
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
                 if ("Color" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
                     color_map = create_texture(texture_description, options, resources);
@@ -243,7 +261,7 @@ Material* Provider::load_cloth(json::Value const& cloth_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_debug(json::Value const& debug_value, Resources& resources) {
+Material* load_debug(json::Value const& debug_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -257,7 +275,7 @@ Material* Provider::load_debug(json::Value const& debug_value, Resources& resour
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, resources);
@@ -275,12 +293,13 @@ Material* Provider::load_debug(json::Value const& debug_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_display(json::Value const& display_value, Resources& resources) {
+Material* load_display(json::Value const& display_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
     Texture_adapter emission_map;
-    bool            two_sided = false;
+
+    bool two_sided = false;
 
     float3 radiance(10.f);
 
@@ -311,8 +330,7 @@ Material* Provider::load_display(json::Value const& display_value, Resources& re
                     continue;
                 }
 
-                memory::Variant_map options;
-
+                Variants options;
                 if ("Emission" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
                     emission_map = create_texture(texture_description, options, resources);
@@ -354,7 +372,7 @@ Material* Provider::load_display(json::Value const& display_value, Resources& re
     return material;
 }
 
-Material* Provider::load_glass(json::Value const& glass_value, Resources& resources) {
+Material* load_glass(json::Value const& glass_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -393,7 +411,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
 
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
@@ -451,7 +469,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_light(json::Value const& light_value, Resources& resources) {
+Material* load_light(json::Value const& light_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     std::string quantity;
@@ -495,8 +513,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
                     continue;
                 }
 
-                memory::Variant_map options;
-
+                Variants options;
                 if ("Emission" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
                     emission_map = create_texture(texture_description, options, resources);
@@ -546,7 +563,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) {
+Material* load_metal(json::Value const& metal_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter normal_map;
@@ -554,7 +571,8 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
     Texture_adapter direction_map;
     Texture_adapter mask;
 
-    bool   two_sided = false;
+    bool two_sided = false;
+
     float3 ior(1.f, 1.f, 1.f);
     float3 absorption(0.75f, 0.75f, 0.75f);
     float  roughness = 0.9f;
@@ -583,7 +601,7 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
                 if ("Normal" == texture_description.usage) {
                     options.set("usage", Texture_usage::Normal);
                     normal_map = create_texture(texture_description, options, resources);
@@ -628,14 +646,15 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_metallic_paint(json::Value const& paint_value, Resources& resources) {
+Material* load_metallic_paint(json::Value const& paint_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
     Texture_adapter flakes_normal_map;
     Texture_adapter flakes_mask;
 
-    bool   two_sided = false;
+    bool two_sided = false;
+
     float3 color_a(1.f, 0.f, 0.f);
     float3 color_b(0.f, 0.f, 1.f);
     float  roughness      = 0.575f;
@@ -682,7 +701,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value, Resource
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, resources);
@@ -696,7 +715,7 @@ Material* Provider::load_metallic_paint(json::Value const& paint_value, Resource
     Texture_description texture_description;
     texture_description.scale = flakes_scale;
 
-    memory::Variant_map options;
+    Variants options;
     options.set("size", flakes_size);
     options.set("density", flakes_density);
 
@@ -762,7 +781,7 @@ Material* Provider::load_mix(json::Value const& mix_value, Resources& resources)
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
                 if ("Mask" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
                     mask = create_texture(texture_description, options, resources);
@@ -801,7 +820,8 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     Texture_adapter mask;
     Texture_adapter density_map;
 
-    bool   two_sided = false;
+    bool two_sided = false;
+
     float3 color(0.6f, 0.6f, 0.6f);
     bool   use_absorption_color = false;
     float3 absorption_color(0.f);
@@ -864,7 +884,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
                 if ("Color" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
                     color_map = create_texture(texture_description, options, resources);
@@ -924,14 +944,14 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         Texture_adapter coating_normal_map;
 
         if (!coating.thickness_map_description.filename.empty()) {
-            memory::Variant_map options;
+            Variants options;
             options.set("usage", Texture_usage::Mask);
             coating_thickness_map = create_texture(coating.thickness_map_description, options,
                                                    resources);
         }
 
         if (!coating.normal_map_description.filename.empty()) {
-            memory::Variant_map options;
+            Variants options;
             options.set("usage", Texture_usage::Normal);
             coating_normal_map = create_texture(coating.normal_map_description, options, resources);
         }
@@ -1098,7 +1118,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_volumetric(json::Value const& volumetric_value, Resources& resources) {
+Material* load_volumetric(json::Value const& volumetric_value, Resources& resources) {
     Sampler_settings sampler_settings(Sampler_settings::Filter::Linear,
                                       Sampler_settings::Address::Clamp,
                                       Sampler_settings::Address::Clamp);
@@ -1147,7 +1167,7 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value, Resourc
                     continue;
                 }
 
-                memory::Variant_map options;
+                Variants options;
                 if ("Density" == texture_description.usage) {
                     options.set("usage", Texture_usage::Mask);
                     density_map = create_texture(texture_description, options, resources);

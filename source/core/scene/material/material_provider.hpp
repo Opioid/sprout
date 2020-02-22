@@ -37,23 +37,7 @@ class Provider final : public resource::Provider<Material> {
   private:
     Material* load(json::Value const& value, std::string_view mount_folder, Resources& resources);
 
-    Material* load_cloth(json::Value const& cloth_value, Resources& resources);
-
-    Material* load_debug(json::Value const& debug_value, Resources& resources);
-
-    Material* load_display(json::Value const& display_value, Resources& resources);
-
-    Material* load_glass(json::Value const& glass_value, Resources& resources);
-
-    Material* load_light(json::Value const& light_value, Resources& resources);
-
-    Material* load_metal(json::Value const& metal_value, Resources& resources);
-
-    Material* load_metallic_paint(json::Value const& paint_value, Resources& resources);
-
     Material* load_mix(json::Value const& mix_value, Resources& resources);
-
-    Material* load_volumetric(json::Value const& volumetric_value, Resources& resources);
 
     bool force_debug_material_;
 
