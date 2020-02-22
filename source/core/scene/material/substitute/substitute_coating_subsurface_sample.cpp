@@ -168,15 +168,15 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
         float3 const attenuation = coating_.attenuation(coating_n_dot_wi);
 
         if (Forward) {
-            return {std::min(n_dot_wi, n_dot_wo) * attenuation * ggx.reflection, ggx.pdf};
+            return {std::min(n_dot_wi, n_dot_wo) * attenuation * ggx.reflection, ggx.pdf()};
         }
-        return {attenuation * ggx.reflection, ggx.pdf};
+        return {attenuation * ggx.reflection, ggx.pdf()};
     }
 
     auto result = Clearcoat_no_lambert::evaluate<Forward>(wi);
 
     if (1.f != base_.metallic_) {
-        result.pdf *= 0.5f;
+        result.pdf() *= 0.5f;
     }
 
     return result;

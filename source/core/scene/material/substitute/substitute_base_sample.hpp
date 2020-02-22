@@ -33,7 +33,6 @@ struct Base_closure {
 
     float3 diffuse_color_;
     float3 f0_;
-    float3 a_;
     float3 emission_;
 
     float metallic_;

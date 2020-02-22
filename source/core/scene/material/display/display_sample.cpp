@@ -30,7 +30,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 schlick);
 
-    return {n_dot_wi * ggx.reflection, ggx.pdf};
+    return {n_dot_wi * ggx.reflection, ggx.pdf()};
 }
 
 bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
@@ -52,7 +52,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
     auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
                                                 schlick);
 
-    return {ggx.reflection, ggx.pdf};
+    return {ggx.reflection, ggx.pdf()};
 }
 
 float3 Sample::radiance() const {

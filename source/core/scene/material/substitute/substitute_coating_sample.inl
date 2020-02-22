@@ -77,7 +77,7 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3 const& wi) const 
                                                                         layer_)
                           : base_.template base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
 
-    float const pdf = 0.5f * (coating.pdf + base.pdf);
+    float const pdf = 0.5f * (coating.pdf + base.pdf());
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
 }
 
@@ -94,7 +94,7 @@ void Sample_coating<Coating, Diffuse>::coating_sample_and_base(sampler::Sampler&
                                                                result.h_dot_wi, layer_);
 
     result.reflection = result.reflection + coating_attenuation * base.reflection;
-    result.pdf        = 0.5f * (result.pdf + base.pdf);
+    result.pdf        = 0.5f * (result.pdf + base.pdf());
 }
 
 template <typename Coating, typename Diffuse>

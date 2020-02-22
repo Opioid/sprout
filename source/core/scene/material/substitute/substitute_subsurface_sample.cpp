@@ -155,7 +155,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
         ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, base_.alpha_, ior_.eta_t);
 
         if (Forward) {
-            return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf};
+            return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf()};
         }
 
         return ggx;
@@ -170,7 +170,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
     }
 
     auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
-    result.pdf *= 0.5f;
+    result.pdf() *= 0.5f;
     return result;
 }
 

@@ -18,10 +18,10 @@ struct Renderstate {
     }
 
     float3 p;      // position in world space
+    float3 geo_n;  // geometry normal in world space
     float3 t;      // interpolated tangent frame in world space
     float3 b;      // ...
     float3 n;      // ...
-    float3 geo_n;  // geometry normal in world space
     float2 uv;     // texture coordinates
 
     float ior;

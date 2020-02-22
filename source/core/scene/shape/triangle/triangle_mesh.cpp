@@ -313,10 +313,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
         c = std::abs(c);
     }
 
-    sample.wi  = dir;
-    sample.uvw = float3(tc);
-    sample.pdf = sl / (c * area);
-    sample.t   = offset_b(d);
+    sample = Sample_to(dir, float3(tc), sl / (c * area), offset_b(d));
 
     return true;
 }

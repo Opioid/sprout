@@ -353,9 +353,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
         float const dist = std::sqrt(det);
         float const t    = offset_b(b - dist);
 
-        sample.wi  = dir;
-        sample.pdf = cone_pdf_uniform(cos_theta_max);
-        sample.t   = t;
+        sample = Sample_to(dir, float3(0.f), cone_pdf_uniform(cos_theta_max), t);
 
         return true;
     }
@@ -431,11 +429,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
         return false;
     }
 
-    sample.wi  = dir;
-    sample.uvw = float3(uv);
-    sample.t   = offset_b(d);
-    // sin_theta because of the uv weight
-    sample.pdf = sl / (c * area * sin_theta);
+    sample = Sample_to(dir, float3(uv), sl / (c * area * sin_theta), offset_b(d));
 
     return true;
 }

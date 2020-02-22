@@ -147,11 +147,8 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
     float3 const xyz  = normalize(transform_vector_transposed(transformation.rotation, dir));
     float2 const disk = hemisphere_to_disk_equidistant(xyz);
 
-    sample.wi     = dir;
-    sample.uvw[0] = 0.5f * disk[0] + 0.5f;
-    sample.uvw[1] = 0.5f * disk[1] + 0.5f;
-    sample.pdf    = 1.f / (2.f * Pi);
-    sample.t      = Ray_max_t;
+    sample = Sample_to(dir, float3(0.5f * disk[0] + 0.5f, 0.5f * disk[1] + 0.5f, 0.f),
+                       1.f / (2.f * Pi), Ray_max_t);
 
     SOFT_ASSERT(testing::check(sample));
 
@@ -182,16 +179,14 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     if (float const z = dot(disk, disk); z > 1.f) {
-        sample.pdf = 0.f;
+        sample.pdf() = 0.f;
         return false;
     }
 
     float3 const dir = disk_to_hemisphere_equidistant(disk);
 
-    sample.wi  = transform_vector(transformation.rotation, dir);
-    sample.uvw = float3(uv);
-    sample.t   = Ray_max_t;
-    sample.pdf = 1.f / (2.f * Pi);
+    sample = Sample_to(transform_vector(transformation.rotation, dir), float3(uv), 1.f / (2.f * Pi),
+                       Ray_max_t);
 
     return true;
 }

@@ -151,9 +151,9 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
         ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
 
         if constexpr (Forward) {
-            return {std::min(n_dot_wi, n_dot_wo) * color_ * ggx.reflection, ggx.pdf};
+            return {std::min(n_dot_wi, n_dot_wo) * color_ * ggx.reflection, ggx.pdf()};
         } else {
-            return {color_ * ggx.reflection, ggx.pdf};
+            return {color_ * ggx.reflection, ggx.pdf()};
         }
     } else {
         float const n_dot_wi = layer_.clamp_n_dot(wi);
@@ -174,9 +174,9 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
         ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
 
         if constexpr (Forward) {
-            return {n_dot_wi * ggx.reflection, fresnel[0] * ggx.pdf};
+            return {n_dot_wi * ggx.reflection, fresnel[0] * ggx.pdf()};
         } else {
-            return {ggx.reflection, fresnel[0] * ggx.pdf};
+            return {ggx.reflection, fresnel[0] * ggx.pdf()};
         }
     }
 }

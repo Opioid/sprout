@@ -240,7 +240,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             }
 
             shadow_ray.set_direction(light_sample.wi);
-            shadow_ray.max_t() = light_sample.t;
+            shadow_ray.max_t() = light_sample.t();
 
             float3 tr;
             if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
@@ -251,7 +251,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
             float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 
-            float const weight = 1.f / (light.pdf * light_sample.pdf);
+            float const weight = 1.f / (light.pdf * light_sample.pdf());
 
             result += weight * (tr * radiance * bxdf.reflection);
         }
@@ -267,7 +267,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         }
 
         shadow_ray.set_direction(light_sample.wi);
-        shadow_ray.max_t() = light_sample.t;
+        shadow_ray.max_t() = light_sample.t();
 
         float3 tr;
         if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
@@ -278,7 +278,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
         float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
-        float const weight = 1.f / (light_sample.pdf);
+        float const weight = 1.f / (light_sample.pdf());
 
         result += weight * (tr * radiance * bxdf.reflection);
     }

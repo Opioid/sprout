@@ -31,7 +31,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
 
     float3 const bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
-    float const pdf = (coating.pdf + flakes.pdf + base.pdf) / 3.f;
+    float const pdf = (coating.pdf + flakes.pdf() + base.pdf()) / 3.f;
 
     return {coating.reflection + coating.attenuation * bottom, pdf};
 }
@@ -54,7 +54,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
 
     float3 const bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
-    float const pdf = (coating.pdf + flakes.pdf + base.pdf) / 3.f;
+    float const pdf = (coating.pdf + flakes.pdf() + base.pdf()) / 3.f;
 
     return {coating.reflection + coating.attenuation * bottom, pdf};
 }
@@ -80,7 +80,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
         float3 const bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
         result.reflection = result.reflection + coating_attenuation * bottom;
-        result.pdf        = (result.pdf + base.pdf + flakes.pdf) * 0.4f;
+        result.pdf        = (result.pdf + base.pdf() + flakes.pdf()) * 0.4f;
     } else if (p < 0.8f) {
         base_.sample(wo_, sampler, result);
 
@@ -94,7 +94,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
         float3 const bottom = (1.f - flakes_fresnel) * result.reflection + flakes.reflection;
 
         result.reflection = coating.reflection + coating.attenuation * bottom;
-        result.pdf        = (result.pdf + coating.pdf + flakes.pdf) * 0.4f;
+        result.pdf        = (result.pdf + coating.pdf + flakes.pdf()) * 0.4f;
     } else {
         float3 flakes_fresnel;
         flakes_.sample(wo_, sampler, flakes_fresnel, result);
@@ -107,7 +107,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
         float3 const bottom = (1.f - flakes_fresnel) * base.reflection + result.reflection;
 
         result.reflection = coating.reflection + coating.attenuation * bottom;
-        result.pdf        = (result.pdf + base.pdf + coating.pdf) * 0.2f;
+        result.pdf        = (result.pdf + base.pdf() + coating.pdf) * 0.2f;
     }
 }
 
@@ -135,7 +135,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
                                                 fresnel);
 
     if constexpr (Forward) {
-        return {n_dot_wi * ggx.reflection, ggx.pdf};
+        return {n_dot_wi * ggx.reflection, ggx.pdf()};
     } else {
         return ggx;
     }
@@ -181,9 +181,9 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
     fresnel_result *= weight_;
 
     if constexpr (Forward) {
-        return {n_dot_wi * weight_ * ggx.reflection, ggx.pdf};
+        return {n_dot_wi * weight_ * ggx.reflection, ggx.pdf()};
     } else {
-        return {weight_ * ggx.reflection, ggx.pdf};
+        return {weight_ * ggx.reflection, ggx.pdf()};
     }
 }
 

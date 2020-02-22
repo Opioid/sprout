@@ -358,7 +358,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
         return float3(0.f);
     }
 
-    Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t, history.depth, history.wavelength,
+    Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t(), history.depth, history.wavelength,
                    history.time);
 
     float3 tr;
@@ -372,9 +372,9 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
-    float const light_pdf = light_sample.pdf * light_weight;
+    float const light_pdf = light_sample.pdf() * light_weight;
 
-    float const weight = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf) : 1.f;
+    float const weight = evaluate_back ? power_heuristic(light_pdf, bxdf.pdf()) : 1.f;
 
     return (weight / light_pdf) * (tr * radiance * bxdf.reflection);
 }

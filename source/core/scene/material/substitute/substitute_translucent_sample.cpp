@@ -80,7 +80,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool /*include_back*
     // we will never get a wi which is in the wrong hemisphere,
     // because that case is handled before coming here,
     // so the check is only neccessary for transmissive materials (codified by thickness > 0).
-    // On the other hand, if the there is transmission and wi is actullay coming from "behind",
+    // On the other hand, if the there is transmission and wi is actually coming from "behind",
     // then we don't need to calculate the reflection.
     // In the other case, transmission won't be visible and we only need reflection.
     if (thickness_ > 0.f && !same_hemisphere(wi)) {
@@ -107,7 +107,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool /*include_back*
     auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
 
     if (thickness_ > 0.f) {
-        result.pdf *= 0.5f;
+        result.pdf() *= 0.5f;
     }
 
     return result;

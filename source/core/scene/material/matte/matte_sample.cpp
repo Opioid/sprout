@@ -22,7 +22,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
 
     auto const brdf = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
                                                     diffuse_color_);
-    return {n_dot_wi * brdf.reflection, brdf.pdf};
+    return {n_dot_wi * brdf.reflection, brdf.pdf()};
 }
 
 bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {

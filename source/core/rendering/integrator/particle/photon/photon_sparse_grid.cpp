@@ -1,5 +1,4 @@
 #include "photon_sparse_grid.hpp"
-#include <algorithm>
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
 #include "base/math/vector3.inl"
@@ -14,6 +13,7 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/shape/shape.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 namespace rendering::integrator::particle::photon {

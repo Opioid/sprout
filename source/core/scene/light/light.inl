@@ -93,7 +93,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
     }
 
     if (dot(result.wi, n) > 0.f || total_sphere) {
-        result.pdf *= rs.pdf;
+        result.pdf() *= rs.pdf;
         return true;
     }
 
@@ -135,7 +135,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
     }
 
     if (dot(result.wi, n) > 0.f) {
-        result.pdf *= rs.pdf;
+        result.pdf() *= rs.pdf;
         return true;
     }
 

@@ -18,7 +18,6 @@ void Base_closure<Diffuse>::set(float3 const& color, float3 const& emission, flo
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
-    a_  = float3(0.f);  // f0_to_a_b(color);
 
     emission_ = emission;
 
@@ -41,7 +40,7 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
 
     if (avoid_caustics_ && alpha_ <= ggx::Min_alpha) {
         if constexpr (Forward) {
-            return {n_dot_wi * d.reflection, d.pdf};
+            return {n_dot_wi * d.reflection, d.pdf()};
         } else {
             return d;
         }
@@ -56,7 +55,7 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
 
     ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha_);
 
-    float const pdf = 0.5f * (d.pdf + ggx.pdf);
+    float const pdf = 0.5f * (d.pdf() + ggx.pdf());
 
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
@@ -93,7 +92,7 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
     // So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
 
     if constexpr (Forward) {
-        return {n_dot_wi * ggx.reflection, ggx.pdf};
+        return {n_dot_wi * ggx.reflection, ggx.pdf()};
     } else {
         return ggx;
     }
@@ -125,7 +124,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
     ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha_);
 
     result.reflection = n_dot_wi * (result.reflection + ggx.reflection);
-    result.pdf        = 0.5f * (result.pdf + ggx.pdf);
+    result.pdf        = 0.5f * (result.pdf + ggx.pdf());
 }
 
 template <typename Diffuse>
@@ -146,7 +145,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
 
     result.reflection = n_dot_wi * (result.reflection + d.reflection);
-    result.pdf        = 0.5f * (result.pdf + d.pdf);
+    result.pdf        = 0.5f * (result.pdf + d.pdf());
 }
 
 template <typename Diffuse>

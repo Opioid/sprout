@@ -61,7 +61,7 @@ Result Clearcoat::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h
 
     float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
 
-    return {ep * weight_ * n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
+    return {ep * weight_ * n_dot_wi * ggx.reflection, attenuation, ggx.pdf()};
 }
 
 Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
@@ -84,7 +84,7 @@ Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h
 
     float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
 
-    return {ep * weight_ * ggx.reflection, attenuation, ggx.pdf};
+    return {ep * weight_ * ggx.reflection, attenuation, ggx.pdf()};
 }
 
 void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
@@ -131,7 +131,7 @@ Result Thinfilm::evaluate_f(float3 const& wi, float3 const& wo, float3 const& h,
 
     float3 const attenuation = (1.f - fresnel);
 
-    return {n_dot_wi * ggx.reflection, attenuation, ggx.pdf};
+    return {n_dot_wi * ggx.reflection, attenuation, ggx.pdf()};
 }
 
 Result Thinfilm::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
@@ -149,7 +149,7 @@ Result Thinfilm::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h,
 
     float3 const attenuation = (1.f - fresnel);
 
-    return {ggx.reflection, attenuation, ggx.pdf};
+    return {ggx.reflection, attenuation, ggx.pdf()};
 }
 
 void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,

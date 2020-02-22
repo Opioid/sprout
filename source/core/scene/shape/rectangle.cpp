@@ -326,10 +326,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv,
         return false;
     }
 
-    sample.wi  = dir;
-    sample.uvw = float3(uv);
-    sample.t   = offset_b(t);
-    sample.pdf = sl / (c * area);
+    sample = Sample_to(dir, float3(uv), sl / (c * area), offset_b(t));
 
     return true;
 }

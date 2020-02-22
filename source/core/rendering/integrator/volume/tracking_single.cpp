@@ -405,7 +405,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
         return float3(0.f);
     }
 
-    Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t, ray.depth, ray.wavelength,
+    Ray shadow_ray(position, light_sample.wi, 0.f, light_sample.t(), ray.depth, ray.wavelength,
                    ray.time);
 
     float3 tr;
@@ -421,7 +421,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
-    return (phase * tr * radiance) / (light_sample.pdf * light_pdf);
+    return (phase * tr * radiance) / (light_sample.pdf() * light_pdf);
 }
 
 sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) {

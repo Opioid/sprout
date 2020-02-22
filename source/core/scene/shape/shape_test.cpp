@@ -37,8 +37,8 @@ bool check(Intersection const& intersection, entity::Composed_transformation con
 }
 
 bool check(const Sample_to& sample) {
-    if (sample.pdf <= 0.f) {
-        std::cout << "pdf " << sample.pdf << std::endl;
+    if (sample.pdf() <= 0.f) {
+        std::cout << "pdf " << sample.pdf() << std::endl;
         return false;
     }
 

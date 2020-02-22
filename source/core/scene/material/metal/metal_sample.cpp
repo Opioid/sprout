@@ -67,9 +67,9 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
                                                 conductor);
 
     if constexpr (Forward) {
-        return {n_dot_wi * ggx.reflection, ggx.pdf};
+        return {n_dot_wi * ggx.reflection, ggx.pdf()};
     } else {
-        return {ggx.reflection, ggx.pdf};
+        return {ggx.reflection, ggx.pdf()};
     }
 }
 
@@ -122,7 +122,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
                                                   conductor);
 
     if constexpr (Forward) {
-        return {n_dot_wi * ggx.reflection, ggx.pdf};
+        return {n_dot_wi * ggx.reflection, ggx.pdf()};
     } else {
         return ggx;
     }
