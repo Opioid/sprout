@@ -190,7 +190,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        if (ray.depth > settings_.min_bounces) {
+        if (ray.depth >= settings_.min_bounces) {
             if (russian_roulette(throughput, sampler_.generate_sample_1D())) {
                 break;
             }
@@ -258,6 +258,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
         return result / float(num_samples);
     }
+
     for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
         auto const& light = worker.scene().light(l);
 

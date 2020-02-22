@@ -51,7 +51,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
 
     set_sample(wo, rs, rs.ior, sampler, worker, sample);
 
-    sample.set_volumetric(anisotropy_, ior_, rs.ior);
+    sample.set_volumetric(ior_, rs.ior);
 
     return sample;
 }

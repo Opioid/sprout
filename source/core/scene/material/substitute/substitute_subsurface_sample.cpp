@@ -103,12 +103,10 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) 
 }
 
 bool Sample_subsurface::evaluates_back(bool previously, bool same_side) const {
-    return previously || same_side;
+    return previously | same_side;
 }
 
-void Sample_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) {
-    anisotropy_ = anisotropy;
-
+void Sample_subsurface::set_volumetric(float ior, float ior_outside) {
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
 }

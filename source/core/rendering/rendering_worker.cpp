@@ -83,7 +83,7 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
             return float4(vli, 1.f);
         }
 
-        Interface_stack temp_stack = interface_stack_;
+        Interface_stack const temp_stack = interface_stack_;
 
         float4 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
 
