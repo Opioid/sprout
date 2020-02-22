@@ -18,7 +18,7 @@ bxdf::Result Sample_coating_subsurface::evaluate_b(float3 const& wi, bool includ
     return evaluate<false>(wi, include_back);
 }
 
-void Sample_coating_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_coating_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
     if (1.f == base_.metallic_) {
         Clearcoat_no_lambert::sample(sampler, result);
         return;
@@ -182,7 +182,7 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_
     return result;
 }
 
-void Sample_coating_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_coating_subsurface::refract(Sampler& sampler, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = float3(1.f);
         result.wi         = -wo_;

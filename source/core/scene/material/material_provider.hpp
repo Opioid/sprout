@@ -47,15 +47,11 @@ class Provider final : public resource::Provider<Material> {
 
     Material* load_light(json::Value const& light_value, Resources& resources);
 
-    Material* load_matte(json::Value const& matte_value, Resources& resources);
-
     Material* load_metal(json::Value const& metal_value, Resources& resources);
 
     Material* load_metallic_paint(json::Value const& paint_value, Resources& resources);
 
     Material* load_mix(json::Value const& mix_value, Resources& resources);
-
-    Material* load_sky(json::Value const& sky_value, Resources& resources);
 
     Material* load_volumetric(json::Value const& volumetric_value, Resources& resources);
 

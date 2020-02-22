@@ -19,8 +19,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace rendering::integrator::volume {
 
 using namespace scene::prop;

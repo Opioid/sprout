@@ -25,7 +25,9 @@ namespace prop {
 class Prop;
 
 struct Intersection {
-    using Filter = material::Sampler_settings::Filter;
+    using Filter  = material::Sampler_settings::Filter;
+    using Sample  = material::Sample;
+    using Sampler = sampler::Sampler;
 
     material::Material const* material(Worker const& worker) const;
 
@@ -38,9 +40,8 @@ struct Intersection {
     float3 thin_absorption(float3 const& wo, uint64_t time, Filter filter,
                            Worker const& worker) const;
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Filter filter,
-                                   bool avoid_caustics, sampler::Sampler& sampler,
-                                   Worker const& worker) const;
+    Sample const& sample(float3 const& wo, Ray const& ray, Filter filter, bool avoid_caustics,
+                         Sampler& sampler, Worker const& worker) const;
 
     bool same_hemisphere(float3 const& v) const;
 

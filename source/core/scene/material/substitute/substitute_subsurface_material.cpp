@@ -33,7 +33,7 @@ void Material_subsurface::compile(thread::Pool& threads, Scene const& scene) {
 
 material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray const& /*ray*/,
                                                     Renderstate const& rs, Filter filter,
-                                                    sampler::Sampler& /*sampler*/,
+                                                    Sampler& /*sampler*/,
                                                     Worker const& worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample_subsurface_volumetric>();

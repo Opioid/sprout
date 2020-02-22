@@ -34,7 +34,7 @@ inline float3 Intersection::thin_absorption(float3 const& wo, uint64_t time, Fil
 }
 
 inline material::Sample const& Intersection::sample(float3 const& wo, Ray const& ray, Filter filter,
-                                                    bool avoid_caustics, sampler::Sampler& sampler,
+                                                    bool avoid_caustics, Sampler& sampler,
                                                     Worker const& worker) const {
     material::Material const* material = Intersection::material(worker);
 

@@ -16,7 +16,7 @@ bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi, bool include_back) 
     return evaluate<false>(wi, include_back);
 }
 
-void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
     if (1.f == base_.metallic_) {
         base_.pure_gloss_sample(wo_, layer_, sampler, result);
         result.wavelength = 0.f;
@@ -172,7 +172,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) co
     return result;
 }
 
-void Sample_subsurface::refract(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_subsurface::refract(Sampler& sampler, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = float3(1.f);
         result.wi         = -wo_;

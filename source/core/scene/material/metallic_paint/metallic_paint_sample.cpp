@@ -59,7 +59,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
     return {coating.reflection + coating.attenuation * bottom, pdf};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

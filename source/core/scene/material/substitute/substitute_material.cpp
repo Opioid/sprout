@@ -16,8 +16,7 @@ Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
-                                         Renderstate const& rs, Filter filter,
-                                         sampler::Sampler& /*sampler*/,
+                                         Renderstate const& rs, Filter filter, Sampler& /*sampler*/,
                                          Worker const& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
@@ -42,7 +41,7 @@ Frozen::Frozen(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
-                                       Filter        filter, sampler::Sampler& /*sampler*/,
+                                       Filter        filter, Sampler& /*sampler*/,
                                        Worker const& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 

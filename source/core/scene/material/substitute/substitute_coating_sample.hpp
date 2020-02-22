@@ -16,19 +16,19 @@ class Sample_coating : public Sample_base {
 
     bxdf::Result evaluate_b(float3 const& wi, bool include_back) const override;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
+    void sample(Sampler& sampler, bxdf::Sample& result) const override;
 
   protected:
     template <bool Forward>
     bxdf::Result evaluate(float3 const& wi) const;
 
-    void coating_sample_and_base(sampler::Sampler& sampler, bxdf::Sample& result) const;
+    void coating_sample_and_base(Sampler& sampler, bxdf::Sample& result) const;
 
-    void diffuse_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const;
+    void diffuse_sample_and_coating(Sampler& sampler, bxdf::Sample& result) const;
 
-    void gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const;
+    void gloss_sample_and_coating(Sampler& sampler, bxdf::Sample& result) const;
 
-    void pure_gloss_sample_and_coating(sampler::Sampler& sampler, bxdf::Sample& result) const;
+    void pure_gloss_sample_and_coating(Sampler& sampler, bxdf::Sample& result) const;
 
   public:
     Base_closure<Diffuse> base_;

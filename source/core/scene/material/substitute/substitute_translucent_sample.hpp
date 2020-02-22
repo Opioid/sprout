@@ -11,7 +11,7 @@ class Sample_translucent : public Sample_base {
 
     bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
     bool is_translucent() const final;
 

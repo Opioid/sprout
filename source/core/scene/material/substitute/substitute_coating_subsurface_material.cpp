@@ -34,7 +34,7 @@ void Material_coating_subsurface::compile(thread::Pool& threads, Scene const& sc
 
 material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ray const& /*ray*/,
                                                             Renderstate const& rs, Filter filter,
-                                                            sampler::Sampler& /*sampler*/,
+                                                            Sampler& /*sampler*/,
                                                             Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

@@ -43,8 +43,6 @@ struct Base_closure {
 
 class Sample_base : public material::Sample {
   public:
-    using Sampler = sampler::Sampler;
-
     float3 const& base_shading_normal() const final;
 
     Layer layer_;

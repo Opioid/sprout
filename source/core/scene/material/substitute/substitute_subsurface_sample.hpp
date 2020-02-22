@@ -13,7 +13,7 @@ class Sample_subsurface final : public Sample_base {
 
     bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
     bool evaluates_back(bool previously, bool same_side) const final;
 
@@ -25,7 +25,7 @@ class Sample_subsurface final : public Sample_base {
     template <bool Forward>
     bxdf::Result evaluate(float3 const& wi, bool include_back) const;
 
-    void refract(sampler::Sampler& sampler, bxdf::Sample& result) const;
+    void refract(Sampler& sampler, bxdf::Sample& result) const;
 
     IoR ior_;
 };

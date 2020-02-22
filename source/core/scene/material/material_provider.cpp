@@ -23,7 +23,6 @@
 #include "light/light_emissionmap_animated.hpp"
 #include "logging/logging.hpp"
 #include "material_sample_cache.inl"
-#include "matte/matte_material.hpp"
 #include "metal/metal_material.hpp"
 #include "metal/metal_presets.hpp"
 #include "metallic_paint/metallic_paint_material.hpp"
@@ -31,7 +30,6 @@
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
 #include "scene/scene_constants.hpp"
-#include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_coating_material.inl"
 #include "substitute/substitute_coating_subsurface_material.hpp"
 #include "substitute/substitute_material.hpp"
@@ -166,16 +164,12 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
                 material = load_glass(n.value, resources);
             } else if ("Light" == n.name) {
                 material = load_light(n.value, resources);
-            } else if ("Matte" == n.name) {
-                material = load_matte(n.value, resources);
             } else if ("Metal" == n.name) {
                 material = load_metal(n.value, resources);
             } else if ("Metallic_paint" == n.name) {
                 material = load_metallic_paint(n.value, resources);
             } else if ("Mix" == n.name) {
                 material = load_mix(n.value, resources);
-            } else if ("Sky" == n.name) {
-                material = load_sky(n.value, resources);
             } else if ("Substitute" == n.name) {
                 material = load_substitute(n.value, resources);
             } else if ("Volumetric" == n.name) {
@@ -552,53 +546,6 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
     return material;
 }
 
-Material* Provider::load_matte(json::Value const& matte_value, Resources& resources) {
-    Sampler_settings sampler_settings;
-
-    //	Texture_ptr normal_map;
-    Texture_adapter mask;
-
-    bool   two_sided = false;
-    float3 color(0.6f, 0.6f, 0.6f);
-
-    for (auto const& n : matte_value.GetObject()) {
-        if ("color" == n.name) {
-            color = read_color(n.value);
-        } else if ("two_sided" == n.name) {
-            two_sided = json::read_bool(n.value);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const texture_description = read_texture_description(tn);
-
-                if (texture_description.filename.empty()) {
-                    continue;
-                }
-
-                memory::Variant_map options;
-                /*if ("Normal" == texture_description.usage) {
-                        options.insert("usage", Texture_usage::Normal);
-                        normal_map = resources.load<image::texture::Texture(
-                                                texture_description.filename, options);
-                } else*/
-                if ("Mask" == texture_description.usage) {
-                    options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, resources);
-                }
-            }
-        } else if ("sampler" == n.name) {
-            read_sampler_settings(n.value, sampler_settings);
-        }
-    }
-
-    auto material = new matte::Material(sampler_settings, two_sided);
-    material->set_mask(mask);
-    //	material->set_normal_map(normal_map);
-
-    material->set_color(color);
-
-    return material;
-}
-
 Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) {
     Sampler_settings sampler_settings;
 
@@ -840,47 +787,6 @@ Material* Provider::load_mix(json::Value const& mix_value, Resources& resources)
     material->set_mask(mask);
 
     material->set_materials(materials[0], materials[1]);
-
-    return material;
-}
-
-Material* Provider::load_sky(json::Value const& sky_value, Resources& resources) {
-    Sampler_settings sampler_settings;
-
-    Texture_adapter mask;
-
-    bool two_sided = false;
-
-    float3 radiance(0.6f, 0.6f, 0.6f);
-
-    for (auto const& n : sky_value.GetObject()) {
-        if ("radiance" == n.name) {
-            radiance = read_color(n.value);
-        } else if ("two_sided" == n.name) {
-            two_sided = json::read_bool(n.value);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const texture_description = read_texture_description(tn);
-
-                if (texture_description.filename.empty()) {
-                    continue;
-                }
-
-                memory::Variant_map options;
-                if ("Mask" == texture_description.usage) {
-                    options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, resources);
-                }
-            }
-        } else if ("sampler" == n.name) {
-            read_sampler_settings(n.value, sampler_settings);
-        }
-    }
-
-    auto material = new sky::Material_overcast(sampler_settings, two_sided);
-
-    material->set_mask(mask);
-    material->set_emission(radiance);
 
     return material;
 }
@@ -1495,7 +1401,6 @@ uint32_t Provider::max_sample_size() {
     num_bytes = std::max(glass::Glass_rough::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass_thin::sample_size(), num_bytes);
     num_bytes = std::max(light::Constant::sample_size(), num_bytes);
-    num_bytes = std::max(matte::Material::sample_size(), num_bytes);
     num_bytes = std::max(metal::Material_anisotropic::sample_size(), num_bytes);
     num_bytes = std::max(metal::Material_isotropic::sample_size(), num_bytes);
     num_bytes = std::max(metallic_paint::Material::sample_size(), num_bytes);
