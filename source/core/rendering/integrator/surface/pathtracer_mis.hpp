@@ -1,6 +1,7 @@
 #ifndef SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_NG_HPP
 #define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_NG_HPP
 
+#include "base/flags/flags.hpp"
 #include "base/math/vector3.hpp"
 #include "base/math/vector4.hpp"
 #include "sampler/sampler_random.hpp"
@@ -51,13 +52,23 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
                           Intersection const& intersection, Material_sample const& material_sample,
                           Filter filter, Worker& worker);
 
-    float3 evaluate_light(Ray const& ray, float3 const& geo_n, Intersection const& intersection,
-                          Bxdf_sample sample_result, bool treat_as_singular, bool is_translucent,
-                          Filter filter, Worker& worker, bool& pure_emissive);
+    enum class State {
+        Primary_ray       = 1 << 0,
+        Treat_as_singular = 1 << 1,
+        Is_translucent    = 1 << 2,
+        Evaluate_back     = 1 << 3,
+        Split_photon      = 1 << 4,
+        Transparent       = 1 << 5
+    };
 
-    float3 evaluate_light_volume(float3 const& vli, Ray const& ray,
-                                 Intersection const& intersection, float bxdf_pdf,
-                                 bool treat_as_singular, bool is_translucent, Worker& worker) const;
+    using Path_state = flags::Flags<State>;
+
+    float3 connect_light(Ray const& ray, float3 const& geo_n, Intersection const& intersection,
+                         Bxdf_sample sample_result, Path_state state, Filter filter, Worker& worker,
+                         bool& pure_emissive);
+
+    float3 connect_light_volume(float3 const& vli, Ray const& ray, Intersection const& intersection,
+                                float bxdf_pdf, Path_state state, Worker& worker) const;
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

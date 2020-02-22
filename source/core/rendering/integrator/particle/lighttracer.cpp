@@ -227,7 +227,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
                                 Ray const& history, Intersection const& intersection,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) {
-    if (!worker.scene().prop(intersection.prop)->visible_in_camera()) {
+    if (!intersection.visible_in_camera(worker)) {
         return false;
     }
 

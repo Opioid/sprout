@@ -127,12 +127,11 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
     Bxdf_sample sample_result;
 
-    bool primary_ray       = true;
-    bool treat_as_singular = true;
-    bool is_translucent    = false;
-    bool evaluate_back     = true;
-    bool split_photon      = false;
-    bool transparent       = true;
+    Path_state state;
+    state.set(State::Primary_ray);
+    state.set(State::Treat_as_singular);
+    state.set(State::Evaluate_back);
+    state.set(State::Transparent);
 
     float3 throughput(1.f);
     float3 result_li(0.f);
@@ -142,7 +141,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics & !primary_ray &
+        bool const avoid_caustics = settings_.avoid_caustics & state.no(State::Primary_ray) &
                                     worker.interface_stack().top_is_straight(worker);
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
@@ -157,15 +156,16 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (material_sample.is_pure_emissive()) {
-            transparent = false;
+            state.unset(State::Transparent);
             break;
         }
 
         if (ray.depth < max_bounces) {
-            evaluate_back = material_sample.evaluates_back(evaluate_back, same_side);
+            state.set(State::Evaluate_back,
+                      material_sample.evaluates_back(state.is(State::Evaluate_back), same_side));
 
             result_li += throughput * sample_lights(ray, intersection, material_sample,
-                                                    evaluate_back, filter, worker);
+                                                    state.is(State::Evaluate_back), filter, worker);
 
             SOFT_ASSERT(all_finite_and_positive(result_li));
         }
@@ -183,17 +183,17 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                 break;
             }
 
-            treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
+            state.set(State::Treat_as_singular, sample_result.type.is(Bxdf_type::Specular));
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            treat_as_singular = false;
+            state.unset(State::Treat_as_singular);
 
-            if (primary_ray) {
-                primary_ray = false;
-                filter      = Filter::Nearest;
+            if (state.is(State::Primary_ray)) {
+                state.unset(State::Primary_ray);
+                filter = Filter::Nearest;
 
                 if (integrate_photons | (0 != ray.depth)) {
-                    photon_li    = throughput * worker.photon_li(intersection, material_sample);
-                    split_photon = 0 != ray.depth;
+                    photon_li = throughput * worker.photon_li(intersection, material_sample);
+                    state.set(State::Split_photon, 0 != ray.depth);
                 }
             }
         }
@@ -212,7 +212,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
             ray.set_direction(sample_result.wi);
 
-            transparent = false;
+            state.unset(State::Transparent);
         }
 
         if (material_sample.ior_greater_one()) {
@@ -235,9 +235,9 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                     // This is the direct eye-light connection for the volume case.
                     result_li += vli;
                 } else {
-                    result_li += throughput *
-                                 evaluate_light_volume(vli, ray, intersection, previous_bxdf_pdf,
-                                                       treat_as_singular, is_translucent, worker);
+                    result_li += throughput * connect_light_volume(vli, ray, intersection,
+                                                                   previous_bxdf_pdf, state,
+                                                                   worker);
                 }
 
                 SOFT_ASSERT(all_finite_and_positive(result_li));
@@ -263,24 +263,23 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         SOFT_ASSERT(all_finite(result_li));
 
-        if (sample_result.type.is(Bxdf_type::Straight) & !treat_as_singular) {
+        if (sample_result.type.is(Bxdf_type::Straight) & state.no(State::Treat_as_singular)) {
             sample_result.pdf = previous_bxdf_pdf;
         } else {
-            is_translucent = material_sample.is_translucent();
-            geo_n          = material_sample.geometric_normal();
+            state.set(State::Is_translucent, material_sample.is_translucent());
+            geo_n = material_sample.geometric_normal();
         }
 
-        if (evaluate_back | treat_as_singular) {
+        if (state.any(State::Evaluate_back, State::Treat_as_singular)) {
             bool         pure_emissive;
-            float3 const radiance = evaluate_light(ray, geo_n, intersection, sample_result,
-                                                   treat_as_singular, is_translucent, filter,
-                                                   worker, pure_emissive);
+            float3 const radiance = connect_light(ray, geo_n, intersection, sample_result, state,
+                                                  filter, worker, pure_emissive);
 
             result_li += throughput * radiance;
 
             if (pure_emissive) {
-                transparent &= (!worker.scene().prop(intersection.prop)->visible_in_camera()) &
-                               (ray.max_t() >= scene::Ray_max_t);
+                state.and_set(State::Transparent, (!intersection.visible_in_camera(worker)) &
+                                                      (ray.max_t() >= scene::Ray_max_t));
                 break;
             }
         }
@@ -296,7 +295,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
     }
 
-    return Result{compose_alpha(result_li, throughput, transparent), photon_li, split_photon};
+    return Result{compose_alpha(result_li, throughput, state.is(State::Transparent)), photon_li,
+                  state.is(State::Split_photon)};
 }
 
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
@@ -379,10 +379,10 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
     return (weight / light_pdf) * (tr * radiance * bxdf.reflection);
 }
 
-float3 Pathtracer_MIS::evaluate_light(Ray const& ray, float3 const& geo_n,
-                                      Intersection const& intersection, Bxdf_sample sample_result,
-                                      bool treat_as_singular, bool is_translucent, Filter filter,
-                                      Worker& worker, bool& pure_emissive) {
+float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
+                                     Intersection const& intersection, Bxdf_sample sample_result,
+                                     Path_state state, Filter filter, Worker& worker,
+                                     bool& pure_emissive) {
     uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_area_light(light_id)) {
         pure_emissive = false;
@@ -391,15 +391,15 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, float3 const& geo_n,
 
     float light_pdf = 0.f;
 
-    if (!treat_as_singular) {
+    if (state.no(State::Treat_as_singular)) {
         bool const calculate_pdf = Light_sampling::Strategy::Single ==
                                    settings_.light_sampling.strategy;
 
-        auto const light = worker.scene().light(light_id, ray.origin, geo_n, is_translucent,
-                                                calculate_pdf);
+        auto const light = worker.scene().light(light_id, ray.origin, geo_n,
+                                                state.is(State::Is_translucent), calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent, Filter::Nearest,
-                                           worker);
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),
+                                           Filter::Nearest, worker);
 
         if (0.f == ls_pdf) {
             pure_emissive = true;
@@ -431,10 +431,9 @@ float3 Pathtracer_MIS::evaluate_light(Ray const& ray, float3 const& geo_n,
     return radiance;
 }
 
-float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
-                                             Intersection const& intersection, float bxdf_pdf,
-                                             bool treat_as_singular, bool is_translucent,
-                                             Worker& worker) const {
+float3 Pathtracer_MIS::connect_light_volume(float3 const& vli, Ray const& ray,
+                                            Intersection const& intersection, float bxdf_pdf,
+                                            Path_state state, Worker& worker) const {
     uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_light(light_id)) {
         return float3(0.f);
@@ -442,14 +441,14 @@ float3 Pathtracer_MIS::evaluate_light_volume(float3 const& vli, Ray const& ray,
 
     float light_pdf = 0.f;
 
-    if (!treat_as_singular) {
+    if (state.no(State::Treat_as_singular)) {
         bool const calculate_pdf = Light_sampling::Strategy::Single ==
                                    settings_.light_sampling.strategy;
 
         auto const light = worker.scene().light(light_id, calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent, Filter::Nearest,
-                                           worker);
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),
+                                           Filter::Nearest, worker);
 
         if (0.f == ls_pdf) {
             return float3(0.f);

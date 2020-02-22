@@ -49,6 +49,12 @@ struct Flags {
         }
     }
 
+    void and_set(T flag, bool value) {
+        if (is(flag) & (!value)) {
+            values &= ~impl_type(flag);
+        }
+    }
+
     void unset(T flag) {
         values &= ~impl_type(flag);
     }

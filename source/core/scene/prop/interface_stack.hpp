@@ -51,6 +51,7 @@ class Interface_stack {
     float top_ior(Worker const& worker) const;
 
     bool top_is_vacuum(Worker const& worker) const;
+
     bool top_is_straight(Worker const& worker) const;
 
     void push(Intersection const& intersection);

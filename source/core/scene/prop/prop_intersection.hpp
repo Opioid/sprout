@@ -31,6 +31,8 @@ struct Intersection {
 
     uint32_t light_id(Worker const& worker) const;
 
+    bool visible_in_camera(Worker const& worker) const;
+
     float opacity(uint64_t time, Filter filter, Worker const& worker) const;
 
     float3 thin_absorption(float3 const& wo, uint64_t time, Filter filter,

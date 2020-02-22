@@ -20,6 +20,10 @@ inline uint32_t Intersection::light_id(Worker const& worker) const {
     return worker.scene().prop_light_id(prop, geo.part);
 }
 
+inline bool Intersection::visible_in_camera(Worker const& worker) const {
+    return worker.scene().prop(prop)->visible_in_camera();
+}
+
 inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& worker) const {
     return material(worker)->opacity(geo.uv, time, filter, worker);
 }
