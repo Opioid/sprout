@@ -142,7 +142,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics & state.no(State::Primary_ray) &
-                                    worker.interface_stack().top_is_straight(worker);
+                                    worker.interface_stack().allows_caustics(worker);
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
@@ -279,7 +279,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
             if (pure_emissive) {
                 state.and_set(State::Transparent, (!intersection.visible_in_camera(worker)) &
-                                                      (ray.max_t() >= scene::Ray_max_t));
+                                                      (ray.max_t() >= Ray_max_t));
                 break;
             }
         }

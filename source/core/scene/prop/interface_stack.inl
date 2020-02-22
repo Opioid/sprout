@@ -82,7 +82,7 @@ inline float Interface_stack::top_ior(Worker const& worker) const {
     return 1.f;
 }
 
-inline bool Interface_stack::top_is_vacuum(Worker const& worker) const {
+inline bool Interface_stack::straight(Worker const& worker) const {
     if (index_ > 0) {
         return 1.f == stack_[index_ - 1].material(worker)->ior();
     }
@@ -90,7 +90,7 @@ inline bool Interface_stack::top_is_vacuum(Worker const& worker) const {
     return true;
 }
 
-inline bool Interface_stack::top_is_straight(Worker const& worker) const {
+inline bool Interface_stack::allows_caustics(Worker const& worker) const {
     if (index_ > 0) {
         auto const material = stack_[index_ - 1].material(worker);
         return (1.f == material->ior()) | (!material->is_scattering_volume());

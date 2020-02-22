@@ -101,8 +101,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
     for (;;) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics & !primary_ray &
-                                    worker.interface_stack().top_is_straight(worker);
+        bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray) &
+                                    worker.interface_stack().allows_caustics(worker);
 
         auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                     worker);

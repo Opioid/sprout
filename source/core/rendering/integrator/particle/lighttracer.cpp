@@ -117,7 +117,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
             } else {
                 bool const side = intersection.subsurface | material_sample.same_hemisphere(wo);
 
-                bool const caustic = caustic_ray & worker.interface_stack().top_is_straight(worker);
+                bool const caustic = caustic_ray & worker.interface_stack().allows_caustics(worker);
 
                 if (side & (caustic | settings_.full_light_path)) {
                     if (direct_camera(camera, bounds, radiance, ray, intersection, material_sample,
