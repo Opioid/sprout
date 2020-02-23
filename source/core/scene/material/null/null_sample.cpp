@@ -18,7 +18,7 @@ bxdf::Result Sample::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) con
 }
 
 void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const {
-    result.reflection = float3(1.f);
+    result.reflection = float3(factor_);
     result.wi         = -wo_;
     result.pdf        = 1.f;
     result.wavelength = 0.f;

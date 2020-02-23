@@ -144,8 +144,12 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         bool const avoid_caustics = settings_.avoid_caustics & state.no(State::Primary_ray) &
                                     worker.interface_stack().allows_caustics(worker);
 
-        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
-                                                          worker);
+        //        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
+        //        sampler_,
+        //                                                          worker);
+
+        auto const& material_sample = worker.sample_material(ray, wo, intersection, filter,
+                                                             avoid_caustics, sampler_);
 
         bool const same_side = material_sample.same_hemisphere(wo);
 

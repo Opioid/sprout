@@ -104,8 +104,12 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray) &
                                     worker.interface_stack().allows_caustics(worker);
 
-        auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
-                                                    worker);
+        //        auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
+        //        sampler_,
+        //                                                    worker);
+
+        auto const& material_sample = worker.sample_material(ray, wo, intersection, filter,
+                                                             avoid_caustics, sampler_);
 
         bool const same_side = material_sample.same_hemisphere(wo);
 

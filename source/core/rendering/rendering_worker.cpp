@@ -11,6 +11,8 @@
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
+#include "scene/material/material_sample.inl"
+#include "scene/material/null/null_sample.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.inl"
@@ -23,6 +25,8 @@
 #include "base/debug/assert.hpp"
 
 namespace rendering {
+
+using Material_sample = scene::material::Sample;
 
 Worker::Worker(uint32_t max_sample_size) : scene::Worker(max_sample_size) {}
 
@@ -71,6 +75,8 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
 
 float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
     Intersection intersection;
+
+    intersection.from_subsurface = false;
 
     if (!interface_stack.empty()) {
         reset_interface_stack(interface_stack);
@@ -133,6 +139,29 @@ float3 Worker::photon_li(Intersection const& intersection, Material_sample const
 
 Worker::Particle_importance& Worker::particle_importance() const {
     return *particle_importance_;
+}
+
+Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
+                                               Intersection const& intersection, Filter filter,
+                                               bool avoid_caustics, Sampler& sampler) const {
+    if ((!intersection.subsurface) & intersection.from_subsurface) {
+        float3 const wi = ray.direction;
+
+        float3 const n     = intersection.geo.n;
+        float3 const geo_n = intersection.geo.geo_n;
+
+        float const vbh = intersection.material(*this)->volume_border_hack(wi, n, *this);
+        float const nsc = non_symmetry_compensation(wi, wo, geo_n, n);
+
+        auto& sample = Worker::sample<scene::material::null::Sample>();
+
+        sample.set_basis(geo_n, wo);
+        sample.factor_ = vbh * nsc;
+
+        return sample;
+    }
+
+    return intersection.sample(wo, ray, filter, avoid_caustics, sampler, *this);
 }
 
 bool Worker::transmittance(Ray const& ray, float3& transmittance) {
@@ -213,7 +242,6 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                     float3 const wi = ray.direction;
 
                     float const vbh = material.volume_border_hack(wi, normals.n, *this);
-
                     float const nsc = non_symmetry_compensation(wi, wo, normals.geo_n, normals.n);
 
                     tv *= vbh * nsc * tr;

@@ -18,6 +18,8 @@ class Sample final : public material::Sample {
     bool ior_greater_one() const final;
 
     bool evaluates_back(bool previously, bool same_side) const final;
+
+    float factor_ = 1.f;
 };
 
 }  // namespace scene::material::null

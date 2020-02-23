@@ -68,6 +68,7 @@ class Worker : public scene::Worker {
     using Photon_map          = integrator::particle::photon::Map;
     using Photon_mapper       = integrator::particle::photon::Mapper;
     using Particle_importance = integrator::particle::Importance_cache;
+    using Sampler             = sampler::Sampler;
 
     Worker(uint32_t max_sample_size);
 
@@ -94,6 +95,10 @@ class Worker : public scene::Worker {
     float3 photon_li(Intersection const& intersection, Material_sample const& sample) const;
 
     Particle_importance& particle_importance() const;
+
+    Material_sample const& sample_material(Ray const& ray, float3 const& wo,
+                                           Intersection const& intersection, Filter filter,
+                                           bool avoid_caustics, Sampler& sampler) const;
 
   protected:
     bool transmittance(Ray const& ray, float3& transmittance);
