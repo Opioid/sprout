@@ -90,15 +90,6 @@ inline bool Interface_stack::straight(Worker const& worker) const {
     return true;
 }
 
-inline bool Interface_stack::allows_caustics(Worker const& worker) const {
-    if (index_ > 0) {
-        auto const material = stack_[index_ - 1].material(worker);
-        return (1.f == material->ior()) | (!material->is_scattering_volume());
-    }
-
-    return true;
-}
-
 inline void Interface_stack::push(Intersection const& intersection) {
     SOFT_ASSERT(index_ < Num_entries - 1);
 

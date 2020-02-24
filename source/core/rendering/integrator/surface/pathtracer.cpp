@@ -96,8 +96,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
     for (;;) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray) &
-                                    worker.interface_stack().allows_caustics(worker);
+        bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
         auto const& material_sample = worker.sample_material(ray, wo, intersection, filter,
                                                              avoid_caustics, sampler_);

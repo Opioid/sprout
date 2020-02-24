@@ -52,8 +52,6 @@ class Interface_stack {
 
     bool straight(Worker const& worker) const;
 
-    bool allows_caustics(Worker const& worker) const;
-
     void push(Intersection const& intersection);
 
     bool remove(Intersection const& intersection);
