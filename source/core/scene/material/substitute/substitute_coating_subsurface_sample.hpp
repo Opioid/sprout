@@ -16,15 +16,13 @@ class Sample_coating_subsurface final
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
 
-    void set_volumetric(float anisotropy, float ior, float ior_outside);
+    void set_volumetric(float ior, float ior_outside);
 
   private:
     template <bool Forward>
     bxdf::Result evaluate(float3 const& wi) const;
 
     void refract(sampler::Sampler& sampler, bxdf::Sample& result) const;
-
-    float anisotropy_;
 
     IoR ior_;
 };

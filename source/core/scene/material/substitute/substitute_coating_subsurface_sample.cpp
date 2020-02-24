@@ -113,9 +113,7 @@ void Sample_coating_subsurface::sample(Sampler& sampler, bxdf::Sample& result) c
     result.wavelength = 0.f;
 }
 
-void Sample_coating_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) {
-    anisotropy_ = anisotropy;
-
+void Sample_coating_subsurface::set_volumetric(float ior, float ior_outside) {
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
 }

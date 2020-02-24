@@ -64,9 +64,7 @@ float Material_subsurface::volume_border_hack(float3 const& wi, float3 const& n,
 
     float const f = 1.f - fresnel::schlick(n_dot_wi, f0);
 
-    //   return n_dot_wi * (f / (0.45f * Pi));
-
-    return 1.f;  // n_dot_wi * f;
+    return /*n_dot_wi **/ f;
 }
 
 size_t Material_subsurface::num_bytes() const {

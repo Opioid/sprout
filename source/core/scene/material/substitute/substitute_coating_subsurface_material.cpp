@@ -76,7 +76,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
     sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
                         fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
 
-    sample.set_volumetric(anisotropy_, ior_, rs.ior);
+    sample.set_volumetric(ior_, rs.ior);
 
     return sample;
 }
