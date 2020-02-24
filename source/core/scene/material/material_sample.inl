@@ -90,10 +90,6 @@ inline bool Sample::ior_greater_one() const {
     return true;
 }
 
-inline bool Sample::evaluates_back(bool /*previously*/, bool /*same_side*/) const {
-    return true;
-}
-
 inline float3 Sample::offset_p(float3 const& p) const {
     return offset_ray(p, geo_n_);
 }

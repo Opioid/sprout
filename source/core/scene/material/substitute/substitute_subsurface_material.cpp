@@ -36,7 +36,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
                                                     Sampler& /*sampler*/,
                                                     Worker const& worker) const {
     if (rs.subsurface) {
-        auto& sample = worker.sample<Sample_subsurface_volumetric>();
+        auto& sample = worker.sample<volumetric::Sample>();
 
         sample.set_basis(rs.geo_n, wo);
 
@@ -66,7 +66,7 @@ float Material_subsurface::volume_border_hack(float3 const& wi, float3 const& n,
 
     //   return n_dot_wi * (f / (0.45f * Pi));
 
-    return 1.f;//n_dot_wi * f;
+    return 1.f;  // n_dot_wi * f;
 }
 
 size_t Material_subsurface::num_bytes() const {

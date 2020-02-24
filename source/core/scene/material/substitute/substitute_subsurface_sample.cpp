@@ -8,12 +8,12 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_subsurface::evaluate_f(float3 const& wi, bool include_back) const {
-    return evaluate<true>(wi, include_back);
+bxdf::Result Sample_subsurface::evaluate_f(float3 const& wi) const {
+    return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi, bool include_back) const {
-    return evaluate<false>(wi, include_back);
+bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi) const {
+    return evaluate<false>(wi);
 }
 
 void Sample_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
@@ -102,26 +102,18 @@ void Sample_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
     result.wavelength = 0.f;
 }
 
-bool Sample_subsurface::evaluates_back(bool previously, bool same_side) const {
-    return previously | same_side;
-}
-
 void Sample_subsurface::set_volumetric(float ior, float ior_outside) {
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
 }
 
 template <bool Forward>
-bxdf::Result Sample_subsurface::evaluate(float3 const& wi, bool include_back) const {
+bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }
 
     if (!same_hemisphere(wo_)) {
-        if (!include_back) {
-            return {float3(0.f), 0.f};
-        }
-
         IoR const ior = ior_.swapped();
 
         float3 const h = -normalize(ior.eta_t * wi + ior.eta_i * wo_);
@@ -193,10 +185,6 @@ void Sample_subsurface::refract(Sampler& sampler, bxdf::Sample& result) const {
 
     result.reflection *= n_dot_wi;
     result.type.set(bxdf::Type::Caustic);
-}
-
-bool Sample_subsurface_volumetric::evaluates_back(bool /*previously*/, bool /*same_side*/) const {
-    return false;
 }
 
 }  // namespace scene::material::substitute

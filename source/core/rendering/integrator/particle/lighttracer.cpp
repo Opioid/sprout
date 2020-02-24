@@ -247,7 +247,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
     }
 
     float3 const wi   = -camera_sample.dir;
-    auto const   bxdf = material_sample.evaluate_f(wi, true);
+    auto const   bxdf = material_sample.evaluate_f(wi);
 
     auto& sensor = camera.sensor();
 

@@ -10,12 +10,12 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample_translucent::evaluate_f(float3 const& wi, bool include_back) const {
-    return evaluate<true>(wi, include_back);
+bxdf::Result Sample_translucent::evaluate_f(float3 const& wi) const {
+    return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_translucent::evaluate_b(float3 const& wi, bool include_back) const {
-    return evaluate<false>(wi, include_back);
+bxdf::Result Sample_translucent::evaluate_b(float3 const& wi) const {
+    return evaluate<false>(wi);
 }
 
 void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
@@ -72,7 +72,7 @@ void Sample_translucent::set_transluceny(float3 const& diffuse_color, float thic
 }
 
 template <bool Forward>
-bxdf::Result Sample_translucent::evaluate(float3 const& wi, bool /*include_back*/) const {
+bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
     // No side check needed because the material is two-sided by definition.
 
     // This is a bit complicated to explain:

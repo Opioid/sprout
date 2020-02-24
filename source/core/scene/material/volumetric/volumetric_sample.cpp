@@ -17,13 +17,13 @@ float3 const& Sample::base_shading_normal() const {
     return geo_n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
@@ -43,10 +43,6 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
 
 bool Sample::is_translucent() const {
     return true;
-}
-
-bool Sample::evaluates_back(bool previously, bool /*same_side*/) const {
-    return previously;
 }
 
 void Sample::set(float anisotropy) {

@@ -17,8 +17,7 @@ float3 Sample_coating<Coating, Diffuse>::radiance() const {
 }
 
 template <typename Coating, typename Diffuse>
-bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi,
-                                                          bool /*include_back*/) const {
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -27,8 +26,7 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi,
 }
 
 template <typename Coating, typename Diffuse>
-bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_b(float3 const& wi,
-                                                          bool /*include_back*/) const {
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_b(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }

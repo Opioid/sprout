@@ -12,9 +12,9 @@ class Sample_coating : public Sample_base {
   public:
     float3 radiance() const final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const override;
+    bxdf::Result evaluate_f(float3 const& wi) const override;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const override;
+    bxdf::Result evaluate_b(float3 const& wi) const override;
 
     void sample(Sampler& sampler, bxdf::Sample& result) const override;
 

@@ -10,19 +10,17 @@ namespace scene::material::substitute {
 class Sample_coating_subsurface final
     : public Sample_coating<coating::Clearcoat_layer, disney::Isotropic_no_lambert> {
   public:
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const final;
+    bxdf::Result evaluate_f(float3 const& wi) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
+    bxdf::Result evaluate_b(float3 const& wi) const final;
 
     void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
-
-    bool evaluates_back(bool previously, bool same_side) const final;
 
     void set_volumetric(float anisotropy, float ior, float ior_outside);
 
   private:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const;
+    bxdf::Result evaluate(float3 const& wi) const;
 
     void refract(sampler::Sampler& sampler, bxdf::Sample& result) const;
 
@@ -35,11 +33,9 @@ class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
   public:
     float3 const& base_shading_normal() const final;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const final;
+    bxdf::Result evaluate_f(float3 const& wi) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
-
-    bool evaluates_back(bool previously, bool same_side) const final;
+    bxdf::Result evaluate_b(float3 const& wi) const final;
 
   private:
     float3 attenuation(float3 const& wi) const;

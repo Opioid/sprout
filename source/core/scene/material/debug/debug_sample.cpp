@@ -13,7 +13,7 @@ float3 const& Sample::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
+bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     float3 const n = cross(layer_.t_, layer_.b_);
 
     bool const same_side = dot(n, layer_.n_) > 0.f;
@@ -29,7 +29,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi, bool) const {
     return {n_dot_wi * lambert, pdf};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool) const {
+bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     float3 const n = cross(layer_.t_, layer_.b_);
 
     bool const same_side = dot(n, layer_.n_) > 0.f;

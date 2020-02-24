@@ -92,7 +92,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     bool primary_ray       = true;
     bool treat_as_singular = true;
-    bool evaluate_back     = true;
     bool transparent       = true;
 
     float3 throughput(1.f);
@@ -103,10 +102,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray) &
                                     worker.interface_stack().allows_caustics(worker);
-
-        //        auto& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
-        //        sampler_,
-        //                                                    worker);
 
         auto const& material_sample = worker.sample_material(ray, wo, intersection, filter,
                                                              avoid_caustics, sampler_);
@@ -123,10 +118,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        evaluate_back = material_sample.evaluates_back(evaluate_back, same_side);
-
-        result += throughput *
-                  direct_light(ray, intersection, material_sample, evaluate_back, filter, worker);
+        result += throughput * direct_light(ray, intersection, material_sample, filter, worker);
 
         SOFT_ASSERT(all_finite_and_positive(result));
 
@@ -205,8 +197,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 }
 
 float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
-                                   Material_sample const& material_sample, bool evaluate_back,
-                                   Filter filter, Worker& worker) {
+                                   Material_sample const& material_sample, Filter filter,
+                                   Worker& worker) {
     float3 result(0.f);
 
     if (!material_sample.ior_greater_one()) {
@@ -251,7 +243,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
                 continue;
             }
 
-            auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+            auto const bxdf = material_sample.evaluate_f(light_sample.wi);
 
             float3 const radiance = light.ref.evaluate(light_sample, Filter::Nearest, worker);
 
@@ -279,7 +271,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             continue;
         }
 
-        auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+        auto const bxdf = material_sample.evaluate_f(light_sample.wi);
 
         float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 

@@ -7,11 +7,11 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 

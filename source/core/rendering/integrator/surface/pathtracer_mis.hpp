@@ -44,11 +44,10 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     Result integrate(Ray& ray, Intersection& intersection, Worker& worker, bool integrate_photons);
 
     float3 sample_lights(Ray const& ray, Intersection& intersection,
-                         Material_sample const& material_sample, bool evaluate_back, Filter filter,
-                         Worker& worker);
+                         Material_sample const& material_sample, Filter filter, Worker& worker);
 
     float3 evaluate_light(Light const& light, float light_weight, Ray const& history,
-                          float3 const& p, uint32_t sampler_dimension, bool evaluate_back,
+                          float3 const& p, uint32_t sampler_dimension,
                           Intersection const& intersection, Material_sample const& material_sample,
                           Filter filter, Worker& worker);
 
@@ -56,9 +55,8 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         Primary_ray       = 1 << 0,
         Treat_as_singular = 1 << 1,
         Is_translucent    = 1 << 2,
-        Evaluate_back     = 1 << 3,
-        Split_photon      = 1 << 4,
-        Transparent       = 1 << 5
+        Split_photon      = 1 << 3,
+        Transparent       = 1 << 4
     };
 
     using Path_state = flags::Flags<State>;

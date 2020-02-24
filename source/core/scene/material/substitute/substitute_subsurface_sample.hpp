@@ -9,13 +9,11 @@ namespace scene::material::substitute {
 
 class Sample_subsurface final : public Sample_base {
   public:
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const final;
+    bxdf::Result evaluate_f(float3 const& wi) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const final;
+    bxdf::Result evaluate_b(float3 const& wi) const final;
 
     void sample(Sampler& sampler, bxdf::Sample& result) const final;
-
-    bool evaluates_back(bool previously, bool same_side) const final;
 
     void set_volumetric(float ior, float ior_outside);
 
@@ -23,16 +21,11 @@ class Sample_subsurface final : public Sample_base {
 
   private:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi, bool include_back) const;
+    bxdf::Result evaluate(float3 const& wi) const;
 
     void refract(Sampler& sampler, bxdf::Sample& result) const;
 
     IoR ior_;
-};
-
-class Sample_subsurface_volumetric final : public volumetric::Sample {
-  public:
-    bool evaluates_back(bool previously, bool same_side) const final;
 };
 
 }  // namespace scene::material::substitute

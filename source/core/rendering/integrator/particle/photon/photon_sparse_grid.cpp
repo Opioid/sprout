@@ -368,7 +368,7 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
                 }
 
                 if (squared_distance(photon.p, position) <= radius_2) {
-                    auto const bxdf = sample.evaluate_f(photon.wi, true);
+                    auto const bxdf = sample.evaluate_f(photon.wi);
 
                     result += float3(photon.alpha) * bxdf.reflection;
                 }
@@ -410,7 +410,7 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
 
                         float const k = conely_filter(distance_2, inv_radius_2);
 
-                        auto const bxdf = sample.evaluate_b(photon.wi, true);
+                        auto const bxdf = sample.evaluate_b(photon.wi);
 
                         result += k * float3(photon.alpha) * bxdf.reflection;
                     }

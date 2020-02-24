@@ -10,12 +10,12 @@ namespace scene::material::substitute {
 
 using Clearcoat_no_lambert = Sample_coating<coating::Clearcoat_layer, disney::Isotropic_no_lambert>;
 
-bxdf::Result Sample_coating_subsurface::evaluate_f(float3 const& wi, bool include_back) const {
-    return evaluate<true>(wi, include_back);
+bxdf::Result Sample_coating_subsurface::evaluate_f(float3 const& wi) const {
+    return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_coating_subsurface::evaluate_b(float3 const& wi, bool include_back) const {
-    return evaluate<false>(wi, include_back);
+bxdf::Result Sample_coating_subsurface::evaluate_b(float3 const& wi) const {
+    return evaluate<false>(wi);
 }
 
 void Sample_coating_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
@@ -113,10 +113,6 @@ void Sample_coating_subsurface::sample(Sampler& sampler, bxdf::Sample& result) c
     result.wavelength = 0.f;
 }
 
-bool Sample_coating_subsurface::evaluates_back(bool previously, bool same_side) const {
-    return previously | same_side;
-}
-
 void Sample_coating_subsurface::set_volumetric(float anisotropy, float ior, float ior_outside) {
     anisotropy_ = anisotropy;
 
@@ -125,16 +121,12 @@ void Sample_coating_subsurface::set_volumetric(float anisotropy, float ior, floa
 }
 
 template <bool Forward>
-bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi, bool include_back) const {
+bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi) const {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }
 
     if (!same_hemisphere(wo_)) {
-        if (!include_back) {
-            return {float3(0.f), 0.f};
-        }
-
         IoR const ior = ior_.swapped();
 
         float3 const h = -normalize(ior.eta_t * wi + ior.eta_i * wo_);
@@ -213,9 +205,8 @@ float3 const& Sample_coating_subsurface_volumetric::base_shading_normal() const 
     return layer_.n_;
 }
 
-bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,
-                                                              bool /*include_back*/) const {
-    bxdf::Result result = volumetric::Sample::evaluate_f(wi, true);
+bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi) const {
+    bxdf::Result result = volumetric::Sample::evaluate_f(wi);
 
     float3 const a = attenuation(wi);
 
@@ -224,20 +215,14 @@ bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi,
     return result;
 }
 
-bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi,
-                                                              bool /*include_back*/) const {
-    bxdf::Result result = volumetric::Sample::evaluate_b(wi, true);
+bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi) const {
+    bxdf::Result result = volumetric::Sample::evaluate_b(wi);
 
     float3 const a = attenuation(wi);
 
     result.reflection *= a;
 
     return result;
-}
-
-bool Sample_coating_subsurface_volumetric::evaluates_back(bool /*previously*/,
-                                                          bool /*same_side*/) const {
-    return false;
 }
 
 float3 Sample_coating_subsurface_volumetric::attenuation(float3 const& wi) const {

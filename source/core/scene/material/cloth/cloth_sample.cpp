@@ -10,13 +10,13 @@ float3 const& Sample::base_shading_normal() const {
     return layer_.n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const pdf      = n_dot_wi * Pi_inv;
     return {pdf * diffuse_color_, pdf};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
     float const pdf      = n_dot_wi * Pi_inv;
     return {Pi_inv * diffuse_color_, pdf};

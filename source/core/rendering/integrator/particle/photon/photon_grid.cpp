@@ -347,7 +347,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                 }
 
                 if (squared_distance(photon.p, position) <= radius_2) {
-                    auto const bxdf = sample.evaluate_f(photon.wi, true);
+                    auto const bxdf = sample.evaluate_f(photon.wi);
 
                     result += float3(photon.alpha) * bxdf.reflection;
                 }
@@ -389,7 +389,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
                         float const k = conely_filter(distance2, inv_radius2);
 
-                        auto const bxdf = sample.evaluate_b(photon.wi, true);
+                        auto const bxdf = sample.evaluate_b(photon.wi);
 
                         result += k * float3(photon.alpha) * bxdf.reflection;
                     }

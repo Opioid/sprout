@@ -53,9 +53,9 @@ class Sample {
 
     virtual float3 const& base_shading_normal() const = 0;
 
-    virtual bxdf::Result evaluate_f(float3 const& wi, bool include_back) const = 0;
+    virtual bxdf::Result evaluate_f(float3 const& wi) const = 0;
 
-    virtual bxdf::Result evaluate_b(float3 const& wi, bool include_back) const = 0;
+    virtual bxdf::Result evaluate_b(float3 const& wi) const = 0;
 
     virtual void sample(Sampler& sampler, bxdf::Sample& result) const = 0;
 
@@ -66,8 +66,6 @@ class Sample {
     virtual bool is_translucent() const;
 
     virtual bool ior_greater_one() const;
-
-    virtual bool evaluates_back(bool previously, bool same_side) const;
 
     float3 offset_p(float3 const& p) const;
     float3 offset_p(float3 const& p, float3 const& wi) const;

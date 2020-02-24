@@ -10,11 +10,11 @@ float3 const& Sample::base_shading_normal() const {
     return geo_n_;
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& /*wi*/, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_f(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& /*wi*/, bool /*include_back*/) const {
+bxdf::Result Sample::evaluate_b(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 

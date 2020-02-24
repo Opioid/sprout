@@ -9,15 +9,13 @@ class Sample : public material::Sample {
   public:
     float3 const& base_shading_normal() const override;
 
-    bxdf::Result evaluate_f(float3 const& wi, bool include_back) const override;
+    bxdf::Result evaluate_f(float3 const& wi) const override;
 
-    bxdf::Result evaluate_b(float3 const& wi, bool include_back) const override;
+    bxdf::Result evaluate_b(float3 const& wi) const override;
 
     void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
     bool is_translucent() const final;
-
-    bool evaluates_back(bool previously, bool same_side) const override;
 
     void set(float anisotropy);
 

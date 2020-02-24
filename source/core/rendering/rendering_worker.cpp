@@ -144,15 +144,16 @@ Worker::Particle_importance& Worker::particle_importance() const {
 Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
                                                Intersection const& intersection, Filter filter,
                                                bool avoid_caustics, Sampler& sampler) const {
-        float3 const wi = ray.direction;
+    auto material = intersection.material(*this);
 
-    if ((!intersection.subsurface) & intersection.from_subsurface & intersection.same_hemisphere(wi)) {
+    float3 const wi = ray.direction;
 
-
+    if (((!intersection.subsurface) & intersection.from_subsurface) &&
+        ((material->ior() > 1.f) & intersection.same_hemisphere(wi))) {
         float3 const n     = intersection.geo.n;
         float3 const geo_n = intersection.geo.geo_n;
 
-        float const vbh = intersection.material(*this)->volume_border_hack(wi, n, *this);
+        float const vbh = material->volume_border_hack(wi, n, *this);
         float const nsc = non_symmetry_compensation(wi, wo, geo_n, n);
 
         auto& sample = Worker::sample<scene::material::null::Sample>();
