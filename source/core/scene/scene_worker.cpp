@@ -76,7 +76,7 @@ float Worker::ior_outside(float3 const& wo, Intersection const& intersection) co
 }
 
 void Worker::interface_change(float3 const& dir, Intersection const& intersection) {
-    if (intersection.same_hemisphere(dir)) {
+    if (bool const leave = intersection.same_hemisphere(dir); leave) {
         interface_stack_.remove(intersection);
     } else if (interface_stack_.straight(*this) | (intersection.material(*this)->ior() > 1.f)) {
         interface_stack_.push(intersection);
@@ -84,22 +84,20 @@ void Worker::interface_change(float3 const& dir, Intersection const& intersectio
 }
 
 material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const& intersection) {
-    bool const leave = intersection.same_hemisphere(dir);
+    float const inter_ior = intersection.material(*this)->ior();
 
-    material::IoR ior;
-
-    if (leave) {
-        ior.eta_t = interface_stack_.peek_ior(intersection, *this);
-        ior.eta_i = intersection.material(*this)->ior();
+    if (bool const leave = intersection.same_hemisphere(dir); leave) {
+        auto const ior = material::IoR{interface_stack_.peek_ior(intersection, *this), inter_ior};
 
         interface_stack_.remove(intersection);
-    } else {
-        ior.eta_t = intersection.material(*this)->ior();
-        ior.eta_i = interface_stack_.top_ior(*this);
 
-        if (interface_stack_.straight(*this) | (intersection.material(*this)->ior() > 1.f)) {
-            interface_stack_.push(intersection);
-        }
+        return ior;
+    }
+
+    auto const ior = material::IoR{inter_ior, interface_stack_.top_ior(*this)};
+
+    if (interface_stack_.straight(*this) | (inter_ior > 1.f)) {
+        interface_stack_.push(intersection);
     }
 
     return ior;
