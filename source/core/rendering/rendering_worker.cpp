@@ -153,7 +153,7 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
         float3 const n     = intersection.geo.n;
         float3 const geo_n = intersection.geo.geo_n;
 
-        float const vbh = material->volume_border_hack(wi, n, *this);
+        float const vbh = material->border(wi, n);
         float const nsc = non_symmetry_compensation(wi, wo, geo_n, n);
 
         auto& sample = Worker::sample<scene::material::null::Sample>();
@@ -244,7 +244,7 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                 if (scene_->thin_absorption(ray, filter, *this, tv)) {
                     float3 const wi = ray.direction;
 
-                    float const vbh = material.volume_border_hack(wi, normals.n, *this);
+                    float const vbh = material.border(wi, normals.n);
                     float const nsc = non_symmetry_compensation(wi, wo, normals.geo_n, normals.n);
 
                     tv *= vbh * nsc * tr;

@@ -16,7 +16,7 @@ class Material_subsurface final : public Material_base {
                                    Filter filter, Sampler& sampler,
                                    Worker const& worker) const final;
 
-    float volume_border_hack(float3 const& wi, float3 const& n, Worker const& worker) const final;
+    float border(float3 const& wi, float3 const& n) const final;
 
     size_t num_bytes() const final;
 
