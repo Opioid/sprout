@@ -144,8 +144,10 @@ Worker::Particle_importance& Worker::particle_importance() const {
 Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
                                                Intersection const& intersection, Filter filter,
                                                bool avoid_caustics, Sampler& sampler) const {
-    if ((!intersection.subsurface) & intersection.from_subsurface) {
         float3 const wi = ray.direction;
+
+    if ((!intersection.subsurface) & intersection.from_subsurface & intersection.same_hemisphere(wi)) {
+
 
         float3 const n     = intersection.geo.n;
         float3 const geo_n = intersection.geo.geo_n;

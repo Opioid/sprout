@@ -169,7 +169,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                       material_sample.evaluates_back(state.is(State::Evaluate_back), same_side));
 
             result_li += throughput * sample_lights(ray, intersection, material_sample,
-                                                    state.is(State::Evaluate_back), filter, worker);
+                                                    /*state.is(State::Evaluate_back)*/true, filter, worker);
 
             SOFT_ASSERT(all_finite_and_positive(result_li));
         }
@@ -274,7 +274,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             geo_n = material_sample.geometric_normal();
         }
 
-        if (state.any(State::Evaluate_back, State::Treat_as_singular)) {
+     //   if (state.any(State::Evaluate_back, State::Treat_as_singular)) {
             bool         pure_emissive;
             float3 const radiance = connect_light(ray, geo_n, intersection, sample_result, state,
                                                   filter, worker, pure_emissive);
@@ -286,7 +286,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                                                       (ray.max_t() >= Ray_max_t));
                 break;
             }
-        }
+     //   }
 
         if ((ray.depth >= max_bounces) & worker.interface_stack().empty_or_scattering(worker)) {
             break;

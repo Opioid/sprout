@@ -66,7 +66,7 @@ float Material_subsurface::volume_border_hack(float3 const& wi, float3 const& n,
 
     //   return n_dot_wi * (f / (0.45f * Pi));
 
-    return n_dot_wi * f;
+    return 1.f;//n_dot_wi * f;
 }
 
 size_t Material_subsurface::num_bytes() const {
