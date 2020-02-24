@@ -162,7 +162,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
     }
     static bool constexpr decomposition = false;
 
-    if (decomposition) {
+    if constexpr (decomposition) {
         auto const cm = material.control_medium();
 
         float const minorant_mu_t = cm.minorant_mu_t();
