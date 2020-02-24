@@ -21,6 +21,7 @@
 namespace rendering::integrator::surface {
 
 using namespace scene;
+using namespace scene::shape;
 
 Pathtracer_DL::Pathtracer_DL(rnd::Generator& rng, Settings const& settings, bool progressive)
     : Integrator(rng),
@@ -112,8 +113,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         }
 
         if (material_sample.is_pure_emissive()) {
-            transparent &= (!intersection.visible_in_camera(worker)) &
-                           (ray.max_t() >= scene::Ray_max_t);
+            transparent &= (!intersection.visible_in_camera(worker)) & (ray.max_t() >= Ray_max_t);
             break;
         }
 
@@ -145,7 +145,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         throughput *= sample_result.reflection / sample_result.pdf;
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
-            ray.min_t() = scene::offset_f(ray.max_t());
+            ray.min_t() = offset_f(ray.max_t());
         } else {
             ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
             ray.min_t() = 0.f;
@@ -159,7 +159,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             ++ray.depth;
         }
 
-        ray.max_t() = scene::Ray_max_t;
+        ray.max_t() = Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
@@ -228,7 +228,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             // auto const light = worker.scene().random_light(select);
             auto const light = worker.scene().random_light(p, n, is_translucent, select);
 
-            shape::Sample_to light_sample;
+            Sample_to light_sample;
             if (!light.ref.sample(p, n, ray.time, is_translucent, sampler, 0, worker,
                                   light_sample)) {
                 continue;
@@ -257,7 +257,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
         auto const& light = worker.scene().light(l);
 
-        shape::Sample_to light_sample;
+        Sample_to light_sample;
         if (!light.sample(p, n, ray.time, is_translucent, sampler, l, worker, light_sample)) {
             continue;
         }

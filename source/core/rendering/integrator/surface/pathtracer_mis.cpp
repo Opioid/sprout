@@ -23,6 +23,7 @@
 namespace rendering::integrator::surface {
 
 using namespace scene;
+using namespace scene::shape;
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive)
     : Integrator(rng),
@@ -200,7 +201,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         throughput *= sample_result.reflection / sample_result.pdf;
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
-            ray.min_t() = scene::offset_f(ray.max_t());
+            ray.min_t() = offset_f(ray.max_t());
         } else {
             ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
             ray.min_t() = 0.f;
@@ -214,7 +215,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             ++ray.depth;
         }
 
-        ray.max_t() = scene::Ray_max_t;
+        ray.max_t() = Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
@@ -344,7 +345,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
                                       Material_sample const& material_sample, Filter filter,
                                       Worker& worker) {
     // Light source importance sample
-    shape::Sample_to light_sample;
+    Sample_to light_sample;
     if (!light.sample(p, material_sample.geometric_normal(), history.time,
                       material_sample.is_translucent(), light_sampler(history.depth),
                       sampler_dimension, worker, light_sample)) {
