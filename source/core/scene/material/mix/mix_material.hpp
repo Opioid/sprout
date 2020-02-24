@@ -12,10 +12,6 @@ class Material : public material::Material {
                                    Filter filter, Sampler& sampler,
                                    Worker const& worker) const final;
 
-    float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const final;
-
-    bool is_masked() const final;
-
     float ior() const final;
 
     size_t num_bytes() const final;

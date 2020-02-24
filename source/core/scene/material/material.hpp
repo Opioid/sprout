@@ -148,7 +148,7 @@ class Material {
 
     virtual bool is_caustic() const;
 
-    virtual bool is_masked() const;
+    bool is_masked() const;
 
     bool is_emissive(Scene const& scene) const;
 

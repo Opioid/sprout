@@ -23,15 +23,6 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     return material_b_->sample(wo, ray, rs, filter, sampler, worker);
 }
 
-float Material::opacity(float2 /*uv*/, uint64_t /*time*/, Filter /*filter*/,
-                        Worker const& /*worker*/) const {
-    return 1.f;
-}
-
-bool Material::is_masked() const {
-    return material_a_->is_masked() || material_b_->is_masked();
-}
-
 float Material::ior() const {
     return material_a_->ior();
 }

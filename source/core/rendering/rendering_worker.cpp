@@ -148,8 +148,8 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
 
     float3 const wi = ray.direction;
 
-    if (((!intersection.subsurface) & intersection.from_subsurface) &&
-        ((material->ior() > 1.f) & intersection.same_hemisphere(wi))) {
+    if (((!intersection.subsurface) & intersection.from_subsurface & (material->ior() > 1.f)) &&
+        intersection.same_hemisphere(wi)) {
         float3 const n     = intersection.geo.n;
         float3 const geo_n = intersection.geo.geo_n;
 
