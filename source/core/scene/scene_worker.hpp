@@ -19,6 +19,7 @@ namespace scene {
 
 class Scene;
 struct Ray;
+struct Result1;
 
 namespace camera {
 class Camera;
@@ -61,9 +62,7 @@ class Worker {
 
     bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection, Filter filter);
 
-    bool visibility(Ray const& ray) const;
-
-    bool masked_visibility(Ray const& ray, Filter filter, float& mv) const;
+    Result1 visibility(Ray const& ray, Filter filter) const;
 
     Scene const& scene() const;
 

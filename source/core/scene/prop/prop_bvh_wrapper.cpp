@@ -299,7 +299,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const {
     return false;
 }
 
-bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const {
+Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -321,7 +321,8 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
 
     bvh::Node* nodes = tree_.nodes_;
 
-    Prop const*     props        = props_;
+    Prop const* props = props_;
+
     uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
@@ -344,7 +345,7 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
                 uint32_t const p = finite_props[i];
                 visibility *= 1.f - props[p].opacity(p, ray, filter, worker);
                 if (visibility <= 0.f) {
-                    return false;
+                    return {false, 0.f};
                 }
             }
         }
@@ -358,12 +359,11 @@ bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker
         uint32_t const p = infinite_props[i];
         visibility *= 1.f - props[p].opacity(p, ray, filter, worker);
         if (visibility <= 0.f) {
-            return false;
+            return {false, 0.f};
         }
     }
 
-    v = visibility;
-    return true;
+    return {true, visibility};
 }
 
 bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,

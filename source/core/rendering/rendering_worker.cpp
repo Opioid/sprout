@@ -240,7 +240,7 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                 ray.min_t() = scene::offset_f(ray.max_t());
                 ray.max_t() = ray_max_t;
 
-                if (scene_->thin_absorption(ray, filter, *this, tv)) {
+                if (scene_->tinted_visibility(ray, filter, *this, tv)) {
                     float3 const wi = ray.direction;
 
                     float const vbh = material.border(wi, normals.n);
@@ -256,7 +256,7 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
         }
     }
 
-    return scene_->thin_absorption(ray, filter, *this, tv);
+    return scene_->tinted_visibility(ray, filter, *this, tv);
 }
 
 }  // namespace rendering

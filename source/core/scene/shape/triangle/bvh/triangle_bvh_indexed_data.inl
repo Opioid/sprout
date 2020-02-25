@@ -178,8 +178,8 @@ float Indexed_data<SV>::bitangent_sign(uint32_t index) const {
 }
 
 template <typename SV>
-uint32_t Indexed_data<SV>::material_index(uint32_t index) const {
-    return triangles_[index].material_index;
+uint32_t Indexed_data<SV>::part(uint32_t index) const {
+    return triangles_[index].part;
 }
 
 template <typename SV>
@@ -288,7 +288,7 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertex_stream 
 }
 
 template <typename SV>
-void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
                                     Vertex_stream const& vertices, uint32_t current_triangle) {
     uint8_t bitanget_sign = 0;
 
@@ -300,7 +300,7 @@ void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t
         bitanget_sign = 1;
     }
 
-    triangles_[current_triangle] = Index_triangle(a, b, c, bitanget_sign, material_index);
+    triangles_[current_triangle] = Index_triangle(a, b, c, bitanget_sign, part);
 }
 
 template <typename SV>
@@ -311,8 +311,8 @@ size_t Indexed_data<SV>::num_bytes() const {
 
 template <typename SV>
 Indexed_data<SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                                 uint8_t bitangent_sign, uint32_t material_index)
-    : a(a), b(b), c(c), bts(bitangent_sign), material_index(material_index) {}
+                                                 uint8_t bitangent_sign, uint32_t part)
+    : a(a), b(b), c(c), bts(bitangent_sign), part(part) {}
 
 template <typename V>
 Indexed_data_interleaved<V>::Indexed_data_interleaved()

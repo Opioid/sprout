@@ -151,7 +151,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Simd3f bitangent_sign(tree_.triangle_bitangent_sign(pi.index));
 
-        uint32_t material_index = tree_.triangle_material_index(pi.index);
+        uint32_t part = tree_.triangle_part(pi.index);
 
         Simd3x3f rotation(transformation.rotation);
 
@@ -167,7 +167,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         intersection.geo_n = float3(geo_n_w);
 
         intersection.uv   = uv;
-        intersection.part = material_index;
+        intersection.part = part;
 
         SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -201,7 +201,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
-        uint32_t material_index = tree_.triangle_material_index(pi.index);
+        uint32_t part = tree_.triangle_part(pi.index);
 
         Simd3x3f rotation(transformation.rotation);
 
@@ -210,7 +210,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
         intersection.p     = float3(p_w);
         intersection.geo_n = float3(geo_n_w);
         intersection.uv    = uv;
-        intersection.part  = material_index;
+        intersection.part  = part;
 
         return true;
     }
@@ -458,7 +458,7 @@ void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
     triangle_mapping = memory::allocate_aligned<uint32_t>(num);
 
     for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
-        if (tree.triangle_material_index(t) == part) {
+        if (tree.triangle_part(t) == part) {
             areas[mt] = tree.triangle_area(t);
 
             triangle_mapping[mt] = t;

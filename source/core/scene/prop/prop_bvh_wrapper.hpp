@@ -16,6 +16,11 @@ class Node_stack;
 class Worker;
 struct Ray;
 
+struct Result1 {
+    bool  valid;
+    float value;
+};
+
 namespace prop {
 
 class Prop;
@@ -39,7 +44,7 @@ class BVH_wrapper {
 
     bool intersect_p(Ray const& ray, Worker const& worker) const;
 
-    bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const;
+    Result1 visibility(Ray const& ray, Filter filter, Worker const& worker) const;
 
     bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const;
 

@@ -389,8 +389,7 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filte
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
                     float2 const uv = data_.interpolate_uv(Simd3f(u), Simd3f(v), i);
 
-                    auto const material = worker.scene().prop_material(entity,
-                                                                       data_.material_index(i));
+                    auto const material = worker.scene().prop_material(entity, data_.part(i));
 
                     opacity += (1.f - opacity) * material->opacity(uv, time, filter, worker);
                     if (opacity >= 1.f) {
@@ -456,8 +455,7 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
 
                     float3 const normal = data_.normal(i);
 
-                    auto const material = worker.scene().prop_material(entity,
-                                                                       data_.material_index(i));
+                    auto const material = worker.scene().prop_material(entity, data_.part(i));
 
                     float3 const tta = material->thin_absorption(ray.direction, normal, uv, time,
                                                                  filter, worker);
@@ -524,8 +522,8 @@ float Tree<Data>::triangle_bitangent_sign(uint32_t index) const {
 }
 
 template <typename Data>
-uint32_t Tree<Data>::triangle_material_index(uint32_t index) const {
-    return data_.material_index(index);
+uint32_t Tree<Data>::triangle_part(uint32_t index) const {
+    return data_.part(index);
 }
 
 template <typename Data>

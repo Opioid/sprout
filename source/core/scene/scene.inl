@@ -17,8 +17,7 @@ inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
 
-inline bool Scene::intersect(Ray& ray, Worker const& worker,
-                             prop::Intersection& intersection) const {
+inline bool Scene::intersect(Ray& ray, Worker const& worker, Intersection& intersection) const {
     return prop_bvh_.intersect(ray, worker, intersection);
 }
 
@@ -27,36 +26,30 @@ inline bool Scene::intersect(Ray& ray, Worker const& worker, shape::Normals& nor
 }
 
 inline bool Scene::intersect_volume(Ray& ray, Worker const& worker,
-                                    prop::Intersection& intersection) const {
+                                    Intersection& intersection) const {
     return volume_bvh_.intersect_nsf(ray, worker, intersection);
 }
 
-inline bool Scene::intersect_p(Ray const& ray, Worker const& worker) const {
-    return prop_bvh_.intersect_p(ray, worker);
-}
-
-inline bool Scene::visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const {
+inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker const& worker) const {
     if (has_masked_material_) {
-        return prop_bvh_.visibility(ray, filter, worker, v);
+        return prop_bvh_.visibility(ray, filter, worker);
     }
 
     if (!prop_bvh_.intersect_p(ray, worker)) {
-        v = 1.f;
-        return true;
+        return {true, 1.f};
     }
 
-    v = 0.f;
-    return false;
+    return {false, 0.f};
 }
 
-inline bool Scene::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                                   float3& ta) const {
+inline bool Scene::tinted_visibility(Ray const& ray, Filter filter, Worker const& worker,
+                                     float3& ta) const {
     if (has_tinted_shadow_) {
         return prop_bvh_.thin_absorption(ray, filter, worker, ta);
     }
 
-    if (float v; Scene::visibility(ray, filter, worker, v)) {
-        ta = float3(v);
+    if (auto const v = visibility(ray, filter, worker); v.valid) {
+        ta = float3(v.value);
         return true;
     }
 

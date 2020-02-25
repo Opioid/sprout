@@ -57,7 +57,7 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
 
     Ray const snow_ray(rs.p, normalize(float3(dir[0], 10.f * dir[2], dir[1])), 0.1f, 4.f);
 
-    if (worker.visibility(snow_ray)) {
+    if (auto const v = worker.visibility(snow_ray, Filter::Undefined); v.valid) {
         float const angle = std::max(rs.n[1], 0.f);
 
         float const weight = angle * angle;

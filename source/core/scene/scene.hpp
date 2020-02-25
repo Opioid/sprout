@@ -79,6 +79,7 @@ class Scene {
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
     using Light          = light::Light_ref;
+    using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;
     using Prop_ptr       = prop::Prop_ptr;
@@ -106,22 +107,23 @@ class Scene {
 
     bool has_volumes() const;
 
-    bool intersect(Ray& ray, Worker const& worker, prop::Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker const& worker, Intersection& intersection) const;
+
     bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const;
 
-    bool intersect_volume(Ray& ray, Worker const& worker, prop::Intersection& intersection) const;
+    bool intersect_volume(Ray& ray, Worker const& worker, Intersection& intersection) const;
 
-    bool intersect_p(Ray const& ray, Worker const& worker) const;
+    Result1 visibility(Ray const& ray, Filter filter, Worker const& worker) const;
 
-    bool visibility(Ray const& ray, Filter filter, Worker const& worker, float& v) const;
-
-    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const;
+    bool tinted_visibility(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const;
 
     uint32_t num_props() const;
 
     Prop const* prop(uint32_t index) const;
-    Prop*       prop(uint32_t index);
-    Prop*       prop(std::string_view name);
+
+    Prop* prop(uint32_t index);
+
+    Prop* prop(std::string_view name);
 
     uint32_t num_lights() const;
 
@@ -145,9 +147,11 @@ class Scene {
     void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration);
 
     uint32_t create_entity();
+
     uint32_t create_entity(std::string const& name);
 
     uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials);
+
     uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials, std::string const& name);
 
     void create_prop_light(uint32_t prop, uint32_t part);
@@ -159,6 +163,7 @@ class Scene {
     void create_prop_volume_image_light(uint32_t prop, uint32_t part);
 
     uint32_t create_extension(Extension* extension);
+
     uint32_t create_extension(Extension* extension, std::string const& name);
 
     void prop_serialize_child(uint32_t parent_id, uint32_t child_id);
@@ -174,6 +179,7 @@ class Scene {
     // while keeping the animated state out of the interface.
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time,
                                                  Transformation& transformation) const;
+
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time, bool is_static,
                                                  Transformation& transformation) const;
 
@@ -288,11 +294,9 @@ class Scene {
 
     light::Tree light_tree_;
 
-    std::vector<Shape*> const& shape_resources_;
-
+    std::vector<Shape*> const&    shape_resources_;
     std::vector<Material*> const& material_resources_;
-
-    std::vector<Texture*> const& texture_resources_;
+    std::vector<Texture*> const&  texture_resources_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;

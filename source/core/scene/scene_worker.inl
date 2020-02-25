@@ -25,12 +25,8 @@ inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& intersect
     return resolve_mask(ray, intersection, filter);
 }
 
-inline bool Worker::visibility(Ray const& ray) const {
-    return !scene_->intersect_p(ray, *this);
-}
-
-inline bool Worker::masked_visibility(Ray const& ray, Filter filter, float& mv) const {
-    return scene_->visibility(ray, filter, *this, mv);
+inline Result1 Worker::visibility(Ray const& ray, Filter filter) const {
+    return scene_->visibility(ray, filter, *this);
 }
 
 inline Scene const& Worker::scene() const {

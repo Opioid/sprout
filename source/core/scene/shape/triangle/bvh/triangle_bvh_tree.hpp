@@ -100,7 +100,7 @@ class Tree {
 
     float triangle_bitangent_sign(uint32_t index) const;
 
-    uint32_t triangle_material_index(uint32_t index) const;
+    uint32_t triangle_part(uint32_t index) const;
 
     float3 triangle_normal(uint32_t index) const;
 

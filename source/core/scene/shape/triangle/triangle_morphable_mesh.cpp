@@ -71,7 +71,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 
         Simd3f bitangent_sign(tree_.triangle_bitangent_sign(pi.index));
 
-        uint32_t material_index = tree_.triangle_material_index(pi.index);
+        uint32_t part = tree_.triangle_part(pi.index);
 
         Simd3x3f rotation(transformation.rotation);
 
@@ -87,7 +87,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
         intersection.geo_n = float3(geo_n_w);
 
         intersection.uv   = uv;
-        intersection.part = material_index;
+        intersection.part = part;
 
         return true;
     }
@@ -120,7 +120,7 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
-        uint32_t material_index = tree_.triangle_material_index(pi.index);
+        uint32_t const part = tree_.triangle_part(pi.index);
 
         Simd3x3f rotation(transformation.rotation);
 
@@ -129,7 +129,7 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
         intersection.p     = float3(p_w);
         intersection.geo_n = float3(geo_n_w);
         intersection.uv    = uv;
-        intersection.part  = material_index;
+        intersection.part  = part;
 
         return true;
     }

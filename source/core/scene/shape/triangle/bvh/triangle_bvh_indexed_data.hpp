@@ -57,7 +57,7 @@ class Indexed_data {
 
     float bitangent_sign(uint32_t index) const;
 
-    uint32_t material_index(uint32_t index) const;
+    uint32_t part(uint32_t index) const;
 
     float3 normal(uint32_t index) const;
 
@@ -73,18 +73,17 @@ class Indexed_data {
 
     void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices);
 
-    void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+    void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
                       Vertex_stream const& vertices, uint32_t current_triangle);
 
     size_t num_bytes() const;
 
     struct alignas(16) Index_triangle {
-        Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint8_t bitangent_sign,
-                       uint32_t material_index);
+        Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint8_t bitangent_sign, uint32_t part);
 
         uint32_t a, b, c;
         uint32_t bts : 1;
-        uint32_t material_index : 31;
+        uint32_t part : 31;
     };
 
   private:
