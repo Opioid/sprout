@@ -451,7 +451,7 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    float2 uv = data_.interpolate_uv(Simd3f(u), Simd3f(v), i);
+                    float2 const uv = data_.interpolate_uv(Simd3f(u), Simd3f(v), i);
 
                     float3 const normal = data_.normal(i);
 
