@@ -93,9 +93,8 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
         }
     }
 
-    intersection.prop            = prop;
-    intersection.from_subsurface = intersection.subsurface;
-    intersection.subsurface      = false;
+    intersection.prop       = prop;
+    intersection.subsurface = false;
     return hit;
 }
 

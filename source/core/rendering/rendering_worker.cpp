@@ -76,8 +76,6 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
 float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
     Intersection intersection;
 
-    intersection.from_subsurface = false;
-
     if (!interface_stack.empty()) {
         reset_interface_stack(interface_stack);
 
@@ -143,12 +141,13 @@ Worker::Particle_importance& Worker::particle_importance() const {
 
 Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
                                                Intersection const& intersection, Filter filter,
-                                               bool avoid_caustics, Sampler& sampler) const {
+                                               bool avoid_caustics, bool straight_border,
+                                               Sampler& sampler) const {
     auto material = intersection.material(*this);
 
     float3 const wi = ray.direction;
 
-    if (((!intersection.subsurface) & intersection.from_subsurface & (material->ior() > 1.f)) &&
+    if (((!intersection.subsurface) & straight_border & (material->ior() > 1.f)) &&
         intersection.same_hemisphere(wi)) {
         float3 const n     = intersection.geo.n;
         float3 const geo_n = intersection.geo.geo_n;

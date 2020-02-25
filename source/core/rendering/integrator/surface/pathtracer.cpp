@@ -85,8 +85,9 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
     Bxdf_sample sample_result;
 
-    bool primary_ray = true;
-    bool transparent = true;
+    bool primary_ray     = true;
+    bool transparent     = true;
+    bool from_subsurface = false;
 
     float3 throughput(1.f);
     float3 result(0.f);
@@ -100,8 +101,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
-        auto const& material_sample = worker.sample_material(ray, wo, intersection, filter,
-                                                             avoid_caustics, sampler_);
+        auto const& material_sample = worker.sample_material(
+            ray, wo, intersection, filter, avoid_caustics, from_subsurface, sampler_);
 
         if (material_sample.same_hemisphere(wo)) {
 #ifdef ONLY_CAUSTICS
@@ -161,6 +162,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             ray.set_direction(sample_result.wi);
 
             transparent = false;
+
+            from_subsurface = false;
         }
 
         if (material_sample.ior_greater_one()) {
@@ -172,6 +175,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         }
+
+        from_subsurface |= intersection.subsurface;
 
         if (!worker.interface_stack().empty()) {
             float3     vli;

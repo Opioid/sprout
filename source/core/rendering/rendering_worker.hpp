@@ -84,8 +84,7 @@ class Worker : public scene::Worker {
 
     void particle_li(uint32_t frame, int4 const& bounds, Interface_stack const& interface_stack);
 
-    Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
-                 float3& transmittance);
+    Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li, float3& tr);
 
     bool transmitted(Ray& ray, float3 const& wo, Intersection const& intersection, Filter filter,
                      float3& tr);
@@ -98,7 +97,8 @@ class Worker : public scene::Worker {
 
     Material_sample const& sample_material(Ray const& ray, float3 const& wo,
                                            Intersection const& intersection, Filter filter,
-                                           bool avoid_caustics, Sampler& sampler) const;
+                                           bool avoid_caustics, bool straight_border,
+                                           Sampler& sampler) const;
 
   protected:
     bool transmittance(Ray const& ray, float3& transmittance);

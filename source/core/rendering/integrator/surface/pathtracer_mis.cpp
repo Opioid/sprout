@@ -143,8 +143,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         bool const avoid_caustics = settings_.avoid_caustics & state.no(State::Primary_ray);
 
-        auto const& material_sample = worker.sample_material(ray, wo, intersection, filter,
-                                                             avoid_caustics, sampler_);
+        bool const straight_border = state.is(State::From_subsurface);
+
+        auto const& material_sample = worker.sample_material(
+            ray, wo, intersection, filter, avoid_caustics, straight_border, sampler_);
 
         bool const same_side = material_sample.same_hemisphere(wo);
 
@@ -209,6 +211,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             ray.set_direction(sample_result.wi);
 
             state.unset(State::Transparent);
+            state.unset(State::From_subsurface);
         }
 
         if (material_sample.ior_greater_one()) {
@@ -220,6 +223,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, intersection);
         }
+
+        state.or_set(State::From_subsurface, intersection.subsurface);
 
         if (!worker.interface_stack().empty()) {
             float3     vli;

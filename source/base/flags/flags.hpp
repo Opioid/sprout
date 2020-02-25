@@ -55,6 +55,12 @@ struct Flags {
         }
     }
 
+    void or_set(T flag, bool value) {
+        if (value) {
+            values |= impl_type(flag);
+        }
+    }
+
     void unset(T flag) {
         values &= ~impl_type(flag);
     }

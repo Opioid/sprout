@@ -13,8 +13,8 @@ inline void Worker::particle_li(uint32_t frame, int4 const& bounds,
 }
 
 inline Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
-                            float3& transmittance) {
-    return volume_integrator_->integrate(ray, intersection, filter, *this, li, transmittance);
+                            float3& tr) {
+    return volume_integrator_->integrate(ray, intersection, filter, *this, li, tr);
 }
 
 }  // namespace rendering

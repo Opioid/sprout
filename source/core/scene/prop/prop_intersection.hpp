@@ -50,7 +50,6 @@ struct Intersection {
     uint32_t prop;
 
     bool subsurface;
-    bool from_subsurface;
 };
 
 }  // namespace prop
