@@ -140,11 +140,11 @@ bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transform
     return det > 0.f;
 }
 
-float Distant_sphere::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                              uint32_t /*entity*/, Filter /*filter*/,
-                              Worker const& /*worker*/) const {
+float Distant_sphere::visibility(Ray const& /*ray*/, Transformation const& /*transformation*/,
+                                 uint32_t /*entity*/, Filter /*filter*/,
+                                 Worker const& /*worker*/) const {
     // Implementation for this is not really needed, so just skip it
-    return 0.f;
+    return 1.f;
 }
 
 bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,

@@ -182,8 +182,8 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation
     return false;
 }
 
-float Rectangle::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                         Filter filter, Worker const& worker) const {
+float Rectangle::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                            Filter filter, Worker const& worker) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -199,21 +199,21 @@ float Rectangle::opacity(Ray const& ray, Transformation const& transformation, u
 
         float u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
-            return 0.f;
+            return 1.f;
         }
 
         float3 b = -transformation.rotation.r[1];
 
         float v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
-            return 0.f;
+            return 1.f;
         }
 
         float2 uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-        return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+        return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
     }
 
-    return 0.f;
+    return 1.f;
 }
 
 bool Rectangle::thin_absorption(Ray const& ray, Transformation const& transformation,

@@ -182,12 +182,12 @@ bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transform
     return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack);
 }
 
-float Morphable_mesh::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                              Filter filter, Worker const& worker) const {
+float Morphable_mesh::visibility(Ray const& ray, Transformation const& transformation,
+                                 uint32_t entity, Filter filter, Worker const& worker) const {
     math::ray tray(transformation.world_to_object_point(ray.origin),
                    transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
-    return tree_.opacity(tray, ray.time, entity, filter, worker);
+    return tree_.visibility(tray, ray.time, entity, filter, worker);
 }
 
 bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,

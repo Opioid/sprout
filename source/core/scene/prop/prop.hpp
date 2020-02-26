@@ -78,7 +78,7 @@ class Prop {
 
     bool intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const;
 
-    float opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const;
+    float visibility(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const;
 
     bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
                          float3& ta) const;

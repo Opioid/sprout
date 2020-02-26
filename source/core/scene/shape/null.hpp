@@ -30,8 +30,8 @@ class Null final : public Shape {
     bool intersect_p(Ray const& ray, Transformation const& transformation,
                      Node_stack& node_stack) const final;
 
-    float opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                  Filter filter, Worker const& worker) const final;
+    float visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                     Filter filter, Worker const& worker) const final;
 
     bool thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
                          Filter filter, Worker const& worker, float3& ta) const final;

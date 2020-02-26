@@ -49,9 +49,9 @@ bool Null::intersect_p(Ray const& /*ray*/, Transformation const& /*transformatio
     return false;
 }
 
-float Null::opacity(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                    uint32_t /*entity*/, Filter /*filter*/, Worker const& /*worker*/) const {
-    return 0.f;
+float Null::visibility(Ray const& /*ray*/, Transformation const& /*transformation*/,
+                       uint32_t /*entity*/, Filter /*filter*/, Worker const& /*worker*/) const {
+    return 1.f;
 }
 
 bool Null::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,

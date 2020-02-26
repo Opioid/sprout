@@ -231,8 +231,8 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Sphere::opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                      Filter filter, Worker const& worker) const {
+float Sphere::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                         Filter filter, Worker const& worker) const {
     float3 const v = transformation.position - ray.origin;
     float const  b = dot(ray.direction, v);
 
@@ -254,7 +254,8 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, uint
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+            return 1.f -
+                   worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
 
         float t1 = b + dist;
@@ -268,11 +269,12 @@ float Sphere::opacity(Ray const& ray, Transformation const& transformation, uint
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+            return 1.f -
+                   worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
     }
 
-    return 0.f;
+    return 1.f;
 }
 
 bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,

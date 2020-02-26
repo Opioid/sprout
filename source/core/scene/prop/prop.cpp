@@ -165,34 +165,34 @@ bool Prop::visible(uint32_t ray_depth) const {
     return true;
 }
 
-float Prop::opacity(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const {
+float Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const {
     if (!has_masked_material()) {
-        return intersect_p(self, ray, worker) ? 1.f : 0.f;
+        return intersect_p(self, ray, worker) ? 0.f : 1.f;
     }
 
     if (!visible_in_shadow()) {
-        return 0.f;
+        return 1.f;
     }
 
     auto const& scene = worker.scene();
 
     if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
-        return 0.f;
+        return 1.f;
     }
 
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
 
-    return scene.prop_shape(self)->opacity(ray, transformation, self, filter, worker);
+    return scene.prop_shape(self)->visibility(ray, transformation, self, filter, worker);
 }
 
 bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
                            float3& ta) const {
     if (!has_tinted_shadow()) {
-        float const o = opacity(self, ray, filter, worker);
+        float const v = visibility(self, ray, filter, worker);
 
-        ta = float3(1.f - o);
-        return 0.f == o;
+        ta = float3(v);
+        return v > 0.f;
     }
 
     if (!visible_in_shadow()) {

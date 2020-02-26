@@ -345,15 +345,15 @@ bool Tree<Data>::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_directi
 }
 
 template <typename Data>
-float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filter,
-                          Worker const& worker) const {
+float Tree<Data>::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
+                             Worker const& worker) const {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
-    float opacity = 0.f;
+    float visibility = 1.f;
 
     Simd3f const ray_origin(ray.origin.v);
     Simd3f const ray_direction(ray.direction.v);
@@ -391,9 +391,9 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filte
 
                     auto const material = worker.scene().prop_material(entity, data_.part(i));
 
-                    opacity += (1.f - opacity) * material->opacity(uv, time, filter, worker);
-                    if (opacity >= 1.f) {
-                        return 1.f;
+                    visibility *= 1.f - material->opacity(uv, time, filter, worker);
+                    if (visibility <= 0.f) {
+                        return 0.f;
                     }
 
                     // ray_max_t has changed if intersect() returns true!
@@ -405,7 +405,7 @@ float Tree<Data>::opacity(ray& ray, uint64_t time, uint32_t entity, Filter filte
         n = node_stack.pop();
     }
 
-    return opacity;
+    return visibility;
 }
 
 template <typename Data>

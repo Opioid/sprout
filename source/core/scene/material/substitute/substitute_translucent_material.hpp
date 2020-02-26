@@ -15,6 +15,7 @@ class Material_translucent : public Material_base {
     size_t num_bytes() const final;
 
     void set_thickness(float thickness);
+
     void set_attenuation_distance(float attenuation_distance);
 
     static size_t sample_size();

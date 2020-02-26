@@ -71,8 +71,8 @@ class Shape {
     virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
                              Node_stack& node_stack) const = 0;
 
-    virtual float opacity(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                          Filter filter, Worker const& worker) const = 0;
+    virtual float visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
+                             Filter filter, Worker const& worker) const = 0;
 
     virtual bool thin_absorption(Ray const& ray, Transformation const& transformation,
                                  uint32_t entity, Filter filter, Worker const& worker,

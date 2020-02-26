@@ -343,7 +343,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& wor
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 uint32_t const p = finite_props[i];
-                visibility *= 1.f - props[p].opacity(p, ray, filter, worker);
+                visibility *= props[p].visibility(p, ray, filter, worker);
                 if (visibility <= 0.f) {
                     return {false, 0.f};
                 }
@@ -357,7 +357,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& wor
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         uint32_t const p = infinite_props[i];
-        visibility *= 1.f - props[p].opacity(p, ray, filter, worker);
+        visibility *= props[p].visibility(p, ray, filter, worker);
         if (visibility <= 0.f) {
             return {false, 0.f};
         }
