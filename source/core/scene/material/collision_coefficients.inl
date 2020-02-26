@@ -58,7 +58,7 @@ static inline float3 extinction_coefficient(float3 const& color, float distance)
 static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance) {
     float3 const mu_t = extinction_coefficient(ac, distance);
 
-    float3 const root = sqrt(9.59217f + 41.6898f * ssc + 17.71226f * ssc * ssc);
+    float3 const root = sqrt(9.59217f + 41.6808f * ssc + 17.7126f * ssc * ssc);
 
     float3 const factor = 4.09712f + 4.20863f * ssc - root;
 
