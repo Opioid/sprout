@@ -150,7 +150,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
                              bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
                              Sample_to& sample) const {
     float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
-    float3 const dir = math::sample_sphere_uniform(uv);
+    float3 const dir = sample_sphere_uniform(uv);
 
     float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, dir));
 
