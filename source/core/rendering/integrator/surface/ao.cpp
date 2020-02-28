@@ -50,8 +50,8 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
                                                       worker);
 
     Ray occlusion_ray;
-    occlusion_ray.origin  = material_sample.offset_p(intersection.geo.p);
-    occlusion_ray.min_t() = 0.f;
+    occlusion_ray.origin  = material_sample.offset_p(intersection.geo.p, intersection.geo.geo_n);
+    // occlusion_ray.min_t() = 0.f;
     occlusion_ray.max_t() = settings_.radius;
     occlusion_ray.time    = ray.time;
 

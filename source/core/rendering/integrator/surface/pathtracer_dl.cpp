@@ -149,7 +149,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             ray.min_t() = offset_f(ray.max_t());
         } else {
             ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t() = 0.f;
+            // ray.min_t() = 0.f;
 
             ray.set_direction(sample_result.wi);
 
@@ -211,15 +211,13 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
     uint32_t const num_samples = settings_.light_sampling.num_samples;
 
-    float3 const p = material_sample.offset_p(intersection.geo.p);
+    float3 const p = intersection.geo.p;
 
     float3 const n = material_sample.geometric_normal();
 
     bool const is_translucent = material_sample.is_translucent();
 
     Ray shadow_ray;
-    shadow_ray.origin     = p;
-    shadow_ray.min_t()    = 0.f;
     shadow_ray.depth      = ray.depth;
     shadow_ray.time       = ray.time;
     shadow_ray.wavelength = ray.wavelength;
@@ -239,10 +237,11 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
                 continue;
             }
 
+            shadow_ray.origin = material_sample.offset_p(p, light_sample.wi);
             shadow_ray.set_direction(light_sample.wi);
             shadow_ray.max_t() = light_sample.t();
 
-            float3 tr;
+            float3 tr(1.f);
             if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
                 continue;
             }
@@ -267,10 +266,11 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             continue;
         }
 
+        shadow_ray.origin = material_sample.offset_p(p, light_sample.wi);
         shadow_ray.set_direction(light_sample.wi);
         shadow_ray.max_t() = light_sample.t();
 
-        float3 tr;
+        float3 tr(1.f);
         if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
             continue;
         }

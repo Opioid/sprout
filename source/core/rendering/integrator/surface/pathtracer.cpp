@@ -157,7 +157,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             ray.min_t() = offset_f(ray.max_t());
         } else {
             ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t() = 0.f;
+            // ray.min_t() = 0.f;
 
             ray.set_direction(sample_result.wi);
 

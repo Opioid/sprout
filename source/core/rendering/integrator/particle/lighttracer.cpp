@@ -229,14 +229,18 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
         return false;
     }
 
-    float3 const p = material_sample.offset_p(intersection.geo.p);
+    float3 const p = intersection.geo.p;
 
     Camera_sample_to camera_sample;
     if (!camera.sample(bounds, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {
         return false;
     }
 
-    Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.wavelength,
+    float3 const wi = -camera_sample.dir;
+
+    float3 const origin = material_sample.offset_p(p, wi);
+
+    Ray ray(origin, wi, 0.f, camera_sample.t, history.depth, history.wavelength,
             history.time);
 
     float3 tr;
@@ -244,7 +248,6 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
         return false;
     }
 
-    float3 const wi   = -camera_sample.dir;
     auto const   bxdf = material_sample.evaluate_f(wi);
 
     auto& sensor = camera.sensor();

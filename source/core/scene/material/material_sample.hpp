@@ -67,7 +67,6 @@ class Sample {
 
     virtual bool ior_greater_one() const;
 
-    float3 offset_p(float3 const& p) const;
     float3 offset_p(float3 const& p, float3 const& wi) const;
 
     float3 const& wo() const;
