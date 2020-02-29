@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_TRANSLUCENT_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_TRANSLUCENT_SAMPLE_HPP
 
 #include "scene/material/disney/disney.hpp"
 #include "substitute_base_sample.hpp"
@@ -15,7 +16,7 @@ class Sample_translucent : public Sample_base {
 
     bool is_translucent() const final;
 
-    void set_transluceny(float3 const& diffuse_color, float thickness, float attenuation_distance);
+    void set_transluceny(float3 const& color, float transparency, float thickness, float attenuation_distance);
 
     Base_closure<disney::Isotropic> base_;
 
@@ -24,7 +25,11 @@ class Sample_translucent : public Sample_base {
     bxdf::Result evaluate(float3 const& wi) const;
 
     float3 attenuation_;
+
+    float  transparency_;
     float  thickness_;
 };
 
 }  // namespace scene::material::substitute
+
+#endif

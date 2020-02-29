@@ -832,6 +832,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     float metallic              = 0.f;
     float ior                   = 1.46f;
     float emission_factor       = 1.f;
+    float transparency          = 0.5f;
     float thickness             = 0.f;
     float attenuation_distance  = 0.f;
     float volumetric_anisotropy = 0.f;
@@ -866,6 +867,8 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
             metallic = json::read_float(n.value);
         } else if ("emission_factor" == n.name) {
             emission_factor = json::read_float(n.value);
+        } else if ("transparency" == n.name) {
+            transparency = json::read_float(n.value);
         } else if ("thickness" == n.name) {
             thickness = json::read_float(n.value);
         } else if ("attenuation_distance" == n.name) {
@@ -933,6 +936,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         material->set_roughness(roughness);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
+        material->set_transparency(transparency);
         material->set_thickness(thickness);
         material->set_attenuation_distance(attenuation_distance);
 

@@ -72,7 +72,7 @@ template <bool Forward>
 bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 const& wo,
                                                         float3 const& h, float wo_dot_h,
                                                         Layer const& layer) const {
-    if (avoid_caustics_ && alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics_ & (alpha_ <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
 
@@ -108,7 +108,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_, diffuse_color_, xi,
                                             result);
 
-    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics & (alpha_ <= ggx::Min_alpha)) {
         result.reflection *= n_dot_wi;
         return;
     }
