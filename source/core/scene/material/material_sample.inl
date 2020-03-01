@@ -90,6 +90,10 @@ inline bool Sample::ior_greater_one() const {
     return true;
 }
 
+inline float3 Sample::offset_p(float3 const& p) const {
+    return offset_ray(p, geo_n_);
+}
+
 inline float3 Sample::offset_p(float3 const& p, float3 const& wi) const {
     return offset_ray(p, same_hemisphere(wi) ? geo_n_ : -geo_n_);
 }

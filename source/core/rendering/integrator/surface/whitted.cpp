@@ -16,8 +16,6 @@
 
 namespace rendering::integrator::surface {
 
-using namespace scene::shape;
-
 Whitted::Whitted(rnd::Generator& rng, Settings const& settings)
     : Integrator(rng), settings_(settings), sampler_(rng) {}
 
@@ -90,20 +88,18 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
                                       Material_sample const& material_sample, Worker& worker) {
     float3 result(0.f);
 
-    float3 const p = intersection.geo.p;
-
     Ray shadow_ray;
+    shadow_ray.origin  = material_sample.offset_p(intersection.geo.p);
+    shadow_ray.min_t() = 0.f;
     shadow_ray.depth   = ray.depth;
     shadow_ray.time    = ray.time;
-    shadow_ray.wavelength = ray.wavelength;
 
     for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
         auto const& light = worker.scene().light(l);
         for (uint32_t i = 0, nls = settings_.num_light_samples; i < nls; ++i) {
-            if (Sample_to light_sample;
-                light.sample(p, material_sample.geometric_normal(), ray.time,
+            if (scene::shape::Sample_to light_sample;
+                light.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
                              material_sample.is_translucent(), sampler_, l, worker, light_sample)) {
-                 shadow_ray.origin = material_sample.offset_p(p, light_sample.wi);
                 shadow_ray.set_direction(light_sample.wi);
                 shadow_ray.max_t() = light_sample.t();
 
