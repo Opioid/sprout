@@ -90,7 +90,15 @@ inline bool Sample::ior_greater_one() const {
     return true;
 }
 
-inline float3 Sample::offset_p(float3 const& p) const {
+inline float3 Sample::offset_p(float3 const& p, bool subsurface, bool translucent) const {
+    if (subsurface) {
+        return p;
+    }
+
+    if (translucent) {
+        return float3(p[0], p[1], p[2], offset_t(p, geo_n_));
+    }
+
     return offset_ray(p, geo_n_);
 }
 

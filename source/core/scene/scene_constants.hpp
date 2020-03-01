@@ -51,6 +51,18 @@ static inline float3 offset_ray(float3 const& p, float3 const& n) {
                   std::abs(p[2]) < Origin ? p[2] + Float_scale * n[2] : p_i[2]);
 }
 
+static inline float offset_t(float3 const& p, float3 const& n) {
+    int3 const of_i(Int_scale * n);
+
+    float3 const p_i(int_as_float((of_i[0])),
+                     int_as_float((of_i[1])),
+                     int_as_float((of_i[2])));
+
+    return std::max(std::max(std::abs(p[0]) < Origin ? Float_scale * n[0] : p_i[0],
+                  std::abs(p[1]) < Origin ? Float_scale * n[1] : p_i[1]),
+                  std::abs(p[2]) < Origin ? Float_scale * n[2] : p_i[2]);
+}
+
 static inline float offset_f(float t) {
     return t < Origin ? t + Float_scale : int_as_float(float_as_int(t) + int32_t(Int_scale));
 }
