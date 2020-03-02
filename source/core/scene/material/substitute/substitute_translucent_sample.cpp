@@ -26,7 +26,7 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
     if (thickness_ > 0.f) {
         float const t = transparency_;
 
-        if (p < t) {
+        if (p < 0.5f) {
             float const n_dot_wi = lambert::Isotropic::reflect(base_.diffuse_color_, layer_,
                                                                sampler, result);
 
@@ -41,20 +41,18 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
 
             float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 
-            result.reflection *= (n_dot_wi * (1.f - f)) * attenuation;
-
-            //  result.pdf *= t;
+            result.reflection *= (t * n_dot_wi * (1.f - f)) * attenuation;
         } else {
-            float const u = 1.f - t;
-            // TODO: adjust p for flexible t
+            float const o = 1.f - t;
+
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
+                base_.diffuse_sample(wo_, layer_, o, sampler, base_.avoid_caustics_, result);
             } else {
-                base_.gloss_sample(wo_, layer_, sampler, result);
+                base_.gloss_sample(wo_, layer_, o, sampler, result);
             }
         }
 
-        //   result.pdf *= 0.5f;
+        result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
             base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
@@ -82,6 +80,8 @@ template <bool Forward>
 bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
     // No side check needed because the material is two-sided by definition.
 
+    float const t = transparency_;
+
     // This is a bit complicated to explain:
     // If the material does not have transmission,
     // we will never get a wi which is in the wrong hemisphere,
@@ -104,14 +104,16 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
 
         float const pdf = n_dot_wi * (0.5f * Pi_inv);
 
-        return {(n_dot_wi * Pi_inv * (1.f - f)) * (attenuation * base_.diffuse_color_), pdf};
+        return {(t * n_dot_wi * Pi_inv * (1.f - f)) * (attenuation * base_.diffuse_color_), pdf};
     }
 
     float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
+    float const o = 1.f - t;  // thickness_ > 0.f ? 1.f - t : 1.f;
+
+    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, o);
 
     if (thickness_ > 0.f) {
         result.pdf() *= 0.5f;

@@ -394,12 +394,12 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
         bool const calculate_pdf = Light_sampling::Strategy::Single ==
                                    settings_.light_sampling.strategy;
 
-        bool const is_translucent = state.is(State::Is_translucent);
+        bool const translucent = state.is(State::Is_translucent);
 
-        auto const light = worker.scene().light(light_id, ray.origin, geo_n, is_translucent,
+        auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
                                                 calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent, Filter::Nearest,
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, translucent, Filter::Nearest,
                                            worker);
 
         if (0.f == ls_pdf) {

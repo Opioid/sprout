@@ -96,7 +96,7 @@ inline float3 Sample::offset_p(float3 const& p, bool subsurface, bool translucen
     }
 
     if (translucent) {
-        return float3(p[0], p[1], p[2], offset_t(p, geo_n_));
+        return float3(p[0], p[1], p[2], Float_scale);
     }
 
     return offset_ray(p, geo_n_);

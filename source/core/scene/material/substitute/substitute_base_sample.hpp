@@ -17,13 +17,23 @@ struct Base_closure {
                                Layer const& layer) const;
 
     template <bool Forward>
+    bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+                               Layer const& layer, float diffuse_factor) const;
+
+    template <bool Forward>
     bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                      float wo_dot_h, Layer const& layer) const;
 
     void diffuse_sample(float3 const& wo, Layer const& layer, Sampler& sampler, bool avoid_caustics,
                         bxdf::Sample& result) const;
 
+    void diffuse_sample(float3 const& wo, Layer const& layer, float diffuse_factor,
+                        Sampler& sampler, bool avoid_caustics, bxdf::Sample& result) const;
+
     void gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
+                      bxdf::Sample& result) const;
+
+    void gloss_sample(float3 const& wo, Layer const& layer, float diffuse_factor, Sampler& sampler,
                       bxdf::Sample& result) const;
 
     void pure_gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler,

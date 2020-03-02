@@ -217,8 +217,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
     float3 const n = material_sample.geometric_normal();
 
     Ray shadow_ray;
-    shadow_ray.origin = p;
-    //    shadow_ray.min_t()    = 0.f;
+    shadow_ray.origin     = p;
     shadow_ray.depth      = ray.depth;
     shadow_ray.time       = ray.time;
     shadow_ray.wavelength = ray.wavelength;
