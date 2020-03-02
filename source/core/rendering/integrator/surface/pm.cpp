@@ -115,8 +115,8 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
         if (material_sample.ior_greater_one()) {
             throughput *= sample_result.reflection / sample_result.pdf;
 
-            ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t() = 0.f;
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
+                                                  intersection.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
         } else {

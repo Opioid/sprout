@@ -91,10 +91,11 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
     bool const translucent = material_sample.is_translucent();
 
     Ray shadow_ray;
-    shadow_ray.origin  = material_sample.offset_p(intersection.geo.p, intersection.subsurface, translucent);
- //   shadow_ray.min_t() = 0.f;
-    shadow_ray.depth   = ray.depth;
-    shadow_ray.time    = ray.time;
+    shadow_ray.origin = material_sample.offset_p(intersection.geo.p, intersection.subsurface,
+                                                 translucent);
+    //   shadow_ray.min_t() = 0.f;
+    shadow_ray.depth = ray.depth;
+    shadow_ray.time  = ray.time;
 
     for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
         auto const& light = worker.scene().light(l);

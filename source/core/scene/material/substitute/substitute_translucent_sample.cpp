@@ -43,7 +43,7 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
 
             result.reflection *= (n_dot_wi * (1.f - f)) * attenuation;
 
-        //  result.pdf *= t;
+            //  result.pdf *= t;
         } else {
             float const u = 1.f - t;
             // TODO: adjust p for flexible t
@@ -52,11 +52,9 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
             } else {
                 base_.gloss_sample(wo_, layer_, sampler, result);
             }
-
-
         }
 
-     //   result.pdf *= 0.5f;
+        //   result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
             base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
@@ -77,7 +75,7 @@ void Sample_translucent::set_transluceny(float3 const& color, float transparency
     attenuation_ = material::extinction_coefficient(color, attenuation_distance);
 
     transparency_ = transparency;
-    thickness_ = thickness;
+    thickness_    = thickness;
 }
 
 template <bool Forward>

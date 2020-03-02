@@ -69,7 +69,7 @@ class Sample {
 
     float3 offset_p(float3 const& p, bool subsurface, bool translucent) const;
 
-    float3 offset_p(float3 const& p, float3 const& wi) const;
+    float3 offset_p(float3 const& p, float3 const& wi, bool subsurface) const;
 
     float3 const& wo() const;
 

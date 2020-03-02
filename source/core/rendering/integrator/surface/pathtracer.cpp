@@ -156,12 +156,11 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = offset_f(ray.max_t());
         } else {
-            ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t() = 0.f;
-
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
+                                                  intersection.subsurface);
             ray.set_direction(sample_result.wi);
 
-            transparent = false;
+            transparent     = false;
             from_subsurface = false;
         }
 

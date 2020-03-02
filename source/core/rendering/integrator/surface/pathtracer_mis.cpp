@@ -22,7 +22,6 @@
 
 namespace rendering::integrator::surface {
 
-
 using namespace scene;
 using namespace scene::shape;
 
@@ -206,9 +205,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = offset_f(ray.max_t());
         } else {
-            ray.origin  = material_sample.offset_p(intersection.geo.p, sample_result.wi);
-            ray.min_t() = 0.f;
-
+            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
+                                                  intersection.subsurface);
             ray.set_direction(sample_result.wi);
 
             state.unset(State::Transparent);
@@ -312,14 +310,13 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     float const num_samples_reciprocal = 1.f / float(num_samples);
 
-            bool const translucent = material_sample.is_translucent();
+    bool const translucent = material_sample.is_translucent();
 
-    float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface, translucent);
+    float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface,
+                                              translucent);
 
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         float3 const n = material_sample.geometric_normal();
-
-
 
         for (uint32_t i = num_samples; i > 0; --i) {
             float const select = light_sampler(ray.depth).generate_sample_1D(1);
@@ -360,7 +357,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
         return float3(0.f);
     }
 
-    Ray shadow_ray(p, light_sample.wi, p[4], light_sample.t(), history.depth, history.wavelength,
+    Ray shadow_ray(p, light_sample.wi, p[3], light_sample.t(), history.depth, history.wavelength,
                    history.time);
 
     float3 tr;
@@ -399,11 +396,11 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
 
         bool const is_translucent = state.is(State::Is_translucent);
 
-        auto const light = worker.scene().light(light_id, ray.origin, geo_n,
-                                                is_translucent, calculate_pdf);
+        auto const light = worker.scene().light(light_id, ray.origin, geo_n, is_translucent,
+                                                calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent,
-                                           Filter::Nearest, worker);
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent, Filter::Nearest,
+                                           worker);
 
         if (0.f == ls_pdf) {
             pure_emissive = true;
