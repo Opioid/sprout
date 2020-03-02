@@ -312,18 +312,20 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     float const num_samples_reciprocal = 1.f / float(num_samples);
 
-    float3 const p = material_sample.offset_p(intersection.geo.p);
+            bool const translucent = material_sample.is_translucent();
+
+    float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface, translucent);
 
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         float3 const n = material_sample.geometric_normal();
 
-        bool const is_translucent = material_sample.is_translucent();
+
 
         for (uint32_t i = num_samples; i > 0; --i) {
             float const select = light_sampler(ray.depth).generate_sample_1D(1);
 
             // auto const light = worker.scene().random_light(select);
-            auto const light = worker.scene().random_light(p, n, is_translucent, select);
+            auto const light = worker.scene().random_light(p, n, translucent, select);
 
             float3 const el = evaluate_light(light.ref, light.pdf, ray, p, 0, intersection,
                                              material_sample, filter, worker);
@@ -358,7 +360,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
         return float3(0.f);
     }
 
-    Ray shadow_ray(p, light_sample.wi, 0.f, light_sample.t(), history.depth, history.wavelength,
+    Ray shadow_ray(p, light_sample.wi, p[4], light_sample.t(), history.depth, history.wavelength,
                    history.time);
 
     float3 tr;

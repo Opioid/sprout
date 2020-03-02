@@ -176,7 +176,7 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& transformation
 
         float const v = dot(b, k / transformation.scale_y());
 
-        return (v > 1.f) | (v < -1.f);
+        return (v <= 1.f) & (v >= -1.f);
     }
 
     return false;

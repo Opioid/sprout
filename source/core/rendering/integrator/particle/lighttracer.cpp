@@ -229,7 +229,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
         return false;
     }
 
-    float3 const p = material_sample.offset_p(intersection.geo.p);
+    float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface, false);
 
     Camera_sample_to camera_sample;
     if (!camera.sample(bounds, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {

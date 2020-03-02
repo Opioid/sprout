@@ -24,7 +24,9 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
     float const p = sampler.generate_sample_1D();
 
     if (thickness_ > 0.f) {
-        if (p < 0.5f) {
+        float const t = transparency_;
+
+        if (p < t) {
             float const n_dot_wi = lambert::Isotropic::reflect(base_.diffuse_color_, layer_,
                                                                sampler, result);
 
@@ -40,15 +42,21 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
             float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 
             result.reflection *= (n_dot_wi * (1.f - f)) * attenuation;
+
+        //  result.pdf *= t;
         } else {
+            float const u = 1.f - t;
+            // TODO: adjust p for flexible t
             if (p < 0.75f) {
                 base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
             } else {
                 base_.gloss_sample(wo_, layer_, sampler, result);
             }
+
+
         }
 
-        result.pdf *= 0.5f;
+     //   result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
             base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
@@ -56,19 +64,20 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
             base_.gloss_sample(wo_, layer_, sampler, result);
         }
     }
+
+    result.wavelength = 0.f;
 }
 
 bool Sample_translucent::is_translucent() const {
     return thickness_ > 0.f;
 }
 
-void Sample_translucent::set_transluceny(float3 const& diffuse_color, float thickness,
+void Sample_translucent::set_transluceny(float3 const& color, float transparency, float thickness,
                                          float attenuation_distance) {
-    thickness_ = thickness;
+    attenuation_ = material::extinction_coefficient(color, attenuation_distance);
 
-    if (thickness > 0.f) {
-        attenuation_ = material::extinction_coefficient(diffuse_color, attenuation_distance);
-    }
+    transparency_ = transparency;
+    thickness_ = thickness;
 }
 
 template <bool Forward>

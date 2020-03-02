@@ -210,15 +210,15 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
     uint32_t const num_samples = settings_.light_sampling.num_samples;
 
-    float3 const p = material_sample.offset_p(intersection.geo.p);
+    bool const translucent = material_sample.is_translucent();
+
+    float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface, translucent);
 
     float3 const n = material_sample.geometric_normal();
 
-    bool const is_translucent = material_sample.is_translucent();
-
     Ray shadow_ray;
     shadow_ray.origin     = p;
-    shadow_ray.min_t()    = 0.f;
+//    shadow_ray.min_t()    = 0.f;
     shadow_ray.depth      = ray.depth;
     shadow_ray.time       = ray.time;
     shadow_ray.wavelength = ray.wavelength;
@@ -230,10 +230,10 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             float const select = sampler.generate_sample_1D(1);
 
             // auto const light = worker.scene().random_light(select);
-            auto const light = worker.scene().random_light(p, n, is_translucent, select);
+            auto const light = worker.scene().random_light(p, n, translucent, select);
 
             Sample_to light_sample;
-            if (!light.ref.sample(p, n, ray.time, is_translucent, sampler, 0, worker,
+            if (!light.ref.sample(p, n, ray.time, translucent, sampler, 0, worker,
                                   light_sample)) {
                 continue;
             }
@@ -262,7 +262,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         auto const& light = worker.scene().light(l);
 
         Sample_to light_sample;
-        if (!light.sample(p, n, ray.time, is_translucent, sampler, l, worker, light_sample)) {
+        if (!light.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
             continue;
         }
 
