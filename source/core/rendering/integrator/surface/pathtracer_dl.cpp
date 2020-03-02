@@ -154,7 +154,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             ray.set_direction(sample_result.wi);
 
             transparent = false;
-
             from_subsurface = false;
         }
 

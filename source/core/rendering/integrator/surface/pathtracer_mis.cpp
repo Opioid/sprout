@@ -22,6 +22,7 @@
 
 namespace rendering::integrator::surface {
 
+
 using namespace scene;
 using namespace scene::shape;
 
@@ -394,10 +395,12 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
         bool const calculate_pdf = Light_sampling::Strategy::Single ==
                                    settings_.light_sampling.strategy;
 
-        auto const light = worker.scene().light(light_id, ray.origin, geo_n,
-                                                state.is(State::Is_translucent), calculate_pdf);
+        bool const is_translucent = state.is(State::Is_translucent);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),
+        auto const light = worker.scene().light(light_id, ray.origin, geo_n,
+                                                is_translucent, calculate_pdf);
+
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, is_translucent,
                                            Filter::Nearest, worker);
 
         if (0.f == ls_pdf) {

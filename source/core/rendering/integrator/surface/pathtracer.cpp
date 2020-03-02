@@ -162,7 +162,6 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             ray.set_direction(sample_result.wi);
 
             transparent = false;
-
             from_subsurface = false;
         }
 
