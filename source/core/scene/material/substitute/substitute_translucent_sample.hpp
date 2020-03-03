@@ -16,8 +16,8 @@ class Sample_translucent : public Sample_base {
 
     bool is_translucent() const final;
 
-    void set_transluceny(float3 const& color, float transparency, float thickness,
-                         float attenuation_distance);
+    void set_transluceny(float3 const& color, float thickness, float attenuation_distance,
+                         float transparency);
 
     Base_closure<disney::Isotropic> base_;
 
@@ -27,8 +27,8 @@ class Sample_translucent : public Sample_base {
 
     float3 attenuation_;
 
-    float transparency_;
     float thickness_;
+    float transparency_;
 };
 
 }  // namespace scene::material::substitute

@@ -94,7 +94,7 @@ void Material_coating_subsurface::set_attenuation(float3 const& absorption_color
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
     } else {
-        cc_ = {extinction_coefficient(absorption_color, distance), float3(0.f)};
+        cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
     }
 
     cm_ = CM(cc_);
@@ -112,7 +112,7 @@ float3 Material_coating_subsurface::absorption_coefficient(float2 uv, Filter fil
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
         float3 const color   = color_map_.sample_3(worker, sampler, uv);
 
-        return extinction_coefficient(color, attenuation_distance_);
+        return attenuation_coefficient(color, attenuation_distance_);
     }
 
     return cc_.a;

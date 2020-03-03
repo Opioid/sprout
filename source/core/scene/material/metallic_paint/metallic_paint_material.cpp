@@ -107,7 +107,7 @@ void Material::set_coating_thickness(float thickness) {
 }
 
 void Material::set_coating_attenuation(float3 const& absorption_color, float distance) {
-    coating_.absorption_coefficient = extinction_coefficient(absorption_color, distance);
+    coating_.absorption_coefficient = attenuation_coefficient(absorption_color, distance);
 }
 
 void Material::set_coating_ior(float ior) {

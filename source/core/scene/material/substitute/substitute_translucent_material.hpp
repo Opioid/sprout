@@ -15,18 +15,14 @@ class Material_translucent : public Material_base {
 
     size_t num_bytes() const final;
 
-    void set_transparency(float transparency);
-
-    void set_thickness(float thickness);
-
-    void set_attenuation_distance(float attenuation_distance);
+    void set_attenuation(float thickness, float attenuation_distance);
 
     static size_t sample_size();
 
   private:
-    float transparency_;
     float thickness_;
     float attenuation_distance_;
+    float transparency_;
 };
 
 }  // namespace scene::material::substitute

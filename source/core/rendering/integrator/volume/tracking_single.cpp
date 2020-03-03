@@ -246,14 +246,14 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     if (material.is_textured_volume()) {
         auto const mu = material.collision_coefficients(float2(0.f), filter, worker);
 
-        float3 const extinction = mu.a + mu.s;
+        float3 const attenuation = mu.a + mu.s;
 
-        float3 const scattering_albedo = mu.s / extinction;
+        float3 const scattering_albedo = mu.s / attenuation;
 
-        tr = exp(-(d - ray.min_t()) * extinction);
+        tr = exp(-(d - ray.min_t()) * attenuation);
 
         float const r = rng_.random_float();
-        float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
+        float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
         float3 const p = ray.point(ray.min_t() + t);
 
@@ -263,11 +263,11 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     } else if (false) {
         auto const mu = material.collision_coefficients();
 
-        float3 const extinction = mu.a + mu.s;
+        float3 const attenuation = mu.a + mu.s;
 
-        float3 const scattering_albedo = mu.s / extinction;
+        float3 const scattering_albedo = mu.s / attenuation;
 
-        tr = exp(-(d - ray.min_t()) * extinction);
+        tr = exp(-(d - ray.min_t()) * attenuation);
 
         //     auto const light = worker.scene().random_light(rng_.random_float());
 
@@ -296,14 +296,14 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
             float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
-            float3 const w = exp(-(sample_t - ray.min_t) * extinction);
+            float3 const w = exp(-(sample_t - ray.min_t) * attenuation);
 
-            li = (l * extinction) * (scattering_albedo * w) / pdf;
+            li = (l * attenuation) * (scattering_albedo * w) / pdf;
             */
         } else {
             // Distance sampling
             float const r = material_sampler(ray.depth).generate_sample_1D(0);
-            float const t = -std::log(1.f - r * (1.f - average(tr))) / average(extinction);
+            float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
             float3 const p = ray.point(ray.min_t() + t);
 
@@ -318,24 +318,24 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
             // Instructive version
             /*
-            float3 const ltr = exp(-t * extinction);
+            float3 const ltr = exp(-t * attenuation);
 
-            float3 const weight = (1.f - tr) / (ltr * extinction);
+            float3 const weight = (1.f - tr) / (ltr * attenuation);
 
-            li = l * extinction * scattering_albedo * ltr * weight;
+            li = l * attenuation * scattering_albedo * ltr * weight;
             */
         }
     } else {
         auto const mu = material.collision_coefficients();
 
-        float3 const extinction = mu.a + mu.s;
+        float3 const attenuation = mu.a + mu.s;
 
-        float3 const scattering_albedo = mu.s / extinction;
+        float3 const scattering_albedo = mu.s / attenuation;
 
-        tr = exp(-(d - ray.min_t()) * extinction);
+        tr = exp(-(d - ray.min_t()) * attenuation);
 
         float const rs = material_sampler(ray.depth).generate_sample_1D(0);
-        float const ts = -std::log(1.f - rs * (1.f - average(tr))) / average(extinction);
+        float const ts = -std::log(1.f - rs * (1.f - average(tr))) / average(attenuation);
 
         float3 const ps = ray.point(ray.min_t() + ts);
 
@@ -366,23 +366,23 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
-        float3 const w = exp(-(sample_t - ray.min_t()) * extinction);
+        float3 const w = exp(-(sample_t - ray.min_t()) * attenuation);
 
         float3 const ds_l = direct_light(light.ref, light.pdf, ray, ps, intersection, worker);
 
-        float3 const ltr = exp(-ts * extinction);
+        float3 const ltr = exp(-ts * attenuation);
 
-        float3 const weight = (1.f - tr) / (ltr * extinction);
+        float3 const weight = (1.f - tr) / (ltr * attenuation);
 
         //     float const ds_pdf = /*1.f /*/ weight[0];
 
         //      float const a = power_heuristic(pdf, ds_pdf);
 
-        float3 const eq_li = /*a **/ (eq_l * extinction) * (scattering_albedo * w) / pdf;
+        float3 const eq_li = /*a **/ (eq_l * attenuation) * (scattering_albedo * w) / pdf;
 
         //    float const b = power_heuristic(ds_pdf, pdf);
 
-        float3 const ds_li = /*b **/ ds_l * extinction * scattering_albedo * ltr * weight;
+        float3 const ds_li = /*b **/ ds_l * attenuation * scattering_albedo * ltr * weight;
 
         li = 0.5f * (eq_li + ds_li);
     }

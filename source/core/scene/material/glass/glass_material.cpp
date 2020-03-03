@@ -57,7 +57,7 @@ void Glass::set_refraction_color(float3 const& color) {
 void Glass::set_attenuation(float3 const& absorption_color, float distance) {
     absorption_color_ = absorption_color;
 
-    absorption_coefficient_ = extinction_coefficient(absorption_color, distance);
+    absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
 
     attenuation_distance_ = distance;
 }

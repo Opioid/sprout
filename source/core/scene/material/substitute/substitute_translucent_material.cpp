@@ -25,8 +25,8 @@ material::Sample const& Material_translucent::sample(float3 const&      wo, Ray 
     float thickness;
 
     thickness = thickness_;
-    sample.set_transluceny(sample.base_.diffuse_color_, transparency_, thickness,
-                           attenuation_distance_);
+    sample.set_transluceny(sample.base_.diffuse_color_, thickness, attenuation_distance_,
+                           transparency_);
 
     return sample;
 }
@@ -35,16 +35,11 @@ size_t Material_translucent::num_bytes() const {
     return sizeof(*this);
 }
 
-void Material_translucent::set_transparency(float transparency) {
-    transparency_ = transparency;
-}
-
-void Material_translucent::set_thickness(float thickness) {
-    thickness_ = thickness;
-}
-
-void Material_translucent::set_attenuation_distance(float attenuation_distance) {
+void Material_translucent::set_attenuation(float thickness, float attenuation_distance) {
+    thickness_            = thickness;
     attenuation_distance_ = attenuation_distance;
+
+    transparency_ = std::exp(-thickness * (1.f / attenuation_distance));
 }
 
 size_t Material_translucent::sample_size() {

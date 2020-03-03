@@ -63,7 +63,7 @@ void Material::set_attenuation(float3 const& absorption_color, float3 const& sca
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
     } else {
-        cc_ = {extinction_coefficient(absorption_color, distance), float3(0.f)};
+        cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
     }
 
     cm_ = CM(cc_);

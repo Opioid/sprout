@@ -263,12 +263,12 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         /*
         auto const mu = material.collision_coefficients();
 
-        float3 const extinction = mu.a + mu.s;
+        float3 const attenuation = mu.a + mu.s;
 
-        float3 const scattering_albedo = mu.s / extinction;
+        float3 const scattering_albedo = mu.s / attenuation;
 
         float const r = rng_.random_float();
-        float const t = -std::log(1.f - r) / average(extinction);
+        float const t = -std::log(1.f - r) / average(attenuation);
 
         float const td = d - ray.min_t;
 
@@ -279,16 +279,16 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
             event = Event::Scatter;
 
-            float3 const w = exp(-(t)*extinction);
+            float3 const w = exp(-(t)*attenuation);
 
-            float3 const pdf = extinction * w;
+            float3 const pdf = attenuation * w;
 
-            float3 const weight = scattering_albedo * extinction / pdf;
+            float3 const weight = scattering_albedo * attenuation / pdf;
 
             tr = w * weight; // This should cancel out to 1.f
             li = float3(0.f);
         } else {
-            tr    = float3(1.f);  // exp(-(td) * extinction);
+            tr    = float3(1.f);  // exp(-(td) * attenuation);
             li    = float3(0.f);
             event = Event::Pass;
         }

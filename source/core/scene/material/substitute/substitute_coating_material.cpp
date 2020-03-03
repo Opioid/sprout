@@ -69,7 +69,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
 }
 
 void Material_clearcoat::set_coating_attenuation(float3 const& absorption_color, float distance) {
-    coating_.absorption_coefficient = extinction_coefficient(absorption_color, distance);
+    coating_.absorption_coefficient = attenuation_coefficient(absorption_color, distance);
 }
 
 void Material_clearcoat::set_coating_ior(float ior) {

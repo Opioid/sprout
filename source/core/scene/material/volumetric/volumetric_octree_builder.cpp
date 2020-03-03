@@ -83,7 +83,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
                                      CM const& cm, uint32_t depth) {
     static int32_t constexpr w = (Gridtree::Cell_dim >> (Gridtree::Log2_cell_dim - 3)) + 1;
 
-    // Without an epsilon the sampled extinction coefficient can sometimes
+    // Without an epsilon the sampled attenuation coefficient can sometimes
     // be a tiny bit larger than the majorant computed here.
     // Supposedly due to floating point imprecision.
     static float constexpr mt_epsilon = 0.f;  // 0.003f;

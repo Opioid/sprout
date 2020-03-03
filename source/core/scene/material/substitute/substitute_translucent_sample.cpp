@@ -68,12 +68,12 @@ bool Sample_translucent::is_translucent() const {
     return thickness_ > 0.f;
 }
 
-void Sample_translucent::set_transluceny(float3 const& color, float transparency, float thickness,
-                                         float attenuation_distance) {
-    attenuation_ = material::extinction_coefficient(color, attenuation_distance);
+void Sample_translucent::set_transluceny(float3 const& color, float thickness,
+                                         float attenuation_distance, float transparency) {
+    attenuation_ = material::attenuation_coefficient(color, attenuation_distance);
 
-    transparency_ = transparency;
     thickness_    = thickness;
+    transparency_ = transparency;
 }
 
 template <bool Forward>
@@ -111,7 +111,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    float const o = 1.f - t;  // thickness_ > 0.f ? 1.f - t : 1.f;
+    float const o = 1.f - t;
 
     auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, o);
 
