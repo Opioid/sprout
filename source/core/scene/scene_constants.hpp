@@ -8,11 +8,11 @@
 
 namespace scene {
 
-// std::numeric_limits<float>::max();
-float constexpr Ray_max_t = 3.4028234663852886e+38f;
+// offset_b(std::numeric_limits<float>::max());
+float constexpr Ray_max_t = 3.4027715434167032e+38f;
 
-// std::nextafter(std::numeric_limits<float>::max(), 0.f);
-float constexpr Almost_ray_max_t = 3.4028232635611926e+38f;
+// std::nextafter(Ray_max_t, 0.f);
+float constexpr Almost_ray_max_t = 3.4027713405926072e+38f;
 
 uint64_t constexpr Units_per_second = 705600000;
 
