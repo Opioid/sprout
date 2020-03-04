@@ -5,8 +5,8 @@
 
 namespace rendering::sensor {
 
-Sensor::Sensor(float exposure)
-    : dimensions_(0), num_layers_(0), exposure_factor_(std::exp2(exposure)) {}
+Sensor::Sensor()
+    : dimensions_(0), num_layers_(0) {}
 
 Sensor::~Sensor() = default;
 

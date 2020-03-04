@@ -6,7 +6,7 @@
 
 namespace rendering::sensor {
 
-Opaque::Opaque(float exposure) : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
+Opaque::Opaque() : layers_(nullptr), pixels_(nullptr) {}
 
 Opaque::~Opaque() {
     memory::free_aligned(layers_);

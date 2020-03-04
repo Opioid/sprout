@@ -34,6 +34,7 @@
 #include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
+#include "rendering/postprocessor/tonemapping/linear.hpp"
 #include "rendering/postprocessor/tonemapping/piecewise.hpp"
 #include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "rendering/sensor/clamp.inl"
@@ -364,7 +365,7 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value)
 }
 
 template <typename Base, typename Filter>
-static Sensor* make_filtered_sensor(float exposure, float3 const& clamp_max,
+static Sensor* make_filtered_sensor(float3 const& clamp_max,
                                     json::Value const& filter_value) {
     using namespace rendering::sensor;
 
@@ -374,30 +375,30 @@ static Sensor* make_filtered_sensor(float exposure, float3 const& clamp_max,
 
     if (clamp) {
         if (filter.radius() <= 1.f) {
-            return new Filtered_1p0<Base, clamp::Clamp, Filter>(exposure, clamp::Clamp(clamp_max),
+            return new Filtered_1p0<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                                 std::move(filter));
         }
 
         if (filter.radius() <= 2.f) {
-            return new Filtered_2p0<Base, clamp::Clamp, Filter>(exposure, clamp::Clamp(clamp_max),
+            return new Filtered_2p0<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                                 std::move(filter));
         }
 
-        return new Filtered_inf<Base, clamp::Clamp, Filter>(exposure, clamp::Clamp(clamp_max),
+        return new Filtered_inf<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                             std::move(filter));
     }
 
     if (filter.radius() <= 1.f) {
-        return new Filtered_1p0<Base, clamp::Identity, Filter>(exposure, clamp::Identity(),
+        return new Filtered_1p0<Base, clamp::Identity, Filter>(clamp::Identity(),
                                                                std::move(filter));
     }
 
     if (filter.radius() <= 2.f) {
-        return new Filtered_2p0<Base, clamp::Identity, Filter>(exposure, clamp::Identity(),
+        return new Filtered_2p0<Base, clamp::Identity, Filter>(clamp::Identity(),
                                                                std::move(filter));
     }
 
-    return new Filtered_inf<Base, clamp::Identity, Filter>(exposure, clamp::Identity(),
+    return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(),
                                                            std::move(filter));
 }
 
@@ -427,8 +428,6 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
 
     bool alpha_transparency = false;
 
-    float exposure = 0.f;
-
     float3 clamp_max(-1.f);
 
     json::Value const* filter_value = nullptr;
@@ -438,8 +437,6 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
     for (auto& n : sensor_value.GetObject()) {
         if ("alpha_transparency" == n.name) {
             alpha_transparency = json::read_bool(n.value);
-        } else if ("exposure" == n.name) {
-            exposure = json::read_float(n.value);
         } else if ("clamp" == n.name) {
             clamp_max = json::read_float3(n.value);
         } else if ("filter" == n.name) {
@@ -451,35 +448,35 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
     if (filter_value && Sensor_filter_type::Undefined != filter_type) {
         if (alpha_transparency) {
             if (Sensor_filter_type::Gaussian == filter_type) {
-                return make_filtered_sensor<Transparent, Gaussian>(exposure, clamp_max,
+                return make_filtered_sensor<Transparent, Gaussian>(clamp_max,
                                                                    *filter_value);
             }
 
-            return make_filtered_sensor<Transparent, Mitchell>(exposure, clamp_max, *filter_value);
+            return make_filtered_sensor<Transparent, Mitchell>(clamp_max, *filter_value);
         }
 
         if (Sensor_filter_type::Gaussian == filter_type) {
-            return make_filtered_sensor<Opaque, Gaussian>(exposure, clamp_max, *filter_value);
+            return make_filtered_sensor<Opaque, Gaussian>(clamp_max, *filter_value);
         }
 
-        return make_filtered_sensor<Opaque, Mitchell>(exposure, clamp_max, *filter_value);
+        return make_filtered_sensor<Opaque, Mitchell>(clamp_max, *filter_value);
     }
 
     bool const clamp = !math::any_negative(clamp_max);
 
     if (alpha_transparency) {
         if (clamp) {
-            return new Unfiltered<Transparent, clamp::Clamp>(exposure, clamp::Clamp(clamp_max));
+            return new Unfiltered<Transparent, clamp::Clamp>(clamp::Clamp(clamp_max));
         }
 
-        return new Unfiltered<Transparent, clamp::Identity>(exposure, clamp::Identity());
+        return new Unfiltered<Transparent, clamp::Identity>(clamp::Identity());
     }
 
     if (clamp) {
-        return new Unfiltered<Opaque, clamp::Clamp>(exposure, clamp::Clamp(clamp_max));
+        return new Unfiltered<Opaque, clamp::Clamp>(clamp::Clamp(clamp_max));
     }
 
-    return new Unfiltered<Opaque, clamp::Identity>(exposure, clamp::Identity());
+    return new Unfiltered<Opaque, clamp::Identity>(clamp::Identity());
 }
 
 static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers,
@@ -840,10 +837,12 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : tonemapper_value.GetObject()) {
+        float const exposure = json::read_float(n.value, "exposure", 0.f);
+
         if ("ACES" == n.name) {
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-            return new Aces(hdr_max);
+            return new Aces(exposure, hdr_max);
         }
 
         if ("ACES_MJP" == n.name) {
@@ -857,7 +856,11 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
             float const mid_out  = json::read_float(n.value, "mid_out", 0.18f);
             float const hdr_max  = json::read_float(n.value, "hdr_max", 1.f);
 
-            return new Generic(contrast, shoulder, mid_in, mid_out, hdr_max);
+            return new Generic(exposure, contrast, shoulder, mid_in, mid_out, hdr_max);
+        }
+
+        if ("Linear" == n.name) {
+            return new Linear(exposure);
         }
 
         if ("Piecewise" == n.name) {
@@ -867,14 +870,14 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
             float const shoulder_length   = json::read_float(n.value, "shoulder_length", 0.5f);
             float const shoulder_angle    = json::read_float(n.value, "shoulder_angle", 0.5f);
 
-            return new Piecewise(toe_strength, toe_length, shoulder_strength, shoulder_length,
+            return new Piecewise(exposure, toe_strength, toe_length, shoulder_strength, shoulder_length,
                                  shoulder_angle);
         }
 
         if ("Uncharted" == n.name) {
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-            return new Uncharted(hdr_max);
+            return new Uncharted(exposure, hdr_max);
         }
     }
 

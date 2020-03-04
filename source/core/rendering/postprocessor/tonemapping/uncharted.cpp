@@ -4,12 +4,12 @@
 
 namespace rendering::postprocessor::tonemapping {
 
-Uncharted::Uncharted(float hdr_max)
-    : normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
+Uncharted::Uncharted(float exposure, float hdr_max)
+    : Tonemapper(exposure), normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
 void Uncharted::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
                       image::Float4 const& source, image::Float4& destination) {
-    float const norm = normalization_factor_;
+    float const norm = exposure_factor_ * normalization_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
         float4 const& color = source.at(i);
