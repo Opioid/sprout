@@ -4,6 +4,8 @@ target_sources(core
     "aces.hpp"
     "generic.cpp"
     "generic.hpp"
+    "piecewise.cpp"
+    "piecewise.hpp"
     "tonemapper.cpp"
     "tonemapper.hpp"
     "uncharted.cpp"

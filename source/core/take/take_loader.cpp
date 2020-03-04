@@ -34,6 +34,7 @@
 #include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
+#include "rendering/postprocessor/tonemapping/piecewise.hpp"
 #include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filter/sensor_gaussian.hpp"
@@ -857,6 +858,17 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
             float const hdr_max  = json::read_float(n.value, "hdr_max", 1.f);
 
             return new Generic(contrast, shoulder, mid_in, mid_out, hdr_max);
+        }
+
+        if ("Piecewise" == n.name) {
+            float const toe_strength      = json::read_float(n.value, "toe_strength", 0.1f);
+            float const toe_length        = json::read_float(n.value, "toe_length", 0.5f);
+            float const shoulder_strength = json::read_float(n.value, "shoulder_strength", 2.f);
+            float const shoulder_length   = json::read_float(n.value, "shoulder_length", 0.5f);
+            float const shoulder_angle    = json::read_float(n.value, "shoulder_angle", 0.5f);
+
+            return new Piecewise(toe_strength, toe_length, shoulder_strength, shoulder_length,
+                                 shoulder_angle);
         }
 
         if ("Uncharted" == n.name) {

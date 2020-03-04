@@ -238,6 +238,12 @@ static inline __m128 log(__m128 x) {
     return x;
 }
 
+static inline float log(float s) {
+    __m128 x = _mm_load_ss(&s);
+
+    return _mm_cvtss_f32(log(x));
+}
+
 }  // namespace math
 
 #endif
