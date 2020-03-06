@@ -1,4 +1,5 @@
 #include "tonemapper.hpp"
+
 #include <cmath>
 
 namespace rendering::postprocessor::tonemapping {

@@ -34,63 +34,55 @@ struct Parameters {
     float x1;
     float y1;
     float w;
-
     float overshoot_x;
     float overshoot_y;
 };
 
-static void CalcDirectParamsFromUser(Parameters& params, float toe_strength, float toe_length,
-                                     float shoulder_strength, float shoulder_length,
-                                     float shoulder_angle) {
+static Parameters calculate_parameters(float toe_strength, float toe_length,
+                                       float shoulder_strength, float shoulder_length,
+                                       float shoulder_angle) {
     // This is not actually the display gamma. It's just a UI space to avoid having to
     // enter small numbers for the input.
-    static float constexpr perceptualGamma = 2.2f;
+    static float constexpr perceptual_gamma = 2.2f;
 
     // constraints
-
-    toe_length      = std::pow(saturate(toe_length), perceptualGamma);
-    toe_strength    = saturate(toe_strength);
-    shoulder_angle  = saturate(shoulder_angle);
-    shoulder_length = std::max(1e-5f, saturate(shoulder_length));
-
-    shoulder_strength = std::max(0.0f, shoulder_strength);
+    toe_length        = std::pow(saturate(toe_length), perceptual_gamma);
+    toe_strength      = saturate(toe_strength);
+    shoulder_angle    = saturate(shoulder_angle);
+    shoulder_length   = std::max(1e-5f, saturate(shoulder_length));
+    shoulder_strength = std::max(0.f, shoulder_strength);
 
     // apply base params
 
     // toe goes from 0 to 0.5
-    float const x0 = toe_length * .5f;
-    float const y0 = (1.0f - toe_strength) * x0;  // lerp from 0 to x0
+    float const x0 = toe_length * 0.5f;
+    float const y0 = (1.f - toe_strength) * x0;  // lerp from 0 to x0
 
-    float const remaining_y = 1.0f - y0;
+    float const remaining_y = 1.f - y0;
 
     float const initial_w = x0 + remaining_y;
 
-    float const y1_offset = (1.0f - shoulder_length) * remaining_y;
-    float const x1        = x0 + y1_offset;
-    float const y1        = y0 + y1_offset;
+    float const y1_offset = (1.f - shoulder_length) * remaining_y;
+
+    float const x1 = x0 + y1_offset;
+    float const y1 = y0 + y1_offset;
 
     // filmic shoulder strength is in F stops
-    float const extraW = std::exp2(shoulder_strength) - 1.0f;
+    float const extra_w = std::exp2(shoulder_strength) - 1.f;
 
-    float const w = initial_w + extraW;
+    float const w = initial_w + extra_w;
 
-    params.x0 = x0;
-    params.y0 = y0;
-    params.x1 = x1;
-    params.y1 = y1;
-    params.w  = w;
+    float const overshoot_x = (w * 2.f) * shoulder_angle * shoulder_strength;
+    float const overshoot_y = 0.5f * shoulder_angle * shoulder_strength;
 
-    params.overshoot_x = (params.w * 2.0f) * shoulder_angle * shoulder_strength;
-    params.overshoot_y = 0.5f * shoulder_angle * shoulder_strength;
+    return {x0, y0, x1, y1, w, overshoot_x, overshoot_y};
 }
 
 Piecewise::Piecewise(float exposure, float toe_strength, float toe_length, float shoulder_strength,
                      float shoulder_length, float shoulder_angle)
     : Tonemapper(exposure) {
-    Parameters params;
-
-    CalcDirectParamsFromUser(params, toe_strength, toe_length, shoulder_strength, shoulder_length,
-                             shoulder_angle);
+    Parameters params = calculate_parameters(toe_strength, toe_length, shoulder_strength,
+                                             shoulder_length, shoulder_angle);
 
     float const w = params.w;
 
