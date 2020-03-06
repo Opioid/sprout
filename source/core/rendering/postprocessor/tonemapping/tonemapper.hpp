@@ -7,14 +7,19 @@ namespace rendering::postprocessor::tonemapping {
 
 class Tonemapper : public Postprocessor {
   public:
-    Tonemapper(float exposure);
+    Tonemapper(bool auto_expose, float exposure);
 
     ~Tonemapper() override;
 
     void init(Camera const& camera, thread::Pool& threads) final;
 
   protected:
+    void pre_apply(image::Float4 const& source, image::Float4& destination,
+                   thread::Pool& threads) final;
+
     static float normalization_factor(float linear_max, float tonemapped_max);
+
+    bool const auto_expose_;
 
     float exposure_factor_;
 };

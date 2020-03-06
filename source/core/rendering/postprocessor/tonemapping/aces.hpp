@@ -7,7 +7,7 @@ namespace rendering::postprocessor::tonemapping {
 
 class Aces : public Tonemapper {
   public:
-    Aces(float exposure, float hdr_max);
+    Aces(bool auto_expose, float exposure, float hdr_max);
 
   private:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
@@ -20,7 +20,7 @@ class Aces : public Tonemapper {
 
 class Aces_MJP : public Tonemapper {
   public:
-    Aces_MJP(float expsosure);
+    Aces_MJP(bool auto_expose, float expsosure);
 
   private:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,

@@ -7,7 +7,7 @@ namespace rendering::postprocessor::tonemapping {
 
 class Linear : public Tonemapper {
   public:
-    Linear(float exposure);
+    Linear(bool auto_expose, float exposure);
 
   private:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,

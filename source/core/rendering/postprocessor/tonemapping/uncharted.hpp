@@ -7,7 +7,7 @@ namespace rendering::postprocessor::tonemapping {
 
 class Uncharted : public Tonemapper {
   public:
-    Uncharted(float exposure, float hdr_max);
+    Uncharted(bool auto_expose, float exposure, float hdr_max);
 
   private:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,

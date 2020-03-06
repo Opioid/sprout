@@ -834,16 +834,18 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : tonemapper_value.GetObject()) {
+        bool const auto_expose = json::read_bool(n.value, "auto_expose", false);
+
         float const exposure = json::read_float(n.value, "exposure", 0.f);
 
         if ("ACES" == n.name) {
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-            return new Aces(exposure, hdr_max);
+            return new Aces(auto_expose, exposure, hdr_max);
         }
 
         if ("ACES_MJP" == n.name) {
-            return new Aces_MJP(exposure);
+            return new Aces_MJP(auto_expose, exposure);
         }
 
         if ("Generic" == n.name) {
@@ -853,11 +855,11 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
             float const mid_out  = json::read_float(n.value, "mid_out", 0.18f);
             float const hdr_max  = json::read_float(n.value, "hdr_max", 1.f);
 
-            return new Generic(exposure, contrast, shoulder, mid_in, mid_out, hdr_max);
+            return new Generic(auto_expose, exposure, contrast, shoulder, mid_in, mid_out, hdr_max);
         }
 
         if ("Linear" == n.name) {
-            return new Linear(exposure);
+            return new Linear(auto_expose, exposure);
         }
 
         if ("Piecewise" == n.name) {
@@ -867,14 +869,14 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
             float const shoulder_length   = json::read_float(n.value, "shoulder_length", 0.5f);
             float const shoulder_angle    = json::read_float(n.value, "shoulder_angle", 0.5f);
 
-            return new Piecewise(exposure, toe_strength, toe_length, shoulder_strength,
+            return new Piecewise(auto_expose, exposure, toe_strength, toe_length, shoulder_strength,
                                  shoulder_length, shoulder_angle);
         }
 
         if ("Uncharted" == n.name) {
             float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-            return new Uncharted(exposure, hdr_max);
+            return new Uncharted(auto_expose, exposure, hdr_max);
         }
     }
 

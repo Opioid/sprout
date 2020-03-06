@@ -4,8 +4,8 @@
 
 namespace rendering::postprocessor::tonemapping {
 
-Uncharted::Uncharted(float exposure, float hdr_max)
-    : Tonemapper(exposure),
+Uncharted::Uncharted(bool auto_expose, float exposure, float hdr_max)
+    : Tonemapper(auto_expose, exposure),
       normalization_factor_(normalization_factor(hdr_max, tonemap(hdr_max))) {}
 
 void Uncharted::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,

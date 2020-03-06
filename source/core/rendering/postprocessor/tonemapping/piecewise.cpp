@@ -78,9 +78,9 @@ static Parameters calculate_parameters(float toe_strength, float toe_length,
     return {x0, y0, x1, y1, w, overshoot_x, overshoot_y};
 }
 
-Piecewise::Piecewise(float exposure, float toe_strength, float toe_length, float shoulder_strength,
-                     float shoulder_length, float shoulder_angle)
-    : Tonemapper(exposure) {
+Piecewise::Piecewise(bool auto_expose, float exposure, float toe_strength, float toe_length,
+                     float shoulder_strength, float shoulder_length, float shoulder_angle)
+    : Tonemapper(auto_expose, exposure) {
     Parameters params = calculate_parameters(toe_strength, toe_length, shoulder_strength,
                                              shoulder_length, shoulder_angle);
 
