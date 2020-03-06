@@ -22,18 +22,14 @@ void Tonemapper::pre_apply(image::Float4 const& source, image::Float4& /*destina
         return;
     }
 
-    struct Luminance {
-        float max;
-        float average;
-    };
+    int32_t const num_pixels = source.description().area();
 
-    memory::Buffer<Luminance> luminances(threads.num_threads());
+    memory::Buffer<float> luminances(threads.num_threads());
 
     threads.run_range(
         [&source, &luminances](uint32_t id, int32_t begin, int32_t end) {
             float const iaf = 1.f / float(source.description().area());
 
-            float max     = 0.f;
             float average = 0.f;
 
             for (int32_t i = begin; i < end; ++i) {
@@ -41,22 +37,17 @@ void Tonemapper::pre_apply(image::Float4 const& source, image::Float4& /*destina
 
                 float const luminance = spectrum::luminance(color);
 
-                max = std::max(max, luminance);
-
                 average += luminance * iaf;
             }
 
-            luminances[id].max     = max;
-            luminances[id].average = average;
+            luminances[id] = average;
         },
-        0, source.description().area());
+        0, num_pixels);
 
-    float max_luminance     = 0.f;
     float average_luminance = 0.f;
 
     for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
-        max_luminance = std::max(max_luminance, luminances[i].max);
-        average_luminance += luminances[i].average;
+        average_luminance += luminances[i];
     }
 
     static float constexpr Gray = 0.18f;
