@@ -94,8 +94,7 @@ Piecewise::Piecewise(float exposure, float toe_strength, float toe_length, float
 
     float const w = params.w;
 
-    m_W    = w;
-    m_invW = 1.f / w;
+    w_inv_ = 1.f / w;
 
     // normalize params to 1.0 range
     params.w = 1.f;
@@ -123,10 +122,8 @@ Piecewise::Piecewise(float exposure, float toe_strength, float toe_length, float
         shoulder_m = m;
     }
 
-    m_x0 = params.x0;
-    m_x1 = params.x1;
-    m_y0 = params.y0;
-    m_y1 = params.y1;
+    x0_ = params.x0;
+    x1_ = params.x1;
 
     // toe section
     {
@@ -203,16 +200,14 @@ float Piecewise::CurveSegment::eval(float x) const {
     return y0 * scale_y + offset_y;
 }
 
-float Piecewise::eval(float srcX) const {
-    float normX = srcX * m_invW;
+float Piecewise::eval(float x) const {
+    float const norm = x * w_inv_;
 
-    int32_t const index = (normX < m_x0) ? 0 : ((normX < m_x1) ? 1 : 2);
+    int32_t const index = (norm < x0_) ? 0 : ((norm < x1_) ? 1 : 2);
 
     CurveSegment const segment = segments_[index];
 
-    float ret = segment.eval(normX);
-
-    return ret;
+    return segment.eval(norm);
 }
 
 }  // namespace rendering::postprocessor::tonemapping

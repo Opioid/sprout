@@ -29,13 +29,10 @@ class Piecewise : public Tonemapper {
 
     float eval(float x) const;
 
-    float m_W;
-    float m_invW;
+    float w_inv_;
 
-    float m_x0;
-    float m_x1;
-    float m_y0;
-    float m_y1;
+    float x0_;
+    float x1_;
 
     CurveSegment segments_[3];
 };
