@@ -8,7 +8,7 @@ namespace rendering::sensor {
 
 class Transparent : public Sensor {
   public:
-    Transparent(float exposure);
+    Transparent();
 
     ~Transparent() override;
 

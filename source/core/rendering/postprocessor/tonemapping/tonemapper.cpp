@@ -1,6 +1,9 @@
 #include "tonemapper.hpp"
+#include <cmath>
 
 namespace rendering::postprocessor::tonemapping {
+
+Tonemapper::Tonemapper(float exposure) : exposure_factor_(std::exp2(exposure)) {}
 
 Tonemapper::~Tonemapper() = default;
 

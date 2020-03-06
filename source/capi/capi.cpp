@@ -76,7 +76,7 @@ struct Engine {
           driver(threads, material::Provider::max_sample_size(), progressor),
           frame(0),
           frame_iteration(0),
-          progressive(progressive),
+          progressive_mode(progressive),
           valid(false) {}
 
     thread::Pool threads;
@@ -108,7 +108,7 @@ struct Engine {
     uint32_t frame;
     uint32_t frame_iteration;
 
-    bool const progressive;
+    bool const progressive_mode;
 
     bool valid;
 };
@@ -185,7 +185,7 @@ int32_t su_load_take(char const* string) {
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(take))
                               : engine->resources.filesystem().read_stream(take, take_name);
 
-        if (!stream || !take::Loader::load(engine->take, *stream, take_name, engine->progressive,
+        if (!stream || !take::Loader::load(engine->take, *stream, take_name, engine->progressive_mode,
                                            engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
@@ -208,7 +208,7 @@ int32_t su_create_defaults() {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::set_default_integrators(num_workers, engine->progressive, engine->take.view);
+    take::Loader::set_default_integrators(num_workers, engine->progressive_mode, engine->take.view);
 
     take::Loader::set_default_exporter(engine->take);
 
@@ -257,7 +257,7 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
     filter::Gaussian filter(radius, alpha);
 
     Sensor* sensor = new Filtered_1p0<Opaque, clamp::Identity, filter::Gaussian>(
-        0.f, clamp::Identity(), std::move(filter));
+        clamp::Identity(), std::move(filter));
 
     camera->set_sensor(sensor);
 

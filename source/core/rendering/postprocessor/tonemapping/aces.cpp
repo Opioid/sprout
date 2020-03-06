@@ -8,12 +8,13 @@
 
 namespace rendering::postprocessor::tonemapping {
 
-Aces::Aces(float hdr_max)
-    : normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
+Aces::Aces(float exposure, float hdr_max)
+    : Tonemapper(exposure), normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
 void Aces::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
                  image::Float4 const& source, image::Float4& destination) {
-    float const norm = normalization_factor_;
+    float const norm = exposure_factor_ * normalization_factor_;
+
     for (int32_t i = begin; i < end; ++i) {
         float4 const& color = source.at(i);
 
@@ -34,7 +35,7 @@ float Aces::tonemap_function(float x) {
     return (x * (a * x + b)) / (x * (c * x + d) + e);
 }
 
-Aces_MJP::Aces_MJP() = default;
+Aces_MJP::Aces_MJP(float exposure) : Tonemapper(exposure) {}
 
 // The code in this file was originally written by Stephen Hill (@self_shadow), who deserves all
 // credit for coming up with this fit and implementing it. Buy him a beer next time you see him. :)

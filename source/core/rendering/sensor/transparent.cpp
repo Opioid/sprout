@@ -6,7 +6,7 @@
 
 namespace rendering::sensor {
 
-Transparent::Transparent(float exposure) : Sensor(exposure), layers_(nullptr), pixels_(nullptr) {}
+Transparent::Transparent() : layers_(nullptr), pixels_(nullptr) {}
 
 Transparent::~Transparent() {
     memory::free_aligned(layers_);
@@ -65,14 +65,12 @@ void Transparent::splat_pixel_atomic(int2 pixel, float4 const& color, float weig
 }
 
 void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) const {
-    float const exposure_factor = exposure_factor_;
-
     for (int32_t i = begin; i < end; ++i) {
         auto const& value = pixels_[i];
 
         float4 const color = value.color / value.weight;
 
-        target.store(i, float4(exposure_factor * color.xyz(), std::min(color[3], 1.f)));
+        target.store(i, float4(color.xyz(), std::min(color[3], 1.f)));
     }
 }
 

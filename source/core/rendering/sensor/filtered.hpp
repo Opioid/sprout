@@ -17,7 +17,7 @@ class Filter;
 template <class Base, class Clamp, class F>
 class Filtered : public Base {
   public:
-    Filtered(float exposure, Clamp const& clamp, F&& filter);
+    Filtered(Clamp const& clamp, F&& filter);
 
     ~Filtered() override;
 
@@ -50,7 +50,7 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_1p0(float exposure, Clamp const& clamp, F&& filter);
+    Filtered_1p0(Clamp const& clamp, F&& filter);
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) final;
@@ -66,7 +66,7 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_2p0(float exposure, Clamp const& clamp, F&& filter);
+    Filtered_2p0(Clamp const& clamp, F&& filter);
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) final;
@@ -82,7 +82,7 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_inf(float exposure, Clamp const& clamp, F&& filter);
+    Filtered_inf(Clamp const& clamp, F&& filter);
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
                     int4 const& bounds) final;

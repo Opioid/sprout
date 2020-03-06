@@ -117,57 +117,9 @@ static inline __m128 exp(__m128 x) {
 }
 
 static inline float exp(float s) {
-    __m128 tmp;
-    __m128 fx;
-
-    __m128i emm0;
-
     __m128 x = _mm_load_ss(&s);
-    x        = _mm_min_ss(x, simd::Exp_hi);
-    x        = _mm_max_ss(x, simd::Exp_lo);
 
-    // express exp(x) as exp(g + n*log(2))
-    fx = _mm_mul_ss(x, simd::LogEst0);
-    fx = _mm_add_ss(fx, simd::Half);
-
-    // how to perform a floorf with SSE: just below
-    emm0 = _mm_cvttps_epi32(fx);
-    tmp  = _mm_cvtepi32_ps(emm0);
-
-    // if greater, substract 1
-    __m128 mask = _mm_cmpgt_ss(tmp, fx);
-    mask        = _mm_and_ps(mask, simd::One);
-    fx          = _mm_sub_ss(tmp, mask);
-
-    tmp      = _mm_mul_ss(fx, simd::Cephes_exp_C1);
-    __m128 z = _mm_mul_ss(fx, simd::Cephes_exp_C2);
-    x        = _mm_sub_ss(x, tmp);
-    x        = _mm_sub_ss(x, z);
-
-    z = _mm_mul_ss(x, x);
-
-    __m128 y = simd::Cephes_exp_p0;
-    y        = _mm_mul_ss(y, x);
-    y        = _mm_add_ss(y, simd::Cephes_exp_p1);
-    y        = _mm_mul_ss(y, x);
-    y        = _mm_add_ss(y, simd::Cephes_exp_p2);
-    y        = _mm_mul_ss(y, x);
-    y        = _mm_add_ss(y, simd::Cephes_exp_p3);
-    y        = _mm_mul_ss(y, x);
-    y        = _mm_add_ss(y, simd::Cephes_exp_p4);
-    y        = _mm_mul_ss(y, x);
-    y        = _mm_add_ss(y, simd::Cephes_exp_p5);
-    y        = _mm_mul_ss(y, z);
-    y        = _mm_add_ss(y, x);
-    y        = _mm_add_ss(y, simd::One);
-
-    emm0         = _mm_cvttps_epi32(fx);
-    emm0         = _mm_add_epi32(emm0, simd::Mask_0x7F);
-    emm0         = _mm_slli_epi32(emm0, 23);
-    __m128 pow2n = _mm_castsi128_ps(emm0);
-
-    y = _mm_mul_ss(y, pow2n);
-    return _mm_cvtss_f32(y);
+    return _mm_cvtss_f32(exp(x));
 }
 
 static inline __m128 log(__m128 x) {

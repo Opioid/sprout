@@ -4,8 +4,8 @@
 
 namespace rendering::postprocessor::tonemapping {
 
-Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max)
-    : a_(contrast), d_(shoulder), hdr_max_(hdr_max) {
+Generic::Generic(float exposure, float contrast, float shoulder, float mid_in, float mid_out, float hdr_max)
+    : Tonemapper(exposure), a_(contrast), d_(shoulder), hdr_max_(hdr_max) {
     float const ad = contrast * shoulder;
 
     float const midi_pow_a  = std::pow(mid_in, contrast);
@@ -32,7 +32,9 @@ void Generic::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t e
 
 float Generic::tonemap_function(float x) const {
     x       = std::min(x, hdr_max_);
-    float z = std::pow(x, a_);
+
+    float const z = std::pow(x, a_);
+
     return z / (std::pow(z, d_) * b_ + c_);
 }
 
