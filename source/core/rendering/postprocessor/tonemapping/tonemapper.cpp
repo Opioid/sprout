@@ -35,7 +35,7 @@ void Tonemapper::pre_apply(image::Float4 const& source, image::Float4& /*destina
             for (int32_t i = begin; i < end; ++i) {
                 float3 const color = source.at(i).xyz();
 
-                float const luminance = spectrum::luminance(color);
+                float const luminance = std::log2(1.f + spectrum::luminance(color));
 
                 average += luminance * iaf;
             }
@@ -52,7 +52,7 @@ void Tonemapper::pre_apply(image::Float4 const& source, image::Float4& /*destina
 
     static float constexpr Gray = 0.18f;
 
-    float const factor = Gray / average_luminance;
+    float const factor = Gray / (std::exp2(average_luminance) - 1.f);
 
     exposure_factor_ = factor;
 }
