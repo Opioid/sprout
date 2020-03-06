@@ -5,7 +5,7 @@
 
 namespace rendering::postprocessor::tonemapping {
 
-class Uncharted : public Tonemapper {
+class Linear : public Tonemapper {
   public:
     Linear(float exposure);
 

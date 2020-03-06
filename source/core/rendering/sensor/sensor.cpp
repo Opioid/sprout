@@ -5,8 +5,7 @@
 
 namespace rendering::sensor {
 
-Sensor::Sensor()
-    : dimensions_(0), num_layers_(0) {}
+Sensor::Sensor() : dimensions_(0), num_layers_(0) {}
 
 Sensor::~Sensor() = default;
 

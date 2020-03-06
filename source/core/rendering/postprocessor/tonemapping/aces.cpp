@@ -9,22 +9,24 @@
 namespace rendering::postprocessor::tonemapping {
 
 Aces::Aces(float exposure, float hdr_max)
-    : Tonemapper(exposure), normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
+    : Tonemapper(exposure),
+      normalization_factor_(normalization_factor(hdr_max, tonemap(hdr_max))) {}
 
 void Aces::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
                  image::Float4 const& source, image::Float4& destination) {
-    float const norm = exposure_factor_ * normalization_factor_;
+    float const factor = exposure_factor_;
+    float const norm   = normalization_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
         float4 const& color = source.at(i);
 
         destination.store(
-            i, float4(norm * tonemap_function(color[0]), norm * tonemap_function(color[1]),
-                      norm * tonemap_function(color[2]), color[3]));
+            i, float4(norm * tonemap(factor * color[0]), norm * tonemap(factor * color[1]),
+                      norm * tonemap(factor * color[2]), color[3]));
     }
 }
 
-float Aces::tonemap_function(float x) {
+float Aces::tonemap(float x) {
     // ACES like in https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
     float constexpr a = 2.51f;
     float constexpr b = 0.03f;

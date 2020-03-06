@@ -365,8 +365,7 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value)
 }
 
 template <typename Base, typename Filter>
-static Sensor* make_filtered_sensor(float3 const& clamp_max,
-                                    json::Value const& filter_value) {
+static Sensor* make_filtered_sensor(float3 const& clamp_max, json::Value const& filter_value) {
     using namespace rendering::sensor;
 
     bool const clamp = !any_negative(clamp_max);
@@ -398,8 +397,7 @@ static Sensor* make_filtered_sensor(float3 const& clamp_max,
                                                                std::move(filter));
     }
 
-    return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(),
-                                                           std::move(filter));
+    return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter));
 }
 
 enum class Sensor_filter_type { Undefined, Gaussian, Mitchell };
@@ -448,8 +446,7 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
     if (filter_value && Sensor_filter_type::Undefined != filter_type) {
         if (alpha_transparency) {
             if (Sensor_filter_type::Gaussian == filter_type) {
-                return make_filtered_sensor<Transparent, Gaussian>(clamp_max,
-                                                                   *filter_value);
+                return make_filtered_sensor<Transparent, Gaussian>(clamp_max, *filter_value);
             }
 
             return make_filtered_sensor<Transparent, Mitchell>(clamp_max, *filter_value);
@@ -846,7 +843,7 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
         }
 
         if ("ACES_MJP" == n.name) {
-            return new Aces_MJP();
+            return new Aces_MJP(exposure);
         }
 
         if ("Generic" == n.name) {
@@ -870,8 +867,8 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
             float const shoulder_length   = json::read_float(n.value, "shoulder_length", 0.5f);
             float const shoulder_angle    = json::read_float(n.value, "shoulder_angle", 0.5f);
 
-            return new Piecewise(exposure, toe_strength, toe_length, shoulder_strength, shoulder_length,
-                                 shoulder_angle);
+            return new Piecewise(exposure, toe_strength, toe_length, shoulder_strength,
+                                 shoulder_length, shoulder_angle);
         }
 
         if ("Uncharted" == n.name) {

@@ -8,8 +8,7 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp>
-Unfiltered<Base, Clamp>::Unfiltered(Clamp const& clamp)
-    : clamp_(clamp) {}
+Unfiltered<Base, Clamp>::Unfiltered(Clamp const& clamp) : clamp_(clamp) {}
 
 template <class Base, class Clamp>
 int32_t Unfiltered<Base, Clamp>::filter_radius_int() const {

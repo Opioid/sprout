@@ -9,8 +9,8 @@ namespace rendering::postprocessor::tonemapping {
 
 class Piecewise : public Tonemapper {
   public:
-    Piecewise(float toe_strength, float toe_length, float shoulder_strength, float shoulder_length,
-              float shoulder_angle);
+    Piecewise(float exposure, float toe_strength, float toe_length, float shoulder_strength,
+              float shoulder_length, float shoulder_angle);
 
   public:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,

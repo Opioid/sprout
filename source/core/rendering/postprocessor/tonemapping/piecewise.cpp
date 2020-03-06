@@ -84,8 +84,9 @@ static void CalcDirectParamsFromUser(Parameters& params, float toe_strength, flo
     params.overshoot_y = 0.5f * shoulder_angle * shoulder_strength;
 }
 
-Piecewise::Piecewise(float toe_strength, float toe_length, float shoulder_strength,
-                     float shoulder_length, float shoulder_angle) {
+Piecewise::Piecewise(float exposure, float toe_strength, float toe_length, float shoulder_strength,
+                     float shoulder_length, float shoulder_angle)
+    : Tonemapper(exposure) {
     Parameters params;
 
     CalcDirectParamsFromUser(params, toe_strength, toe_length, shoulder_strength, shoulder_length,
@@ -182,10 +183,13 @@ Piecewise::Piecewise(float toe_strength, float toe_length, float shoulder_streng
 
 void Piecewise::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
                       image::Float4 const& source, image::Float4& destination) {
+    float const factor = exposure_factor_;
+
     for (int32_t i = begin; i < end; ++i) {
         float4 const& color = source.at(i);
 
-        destination.store(i, float4(eval(color[0]), eval(color[1]), eval(color[2]), color[3]));
+        destination.store(i, float4(eval(factor * color[0]), eval(factor * color[1]),
+                                    eval(factor * color[2]), color[3]));
     }
 }
 

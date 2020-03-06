@@ -185,8 +185,9 @@ int32_t su_load_take(char const* string) {
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(take))
                               : engine->resources.filesystem().read_stream(take, take_name);
 
-        if (!stream || !take::Loader::load(engine->take, *stream, take_name, engine->progressive_mode,
-                                           engine->scene, engine->resources)) {
+        if (!stream ||
+            !take::Loader::load(engine->take, *stream, take_name, engine->progressive_mode,
+                                engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
         }
@@ -256,8 +257,8 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
 
     filter::Gaussian filter(radius, alpha);
 
-    Sensor* sensor = new Filtered_1p0<Opaque, clamp::Identity, filter::Gaussian>(
-        clamp::Identity(), std::move(filter));
+    Sensor* sensor = new Filtered_1p0<Opaque, clamp::Identity, filter::Gaussian>(clamp::Identity(),
+                                                                                 std::move(filter));
 
     camera->set_sensor(sensor);
 
@@ -294,7 +295,7 @@ int32_t su_create_sampler(uint32_t num_samples) {
     if (!engine->take.view.samplers) {
         uint32_t const num_workers = engine->resources.threads().num_threads();
 
-        if (engine->progressive) {
+        if (engine->progressive_mode) {
             engine->take.view.samplers = new sampler::Random_pool(num_workers);
         } else {
             engine->take.view.samplers = new sampler::Golden_ratio_pool(num_workers);
@@ -564,7 +565,7 @@ int32_t su_render() {
         return -2;
     }
 
-    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive_mode);
 
     engine->driver.render(engine->take.exporters);
 
@@ -580,7 +581,7 @@ int32_t su_render_frame(uint32_t frame) {
         return -2;
     }
 
-    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive_mode);
 
     engine->driver.render(frame);
 
@@ -608,7 +609,7 @@ int32_t su_start_render_frame(uint32_t frame) {
 
     engine->frame_iteration = 0;
 
-    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive_mode);
 
     engine->driver.start_frame(frame);
 

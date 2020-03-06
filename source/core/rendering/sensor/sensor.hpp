@@ -67,8 +67,6 @@ class Sensor {
     int2 dimensions_;
 
     int32_t num_layers_;
-
-    float exposure_factor_;
 };
 
 }  // namespace rendering::sensor

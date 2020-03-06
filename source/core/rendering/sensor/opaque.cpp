@@ -61,20 +61,16 @@ void Opaque::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) {
 }
 
 void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
-    float const exposure_factor = exposure_factor_;
-
     for (int32_t i = begin; i < end; ++i) {
         auto const& value = pixels_[i];
 
         float3 const color = value.xyz() / value[3];
 
-        target.store(i, float4(exposure_factor * color, 1.f));
+        target.store(i, float4(color, 1.f));
     }
 }
 
 void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const {
-    float const exposure_factor = exposure_factor_;
-
     for (int32_t i = begin; i < end; ++i) {
         auto const& value = pixels_[i];
 
@@ -82,7 +78,7 @@ void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& targe
 
         float3 const old = target.load(i).xyz();
 
-        target.store(i, float4(old + exposure_factor * color, 1.f));
+        target.store(i, float4(old + color, 1.f));
     }
 }
 

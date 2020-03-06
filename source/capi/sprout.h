@@ -8,13 +8,13 @@ extern "C" {
 #include <stdint.h>
 
 #if defined _WIN32
-#   ifdef SU_LIBRARY_EXPORTS
-#       define SU_LIBRARY_API __declspec(dllexport)
-#   else
-#       define SU_LIBRARY_API __declspec(dllimport)
-#   endif
+#ifdef SU_LIBRARY_EXPORTS
+#define SU_LIBRARY_API __declspec(dllexport)
 #else
-#   define SU_LIBRARY_API __attribute__ ((visibility ("default")))
+#define SU_LIBRARY_API __declspec(dllimport)
+#endif
+#else
+#define SU_LIBRARY_API __attribute__((visibility("default")))
 #endif
 
 #define SU_RESOURCE_NULL 0xFFFFFFFF
@@ -46,21 +46,19 @@ SU_LIBRARY_API int32_t su_mount(char const* folder);
 
 SU_LIBRARY_API int32_t su_clear(void);
 
-SU_LIBRARY_API int32_t su_load_take(char const* string) ;
+SU_LIBRARY_API int32_t su_load_take(char const* string);
 
 SU_LIBRARY_API int32_t su_create_defaults(void);
 
 SU_LIBRARY_API uint32_t su_create_camera(char const* string);
 
-SU_LIBRARY_API uint32_t su_create_camera_perspective(uint32_t width, uint32_t height,
-                                                     float fov ;
+SU_LIBRARY_API uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov);
 
 SU_LIBRARY_API int32_t su_camera_set_resolution(uint32_t width, uint32_t height);
 
 SU_LIBRARY_API int32_t su_create_sampler(uint32_t num_samples);
 
 SU_LIBRARY_API int32_t su_create_integrators(char const* string);
-
 
 SU_LIBRARY_API uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t width,
                                         uint32_t height, uint32_t depth, uint32_t num_elements,
@@ -71,12 +69,10 @@ SU_LIBRARY_API uint32_t su_create_material(char const* string);
 SU_LIBRARY_API uint32_t su_create_material_from_file(char const* filename);
 
 SU_LIBRARY_API uint32_t su_create_triangle_mesh_async(
-    uint32_t num_triangles, uint32_t num_vertices,
-    uint32_t positions_stride, float const* positions,
-    uint32_t normals_stride, float const* normals,
-    uint32_t tangents_stride, float const* tangents,
-    uint32_t uvs_stride, float const* uvs, uint32_t const* indices,
-    uint32_t num_parts, uint32_t const* parts) ;
+    uint32_t num_triangles, uint32_t num_vertices, uint32_t positions_stride,
+    float const* positions, uint32_t normals_stride, float const* normals, uint32_t tangents_stride,
+    float const* tangents, uint32_t uvs_stride, float const* uvs, uint32_t const* indices,
+    uint32_t num_parts, uint32_t const* parts);
 
 SU_LIBRARY_API uint32_t su_create_triangle_mesh_from_file(char const* filename);
 
@@ -91,13 +87,11 @@ SU_LIBRARY_API int32_t su_camera_sensor_dimensions(int32_t* dimensions);
 
 SU_LIBRARY_API int32_t su_entity_allocate_frames(uint32_t entity);
 
-SU_LIBRARY_API int32_t su_entity_transformation(uint32_t entity,
-                                                float*   transformation);
+SU_LIBRARY_API int32_t su_entity_transformation(uint32_t entity, float* transformation);
 
-SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t     entity,
-                                                    float const* transformation);
+SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t entity, float const* transformation);
 
-SU_LIBRARY_API int32_t su_entity_set_transformation_frame(uint32_t     entity, uint32_t frame,
+SU_LIBRARY_API int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame,
                                                           float const* transformation);
 
 SU_LIBRARY_API int32_t su_render(void);
