@@ -192,7 +192,11 @@ static constexpr Vector2<T> max(Vector2<T> a, Vector2<T> b) {
 
 template <typename T>
 static constexpr bool operator<(Vector2<T> a, Vector2<T> b) {
-    return a[0] < b[0] || a[1] < b[1];
+    if (a[1] == b[1]) {
+        return a[0] < b[0];
+    }
+
+    return a[1] < b[1];
 }
 
 template <typename T>
