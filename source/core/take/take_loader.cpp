@@ -809,7 +809,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
 
             pipeline.add(new Bloom(angle, alpha, threshold, intensity));
         } else if ("Glare" == n->name) {
-            Glare::Adaption adaption = Glare::Adaption::Mesopic;
+            Glare::Adaption adaption = Glare::Adaption::Scotopic;
 
             std::string const adaption_name = json::read_string(n->value, "adaption");
             if ("Scotopic" == adaption_name) {
