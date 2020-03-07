@@ -81,7 +81,11 @@ int main(int argc, char* argv[]) {
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
                               : filesystem.read_stream(args.take, take_name);
 
-        load_pipeline(*stream, take_name, pipeline, resources);
+        if (stream) {
+            load_pipeline(*stream, take_name, pipeline, resources);
+        } else {
+            logging::error("Loading take %S: ", args.take);
+        }
     }
 
     std::vector<Item> items;
