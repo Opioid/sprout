@@ -46,8 +46,6 @@ static inline float f3(float theta, float lambda) {
 void Glare::init(Camera const& camera, thread::Pool& threads) {
     auto const dim = camera.sensor_dimensions();
 
-    dimensions_ = dim;
-
     uint32_t const buffer_size = uint32_t(dim[0] * dim[1]);
 
     high_.reserve(buffer_size);
@@ -82,21 +80,25 @@ void Glare::init(Camera const& camera, thread::Pool& threads) {
     memory::Buffer<F> f(static_cast<uint32_t>(buffer_size));
 
     struct Init {
-        float  a_sum = 0.f;
-        float  b_sum = 0.f;
-        float  c_sum = 0.f;
-        float3 d_sum = float3(0.f);
+        float  a_sum;
+        float  b_sum;
+        float  c_sum;
+        float3 d_sum;
     };
 
-    memory::Array<Init> inits(threads.num_threads());
+    memory::Array<Init> inits(threads.num_threads(), {0.f, 0.f, 0.f, float3(0.f)});
+
+    int32_t const width = dim[0];
+
+    Adaption const adaption = adaption_;
 
     threads.run_range(
-        [this, angle, wl_norm, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits](uint32_t id, int32_t begin,
-                                                                   int32_t end) noexcept {
+        [adaption, width, angle, wl_norm, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits](
+            uint32_t id, int32_t begin, int32_t end) noexcept {
             Init& init = inits[id];
 
             for (int32_t y = begin; y < end; ++y) {
-                for (int32_t x = 0; x < dimensions_[0]; ++x) {
+                for (int32_t x = 0; x < width; ++x) {
                     float2 const p(float(x) + 0.5f, float(y) + 0.5f);
 
                     float const theta = length(p) * angle;
@@ -111,7 +113,7 @@ void Glare::init(Camera const& camera, thread::Pool& threads) {
 
                     float3 d(0.f);
 
-                    if (Adaption::Photopic != adaption_) {
+                    if (Adaption::Photopic != adaption) {
                         float3 xyz(0.f);
                         for (int32_t k = 0; k < wl_num_samples; ++k) {
                             float const lambda = wl_start + float(k) * wl_step;
@@ -126,13 +128,13 @@ void Glare::init(Camera const& camera, thread::Pool& threads) {
                         init.d_sum += d;
                     }
 
-                    int32_t const i = y * dimensions_[0] + x;
+                    int32_t const i = y * width + x;
 
                     f[i] = F{a, b, c, d};
                 }
             }
         },
-        0, dimensions_[1]);
+        0, dim[1]);
 
     float  a_sum = 0.f;
     float  b_sum = 0.f;
