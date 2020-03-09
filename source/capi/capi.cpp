@@ -228,7 +228,7 @@ uint32_t su_create_camera(char const* string) {
 
     ASSERT_PARSE(string, prop::Null)
 
-    if (auto camera = take::Loader::load_camera(*root, engine->scene); camera) {
+    if (auto camera = take::Loader::load_camera(*root, &engine->scene); camera) {
         engine->take.view.clear();
 
         engine->take.view.camera = camera;

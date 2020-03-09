@@ -10,7 +10,6 @@
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/log_std_out.hpp"
 #include "core/logging/logging.hpp"
-#include "core/rendering/postprocessor/postprocessor_pipeline.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/take/take_loader.hpp"
 #include "item.hpp"
@@ -23,7 +22,7 @@
 
 using namespace it::options;
 
-using Pipeline  = rendering::postprocessor::Pipeline;
+using Pipeline  = op::Pipeline;
 using Resources = resource::Manager;
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
@@ -154,26 +153,20 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
         return;
     }
 
-    json::Value const* postprocessors_value = nullptr;
-
     for (auto& n : root->GetObject()) {
-        if ("post" == n.name || "postprocessors" == n.name) {
-            postprocessors_value = &n.value;
+        if ("camera" == n.name) {
+            pipeline.camera = take::Loader::load_camera(n.value, nullptr);
+        } else if ("post" == n.name || "postprocessors" == n.name) {
+            std::string_view const take_mount_folder = string::parent_directory(take_name);
+
+            auto& filesystem = resources.filesystem();
+
+            filesystem.push_mount(take_mount_folder);
+
+            take::Loader::load_postprocessors(n.value, resources, pipeline.pp);
+
+            filesystem.pop_mount();
         }
-    }
-
-    if (postprocessors_value) {
-        std::string_view const take_mount_folder = string::parent_directory(take_name);
-
-        auto& filesystem = resources.filesystem();
-
-        filesystem.push_mount(take_mount_folder);
-
-        take::Loader::load_postprocessors(*postprocessors_value, resources, pipeline, int2(0));
-
-        filesystem.pop_mount();
-
-        //     pipeline.init(resources.threads());
     }
 }
 

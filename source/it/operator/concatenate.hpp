@@ -2,6 +2,7 @@
 #define SU_IT_OPERATOR_CONCATENATE_HPP
 
 #include "base/math/vector2.hpp"
+#include "core/rendering/postprocessor/postprocessor_pipeline.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -22,7 +23,13 @@ struct Item;
 
 namespace op {
 
-using Pipeline = rendering::postprocessor::Pipeline;
+struct Pipeline {
+    ~Pipeline();
+
+    rendering::postprocessor::Pipeline pp;
+
+    scene::camera::Camera* camera = nullptr;
+};
 
 uint32_t concatenate(std::vector<Item> const& items, it::options::Options const& options,
                      Pipeline& pipeline, thread::Pool& threads);

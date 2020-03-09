@@ -10,6 +10,10 @@
 
 namespace op {
 
+Pipeline::~Pipeline() {
+    delete camera;
+}
+
 using namespace image;
 
 int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row);
@@ -57,12 +61,16 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
         }
     }
 
-    if (!pipeline.empty()) {
-        scene::camera::Perspective camera(dimensions);
+    if (!pipeline.pp.empty()) {
+        if (pipeline.camera) {
+            pipeline.pp.init(*pipeline.camera, threads);
+        } else {
+            scene::camera::Perspective camera(dimensions);
 
-        pipeline.init(camera, threads);
+            pipeline.pp.init(camera, threads);
+        }
 
-        pipeline.apply(target, threads);
+        pipeline.pp.apply(target, threads);
     }
 
     std::string const name = name_out(items, "concat");

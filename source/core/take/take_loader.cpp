@@ -116,7 +116,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
     for (auto& n : root->GetObject()) {
         if ("camera" == n.name) {
-            if (Camera* camera = load_camera(n.value, scene); camera) {
+            if (Camera* camera = load_camera(n.value, &scene); camera) {
                 take.view.camera = camera;
             } else {
                 return false;
@@ -168,8 +168,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
             filesystem.push_mount(take_mount_folder);
 
-            load_postprocessors(*postprocessors_value, resources, take.view.pipeline,
-                                take.view.camera->sensor_dimensions());
+            load_postprocessors(*postprocessors_value, resources, take.view.pipeline);
 
             filesystem.pop_mount();
         }
@@ -200,7 +199,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     return true;
 }
 
-Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) {
+Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -218,7 +217,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) {
 
     if (!type_value) {
         // Can this happen at all!
-        logging::error("Empty camera object");
+        logging::push_error("Empty camera object");
         return nullptr;
     }
 
@@ -251,7 +250,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) {
     if (sensor_value) {
         resolution = json::read_int2(*sensor_value, "resolution", int2::identity());
         if (int2::identity() == resolution) {
-            logging::error("Sensor resolution must be greater than zero");
+            logging::push_error("Sensor resolution must be greater than zero");
             return nullptr;
         }
     } else {
@@ -295,7 +294,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) {
     } else if ("Hemispherical" == type_name) {
         camera = new Hemispherical(resolution);
     } else {
-        logging::error("Camera type \"" + type_name + "\" not recognized");
+        logging::push_error("Camera type \"" + type_name + "\" not recognized");
         return nullptr;
     }
 
@@ -303,23 +302,25 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene& scene) {
         camera->set_parameters(*parameters_value);
     }
 
-    if (sensor_value) {
-        auto sensor = load_sensor(*sensor_value);
+    if (scene) {
+        if (sensor_value) {
+            auto sensor = load_sensor(*sensor_value);
 
-        camera->set_sensor(sensor);
-    }
-
-    uint32_t const prop_id = scene.create_entity();
-
-    camera->init(prop_id);
-
-    if (animation_value) {
-        if (auto animation = scene::animation::load(*animation_value, transformation, scene);
-            animation) {
-            scene.create_animation_stage(prop_id, animation);
+            camera->set_sensor(sensor);
         }
-    } else {
-        scene.prop_set_world_transformation(prop_id, transformation);
+
+        uint32_t const prop_id = scene->create_entity();
+
+        camera->init(prop_id);
+
+        if (animation_value) {
+            if (auto animation = scene::animation::load(*animation_value, transformation, *scene);
+                animation) {
+                scene->create_animation_stage(prop_id, animation);
+            }
+        } else {
+            scene->prop_set_world_transformation(prop_id, transformation);
+        }
     }
 
     return camera;
@@ -768,7 +769,7 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
 }
 
 void Loader::load_postprocessors(json::Value const& pp_value, Resources& resources,
-                                 Pipeline& pipeline, int2 dimensions) {
+                                 Pipeline& pipeline) {
     if (!pp_value.IsArray()) {
         return;
     }
@@ -785,22 +786,12 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto backplate_res = resources.load<image::texture::Texture>(name);
+            auto const backplate_res = resources.load<image::texture::Texture>(name);
             if (!backplate_res.ptr) {
                 continue;
             }
 
-            auto backplate = backplate_res.ptr;
-
-            if (backplate->dimensions_2() != dimensions) {
-                logging::warning(
-                    "Not using backplate %S, "
-                    "because resolution does not match sensor resolution.",
-                    name);
-                continue;
-            }
-
-            pipeline.add(new Backplate(backplate));
+            pipeline.add(new Backplate(backplate_res.ptr));
         } else if ("Bloom" == n->name) {
             float const angle     = json::read_float(n->value, "angle", 0.00002f);
             float const alpha     = json::read_float(n->value, "alpha", 0.005f);
