@@ -895,25 +895,21 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
             std::string const format = json::read_string(n.value, "format", "PNG");
 
+            bool const transparent_sensor = camera.sensor().has_alpha_transparency();
+
+            bool const alpha = view.pipeline.has_alpha_transparency(transparent_sensor);
+
             image::Writer* writer;
 
             if ("EXR" == format) {
-                bool const transparent_sensor = camera.sensor().has_alpha_transparency();
-
-                bool const alpha = view.pipeline.has_alpha_transparency(transparent_sensor);
-
                 writer = new exr::Writer(alpha);
             } else if ("RGBE" == format) {
                 writer = new rgbe::Writer();
             } else {
-                bool const transparent_sensor = camera.sensor().has_alpha_transparency();
-
                 bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
 
                 bool const pre_multiplied_alpha = json::read_bool(n.value, "pre_multiplied_alpha",
                                                                   true);
-
-                bool const alpha = view.pipeline.has_alpha_transparency(transparent_sensor);
 
                 writer = new png::Writer(error_diffusion, alpha, pre_multiplied_alpha);
             }
