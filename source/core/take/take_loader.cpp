@@ -11,7 +11,6 @@
 #include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink_ffmpeg.hpp"
 #include "exporting/exporting_sink_image_sequence.hpp"
-#include "exporting/exporting_sink_null.hpp"
 #include "exporting/exporting_sink_statistics.hpp"
 #include "image/encoding/exr/exr_writer.hpp"
 #include "image/encoding/png/png_writer.hpp"
@@ -926,8 +925,6 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
             exporters.push_back(new exporting::Ffmpeg("output", camera.sensor().dimensions(),
                                                       error_diffusion, framerate));
-        } else if ("Null" == n.name) {
-            exporters.push_back(new exporting::Null);
         } else if ("Stats" == n.name || "Statistics" == n.name) {
             exporters.push_back(new exporting::Statistics);
         }

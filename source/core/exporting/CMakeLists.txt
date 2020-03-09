@@ -4,8 +4,6 @@ target_sources(core
   "exporting_sink_ffmpeg.hpp"
   "exporting_sink_image_sequence.cpp"
   "exporting_sink_image_sequence.hpp"
-  "exporting_sink_null.cpp"
-  "exporting_sink_null.hpp"
   "exporting_sink_statistics.cpp"
   "exporting_sink_statistics.hpp"
   "exporting_sink.hpp"
