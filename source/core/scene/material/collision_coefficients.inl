@@ -69,30 +69,6 @@ static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance
     return {mu_a, mu_t - mu_a};
 }
 
-static inline CC attenuation(float3 const& color, float distance) {
-    return attenuation(color, color, distance);
-}
-
-// Supposedly this:
-// https://disney-animation.s3.amazonaws.com/uploads/production/publication_asset/153/asset/siggraph2016SSS.pdf
-// But looks wrong (Well, the emily head looks better with the above)?!
-
-static inline CC disney_attenuation(float3 const& color, float distance) {
-    float3 const a  = color;
-    float3 const a2 = a * a;
-    float3 const a3 = a2 * a;
-
-    float3 const alpha = float3(1.f) - exp(-5.09406f * a + 2.61188f * a2 - 4.31805f * a3);
-
-    float3 const s = float3(1.9f) - a + 3.5f * (a - float3(0.8f)) * (a - float3(0.8f));
-
-    float3 const mu_t = 1.0f / (distance * s);
-
-    float3 const mu_s = alpha * mu_t;
-
-    return {mu_t - mu_s, mu_s};
-}
-
 }  // namespace scene::material
 
 #endif

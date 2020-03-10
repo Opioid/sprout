@@ -988,7 +988,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
             material->set_density_map(density_map);
 
             material->set_color(color);
-            material->set_attenuation(use_absorption_color ? absorption_color : color,
+            material->set_attenuation(use_absorption_color ? absorption_color : float3(0.18f),
                                       use_scattering_color ? scattering_color : color,
                                       attenuation_distance);
             material->set_volumetric_anisotropy(volumetric_anisotropy);
@@ -1042,7 +1042,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         material->set_density_map(density_map);
 
         material->set_color(color);
-        material->set_attenuation(use_absorption_color ? absorption_color : color,
+        material->set_attenuation(use_absorption_color ? absorption_color : float3(0.18f),
                                   use_scattering_color ? scattering_color : color,
                                   attenuation_distance);
         material->set_volumetric_anisotropy(volumetric_anisotropy);
