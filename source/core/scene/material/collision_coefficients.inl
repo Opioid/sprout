@@ -55,9 +55,7 @@ static inline float3 attenuation_coefficient(float3 const& color, float distance
     return -a / distance;
 }
 
-static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance) {
-    float3 const mu_t = attenuation_coefficient(ac, distance);
-
+static inline CC scattering(float3 const& mu_t, float3 const& ssc) {
     float3 const root = sqrt(9.59217f + 41.6808f * ssc + 17.7126f * ssc * ssc);
 
     float3 const factor = 4.09712f + 4.20863f * ssc - root;
@@ -67,6 +65,12 @@ static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance
     float3 const mu_a = mu_t * (1.f - pss);
 
     return {mu_a, mu_t - mu_a};
+}
+
+static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance) {
+    float3 const mu_t = attenuation_coefficient(ac, distance);
+
+    return scattering(mu_t, ssc);
 }
 
 }  // namespace scene::material

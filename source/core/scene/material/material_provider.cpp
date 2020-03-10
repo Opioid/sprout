@@ -823,9 +823,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     bool two_sided = false;
 
     float3 color(0.6f, 0.6f, 0.6f);
-    bool   use_absorption_color = false;
     float3 absorption_color(0.f);
-    bool   use_scattering_color = false;
     float3 scattering_color(0.f);
 
     float roughness             = 0.9f;
@@ -853,11 +851,9 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
             //            float3 const f82 = fresnel::conductor(1.f / 7.f, eta, k);
             //            a                = fresnel::lazanyi_schlick_a(f0, f82);
         } else if ("absorption_color" == n.name) {
-            use_absorption_color = true;
-            absorption_color     = read_color(n.value);
+            absorption_color = read_color(n.value);
         } else if ("scattering_color" == n.name) {
-            use_scattering_color = true;
-            scattering_color     = read_color(n.value);
+            scattering_color = read_color(n.value);
         } else if ("ior" == n.name) {
             ior = json::read_float(n.value);
         } else if ("roughness" == n.name) {
@@ -988,9 +984,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
             material->set_density_map(density_map);
 
             material->set_color(color);
-            material->set_attenuation(use_absorption_color ? absorption_color : float3(0.18f),
-                                      use_scattering_color ? scattering_color : color,
-                                      attenuation_distance);
+            material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
             material->set_volumetric_anisotropy(volumetric_anisotropy);
             material->set_ior(ior);
             material->set_roughness(roughness);
@@ -1042,9 +1036,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         material->set_density_map(density_map);
 
         material->set_color(color);
-        material->set_attenuation(use_absorption_color ? absorption_color : float3(0.18f),
-                                  use_scattering_color ? scattering_color : color,
-                                  attenuation_distance);
+        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
         material->set_volumetric_anisotropy(volumetric_anisotropy);
         material->set_ior(ior);
         material->set_roughness(roughness);

@@ -116,7 +116,7 @@ CC Material_subsurface::collision_coefficients(float2 uv, Filter filter,
 
     float3 const color = color_map_.sample_3(worker, sampler, uv);
 
-    return attenuation(float3(max_component(color)), color, attenuation_distance_);
+    return scattering(cc_.a, color);
 }
 
 CC Material_subsurface::collision_coefficients(float3 const& p, Filter filter,
