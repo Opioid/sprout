@@ -60,7 +60,7 @@ static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance
 
     float3 const root = sqrt(9.59217f + 41.6808f * ssc + 17.7126f * ssc * ssc);
 
-    float3 const factor = 4.09712f + 4.20863f * ssc - root;
+    float3 const factor = 4.097125f + 4.20863f * ssc - root;
 
     float3 const pss = 1.f - (factor * factor);
 
