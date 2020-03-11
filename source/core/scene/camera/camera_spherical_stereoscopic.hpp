@@ -8,8 +8,6 @@ namespace scene::camera {
 
 class Spherical_stereoscopic final : public Stereoscopic {
   public:
-    Spherical_stereoscopic(int2 resolution);
-
     uint32_t num_views() const final;
 
     int2 sensor_dimensions() const final;

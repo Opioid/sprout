@@ -17,16 +17,6 @@
 
 namespace scene::camera {
 
-Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) : Stereoscopic(resolution) {
-    float2 const fr(resolution);
-    d_x_ = 1.f / fr[0];
-    d_y_ = 1.f / fr[1];
-
-    view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
-    view_bounds_[1] = int4(int2(0, resolution[1]),
-                           int2(resolution[0], resolution[1] * 2) - int2(1));
-}
-
 uint32_t Spherical_stereoscopic::num_views() const {
     return 2;
 }
@@ -81,7 +71,16 @@ bool Spherical_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/, f
     return false;
 }
 
-void Spherical_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {}
+void Spherical_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {
+    float2 const fr(resolution_);
+    d_x_ = 1.f / fr[0];
+    d_y_ = 1.f / fr[1];
+
+    view_bounds_[0] = int4(int2(0), resolution_ - int2(1));
+    view_bounds_[1] = int4(int2(0, resolution_[1]),
+                           int2(resolution_[0], resolution_[1] * 2) - int2(1));
+
+}
 
 void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {
     if ("stereo" == name) {

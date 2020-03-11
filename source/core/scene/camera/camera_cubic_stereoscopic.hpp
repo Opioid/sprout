@@ -13,7 +13,7 @@ class Cubic_stereoscopic final : public Stereoscopic {
         rxlmxryrmyrzrmzlxlmxlylmylzlmz,
     };
 
-    Cubic_stereoscopic(Layout layout, int2 resolution);
+    Cubic_stereoscopic(Layout layout);
 
     uint32_t num_views() const final;
 

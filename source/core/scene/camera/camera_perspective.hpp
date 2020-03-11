@@ -23,7 +23,7 @@ class Perspective final : public Camera {
         bool use_point = false;
     };
 
-    Perspective(int2 resolution);
+    Perspective();
 
     uint32_t num_views() const final;
 

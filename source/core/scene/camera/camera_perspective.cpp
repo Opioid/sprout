@@ -19,8 +19,8 @@
 
 namespace scene::camera {
 
-Perspective::Perspective(int2 resolution)
-    : Camera(resolution),
+Perspective::Perspective()
+    :
       lens_tilt_(float3x3::identity()),
       lens_shift_(float2(0.f)),
       lens_radius_(0.f),

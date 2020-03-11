@@ -11,7 +11,7 @@ class Cubic final : public Camera {
   public:
     enum class Layout { xmxymyzmz, xmxy_myzmz };
 
-    Cubic(Layout layout, int2 resolution);
+    Cubic(Layout layout);
 
     uint32_t num_views() const final;
 

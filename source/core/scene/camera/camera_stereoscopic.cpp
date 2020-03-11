@@ -3,7 +3,7 @@
 
 namespace scene::camera {
 
-Stereoscopic::Stereoscopic(int2 resolution) : Camera(resolution) {
+Stereoscopic::Stereoscopic() {
     set_interpupillary_distance(0.062f);
 }
 

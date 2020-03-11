@@ -14,10 +14,8 @@
 
 namespace scene::camera {
 
-Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution)
-    : Stereoscopic(resolution),
-      view_bounds_{int4(int2(0), resolution - int2(1)),
-                   int4(int2(resolution[0], 0), int2(resolution[0] * 2, resolution[1]) - int2(1))},
+Perspective_stereoscopic::Perspective_stereoscopic()
+    :
       fov_(degrees_to_radians(90.f)) {}
 
 uint32_t Perspective_stereoscopic::num_views() const {
@@ -69,6 +67,9 @@ void Perspective_stereoscopic::set_fov(float fov) {
 }
 
 void Perspective_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {
+    view_bounds_[0] = int4(int2(0), resolution_ - int2(1));
+    view_bounds_[1] = int4(int2(resolution_[0], 0), int2(resolution_[0] * 2, resolution_[1]) - int2(1));
+
     float2 const fr(resolution_);
     float const  ratio = fr[0] / fr[1];
 

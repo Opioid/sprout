@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_CAMERA_CAMERA_HPP
 
 #include "base/json/json_types.hpp"
-#include "base/math/vector2.hpp"
+#include "base/math/vector4.hpp"
 #include "scene/prop/interface_stack.hpp"
 #include "scene/scene_constants.hpp"
 
@@ -44,7 +44,7 @@ class Camera {
     using Sampler        = sampler::Sampler;
     using Sensor         = rendering::sensor::Sensor;
 
-    Camera(int2 resolution);
+    Camera();
 
     virtual ~Camera();
 
@@ -75,7 +75,9 @@ class Camera {
 
     int2 resolution() const;
 
-    void set_resolution(int2 resolution);
+    int4 const& crop() const;
+
+    void set_resolution(int2 resolution, int4 const& crop);
 
     Sensor& sensor() const;
 
@@ -98,14 +100,17 @@ class Camera {
 
     uint32_t entity_ = 0xFFFFFFFF;
 
-    int2 resolution_;
+    int32_t filter_radius_ = 0;
 
-    Sensor* sensor_;
+    int2 resolution_ = int2(0);
+
+    int4 crop_ = int4(0);
+
+    Sensor* sensor_ = nullptr;
 
     prop::Interface_stack interface_stack_;
     prop::Interface_stack interfaces_;
 
-    int32_t filter_radius_ = 0;
 
     uint64_t frame_step_     = scene::Units_per_second / 60;
     uint64_t frame_duration_ = frame_step_;

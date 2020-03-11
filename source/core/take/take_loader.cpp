@@ -246,14 +246,18 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
     }
 
     int2 resolution;
+    int4 crop;
     if (sensor_value) {
-        resolution = json::read_int2(*sensor_value, "resolution", int2::identity());
-        if (int2::identity() == resolution) {
+        resolution = json::read_int2(*sensor_value, "resolution", int2(0));
+        resolution = max(resolution, int2(0));
+        if (int2(0) == resolution) {
             logging::push_error("Sensor resolution must be greater than zero");
             return nullptr;
         }
+
+        crop = json::read_int4(*sensor_value, "crop", int4(int2(0), resolution));
     } else {
-        logging::error("No sensor configuration included");
+        logging::push_error("No sensor configuration included");
         return nullptr;
     }
 
@@ -268,7 +272,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
                 layout = Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
             }
 
-            camera = new Cubic_stereoscopic(layout, resolution);
+            camera = new Cubic_stereoscopic(layout);
         } else {
             Cubic::Layout layout = Cubic::Layout::xmxymyzmz;
 
@@ -276,26 +280,28 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
                 layout = Cubic::Layout::xmxy_myzmz;
             }
 
-            camera = new Cubic(layout, resolution);
+            camera = new Cubic(layout);
         }
     } else if ("Perspective" == type_name) {
         if (stereo) {
-            camera = new Perspective_stereoscopic(resolution);
+            camera = new Perspective_stereoscopic();
         } else {
-            camera = new Perspective(resolution);
+            camera = new Perspective();
         }
     } else if ("Spherical" == type_name) {
         if (stereo) {
-            camera = new Spherical_stereoscopic(resolution);
+            camera = new Spherical_stereoscopic();
         } else {
-            camera = new Spherical(resolution);
+            camera = new Spherical();
         }
     } else if ("Hemispherical" == type_name) {
-        camera = new Hemispherical(resolution);
+        camera = new Hemispherical();
     } else {
         logging::push_error("Camera type \"" + type_name + "\" not recognized");
         return nullptr;
     }
+
+    camera->set_resolution(resolution, crop);
 
     if (parameters_value) {
         camera->set_parameters(*parameters_value);

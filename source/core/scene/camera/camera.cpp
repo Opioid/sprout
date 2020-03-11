@@ -16,7 +16,7 @@
 
 namespace scene::camera {
 
-Camera::Camera(int2 resolution) : resolution_(resolution), sensor_(nullptr) {}
+Camera::Camera() = default;
 
 Camera::~Camera() {
     delete sensor_;
@@ -94,16 +94,25 @@ int2 Camera::resolution() const {
     return resolution_;
 }
 
+int4 const& Camera::crop() const {
+    return crop_;
+}
+
+void Camera::set_resolution(int2 resolution, int4 const& crop) {
+    resolution_ = resolution;
+
+    crop_[0] = std::max(0, crop[0]);
+    crop_[1] = std::max(0, crop[1]);
+    crop_[2] = std::min(resolution[0], crop[2]);
+    crop_[3] = std::min(resolution[1], crop[3]);
+}
+
 rendering::sensor::Sensor& Camera::sensor() const {
     return *sensor_;
 }
 
 void Camera::set_sensor(Sensor* sensor) {
     sensor_ = sensor;
-}
-
-void Camera::set_resolution(int2 resolution) {
-    resolution_ = resolution;
 }
 
 prop::Interface_stack const& Camera::interface_stack() const {

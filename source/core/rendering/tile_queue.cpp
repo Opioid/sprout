@@ -5,10 +5,12 @@ namespace rendering {
 
 Tile_queue::~Tile_queue() = default;
 
-void Tile_queue::init(int2 dimensions, int32_t tile_dimensions, int32_t filter_radius) {
-    dimensions_      = dimensions;
+void Tile_queue::init(int4 const& crop, int32_t tile_dimensions, int32_t filter_radius) {
+    crop_      = crop;
     tile_dimensions_ = tile_dimensions;
     filter_radius_   = filter_radius;
+
+    int2 const dimensions = crop.zw() - crop.xy();
 
     int32_t const tiles_per_row = int32_t(std::ceil(float(dimensions[0]) / float(tile_dimensions)));
 
@@ -35,7 +37,7 @@ bool Tile_queue::pop(int4& tile) {
         return false;
     }
 
-    int2 const dimensions = dimensions_;
+    int4 const crop = crop_;
 
     int32_t const tile_dimensions = tile_dimensions_;
 
@@ -46,22 +48,23 @@ bool Tile_queue::pop(int4& tile) {
     start[0] = current - start[1] * tiles_per_row_;
 
     start *= tile_dimensions;
+    start += crop.xy();
 
-    int2 end = min(start + tile_dimensions, dimensions);
+    int2 end = min(start + tile_dimensions, crop.zw());
 
-    if (0 == start[1]) {
+    if (crop[1] == start[1]) {
         start[1] -= filter_radius;
     }
 
-    if (dimensions[1] == end[1]) {
+    if (crop[3] == end[1]) {
         end[1] += filter_radius;
     }
 
-    if (0 == start[0]) {
+    if (crop[0] == start[0]) {
         start[0] -= filter_radius;
     }
 
-    if (dimensions[0] == end[0]) {
+    if (crop[2] == end[0]) {
         end[0] += filter_radius;
     }
 
@@ -71,8 +74,8 @@ bool Tile_queue::pop(int4& tile) {
 }
 
 uint32_t Tile_queue::index(int4 const& tile) const {
-    int32_t const x = std::max(tile[0], 0) / tile_dimensions_;
-    int32_t const y = std::max(tile[1], 0) / tile_dimensions_;
+    int32_t const x = std::max(tile[0] - crop_[0], 0) / tile_dimensions_;
+    int32_t const y = std::max(tile[1] - crop_[1], 0) / tile_dimensions_;
 
     return uint32_t(y * tiles_per_row_ + x);
 }

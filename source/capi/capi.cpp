@@ -76,9 +76,8 @@ struct Engine {
           driver(threads, material::Provider::max_sample_size(), progressor),
           frame(0),
           frame_iteration(0),
-          progressive_mode(progressive),
+          progressive(progressive),
           valid(false) {}
-
     thread::Pool threads;
 
     resource::Manager resources;
@@ -108,7 +107,7 @@ struct Engine {
     uint32_t frame;
     uint32_t frame_iteration;
 
-    bool const progressive_mode;
+    bool const progressive;
 
     bool valid;
 };
@@ -186,7 +185,7 @@ int32_t su_load_take(char const* string) {
                               : engine->resources.filesystem().read_stream(take, take_name);
 
         if (!stream ||
-            !take::Loader::load(engine->take, *stream, take_name, engine->progressive_mode,
+            !take::Loader::load(engine->take, *stream, take_name, engine->progressive,
                                 engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
@@ -209,7 +208,7 @@ int32_t su_create_defaults() {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::set_default_integrators(num_workers, engine->progressive_mode, engine->take.view);
+    take::Loader::set_default_integrators(num_workers, engine->progressive, engine->take.view);
 
     take::Loader::set_default_exporter(engine->take);
 
@@ -246,7 +245,10 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
 
     engine->take.view.clear();
 
-    camera::Perspective* camera = new camera::Perspective(int2(width, height));
+    camera::Perspective* camera = new camera::Perspective();
+
+    int2 const resolution(width, height);
+    camera->set_resolution(resolution, int4(int2(0), resolution));
 
     camera->set_fov(fov);
 
@@ -282,7 +284,8 @@ int32_t su_camera_set_resolution(uint32_t width, uint32_t height) {
         return -2;
     }
 
-    camera->set_resolution(int2(width, height));
+    int2 const resolution(width, height);
+    camera->set_resolution(resolution, int4(int2(0), resolution));
 
     return 0;
 }
@@ -295,7 +298,7 @@ int32_t su_create_sampler(uint32_t num_samples) {
     if (!engine->take.view.samplers) {
         uint32_t const num_workers = engine->resources.threads().num_threads();
 
-        if (engine->progressive_mode) {
+        if (engine->progressive) {
             engine->take.view.samplers = new sampler::Random_pool(num_workers);
         } else {
             engine->take.view.samplers = new sampler::Golden_ratio_pool(num_workers);
@@ -565,7 +568,7 @@ int32_t su_render() {
         return -2;
     }
 
-    engine->driver.init(engine->take.view, engine->scene, engine->progressive_mode);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
     engine->driver.render(engine->take.exporters);
 
@@ -581,7 +584,7 @@ int32_t su_render_frame(uint32_t frame) {
         return -2;
     }
 
-    engine->driver.init(engine->take.view, engine->scene, engine->progressive_mode);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
     engine->driver.render(frame);
 
@@ -609,7 +612,7 @@ int32_t su_start_render_frame(uint32_t frame) {
 
     engine->frame_iteration = 0;
 
-    engine->driver.init(engine->take.view, engine->scene, engine->progressive_mode);
+    engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
     engine->driver.start_frame(frame);
 

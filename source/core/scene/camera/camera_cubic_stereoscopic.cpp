@@ -14,9 +14,8 @@
 
 namespace scene::camera {
 
-Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution)
-    : Stereoscopic(int2(resolution[0], resolution[0])) {
-    float const f = float(resolution[0]);
+Cubic_stereoscopic::Cubic_stereoscopic(Layout /*layout*/) {
+/*    float const f = float(resolution[0]);
 
     left_top_ = float3(-1.f, 1.f, 1.f);
 
@@ -58,6 +57,7 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution)
     math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 
     set_interpupillary_distance_falloff(0.36f);
+*/
 }
 
 uint32_t Cubic_stereoscopic::num_views() const {

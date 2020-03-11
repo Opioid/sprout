@@ -45,7 +45,7 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
 
     Camera const& camera = *view.camera;
 
-    tiles_.init(camera.resolution(), 32, camera.sensor().filter_radius_int());
+    tiles_.init(camera.crop(), 32, camera.sensor().filter_radius_int());
 
     int2 const d = camera.sensor_dimensions();
 
