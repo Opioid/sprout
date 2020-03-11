@@ -36,6 +36,8 @@ class Perspective_stereoscopic final : public Stereoscopic {
     float3 d_y_;
 
     int4 view_bounds_[2];
+
+    float fov_;
 };
 
 }  // namespace scene::camera

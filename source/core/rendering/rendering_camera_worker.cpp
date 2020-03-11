@@ -27,10 +27,11 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
 
+    int4 const view_tile(bounds.xy() + tile.xy(), bounds.xy() + tile.zw());
+
     auto& sensor = camera.sensor();
 
-    int4 isolated_bounds = sensor.isolated_tile(
-        int4(bounds.xy() + tile.xy(), bounds.xy() + tile.zw()));
+    int4 isolated_bounds = sensor.isolated_tile(view_tile);
     isolated_bounds[2] -= isolated_bounds[0];
     isolated_bounds[3] -= isolated_bounds[1];
 
