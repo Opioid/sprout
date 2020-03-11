@@ -1,9 +1,11 @@
-#ifndef SU_BASE_SPECTRUM_BLACKBODY_HPP
-#define SU_BASE_SPECTRUM_BLACKBODY_HPP
+#ifndef SU_BASE_SPECTRUM_MAPPING_HPP
+#define SU_BASE_SPECTRUM_MAPPING_HPP
 
 #include "math/vector3.hpp"
 
 namespace spectrum {
+
+float3 heatmap(float x);
 
 float3 blackbody(float temperature);
 

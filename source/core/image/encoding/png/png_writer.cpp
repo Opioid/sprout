@@ -2,7 +2,7 @@
 #include "base/encoding/encoding.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
-#include "base/spectrum/heatmap.hpp"
+#include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"

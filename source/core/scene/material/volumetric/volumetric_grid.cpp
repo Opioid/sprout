@@ -4,7 +4,7 @@
 #include "base/math/ray.inl"
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
-#include "base/spectrum/heatmap.hpp"
+#include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.inl"

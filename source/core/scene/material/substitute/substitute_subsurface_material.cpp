@@ -2,7 +2,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector4.inl"
-#include "base/spectrum/heatmap.hpp"
+#include "base/spectrum/mapping.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/volumetric/volumetric_octree_builder.hpp"

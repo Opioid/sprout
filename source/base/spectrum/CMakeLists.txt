@@ -1,13 +1,11 @@
 target_sources(base
 	PRIVATE
-	"blackbody.cpp"
-	"blackbody.hpp"
 	"discrete.hpp"
 	"discrete.inl"
-	"heatmap.cpp"
-	"heatmap.hpp"
 	"interpolated.cpp"
 	"interpolated.hpp"
+	"mapping.cpp"
+	"mapping.hpp"
 	"rgb.hpp"
 	"xyz.cpp"
 	"xyz.hpp"
