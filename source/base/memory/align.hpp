@@ -29,7 +29,7 @@ void destroy(T& t) {
 }
 
 template <typename T, typename... P>
-T* construct_array_aligned(size_t count, P&... ps) {
+T* construct_aligned(size_t count, P&... ps) {
     // This is more complicated than expected. See for example:
     // https://stackoverflow.com/questions/8720425/array-placement-new-requires-unspecified-overhead-in-the-buffer
     // Basically there is a small memory overhead for placement new[] that is "unknown" beforehand,

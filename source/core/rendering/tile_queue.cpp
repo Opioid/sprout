@@ -5,16 +5,16 @@ namespace rendering {
 
 Tile_queue::~Tile_queue() = default;
 
-void Tile_queue::init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius) {
-    resolution_      = resolution;
+void Tile_queue::init(int2 dimensions, int32_t tile_dimensions, int32_t filter_radius) {
+    dimensions_      = dimensions;
     tile_dimensions_ = tile_dimensions;
     filter_radius_   = filter_radius;
 
-    int32_t const tiles_per_row = int32_t(std::ceil(float(resolution[0]) / float(tile_dimensions)));
+    int32_t const tiles_per_row = int32_t(std::ceil(float(dimensions[0]) / float(tile_dimensions)));
 
     tiles_per_row_ = tiles_per_row;
 
-    num_tiles_ = tiles_per_row * int32_t(std::ceil(float(resolution[1]) / float(tile_dimensions)));
+    num_tiles_ = tiles_per_row * int32_t(std::ceil(float(dimensions[1]) / float(tile_dimensions)));
 
     current_consume_ = 0;
 }
@@ -31,43 +31,43 @@ bool Tile_queue::pop(int4& tile) {
     // uint32_t const current = current_consume_++;
     int32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
-    if (current < num_tiles_) {
-        int2 const resolution = resolution_;
-
-        int32_t const tile_dimensions = tile_dimensions_;
-
-        int32_t const filter_radius = filter_radius_;
-
-        int2 start;
-        start[1] = current / tiles_per_row_;
-        start[0] = current - start[1] * tiles_per_row_;
-
-        start *= tile_dimensions;
-
-        int2 end = min(start + tile_dimensions, resolution);
-
-        if (0 == start[1]) {
-            start[1] -= filter_radius;
-        }
-
-        if (resolution[1] == end[1]) {
-            end[1] += filter_radius;
-        }
-
-        if (0 == start[0]) {
-            start[0] -= filter_radius;
-        }
-
-        if (resolution[0] == end[0]) {
-            end[0] += filter_radius;
-        }
-
-        tile = int4(start, end - 1);
-
-        return true;
+    if (current >= num_tiles_) {
+        return false;
     }
 
-    return false;
+    int2 const dimensions = dimensions_;
+
+    int32_t const tile_dimensions = tile_dimensions_;
+
+    int32_t const filter_radius = filter_radius_;
+
+    int2 start;
+    start[1] = current / tiles_per_row_;
+    start[0] = current - start[1] * tiles_per_row_;
+
+    start *= tile_dimensions;
+
+    int2 end = min(start + tile_dimensions, dimensions);
+
+    if (0 == start[1]) {
+        start[1] -= filter_radius;
+    }
+
+    if (dimensions[1] == end[1]) {
+        end[1] += filter_radius;
+    }
+
+    if (0 == start[0]) {
+        start[0] -= filter_radius;
+    }
+
+    if (dimensions[0] == end[0]) {
+        end[0] += filter_radius;
+    }
+
+    tile = int4(start, end - 1);
+
+    return true;
 }
 
 uint32_t Tile_queue::index(int4 const& tile) const {

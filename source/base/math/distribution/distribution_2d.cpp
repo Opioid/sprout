@@ -19,7 +19,7 @@ typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::allocate
         memory::destroy_aligned(conditional_, conditional_size_);
 
         conditional_size_ = num;
-        conditional_      = memory::construct_array_aligned<Distribution_impl>(num);
+        conditional_      = memory::construct_aligned<Distribution_impl>(num);
     }
 
     return conditional_;

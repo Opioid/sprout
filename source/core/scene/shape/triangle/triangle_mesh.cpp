@@ -35,7 +35,7 @@ Tree& Mesh::tree() {
 void Mesh::allocate_parts(uint32_t num_parts) {
     tree_.allocate_parts(num_parts);
 
-    distributions_ = memory::construct_array_aligned<Distribution>(num_parts);
+    distributions_ = memory::construct_aligned<Distribution>(num_parts);
 
     part_materials_ = memory::allocate_aligned<uint32_t>(num_parts);
 }

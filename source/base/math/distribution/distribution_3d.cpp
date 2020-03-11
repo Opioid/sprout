@@ -15,7 +15,7 @@ Distribution_2D* Distribution_3D::allocate(uint32_t num) {
         memory::destroy_aligned(conditional_, conditional_size_);
 
         conditional_size_ = num;
-        conditional_      = memory::construct_array_aligned<Distribution_2D>(num);
+        conditional_      = memory::construct_aligned<Distribution_2D>(num);
     }
 
     return conditional_;

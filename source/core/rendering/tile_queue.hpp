@@ -12,7 +12,7 @@ class Tile_queue {
   public:
     ~Tile_queue();
 
-    void init(int2 resolution, int32_t tile_dimensions, int32_t filter_radius);
+    void init(int2 dimensions, int32_t tile_dimensions, int32_t filter_radius);
 
     uint32_t size() const;
 
@@ -23,7 +23,7 @@ class Tile_queue {
     uint32_t index(int4 const& tile) const;
 
   private:
-    int2 resolution_;
+    int2 dimensions_;
 
     int32_t tile_dimensions_;
 

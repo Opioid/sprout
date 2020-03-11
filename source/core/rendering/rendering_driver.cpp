@@ -24,8 +24,8 @@ Driver::Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& 
     : threads_(threads),
       scene_(nullptr),
       view_(nullptr),
-      workers_(memory::construct_array_aligned<Camera_worker>(threads.num_threads(),
-                                                              max_sample_size, tiles_, ranges_)),
+      workers_(memory::construct_aligned<Camera_worker>(threads.num_threads(), max_sample_size,
+                                                        tiles_, ranges_)),
       frame_(0),
       frame_view_(0),
       frame_iteration_(0),
@@ -43,11 +43,13 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
 
     scene_ = &scene;
 
-    tiles_.init(view.camera->resolution(), 32, view.camera->sensor().filter_radius_int());
+    Camera const& camera = *view.camera;
 
-    int2 const d = view.camera->sensor_dimensions();
+    tiles_.init(camera.resolution(), 32, camera.sensor().filter_radius_int());
 
-    view.camera->sensor().resize(d, progressive && view.lighttracers ? 2 : 1);
+    int2 const d = camera.sensor_dimensions();
+
+    camera.sensor().resize(d, progressive && view.lighttracers ? 2 : 1);
 
     target_.resize(d);
 
@@ -90,10 +92,9 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
     }
 
     for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
-        workers_[i].init(i, scene, *view.camera, view.num_samples_per_pixel,
-                         view.surface_integrators, *view.volume_integrators, *view.samplers,
-                         photon_map, view.photon_settings, view.lighttracers,
-                         Num_particles_per_chunk, &particle_importance_);
+        workers_[i].init(i, scene, camera, view.num_samples_per_pixel, view.surface_integrators,
+                         *view.volume_integrators, *view.samplers, photon_map, view.photon_settings,
+                         view.lighttracers, Num_particles_per_chunk, &particle_importance_);
     }
 }
 
