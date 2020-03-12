@@ -15,49 +15,49 @@
 namespace scene::camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout /*layout*/) {
-/*    float const f = float(resolution[0]);
+    /*    float const f = float(resolution[0]);
 
-    left_top_ = float3(-1.f, 1.f, 1.f);
+        left_top_ = float3(-1.f, 1.f, 1.f);
 
-    float3 const right_top(1.f, 1.f, 1.f);
-    float3 const left_bottom(-1.f, -1.f, 1.f);
+        float3 const right_top(1.f, 1.f, 1.f);
+        float3 const left_bottom(-1.f, -1.f, 1.f);
 
-    d_x_ = (right_top - left_top_) / f;
-    d_y_ = (left_bottom - left_top_) / f;
+        d_x_ = (right_top - left_top_) / f;
+        d_y_ = (left_bottom - left_top_) / f;
 
-    if (Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz == layout) {
-        for (int32_t i = 0; i < 12; ++i) {
-            int2 offset = int2(resolution[0] * i, 0);
+        if (Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz == layout) {
+            for (int32_t i = 0; i < 12; ++i) {
+                int2 offset = int2(resolution[0] * i, 0);
 
-            view_bounds_[i] = int4(offset, offset + resolution_);
+                view_bounds_[i] = int4(offset, offset + resolution_);
+            }
+
+            sensor_dimensions_ = int2(resolution_[0] * 12, resolution_[0]);
+        } else if (Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz == layout) {
+            for (int32_t i = 0; i < 6; ++i) {
+                int2 offset = int2(resolution[0] * (i + 6), 0);
+
+                view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
+            }
+
+            for (int32_t i = 6; i < 12; ++i) {
+                int2 offset = int2(resolution[0] * (i - 6), 0);
+
+                view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
+            }
+
+            sensor_dimensions_ = int2(resolution_[0] * 12, resolution_[0]);
         }
 
-        sensor_dimensions_ = int2(resolution_[0] * 12, resolution_[0]);
-    } else if (Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz == layout) {
-        for (int32_t i = 0; i < 6; ++i) {
-            int2 offset = int2(resolution[0] * (i + 6), 0);
+        math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
+        math::set_rotation_y(view_rotations_[1], math::degrees_to_radians(90.f));
+        math::set_rotation_x(view_rotations_[2], math::degrees_to_radians(90.f));
+        math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
+        view_rotations_[4] = float3x3::identity();
+        math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 
-            view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
-        }
-
-        for (int32_t i = 6; i < 12; ++i) {
-            int2 offset = int2(resolution[0] * (i - 6), 0);
-
-            view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
-        }
-
-        sensor_dimensions_ = int2(resolution_[0] * 12, resolution_[0]);
-    }
-
-    math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
-    math::set_rotation_y(view_rotations_[1], math::degrees_to_radians(90.f));
-    math::set_rotation_x(view_rotations_[2], math::degrees_to_radians(90.f));
-    math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
-    view_rotations_[4] = float3x3::identity();
-    math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
-
-    set_interpupillary_distance_falloff(0.36f);
-*/
+        set_interpupillary_distance_falloff(0.36f);
+    */
 }
 
 uint32_t Cubic_stereoscopic::num_views() const {

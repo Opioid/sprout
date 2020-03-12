@@ -111,7 +111,6 @@ class Camera {
     prop::Interface_stack interface_stack_;
     prop::Interface_stack interfaces_;
 
-
     uint64_t frame_step_     = scene::Units_per_second / 60;
     uint64_t frame_duration_ = frame_step_;
 };

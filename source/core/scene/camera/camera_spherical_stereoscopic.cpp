@@ -79,7 +79,6 @@ void Spherical_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {
     view_bounds_[0] = int4(int2(0), resolution_ - int2(1));
     view_bounds_[1] = int4(int2(0, resolution_[1]),
                            int2(resolution_[0], resolution_[1] * 2) - int2(1));
-
 }
 
 void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {

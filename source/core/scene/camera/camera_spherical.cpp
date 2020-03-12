@@ -63,10 +63,9 @@ bool Spherical::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& 
 }
 
 void Spherical::on_update(uint64_t /*time*/, Worker& /*worker*/) {
-    float2 fr(resolution_);
+    float2 const fr(resolution_);
     d_x_ = 1.f / fr[0];
     d_y_ = 1.f / fr[1];
-
 }
 
 void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}

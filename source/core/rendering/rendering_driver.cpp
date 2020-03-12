@@ -155,6 +155,10 @@ void Driver::render(uint32_t frame) {
 
     auto const pp_start = std::chrono::high_resolution_clock::now();
 
+    if (int4(int2(0), camera.resolution()) != camera.crop()) {
+        camera.sensor().fix_zero_weights();
+    }
+
     if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
         view_->pipeline.apply_accumulate(camera.sensor(), target_, threads_);
     } else {

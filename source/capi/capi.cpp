@@ -184,9 +184,8 @@ int32_t su_load_take(char const* string) {
         auto stream = is_json ? file::Stream_ptr(new std::stringstream(take))
                               : engine->resources.filesystem().read_stream(take, take_name);
 
-        if (!stream ||
-            !take::Loader::load(engine->take, *stream, take_name, engine->progressive,
-                                engine->scene, engine->resources)) {
+        if (!stream || !take::Loader::load(engine->take, *stream, take_name, engine->progressive,
+                                           engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
         }

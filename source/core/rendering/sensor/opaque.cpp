@@ -30,6 +30,15 @@ void Opaque::set_weights(float weight) {
     }
 }
 
+void Opaque::fix_zero_weights() {
+    auto const d = dimensions();
+    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+        if (pixels_[i][3] <= 0.f) {
+            pixels_[i][3] = 1.f;
+        }
+    }
+}
+
 bool Opaque::has_alpha_transparency() const {
     return false;
 }
