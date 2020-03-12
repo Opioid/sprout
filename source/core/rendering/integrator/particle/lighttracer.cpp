@@ -52,7 +52,7 @@ void Lighttracer::start_pixel() {
     }
 }
 
-void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
+void Lighttracer::li(uint32_t frame, int4 const& cropped_bounds, int4 const& sensor_bounds, Worker& worker,
                      Interface_stack const& /*initial_stack*/) {
     worker.interface_stack().clear();
 
@@ -118,7 +118,7 @@ void Lighttracer::li(uint32_t frame, int4 const& bounds, Worker& worker,
                 bool const side = intersection.subsurface | material_sample.same_hemisphere(wo);
 
                 if (side & (caustic_ray | settings_.full_light_path)) {
-                    if (direct_camera(camera, bounds, radiance, ray, intersection, material_sample,
+                    if (direct_camera(camera, cropped_bounds, sensor_bounds, radiance, ray, intersection, material_sample,
                                       filter, worker)) {
                         if (first) {
                             importance.increment(light_id, light_sample.xy, intersection.geo.p);
@@ -222,7 +222,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     return true;
 }
 
-bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3 const& radiance,
+bool Lighttracer::direct_camera(Camera const& camera, int4 const& cropped_bounds, int4 const& sensor_bounds, float3 const& radiance,
                                 Ray const& history, Intersection const& intersection,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) {
@@ -233,7 +233,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
     float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface, false);
 
     Camera_sample_to camera_sample;
-    if (!camera.sample(bounds, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {
+    if (!camera.sample(cropped_bounds, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {
         return false;
     }
 
@@ -258,7 +258,7 @@ bool Lighttracer::direct_camera(Camera const& camera, int4 const& bounds, float3
 
     float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
 
-    sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
+    sensor.splat_sample(camera_sample, float4(result, 1.f), sensor_bounds);
 
     return true;
 }
