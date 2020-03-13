@@ -72,11 +72,19 @@ void Camera_worker::particles(uint32_t frame, uint32_t view, uint32_t iteration,
     lighttracer_->start_pixel();
 
     int4 bounds = camera.view_bounds(view);
+
+    int4 const crop = camera.crop();
+
+    int4 cropped_bounds(bounds.xy() + crop.xy(), bounds.xy() + crop.zw());
+
     bounds[2] -= bounds[0];
     bounds[3] -= bounds[1];
 
+    cropped_bounds[2] -= cropped_bounds[0];
+    cropped_bounds[3] -= cropped_bounds[1];
+
     for (uint64_t i = range[0]; i < range[1]; ++i) {
-        particle_li(frame, bounds, camera.interface_stack());
+        particle_li(frame, cropped_bounds, bounds, camera.interface_stack());
     }
 }
 

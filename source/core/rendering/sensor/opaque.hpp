@@ -17,6 +17,8 @@ class Opaque : public Sensor {
 
     void set_weights(float weight) final;
 
+    void fix_zero_weights() final;
+
     bool has_alpha_transparency() const final;
 
   protected:

@@ -7,8 +7,6 @@ namespace scene::camera {
 
 class Spherical final : public Camera {
   public:
-    Spherical(int2 resolution);
-
     uint32_t num_views() const final;
 
     int2 sensor_dimensions() const final;

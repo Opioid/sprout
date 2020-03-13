@@ -65,7 +65,9 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
         if (pipeline.camera) {
             pipeline.pp.init(*pipeline.camera, threads);
         } else {
-            scene::camera::Perspective camera(dimensions);
+            scene::camera::Perspective camera;
+
+            camera.set_resolution(dimensions, int4(int2(0), dimensions));
 
             pipeline.pp.init(camera, threads);
         }

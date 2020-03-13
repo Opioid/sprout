@@ -220,6 +220,18 @@ uint3 read_uint3(rapidjson::Value const& value) {
     return uint3(value[0].GetUint(), value[1].GetUint(), value[2].GetUint());
 }
 
+int4 read_int4(rapidjson::Value const& value) {
+    return int4(value[0].GetInt(), value[1].GetInt(), value[2].GetInt(), value[3].GetInt());
+}
+
+int4 read_int4(json::Value const& value, std::string_view name, int4 default_value) {
+    if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
+        return read_int4(node->value);
+    }
+
+    return default_value;
+}
+
 float3x3 create_rotation_matrix(float3 const& xyz) {
     float3x3 rot_x;
     set_rotation_x(rot_x, degrees_to_radians(xyz[0]));

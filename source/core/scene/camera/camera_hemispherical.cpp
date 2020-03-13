@@ -14,12 +14,6 @@
 
 namespace scene::camera {
 
-Hemispherical::Hemispherical(int2 resolution) : Camera(resolution) {
-    float2 fr(resolution);
-    d_x_ = 1.f / fr[0];
-    d_y_ = 1.f / fr[1];
-}
-
 uint32_t Hemispherical::num_views() const {
     return 1;
 }
@@ -74,7 +68,11 @@ bool Hemispherical::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 con
     return false;
 }
 
-void Hemispherical::on_update(uint64_t /*time*/, Worker& /*worker*/) {}
+void Hemispherical::on_update(uint64_t /*time*/, Worker& /*worker*/) {
+    float2 fr(resolution_);
+    d_x_ = 1.f / fr[0];
+    d_y_ = 1.f / fr[1];
+}
 
 void Hemispherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 

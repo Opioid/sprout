@@ -31,6 +31,15 @@ void Transparent::set_weights(float weight) {
     }
 }
 
+void Transparent::fix_zero_weights() {
+    auto const d = dimensions();
+    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+        if (pixels_[i].weight <= 0.f) {
+            pixels_[i].weight = 1.f;
+        }
+    }
+}
+
 bool Transparent::has_alpha_transparency() const {
     return true;
 }

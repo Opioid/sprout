@@ -8,7 +8,7 @@ namespace scene::camera {
 
 class Perspective_stereoscopic final : public Stereoscopic {
   public:
-    Perspective_stereoscopic(int2 resolution);
+    Perspective_stereoscopic();
 
     uint32_t num_views() const final;
 

@@ -7,7 +7,8 @@ namespace scene::camera {
 
 class Stereoscopic : public Camera {
   public:
-    Stereoscopic(int2 resolution);
+    Stereoscopic();
+
     virtual ~Stereoscopic();
 
     void set_interpupillary_distance(float ipd);

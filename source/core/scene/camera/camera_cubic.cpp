@@ -13,7 +13,8 @@
 
 namespace scene::camera {
 
-Cubic::Cubic(Layout layout, int2 resolution) : Camera(int2(resolution[0], resolution[1])) {
+Cubic::Cubic(Layout /*layout*/) {
+    /*
     float f = float(resolution[0]);
 
     left_top_ = float3(-1.f, 1.f, 1.f);
@@ -60,6 +61,7 @@ Cubic::Cubic(Layout layout, int2 resolution) : Camera(int2(resolution[0], resolu
     math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
     view_rotations_[4] = float3x3::identity();
     math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
+    */
 }
 
 uint32_t Cubic::num_views() const {

@@ -13,12 +13,6 @@
 
 namespace scene::camera {
 
-Spherical::Spherical(int2 resolution) : Camera(resolution) {
-    float2 fr(resolution);
-    d_x_ = 1.f / fr[0];
-    d_y_ = 1.f / fr[1];
-}
-
 uint32_t Spherical::num_views() const {
     return 1;
 }
@@ -68,7 +62,11 @@ bool Spherical::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& 
     return false;
 }
 
-void Spherical::on_update(uint64_t /*time*/, Worker& /*worker*/) {}
+void Spherical::on_update(uint64_t /*time*/, Worker& /*worker*/) {
+    float2 const fr(resolution_);
+    d_x_ = 1.f / fr[0];
+    d_y_ = 1.f / fr[1];
+}
 
 void Spherical::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 

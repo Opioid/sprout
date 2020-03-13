@@ -54,6 +54,9 @@ int3 read_int3(json::Value const& value, std::string_view name, int3 default_val
 
 uint3 read_uint3(json::Value const& value);
 
+int4 read_int4(json::Value const& value);
+int4 read_int4(json::Value const& value, std::string_view name, int4 default_value);
+
 // math::quaternion read_quaternion(rapidjson::Value const& value);
 
 float3x3 create_rotation_matrix(float3 const& xyz);

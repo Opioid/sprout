@@ -82,7 +82,7 @@ class Worker : public scene::Worker {
 
     float4 li(Ray& ray, Interface_stack const& interface_stack);
 
-    void particle_li(uint32_t frame, int4 const& bounds, Interface_stack const& interface_stack);
+    void particle_li(uint32_t frame, int4 const& cropped_bounds, int4 const& sensor_bounds, Interface_stack const& interface_stack);
 
     Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li, float3& tr);
 
