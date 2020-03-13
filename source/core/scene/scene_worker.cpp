@@ -23,8 +23,7 @@ Worker::Worker(uint32_t max_sample_size) : node_stack_(128 + 16), sample_cache_(
 
 Worker::~Worker() = default;
 
-void Worker::init(uint32_t id, Scene const& scene, Camera const& camera) {
-    rng_.start(0, id);
+void Worker::init(Scene const& scene, Camera const& camera) {
     scene_  = &scene;
     camera_ = &camera;
 }

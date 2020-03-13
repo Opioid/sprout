@@ -52,7 +52,7 @@ class Worker {
 
     ~Worker();
 
-    void init(uint32_t id, Scene const& scene, Camera const& camera);
+    void init(Scene const& scene, Camera const& camera);
 
     bool intersect(Ray& ray, Intersection& intersection) const;
 

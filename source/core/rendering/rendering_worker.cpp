@@ -39,7 +39,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
                   sampler::Pool& samplers, Photon_map* photon_map,
                   take::Photon_settings const& photon_settings, Lighttracer_pool* lighttracers,
                   uint32_t num_particles_per_chunk, Particle_importance* particle_importance) {
-    scene::Worker::init(id, scene, camera);
+    scene::Worker::init(scene, camera);
 
     if (surfaces) {
         surface_integrator_ = surfaces->get(id, rng_);
