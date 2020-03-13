@@ -81,8 +81,9 @@ bool Perspective::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*
     return true;
 }
 
-bool Perspective::sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
-                         uint32_t sampler_dimension, Scene const& scene, Sample_to& sample) const {
+bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, float3 const& p,
+                         Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
+                         Sample_to& sample) const {
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 

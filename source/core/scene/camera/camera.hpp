@@ -65,8 +65,8 @@ class Camera {
     virtual bool generate_ray(Sample const& sample, uint32_t frame, uint32_t view,
                               Scene const& scene, Ray& ray) const = 0;
 
-    virtual bool sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
-                        uint32_t sampler_dimension, Scene const& scene,
+    virtual bool sample(uint32_t view, int4 const& bounds, uint64_t time, float3 const& p,
+                        Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                         Sample_to& sample) const = 0;
 
     virtual Frustum frustum() const;

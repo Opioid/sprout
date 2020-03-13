@@ -108,9 +108,10 @@ bool Cubic_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, uint
     return true;
 }
 
-bool Cubic_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/, float3 const& /*p*/,
-                                Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                                Scene const& /*scene*/, Sample_to& /*sample*/) const {
+bool Cubic_stereoscopic::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
+                                float3 const& /*p*/, Sampler& /*sampler*/,
+                                uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
+                                Sample_to& /*sample*/) const {
     return false;
 }
 

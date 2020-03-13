@@ -53,7 +53,9 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
 
     target_.resize(d);
 
-    uint64_t const num_particles = uint64_t(d[0] * d[1]) *
+    int2 const r = camera.resolution();
+
+    uint64_t const num_particles = uint64_t(r[0] * r[1]) *
                                    uint64_t(progressive ? 1 : view.num_particles_per_pixel);
 
 #ifdef PARTICLE_GUIDING
@@ -155,9 +157,9 @@ void Driver::render(uint32_t frame) {
 
     auto const pp_start = std::chrono::high_resolution_clock::now();
 
-//    if (int4(int2(0), camera.resolution()) != camera.crop()) {
-//        camera.sensor().fix_zero_weights();
-//    }
+    //    if (int4(int2(0), camera.resolution()) != camera.crop()) {
+    //        camera.sensor().fix_zero_weights();
+    //    }
 
     if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
         view_->pipeline.apply_accumulate(camera.sensor(), target_, threads_);
@@ -232,42 +234,34 @@ void Driver::render_frame_backward(uint32_t frame) {
     particle_importance_.set_training(false);
 #endif
 
-    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
-        frame_view_ = v;
+    ranges_.restart();
 
-        ranges_.restart();
+    threads_.run_parallel([this](uint32_t index) noexcept {
+        auto& worker = workers_[index];
 
-        threads_.run_parallel([this](uint32_t index) noexcept {
-            auto& worker = workers_[index];
+        for (ulong2 range; ranges_.pop(0, range);) {
+            worker.particles(frame_, 0, 0, range);
 
-            for (ulong2 range; ranges_.pop(0, range);) {
-                worker.particles(frame_, frame_view_, 0, 0, range);
-
-                progressor_.tick();
-            }
-        });
-    }
+            progressor_.tick();
+        }
+    });
 
 #ifdef PARTICLE_GUIDING
 
     particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
 
-    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
-        frame_view_ = v;
+    ranges_.restart();
 
-        ranges_.restart();
+    threads_.run_parallel([this](uint32_t index) noexcept {
+        auto& worker = workers_[index];
 
-        threads_.run_parallel([this](uint32_t index) noexcept {
-            auto& worker = workers_[index];
+        for (ulong2 range; ranges_.pop(1, range);) {
+            worker.particles(frame_, 0, 1, range);
 
-            for (ulong2 range; ranges_.pop(1, range);) {
-                worker.particles(frame_, frame_view_, 0, 1, range);
-
-                progressor_.tick();
-            }
-        });
-    }
+            progressor_.tick();
+        }
+    });
 
 #endif
 
@@ -300,19 +294,15 @@ void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) {
     // This weight works because we assume 1 particle per pixel in progressive mode
     camera.sensor().set_weights(float(iteration + 1));
 
-    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
-        frame_view_ = v;
+    ranges_.restart();
 
-        ranges_.restart();
+    threads_.run_parallel([this](uint32_t index) noexcept {
+        auto& worker = workers_[index];
 
-        threads_.run_parallel([this](uint32_t index) noexcept {
-            auto& worker = workers_[index];
-
-            for (ulong2 range; ranges_.pop(0, range);) {
-                worker.particles(frame_, frame_view_, frame_iteration_, 0, range);
-            }
-        });
-    }
+        for (ulong2 range; ranges_.pop(0, range);) {
+            worker.particles(frame_, frame_iteration_, 0, range);
+        }
+    });
 
     // If there will be a forward pass later...
     if (forward) {

@@ -21,7 +21,7 @@ class Perspective_stereoscopic final : public Stereoscopic {
     bool generate_ray(Sample const& sample, uint32_t frame, uint32_t view, Scene const& scene,
                       Ray& ray) const final;
 
-    bool sample(int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
+    bool sample(uint32_t view, int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
                 uint32_t sampler_dimension, Scene const& scene, Sample_to& sample) const final;
 
     void set_fov(float fov);
@@ -38,6 +38,8 @@ class Perspective_stereoscopic final : public Stereoscopic {
     int4 view_bounds_[2];
 
     float fov_;
+
+    float a_;
 };
 
 }  // namespace scene::camera

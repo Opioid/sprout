@@ -52,8 +52,7 @@ void Lighttracer::start_pixel() {
     }
 }
 
-void Lighttracer::li(uint32_t frame, int4 const& cropped_bounds, int4 const& sensor_bounds, Worker& worker,
-                     Interface_stack const& /*initial_stack*/) {
+void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*initial_stack*/) {
     worker.interface_stack().clear();
 
     Camera const& camera = worker.camera();
@@ -118,8 +117,8 @@ void Lighttracer::li(uint32_t frame, int4 const& cropped_bounds, int4 const& sen
                 bool const side = intersection.subsurface | material_sample.same_hemisphere(wo);
 
                 if (side & (caustic_ray | settings_.full_light_path)) {
-                    if (direct_camera(camera, cropped_bounds, sensor_bounds, radiance, ray, intersection, material_sample,
-                                      filter, worker)) {
+                    if (direct_camera(camera, radiance, ray, intersection, material_sample, filter,
+                                      worker)) {
                         if (first) {
                             importance.increment(light_id, light_sample.xy, intersection.geo.p);
                             first = false;
@@ -222,45 +221,61 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     return true;
 }
 
-bool Lighttracer::direct_camera(Camera const& camera, int4 const& cropped_bounds, int4 const& sensor_bounds, float3 const& radiance,
-                                Ray const& history, Intersection const& intersection,
+bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ray const& history,
+                                Intersection const&    intersection,
                                 Material_sample const& material_sample, Filter filter,
                                 Worker& worker) {
     if (!intersection.visible_in_camera(worker)) {
         return false;
     }
 
+    int4 crop = camera.crop();
+
+    crop[2] -= crop[0];
+    crop[3] -= crop[1];
+
+    bool hit = false;
+
     float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface, false);
 
-    Camera_sample_to camera_sample;
-    if (!camera.sample(cropped_bounds, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {
-        return false;
+    for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
+        int4 bounds = camera.view_bounds(v);
+
+        bounds[2] -= bounds[0];
+        bounds[3] -= bounds[1];
+
+        Camera_sample_to camera_sample;
+        if (!camera.sample(v, crop, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {
+            continue;
+        }
+
+        Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.wavelength,
+                history.time);
+
+        float3 tr;
+        if (!worker.transmitted(ray, material_sample.wo(), intersection, filter, tr)) {
+            continue;
+        }
+
+        float3 const wi   = -camera_sample.dir;
+        auto const   bxdf = material_sample.evaluate_f(wi);
+
+        auto& sensor = camera.sensor();
+
+        float3 const wo = material_sample.wo();
+
+        float3 const& n = material_sample.base_shading_normal();
+
+        float const nsc = non_symmetry_compensation(wo, wi, intersection.geo.geo_n, n);
+
+        float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
+
+        sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
+
+        hit = true;
     }
 
-    Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.wavelength,
-            history.time);
-
-    float3 tr;
-    if (!worker.transmitted(ray, material_sample.wo(), intersection, filter, tr)) {
-        return false;
-    }
-
-    float3 const wi   = -camera_sample.dir;
-    auto const   bxdf = material_sample.evaluate_f(wi);
-
-    auto& sensor = camera.sensor();
-
-    float3 const wo = material_sample.wo();
-
-    float3 const& n = material_sample.base_shading_normal();
-
-    float const nsc = non_symmetry_compensation(wo, wi, intersection.geo.geo_n, n);
-
-    float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
-
-    sensor.splat_sample(camera_sample, float4(result, 1.f), sensor_bounds);
-
-    return true;
+    return hit;
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {

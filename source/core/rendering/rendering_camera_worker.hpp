@@ -15,8 +15,7 @@ class alignas(64) Camera_worker : public Worker {
     void render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                 uint32_t num_samples);
 
-    void particles(uint32_t frame, uint32_t view, uint32_t iteration, uint32_t segment,
-                   ulong2 const& range);
+    void particles(uint32_t frame, uint32_t iteration, uint32_t segment, ulong2 const& range);
 
   private:
     Tile_queue const& tiles_;

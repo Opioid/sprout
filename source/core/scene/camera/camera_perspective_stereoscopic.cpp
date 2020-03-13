@@ -53,11 +53,60 @@ bool Perspective_stereoscopic::generate_ray(Sample const& sample, uint32_t frame
     return true;
 }
 
-bool Perspective_stereoscopic::sample(int4 const& /*bounds*/, uint64_t /*time*/,
-                                      float3 const& /*p*/, Sampler& /*sampler*/,
-                                      uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
-                                      Sample_to& /*sample*/) const {
-    return false;
+bool Perspective_stereoscopic::sample(uint32_t view, int4 const& bounds, uint64_t time,
+                                      float3 const& p, Sampler& /*sampler*/,
+                                      uint32_t /*sampler_dimension*/, Scene const& scene,
+                                      Sample_to& sample) const {
+    Transformation temp;
+    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
+
+    float3 const po = transformation.world_to_object_point(p) - eye_offsets_[view];
+
+    float t;
+
+    float3 dir;
+
+    float3 out_dir;
+
+    t       = length(po);
+    dir     = po / t;
+    out_dir = dir;
+
+    float const cos_theta = out_dir[2];
+
+    if (cos_theta < 0.f) {
+        return false;
+    }
+
+    float3 const pd = left_top_[2] * (dir / dir[2]);
+
+    float3 const offset = pd - left_top_;
+
+    float const x = offset[0] / d_x_[0];
+    float const y = offset[1] / d_y_[1];
+
+    float const fx = std::floor(x);
+    float const fy = std::floor(y);
+
+    int2 const pixel(fx, fy);
+
+    if (uint32_t(pixel[0] - bounds[0]) > uint32_t(bounds[2]) ||
+        uint32_t(pixel[1] - bounds[1]) > uint32_t(bounds[3])) {
+        return false;
+    }
+
+    float const cos_theta_2 = cos_theta * cos_theta;
+
+    float const wa = 1.f / ((t * t) / cos_theta);
+    float const wb = 1.f / (a_ * (cos_theta_2 * cos_theta_2));
+
+    sample.pixel    = pixel;
+    sample.pixel_uv = float2(x - fx, y - fy);
+    sample.dir      = transformation.object_to_world_vector(out_dir);
+    sample.t        = t;
+    sample.pdf      = wa * wb;
+
+    return true;
 }
 
 void Perspective_stereoscopic::set_fov(float fov) {
@@ -80,6 +129,11 @@ void Perspective_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) 
 
     d_x_ = (right_top - left_top_) / fr[0];
     d_y_ = (left_bottom - left_top_) / fr[1];
+
+    float3 const nlb = left_bottom / z;
+    float3 const nrt = right_top / z;
+
+    a_ = std::abs((nrt[0] - nlb[0]) * (nrt[1] - nlb[1]));
 }
 
 void Perspective_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {

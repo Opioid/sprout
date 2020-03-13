@@ -58,16 +58,15 @@ class alignas(64) Lighttracer final : public Integrator {
 
     void start_pixel() final;
 
-    void li(uint32_t frame, int4 const& cropped_bounds, int4 const& sensor_bounds, Worker& worker,
-            Interface_stack const& initial_stack);
+    void li(uint32_t frame, Worker& worker, Interface_stack const& initial_stack);
 
   private:
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                             Light const*& light_out, uint32_t& light_id, Sample_from& light_sample);
 
-    bool direct_camera(Camera const& camera, int4 const& cropped_bounds, int4 const& sensor_bounds, float3 const& radiance,
-                       Ray const& history, Intersection const& intersection,
-                       Material_sample const& material_sample, Filter filter, Worker& worker);
+    bool direct_camera(Camera const& camera, float3 const& radiance, Ray const& history,
+                       Intersection const& intersection, Material_sample const& material_sample,
+                       Filter filter, Worker& worker);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 
