@@ -40,11 +40,13 @@ class Range_queue {
 
     void init(uint64_t total0, uint64_t total1, uint32_t range_size);
 
+    uint64_t total() const;
+
     uint32_t size() const;
 
-    void restart();
+    void restart(uint32_t segment);
 
-    bool pop(uint32_t segment, ulong2& range);
+    bool pop(ulong2& range);
 
     uint32_t index(ulong2 const& range, uint32_t segment) const;
 
@@ -56,6 +58,8 @@ class Range_queue {
 
     uint32_t num_ranges0_;
     uint32_t num_ranges1_;
+
+    uint32_t current_segment_;
 
     std::atomic<uint32_t> current_consume_;
 };

@@ -102,8 +102,8 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
 
-//         auto const& material_sample = worker.sample_material(
-//            ray, wo, intersection, filter, avoid_caustics, from_subsurface, sampler_);
+        //         auto const& material_sample = worker.sample_material(
+        //            ray, wo, intersection, filter, avoid_caustics, from_subsurface, sampler_);
 
         if (material_sample.is_pure_emissive()) {
             break;

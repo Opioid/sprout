@@ -157,9 +157,9 @@ void Driver::render(uint32_t frame) {
 
     auto const pp_start = std::chrono::high_resolution_clock::now();
 
-        if (int4(int2(0), camera.resolution()) != camera.crop()) {
-            camera.sensor().fix_zero_weights();
-        }
+    if (int4(int2(0), camera.resolution()) != camera.crop()) {
+        camera.sensor().fix_zero_weights();
+    }
 
     if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
         view_->pipeline.apply_accumulate(camera.sensor(), target_, threads_);
@@ -224,7 +224,7 @@ void Driver::render_frame_backward(uint32_t frame) {
 
     auto& camera = *view_->camera;
 
-    progressor_.start(ranges_.size() * camera.num_views());
+    progressor_.start(ranges_.size());
 
     camera.sensor().clear(float(view_->num_particles_per_pixel));
 
@@ -234,13 +234,13 @@ void Driver::render_frame_backward(uint32_t frame) {
     particle_importance_.set_training(false);
 #endif
 
-    ranges_.restart();
+    ranges_.restart(0);
 
     threads_.run_parallel([this](uint32_t index) noexcept {
         auto& worker = workers_[index];
 
-        for (ulong2 range; ranges_.pop(0, range);) {
-            worker.particles(frame_, 0, 0, range);
+        for (ulong2 range; ranges_.pop(range);) {
+            worker.particles(frame_, 0, range);
 
             progressor_.tick();
         }
@@ -251,13 +251,13 @@ void Driver::render_frame_backward(uint32_t frame) {
     particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
 
-    ranges_.restart();
+    ranges_.restart(1);
 
     threads_.run_parallel([this](uint32_t index) noexcept {
         auto& worker = workers_[index];
 
-        for (ulong2 range; ranges_.pop(1, range);) {
-            worker.particles(frame_, 0, 1, range);
+        for (ulong2 range; ranges_.pop(range);) {
+            worker.particles(frame_, 0, range);
 
             progressor_.tick();
         }
@@ -294,13 +294,13 @@ void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) {
     // This weight works because we assume 1 particle per pixel in progressive mode
     camera.sensor().set_weights(float(iteration + 1));
 
-    ranges_.restart();
+    ranges_.restart(0);
 
     threads_.run_parallel([this](uint32_t index) noexcept {
         auto& worker = workers_[index];
 
-        for (ulong2 range; ranges_.pop(0, range);) {
-            worker.particles(frame_, frame_iteration_, 0, range);
+        for (ulong2 range; ranges_.pop(range);) {
+            worker.particles(frame_, frame_iteration_, range);
         }
     });
 

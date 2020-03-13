@@ -84,20 +84,27 @@ void Range_queue::init(uint64_t total0, uint64_t total1, uint32_t range_size) {
     num_ranges1_ = uint32_t(std::ceil(float(total1) / float(range_size)));
 }
 
+uint64_t Range_queue::total() const {
+    return total0_ + total1_;
+}
+
 uint32_t Range_queue::size() const {
     return num_ranges0_ + num_ranges1_;
 }
 
-void Range_queue::restart() {
+void Range_queue::restart(uint32_t segment) {
+    current_segment_ = segment;
+
     current_consume_ = 0;
 }
 
-bool Range_queue::pop(uint32_t segment, ulong2& range) {
+bool Range_queue::pop(ulong2& range) {
     uint32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
-    uint64_t const start = uint64_t(current) * uint64_t(range_size_);
+    uint64_t const start = uint64_t(current) * uint64_t(range_size_) +
+                           (0 == current_segment_ ? 0 : total0_);
 
-    uint32_t const num_ranges = 0 == segment ? num_ranges0_ : num_ranges1_;
+    uint32_t const num_ranges = (0 == current_segment_ ? num_ranges0_ : num_ranges1_);
 
     if (current < num_ranges - 1) {
         range = ulong2(start, start + range_size_);
@@ -105,7 +112,7 @@ bool Range_queue::pop(uint32_t segment, ulong2& range) {
     }
 
     if (current < num_ranges) {
-        range = ulong2(start, 0 == segment ? total0_ : total1_);
+        range = ulong2(start, 0 == current_segment_ ? total0_ : total1_);
         return true;
     }
 

@@ -15,8 +15,7 @@
 
 namespace rendering {
 
-Camera_worker::Camera_worker(uint32_t max_sample_size,
-                             Range_queue const& ranges)
+Camera_worker::Camera_worker(uint32_t max_sample_size, Range_queue const& ranges)
     : Worker(max_sample_size), ranges_(ranges) {}
 
 void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
@@ -41,11 +40,12 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
 
     int2 const r = camera.resolution();
 
-    uint64_t const so = uint64_t(iteration) * uint64_t(r[0] * r[1]);
+    uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
 
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
+        uint64_t const o1 = uint64_t(y * r[0]) + o0;
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
-            rng_.start(0, uint64_t(y * r[0] + x) + so);
+            rng_.start(0, o1 + uint64_t(x));
 
             sampler_->start_pixel();
             surface_integrator_->start_pixel();
@@ -67,17 +67,16 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
     }
 }
 
-void Camera_worker::particles(uint32_t frame, uint32_t iteration, uint32_t segment,
-                              ulong2 const& range) {
-    scene::camera::Camera const& camera = *camera_;
+void Camera_worker::particles(uint32_t frame, uint32_t iteration, ulong2 const& range) {
+    Camera const& camera = *camera_;
 
-    uint32_t const range_index = ranges_.index(range, segment);
-
-    rng_.start(0, range_index + iteration * ranges_.size());
+    uint64_t const so = uint64_t(iteration) * ranges_.total();
 
     lighttracer_->start_pixel();
 
     for (uint64_t i = range[0]; i < range[1]; ++i) {
+        rng_.start(0, i + so);
+
         particle_li(frame, camera.interface_stack());
     }
 }
