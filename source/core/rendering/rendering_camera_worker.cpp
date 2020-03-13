@@ -23,11 +23,15 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
                            uint32_t num_samples) {
     Camera const& camera = *camera_;
 
-    int4 bounds = camera.view_bounds(view);
-    bounds[2] -= bounds[0];
-    bounds[3] -= bounds[1];
+    int2 const offset = camera.view_offset(view);
 
-    int4 const view_tile(bounds.xy() + tile.xy(), bounds.xy() + tile.zw());
+    int4 crop = camera.crop();
+    crop[2] -= crop[0] + 1;
+    crop[3] -= crop[1] + 1;
+    crop[0] += offset[0];
+    crop[1] += offset[1];
+
+    int4 const view_tile(offset + tile.xy(), offset + tile.zw());
 
     auto& sensor = camera.sensor();
 
@@ -52,9 +56,9 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
                     float4 const color = li(ray, camera.interface_stack());
-                    sensor.add_sample(sample, color, isolated_bounds, bounds);
+                    sensor.add_sample(sample, color, isolated_bounds, offset, crop);
                 } else {
-                    sensor.add_sample(sample, float4(0.f), isolated_bounds, bounds);
+                    sensor.add_sample(sample, float4(0.f), isolated_bounds, offset, crop);
                 }
             }
         }

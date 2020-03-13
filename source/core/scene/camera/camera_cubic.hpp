@@ -17,7 +17,7 @@ class Cubic final : public Camera {
 
     int2 sensor_dimensions() const final;
 
-    int4 view_bounds(uint32_t view) const final;
+    int2 view_offset(uint32_t view) const final;
 
     float pixel_solid_angle() const final;
 
@@ -38,7 +38,7 @@ class Cubic final : public Camera {
 
     int2 sensor_dimensions_;
 
-    int4 view_bounds_[6];
+    int2 view_offsets_[6];
 
     float3x3 view_rotations_[6];
 };

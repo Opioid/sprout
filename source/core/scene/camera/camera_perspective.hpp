@@ -29,7 +29,7 @@ class Perspective final : public Camera {
 
     int2 sensor_dimensions() const final;
 
-    int4 view_bounds(uint32_t view) const final;
+    int2 view_offset(uint32_t view) const final;
 
     float pixel_solid_angle() const final;
 

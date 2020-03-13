@@ -86,11 +86,12 @@ Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp const& clamp, F&& filter)
 
 template <class Base, class Clamp, class F>
 void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              int4 const& isolated, int4 const& bounds) {
+                                              int4 const& isolated, int2 offset,
+                                              int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
-    int32_t const x = bounds[0] + sample.pixel[0];
-    int32_t const y = bounds[1] + sample.pixel[1];
+    int32_t const x = offset[0] + sample.pixel[0];
+    int32_t const y = offset[1] + sample.pixel[1];
 
     float const ox = sample.pixel_uv[0] - 0.5f;
     float const oy = sample.pixel_uv[1] - 0.5f;
@@ -121,11 +122,11 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
 template <class Base, class Clamp, class F>
 void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
-                                                int4 const& bounds) {
+                                                int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
-    int32_t const x = bounds[0] + sample.pixel[0];
-    int32_t const y = bounds[1] + sample.pixel[1];
+    int32_t const x = offset[0] + sample.pixel[0];
+    int32_t const y = offset[1] + sample.pixel[1];
 
     float const ox = sample.pixel_uv[0] - 0.5f;
     float const oy = sample.pixel_uv[1] - 0.5f;
@@ -160,11 +161,12 @@ Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp const& clamp, F&& filter)
 
 template <class Base, class Clamp, class F>
 void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              int4 const& isolated, int4 const& bounds) {
+                                              int4 const& isolated, int2 offset,
+                                              int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
-    int32_t const x = bounds[0] + sample.pixel[0];
-    int32_t const y = bounds[1] + sample.pixel[1];
+    int32_t const x = offset[0] + sample.pixel[0];
+    int32_t const y = offset[1] + sample.pixel[1];
 
     float const ox = sample.pixel_uv[0] - 0.5f;
     float const oy = sample.pixel_uv[1] - 0.5f;
@@ -219,11 +221,11 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
 template <class Base, class Clamp, class F>
 void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
-                                                int4 const& bounds) {
+                                                int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
-    int32_t const x = bounds[0] + sample.pixel[0];
-    int32_t const y = bounds[1] + sample.pixel[1];
+    int32_t const x = offset[0] + sample.pixel[0];
+    int32_t const y = offset[1] + sample.pixel[1];
 
     float const ox = sample.pixel_uv[0] - 0.5f;
     float const oy = sample.pixel_uv[1] - 0.5f;
@@ -282,11 +284,12 @@ Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter)
 
 template <class Base, class Clamp, class F>
 void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              int4 const& isolated, int4 const& bounds) {
+                                              int4 const& isolated, int2 offset,
+                                              int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
-    int32_t const px = bounds[0] + sample.pixel[0];
-    int32_t const py = bounds[1] + sample.pixel[1];
+    int32_t const px = offset[0] + sample.pixel[0];
+    int32_t const py = offset[1] + sample.pixel[1];
 
     int32_t const r  = Filtered_base::filter_radius_int();
     float const   rf = Filtered_base::filter_.radius();
@@ -295,10 +298,10 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
         for (int32_t kx = -r; kx <= r; ++kx) {
             int2 const pixel(px + kx, py + ky);
 
-            float2 const offset = sample.pixel_uv - 0.5f - float2(kx, ky);
+            float2 const ro = sample.pixel_uv - 0.5f - float2(kx, ky);
 
-            if ((offset[0] < rf) & (offset[1] < rf)) {
-                Filtered_base::weight_and_add(pixel, offset, clamped, isolated, bounds);
+            if ((ro[0] < rf) & (ro[1] < rf)) {
+                Filtered_base::weight_and_add(pixel, ro, clamped, isolated, bounds);
             }
         }
     }
@@ -306,11 +309,11 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
 template <class Base, class Clamp, class F>
 void Filtered_inf<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 const& color,
-                                                int4 const& bounds) {
+                                                int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
-    int32_t const px = bounds[0] + sample.pixel[0];
-    int32_t const py = bounds[1] + sample.pixel[1];
+    int32_t const px = offset[0] + sample.pixel[0];
+    int32_t const py = offset[1] + sample.pixel[1];
 
     int32_t const r  = Filtered_base::filter_radius_int();
     float const   rf = Filtered_base::filter_.radius();
@@ -319,10 +322,10 @@ void Filtered_inf<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
         for (int32_t kx = -r; kx <= r; ++kx) {
             int2 const pixel(px + kx, py + ky);
 
-            float2 const offset = sample.pixel_uv - 0.5f - float2(kx, ky);
+            float2 const ro = sample.pixel_uv - 0.5f - float2(kx, ky);
 
-            if ((offset[0] < rf) & (offset[1] < rf)) {
-                Filtered_base::weight_and_add(pixel, offset, clamped, bounds);
+            if ((ro[0] < rf) & (ro[1] < rf)) {
+                Filtered_base::weight_and_add(pixel, ro, clamped, bounds);
             }
         }
     }

@@ -72,8 +72,8 @@ int2 Cubic::sensor_dimensions() const {
     return sensor_dimensions_;
 }
 
-int4 Cubic::view_bounds(uint32_t view) const {
-    return view_bounds_[view];
+int2 Cubic::view_offset(uint32_t view) const {
+    return view_offsets_[view];
 }
 
 float Cubic::pixel_solid_angle() const {

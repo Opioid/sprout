@@ -52,10 +52,11 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_1p0(Clamp const& clamp, F&& filter);
 
-    void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
+    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color, int4 const& bounds) final;
+    void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
+                      int4 const& bounds) final;
 };
 
 template <class Base, class Clamp, class F>
@@ -68,10 +69,11 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_2p0(Clamp const& clamp, F&& filter);
 
-    void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
+    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color, int4 const& bounds) final;
+    void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
+                      int4 const& bounds) final;
 };
 
 template <class Base, class Clamp, class F>
@@ -84,10 +86,11 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
 
     Filtered_inf(Clamp const& clamp, F&& filter);
 
-    void add_sample(Sample const& sample, float4 const&, int4 const& isolated,
+    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color, int4 const& bounds) final;
+    void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
+                      int4 const& bounds) final;
 };
 
 }  // namespace rendering::sensor

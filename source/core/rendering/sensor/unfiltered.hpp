@@ -22,10 +22,11 @@ class Unfiltered final : public Base {
 
     int4 isolated_tile(int4 const& tile) const final;
 
-    void add_sample(Sample const& sample, float4 const& color, int4 const& isolated,
+    void add_sample(Sample const& sample, float4 const& color, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color, int4 const& bounds) final;
+    void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
+                      int4 const& bounds) final;
 
   private:
     Clamp clamp_;

@@ -22,11 +22,11 @@ uint32_t Spherical_stereoscopic::num_views() const {
 }
 
 int2 Spherical_stereoscopic::sensor_dimensions() const {
-    return view_bounds_[1].zw();
+    return int2(resolution_[0], resolution_[1] * 2);
 }
 
-int4 Spherical_stereoscopic::view_bounds(uint32_t view) const {
-    return view_bounds_[view];
+int2 Spherical_stereoscopic::view_offset(uint32_t view) const {
+    return view_offsets_[view];
 }
 
 float Spherical_stereoscopic::pixel_solid_angle() const {
@@ -77,9 +77,8 @@ void Spherical_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {
     d_x_ = 1.f / fr[0];
     d_y_ = 1.f / fr[1];
 
-    view_bounds_[0] = int4(int2(0), resolution_ - int2(1));
-    view_bounds_[1] = int4(int2(0, resolution_[1]),
-                           int2(resolution_[0], resolution_[1] * 2) - int2(1));
+    view_offsets_[0] = int2(0);
+    view_offsets_[1] = int2(0, resolution_[1]);
 }
 
 void Spherical_stereoscopic::set_parameter(std::string_view name, json::Value const& value) {

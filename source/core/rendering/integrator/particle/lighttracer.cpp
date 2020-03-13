@@ -229,23 +229,22 @@ bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ra
         return false;
     }
 
-    int4 crop = camera.crop();
+    auto& sensor = camera.sensor();
 
-    crop[2] -= crop[0];
-    crop[3] -= crop[1];
+    int32_t const fr = camera.sensor().filter_radius_int();
+
+    int4 filter_crop = camera.crop() + int4(-fr, -fr, fr, fr);
+    filter_crop[2] -= filter_crop[0] + 1;
+    filter_crop[3] -= filter_crop[1] + 1;
 
     bool hit = false;
 
     float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface, false);
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
-        int4 bounds = camera.view_bounds(v);
-
-        bounds[2] -= bounds[0];
-        bounds[3] -= bounds[1];
-
         Camera_sample_to camera_sample;
-        if (!camera.sample(v, crop, history.time, p, sampler_, 0, worker.scene(), camera_sample)) {
+        if (!camera.sample(v, filter_crop, history.time, p, sampler_, 0, worker.scene(),
+                           camera_sample)) {
             continue;
         }
 
@@ -260,8 +259,6 @@ bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ra
         float3 const wi   = -camera_sample.dir;
         auto const   bxdf = material_sample.evaluate_f(wi);
 
-        auto& sensor = camera.sensor();
-
         float3 const wo = material_sample.wo();
 
         float3 const& n = material_sample.base_shading_normal();
@@ -270,7 +267,15 @@ bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ra
 
         float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
 
-        sensor.splat_sample(camera_sample, float4(result, 1.f), bounds);
+        int2 const offset = camera.view_offset(v);
+
+        int4 crop = camera.crop();
+        crop[2] -= crop[0] + 1;
+        crop[3] -= crop[1] + 1;
+        crop[0] += offset[0];
+        crop[1] += offset[1];
+
+        sensor.splat_sample(camera_sample, float4(result, 1.f), offset, crop);
 
         hit = true;
     }

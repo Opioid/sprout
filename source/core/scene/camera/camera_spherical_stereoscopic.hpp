@@ -12,7 +12,7 @@ class Spherical_stereoscopic final : public Stereoscopic {
 
     int2 sensor_dimensions() const final;
 
-    int4 view_bounds(uint32_t view) const final;
+    int2 view_offset(uint32_t view) const final;
 
     float pixel_solid_angle() const final;
 
@@ -30,7 +30,7 @@ class Spherical_stereoscopic final : public Stereoscopic {
     float d_x_;
     float d_y_;
 
-    int4 view_bounds_[2];
+    int2 view_offsets_[2];
 };
 
 }  // namespace scene::camera

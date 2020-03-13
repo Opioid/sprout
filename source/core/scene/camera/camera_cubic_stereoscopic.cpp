@@ -68,8 +68,8 @@ int2 Cubic_stereoscopic::sensor_dimensions() const {
     return sensor_dimensions_;
 }
 
-int4 Cubic_stereoscopic::view_bounds(uint32_t view) const {
-    return view_bounds_[view];
+int2 Cubic_stereoscopic::view_offset(uint32_t view) const {
+    return view_offsets_[view];
 }
 
 float Cubic_stereoscopic::pixel_solid_angle() const {

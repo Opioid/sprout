@@ -24,8 +24,8 @@ int2 Perspective_stereoscopic::sensor_dimensions() const {
     return int2(resolution_[0] * 2, resolution_[1]);
 }
 
-int4 Perspective_stereoscopic::view_bounds(uint32_t view) const {
-    return view_bounds_[view];
+int2 Perspective_stereoscopic::view_offset(uint32_t view) const {
+    return view_offsets_[view];
 }
 
 float Perspective_stereoscopic::pixel_solid_angle() const {
@@ -114,9 +114,8 @@ void Perspective_stereoscopic::set_fov(float fov) {
 }
 
 void Perspective_stereoscopic::on_update(uint64_t /*time*/, Worker& /*worker*/) {
-    view_bounds_[0] = int4(int2(0), resolution_ - int2(1));
-    view_bounds_[1] = int4(int2(resolution_[0], 0),
-                           int2(resolution_[0] * 2, resolution_[1]) - int2(1));
+    view_offsets_[0] = int2(0);
+    view_offsets_[1] = int2(resolution_[0], 0);
 
     float2 const fr(resolution_);
     float const  ratio = fr[0] / fr[1];

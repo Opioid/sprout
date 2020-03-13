@@ -56,7 +56,7 @@ class Camera {
 
     virtual int2 sensor_dimensions() const = 0;
 
-    virtual int4 view_bounds(uint32_t view) const = 0;
+    virtual int2 view_offset(uint32_t view) const = 0;
 
     virtual float pixel_solid_angle() const = 0;
 
