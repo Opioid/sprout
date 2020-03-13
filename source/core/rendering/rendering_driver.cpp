@@ -25,7 +25,7 @@ Driver::Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& 
       scene_(nullptr),
       view_(nullptr),
       workers_(memory::construct_aligned<Camera_worker>(threads.num_threads(), max_sample_size,
-                                                        tiles_, ranges_)),
+                                                        ranges_)),
       frame_(0),
       frame_view_(0),
       frame_iteration_(0),
@@ -157,9 +157,9 @@ void Driver::render(uint32_t frame) {
 
     auto const pp_start = std::chrono::high_resolution_clock::now();
 
-    //    if (int4(int2(0), camera.resolution()) != camera.crop()) {
-    //        camera.sensor().fix_zero_weights();
-    //    }
+        if (int4(int2(0), camera.resolution()) != camera.crop()) {
+            camera.sensor().fix_zero_weights();
+        }
 
     if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
         view_->pipeline.apply_accumulate(camera.sensor(), target_, threads_);

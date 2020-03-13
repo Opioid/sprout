@@ -20,8 +20,6 @@ class Tile_queue {
 
     bool pop(int4& tile);
 
-    uint32_t index(int4 const& tile) const;
-
   private:
     int4 crop_;
 

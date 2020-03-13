@@ -30,7 +30,6 @@ void Tile_queue::restart() {
 }
 
 bool Tile_queue::pop(int4& tile) {
-    // uint32_t const current = current_consume_++;
     int32_t const current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
     if (current >= num_tiles_) {
@@ -71,13 +70,6 @@ bool Tile_queue::pop(int4& tile) {
     tile = int4(start, end - 1);
 
     return true;
-}
-
-uint32_t Tile_queue::index(int4 const& tile) const {
-    int32_t const x = std::max(tile[0] - crop_[0], 0) / tile_dimensions_;
-    int32_t const y = std::max(tile[1] - crop_[1], 0) / tile_dimensions_;
-
-    return uint32_t(y * tiles_per_row_ + x);
 }
 
 Range_queue::~Range_queue() = default;
