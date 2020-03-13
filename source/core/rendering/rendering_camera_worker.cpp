@@ -21,7 +21,7 @@ Camera_worker::Camera_worker(uint32_t max_sample_size, Tile_queue const& tiles,
 
 void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                            uint32_t num_samples) {
-    scene::camera::Camera const& camera = *camera_;
+    Camera const& camera = *camera_;
 
     int4 bounds = camera.view_bounds(view);
     bounds[2] -= bounds[0];
