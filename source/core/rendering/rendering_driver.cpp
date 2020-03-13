@@ -24,8 +24,7 @@ Driver::Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& 
     : threads_(threads),
       scene_(nullptr),
       view_(nullptr),
-      workers_(memory::construct_aligned<Camera_worker>(threads.num_threads(), max_sample_size,
-                                                        ranges_)),
+      workers_(memory::construct_aligned<Camera_worker>(threads.num_threads(), max_sample_size)),
       frame_(0),
       frame_view_(0),
       frame_iteration_(0),
@@ -299,8 +298,10 @@ void Driver::render_frame_backward(uint32_t frame, uint32_t iteration) {
     threads_.run_parallel([this](uint32_t index) noexcept {
         auto& worker = workers_[index];
 
+        uint64_t const offset = uint64_t(frame_iteration_) * ranges_.total();
+
         for (ulong2 range; ranges_.pop(range);) {
-            worker.particles(frame_, frame_iteration_, range);
+            worker.particles(frame_, offset, range);
         }
     });
 

@@ -5,7 +5,6 @@
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "rendering/sensor/sensor.hpp"
-#include "rendering/tile_queue.hpp"
 #include "rendering_worker.inl"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
@@ -15,8 +14,7 @@
 
 namespace rendering {
 
-Camera_worker::Camera_worker(uint32_t max_sample_size, Range_queue const& ranges)
-    : Worker(max_sample_size), ranges_(ranges) {}
+Camera_worker::Camera_worker(uint32_t max_sample_size) : Worker(max_sample_size) {}
 
 void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                            uint32_t num_samples) {
@@ -67,15 +65,13 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
     }
 }
 
-void Camera_worker::particles(uint32_t frame, uint32_t iteration, ulong2 const& range) {
+void Camera_worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     Camera const& camera = *camera_;
-
-    uint64_t const so = uint64_t(iteration) * ranges_.total();
 
     lighttracer_->start_pixel();
 
     for (uint64_t i = range[0]; i < range[1]; ++i) {
-        rng_.start(0, i + so);
+        rng_.start(0, i + offset);
 
         particle_li(frame, camera.interface_stack());
     }
