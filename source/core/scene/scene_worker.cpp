@@ -8,6 +8,9 @@
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.inl"
 #include "scene.hpp"
+#include "scene/material/material_helper.hpp"
+#include "scene/material/material_sample.inl"
+#include "scene/material/null/null_sample.hpp"
 #include "scene_constants.hpp"
 #include "scene_ray.inl"
 #include "shape/node_stack.inl"
@@ -16,6 +19,7 @@ namespace scene {
 
 static material::Sampler_cache const Sampler_cache;
 
+using Material_sample    = scene::material::Sample;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 using Texture_sampler_3D = image::texture::Sampler_3D;
 
@@ -100,6 +104,33 @@ material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const
     }
 
     return ior;
+}
+
+Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
+                                               Intersection const& intersection, Filter filter,
+                                               bool avoid_caustics, bool straight_border,
+                                               Sampler& sampler) const {
+    auto material = intersection.material(*this);
+
+    float3 const wi = ray.direction;
+
+    if (((!intersection.subsurface) & straight_border & (material->ior() > 1.f)) &&
+        intersection.same_hemisphere(wi)) {
+        float3 const n     = intersection.geo.n;
+        float3 const geo_n = intersection.geo.geo_n;
+
+        float const vbh = material->border(wi, n);
+        float const nsc = material::non_symmetry_compensation(wi, wo, geo_n, n);
+
+        auto& sample = Worker::sample<scene::material::null::Sample>();
+
+        sample.set_basis(geo_n, wo);
+        sample.factor_ = vbh * nsc;
+
+        return sample;
+    }
+
+    return intersection.sample(wo, ray, filter, avoid_caustics, sampler, *this);
 }
 
 }  // namespace scene

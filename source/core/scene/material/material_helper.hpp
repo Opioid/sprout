@@ -41,6 +41,23 @@ static inline float3 sample_normal(float3 const& wo, Renderstate const& rs,
     return sample_normal(wo, rs, rs.uv, map, sampler, worker);
 }
 
+static inline float non_symmetry_compensation(float3 const& wi, float3 const& wo,
+                                              float3 const& geo_n, float3 const& n) {
+    // Veach's compensation for "Non-symmetry due to shading normals".
+    // See e.g. CorrectShadingNormal() at:
+    // https://github.com/mmp/pbrt-v3/blob/master/src/integrators/bdpt.cpp#L55
+
+    float const numer = std::abs(dot(wo, geo_n) * dot(wi, n));
+    float const denom = std::abs(dot(wo, n) * dot(wi, geo_n));
+
+    return (numer / std::max(denom, 0.01f));
+
+    //    float const numer = scene::material::clamp_abs_dot(wi, n);
+    //    float const denom = scene::material::clamp_abs_dot(wi, geo_n);
+
+    //    return std::min(numer / denom, 1.f);
+}
+
 }  // namespace scene::material
 
 #endif

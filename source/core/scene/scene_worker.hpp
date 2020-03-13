@@ -42,11 +42,13 @@ class Worker {
   public:
     using Camera             = camera::Camera;
     using Filter             = material::Sampler_settings::Filter;
+    using Material_sample    = material::Sample;
     using Texture            = image::texture::Texture;
     using Texture_sampler_2D = image::texture::Sampler_2D;
     using Texture_sampler_3D = image::texture::Sampler_3D;
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
+    using Sampler            = sampler::Sampler;
 
     Worker(uint32_t max_sample_size);
 
@@ -94,6 +96,11 @@ class Worker {
     void interface_change(float3 const& dir, Intersection const& intersection);
 
     material::IoR interface_change_ior(float3 const& dir, Intersection const& intersection);
+
+    Material_sample const& sample_material(Ray const& ray, float3 const& wo,
+                                           Intersection const& intersection, Filter filter,
+                                           bool avoid_caustics, bool straight_border,
+                                           Sampler& sampler) const;
 
   protected:
     mutable rnd::Generator rng_;

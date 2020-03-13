@@ -13,6 +13,7 @@
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
+#include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
@@ -271,7 +272,8 @@ bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ra
 
         float3 const& n = material_sample.base_shading_normal();
 
-        float const nsc = non_symmetry_compensation(wo, wi, intersection.geo.geo_n, n);
+        float const nsc = scene::material::non_symmetry_compensation(wo, wi, intersection.geo.geo_n,
+                                                                     n);
 
         float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
 
