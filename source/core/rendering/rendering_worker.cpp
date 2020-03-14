@@ -198,6 +198,8 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
 
 bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
                                Filter filter, float3& tv) {
+    using namespace scene::material;
+
     auto const& material = *intersection.material(*this);
 
     if (intersection.subsurface & (material.ior() > 1.f)) {
@@ -214,8 +216,7 @@ bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& i
                     float3 const wi = ray.direction;
 
                     float const vbh = material.border(wi, normals.n);
-                    float const nsc = scene::material::non_symmetry_compensation(
-                        wi, wo, normals.geo_n, normals.n);
+                    float const nsc = non_symmetry_compensation(wi, wo, normals.geo_n, normals.n);
 
                     tv *= vbh * nsc * tr;
 

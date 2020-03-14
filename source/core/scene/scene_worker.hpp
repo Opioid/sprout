@@ -56,6 +56,8 @@ class Worker {
 
     void init(Scene const& scene, Camera const& camera);
 
+    void init_rng(uint64_t sequence) const;
+
     bool intersect(Ray& ray, Intersection& intersection) const;
 
     bool intersect(Ray& ray, shape::Normals& normals) const;

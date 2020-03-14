@@ -32,6 +32,10 @@ void Worker::init(Scene const& scene, Camera const& camera) {
     camera_ = &camera;
 }
 
+void Worker::init_rng(uint64_t sequence) const {
+    rng_.start(0, sequence);
+}
+
 bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) {
     float const start_min_t = ray.min_t();
 

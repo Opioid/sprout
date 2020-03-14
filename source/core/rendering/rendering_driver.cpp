@@ -80,11 +80,6 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
         photon_map_.init(num_workers, view.photon_settings.num_photons,
                          view.photon_settings.search_radius, view.photon_settings.merge_radius);
 
-        uint32_t range = num_photons / num_workers;
-        if (num_photons % num_workers) {
-            ++range;
-        }
-
         photon_map = &photon_map_;
     }
 
@@ -391,6 +386,10 @@ void Driver::bake_photons(uint32_t frame) {
 
     auto const start = std::chrono::high_resolution_clock::now();
 
+    for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
+        workers_[i].init_rng(i);
+    }
+
     uint64_t num_paths = 0;
     uint32_t begin     = 0;
 
@@ -418,7 +417,7 @@ void Driver::bake_photons(uint32_t frame) {
                 photon_infos_[id].num_paths = worker.bake_photons(begin, end, frame_,
                                                                   frame_iteration_);
             },
-            static_cast<int32_t>(begin), static_cast<int32_t>(num_photons));
+            int32_t(begin), int32_t(num_photons));
 
         for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
             num_paths += uint64_t(photon_infos_[i].num_paths);
