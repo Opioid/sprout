@@ -268,7 +268,7 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
         [this, merge_radius, num_reduced](uint32_t id, int32_t begin, int32_t end) noexcept {
             num_reduced[id] = reduce(merge_radius, begin, end);
         },
-        0, static_cast<int32_t>(num_photons_));
+        0, int32_t(num_photons_));
 
     uint32_t comp_num_photons = num_photons_;
 
@@ -333,9 +333,9 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
     Adjacency adjacency;
     adjacent_cells(position, cell_bound_, adjacency);
 
-    if (intersection.subsurface) {
-        float const radius_2 = search_radius_ * search_radius_;
+    float const radius2 = search_radius_ * search_radius_;
 
+    if (intersection.subsurface) {
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
             int2 const cell = adjacency.cells[c];
 
@@ -346,7 +346,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                     continue;
                 }
 
-                if (squared_distance(photon.p, position) <= radius_2) {
+                if (squared_distance(photon.p, position) <= radius2) {
                     auto const bxdf = sample.evaluate_f(photon.wi);
 
                     result += float3(photon.alpha) * bxdf.reflection;
@@ -358,8 +358,6 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
 
         result *= volume_normalization_ / mu_s;
     } else {
-        float const radius2 = search_radius_ * search_radius_;
-
         float const inv_radius2 = 1.f / radius2;
 
         Plane const disk = plane::create(intersection.geo.n, position);
@@ -505,7 +503,7 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) {
 }
 
 int32_t Grid::map1(float3 const& v) const {
-    int3 const c = static_cast<int3>((v - aabb_.min()) * local_to_texture_) + 1;
+    int3 const c = int3((v - aabb_.min()) * local_to_texture_) + 1;
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
@@ -513,9 +511,9 @@ int32_t Grid::map1(float3 const& v) const {
 int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const {
     float3 const r = (v - aabb_.min()) * local_to_texture_;
 
-    int3 const c = static_cast<int3>(r);
+    int3 const c = int3(r);
 
-    float3 const d = r - static_cast<float3>(c);
+    float3 const d = r - float3(c);
 
     adjacents = uint8_t(adjacent(d[0], cell_bound) << 4);
     adjacents |= uint8_t(adjacent(d[1], cell_bound) << 2);
@@ -546,13 +544,14 @@ static float3 scattering_coefficient(prop::Intersection const& intersection, Wor
     auto const& material = *intersection.material(worker);
 
     if (material.is_heterogeneous_volume()) {
+        Scene const& scene = worker.scene();
+
         entity::Composed_transformation temp;
-        auto const& transformation = worker.scene().prop_transformation_at(intersection.prop, 0,
-                                                                           temp);
+        auto const& transformation = scene.prop_transformation_at(intersection.prop, 0, temp);
 
         float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
 
-        auto const shape = worker.scene().prop_shape(intersection.prop);
+        auto const shape = scene.prop_shape(intersection.prop);
 
         float3 const uvw = shape->object_to_texture_point(local_position);
 
