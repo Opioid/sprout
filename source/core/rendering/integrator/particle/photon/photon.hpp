@@ -11,7 +11,7 @@ struct Photon {
     float3 wi;
     float  alpha[3];
 
-    enum class Property { First_hit = 1 << 0, Volumetric = 1 << 1 };
+    enum class Property { Volumetric = 1 << 0 };
 
     flags::Flags<Property> properties;
 };

@@ -164,7 +164,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                             photon.alpha[0] = radiance[0];
                             photon.alpha[1] = radiance[1];
                             photon.alpha[2] = radiance[2];
-                            photon.properties.set(Photon::Property::First_hit, 0 == num_photons);
                             photon.properties.set(Photon::Property::Volumetric,
                                                   intersection.subsurface);
 
