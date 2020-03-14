@@ -221,8 +221,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 radiance *= eta * eta;
             }
 
-            ray.max_t() = scene::Ray_max_t;
-
             if (!worker.interface_stack().empty()) {
                 float3     vli;
                 float3     vtr;
