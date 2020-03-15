@@ -120,16 +120,10 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
 
     if (((!intersection.subsurface) & straight_border & (material->ior() > 1.f)) &&
         intersection.same_hemisphere(wi)) {
-        float3 const n     = intersection.geo.n;
-        float3 const geo_n = intersection.geo.geo_n;
+        auto& sample = Worker::sample<material::null::Sample>();
 
-        float const vbh = material->border(wi, n);
-        float const nsc = material::non_symmetry_compensation(wi, wo, geo_n, n);
-
-        auto& sample = Worker::sample<scene::material::null::Sample>();
-
-        sample.set_basis(geo_n, wo);
-        sample.factor_ = vbh * nsc;
+        sample.set_basis(intersection.geo.geo_n, wo);
+        sample.factor_ = material->border(wi, intersection.geo.n);
 
         return sample;
     }
