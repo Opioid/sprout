@@ -248,7 +248,7 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 
     float const factor = (abs_wi_dot_h * abs_wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-    float const denom = math::pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
+    float const denom = pow2(ior.eta_i * wo_dot_h + ior.eta_t * wi_dot_h);
 
     float const refraction = d * g * f;
 

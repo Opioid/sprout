@@ -75,17 +75,19 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     bool const avoid_caustics = true;
 
+    bool treat_as_singular = true;
+
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
         auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
                                                           worker);
 
-        if (material_sample.same_hemisphere(wo)) {
 #ifndef ONLY_CAUSTICS
+        if (treat_as_singular & material_sample.same_hemisphere(wo)) {
             result += throughput * material_sample.radiance();
-#endif
         }
+#endif
 
         if (material_sample.is_pure_emissive()) {
             break;
@@ -96,12 +98,21 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        if (!sample_result.type.is(Bxdf_type::Caustic)) {
+        if (sample_result.type.is(Bxdf_type::Caustic)) {
+            treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
+        } else if (sample_result.type.no(Bxdf_type::Straight)) {
+            filter            = Filter::Nearest;
+            treat_as_singular = false;
+        }
+
+        if (sample_result.type.no(Bxdf_type::Specular)) {
             if (ray.depth > 0 || settings_.photons_not_only_through_specular) {
                 result += throughput * worker.photon_li(intersection, material_sample);
             }
 
-            break;
+            if (sample_result.type.no(Bxdf_type::Caustic)) {
+                break;
+            }
         }
 
         if (ray.depth >= Max_bounces - 1) {

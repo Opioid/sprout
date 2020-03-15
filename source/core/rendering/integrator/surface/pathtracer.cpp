@@ -18,7 +18,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-// #define ONLY_CAUSTICS
+//#define ONLY_CAUSTICS
 
 using namespace scene;
 
@@ -136,7 +136,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
 
         if (sample_result.type.is(Bxdf_type::Caustic)) {
 #ifdef ONLY_CAUSTICS
-            caustic_path |= maybe_caustic;
+            caustic_path |= !primary_ray;
 #else
             if (avoid_caustics) {
                 break;

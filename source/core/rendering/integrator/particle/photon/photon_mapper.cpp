@@ -146,40 +146,41 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 #endif
 
             if (material_sample.ior_greater_one()) {
-                if (sample_result.type.is(Bxdf_type::Caustic)) {
-                    caustic_path = true;
-                } else {
-                    if ((intersection.subsurface || material_sample.same_hemisphere(wo)) &&
-                        (caustic_path || settings_.full_light_path)) {
-                        if ((!infinite_world || unnatural_limit.intersect(intersection.geo.p))
+                if (sample_result.type.no(Bxdf_type::Specular) &&
+                    (intersection.subsurface || material_sample.same_hemisphere(wo)) &&
+                    (caustic_path || settings_.full_light_path)) {
+                    if ((!infinite_world || unnatural_limit.intersect(intersection.geo.p))
 #ifdef ISLAND_MODE
-                            && frustum.intersect(intersection.geo.p, 0.1f)
+                        && frustum.intersect(intersection.geo.p, 0.1f)
 #endif
 
-                        ) {
-                            auto& photon = photons[num_photons];
+                    ) {
+                        auto& photon = photons[num_photons];
 
-                            photon.p        = intersection.geo.p;
-                            photon.wi       = wo;
-                            photon.alpha[0] = radiance[0];
-                            photon.alpha[1] = radiance[1];
-                            photon.alpha[2] = radiance[2];
-                            photon.properties.set(Photon::Property::Volumetric,
-                                                  intersection.subsurface);
+                        photon.p        = intersection.geo.p;
+                        photon.wi       = wo;
+                        photon.alpha[0] = radiance[0];
+                        photon.alpha[1] = radiance[1];
+                        photon.alpha[2] = radiance[2];
+                        photon.properties.set(Photon::Property::Volumetric,
+                                              intersection.subsurface);
 
-                            iteration = i + 1;
+                        iteration = i + 1;
 
-                            ++num_photons;
+                        ++num_photons;
 
-                            if (max_photons == num_photons || caustics_only) {
-                                return iteration;
-                            }
+                        if (max_photons == num_photons || caustics_only) {
+                            return iteration;
                         }
                     }
+                }
 
-                    if (!settings_.indirect_caustics) {
-                        break;
-                    }
+                if (!settings_.indirect_caustics) {
+                    break;
+                }
+
+                if (sample_result.type.is(Bxdf_type::Caustic)) {
+                    caustic_path = true;
                 }
 
                 float3 const nr  = radiance * sample_result.reflection / sample_result.pdf;
