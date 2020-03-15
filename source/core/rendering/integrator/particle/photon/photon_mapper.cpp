@@ -19,6 +19,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
+#include <iostream>
+
 //#define ISLAND_MODE
 
 namespace rendering::integrator::particle::photon {
@@ -109,6 +111,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
         worker.interface_stack().clear();
 
         bool caustic_path = false;
+        bool from_subsurface = false;
 
         Ray ray;
         //   Light const* light;
@@ -129,6 +132,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
             auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
                                                               sampler_, worker);
+
+//            auto const& material_sample = worker.sample_material(
+//                ray, wo, intersection, filter, avoid_caustics, from_subsurface, sampler_);
 
             if (material_sample.is_pure_emissive()) {
                 break;
@@ -157,13 +163,21 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                     ) {
                         auto& photon = photons[num_photons];
 
+                        float3 radi = radiance;
+//                        if (intersection.subsurface) {
+//                            float const ior = intersection.material(worker)->ior();//  worker.interface_stack().top_ior(worker);
+//                            radi *= ior;
+//                        }
+
                         photon.p        = intersection.geo.p;
                         photon.wi       = wo;
-                        photon.alpha[0] = radiance[0];
-                        photon.alpha[1] = radiance[1];
-                        photon.alpha[2] = radiance[2];
+                        photon.alpha[0] = radi[0];
+                        photon.alpha[1] = radi[1];
+                        photon.alpha[2] = radi[2];
                         photon.properties.set(Photon::Property::Volumetric,
                                               intersection.subsurface);
+
+
 
                         iteration = i + 1;
 
@@ -194,13 +208,19 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                 radiance = nr / continue_prob;
 
-                ray.set_direction(sample_result.wi);
                 ++ray.depth;
             }
 
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
-                                                  intersection.subsurface);
-            //    ray.min_t() = 0.f;
+            if (sample_result.type.is(Bxdf_type::Straight)) {
+                ray.min_t() = scene::offset_f(ray.max_t());
+            } else {
+                ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
+                                                      intersection.subsurface);
+                ray.set_direction(sample_result.wi);
+
+                from_subsurface = false;
+            }
+
             ray.max_t() = scene::Ray_max_t;
 
             if (0.f == ray.wavelength) {
@@ -215,11 +235,12 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                     break;
                 }
 #endif
-
                 float const eta = ior.eta_i / ior.eta_t;
 
                 radiance *= eta * eta;
             }
+
+            from_subsurface |= intersection.subsurface;
 
             if (!worker.interface_stack().empty()) {
                 float3     vli;

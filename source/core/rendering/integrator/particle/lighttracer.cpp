@@ -24,6 +24,8 @@
 
 namespace rendering::integrator::particle {
 
+using namespace scene;
+
 Lighttracer::Lighttracer(rnd::Generator& rng, Settings const& settings)
     : Integrator(rng),
       settings_(settings),
@@ -266,14 +268,14 @@ bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ra
         }
 
         float3 const wi   = -camera_sample.dir;
+
         auto const   bxdf = material_sample.evaluate_f(wi);
 
-        float3 const wo = material_sample.wo();
+        float3 const& wo = material_sample.wo();
 
         float3 const& n = material_sample.base_shading_normal();
 
-        float const nsc = scene::material::non_symmetry_compensation(wo, wi, intersection.geo.geo_n,
-                                                                     n);
+        float const nsc = material::non_symmetry_compensation(wo, wi, intersection.geo.geo_n, n);
 
         float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
 
