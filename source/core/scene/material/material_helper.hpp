@@ -50,7 +50,7 @@ static inline float non_symmetry_compensation(float3 const& wi, float3 const& wo
     float const numer = std::abs(dot(wo, geo_n) * dot(wi, n));
     float const denom = std::abs(dot(wo, n) * dot(wi, geo_n));
 
-    return (numer / std::max(denom, 0.01f));
+    return std::min(numer / denom, 8.f);
 
     //    float const numer = scene::material::clamp_abs_dot(wi, n);
     //    float const denom = scene::material::clamp_abs_dot(wi, geo_n);

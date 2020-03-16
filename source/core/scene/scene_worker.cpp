@@ -110,7 +110,7 @@ material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const
     return ior;
 }
 
-Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
+Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
                                                Intersection const& intersection, Filter filter,
                                                bool avoid_caustics, bool straight_border,
                                                Sampler& sampler) const {
@@ -122,8 +122,14 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
         intersection.same_hemisphere(wi)) {
         auto& sample = Worker::sample<material::null::Sample>();
 
-        sample.set_basis(intersection.geo.geo_n, wo);
-        sample.factor_ = material->border(wi, intersection.geo.n);
+        float3 const geo_n = intersection.geo.geo_n;
+        float3 const n     = intersection.geo.n;
+
+        float const vbh = material->border(wi, n);
+        float const nsc = material::non_symmetry_compensation(wi, wo1, geo_n, n);
+
+        sample.set_basis(geo_n, wo);
+        sample.factor_ = nsc * vbh;
 
         return sample;
     }

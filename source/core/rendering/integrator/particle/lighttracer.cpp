@@ -72,7 +72,7 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
 
     Sample_from light_sample;
 
-    bool caustic_ray     = false;
+    bool caustic_path    = false;
     bool from_subsurface = false;
 
     // ---
@@ -118,12 +118,10 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
         }
 
         if (material_sample.ior_greater_one()) {
-            if (sample_result.type.is(Bxdf_type::Caustic)) {
-                caustic_ray = true;
-            } else {
+            if (sample_result.type.no(Bxdf_type::Specular)) {
                 bool const side = intersection.subsurface | material_sample.same_hemisphere(wo);
 
-                if (side & (caustic_ray | settings_.full_light_path)) {
+                if (side & (caustic_path | settings_.full_light_path)) {
                     if (direct_camera(camera, radiance, ray, intersection, material_sample, filter,
                                       worker)) {
                         if (first) {
@@ -136,6 +134,10 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
                 if (!settings_.indirect_caustics) {
                     break;
                 }
+            }
+
+            if (sample_result.type.is(Bxdf_type::Caustic)) {
+                caustic_path = true;
             }
         }
 
@@ -267,9 +269,9 @@ bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ra
             continue;
         }
 
-        float3 const wi   = -camera_sample.dir;
+        float3 const wi = -camera_sample.dir;
 
-        auto const   bxdf = material_sample.evaluate_f(wi);
+        auto const bxdf = material_sample.evaluate_f(wi);
 
         float3 const& wo = material_sample.wo();
 

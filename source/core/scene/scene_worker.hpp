@@ -99,7 +99,7 @@ class Worker {
 
     material::IoR interface_change_ior(float3 const& dir, Intersection const& intersection);
 
-    Material_sample const& sample_material(Ray const& ray, float3 const& wo,
+    Material_sample const& sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
                                            Intersection const& intersection, Filter filter,
                                            bool avoid_caustics, bool straight_border,
                                            Sampler& sampler) const;

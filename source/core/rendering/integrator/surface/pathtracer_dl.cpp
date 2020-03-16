@@ -98,6 +98,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     float3 throughput(1.f);
     float3 result(0.f);
+    float3 wo1(0.);
 
     for (;;) {
         float3 const wo = -ray.direction;
@@ -105,7 +106,9 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
         auto const& material_sample = worker.sample_material(
-            ray, wo, intersection, filter, avoid_caustics, from_subsurface, sampler_);
+            ray, wo, wo1, intersection, filter, avoid_caustics, from_subsurface, sampler_);
+
+        wo1 = wo;
 
         bool const same_side = material_sample.same_hemisphere(wo);
 

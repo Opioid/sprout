@@ -137,6 +137,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
     float3 result_li(0.f);
     float3 photon_li(0.f);
     float3 geo_n(0.f);
+    float3 wo1(0.);
 
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
@@ -146,7 +147,9 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         bool const straight_border = state.is(State::From_subsurface);
 
         auto const& material_sample = worker.sample_material(
-            ray, wo, intersection, filter, avoid_caustics, straight_border, sampler_);
+            ray, wo, wo1, intersection, filter, avoid_caustics, straight_border, sampler_);
+
+        wo1 = wo;
 
         bool const same_side = material_sample.same_hemisphere(wo);
 
