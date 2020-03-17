@@ -117,7 +117,7 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
             break;
         }
 
-        if (material_sample.ior_greater_one()) {
+        if (sample_result.type.no(Bxdf_type::Straight)) {
             if (sample_result.type.no(Bxdf_type::Specular)) {
                 bool const side = intersection.subsurface | material_sample.same_hemisphere(wo);
 
@@ -157,12 +157,9 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
             ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
                                                   intersection.subsurface);
             ray.set_direction(sample_result.wi);
+            ++ray.depth;
 
             from_subsurface = false;
-        }
-
-        if (material_sample.ior_greater_one()) {
-            ++ray.depth;
         }
 
         ray.max_t() = scene::Ray_max_t;

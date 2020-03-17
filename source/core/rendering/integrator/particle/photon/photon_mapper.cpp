@@ -110,7 +110,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
     for (uint32_t i = 0; i < Max_iterations; ++i) {
         worker.interface_stack().clear();
 
-        bool caustic_path = false;
+        bool caustic_path    = false;
         bool from_subsurface = false;
 
         Ray ray;
@@ -133,8 +133,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
             auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
                                                               sampler_, worker);
 
-//            auto const& material_sample = worker.sample_material(
-//                ray, wo, intersection, filter, avoid_caustics, from_subsurface, sampler_);
+            //            auto const& material_sample = worker.sample_material(
+            //                ray, wo, intersection, filter, avoid_caustics, from_subsurface,
+            //                sampler_);
 
             if (material_sample.is_pure_emissive()) {
                 break;
@@ -151,7 +152,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
             }
 #endif
 
-            if (material_sample.ior_greater_one()) {
+            if (sample_result.type.no(Bxdf_type::Straight)) {
                 if (sample_result.type.no(Bxdf_type::Specular) &&
                     (intersection.subsurface || material_sample.same_hemisphere(wo)) &&
                     (caustic_path || settings_.full_light_path)) {
@@ -164,10 +165,12 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                         auto& photon = photons[num_photons];
 
                         float3 radi = radiance;
-//                        if (intersection.subsurface) {
-//                            float const ior = intersection.material(worker)->ior();//  worker.interface_stack().top_ior(worker);
-//                            radi *= ior;
-//                        }
+                        //                        if (intersection.subsurface) {
+                        //                            float const ior =
+                        //                            intersection.material(worker)->ior();//
+                        //                            worker.interface_stack().top_ior(worker); radi
+                        //                            *= ior;
+                        //                        }
 
                         photon.p        = intersection.geo.p;
                         photon.wi       = wo;
@@ -176,8 +179,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                         photon.alpha[2] = radi[2];
                         photon.properties.set(Photon::Property::Volumetric,
                                               intersection.subsurface);
-
-
 
                         iteration = i + 1;
 

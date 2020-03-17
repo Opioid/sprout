@@ -211,13 +211,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
                                                   intersection.subsurface);
             ray.set_direction(sample_result.wi);
+            ++ray.depth;
 
             state.unset(State::Transparent);
             state.unset(State::From_subsurface);
-        }
-
-        if (material_sample.ior_greater_one()) {
-            ++ray.depth;
         }
 
         ray.max_t() = Ray_max_t;

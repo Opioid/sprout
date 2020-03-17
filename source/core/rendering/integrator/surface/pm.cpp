@@ -123,15 +123,15 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
             ray.wavelength = sample_result.wavelength;
         }
 
-        if (material_sample.ior_greater_one()) {
+        if (sample_result.type.is(Bxdf_type::Straight)) {
+            ray.min_t() = scene::offset_f(ray.max_t());
+        } else {
             throughput *= sample_result.reflection / sample_result.pdf;
 
             ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
                                                   intersection.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
-        } else {
-            ray.min_t() = scene::offset_f(ray.max_t());
         }
 
         ray.max_t() = scene::Ray_max_t;

@@ -162,13 +162,10 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
                                                   intersection.subsurface);
             ray.set_direction(sample_result.wi);
+            ++ray.depth;
 
             transparent     = false;
             from_subsurface = false;
-        }
-
-        if (material_sample.ior_greater_one()) {
-            ++ray.depth;
         }
 
         ray.max_t() = Ray_max_t;
