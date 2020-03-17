@@ -35,14 +35,6 @@ bool Material_base::has_emission_map() const {
     return emission_map_.is_valid();
 }
 
-float Material_base::ior() const {
-    return ior_;
-}
-
-void Material_base::set_ior(float ior) {
-    ior_ = ior;
-}
-
 bool Material_base::is_caustic() const {
     return !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha;
 }

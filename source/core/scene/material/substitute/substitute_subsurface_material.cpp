@@ -55,16 +55,6 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
     return sample;
 }
 
-float Material_subsurface::border(float3 const& wi, float3 const& n) const {
-    float const f0 = fresnel::schlick_f0(ior_, 1.f);
-
-    float const n_dot_wi = std::max(dot(n, wi), 0.f);
-
-    float const f = 1.f - fresnel::schlick(n_dot_wi, f0);
-
-    return /*n_dot_wi **/ f;
-}
-
 size_t Material_subsurface::num_bytes() const {
     return sizeof(*this);
 }

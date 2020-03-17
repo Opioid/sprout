@@ -14,8 +14,6 @@ class Glass_rough : public Material {
 
     float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
 
-    float ior() const final;
-
     size_t num_bytes() const final;
 
     void set_normal_map(Texture_adapter const& normal_map);
@@ -23,7 +21,6 @@ class Glass_rough : public Material {
 
     void set_refraction_color(float3 const& color);
     void set_attenuation(float3 const& absorption_color, float distance);
-    void set_ior(float ior);
     void set_roughness(float roughness);
 
     bool is_caustic() const final;
@@ -38,7 +35,6 @@ class Glass_rough : public Material {
     float3 absorption_coefficient_;
 
     float attenuation_distance_;
-    float ior_;
     float alpha_;
 };
 

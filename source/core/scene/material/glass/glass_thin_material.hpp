@@ -15,8 +15,6 @@ class Glass_thin : public Material {
     float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                            Filter filter, Worker const& worker) const final;
 
-    float ior() const final;
-
     bool has_tinted_shadow() const final;
 
     size_t num_bytes() const final;
@@ -25,7 +23,6 @@ class Glass_thin : public Material {
 
     void set_refraction_color(float3 const& color);
     void set_attenuation(float3 const& absorption_color, float distance);
-    void set_ior(float ior);
     void set_thickness(float thickness);
 
     static size_t sample_size();
@@ -35,7 +32,6 @@ class Glass_thin : public Material {
 
     float3 refraction_color_;
     float3 absorption_coefficient_;
-    float  ior_;
     float  thickness_;
 };
 

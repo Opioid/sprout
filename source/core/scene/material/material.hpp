@@ -65,7 +65,7 @@ class Material {
 
     void set_mask(Texture_adapter const& mask);
 
-    void set_parameters(json::Value const& parameters);
+    void set_ior(float ior);
 
     virtual void compile(thread::Pool& threads, Scene const& scene);
 
@@ -106,7 +106,7 @@ class Material {
     virtual float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                                    Filter filter, Worker const& worker) const;
 
-    virtual float border(float3 const& wi, float3 const& n) const;
+    float border(float3 const& wi, float3 const& n) const;
 
     virtual float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const;
 
@@ -142,7 +142,7 @@ class Material {
 
     virtual bool has_tinted_shadow() const;
 
-    virtual float ior() const = 0;
+    float ior() const;
 
     uint32_t sampler_key() const;
 
@@ -156,9 +156,6 @@ class Material {
 
     virtual size_t num_bytes() const = 0;
 
-  protected:
-    virtual void set_parameter(std::string_view name, json::Value const& value);
-
   private:
     uint32_t sampler_key_;
 
@@ -166,6 +163,8 @@ class Material {
 
   protected:
     Texture_adapter mask_;
+
+    float ior_;
 
   public:
     static void init_rainbow();

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_MATERIAL_LIGHT_CONSTANT_HPP
+#define SU_SCENE_MATERIAL_LIGHT_CONSTANT_HPP
 
 #include "scene/light/emittance.hpp"
 #include "scene/material/material.hpp"
@@ -17,8 +18,6 @@ class Constant : public Material {
 
     float3 average_radiance(float area, Scene const& scene) const final;
 
-    float ior() const final;
-
     bool has_emission_map() const final;
 
     size_t num_bytes() const final;
@@ -32,3 +31,5 @@ class Constant : public Material {
 };
 
 }  // namespace scene::material::light
+
+#endif

@@ -4,6 +4,7 @@
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
 #include "collision_coefficients.inl"
+#include "fresnel/fresnel.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
@@ -15,7 +16,7 @@ char const* Material::identifier() {
 }
 
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
-    : sampler_key_(sampler_settings.key()), two_sided_(two_sided) {}
+    : sampler_key_(sampler_settings.key()), two_sided_(two_sided), ior_(1.5f) {}
 
 Material::~Material() = default;
 
@@ -23,10 +24,8 @@ void Material::set_mask(Texture_adapter const& mask) {
     mask_ = mask;
 }
 
-void Material::set_parameters(json::Value const& parameters) {
-    for (auto const& n : parameters.GetObject()) {
-        set_parameter(n.name.GetString(), n.value);
-    }
+void Material::set_ior(float ior) {
+    ior_ = ior;
 }
 
 void Material::compile(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
@@ -83,8 +82,14 @@ float3 Material::thin_absorption(float3 const& /*wi*/, float3 const& /*n*/, floa
     return float3(1.f - opacity(uv, time, filter, worker));
 }
 
-float Material::border(float3 const& /*wi*/, float3 const& /*n*/) const {
-    return 1.f;
+float Material::border(float3 const& wi, float3 const& n) const {
+    float const f0 = fresnel::schlick_f0(ior_, 1.f);
+
+    float const n_dot_wi = std::max(dot(n, wi), 0.f);
+
+    float const f = 1.f - fresnel::schlick(n_dot_wi, f0);
+
+    return f;
 }
 
 float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
@@ -152,6 +157,10 @@ bool Material::has_tinted_shadow() const {
     return false;
 }
 
+float Material::ior() const {
+    return ior_;
+}
+
 uint32_t Material::sampler_key() const {
     return sampler_key_;
 }
@@ -176,8 +185,6 @@ bool Material::is_emissive(Scene const& scene) const {
 bool Material::is_two_sided() const {
     return two_sided_;
 }
-
-void Material::set_parameter(std::string_view /*name*/, json::Value const& /*value*/) {}
 
 float3 Material::rainbow_[Num_bands + 1];
 

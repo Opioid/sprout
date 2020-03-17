@@ -37,10 +37,6 @@ float3 Glass::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
     return absorption_coefficient_;
 }
 
-float Glass::ior() const {
-    return ior_;
-}
-
 size_t Glass::num_bytes() const {
     return sizeof(*this);
 }
@@ -59,10 +55,6 @@ void Glass::set_attenuation(float3 const& absorption_color, float distance) {
     absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
 
     attenuation_distance_ = distance;
-}
-
-void Glass::set_ior(float ior) {
-    ior_ = ior;
 }
 
 bool Glass::is_caustic() const {

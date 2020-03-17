@@ -49,10 +49,6 @@ float3 Glass_rough::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
     return absorption_coefficient_;
 }
 
-float Glass_rough::ior() const {
-    return ior_;
-}
-
 size_t Glass_rough::num_bytes() const {
     return sizeof(*this);
 }
@@ -73,10 +69,6 @@ void Glass_rough::set_attenuation(float3 const& absorption_color, float distance
     absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
 
     attenuation_distance_ = distance;
-}
-
-void Glass_rough::set_ior(float ior) {
-    ior_ = ior;
 }
 
 void Glass_rough::set_roughness(float roughness) {

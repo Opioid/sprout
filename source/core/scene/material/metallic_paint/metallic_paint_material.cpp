@@ -60,10 +60,6 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-float Material::ior() const {
-    return ior_;
-}
-
 size_t Material::num_bytes() const {
     return sizeof(*this);
 }

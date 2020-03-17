@@ -29,13 +29,9 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set(ior_, absorption_, alpha_, rs.avoid_caustics);
+    sample.set(ior3_, absorption_, alpha_, rs.avoid_caustics);
 
     return sample;
-}
-
-float Material_isotropic::ior() const {
-    return ior_[0];
 }
 
 bool Material_isotropic::is_caustic() const {
@@ -51,7 +47,8 @@ void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) {
 }
 
 void Material_isotropic::set_ior(float3 const& ior) {
-    ior_ = ior;
+    ior_  = ior[0];
+    ior3_ = ior;
 }
 
 void Material_isotropic::set_absorption(float3 const& absorption) {
@@ -93,14 +90,10 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.layer_.set(ior_, absorption_, roughness_);
+    sample.layer_.set(ior3_, absorption_, roughness_);
     sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
-}
-
-float Material_anisotropic::ior() const {
-    return ior_[0];
 }
 
 bool Material_anisotropic::is_caustic() const {
@@ -120,7 +113,8 @@ void Material_anisotropic::set_direction_map(Texture_adapter const& direction_ma
 }
 
 void Material_anisotropic::set_ior(float3 const& ior) {
-    ior_ = ior;
+    ior_  = ior[0];
+    ior3_ = ior;
 }
 
 void Material_anisotropic::set_absorption(float3 const& absorption) {

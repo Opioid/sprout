@@ -12,8 +12,6 @@ class alignas(64) Material_isotropic : public Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float ior() const final;
-
     bool is_caustic() const final;
 
     size_t num_bytes() const final;
@@ -29,7 +27,7 @@ class alignas(64) Material_isotropic : public Material {
   protected:
     Texture_adapter normal_map_;
 
-    float3 ior_;
+    float3 ior3_;
     float3 absorption_;
 
     float alpha_;
@@ -41,8 +39,6 @@ class alignas(64) Material_anisotropic : public Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
-
-    float ior() const final;
 
     bool is_caustic() const final;
 
@@ -61,7 +57,7 @@ class alignas(64) Material_anisotropic : public Material {
     Texture_adapter normal_map_;
     Texture_adapter direction_map_;
 
-    float3 ior_;
+    float3 ior3_;
     float3 absorption_;
 
     float2 roughness_;

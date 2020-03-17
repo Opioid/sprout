@@ -47,10 +47,6 @@ float3 Emissionmap::average_radiance(float /*area*/, Scene const& /*scene*/) con
     return average_emission_;
 }
 
-float Emissionmap::ior() const {
-    return 1.5f;
-}
-
 bool Emissionmap::has_emission_map() const {
     return emission_map_.is_valid();
 }

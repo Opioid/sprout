@@ -11,8 +11,6 @@ class Material : public scene::material::Material {
   public:
     Material(Sky& sky);
 
-    float ior() const final;
-
   protected:
     Sky& sky_;
 };

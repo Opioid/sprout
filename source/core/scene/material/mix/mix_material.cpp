@@ -22,10 +22,6 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     return material_b_->sample(wo, ray, rs, filter, sampler, worker);
 }
 
-float Material::ior() const {
-    return material_a_->ior();
-}
-
 size_t Material::num_bytes() const {
     return sizeof(*this);
 }
@@ -33,6 +29,8 @@ size_t Material::num_bytes() const {
 void Material::set_materials(material::Material const* a, material::Material const* b) {
     material_a_ = a;
     material_b_ = b;
+
+    ior_ = a->ior();
 }
 
 }  // namespace scene::material::mix

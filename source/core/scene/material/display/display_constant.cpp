@@ -25,7 +25,7 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.set(emission_, f0_, alpha_);
+    sample.set(emission_, fresnel::schlick_f0(ior_, rs.ior), alpha_);
 
     return sample;
 }
@@ -37,10 +37,6 @@ float3 Constant::evaluate_radiance(float3 const& /*wi*/, float2 /*uv*/, float /*
 
 float3 Constant::average_radiance(float /*area*/, Scene const& /*scene*/) const {
     return emission_;
-}
-
-float Constant::ior() const {
-    return ior_;
 }
 
 size_t Constant::num_bytes() const {
@@ -55,11 +51,6 @@ void Constant::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
-}
-
-void Constant::set_ior(float ior) {
-    ior_ = ior;
-    f0_  = fresnel::schlick_f0(1.f, ior);
 }
 
 size_t Constant::sample_size() {

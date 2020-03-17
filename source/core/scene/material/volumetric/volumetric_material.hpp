@@ -14,8 +14,6 @@ class Material : public material::Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float ior() const final;
-
     CM control_medium() const final;
 
     float similarity_relation_scale(uint32_t depth) const final;

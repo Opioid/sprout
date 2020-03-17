@@ -13,8 +13,4 @@ Material::Material(Sky& sky)
           false),
       sky_(sky) {}
 
-float Material::ior() const {
-    return 1.5f;
-}
-
 }  // namespace procedural::sky

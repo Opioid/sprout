@@ -20,8 +20,6 @@ class alignas(64) Emissionmap : public Material {
 
     float3 average_radiance(float area, Scene const& scene) const final;
 
-    float ior() const override;
-
     bool has_emission_map() const final;
 
     Sample_2D radiance_sample(float2 r2) const final;

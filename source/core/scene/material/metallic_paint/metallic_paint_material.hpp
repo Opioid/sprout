@@ -12,8 +12,6 @@ class Material : public material::Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float ior() const final;
-
     size_t num_bytes() const final;
 
     void set_color(float3 const& a, float3 const& b);
@@ -45,8 +43,6 @@ class Material : public material::Material {
     float alpha_;
 
     float flakes_alpha_;
-
-    float ior_;
 
     struct Clearcoat_data {
         float3 absorption_coefficient;

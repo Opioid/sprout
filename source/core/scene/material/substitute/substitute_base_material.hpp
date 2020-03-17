@@ -16,10 +16,6 @@ class Material_base : public material::Material {
 
     bool has_emission_map() const final;
 
-    float ior() const final;
-
-    void set_ior(float ior);
-
     bool is_caustic() const override;
 
     void set_color_map(Texture_adapter const& color_map);
@@ -47,7 +43,6 @@ class Material_base : public material::Material {
 
     float3 color_;
 
-    float ior_;
     float alpha_;
     float metallic_;
     float emission_factor_;

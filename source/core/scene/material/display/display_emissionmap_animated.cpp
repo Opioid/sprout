@@ -26,24 +26,15 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
 
     float3 const radiance = emission_map_.sample_3(worker, sampler, rs.uv, element_);
 
-    sample.set(emission_factor_ * radiance, f0_, alpha_);
+    sample.set(emission_factor_ * radiance, fresnel::schlick_f0(ior_, rs.ior), alpha_);
 
     return sample;
-}
-
-float Emissionmap_animated::ior() const {
-    return ior_;
 }
 
 void Emissionmap_animated::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
-}
-
-void Emissionmap_animated::set_ior(float ior) {
-    ior_ = ior;
-    f0_  = fresnel::schlick_f0(1.f, ior);
 }
 
 size_t Emissionmap_animated::num_bytes() const {

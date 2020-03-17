@@ -15,8 +15,6 @@ class Material_subsurface final : public Material_base {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float border(float3 const& wi, float3 const& n) const final;
-
     size_t num_bytes() const final;
 
     void set_density_map(Texture_adapter const& density_map);

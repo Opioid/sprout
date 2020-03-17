@@ -87,7 +87,7 @@ void size() {
 
     print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
-    print_size<scene::material::Material>("material::Material", 24);
+    print_size<scene::material::Material>("material::Material", 32);
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
     print_size<scene::material::debug::Material>("debug::Material", 32);

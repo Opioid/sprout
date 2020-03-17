@@ -10,7 +10,9 @@
 namespace scene::material::volumetric {
 
 Material::Material(Sampler_settings const& sampler_settings)
-    : material::Material(sampler_settings, true), is_scattering_(true) {}
+    : material::Material(sampler_settings, true), is_scattering_(true) {
+    ior_ = 1.f;
+}
 
 Material::~Material() = default;
 
@@ -34,10 +36,6 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     sample.set_basis(rs.geo_n, wo);
 
     return sample;
-}
-
-float Material::ior() const {
-    return 1.f;
 }
 
 CM Material::control_medium() const {
