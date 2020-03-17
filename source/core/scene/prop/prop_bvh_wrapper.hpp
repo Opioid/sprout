@@ -36,17 +36,17 @@ class BVH_wrapper {
 
     AABB const& aabb() const;
 
-    bool intersect(Ray& ray, Worker const& worker, Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker& worker, Intersection& intersection) const;
 
-    bool intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const;
+    bool intersect_nsf(Ray& ray, Worker& worker, Intersection& intersection) const;
 
-    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const;
+    bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
 
-    bool intersect_p(Ray const& ray, Worker const& worker) const;
+    bool intersect_p(Ray const& ray, Worker& worker) const;
 
-    Result1 visibility(Ray const& ray, Filter filter, Worker const& worker) const;
+    Result1 visibility(Ray const& ray, Filter filter, Worker& worker) const;
 
-    bool thin_absorption(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const;
+    bool thin_absorption(Ray const& ray, Filter filter, Worker& worker, float3& ta) const;
 
   private:
     bvh::Tree tree_;

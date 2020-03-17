@@ -72,10 +72,10 @@ class Shape {
                              Node_stack& node_stack) const = 0;
 
     virtual float visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                             Filter filter, Worker const& worker) const = 0;
+                             Filter filter, Worker& worker) const = 0;
 
     virtual bool thin_absorption(Ray const& ray, Transformation const& transformation,
-                                 uint32_t entity, Filter filter, Worker const& worker,
+                                 uint32_t entity, Filter filter, Worker& worker,
                                  float3& ta) const = 0;
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,

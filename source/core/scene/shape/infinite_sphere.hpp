@@ -28,10 +28,10 @@ class Infinite_sphere final : public Shape {
                      Node_stack& node_stack) const final;
 
     float visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                     Filter filter, Worker const& worker) const final;
+                     Filter filter, Worker& worker) const final;
 
     bool thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                         Filter filter, Worker const& worker, float3& ta) const final;
+                         Filter filter, Worker& worker, float3& ta) const final;
 
     bool sample(uint32_t part, float3 const& p, float3 const& n,
                 Transformation const& transformation, float area, bool two_sided, Sampler& sampler,

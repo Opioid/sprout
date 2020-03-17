@@ -17,20 +17,19 @@ inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
 
-inline bool Scene::intersect(Ray& ray, Worker const& worker, Intersection& intersection) const {
+inline bool Scene::intersect(Ray& ray, Worker& worker, Intersection& intersection) const {
     return prop_bvh_.intersect(ray, worker, intersection);
 }
 
-inline bool Scene::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const {
+inline bool Scene::intersect(Ray& ray, Worker& worker, shape::Normals& normals) const {
     return prop_bvh_.intersect(ray, worker, normals);
 }
 
-inline bool Scene::intersect_volume(Ray& ray, Worker const& worker,
-                                    Intersection& intersection) const {
+inline bool Scene::intersect_volume(Ray& ray, Worker& worker, Intersection& intersection) const {
     return volume_bvh_.intersect_nsf(ray, worker, intersection);
 }
 
-inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker const& worker) const {
+inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker& worker) const {
     if (has_masked_material_) {
         return prop_bvh_.visibility(ray, filter, worker);
     }
@@ -42,7 +41,7 @@ inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker const& wo
     return {false, 0.f};
 }
 
-inline bool Scene::tinted_visibility(Ray const& ray, Filter filter, Worker const& worker,
+inline bool Scene::tinted_visibility(Ray const& ray, Filter filter, Worker& worker,
                                      float3& ta) const {
     if (has_tinted_shadow_) {
         return prop_bvh_.thin_absorption(ray, filter, worker, ta);

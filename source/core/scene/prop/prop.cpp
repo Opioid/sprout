@@ -67,7 +67,7 @@ void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& 
     properties_.set(Property::Local_animation, local_animation);
 }
 
-bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
+bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker,
                      shape::Intersection& intersection) const {
     if (!visible(ray.depth)) {
         return false;
@@ -88,7 +88,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker,
                                              intersection);
 }
 
-bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
+bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker,
                          shape::Intersection& intersection) const {
     if (!visible(ray.depth)) {
         return false;
@@ -109,7 +109,7 @@ bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
                                                  intersection);
 }
 
-bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const {
+bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const {
     //	if (!visible(ray.depth)) {
     //		return false;
     //	}
@@ -132,7 +132,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Norma
     return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(), normals);
 }
 
-bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const {
+bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker& worker) const {
     if (!visible_in_shadow()) {
         return false;
     }
@@ -165,7 +165,7 @@ bool Prop::visible(uint32_t ray_depth) const {
     return true;
 }
 
-float Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const {
+float Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker& worker) const {
     if (!has_masked_material()) {
         return intersect_p(self, ray, worker) ? 0.f : 1.f;
     }
@@ -186,7 +186,7 @@ float Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker cons
     return scene.prop_shape(self)->visibility(ray, transformation, self, filter, worker);
 }
 
-bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
+bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker& worker,
                            float3& ta) const {
     if (!has_tinted_shadow()) {
         float const v = visibility(self, ray, filter, worker);

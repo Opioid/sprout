@@ -141,7 +141,7 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Cube::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                       Filter filter, Worker const& worker) const {
+                       Filter filter, Worker& worker) const {
     float3 v      = transformation.position - ray.origin;
     float  b      = dot(v, ray.direction);
     float  radius = transformation.scale_x();
@@ -184,7 +184,7 @@ float Cube::visibility(Ray const& ray, Transformation const& transformation, uin
 }
 
 bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                           uint32_t /*entity*/, Filter /*filter*/, Worker const& /*worker*/,
+                           uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
                            float3& ta) const {
     ta = float3(1.f);
     return true;

@@ -12,7 +12,7 @@ class Sample_cache {
     ~Sample_cache();
 
     template <typename T>
-    T& get();
+    T& get() const;
 
   private:
     uint32_t max_sample_size_;

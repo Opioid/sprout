@@ -68,19 +68,19 @@ class Prop {
 
     void morph(uint32_t self, thread::Pool& threads, Scene const& scene);
 
-    bool intersect(uint32_t self, Ray& ray, Worker const& worker,
+    bool intersect(uint32_t self, Ray& ray, Worker& worker,
                    shape::Intersection& intersection) const;
 
-    bool intersect_nsf(uint32_t self, Ray& ray, Worker const& worker,
+    bool intersect_nsf(uint32_t self, Ray& ray, Worker& worker,
                        shape::Intersection& intersection) const;
 
-    bool intersect(uint32_t self, Ray& ray, Worker const& worker, shape::Normals& normals) const;
+    bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const;
 
-    bool intersect_p(uint32_t self, Ray const& ray, Worker const& worker) const;
+    bool intersect_p(uint32_t self, Ray const& ray, Worker& worker) const;
 
-    float visibility(uint32_t self, Ray const& ray, Filter filter, Worker const& worker) const;
+    float visibility(uint32_t self, Ray const& ray, Filter filter, Worker& worker) const;
 
-    bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker const& worker,
+    bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker& worker,
                          float3& ta) const;
 
     bool has_masked_material() const;

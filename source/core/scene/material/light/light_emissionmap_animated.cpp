@@ -28,8 +28,7 @@ void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /
 
 material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
-                                                     Sampler& /*sampler*/,
-                                                     Worker const& worker) const {
+                                                     Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);

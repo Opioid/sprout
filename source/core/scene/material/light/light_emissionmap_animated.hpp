@@ -17,8 +17,7 @@ class Emissionmap_animated : public Emissionmap {
                   Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const override;
+                                   Filter filter, Sampler& sampler, Worker& worker) const override;
 
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const final;

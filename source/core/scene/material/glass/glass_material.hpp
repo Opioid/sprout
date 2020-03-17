@@ -10,8 +10,7 @@ class alignas(64) Glass : public Material {
     Glass(Sampler_settings const& sampler_settings);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const override;
+                                   Filter filter, Sampler& sampler, Worker& worker) const override;
 
     float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
 

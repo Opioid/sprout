@@ -32,7 +32,7 @@ void Worker::init(Scene const& scene, Camera const& camera) {
     camera_ = &camera;
 }
 
-void Worker::init_rng(uint64_t sequence) const {
+void Worker::init_rng(uint64_t sequence) {
     rng_.start(0, sequence);
 }
 
@@ -113,7 +113,7 @@ material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const
 Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
                                                Intersection const& intersection, Filter filter,
                                                bool avoid_caustics, bool straight_border,
-                                               Sampler& sampler) const {
+                                               Sampler& sampler) {
     auto material = intersection.material(*this);
 
     float3 const wi = ray.direction;

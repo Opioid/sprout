@@ -41,7 +41,7 @@ struct Intersection {
                            Worker const& worker) const;
 
     Sample const& sample(float3 const& wo, Ray const& ray, Filter filter, bool avoid_caustics,
-                         Sampler& sampler, Worker const& worker) const;
+                         Sampler& sampler, Worker& worker) const;
 
     bool same_hemisphere(float3 const& v) const;
 

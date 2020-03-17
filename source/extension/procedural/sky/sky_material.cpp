@@ -30,7 +30,7 @@ Sky_material::Sky_material(Sky& sky) : Material(sky) {}
 
 material::Sample const& Sky_material::sample(float3 const&      wo, scene::Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
-                                             Sampler& /*sampler*/, Worker const& worker) const {
+                                             Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -69,8 +69,7 @@ Sky_baked_material::~Sky_baked_material() = default;
 
 material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene::Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
-                                                   Sampler& /*sampler*/,
-                                                   Worker const& worker) const {
+                                                   Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);

@@ -272,7 +272,7 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Mesh::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                       Filter filter, Worker const& worker) const {
+                       Filter filter, Worker& worker) const {
     math::ray tray(transformation.world_to_object_point(ray.origin),
                    transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
@@ -280,7 +280,7 @@ float Mesh::visibility(Ray const& ray, Transformation const& transformation, uin
 }
 
 bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                           Filter filter, Worker const& worker, float3& ta) const {
+                           Filter filter, Worker& worker, float3& ta) const {
     math::ray tray(transformation.world_to_object_point(ray.origin),
                    transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 

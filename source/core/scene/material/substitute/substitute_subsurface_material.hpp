@@ -13,8 +13,7 @@ class Material_subsurface final : public Material_base {
     void compile(thread::Pool& threads, Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const final;
+                                   Filter filter, Sampler& sampler, Worker& worker) const final;
 
     float border(float3 const& wi, float3 const& n) const final;
 

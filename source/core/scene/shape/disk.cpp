@@ -168,7 +168,7 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
 }
 
 float Disk::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                       Filter filter, Worker const& worker) const {
+                       Filter filter, Worker& worker) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);
@@ -198,7 +198,7 @@ float Disk::visibility(Ray const& ray, Transformation const& transformation, uin
 }
 
 bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                           Filter filter, Worker const& worker, float3& ta) const {
+                           Filter filter, Worker& worker, float3& ta) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float d     = dot(normal, transformation.position);

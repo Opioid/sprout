@@ -107,15 +107,15 @@ class Scene {
 
     bool has_volumes() const;
 
-    bool intersect(Ray& ray, Worker const& worker, Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker& worker, Intersection& intersection) const;
 
-    bool intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const;
+    bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
 
-    bool intersect_volume(Ray& ray, Worker const& worker, Intersection& intersection) const;
+    bool intersect_volume(Ray& ray, Worker& worker, Intersection& intersection) const;
 
-    Result1 visibility(Ray const& ray, Filter filter, Worker const& worker) const;
+    Result1 visibility(Ray const& ray, Filter filter, Worker& worker) const;
 
-    bool tinted_visibility(Ray const& ray, Filter filter, Worker const& worker, float3& ta) const;
+    bool tinted_visibility(Ray const& ray, Filter filter, Worker& worker, float3& ta) const;
 
     uint32_t num_props() const;
 

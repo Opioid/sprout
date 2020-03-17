@@ -8,11 +8,11 @@
 
 namespace scene {
 
-inline bool Worker::intersect(Ray& ray, Intersection& intersection) const {
+inline bool Worker::intersect(Ray& ray, Intersection& intersection) {
     return scene_->intersect(ray, *this, intersection);
 }
 
-inline bool Worker::intersect(Ray& ray, shape::Normals& normals) const {
+inline bool Worker::intersect(Ray& ray, shape::Normals& normals) {
     return scene_->intersect(ray, *this, normals);
 }
 
@@ -25,7 +25,7 @@ inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& intersect
     return resolve_mask(ray, intersection, filter);
 }
 
-inline Result1 Worker::visibility(Ray const& ray, Filter filter) const {
+inline Result1 Worker::visibility(Ray const& ray, Filter filter) {
     return scene_->visibility(ray, filter, *this);
 }
 
@@ -41,11 +41,11 @@ inline uint64_t Worker::absolute_time(uint32_t frame, float frame_delta) const {
     return camera_->absolute_time(frame, frame_delta);
 }
 
-inline shape::Node_stack& Worker::node_stack() const {
+inline shape::Node_stack& Worker::node_stack() {
     return node_stack_;
 }
 
-inline material::Sample_cache& Worker::sample_cache() const {
+inline material::Sample_cache& Worker::sample_cache() {
     return sample_cache_;
 }
 
@@ -57,7 +57,7 @@ inline prop::Interface_stack& Worker::interface_stack() {
     return interface_stack_;
 }
 
-inline rnd::Generator& Worker::rng() const {
+inline rnd::Generator& Worker::rng() {
     return rng_;
 }
 

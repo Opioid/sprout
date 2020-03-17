@@ -46,8 +46,7 @@ class Material_clearcoat : public Material_coating<Clearcoat_data> {
                              Worker const& worker) const final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const override;
+                                   Filter filter, Sampler& sampler, Worker& worker) const override;
 
     void set_coating_attenuation(float3 const& absorption_color, float distance);
 
@@ -69,8 +68,7 @@ class Material_thinfilm : public Material_coating<Thinfilm_data> {
     Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const final;
+                                   Filter filter, Sampler& sampler, Worker& worker) const final;
 
     void set_thinfilm(float ior, float roughness, float thickness);
 

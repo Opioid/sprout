@@ -346,7 +346,7 @@ bool Tree<Data>::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_directi
 
 template <typename Data>
 float Tree<Data>::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
-                             Worker const& worker) const {
+                             Worker& worker) const {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);
@@ -409,8 +409,8 @@ float Tree<Data>::visibility(ray& ray, uint64_t time, uint32_t entity, Filter fi
 }
 
 template <typename Data>
-bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter,
-                            Worker const& worker, float3& ta) const {
+bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker& worker,
+                            float3& ta) const {
     auto& node_stack = worker.node_stack();
     //	node_stack.clear();
     //	node_stack.push(0);

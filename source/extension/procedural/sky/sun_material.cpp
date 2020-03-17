@@ -25,7 +25,7 @@ Sun_material::Sun_material(Sky& sky) : Material(sky) {}
 
 material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
-                                             Sampler& /*sampler*/, Worker const& worker) const {
+                                             Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);
@@ -57,8 +57,7 @@ Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
 
 material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter /*filter*/,
-                                                   Sampler& /*sampler*/,
-                                                   Worker const& worker) const {
+                                                   Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     sample.set_basis(rs.geo_n, wo);

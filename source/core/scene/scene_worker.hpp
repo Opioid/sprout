@@ -56,17 +56,17 @@ class Worker {
 
     void init(Scene const& scene, Camera const& camera);
 
-    void init_rng(uint64_t sequence) const;
+    void init_rng(uint64_t sequence);
 
-    bool intersect(Ray& ray, Intersection& intersection) const;
+    bool intersect(Ray& ray, Intersection& intersection);
 
-    bool intersect(Ray& ray, shape::Normals& normals) const;
+    bool intersect(Ray& ray, shape::Normals& normals);
 
     bool resolve_mask(Ray& ray, Intersection& intersection, Filter filter);
 
     bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection, Filter filter);
 
-    Result1 visibility(Ray const& ray, Filter filter) const;
+    Result1 visibility(Ray const& ray, Filter filter);
 
     Scene const& scene() const;
 
@@ -74,9 +74,9 @@ class Worker {
 
     uint64_t absolute_time(uint32_t frame, float frame_delta) const;
 
-    shape::Node_stack& node_stack() const;
+    shape::Node_stack& node_stack();
 
-    material::Sample_cache& sample_cache() const;
+    material::Sample_cache& sample_cache();
 
     template <typename T>
     T& sample() const;
@@ -89,7 +89,7 @@ class Worker {
 
     Interface_stack& interface_stack();
 
-    rnd::Generator& rng() const;
+    rnd::Generator& rng();
 
     void reset_interface_stack(Interface_stack const& stack);
 
@@ -102,14 +102,14 @@ class Worker {
     Material_sample const& sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
                                            Intersection const& intersection, Filter filter,
                                            bool avoid_caustics, bool straight_border,
-                                           Sampler& sampler) const;
+                                           Sampler& sampler);
 
   protected:
-    mutable rnd::Generator rng_;
+    rnd::Generator rng_;
 
-    mutable shape::Node_stack node_stack_;
+    shape::Node_stack node_stack_;
 
-    mutable material::Sample_cache sample_cache_;
+    material::Sample_cache sample_cache_;
 
     Interface_stack interface_stack_;
     Interface_stack interface_stack_temp_;

@@ -13,8 +13,7 @@ class Material_coating_subsurface final : public Material_clearcoat {
     void compile(thread::Pool& threads, Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const final;
+                                   Filter filter, Sampler& sampler, Worker& worker) const final;
 
     size_t num_bytes() const final;
 

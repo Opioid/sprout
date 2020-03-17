@@ -10,8 +10,7 @@ class alignas(64) Material_isotropic : public Material {
     Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const final;
+                                   Filter filter, Sampler& sampler, Worker& worker) const final;
 
     float ior() const final;
 
@@ -41,8 +40,7 @@ class alignas(64) Material_anisotropic : public Material {
     Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler,
-                                   Worker const& worker) const final;
+                                   Filter filter, Sampler& sampler, Worker& worker) const final;
 
     float ior() const final;
 

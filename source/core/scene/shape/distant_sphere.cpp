@@ -141,15 +141,14 @@ bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transform
 }
 
 float Distant_sphere::visibility(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                                 uint32_t /*entity*/, Filter /*filter*/,
-                                 Worker const& /*worker*/) const {
+                                 uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/) const {
     // Implementation for this is not really needed, so just skip it
     return 1.f;
 }
 
 bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                                     uint32_t /*entity*/, Filter /*filter*/,
-                                     Worker const& /*worker*/, float3& ta) const {
+                                     uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
+                                     float3& ta) const {
     // Implementation for this is not really needed, so just skip it
     ta = float3(1.f);
     return true;

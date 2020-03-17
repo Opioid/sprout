@@ -26,7 +26,7 @@ AABB const& BVH_wrapper::aabb() const {
     return tree_.aabb_;
 }
 
-bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& intersection) const {
+bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection) const {
     auto& node_stack = worker.node_stack();
 
     bool hit = false;
@@ -98,7 +98,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, Intersection& inters
     return hit;
 }
 
-bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& intersection) const {
+bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersection) const {
     auto& node_stack = worker.node_stack();
 
     bool hit = false;
@@ -170,7 +170,7 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker const& worker, Intersection& in
     return hit;
 }
 
-bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& normals) const {
+bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) const {
     auto& node_stack = worker.node_stack();
 
     bool hit = false;
@@ -236,7 +236,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker const& worker, shape::Normals& norm
     return hit;
 }
 
-bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const {
+bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -299,7 +299,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker const& worker) const {
     return false;
 }
 
-Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& worker) const {
+Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
@@ -366,8 +366,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker const& wor
     return {true, visibility};
 }
 
-bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker const& worker,
-                                  float3& ta) const {
+bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker, float3& ta) const {
     auto& node_stack = worker.node_stack();
 
     node_stack.clear();
