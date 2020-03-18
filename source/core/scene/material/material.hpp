@@ -67,7 +67,7 @@ class Material {
 
     void set_ior(float ior);
 
-    virtual void compile(thread::Pool& threads, Scene const& scene);
+    virtual void commit(thread::Pool& threads, Scene const& scene);
 
     virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
                           thread::Pool& threads, Scene const& scene);

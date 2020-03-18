@@ -49,7 +49,7 @@ CCE Grid::collision_coefficients_emission(float3 const& uvw, Filter filter,
     return {{d * cc_.a, d * cc_.s}, emission_};
 }
 
-void Grid::compile(thread::Pool& threads, Scene const& scene) {
+void Grid::commit(thread::Pool& threads, Scene const& scene) {
     auto const& texture = density_.texture(scene);
 
     Octree_builder builder;
@@ -220,7 +220,7 @@ void Grid_color::set_attenuation(float scattering_factor, float distance) {
     scattering_factor_ = scattering_factor;
 }
 
-void Grid_color::compile(thread::Pool& threads, Scene const& scene) {
+void Grid_color::commit(thread::Pool& threads, Scene const& scene) {
     auto const& texture = color_.texture(scene);
 
     Octree_builder builder;

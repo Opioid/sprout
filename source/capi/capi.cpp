@@ -354,7 +354,7 @@ uint32_t su_create_material(char const* string) {
         return resource::Null;
     }
 
-    material.ptr->compile(engine->threads, engine->scene);
+    material.ptr->commit(engine->threads, engine->scene);
 
     return material.id;
 }

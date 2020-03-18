@@ -26,7 +26,7 @@ class alignas(64) Grid : public Material {
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const final;
 
-    void compile(thread::Pool& threads, Scene const& scene) final;
+    void commit(thread::Pool& threads, Scene const& scene) final;
 
     Gridtree const* volume_tree() const final;
 
@@ -91,7 +91,7 @@ class Grid_color : public Material {
 
     void set_attenuation(float scattering_factor, float distance);
 
-    void compile(thread::Pool& threads, Scene const& scene) final;
+    void commit(thread::Pool& threads, Scene const& scene) final;
 
     Gridtree const* volume_tree() const final;
 

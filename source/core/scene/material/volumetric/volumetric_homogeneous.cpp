@@ -6,7 +6,7 @@ namespace scene::material::volumetric {
 
 Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) : Material(sampler_settings) {}
 
-void Homogeneous::compile(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+void Homogeneous::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
     is_scattering_ = any_greater_zero(cc_.s);
 }
 

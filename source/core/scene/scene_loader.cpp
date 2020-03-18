@@ -461,14 +461,14 @@ Loader::Material_ptr Loader::load_material(std::string const&     name,
         if (auto material = resource_manager_.load<Material>(name, data,
                                                              local_materials.source_name);
             material.ptr) {
-            material.ptr->compile(resource_manager_.threads(), scene);
+            material.ptr->commit(resource_manager_.threads(), scene);
             return material;
         }
     }
 
     // Lastly, try loading the material from the filesystem.
     if (auto material = resource_manager_.load<Material>(name); material.ptr) {
-        material.ptr->compile(resource_manager_.threads(), scene);
+        material.ptr->commit(resource_manager_.threads(), scene);
         return material;
     }
 

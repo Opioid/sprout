@@ -20,7 +20,7 @@ namespace scene::material::substitute {
 Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings)
     : Material_base(sampler_settings, false) {}
 
-void Material_subsurface::compile(thread::Pool& threads, Scene const& scene) {
+void Material_subsurface::commit(thread::Pool& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture(scene);
 

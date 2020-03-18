@@ -9,7 +9,7 @@ class Homogeneous : public Material {
   public:
     Homogeneous(Sampler_settings const& sampler_settings);
 
-    void compile(thread::Pool& threads, Scene const& scene) final;
+    void commit(thread::Pool& threads, Scene const& scene) final;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const final;

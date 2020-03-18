@@ -28,7 +28,7 @@ void Material::set_ior(float ior) {
     ior_ = ior;
 }
 
-void Material::compile(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
+void Material::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
 
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
                         thread::Pool& /*threads*/, Scene const& /*scene*/) {}
