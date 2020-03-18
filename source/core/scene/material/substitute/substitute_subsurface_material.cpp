@@ -18,7 +18,9 @@
 namespace scene::material::substitute {
 
 Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings)
-    : Material_base(sampler_settings, false) {}
+    : Material_base(sampler_settings, false) {
+    properties_.set(Property::Caustic);
+}
 
 void Material_subsurface::commit(thread::Pool& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
@@ -28,7 +30,9 @@ void Material_subsurface::commit(thread::Pool& threads, Scene const& scene) {
         builder.build(tree_, texture, cm_, threads);
     }
 
-    is_scattering_ = color_map_.is_valid() || any_greater_zero(cc_.s);
+    properties_.set(Property::Scattering_volume, color_map_.is_valid() || any_greater_zero(cc_.s));
+    properties_.set(Property::Textured_volume, color_map_.is_valid());
+    properties_.set(Property::Heterogeneous_volume, density_map_.is_valid());
 }
 
 material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray const& /*ray*/,
@@ -136,22 +140,6 @@ CM Material_subsurface::control_medium() const {
 volumetric::Gridtree const* Material_subsurface::volume_tree() const {
     //	return nullptr;
     return &tree_;
-}
-
-bool Material_subsurface::is_heterogeneous_volume() const {
-    return density_map_.is_valid();
-}
-
-bool Material_subsurface::is_textured_volume() const {
-    return color_map_.is_valid();
-}
-
-bool Material_subsurface::is_scattering_volume() const {
-    return is_scattering_;
-}
-
-bool Material_subsurface::is_caustic() const {
-    return true;
 }
 
 size_t Material_subsurface::sample_size() {

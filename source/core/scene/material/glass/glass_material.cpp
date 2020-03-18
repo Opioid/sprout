@@ -10,7 +10,9 @@
 
 namespace scene::material::glass {
 
-Glass::Glass(Sampler_settings const& sampler_settings) : Material(sampler_settings, false) {}
+Glass::Glass(Sampler_settings const& sampler_settings) : Material(sampler_settings, false) {
+    properties_.set(Property::Caustic);
+}
 
 material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
                                       Filter filter, Sampler& /*sampler*/, Worker& worker) const {
@@ -55,10 +57,6 @@ void Glass::set_attenuation(float3 const& absorption_color, float distance) {
     absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
 
     attenuation_distance_ = distance;
-}
-
-bool Glass::is_caustic() const {
-    return true;
 }
 
 size_t Glass::sample_size() {

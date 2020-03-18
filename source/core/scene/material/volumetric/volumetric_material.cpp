@@ -10,8 +10,9 @@
 namespace scene::material::volumetric {
 
 Material::Material(Sampler_settings const& sampler_settings)
-    : material::Material(sampler_settings, true), is_scattering_(true) {
+    : material::Material(sampler_settings, true) {
     ior_ = 1.f;
+    properties_.set(Property::Scattering_volume);
 }
 
 Material::~Material() = default;
@@ -46,10 +47,6 @@ float Material::similarity_relation_scale(uint32_t depth) const {
     float const gs = van_de_hulst_anisotropy(depth);
 
     return van_de_hulst(anisotropy_, gs);
-}
-
-bool Material::is_scattering_volume() const {
-    return is_scattering_;
 }
 
 float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const {

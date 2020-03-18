@@ -15,8 +15,6 @@ class Glass_thin : public Material {
     float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                            Filter filter, Worker const& worker) const final;
 
-    bool has_tinted_shadow() const final;
-
     size_t num_bytes() const final;
 
     void set_normal_map(Texture_adapter const& normal_map);

@@ -47,10 +47,6 @@ float3 Emissionmap::average_radiance(float /*area*/, Scene const& /*scene*/) con
     return average_emission_;
 }
 
-bool Emissionmap::has_emission_map() const {
-    return emission_map_.is_valid();
-}
-
 Material::Sample_2D Emissionmap::radiance_sample(float2 r2) const {
     auto const result = distribution_.sample_continuous(r2);
 
@@ -78,6 +74,8 @@ void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64
 
 void Emissionmap::set_emission_map(Texture_adapter const& emission_map) {
     emission_map_ = emission_map;
+
+    properties_.set(Property::Emission_map, emission_map.is_valid());
 }
 
 void Emissionmap::set_emission_factor(float emission_factor) {

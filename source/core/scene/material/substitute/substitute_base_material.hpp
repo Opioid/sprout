@@ -9,14 +9,12 @@ class Material_base : public material::Material {
   public:
     Material_base(Sampler_settings const& sampler_settings, bool two_sided);
 
+    void commit(thread::Pool& threads, Scene const& scene) override;
+
     float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
                              Worker const& worker) const override;
 
     float3 average_radiance(float area, Scene const& scene) const final;
-
-    bool has_emission_map() const final;
-
-    bool is_caustic() const override;
 
     void set_color_map(Texture_adapter const& color_map);
     void set_normal_map(Texture_adapter const& normal_map);

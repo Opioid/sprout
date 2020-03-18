@@ -12,7 +12,9 @@
 namespace scene::material::glass {
 
 Glass_rough::Glass_rough(Sampler_settings const& sampler_settings)
-    : Material(sampler_settings, false) {}
+    : Material(sampler_settings, false) {
+    properties_.set(Property::Caustic);
+}
 
 material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*ray*/,
                                             Renderstate const& rs, Filter filter,
@@ -75,10 +77,6 @@ void Glass_rough::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 
     alpha_ = r * r;
-}
-
-bool Glass_rough::is_caustic() const {
-    return true;
 }
 
 size_t Glass_rough::sample_size() {

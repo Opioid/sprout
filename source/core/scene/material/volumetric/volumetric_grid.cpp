@@ -17,7 +17,9 @@
 namespace scene::material::volumetric {
 
 Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density)
-    : Material(sampler_settings), density_(density) {}
+    : Material(sampler_settings), density_(density) {
+    properties_.set(Property::Heterogeneous_volume);
+}
 
 Grid::~Grid() = default;
 
@@ -55,15 +57,11 @@ void Grid::commit(thread::Pool& threads, Scene const& scene) {
     Octree_builder builder;
     builder.build(tree_, texture, cm_, threads);
 
-    is_scattering_ = any_greater_zero(cc_.s);
+    properties_.set(Property::Scattering_volume, any_greater_zero(cc_.s));
 }
 
 Gridtree const* Grid::volume_tree() const {
     return &tree_;
-}
-
-bool Grid::is_heterogeneous_volume() const {
-    return true;
 }
 
 size_t Grid::num_bytes() const {
@@ -77,13 +75,11 @@ float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) cons
 }
 
 Grid_emission::Grid_emission(Sampler_settings const& sampler_settings, Texture_adapter const& grid)
-    : Grid(sampler_settings, grid), average_emission_(float3(-1.f)) {}
+    : Grid(sampler_settings, grid), average_emission_(float3(-1.f)) {
+    properties_.set(Property::Emission_map);
+}
 
 Grid_emission::~Grid_emission() = default;
-
-bool Grid_emission::has_emission_map() const {
-    return true;
-}
 
 Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const {
     auto const result = distribution_.sample_continuous(r3);
@@ -171,6 +167,7 @@ size_t Grid_emission::num_bytes() const {
 }
 
 Grid_color::Grid_color(Sampler_settings const& sampler_settings) : Material(sampler_settings) {
+    properties_.set(Property::Heterogeneous_volume);
     cc_ = CC{float3(0.5f), float3(0.5f)};
     cm_ = CM(cc_);
 }
@@ -229,10 +226,6 @@ void Grid_color::commit(thread::Pool& threads, Scene const& scene) {
 
 Gridtree const* Grid_color::volume_tree() const {
     return &tree_;
-}
-
-bool Grid_color::is_heterogeneous_volume() const {
-    return true;
 }
 
 size_t Grid_color::num_bytes() const {

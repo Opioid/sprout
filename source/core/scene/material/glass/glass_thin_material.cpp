@@ -13,7 +13,9 @@
 namespace scene::material::glass {
 
 Glass_thin::Glass_thin(Sampler_settings const& sampler_settings)
-    : Material(sampler_settings, true) {}
+    : Material(sampler_settings, true) {
+    properties_.set(Property::Tinted_shadow);
+}
 
 material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*ray*/,
                                            Renderstate const& rs, Filter filter,
@@ -64,10 +66,6 @@ float3 Glass_thin::thin_absorption(float3 const& wi, float3 const& n, float2 uv,
     float3 const ta = min((1.f - o) + (refraction_color_ * attenuation), 1.f);
 
     return (1.f - f) * ta;
-}
-
-bool Glass_thin::has_tinted_shadow() const {
-    return true;
 }
 
 size_t Glass_thin::num_bytes() const {

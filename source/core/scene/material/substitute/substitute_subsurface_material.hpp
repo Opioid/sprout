@@ -36,12 +36,6 @@ class Material_subsurface final : public Material_base {
 
     volumetric::Gridtree const* volume_tree() const final;
 
-    bool is_heterogeneous_volume() const final;
-    bool is_textured_volume() const final;
-    bool is_scattering_volume() const final;
-
-    bool is_caustic() const final;
-
     static size_t sample_size();
 
   private:
@@ -58,8 +52,6 @@ class Material_subsurface final : public Material_base {
     float attenuation_distance_;
 
     volumetric::Gridtree tree_;
-
-    bool is_scattering_;
 };
 
 }  // namespace scene::material::substitute

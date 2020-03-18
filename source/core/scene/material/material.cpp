@@ -16,7 +16,9 @@ char const* Material::identifier() {
 }
 
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
-    : sampler_key_(sampler_settings.key()), two_sided_(two_sided), ior_(1.5f) {}
+    : sampler_key_(sampler_settings.key()),
+      properties_(two_sided ? Property::Two_sided : Property::None),
+      ior_(1.5f) {}
 
 Material::~Material() = default;
 
@@ -45,10 +47,6 @@ float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, 
 
 float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const {
     return float3(0.f);
-}
-
-bool Material::has_emission_map() const {
-    return false;
 }
 
 Material::Sample_2D Material::radiance_sample(float2 r2) const {
@@ -132,49 +130,41 @@ float Material::similarity_relation_scale(uint32_t /*depth*/) const {
     return 1.f;
 }
 
-bool Material::is_heterogeneous_volume() const {
-    return false;
-}
-
-bool Material::is_textured_volume() const {
-    return false;
-}
-
-bool Material::is_scattering_volume() const {
-    return false;
-}
-
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                 Transformation const& /*transformation*/, float /*extent*/,
                                 bool /*importance_sampling*/, thread::Pool& /*threads*/,
                                 Scene const& /*scene*/) {}
 
-bool Material::is_animated() const {
-    return false;
-}
-
-bool Material::has_tinted_shadow() const {
-    return false;
-}
-
-float Material::ior() const {
-    return ior_;
-}
-
 uint32_t Material::sampler_key() const {
     return sampler_key_;
 }
 
-bool Material::is_caustic() const {
-    return false;
+bool Material::is_two_sided() const {
+    return properties_.is(Property::Two_sided);
 }
 
 bool Material::is_masked() const {
     return mask_.is_valid();
 }
 
+bool Material::is_animated() const {
+    return properties_.is(Property::Animated);
+}
+
+bool Material::is_caustic() const {
+    return properties_.is(Property::Caustic);
+}
+
+bool Material::has_tinted_shadow() const {
+    return properties_.is(Property::Tinted_shadow);
+}
+
+bool Material::has_emission_map() const {
+    return properties_.is(Property::Emission_map);
+}
+
 bool Material::is_emissive(Scene const& scene) const {
-    if (has_emission_map()) {
+    if (properties_.is(Property::Emission_map)) {
         return true;
     }
 
@@ -182,8 +172,20 @@ bool Material::is_emissive(Scene const& scene) const {
     return any_greater_zero(e);
 }
 
-bool Material::is_two_sided() const {
-    return two_sided_;
+bool Material::is_scattering_volume() const {
+    return properties_.is(Property::Scattering_volume);
+}
+
+bool Material::is_textured_volume() const {
+    return properties_.is(Property::Textured_volume);
+}
+
+bool Material::is_heterogeneous_volume() const {
+    return properties_.is(Property::Heterogeneous_volume);
+}
+
+float Material::ior() const {
+    return ior_;
 }
 
 float3 Material::rainbow_[Num_bands + 1];

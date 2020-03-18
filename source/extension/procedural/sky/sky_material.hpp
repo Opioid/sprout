@@ -45,8 +45,6 @@ class Sky_baked_material : public Material {
 
     float3 average_radiance(float area, scene::Scene const& scene) const final;
 
-    bool has_emission_map() const final;
-
     Sample_2D radiance_sample(float2 r2) const final;
 
     float emission_pdf(float2 uv, Filter filter, scene::Worker const& worker) const final;

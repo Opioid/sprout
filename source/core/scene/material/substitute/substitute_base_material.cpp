@@ -13,6 +13,10 @@ namespace scene::material::substitute {
 Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
+void Material_base::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+    properties_.set(Property::Caustic, !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha);
+}
+
 float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
                                         Filter filter, Worker const& worker) const {
     if (emission_map_.is_valid()) {
@@ -31,14 +35,6 @@ float3 Material_base::average_radiance(float /*area*/, Scene const& scene) const
     return float3(0.f);
 }
 
-bool Material_base::has_emission_map() const {
-    return emission_map_.is_valid();
-}
-
-bool Material_base::is_caustic() const {
-    return !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha;
-}
-
 void Material_base::set_color_map(Texture_adapter const& color_map) {
     color_map_ = color_map;
 }
@@ -53,6 +49,8 @@ void Material_base::set_surface_map(Texture_adapter const& surface_map) {
 
 void Material_base::set_emission_map(Texture_adapter const& emission_map) {
     emission_map_ = emission_map;
+
+    properties_.set(Property::Emission_map, emission_map.is_valid());
 }
 
 void Material_base::set_color(float3 const& color) {

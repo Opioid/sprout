@@ -29,8 +29,6 @@ class Emissionmap_animated : public Emissionmap {
                           bool importance_sampling, thread::Pool& threads,
                           Scene const& scene) final;
 
-    bool is_animated() const final;
-
     void set_emission_map(Texture_adapter const& emission_map, uint64_t animation_duration);
 
     size_t num_bytes() const override;

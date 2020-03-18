@@ -18,8 +18,6 @@ class Material : public material::Material {
 
     float similarity_relation_scale(uint32_t depth) const final;
 
-    bool is_scattering_volume() const final;
-
     float3 average_radiance(float area, Scene const& scene) const final;
 
     void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
@@ -44,8 +42,6 @@ class Material : public material::Material {
     float distance_;
 
     float anisotropy_;
-
-    bool is_scattering_;
 
   private:
     static uint32_t SR_low;

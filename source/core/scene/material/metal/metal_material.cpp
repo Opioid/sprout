@@ -13,6 +13,10 @@ namespace scene::material::metal {
 Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
+void Material_isotropic::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+    properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
+}
+
 material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    Sampler& /*sampler*/, Worker& worker) const {
@@ -32,10 +36,6 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
     sample.set(ior3_, absorption_, alpha_, rs.avoid_caustics);
 
     return sample;
-}
-
-bool Material_isotropic::is_caustic() const {
-    return alpha_ <= ggx::Min_alpha;
 }
 
 size_t Material_isotropic::num_bytes() const {
@@ -68,6 +68,11 @@ size_t Material_isotropic::sample_size() {
 Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
+void Material_anisotropic::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+    properties_.set(Property::Caustic,
+                    roughness_[0] <= ggx::Min_roughness || roughness_[1] <= ggx::Min_roughness);
+}
+
 material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
                                                      Sampler& /*sampler*/, Worker& worker) const {
@@ -94,10 +99,6 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
     sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
-}
-
-bool Material_anisotropic::is_caustic() const {
-    return roughness_[0] <= ggx::Min_roughness || roughness_[1] <= ggx::Min_roughness;
 }
 
 size_t Material_anisotropic::num_bytes() const {

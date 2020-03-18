@@ -30,8 +30,6 @@ class alignas(64) Grid : public Material {
 
     Gridtree const* volume_tree() const final;
 
-    bool is_heterogeneous_volume() const final;
-
     size_t num_bytes() const override;
 
   protected:
@@ -47,8 +45,6 @@ class Grid_emission : public Grid {
     Grid_emission(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
 
     ~Grid_emission() override;
-
-    bool has_emission_map() const final;
 
     Sample_3D radiance_sample(float3 const& r3) const final;
 
@@ -94,8 +90,6 @@ class Grid_color : public Material {
     void commit(thread::Pool& threads, Scene const& scene) final;
 
     Gridtree const* volume_tree() const final;
-
-    bool is_heterogeneous_volume() const final;
 
     size_t num_bytes() const override;
 

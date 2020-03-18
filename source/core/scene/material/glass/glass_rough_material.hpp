@@ -23,8 +23,6 @@ class Glass_rough : public Material {
     void set_attenuation(float3 const& absorption_color, float distance);
     void set_roughness(float roughness);
 
-    bool is_caustic() const final;
-
     static size_t sample_size();
 
   protected:

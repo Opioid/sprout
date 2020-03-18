@@ -10,7 +10,9 @@
 namespace scene::material::light {
 
 Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided)
-    : Emissionmap(sampler_settings, two_sided), element_(-1) {}
+    : Emissionmap(sampler_settings, two_sided), element_(-1) {
+    properties_.set(Property::Animated);
+}
 
 Emissionmap_animated::~Emissionmap_animated() = default;
 
@@ -73,10 +75,6 @@ void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*
     element_ = element;
 
     prepare_sampling_internal(shape, element, importance_sampling, threads, scene);
-}
-
-bool Emissionmap_animated::is_animated() const {
-    return true;
 }
 
 void Emissionmap_animated::set_emission_map(Texture_adapter const& emission_map,

@@ -39,10 +39,6 @@ float3 Constant::average_radiance(float area, Scene const& /*scene*/) const {
     return radiance;
 }
 
-bool Constant::has_emission_map() const {
-    return false;
-}
-
 size_t Constant::num_bytes() const {
     return sizeof(*this);
 }

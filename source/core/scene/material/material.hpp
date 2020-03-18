@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
+#include "base/flags/flags.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
@@ -83,8 +84,6 @@ class Material {
 
     virtual float3 average_radiance(float area_or_volume, Scene const& scene) const;
 
-    virtual bool has_emission_map() const;
-
     struct Sample_2D {
         float2 uv;
         float  pdf;
@@ -127,41 +126,54 @@ class Material {
 
     virtual float similarity_relation_scale(uint32_t depth) const;
 
-    virtual bool is_heterogeneous_volume() const;
-
-    virtual bool is_textured_volume() const;
-
-    virtual bool is_scattering_volume() const;
-
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                                   Transformation const& transformation, float extent,
                                   bool importance_sampling, thread::Pool& threads,
                                   Scene const& scene);
 
-    virtual bool is_animated() const;
-
-    virtual bool has_tinted_shadow() const;
-
-    float ior() const;
-
     uint32_t sampler_key() const;
-
-    virtual bool is_caustic() const;
 
     bool is_masked() const;
 
+    bool is_two_sided() const;
+
+    bool is_animated() const;
+
+    bool is_caustic() const;
+
+    bool has_tinted_shadow() const;
+
+    bool has_emission_map() const;
+
     bool is_emissive(Scene const& scene) const;
 
-    bool is_two_sided() const;
+    bool is_scattering_volume() const;
+
+    bool is_textured_volume() const;
+
+    bool is_heterogeneous_volume() const;
+
+    float ior() const;
 
     virtual size_t num_bytes() const = 0;
 
-  private:
+  protected:
     uint32_t sampler_key_;
 
-    bool two_sided_;
+    enum class Property {
+        None                 = 0,
+        Two_sided            = 1 << 0,
+        Animated             = 1 << 1,
+        Caustic              = 1 << 2,
+        Tinted_shadow        = 1 << 3,
+        Emission_map         = 1 << 4,
+        Scattering_volume    = 1 << 5,
+        Textured_volume      = 1 << 6,
+        Heterogeneous_volume = 1 << 7
+    };
 
-  protected:
+    flags::Flags<Property> properties_;
+
     Texture_adapter mask_;
 
     float ior_;

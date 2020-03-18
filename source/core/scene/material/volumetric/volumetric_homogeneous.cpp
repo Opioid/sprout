@@ -7,7 +7,7 @@ namespace scene::material::volumetric {
 Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) : Material(sampler_settings) {}
 
 void Homogeneous::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
-    is_scattering_ = any_greater_zero(cc_.s);
+    properties_.set(Property::Scattering_volume, any_greater_zero(cc_.s));
 }
 
 float3 Homogeneous::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, float /*volume*/,
