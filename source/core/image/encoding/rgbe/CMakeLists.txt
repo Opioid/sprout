@@ -1,5 +1,7 @@
 target_sources(core
     PRIVATE
+    "rgbe_as_png_writer.cpp"
+    "rgbe_as_png_writer.hpp"
     "rgbe_reader.cpp"
     "rgbe_reader.hpp"
     "rgbe_writer.cpp"
