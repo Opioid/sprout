@@ -1,6 +1,7 @@
 #include "operator_helper.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "core/image/typed_image.hpp"
 #include "core/image/encoding/exr/exr_writer.hpp"
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/encoding/rgbe/rgbe_as_png_writer.hpp"
@@ -43,6 +44,18 @@ bool write(Float4 const& image, std::string const& name, bool alpha, thread::Poo
 
     encoding::png::Writer writer(false, alpha, false);
     return writer.write(stream, image, threads);
+}
+
+bool write(image::Float4 const& image, std::string const& name, Transcode transcode, thread::Pool& threads) {
+    image::Float4 temp(image.description());
+
+    if (Transcode::RGBE == transcode) {
+        encoding::rgbe::Rgbe_as_png::transcode(image, temp, threads);
+    } else if (Transcode::RGBD == transcode) {
+        encoding::rgbe::Rgbd_as_png::transcode(image, temp, threads);
+    }
+
+    return write(temp, name, false, threads);
 }
 
 }  // namespace op

@@ -15,6 +15,11 @@ namespace image::encoding::rgbe {
 static byte4 float_to_rgbe(float4 const& c);
 static byte4 float_to_rgbd(float4 const& c, float max);
 
+using image_float3 = packed_float3;
+
+static image_float3 rgbe_to_float3(uint8_t rgbe[4]);
+static image_float3 rgbd_to_float3(uint8_t rgbe[4], float max);
+
 std::string Rgbe_as_png::file_extension() const {
     return "rgbe.png";
 }
@@ -22,7 +27,7 @@ std::string Rgbe_as_png::file_extension() const {
 bool Rgbe_as_png::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
     int2 const d = image.description().dimensions_2();
 
-    memory::Buffer<byte4> buffer(d[0] * d[1]);
+    memory::Buffer<byte4> buffer(uint32_t(d[0] * d[1]));
 
     threads.run_range(
         [&buffer, &image](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
@@ -46,6 +51,20 @@ bool Rgbe_as_png::write(std::ostream& stream, Float4 const& image, thread::Pool&
     mz_free(png_buffer);
 
     return true;
+}
+
+void Rgbe_as_png::transcode(Float4 const& source, Float4& destination, thread::Pool& threads) {
+    int2 const d = source.description().dimensions_2();
+
+    threads.run_range(
+        [&source, &destination](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t i = begin; i < end; ++i) {
+                byte4 rgbe = float_to_rgbe(source.at(i));
+
+                destination.store(i, float4(rgbe_to_float3(rgbe.v), 1.f));
+            }
+        },
+        0, d[0] * d[1]);
 }
 
 std::string Rgbd_as_png::file_extension() const {
@@ -91,6 +110,28 @@ bool Rgbd_as_png::write(std::ostream& stream, Float4 const& image, thread::Pool&
     return true;
 }
 
+void Rgbd_as_png::transcode(Float4 const& source, Float4& destination, thread::Pool& threads) {
+    int2 const d = source.description().dimensions_2();
+
+    float max = 0.f;
+
+    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+        float const pm = max_component(source.at(i).xyz());
+
+        max = std::max(max, pm);
+    }
+
+    threads.run_range(
+        [&source, &destination, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t i = begin; i < end; ++i) {
+                byte4 rgbe = float_to_rgbd(source.at(i), max);
+
+                destination.store(i, float4(rgbd_to_float3(rgbe.v, max), 1.f));
+            }
+        },
+        0, d[0] * d[1]);
+}
+
 byte4 float_to_rgbe(float4 const& c) {
     float v = c[0];
 
@@ -113,6 +154,17 @@ byte4 float_to_rgbe(float4 const& c) {
     return byte4(uint8_t(c[0] * v), uint8_t(c[1] * v), uint8_t(c[2] * v), uint8_t(e + 128));
 }
 
+image_float3 rgbe_to_float3(uint8_t rgbe[4]) {
+    if (rgbe[3] > 0) {
+        // nonzero pixel
+        float const f = std::ldexp(1.f, int32_t(rgbe[3]) - (128 + 8));
+
+        return image_float3(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
+    }
+
+    return image_float3(0.f);
+}
+
 byte4 float_to_rgbd(float4 const& c, float max) {
     float v = c[0];
 
@@ -130,18 +182,22 @@ byte4 float_to_rgbd(float4 const& c, float max) {
 
     float d = std::max(max / v, 1.f);
 
-  //  d = saturate(std::floor(d) / 255.f);
+    d = std::min(std::floor(d), 255.f);
 
-    if (d > 1.f) {
-        std::cout << d << std::endl;
+    v = d * (255.f / max);
+
+    return byte4(uint8_t(c[0] * v), uint8_t(c[1] * v), uint8_t(c[2] * v), uint8_t(d));
+}
+
+image_float3 rgbd_to_float3(uint8_t rgbd[4], float max) {
+    if (rgbd[3] > 0) {
+        // nonzero pixel
+        float const f = (max / 255.f) / float(rgbd[3]);
+
+        return image_float3(float(rgbd[0]) * f, float(rgbd[1]) * f, float(rgbd[2]) * f);
     }
 
-    int         e;
-    float const f = std::frexp(v, &e);
-
-    v = f * 256.f / v;
-
-    return byte4(uint8_t(c[0] * v), uint8_t(c[1] * v), uint8_t(c[2] * v), uint8_t(e + 128));
+    return image_float3(0.f);
 }
 
 }  // namespace image::encoding::rgbe

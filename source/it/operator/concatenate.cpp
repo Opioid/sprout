@@ -77,7 +77,9 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
 
     std::string const name = name_out(items, "concat");
 
-    write(target, name, alpha, threads);
+ //   write(target, name, alpha, threads);
+
+    write(target, name, Transcode::RGBD, threads);
 
     return uint32_t(items.size());
 }
