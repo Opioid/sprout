@@ -13,6 +13,10 @@ static inline float phase_hg(float cos_theta, float g) {
     return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
 }
 
+Sample::Sample() {
+    properties_.set(Property::Translucent);
+}
+
 float3 const& Sample::base_shading_normal() const {
     return geo_n_;
 }
@@ -39,10 +43,6 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
     result.pdf        = ps[3];
     result.wavelength = 0.f;
     result.type.clear(bxdf::Type::Diffuse_reflection);
-}
-
-bool Sample::is_translucent() const {
-    return true;
 }
 
 void Sample::set(float anisotropy) {

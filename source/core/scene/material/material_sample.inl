@@ -72,22 +72,24 @@ inline float3 Layer::world_to_tangent(float3 const& v) const {
                   v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline Sample::~Sample() {}
+inline Sample::Sample() : properties_(Property::Can_evaluate) {}
+
+inline Sample::~Sample() = default;
 
 inline float3 Sample::radiance() const {
     return float3(0.f);
 }
 
 inline bool Sample::is_pure_emissive() const {
-    return false;
+    return properties_.is(Property::Pure_emissive);
 }
 
 inline bool Sample::is_translucent() const {
-    return false;
+    return properties_.is(Property::Translucent);
 }
 
 inline bool Sample::ior_greater_one() const {
-    return true;
+    return properties_.is(Property::Can_evaluate);
 }
 
 inline float3 Sample::offset_p(float3 const& p, bool subsurface, bool translucent) const {

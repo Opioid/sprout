@@ -7,6 +7,8 @@ namespace scene::material::volumetric {
 
 class Sample : public material::Sample {
   public:
+    Sample();
+
     float3 const& base_shading_normal() const override;
 
     bxdf::Result evaluate_f(float3 const& wi) const override;
@@ -14,8 +16,6 @@ class Sample : public material::Sample {
     bxdf::Result evaluate_b(float3 const& wi) const override;
 
     void sample(Sampler& sampler, bxdf::Sample& result) const final;
-
-    bool is_translucent() const final;
 
     void set(float anisotropy);
 

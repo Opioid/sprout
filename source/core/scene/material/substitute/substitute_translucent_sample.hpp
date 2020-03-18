@@ -14,8 +14,6 @@ class Sample_translucent : public Sample_base {
 
     void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
-    bool is_translucent() const final;
-
     void set_transluceny(float3 const& color, float thickness, float attenuation_distance,
                          float transparency);
 

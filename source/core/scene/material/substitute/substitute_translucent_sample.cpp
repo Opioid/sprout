@@ -64,12 +64,10 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
     result.wavelength = 0.f;
 }
 
-bool Sample_translucent::is_translucent() const {
-    return thickness_ > 0.f;
-}
-
 void Sample_translucent::set_transluceny(float3 const& color, float thickness,
                                          float attenuation_distance, float transparency) {
+    properties_.set(Property::Translucent, thickness > 0.f);
+
     attenuation_ = material::attenuation_coefficient(color, attenuation_distance);
 
     thickness_    = thickness;

@@ -7,6 +7,8 @@ namespace scene::material::null {
 
 class Sample final : public material::Sample {
   public:
+    Sample();
+
     float3 const& base_shading_normal() const final;
 
     bxdf::Result evaluate_f(float3 const& wi) const final;
@@ -14,8 +16,6 @@ class Sample final : public material::Sample {
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
     void sample(Sampler& sampler, bxdf::Sample& result) const final;
-
-    bool ior_greater_one() const final;
 
     float factor_ = 1.f;
 };

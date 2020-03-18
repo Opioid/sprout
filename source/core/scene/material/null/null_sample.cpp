@@ -5,6 +5,10 @@
 
 namespace scene::material::null {
 
+Sample::Sample() {
+    properties_.set(Property::Can_evaluate, false);
+}
+
 float3 const& Sample::base_shading_normal() const {
     return geo_n_;
 }
@@ -23,10 +27,6 @@ void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const {
     result.pdf        = 1.f;
     result.wavelength = 0.f;
     result.type.clear(bxdf::Type::Straight_transmission);
-}
-
-bool Sample::ior_greater_one() const {
-    return false;
 }
 
 }  // namespace scene::material::null

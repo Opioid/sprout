@@ -91,14 +91,14 @@ void size() {
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
     print_size<scene::material::debug::Material>("debug::Material", 32);
-    print_size<scene::material::debug::Sample>("debug::Sample", 96);
+    print_size<scene::material::debug::Sample>("debug::Sample", 128);
 
     print_size<scene::material::glass::Glass>("glass::Glass", 128);
-    print_size<scene::material::glass::Sample>("glass::Sample", 128);
+    print_size<scene::material::glass::Sample>("glass::Sample", 192);
 
     print_size<scene::material::light::Constant>("light::Constant", 64);
     print_size<scene::material::light::Emissionmap>("light::Emissionmap", 128);
-    print_size<scene::material::light::Sample>("light::Sample", 64);
+    print_size<scene::material::light::Sample>("light::Sample", 128);
 
     print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 128);
     print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 128);

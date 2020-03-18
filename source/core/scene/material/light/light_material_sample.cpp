@@ -6,6 +6,10 @@
 
 namespace scene::material::light {
 
+Sample::Sample() {
+    properties_.set(Property::Pure_emissive);
+}
+
 float3 const& Sample::base_shading_normal() const {
     return geo_n_;
 }
@@ -25,10 +29,6 @@ float3 Sample::radiance() const {
 void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const {
     result.reflection = float3(0.f);
     result.pdf        = 0.f;
-}
-
-bool Sample::is_pure_emissive() const {
-    return true;
 }
 
 void Sample::set(float3 const& radiance) {

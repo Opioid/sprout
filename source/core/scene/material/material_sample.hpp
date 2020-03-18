@@ -1,6 +1,7 @@
 #ifndef SU_SCENE_MATERIAL_SAMPLE_HPP
 #define SU_SCENE_MATERIAL_SAMPLE_HPP
 
+#include "base/flags/flags.hpp"
 #include "base/math/vector3.hpp"
 
 namespace sampler {
@@ -49,6 +50,8 @@ class Sample {
   public:
     using Sampler = sampler::Sampler;
 
+    Sample();
+
     virtual ~Sample();
 
     virtual float3 const& base_shading_normal() const = 0;
@@ -61,11 +64,11 @@ class Sample {
 
     virtual float3 radiance() const;
 
-    virtual bool is_pure_emissive() const;
+    bool is_pure_emissive() const;
 
-    virtual bool is_translucent() const;
+    bool is_translucent() const;
 
-    virtual bool ior_greater_one() const;
+    bool ior_greater_one() const;
 
     float3 offset_p(float3 const& p, bool subsurface, bool translucent) const;
 
@@ -84,6 +87,15 @@ class Sample {
   protected:
     float3 geo_n_;
     float3 wo_;
+
+    enum class Property {
+        None                 = 0,
+        Pure_emissive            = 1 << 0,
+        Translucent             = 1 << 1,
+        Can_evaluate              = 1 << 2
+    };
+
+    flags::Flags<Property> properties_;
 };
 
 struct IoR {

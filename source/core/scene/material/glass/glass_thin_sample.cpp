@@ -12,6 +12,10 @@
 
 namespace scene::material::glass {
 
+Sample_thin::Sample_thin() {
+    properties_.set(Property::Translucent);
+}
+
 float3 const& Sample_thin::base_shading_normal() const {
     return layer_.n_;
 }
@@ -61,10 +65,6 @@ void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const 
     }
 
     result.wavelength = 0.f;
-}
-
-bool Sample_thin::is_translucent() const {
-    return true;
 }
 
 void Sample_thin::set(float3 const& refraction_color, float3 const& absorption_coefficient,

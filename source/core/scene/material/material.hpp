@@ -2,7 +2,6 @@
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
 #include "base/flags/flags.hpp"
-#include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
 #include "collision_coefficients.hpp"
