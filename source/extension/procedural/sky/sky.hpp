@@ -41,8 +41,8 @@ class Sky : public scene::Extension {
 
     Model model_;
 
-    uint32_t sky_ = 0xFFFFFFFF;
-    uint32_t sun_ = 0xFFFFFFFF;
+    uint32_t sky_ = scene::prop::Null;
+    uint32_t sun_ = scene::prop::Null;
 
     float3x3 sun_rotation_ = float3x3(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, -1.f, 0.f);
 

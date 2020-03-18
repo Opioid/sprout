@@ -373,7 +373,7 @@ uint32_t Loader::load_extension(std::string const& type, json::Value const& exte
         return p->second->create_extension(extension_value, name, scene, resource_manager_);
     }
 
-    return 0xFFFFFFFF;
+    return prop::Null;
 }
 
 Loader::Shape_ptr Loader::load_shape(json::Value const& shape_value) {

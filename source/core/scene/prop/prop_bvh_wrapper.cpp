@@ -31,7 +31,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection
 
     bool hit = false;
 
-    uint32_t prop = 0xFFFFFFFF;
+    uint32_t prop = prop::Null;
 
     node_stack.clear();
     if (0 != tree_.num_nodes_) {
@@ -103,7 +103,7 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersec
 
     bool hit = false;
 
-    uint32_t prop = 0xFFFFFFFF;
+    uint32_t prop = prop::Null;
 
     node_stack.clear();
     if (0 != tree_.num_nodes_) {

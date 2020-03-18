@@ -89,10 +89,10 @@ class Sample {
     float3 wo_;
 
     enum class Property {
-        None                 = 0,
-        Pure_emissive            = 1 << 0,
-        Translucent             = 1 << 1,
-        Can_evaluate              = 1 << 2
+        None          = 0,
+        Pure_emissive = 1 << 0,
+        Translucent   = 1 << 1,
+        Can_evaluate  = 1 << 2
     };
 
     flags::Flags<Property> properties_;

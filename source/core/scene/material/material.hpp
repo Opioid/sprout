@@ -157,7 +157,7 @@ class Material {
     virtual size_t num_bytes() const = 0;
 
   protected:
-    uint32_t sampler_key_;
+    uint32_t const sampler_key_;
 
     enum class Property {
         None                 = 0,

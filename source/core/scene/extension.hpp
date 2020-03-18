@@ -1,8 +1,10 @@
-#ifndef SU_SCENE_EXTENSION_HPP
-#define SU_SCENE_EXTENSION_HPP
+#ifndef SU_CORE_SCENE_EXTENSION_HPP
+#define SU_CORE_SCENE_EXTENSION_HPP
+
+#include "base/json/json_types.hpp"
+#include "prop/prop.hpp"
 
 #include <cstdint>
-#include "base/json/json_types.hpp"
 
 namespace scene {
 
@@ -21,7 +23,7 @@ class Extension {
     virtual void update(Scene& scene) = 0;
 
   protected:
-    uint32_t prop_ = 0xFFFFFFFF;
+    uint32_t prop_ = prop::Null;
 };
 
 }  // namespace scene
