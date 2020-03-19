@@ -20,11 +20,41 @@ bool write(Float4 const& image, std::string const& name, bool alpha, thread::Poo
 
     if ("exr" == s) {
         encoding::exr::Writer writer(alpha);
+
+        std::string_view ps = string::presuffix(name);
+
+        if ("rgbe" == ps) {
+            image::Float4 temp(image.description());
+            encoding::rgbe::Rgbe_as_png::transcode(image, temp, threads);
+            return writer.write(stream, temp, threads);
+        }
+
+        if ("rgbd" == ps) {
+            image::Float4 temp(image.description());
+            encoding::rgbe::Rgbd_as_png::transcode(image, temp, threads);
+            return writer.write(stream, temp, threads);
+        }
+
         return writer.write(stream, image, threads);
     }
 
     if ("hdr" == s) {
         encoding::rgbe::Writer writer;
+
+        std::string_view ps = string::presuffix(name);
+
+        if ("rgbe" == ps) {
+            image::Float4 temp(image.description());
+            encoding::rgbe::Rgbe_as_png::transcode(image, temp, threads);
+            return writer.write(stream, temp, threads);
+        }
+
+        if ("rgbd" == ps) {
+            image::Float4 temp(image.description());
+            encoding::rgbe::Rgbd_as_png::transcode(image, temp, threads);
+            return writer.write(stream, temp, threads);
+        }
+
         return writer.write(stream, image, threads);
     }
 
@@ -44,18 +74,6 @@ bool write(Float4 const& image, std::string const& name, bool alpha, thread::Poo
 
     encoding::png::Writer writer(false, alpha, false);
     return writer.write(stream, image, threads);
-}
-
-bool write(image::Float4 const& image, std::string const& name, Transcode transcode, thread::Pool& threads) {
-    image::Float4 temp(image.description());
-
-    if (Transcode::RGBE == transcode) {
-        encoding::rgbe::Rgbe_as_png::transcode(image, temp, threads);
-    } else if (Transcode::RGBD == transcode) {
-        encoding::rgbe::Rgbd_as_png::transcode(image, temp, threads);
-    }
-
-    return write(temp, name, false, threads);
 }
 
 }  // namespace op
