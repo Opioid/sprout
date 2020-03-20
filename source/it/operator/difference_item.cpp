@@ -68,7 +68,9 @@ void Difference_item::calculate_difference(Texture const* other, Scratch* scratc
                 float3 const va = args.image->at_3(i);
                 float3 const vb = args.other->at_3(i);
 
-                max_val = std::max(max_val, max_component(va));
+                float const mc = max_component(va);
+
+                max_val = std::isfinite(mc) ? std::max(max_val, mc) : max_val;
 
                 float dif = distance(va, vb);
 
