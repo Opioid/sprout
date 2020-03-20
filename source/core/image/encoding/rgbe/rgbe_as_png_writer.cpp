@@ -8,8 +8,6 @@
 #include <cmath>
 #include <ostream>
 
-#include <iostream>
-
 namespace image::encoding::rgbe {
 
 static byte4 float_to_rgbe(float4 const& c);
@@ -84,7 +82,7 @@ bool Rgbd_as_png::write(std::ostream& stream, Float4 const& image, thread::Pool&
         max = std::max(max, pm);
     }
 
-    std::cout << max << std::endl;
+    max = std::min(max, 65536.f);
 
     threads.run_range(
         [&buffer, &image, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
@@ -120,6 +118,8 @@ void Rgbd_as_png::transcode(Float4 const& source, Float4& destination, thread::P
 
         max = std::max(max, pm);
     }
+
+    max = std::min(max, 65536.f);
 
     threads.run_range(
         [&source, &destination, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
