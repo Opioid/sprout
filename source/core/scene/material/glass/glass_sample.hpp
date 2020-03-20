@@ -26,10 +26,6 @@ class alignas(64) Sample : public material::Sample {
     float ior_;
     float ior_outside_;
 
-    static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result);
-
-    static void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                        float n_dot_t, float eta, bxdf::Sample& result);
 };
 
 }  // namespace scene::material::glass

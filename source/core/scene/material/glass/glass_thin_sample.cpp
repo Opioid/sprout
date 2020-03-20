@@ -12,6 +12,10 @@
 
 namespace scene::material::glass {
 
+static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result);
+
+static void refract(float3 const& wo, float3 const& color, bxdf::Sample& result);
+
 Sample_thin::Sample_thin() {
     properties_.set(Property::Translucent);
 }
@@ -76,7 +80,7 @@ void Sample_thin::set(float3 const& refraction_color, float3 const& absorption_c
     thickness_              = thickness;
 }
 
-void Sample_thin::reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result) {
+void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result) {
     result.reflection = float3(1.f);
     result.wi         = normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
@@ -85,7 +89,7 @@ void Sample_thin::reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxd
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 }
 
-void Sample_thin::refract(float3 const& wo, float3 const& color, bxdf::Sample& result) {
+void refract(float3 const& wo, float3 const& color, bxdf::Sample& result) {
     result.reflection = color;
     result.wi         = -wo;
     result.pdf        = 1.f;

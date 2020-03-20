@@ -28,10 +28,6 @@ class Sample_thin : public material::Sample {
     float ior_;
     float ior_outside_;
     float thickness_;
-
-    static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result);
-
-    static void refract(float3 const& wo, float3 const& color, bxdf::Sample& result);
 };
 
 }  // namespace scene::material::glass
