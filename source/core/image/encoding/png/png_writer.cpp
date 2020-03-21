@@ -293,12 +293,14 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
 
     byte3* bytes = memory::allocate_aligned<byte3>(num_pixels);
 
-    float const im = max_value > 0.f ? 1.f / max_value : 1.f;
-
     threads.run_range(
-        [bytes, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+        [bytes, data, max_value](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t i = begin; i < end; ++i) {
-                float const n = data[i] * im;
+                float n = (max_value > 0.f ? std::min(data[i], max_value) : data[i]) / max_value;
+
+                if (!std::isfinite(n)) {
+                    n = 1.f;
+                }
 
                 float3 const hm = spectrum::heatmap(n);
 

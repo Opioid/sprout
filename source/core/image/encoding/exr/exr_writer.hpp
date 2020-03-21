@@ -8,7 +8,7 @@ namespace image::encoding::exr {
 
 class Writer : public image::Writer {
   public:
-    Writer(bool alpha);
+    Writer(bool half, bool alpha);
 
     std::string file_extension() const final;
 
@@ -20,7 +20,7 @@ class Writer : public image::Writer {
     bool zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
                          thread::Pool& threads) const;
 
-    bool half_ = false;
+    bool half_;
     bool alpha_;
 };
 

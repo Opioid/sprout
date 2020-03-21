@@ -82,7 +82,7 @@ bool Rgbd_as_png::write(std::ostream& stream, Float4 const& image, thread::Pool&
         max = std::max(max, pm);
     }
 
-    max = std::min(max, 65536.f);
+    max = std::min(max, 4096.f);
 
     threads.run_range(
         [&buffer, &image, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
@@ -119,7 +119,7 @@ void Rgbd_as_png::transcode(Float4 const& source, Float4& destination, thread::P
         max = std::max(max, pm);
     }
 
-    max = std::min(max, 65536.f);
+    max = std::min(max, 4096.f);
 
     threads.run_range(
         [&source, &destination, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {

@@ -13,7 +13,7 @@
 
 namespace image::encoding::exr {
 
-Writer::Writer(bool alpha) : alpha_(alpha) {}
+Writer::Writer(bool half, bool alpha) : half_(half), alpha_(alpha) {}
 
 std::string Writer::file_extension() const {
     return "exr";
