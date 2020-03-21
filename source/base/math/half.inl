@@ -3,7 +3,7 @@
 
 #include "half.hpp"
 #include "simd/simd.hpp"
-#include "vector3.inl"
+#include "vector4.inl"
 
 #include <cstring>
 
@@ -88,6 +88,16 @@ static inline float3 half_to_float(short3 h) {
     __m128 const r = _mm_cvtph_ps(_mm_load_si128(reinterpret_cast<__m128i const*>(i)));
 
     float3 result;
+    simd::store_float4(result.v, r);
+    return result;
+}
+
+static inline float4 half_to_float(short4 h) {
+    alignas(16) int32_t const i[4] = {int32_t(h[0]) | int32_t(h[1]) << 16, int32_t(h[2]) | int32_t(h[3]) << 16, 0, 0};
+
+    __m128 const r = _mm_cvtph_ps(_mm_load_si128(reinterpret_cast<__m128i const*>(i)));
+
+    float4 result;
     simd::store_float4(result.v, r);
     return result;
 }

@@ -488,6 +488,7 @@ template class Typed_image<byte2>;
 template class Typed_image<byte3>;
 template class Typed_image<byte4>;
 template class Typed_image<short3>;
+template class Typed_image<short4>;
 template class Typed_image<float>;
 template class Typed_sparse_image<float>;
 template class Typed_image<float2>;

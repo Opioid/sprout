@@ -124,7 +124,7 @@ void copy(texture::Texture const& source, Float4& destination, int2 offset, floa
 
     for (int32_t y = 0; y < sd[1]; ++y) {
         for (int32_t x = 0; x < sd[0]; ++x) {
-            float4 const s = source.at_4(x, y, 0);
+            float4 const s = source.at_4(x, y);
 
             float4 const d = op::clip(s, clip);
 

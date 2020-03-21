@@ -42,6 +42,10 @@ struct Channels {
         return size;
     }
 
+    uint32_t num_channels() const {
+        return channels.size();
+    }
+
     std::vector<Channel> channels;
 };
 
@@ -130,8 +134,8 @@ Image* Reader::read(std::istream& stream) {
         return nullptr;
     }
 
-    if (channels.channels.size() != 3) {
-        logging::push_error("only 3 channels are supported");
+    if (channels.channels.size() != 3 && channels.channels.size() != 4) {
+        logging::push_error("only 3 or 4 channels are supported");
         return nullptr;
     }
 
@@ -313,10 +317,22 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
 
     Image* image = nullptr;
 
-    if (Channel::Type::Half == channels.channels[0].type) {
-        image = new Image(Short3(Description(dimensions)));
+    Channel::Type const channel_type = channels.channels[0].type;
+
+    if (3 == channels.num_channels()) {
+        if (Channel::Type::Half == channel_type) {
+            image = new Image(Short3(Description(dimensions)));
+        } else {
+            image = new Image(Float3(Description(dimensions)));
+        }
+    } else if (4 == channels.num_channels()) {
+        if (Channel::Type::Half == channel_type) {
+            image = new Image(Short4(Description(dimensions)));
+        } else {
+            image = new Image(Float4(Description(dimensions)));
+        }
     } else {
-        image = new Image(Float3(Description(dimensions)));
+        return nullptr;
     }
 
     for (int32_t i = 0, p = 0; i < row_blocks; ++i) {
@@ -343,36 +359,72 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
             interleave_sse2(uncompressed, num_pixels_here * bytes_per_pixel, buffer.data());
         }
 
-        if (Channel::Type::Half == channels.channels[0].type) {
-            int16_t* const shorts = reinterpret_cast<int16_t* const>(buffer.data());
+        if (3 == channels.num_channels()) {
+            if (Channel::Type::Half == channel_type) {
+                int16_t* const shorts = reinterpret_cast<int16_t* const>(buffer.data());
 
-            auto& image_s3 = image->short3();
+                auto& image_s3 = image->short3();
 
-            for (int32_t y = 0; y < num_rows_here; ++y) {
-                int32_t const o = 3 * y * dimensions[0];
-                for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
-                    int16_t const r = shorts[o + 2 * dimensions[0] + x];
-                    int16_t const g = shorts[o + 1 * dimensions[0] + x];
-                    int16_t const b = shorts[o + 0 * dimensions[0] + x];
+                for (int32_t y = 0; y < num_rows_here; ++y) {
+                    int32_t const o = 3 * y * dimensions[0];
+                    for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
+                        int16_t const r = shorts[o + 2 * dimensions[0] + x];
+                        int16_t const g = shorts[o + 1 * dimensions[0] + x];
+                        int16_t const b = shorts[o + 0 * dimensions[0] + x];
 
-                    image_s3.store(p, short3(r, g, b));
+                        image_s3.store(p, short3(r, g, b));
+                    }
+                }
+            } else {
+                float* const floats = reinterpret_cast<float* const>(buffer.data());
+
+                auto& image_f3 = image->float3();
+
+                for (int32_t y = 0; y < num_rows_here; ++y) {
+                    int32_t const o = 3 * y * dimensions[0];
+                    for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
+                        float const r = floats[o + 2 * dimensions[0] + x];
+                        float const g = floats[o + 1 * dimensions[0] + x];
+                        float const b = floats[o + 0 * dimensions[0] + x];
+
+                        image_f3.store(p, packed_float3(r, g, b));
+                    }
                 }
             }
         } else {
-            float* const floats = reinterpret_cast<float* const>(buffer.data());
+            if (Channel::Type::Half == channel_type) {
+                 int16_t* const shorts = reinterpret_cast<int16_t* const>(buffer.data());
 
-            auto& image_f3 = image->float3();
+                 auto& image_s4 = image->short4();
 
-            for (int32_t y = 0; y < num_rows_here; ++y) {
-                int32_t const o = 3 * y * dimensions[0];
-                for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
-                    float const r = floats[o + 2 * dimensions[0] + x];
-                    float const g = floats[o + 1 * dimensions[0] + x];
-                    float const b = floats[o + 0 * dimensions[0] + x];
+                 for (int32_t y = 0; y < num_rows_here; ++y) {
+                     int32_t const o = 4 * y * dimensions[0];
+                     for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
+                         int16_t const r = shorts[o + 3 * dimensions[0] + x];
+                         int16_t const g = shorts[o + 2 * dimensions[0] + x];
+                         int16_t const b = shorts[o + 1 * dimensions[0] + x];
+                         int16_t const a = shorts[o + 0 * dimensions[0] + x];
 
-                    image_f3.store(p, packed_float3(r, g, b));
-                }
-            }
+                         image_s4.store(p, short4(r, g, b, a));
+                     }
+                 }
+             } else {
+                 float* const floats = reinterpret_cast<float* const>(buffer.data());
+
+                 auto& image_f4 = image->float4();
+
+                 for (int32_t y = 0; y < num_rows_here; ++y) {
+                     int32_t const o = 4 * y * dimensions[0];
+                     for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
+                         float const r = floats[o + 3 * dimensions[0] + x];
+                         float const g = floats[o + 2 * dimensions[0] + x];
+                         float const b = floats[o + 1 * dimensions[0] + x];
+                         float const a = floats[o + 0 * dimensions[0] + x];
+
+                         image_f4.store(p, float4(r, g, b, a));
+                     }
+                 }
+             }
         }
     }
 

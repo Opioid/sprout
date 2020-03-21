@@ -21,6 +21,7 @@ using Byte3 = Typed_image<byte3>;
 using Byte4 = Typed_image<byte4>;
 
 using Short3 = Typed_image<short3>;
+using Short4 = Typed_image<short4>;
 
 using Float1        = Typed_image<float>;
 using Float1_sparse = Typed_sparse_image<float>;

@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_INL
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_INL
 
-#include "base/math/vector3.inl"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
 #include "texture.hpp"
@@ -23,6 +22,7 @@ TEXTURE_CONSTRUCTOR(Byte3_snorm, byte3_snorm_)
 TEXTURE_CONSTRUCTOR(Byte3_sRGB, byte3_srgb_)
 TEXTURE_CONSTRUCTOR(Byte4_sRGB, byte4_srgb_)
 TEXTURE_CONSTRUCTOR(Half3, half3_)
+TEXTURE_CONSTRUCTOR(Half4, half4_)
 TEXTURE_CONSTRUCTOR(Float1, float1_)
 TEXTURE_CONSTRUCTOR(Float1_sparse, float1_sparse_)
 TEXTURE_CONSTRUCTOR(Float2, float2_)
@@ -46,6 +46,8 @@ TEXTURE_CONSTRUCTOR(Float3, float3_)
             return byte4_srgb_.NAME(__VA_ARGS__);    \
         case Type::Half3:                            \
             return half3_.NAME(__VA_ARGS__);         \
+        case Type::Half4:                            \
+            return half4_.NAME(__VA_ARGS__);         \
         case Type::Float1:                           \
             return float1_.NAME(__VA_ARGS__);        \
         case Type::Float1_sparse:                    \
@@ -73,6 +75,7 @@ inline int32_t Texture::num_channels() const {
         case Type::Float3:
             return 3;
         case Type::Byte4_sRGB:
+        case Type::Half4:
             return 4;
     }
 

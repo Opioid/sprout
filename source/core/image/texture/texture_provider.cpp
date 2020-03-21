@@ -8,16 +8,7 @@
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
 #include "texture.inl"
-#include "texture_byte1_unorm.hpp"
-#include "texture_byte2_snorm.hpp"
-#include "texture_byte2_unorm.hpp"
-#include "texture_byte3_snorm.hpp"
-#include "texture_byte3_srgb.hpp"
-#include "texture_byte3_unorm.hpp"
-#include "texture_byte4_srgb.hpp"
 #include "texture_encoding.hpp"
-#include "texture_float1.hpp"
-#include "texture_float3.hpp"
 
 #include "base/debug/assert.hpp"
 #include "texture_test.hpp"
@@ -112,6 +103,10 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
         return new Texture(Half3(image->short3()));
     }
 
+    if (Image::Type::Short4 == image->type()) {
+        return new Texture(Half4(image->short4()));
+    }
+
     if (Image::Type::Float1 == image->type()) {
         return new Texture(Float1(image->float1()));
     }
@@ -125,7 +120,7 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
     }
 
     // We should never come here...
-
+    logging::error("No suitable texture type for image %S.", filename);
     return nullptr;
 }
 

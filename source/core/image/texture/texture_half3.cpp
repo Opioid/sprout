@@ -98,15 +98,11 @@ float2 Half3::at_2(int32_t x, int32_t y, int32_t z) const {
 }
 
 float3 Half3::at_3(int32_t x, int32_t y, int32_t z) const {
-    return float3(image_.load(x, y, z));
-
-    //	return float3(image_.at(x, y, z));
+    return half_to_float(image_.load(x, y, z));
 }
 
 float4 Half3::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(half_to_float(image_.load(x, y, z)), 1.f);
-
-    //	return float4(image_.at(x, y, z), 1.f);
 }
 
 }  // namespace image::texture

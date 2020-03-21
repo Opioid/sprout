@@ -28,6 +28,8 @@ target_sources(core
     "texture_float3.hpp"
     "texture_half3.cpp"
     "texture_half3.hpp"
+    "texture_half4.cpp"
+    "texture_half4.hpp"
     "texture_provider.cpp"
     "texture_provider.hpp"
     "texture_sampler.cpp"
