@@ -907,7 +907,8 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
             image::Writer* writer;
 
             if ("EXR" == format) {
-                writer = new exr::Writer(alpha);
+                bool const half = true;
+                writer = new exr::Writer(half, alpha);
             } else if ("RGBE" == format) {
                 writer = new rgbe::Writer();
             } else {
