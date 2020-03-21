@@ -12,6 +12,7 @@
 #include "texture_float1.hpp"
 #include "texture_float2.hpp"
 #include "texture_float3.hpp"
+#include "texture_float4.hpp"
 #include "texture_half3.hpp"
 #include "texture_half4.hpp"
 
@@ -34,6 +35,7 @@ class alignas(64) Texture {
     Texture(Float1_sparse const& texture);
     Texture(Float2 const& texture);
     Texture(Float3 const& texture);
+    Texture(Float4 const& texture);
 
     int32_t num_channels() const;
 
@@ -94,6 +96,7 @@ class alignas(64) Texture {
         Float1_sparse,
         Float2,
         Float3,
+        Float4
     };
 
     Type const type_;
@@ -116,6 +119,7 @@ class alignas(64) Texture {
         Float1_sparse const float1_sparse_;
         Float2 const        float2_;
         Float3 const        float3_;
+        Float4 const        float4_;
     };
 };
 

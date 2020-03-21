@@ -119,6 +119,10 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
         return new Texture(Float3(image->float3()));
     }
 
+    if (Image::Type::Float4 == image->type()) {
+        return new Texture(Float4(image->float4()));
+    }
+
     // We should never come here...
     logging::error("No suitable texture type for image %S.", filename);
     return nullptr;

@@ -26,6 +26,8 @@ target_sources(core
     "texture_float2.hpp"
     "texture_float3.cpp"
     "texture_float3.hpp"
+    "texture_float4.cpp"
+    "texture_float4.hpp"
     "texture_half3.cpp"
     "texture_half3.hpp"
     "texture_half4.cpp"

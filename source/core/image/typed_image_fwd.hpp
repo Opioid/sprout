@@ -27,7 +27,6 @@ using Float1        = Typed_image<float>;
 using Float1_sparse = Typed_sparse_image<float>;
 using Float2        = Typed_image<float2>;
 using Float3        = Typed_image<packed_float3>;
-// using Float3 = Typed_image<float3>;
 using Float4 = Typed_image<float4>;
 
 }  // namespace image

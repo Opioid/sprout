@@ -27,6 +27,7 @@ TEXTURE_CONSTRUCTOR(Float1, float1_)
 TEXTURE_CONSTRUCTOR(Float1_sparse, float1_sparse_)
 TEXTURE_CONSTRUCTOR(Float2, float2_)
 TEXTURE_CONSTRUCTOR(Float3, float3_)
+TEXTURE_CONSTRUCTOR(Float4, float4_)
 
 #define TEXTURE_DELEGATE(NAME, ...)                  \
     switch (type_) {                                 \
@@ -56,7 +57,9 @@ TEXTURE_CONSTRUCTOR(Float3, float3_)
             return float2_.NAME(__VA_ARGS__);        \
         case Type::Float3:                           \
             return float3_.NAME(__VA_ARGS__);        \
-    }
+        case Type::Float4:                           \
+            return float4_.NAME(__VA_ARGS__);        \
+}
 
 inline int32_t Texture::num_channels() const {
     switch (type_) {
@@ -76,6 +79,7 @@ inline int32_t Texture::num_channels() const {
             return 3;
         case Type::Byte4_sRGB:
         case Type::Half4:
+        case Type::Float4:
             return 4;
     }
 
