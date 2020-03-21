@@ -265,7 +265,8 @@ static inline float linear_to_gamma_sRGB_unbounded(float c) {
 }
 
 float luminance_gamma_sRGB(float3 const& linear) {
-    return /*linear_to_gamma_sRGB_unbounded*/ (spectrum::luminance(linear));
+    float const l = linear_to_gamma_sRGB_unbounded(spectrum::luminance(linear));
+    return std::isfinite(l) ? l : 0.f;
 }
 
 }  // namespace op

@@ -7,8 +7,7 @@
 namespace op {
 
 Difference_item::Difference_item(Item const& item)
-    : name_(item.name_out.empty() ? item.name.substr(0, item.name.find_last_of('.')) + "_dif.png"
-                                  : item.name_out),
+    : name_(item.name_out.empty() ? item.name + ".dif.png" : item.name_out),
       image_(item.image) {
     int2 const d = item.image->dimensions_2();
     difference_  = new float[d[0] * d[1]];

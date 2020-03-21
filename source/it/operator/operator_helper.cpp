@@ -19,22 +19,28 @@ bool write(Float4 const& image, std::string const& name, bool alpha, thread::Poo
     std::ofstream stream(name, std::ios::binary);
 
     if ("exr" == s) {
-        encoding::exr::Writer writer(alpha);
-
         std::string_view ps = string::presuffix(name);
 
         if ("rgbe" == ps) {
             image::Float4 temp(image.description());
             encoding::rgbe::Rgbe_as_png::transcode(image, temp, threads);
+            encoding::exr::Writer writer(false, alpha);
             return writer.write(stream, temp, threads);
         }
 
         if ("rgbd" == ps) {
             image::Float4 temp(image.description());
             encoding::rgbe::Rgbd_as_png::transcode(image, temp, threads);
+            encoding::exr::Writer writer(false, alpha);
             return writer.write(stream, temp, threads);
         }
 
+        if ("f16" == ps) {
+            encoding::exr::Writer writer(true, alpha);
+            return writer.write(stream, image, threads);
+        }
+
+        encoding::exr::Writer writer(false, alpha);
         return writer.write(stream, image, threads);
     }
 
