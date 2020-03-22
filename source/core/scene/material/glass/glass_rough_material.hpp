@@ -12,8 +12,6 @@ class Glass_rough : public Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
-
     size_t num_bytes() const final;
 
     void set_normal_map(Texture_adapter const& normal_map);
@@ -30,9 +28,7 @@ class Glass_rough : public Material {
     Texture_adapter roughness_map_;
 
     float3 refraction_color_;
-    float3 absorption_coefficient_;
 
-    float attenuation_distance_;
     float alpha_;
 };
 

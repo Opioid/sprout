@@ -14,19 +14,6 @@ class Homogeneous : public Material {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
-    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
-
-    CC collision_coefficients() const final;
-
-    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const final;
-
-    CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const final;
-
-    CCE collision_coefficients_emission() const final;
-
-    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
-                                        Worker const& worker) const final;
-
     size_t num_bytes() const override;
 };
 

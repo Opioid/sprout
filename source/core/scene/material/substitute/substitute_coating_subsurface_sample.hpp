@@ -29,8 +29,6 @@ class Sample_coating_subsurface final
 
 class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
   public:
-    float3 const& base_shading_normal() const final;
-
     bxdf::Result evaluate_f(float3 const& wi) const final;
 
     bxdf::Result evaluate_b(float3 const& wi) const final;

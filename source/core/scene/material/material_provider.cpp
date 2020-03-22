@@ -7,7 +7,6 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
-#include "cloth/cloth_material.hpp"
 #include "display/display_constant.hpp"
 #include "display/display_emissionmap.hpp"
 #include "display/display_emissionmap_animated.hpp"
@@ -47,8 +46,6 @@ using Texture       = image::texture::Texture;
 using Texture_usage = image::texture::Provider::Usage;
 using Resources     = resource::Manager;
 using Variants      = memory::Variant_map;
-
-static Material* load_cloth(json::Value const& cloth_value, Resources& resources);
 
 static Material* load_debug(json::Value const& debug_value, Resources& resources);
 
@@ -171,9 +168,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
                 material = new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
             }
         } else {
-            if ("Cloth" == n.name) {
-                material = load_cloth(n.value, resources);
-            } else if ("Debug" == n.name) {
+            if ("Debug" == n.name) {
                 material = load_debug(n.value, resources);
             } else if ("Display" == n.name) {
                 material = load_display(n.value, resources);
@@ -205,58 +200,6 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
         logging::push_error("Material is of unknown type.");
         return nullptr;
     }
-
-    return material;
-}
-
-Material* load_cloth(json::Value const& cloth_value, Resources& resources) {
-    Sampler_settings sampler_settings;
-
-    Texture_adapter color_map;
-    Texture_adapter normal_map;
-    Texture_adapter mask;
-
-    bool two_sided = false;
-
-    float3 color(0.75f, 0.75f, 0.75f);
-
-    for (auto const& n : cloth_value.GetObject()) {
-        if ("color" == n.name) {
-            color = read_color(n.value);
-        } else if ("two_sided" == n.name) {
-            two_sided = json::read_bool(n.value);
-        } else if ("textures" == n.name) {
-            for (auto const& tn : n.value.GetArray()) {
-                Texture_description const texture_description = read_texture_description(tn);
-
-                if (texture_description.filename.empty()) {
-                    continue;
-                }
-
-                Variants options;
-                if ("Color" == texture_description.usage) {
-                    options.set("usage", Texture_usage::Color);
-                    color_map = create_texture(texture_description, options, resources);
-                } else if ("Normal" == texture_description.usage) {
-                    options.set("usage", Texture_usage::Normal);
-                    normal_map = create_texture(texture_description, options, resources);
-                } else if ("Mask" == texture_description.usage) {
-                    options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, resources);
-                }
-            }
-        } else if ("sampler" == n.name) {
-            read_sampler_settings(n.value, sampler_settings);
-        }
-    }
-
-    auto material = new cloth::Material(sampler_settings, two_sided);
-
-    material->set_mask(mask);
-    material->set_color_map(color_map);
-    material->set_normal_map(normal_map);
-
-    material->set_color(color);
 
     return material;
 }
@@ -1187,13 +1130,13 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
             auto material = new Grid_emission(sampler_settings, density_map);
             material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
             material->set_emission(emission);
-            material->set_anisotropy(anisotropy);
+            material->set_volumetric_anisotropy(anisotropy);
             return material;
         }
         auto material = new Grid(sampler_settings, density_map);
         material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
         material->set_emission(emission);
-        material->set_anisotropy(anisotropy);
+        material->set_volumetric_anisotropy(anisotropy);
         return material;
     }
 
@@ -1202,7 +1145,7 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
         material->set_color(color_map);
         material->set_attenuation(1.f, attenuation_distance);
         material->set_emission(emission);
-        material->set_anisotropy(anisotropy);
+        material->set_volumetric_anisotropy(anisotropy);
         return material;
     }
 
@@ -1217,7 +1160,7 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
     auto material = new Homogeneous(sampler_settings);
     material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
     material->set_emission(emission);
-    material->set_anisotropy(anisotropy);
+    material->set_volumetric_anisotropy(anisotropy);
     return material;
 }
 
@@ -1405,7 +1348,6 @@ float3 read_spectrum(json::Value const& spectrum_value) {
 uint32_t Provider::max_sample_size() {
     size_t num_bytes = 0;
 
-    num_bytes = std::max(cloth::Material::sample_size(), num_bytes);
     num_bytes = std::max(display::Constant::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass_dispersion::sample_size(), num_bytes);

@@ -17,7 +17,7 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
                                          Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs.geo_n, rs.n, wo);
 
     sample.set(emittance_.radiance(worker.scene().light_area(rs.prop, rs.part)));
 

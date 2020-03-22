@@ -199,10 +199,6 @@ void Sample_coating_subsurface::refract(Sampler& sampler, bxdf::Sample& result) 
     result.type.set(bxdf::Type::Caustic);
 }
 
-float3 const& Sample_coating_subsurface_volumetric::base_shading_normal() const {
-    return layer_.n_;
-}
-
 bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi) const {
     bxdf::Result result = volumetric::Sample::evaluate_f(wi);
 

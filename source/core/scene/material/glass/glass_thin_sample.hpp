@@ -9,8 +9,6 @@ class Sample_thin : public material::Sample {
   public:
     Sample_thin();
 
-    float3 const& base_shading_normal() const final;
-
     bxdf::Result evaluate_f(float3 const& wi) const final;
 
     bxdf::Result evaluate_b(float3 const& wi) const final;

@@ -18,7 +18,7 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
                                                      Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs.geo_n, rs.n, wo);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

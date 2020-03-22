@@ -21,7 +21,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
                                             Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_rough>();
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs.geo_n, rs.n, wo);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -46,11 +46,6 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
     return sample;
 }
 
-float3 Glass_rough::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                           Worker const& /*worker*/) const {
-    return absorption_coefficient_;
-}
-
 size_t Glass_rough::num_bytes() const {
     return sizeof(*this);
 }
@@ -68,7 +63,7 @@ void Glass_rough::set_refraction_color(float3 const& color) {
 }
 
 void Glass_rough::set_attenuation(float3 const& absorption_color, float distance) {
-    absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
+    cc_.a = attenuation_coefficient(absorption_color, distance);
 
     attenuation_distance_ = distance;
 }

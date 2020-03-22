@@ -13,13 +13,11 @@
 namespace scene::material::substitute {
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::set(float3 const& color, float3 const& emission, float f0, float alpha,
-                                float metallic, bool avoid_caustics) {
+void Base_closure<Diffuse>::set(float3 const& color, float f0, float alpha, float metallic,
+                                bool avoid_caustics) {
     diffuse_color_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
-
-    emission_ = emission;
 
     metallic_ = metallic;
 
@@ -268,10 +266,6 @@ float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_d
 
     // Same as above, but shorter
     return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
-}
-
-inline float3 const& Sample_base::base_shading_normal() const {
-    return layer_.n_;
 }
 
 }  // namespace scene::material::substitute

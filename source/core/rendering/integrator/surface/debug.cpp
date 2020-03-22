@@ -44,7 +44,7 @@ float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
                 return float4(0.f, 0.f, 0.f, 1.f);
             }
 
-            vector = material_sample.base_shading_normal();
+            vector = material_sample.interpolated_normal();
         } break;
         case Settings::Vector::UV:
             vector = float3(0.5f * intersection.geo.uv, -1.f);

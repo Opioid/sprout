@@ -7,10 +7,6 @@
 
 namespace scene::material::metal {
 
-float3 const& Sample_isotropic::base_shading_normal() const {
-    return layer_.n_;
-}
-
 bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi) const {
     return evaluate<true>(wi);
 }
@@ -71,10 +67,6 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
     } else {
         return {ggx.reflection, ggx.pdf()};
     }
-}
-
-float3 const& Sample_anisotropic::base_shading_normal() const {
-    return layer_.n_;
 }
 
 bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi) const {

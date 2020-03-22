@@ -8,7 +8,7 @@
 
 namespace scene::material::volumetric {
 
-class alignas(64) Grid : public Material {
+class Grid : public Material {
   public:
     Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density);
 
@@ -16,10 +16,6 @@ class alignas(64) Grid : public Material {
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const final;
-
-    CC collision_coefficients() const final;
-
-    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const final;
 
     CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const final;
 
@@ -75,10 +71,6 @@ class Grid_color : public Material {
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const final;
-
-    CC collision_coefficients() const final;
-
-    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const final;
 
     CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const final;
 

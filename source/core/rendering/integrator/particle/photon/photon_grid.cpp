@@ -380,7 +380,7 @@ float3 Grid::li(Intersection const& intersection, Material_sample const& sample,
                         continue;
                     }
 
-                    if (dot(sample.base_shading_normal(), photon.wi) > 0.f) {
+                    if (dot(sample.interpolated_normal(), photon.wi) > 0.f) {
                         // float const k = 1.f;
 
                         // float const k = cone_filter(distance2, inv_radius2);

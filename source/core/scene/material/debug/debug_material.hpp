@@ -4,7 +4,7 @@
 
 namespace scene::material::debug {
 
-class alignas(32) Material : public material::Material {
+class alignas(16) Material : public material::Material {
   public:
     Material(Sampler_settings const& sampler_settings);
 

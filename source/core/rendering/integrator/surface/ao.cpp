@@ -59,7 +59,7 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         //		float3 ws = intersection.geo.tangent_to_world(hs);
 
-        float3 const& n = material_sample.base_shading_normal();
+        float3 const& n = material_sample.interpolated_normal();
 
         auto const tb = orthonormal_basis(n);
 

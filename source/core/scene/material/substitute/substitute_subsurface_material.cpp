@@ -41,9 +41,9 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
     if (rs.subsurface) {
         auto& sample = worker.sample<volumetric::Sample>();
 
-        sample.set_basis(rs.geo_n, wo);
+        sample.set_basis(rs.geo_n, rs.n, wo);
 
-        sample.set(anisotropy_);
+        sample.set(volumetric_anisotropy_);
 
         return sample;
     }
@@ -81,10 +81,6 @@ void Material_subsurface::set_attenuation(float3 const& absorption_color,
     attenuation_distance_ = distance;
 }
 
-void Material_subsurface::set_volumetric_anisotropy(float anisotropy) {
-    anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
-}
-
 float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
                                                    Worker const& worker) const {
     if (color_map_.is_valid()) {
@@ -95,10 +91,6 @@ float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
     }
 
     return cc_.a;
-}
-
-CC Material_subsurface::collision_coefficients() const {
-    return cc_;
 }
 
 CC Material_subsurface::collision_coefficients(float2 uv, Filter filter,
@@ -131,10 +123,6 @@ CC Material_subsurface::collision_coefficients(float3 const& p, Filter filter,
     //	attenuation(c, attenuation_distance_, mu_a, mu_s);
 
     //	return {d * mu_a, d * mu_s};
-}
-
-CM Material_subsurface::control_medium() const {
-    return cm_;
 }
 
 volumetric::Gridtree const* Material_subsurface::volume_tree() const {

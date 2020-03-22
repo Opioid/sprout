@@ -72,12 +72,12 @@ inline float3 Layer::world_to_tangent(float3 const& v) const {
                   v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline Sample::Sample() : properties_(Property::Can_evaluate) {}
+inline Sample::Sample() : radiance_(0.f), properties_(Property::Can_evaluate) {}
 
 inline Sample::~Sample() = default;
 
-inline float3 Sample::radiance() const {
-    return float3(0.f);
+inline float3 const& Sample::radiance() const {
+    return radiance_;
 }
 
 inline bool Sample::is_pure_emissive() const {
@@ -124,13 +124,22 @@ inline float3 const& Sample::geometric_normal() const {
     return geo_n_;
 }
 
+inline float3 const& Sample::interpolated_normal() const {
+    return n_;
+}
+
 inline bool Sample::same_hemisphere(float3 const& v) const {
     return dot(geo_n_, v) > 0.f;
 }
 
-inline void Sample::set_basis(float3 const& geo_n, float3 const& wo) {
+inline void Sample::set_basis(float3 const& geo_n, float3 const& n, float3 const& wo) {
     geo_n_ = geo_n;
+    n_     = n;
     wo_    = wo;
+}
+
+inline void Sample::set_radiance(float3 const& radiance) {
+    radiance_ = radiance;
 }
 
 inline IoR IoR::swapped() const {

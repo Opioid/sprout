@@ -9,10 +9,6 @@
 
 namespace scene::material::metallic_paint {
 
-float3 const& Sample::base_shading_normal() const {
-    return base_.n_;
-}
-
 bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};

@@ -10,13 +10,6 @@
 namespace scene::material::substitute {
 
 template <typename Coating, typename Diffuse>
-float3 Sample_coating<Coating, Diffuse>::radiance() const {
-    float const n_dot_wo = coating_.clamp_abs_n_dot(wo_);
-
-    return coating_.attenuation(n_dot_wo) * base_.emission_;
-}
-
-template <typename Coating, typename Diffuse>
 bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};

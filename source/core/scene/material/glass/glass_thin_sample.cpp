@@ -20,10 +20,6 @@ Sample_thin::Sample_thin() {
     properties_.set(Property::Translucent);
 }
 
-float3 const& Sample_thin::base_shading_normal() const {
-    return layer_.n_;
-}
-
 bxdf::Result Sample_thin::evaluate_f(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }

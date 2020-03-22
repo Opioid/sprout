@@ -54,15 +54,13 @@ class Sample {
 
     virtual ~Sample();
 
-    virtual float3 const& base_shading_normal() const = 0;
-
     virtual bxdf::Result evaluate_f(float3 const& wi) const = 0;
 
     virtual bxdf::Result evaluate_b(float3 const& wi) const = 0;
 
     virtual void sample(Sampler& sampler, bxdf::Sample& result) const = 0;
 
-    virtual float3 radiance() const;
+    float3 const& radiance() const;
 
     bool is_pure_emissive() const;
 
@@ -80,13 +78,19 @@ class Sample {
 
     float3 const& geometric_normal() const;
 
+    float3 const& interpolated_normal() const;
+
     bool same_hemisphere(float3 const& v) const;
 
-    void set_basis(float3 const& geo_n, float3 const& wo);
+    void set_basis(float3 const& geo_n, float3 const& n, float3 const& wo);
+
+    void set_radiance(float3 const& radiance);
 
   protected:
     float3 geo_n_;
+    float3 n_;
     float3 wo_;
+    float3 radiance_;
 
     enum class Property {
         None          = 0,

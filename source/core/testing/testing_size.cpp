@@ -87,25 +87,25 @@ void size() {
 
     print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
-    print_size<scene::material::Material>("material::Material", 32);
+    print_size<scene::material::Material>("material::Material", 112);
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
-    print_size<scene::material::debug::Material>("debug::Material", 32);
-    print_size<scene::material::debug::Sample>("debug::Sample", 128);
+    print_size<scene::material::debug::Material>("debug::Material", 112);
+    print_size<scene::material::debug::Sample>("debug::Sample", 160);
 
-    print_size<scene::material::glass::Glass>("glass::Glass", 128);
+    print_size<scene::material::glass::Glass>("glass::Glass", 192);
     print_size<scene::material::glass::Sample>("glass::Sample", 192);
 
-    print_size<scene::material::light::Constant>("light::Constant", 64);
-    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 128);
+    print_size<scene::material::light::Constant>("light::Constant", 144);
+    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 256);
     print_size<scene::material::light::Sample>("light::Sample", 128);
 
-    print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 128);
-    print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 128);
+    print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 192);
+    print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 192);
     print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
-    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 192);
+    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 256);
 
-    print_size<scene::material::substitute::Material>("substitute::Material", 96);
+    print_size<scene::material::substitute::Material>("substitute::Material", 176);
     print_size<scene::material::substitute::Sample>("substitute::Sample", 192);
 
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);

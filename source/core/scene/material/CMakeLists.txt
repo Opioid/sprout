@@ -1,4 +1,3 @@
-add_subdirectory(cloth)
 add_subdirectory(coating)
 add_subdirectory(debug)
 add_subdirectory(disney)

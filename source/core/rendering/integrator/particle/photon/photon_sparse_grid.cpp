@@ -403,7 +403,7 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
                         continue;
                     }
 
-                    if (dot(sample.base_shading_normal(), photon.wi) > 0.f) {
+                    if (dot(sample.interpolated_normal(), photon.wi) > 0.f) {
                         // float const k = 1.f;
 
                         // float const k = cone_filter(distance_2, inv_radius_2);

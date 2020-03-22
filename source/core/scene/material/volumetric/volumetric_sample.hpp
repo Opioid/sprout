@@ -9,8 +9,6 @@ class Sample : public material::Sample {
   public:
     Sample();
 
-    float3 const& base_shading_normal() const override;
-
     bxdf::Result evaluate_f(float3 const& wi) const override;
 
     bxdf::Result evaluate_b(float3 const& wi) const override;

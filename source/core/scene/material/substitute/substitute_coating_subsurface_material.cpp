@@ -59,9 +59,9 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample_coating_subsurface_volumetric>();
 
-        sample.set_basis(rs.geo_n, wo);
+        sample.set_basis(rs.geo_n, rs.n, wo);
 
-        sample.set(anisotropy_);
+        sample.set(volumetric_anisotropy_);
 
         set_coating_basis(wo, rs, sampler, worker, sample);
 
@@ -106,10 +106,6 @@ void Material_coating_subsurface::set_attenuation(float3 const& absorption_color
     attenuation_distance_ = distance;
 }
 
-void Material_coating_subsurface::set_volumetric_anisotropy(float anisotropy) {
-    anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
-}
-
 float3 Material_coating_subsurface::absorption_coefficient(float2 uv, Filter filter,
                                                            Worker const& worker) const {
     if (color_map_.is_valid()) {
@@ -120,10 +116,6 @@ float3 Material_coating_subsurface::absorption_coefficient(float2 uv, Filter fil
     }
 
     return cc_.a;
-}
-
-CC Material_coating_subsurface::collision_coefficients() const {
-    return cc_;
 }
 
 CC Material_coating_subsurface::collision_coefficients(float2 uv, Filter filter,
@@ -156,10 +148,6 @@ CC Material_coating_subsurface::collision_coefficients(float3 const& p, Filter f
     //	attenuation(c, attenuation_distance_, mu_a, mu_s);
 
     //	return {d * mu_a, d * mu_s};
-}
-
-CM Material_coating_subsurface::control_medium() const {
-    return cm_;
 }
 
 volumetric::Gridtree const* Material_coating_subsurface::volume_tree() const {

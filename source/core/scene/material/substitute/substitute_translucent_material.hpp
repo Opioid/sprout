@@ -20,7 +20,6 @@ class Material_translucent : public Material_base {
 
   private:
     float thickness_;
-    float attenuation_distance_;
     float transparency_;
 };
 

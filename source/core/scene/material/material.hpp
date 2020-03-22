@@ -49,7 +49,7 @@ class Gridtree;
 
 class Sample;
 
-class Material {
+class alignas(16) Material {
   public:
     using Filter          = Sampler_settings::Filter;
     using Shape           = shape::Shape;
@@ -66,6 +66,8 @@ class Material {
     void set_mask(Texture_adapter const& mask);
 
     void set_ior(float ior);
+
+    void set_volumetric_anisotropy(float anisotropy);
 
     virtual void commit(thread::Pool& threads, Scene const& scene);
 
@@ -108,22 +110,22 @@ class Material {
 
     virtual float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const;
 
-    virtual CC collision_coefficients() const;
+    CC collision_coefficients() const;
 
     virtual CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const;
 
     virtual CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const;
 
-    virtual CCE collision_coefficients_emission() const;
+    CCE collision_coefficients_emission() const;
 
     virtual CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                                 Worker const& worker) const;
 
-    virtual CM control_medium() const;
+    CM control_medium() const;
 
     virtual volumetric::Gridtree const* volume_tree() const;
 
-    virtual float similarity_relation_scale(uint32_t depth) const;
+    float similarity_relation_scale(uint32_t depth) const;
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                                   Transformation const& transformation, float extent,
@@ -157,6 +159,8 @@ class Material {
     virtual size_t num_bytes() const = 0;
 
   protected:
+    float van_de_hulst_anisotropy(uint32_t depth) const;
+
     uint32_t const sampler_key_;
 
     enum class Property {
@@ -175,12 +179,23 @@ class Material {
 
     Texture_adapter mask_;
 
+    CC cc_;
+    CM cm_;
+
+    float3 emission_;
+
     float ior_;
+
+    float attenuation_distance_;
+
+    float volumetric_anisotropy_;
 
   public:
     static void init_rainbow();
 
     static float3 spectrum_at_wavelength(float lambda, float value = 1.f);
+
+    static void set_similarity_relation_range(uint32_t low, uint32_t high);
 
     static int32_t constexpr Num_bands = 36;
 
@@ -188,6 +203,10 @@ class Material {
 
   private:
     static float3 rainbow_[Num_bands + 1];
+
+    static uint32_t SR_low;
+    static uint32_t SR_high;
+    static float    SR_inv_range;
 };
 
 }  // namespace material

@@ -21,7 +21,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
                                          Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs.geo_n, rs.n, wo);
 
     sample.base_.set_tangent_frame(rs.t, rs.b, rs.n);
 

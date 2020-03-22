@@ -12,15 +12,10 @@
 
 namespace scene::material::glass {
 
-
 static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result);
 
 static void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
                     float n_dot_t, float eta, bxdf::Sample& result);
-
-float3 const& Sample::base_shading_normal() const {
-    return layer_.n_;
-}
 
 bxdf::Result Sample::evaluate_f(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
@@ -88,8 +83,8 @@ void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& re
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 }
 
-void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                     float n_dot_t, float eta, bxdf::Sample& result) {
+void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo, float n_dot_t,
+             float eta, bxdf::Sample& result) {
     result.reflection = color;
     result.wi         = normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;

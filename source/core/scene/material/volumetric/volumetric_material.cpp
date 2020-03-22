@@ -23,7 +23,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>();
 
-        sample.set_basis(rs.geo_n, wo);
+        sample.set_basis(rs.geo_n, rs.n, wo);
 
         float const gs = van_de_hulst_anisotropy(ray.depth);
 
@@ -34,19 +34,9 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
 
     auto& sample = worker.sample<null::Sample>();
 
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs.geo_n, rs.n, wo);
 
     return sample;
-}
-
-CM Material::control_medium() const {
-    return cm_;
-}
-
-float Material::similarity_relation_scale(uint32_t depth) const {
-    float const gs = van_de_hulst_anisotropy(depth);
-
-    return van_de_hulst(anisotropy_, gs);
 }
 
 float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const {
@@ -63,44 +53,15 @@ void Material::set_attenuation(float3 const& absorption_color, float3 const& sca
 
     cm_ = CM(cc_);
 
-    distance_ = distance;
+    attenuation_distance_ = distance;
 }
 
 void Material::set_emission(float3 const& emission) {
     emission_ = emission;
 }
 
-void Material::set_anisotropy(float anisotropy) {
-    anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
-}
-
 size_t Material::sample_size() {
     return sizeof(Sample);
-}
-
-void Material::set_similarity_relation_range(uint32_t low, uint32_t high) {
-    SR_low       = low;
-    SR_high      = high;
-    SR_inv_range = 1.f / float(high - low);
-}
-
-uint32_t Material::SR_low  = 16;
-uint32_t Material::SR_high = 64;
-
-float Material::SR_inv_range = 1.f / float(Material::SR_high - Material::SR_low);
-
-float Material::van_de_hulst_anisotropy(uint32_t depth) const {
-    if (depth < SR_low) {
-        return anisotropy_;
-    }
-
-    if (depth < SR_high) {
-        float const towards_zero = SR_inv_range * float(depth - SR_low);
-
-        return lerp(anisotropy_, 0.f, towards_zero);
-    }
-
-    return 0.f;
 }
 
 }  // namespace scene::material::volumetric

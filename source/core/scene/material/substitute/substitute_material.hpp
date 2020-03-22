@@ -5,7 +5,7 @@
 
 namespace scene::material::substitute {
 
-class alignas(32) Material : public Material_base {
+class alignas(16) Material : public Material_base {
   public:
     Material(Sampler_settings const& sampler_settings, bool two_sided);
 
@@ -17,7 +17,7 @@ class alignas(32) Material : public Material_base {
     static size_t sample_size();
 };
 
-class alignas(32) Frozen : public Material_base {
+class alignas(16) Frozen : public Material_base {
   public:
     Frozen(Sampler_settings const& sampler_settings, bool two_sided);
 

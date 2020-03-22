@@ -128,7 +128,7 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
         float const vbh = material->border(wi, n);
         float const nsc = material::non_symmetry_compensation(wi, wo1, geo_n, n);
 
-        sample.set_basis(geo_n, wo);
+        sample.set_basis(geo_n, n, wo);
         sample.factor_ = nsc * vbh;
 
         return sample;

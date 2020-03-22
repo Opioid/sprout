@@ -30,14 +30,6 @@ float3 Grid::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*
     return d * cc_.a * emission_;
 }
 
-CC Grid::collision_coefficients() const {
-    return cc_;
-}
-
-CC Grid::collision_coefficients(float2 /*uv*/, Filter /*filter*/, Worker const& /*worker*/) const {
-    return cc_;
-}
-
 CC Grid::collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 
@@ -182,46 +174,37 @@ float3 Grid_color::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, fl
                                      Filter filter, Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
-    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), distance_);
+    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
 
     return cc.a * emission_;
-}
-
-CC Grid_color::collision_coefficients() const {
-    return cc_;
-}
-
-CC Grid_color::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
-                                      Worker const& /*worker*/) const {
-    return cc_;
 }
 
 CC Grid_color::collision_coefficients(float3 const& uvw, Filter filter,
                                       Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
-    return c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), distance_);
+    return c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
 }
 
 CCE Grid_color::collision_coefficients_emission(float3 const& uvw, Filter filter,
                                                 Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
-    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), distance_);
+    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
 
     return {cc, emission_};
 }
 
 void Grid_color::set_attenuation(float scattering_factor, float distance) {
-    distance_          = distance;
-    scattering_factor_ = scattering_factor;
+    attenuation_distance_ = distance;
+    scattering_factor_    = scattering_factor;
 }
 
 void Grid_color::commit(thread::Pool& threads, Scene const& scene) {
     auto const& texture = color_.texture(scene);
 
     Octree_builder builder;
-    builder.build(tree_, texture, CM(distance_, scattering_factor_), threads);
+    builder.build(tree_, texture, CM(attenuation_distance_, scattering_factor_), threads);
 }
 
 Gridtree const* Grid_color::volume_tree() const {

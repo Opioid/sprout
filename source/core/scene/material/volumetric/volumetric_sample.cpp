@@ -17,10 +17,6 @@ Sample::Sample() {
     properties_.set(Property::Translucent);
 }
 
-float3 const& Sample::base_shading_normal() const {
-    return geo_n_;
-}
-
 bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     float const phase = Sample::phase(wo_, wi);
 

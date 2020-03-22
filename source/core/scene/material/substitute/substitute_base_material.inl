@@ -25,7 +25,7 @@ template <typename Sample>
 void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
                                Texture_sampler_2D const& sampler, Worker const& worker,
                                Sample& sample) const {
-    sample.set_basis(rs.geo_n, wo);
+    sample.set_basis(rs.geo_n, rs.n, wo);
 
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
@@ -60,8 +60,9 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
         radiance = float3(0.f);
     }
 
-    sample.base_.set(color, radiance, fresnel::schlick_f0(ior_, ior_outside), surface[0],
-                     surface[1], rs.avoid_caustics);
+    sample.set_radiance(radiance);
+    sample.base_.set(color, fresnel::schlick_f0(ior_, ior_outside), surface[0], surface[1],
+                     rs.avoid_caustics);
 }
 
 }  // namespace scene::material::substitute

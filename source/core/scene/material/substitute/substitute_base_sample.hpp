@@ -9,8 +9,7 @@ template <typename Diffuse>
 struct Base_closure {
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& color, float3 const& emission, float f0, float alpha, float metallic,
-             bool avoid_caustics);
+    void set(float3 const& color, float f0, float alpha, float metallic, bool avoid_caustics);
 
     template <bool Forward>
     bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
@@ -43,7 +42,6 @@ struct Base_closure {
 
     float3 diffuse_color_;
     float3 f0_;
-    float3 emission_;
 
     float metallic_;
     float alpha_;
@@ -53,8 +51,6 @@ struct Base_closure {
 
 class Sample_base : public material::Sample {
   public:
-    float3 const& base_shading_normal() const final;
-
     Layer layer_;
 };
 

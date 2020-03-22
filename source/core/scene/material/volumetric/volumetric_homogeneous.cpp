@@ -15,34 +15,6 @@ float3 Homogeneous::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*
     return cc_.a * emission_;
 }
 
-float3 Homogeneous::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                           Worker const& /*worker*/) const {
-    return cc_.a;
-}
-
-CC Homogeneous::collision_coefficients() const {
-    return cc_;
-}
-
-CC Homogeneous::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
-                                       Worker const& /*worker*/) const {
-    return cc_;
-}
-
-CC Homogeneous::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
-                                       Worker const& /*worker*/) const {
-    return cc_;
-}
-
-CCE Homogeneous::collision_coefficients_emission() const {
-    return {cc_, emission_};
-}
-
-CCE Homogeneous::collision_coefficients_emission(float3 const& /*uvw*/, Filter /*filter*/,
-                                                 Worker const& /*worker*/) const {
-    return {cc_, emission_};
-}
-
 size_t Homogeneous::num_bytes() const {
     return sizeof(*this);
 }

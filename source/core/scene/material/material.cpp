@@ -18,7 +18,11 @@ char const* Material::identifier() {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : sampler_key_(sampler_settings.key()),
       properties_(two_sided ? Property::Two_sided : Property::None),
-      ior_(1.5f) {}
+      cc_{float3(0.f), float3(0.f)},
+      emission_(0.f),
+      ior_(1.5f),
+      attenuation_distance_(0.f),
+      volumetric_anisotropy_(0.f) {}
 
 Material::~Material() = default;
 
@@ -28,6 +32,10 @@ void Material::set_mask(Texture_adapter const& mask) {
 
 void Material::set_ior(float ior) {
     ior_ = ior;
+}
+
+void Material::set_volumetric_anisotropy(float anisotropy) {
+    volumetric_anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
 void Material::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
@@ -92,42 +100,44 @@ float Material::border(float3 const& wi, float3 const& n) const {
 
 float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
                                         Worker const& /*worker*/) const {
-    return float3(0.f);
+    return cc_.a;
 }
 
 CC Material::collision_coefficients() const {
-    return {float3(0.f), float3(0.f)};
+    return cc_;
 }
 
 CC Material::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const {
-    return {float3(0.f), float3(0.f)};
+    return cc_;
 }
 
 CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const {
-    return {float3(0.f), float3(0.f)};
+    return cc_;
 }
 
 CCE Material::collision_coefficients_emission() const {
-    return {{float3(0.f), float3(0.f)}, float3(0.f)};
+    return {cc_, emission_};
 }
 
 CCE Material::collision_coefficients_emission(float3 const& /*uvw*/, Filter /*filter*/,
                                               Worker const& /*worker*/) const {
-    return {{float3(0.f), float3(0.f)}, float3(0.f)};
+    return {cc_, emission_};
 }
 
 CM Material::control_medium() const {
-    return CM(0.f);
+    return cm_;
 }
 
 volumetric::Gridtree const* Material::volume_tree() const {
     return nullptr;
 }
 
-float Material::similarity_relation_scale(uint32_t /*depth*/) const {
-    return 1.f;
+float Material::similarity_relation_scale(uint32_t depth) const {
+    float const gs = van_de_hulst_anisotropy(depth);
+
+    return van_de_hulst(volumetric_anisotropy_, gs);
 }
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
@@ -186,6 +196,20 @@ bool Material::is_heterogeneous_volume() const {
 
 float Material::ior() const {
     return ior_;
+}
+
+float Material::van_de_hulst_anisotropy(uint32_t depth) const {
+    if (depth < SR_low) {
+        return volumetric_anisotropy_;
+    }
+
+    if (depth < SR_high) {
+        float const towards_zero = SR_inv_range * float(depth - SR_low);
+
+        return lerp(volumetric_anisotropy_, 0.f, towards_zero);
+    }
+
+    return 0.f;
 }
 
 float3 Material::rainbow_[Num_bands + 1];
@@ -255,5 +279,16 @@ float3 Material::spectrum_at_wavelength(float lambda, float value) {
 
     return value * lerp(rainbow_[id], rainbow_[id + 1], frac);
 }
+
+void Material::set_similarity_relation_range(uint32_t low, uint32_t high) {
+    SR_low       = low;
+    SR_high      = high;
+    SR_inv_range = 1.f / float(high - low);
+}
+
+uint32_t Material::SR_low  = 16;
+uint32_t Material::SR_high = 64;
+
+float Material::SR_inv_range = 1.f / float(Material::SR_high - Material::SR_low);
 
 }  // namespace scene::material

@@ -13,10 +13,6 @@
 
 namespace scene::material::glass {
 
-float3 const& Sample_rough::base_shading_normal() const {
-    return layer_.n_;
-}
-
 bxdf::Result Sample_rough::evaluate_f(float3 const& wi) const {
     return evaluate<true>(wi);
 }
