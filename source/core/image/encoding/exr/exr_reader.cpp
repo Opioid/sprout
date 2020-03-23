@@ -16,6 +16,15 @@
 
 namespace image::encoding::exr {
 
+/*
+struct Chromaticities {
+    float red[2];
+    float green[2];
+    float blue[2];
+    float white[2];
+};
+*/
+
 struct Channels {
     Channels() {
         channels.reserve(4);
@@ -43,7 +52,7 @@ struct Channels {
     }
 
     uint32_t num_channels() const {
-        return channels.size();
+        return uint32_t(channels.size());
     }
 
     std::vector<Channel> channels;
@@ -117,11 +126,19 @@ Image* Reader::read(std::istream& stream) {
             channel_list(stream, channels);
         } else if ("compression" == attribute_type) {
             compression = exr::compression(stream);
-        } else {
+        } /*else if ("chromaticities" == attribute_type) {
+            Chromaticities chroma;
+            stream.read(reinterpret_cast<char*>(&chroma), sizeof(Chromaticities));
+
+            std::cout << chroma.red[0] << " " << chroma.red[1] << std::endl;
+            std::cout << chroma.green[0] << " " << chroma.green[1] << std::endl;
+            std::cout << chroma.blue[0] << " " << chroma.blue[1] << std::endl;
+            std::cout << chroma.white[0] << " " << chroma.white[1] << std::endl;
+        }*/ else {
             stream.seekg(attribute_size, std::ios_base::cur);
         }
 
-        //    std::cout << std::endl;
+        //   std::cout << std::endl;
     }
 
     if (data_window != display_window) {
