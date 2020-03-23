@@ -39,9 +39,7 @@ class alignas(64) Texture {
 
     int32_t volume() const;
 
-    int2 dimensions_2() const;
-
-    int3 const& dimensions_3() const;
+    int3 const& dimensions() const;
 
     int2 back_2() const;
 

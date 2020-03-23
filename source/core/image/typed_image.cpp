@@ -19,11 +19,7 @@ uint64_t Description::num_pixels() const {
            uint64_t(num_elements_);
 }
 
-int2 Description::dimensions_2() const {
-    return dimensions_.xy();
-}
-
-int3 const& Description::dimensions_3() const {
+int3 const& Description::dimensions() const {
     return dimensions_;
 }
 

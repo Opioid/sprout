@@ -8,11 +8,11 @@
 
 namespace image::texture {
 
-#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                                  \
-    inline Texture::Texture(TYPE const& texture)                           \
-        : type_(Type::TYPE),                                               \
-          back_(texture.image().description().dimensions_3() - 1),         \
-          dimensions_float_(texture.image().description().dimensions_3()), \
+#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                                \
+    inline Texture::Texture(TYPE const& texture)                         \
+        : type_(Type::TYPE),                                             \
+          back_(texture.image().description().dimensions() - 1),         \
+          dimensions_float_(texture.image().description().dimensions()), \
           MEMBER(texture) {}
 
 TEXTURE_CONSTRUCTOR(Byte1_unorm, byte1_unorm_)
@@ -91,16 +91,10 @@ inline int32_t Texture::volume() const {
     return 0;
 }
 
-inline int2 Texture::dimensions_2() const {
-    TEXTURE_DELEGATE(image().description().dimensions_2)
+inline int3 const& Texture::dimensions() const {
+    TEXTURE_DELEGATE(image().description().dimensions)
 
-    return int2(0);
-}
-
-inline int3 const& Texture::dimensions_3() const {
-    TEXTURE_DELEGATE(image().description().dimensions_3)
-
-    return byte1_unorm_.image().description().dimensions_3();
+    return byte1_unorm_.image().description().dimensions();
 }
 
 inline int2 Texture::back_2() const {

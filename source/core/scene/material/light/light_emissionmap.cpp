@@ -92,7 +92,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
     auto const& texture = emission_map_.texture(scene);
 
     if (importance_sampling) {
-        auto const d = texture.dimensions_2();
+        auto const d = texture.dimensions().xy();
 
         Distribution_2D::Distribution_impl* conditional = distribution_.allocate(uint32_t(d[1]));
 

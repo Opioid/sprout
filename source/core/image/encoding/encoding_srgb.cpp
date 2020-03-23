@@ -42,7 +42,7 @@ char* Srgb::data() {
 }
 
 void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
-    int2 const d = image.description().dimensions_2();
+    int2 const d = image.description().dimensions().xy();
 
     if (alpha_) {
         byte4* rgba = reinterpret_cast<byte4*>(buffer_);

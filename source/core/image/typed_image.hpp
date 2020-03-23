@@ -13,9 +13,7 @@ struct Description {
 
     uint64_t num_pixels() const;
 
-    int2 dimensions_2() const;
-
-    int3 const& dimensions_3() const;
+    int3 const& dimensions() const;
 
     int32_t area() const;
 

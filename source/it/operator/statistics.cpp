@@ -114,11 +114,11 @@ Luminance average_and_max_luminance(Texture const* image) {
     float average = 0.f;
     float max     = 0.f;
 
-    auto const& d = image->dimensions_3();
+    auto const d = image->dimensions();
 
-    for (int32_t z = 0, depth = d[2]; z < depth; ++z) {
-        for (int32_t y = 0, height = d[1]; y < height; ++y) {
-            for (int32_t x = 0, width = d[0]; x < width; ++x) {
+    for (int32_t z = 0; z < d[2]; ++z) {
+        for (int32_t y = 0; y < d[1]; ++y) {
+            for (int32_t x = 0; x < d[0]; ++x) {
                 float const luminance = luminance_gamma_sRGB(image->at_3(x, y, z));
 
                 average += ilen * luminance;
@@ -138,11 +138,11 @@ void write_histogram(Item const& item, std::ostream& stream) {
 
     Histogram hist(max_l);
 
-    auto const& d = image->dimensions_3();
+    auto const d = image->dimensions();
 
-    for (int32_t z = 0, depth = d[2]; z < depth; ++z) {
-        for (int32_t y = 0, height = d[1]; y < height; ++y) {
-            for (int32_t x = 0, width = d[0]; x < width; ++x) {
+    for (int32_t z = 0; z < d[2]; ++z) {
+        for (int32_t y = 0; y < d[1]; ++y) {
+            for (int32_t x = 0; x < d[0]; ++x) {
                 float const luminance = luminance_gamma_sRGB(image->at_3(x, y, z));
 
                 hist.insert(luminance);

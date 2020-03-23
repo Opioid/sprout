@@ -20,7 +20,7 @@ std::string Writer::file_extension() const {
 }
 
 bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
-    auto const d = image.description().dimensions_2();
+    auto const d = image.description().dimensions();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
 
@@ -52,7 +52,7 @@ bool Writer::write(std::string_view name, Byte3 const& image) {
         return false;
     }
 
-    auto const d = image.description().dimensions_3();
+    auto const d = image.description().dimensions();
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 3,
@@ -75,7 +75,7 @@ bool Writer::write(std::string_view name, Byte1 const& image) {
         return false;
     }
 
-    auto const d = image.description().dimensions_3();
+    auto const d = image.description().dimensions();
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1], 1,

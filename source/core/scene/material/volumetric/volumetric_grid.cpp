@@ -100,7 +100,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
     float3 const emission = cc_.a * emission_;
 
     if (importance_sampling) {
-        auto const& d = texture.dimensions_3();
+        auto const& d = texture.dimensions();
 
         Distribution_2D* conditional_2d = distribution_.allocate(uint32_t(d[2]));
 

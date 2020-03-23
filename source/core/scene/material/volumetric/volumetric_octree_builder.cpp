@@ -16,7 +16,7 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CM const& cm,
                            thread::Pool& threads) {
     threads.wait_async();
 
-    int3 const d = texture.dimensions_3();
+    int3 const d = texture.dimensions();
 
     int3 num_cells = d >> Gridtree::Log2_cell_dim;
 
@@ -88,7 +88,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
     // Supposedly due to floating point imprecision.
     static float constexpr mt_epsilon = 0.f;  // 0.003f;
 
-    int3 const d = texture.dimensions_3();
+    int3 const d = texture.dimensions();
 
     // Include 1 additional voxel on each border to account for filtering
     int3 const minb = max(box.bounds[0] - 1, 0);

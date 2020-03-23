@@ -45,7 +45,7 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
     float threshold = threshold_;
     float intensity = intensity_;
 
-    auto const d = destination.description().dimensions_3();
+    auto const d = destination.description().dimensions();
 
     if (0 == pass) {
         for (int32_t i = begin; i < end; ++i) {

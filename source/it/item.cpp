@@ -16,7 +16,7 @@ int2 max_dimensions_2(std::vector<Item> const& items) {
     int2 dm(0);
 
     for (auto const& i : items) {
-        dm = max(dm, i.image->dimensions_2());
+        dm = max(dm, i.image->dimensions().xy());
     }
 
     return dm;

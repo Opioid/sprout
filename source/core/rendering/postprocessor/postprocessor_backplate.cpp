@@ -16,7 +16,7 @@ bool Backplate::alpha_out(bool /*alpha_in*/) const {
 
 void Backplate::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
                       image::Float4 const& source, image::Float4& destination) {
-    int2 const d = backplate_->dimensions_2();
+    int2 const d = backplate_->dimensions().xy();
 
     for (int32_t i = begin; i < end; ++i) {
         float4 const foreground = source.load(i);

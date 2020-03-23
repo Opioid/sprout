@@ -16,14 +16,14 @@ uint32_t add(std::vector<Item> const& items, it::options::Options const& /*optio
 
     threads.run_range(
         [&items, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            int2 const d = target.description().dimensions_2();
+            int2 const d = target.description().dimensions().xy();
 
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < d[0]; ++x) {
                     float4 a(0.f);
 
                     for (auto const& i : items) {
-                        int2 const db = i.image->dimensions_2();
+                        int2 const db = i.image->dimensions().xy();
 
                         if ((x >= db[0]) | (y >= db[1])) {
                             continue;
@@ -51,7 +51,7 @@ uint32_t add(std::vector<Item> const& items, it::options::Options const& /*optio
 
 uint32_t sub(std::vector<Item> const& items, it::options::Options const& /*options*/,
              thread::Pool&            threads) {
-    int2 const d = items[0].image->dimensions_2();
+    int2 const d = items[0].image->dimensions().xy();
 
     Float4 target = Float4(image::Description(d));
 
@@ -59,7 +59,7 @@ uint32_t sub(std::vector<Item> const& items, it::options::Options const& /*optio
         [&items, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             auto const image0 = items[0].image;
 
-            int2 const d = image0->dimensions_2();
+            int2 const d = image0->dimensions().xy();
 
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < d[0]; ++x) {
@@ -68,7 +68,7 @@ uint32_t sub(std::vector<Item> const& items, it::options::Options const& /*optio
                     for (size_t i = 1, len = items.size(); i < len; ++i) {
                         auto const imagei = items[i].image;
 
-                        int2 const db = imagei->dimensions_2();
+                        int2 const db = imagei->dimensions().xy();
 
                         if ((x >= db[0]) | (y >= db[1])) {
                             continue;

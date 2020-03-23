@@ -70,7 +70,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
         stream.put(static_cast<char>(compression));
     }
 
-    int2 const d  = image.description().dimensions_2();
+    int2 const d  = image.description().dimensions().xy();
     int2 const dw = d - 1;
 
     {
@@ -141,7 +141,7 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
 
 static inline void write_scanline(std::ostream& stream, Float4 const& image, int32_t y,
                                   uint32_t channel, bool half) {
-    int32_t const width = image.description().dimensions_2()[0];
+    int32_t const width = image.description().dimensions()[0];
 
     if (half) {
         for (int32_t x = 0; x < width; ++x) {
@@ -157,7 +157,7 @@ static inline void write_scanline(std::ostream& stream, Float4 const& image, int
 }
 
 bool Writer::no_compression(std::ostream& stream, Float4 const& image) const {
-    int2 const d = image.description().dimensions_2();
+    auto const d = image.description().dimensions();
 
     int64_t const scanline_offset = stream.tellp() + int64_t(d[1] * 8);
 
@@ -235,7 +235,7 @@ static void reorder(uint8_t* destination, uint8_t const* source, uint32_t len) {
 
 static inline void block_half(uint8_t* destination, Float4 const& image, int32_t num_channels,
                               int32_t num_rows, int32_t pixel) {
-    int32_t const width = image.description().dimensions_2()[0];
+    int32_t const width = image.description().dimensions()[0];
 
     int16_t* halfs = reinterpret_cast<int16_t*>(destination);
 
@@ -262,7 +262,7 @@ static inline void block_half(uint8_t* destination, Float4 const& image, int32_t
 
 static inline void block_float(uint8_t* destination, Float4 const& image, int32_t num_channels,
                                int32_t num_rows, int32_t pixel) {
-    int32_t const width = image.description().dimensions_2()[0];
+    int32_t const width = image.description().dimensions()[0];
 
     float* floats = reinterpret_cast<float*>(destination);
 
@@ -289,7 +289,7 @@ static inline void block_float(uint8_t* destination, Float4 const& image, int32_
 
 bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
                              thread::Pool& threads) const {
-    int2 const d = image.description().dimensions_2();
+    auto const d = image.description().dimensions();
 
     int32_t const rows_per_block = exr::num_scanlines_per_block(compression);
     int32_t const row_blocks     = exr::num_scanline_blocks(d[1], compression);
@@ -346,7 +346,7 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compress
                 return;
             }
 
-            int32_t const width = args.image.description().dimensions_2()[0];
+            int32_t const width = args.image.description().dimensions()[0];
 
             uint32_t const offset = id * args.bytes_per_block;
 

@@ -10,7 +10,7 @@ Difference_item::Difference_item(Item const& item)
     : name_(item.name_out.empty() ? item.name.substr(0, item.name.find_last_of('.')) + "_dif.png"
                                   : item.name_out),
       image_(item.image) {
-    int2 const d = item.image->dimensions_2();
+    int2 const d = item.image->dimensions().xy();
     difference_  = new float[d[0] * d[1]];
 }
 
@@ -40,7 +40,7 @@ float Difference_item::psnr() const {
 
 void Difference_item::calculate_difference(Texture const* other, Scratch* scratch, float clamp,
                                            float2 clip, thread::Pool& threads) {
-    int2 const d = image_->dimensions_2();
+    int2 const d = image_->dimensions().xy();
 
     int32_t const num_pixel = d[0] * d[1];
 
@@ -64,7 +64,7 @@ void Difference_item::calculate_difference(Texture const* other, Scratch* scratc
             float max_dif = 0.f;
             float dif_sum = 0.f;
 
-            int32_t const width = args.image->dimensions_2()[0];
+            int32_t const width = args.image->dimensions()[0];
 
             for (int32_t y = begin; y < end; ++y) {
                 for (int32_t x = 0; x < width; ++x) {

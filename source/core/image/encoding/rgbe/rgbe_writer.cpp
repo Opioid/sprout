@@ -25,7 +25,7 @@ std::string Writer::file_extension() const {
 }
 
 bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*threads*/) {
-    write_header(stream, image.description().dimensions_2());
+    write_header(stream, image.description().dimensions().xy());
 
     write_pixels_rle(stream, image);
 
@@ -39,7 +39,7 @@ void write_header(std::ostream& stream, int2 dimensions) {
 }
 
 void write_pixels(std::ostream& stream, Float4 const& image) {
-    int2 const d = image.description().dimensions_2();
+    int2 const d = image.description().dimensions().xy();
 
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
         byte4 const rgbe = float_to_rgbe(image.at(i));
@@ -49,9 +49,11 @@ void write_pixels(std::ostream& stream, Float4 const& image) {
 }
 
 void write_pixels_rle(std::ostream& stream, Float4 const& image) {
-    int32_t const scanline_width = image.description().dimensions_3()[0];
+    auto const& d = image.description().dimensions();
 
-    int32_t num_scanlines = image.description().dimensions_3()[1];
+    int32_t const scanline_width = d[0];
+
+    int32_t num_scanlines = d[1];
 
     if (scanline_width < 8 || scanline_width > 0x7fff) {
         // run length encoding is not allowed so write flat

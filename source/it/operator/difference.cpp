@@ -27,8 +27,9 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
         return 0;
     }
 
-    Texture const* reference  = items[0].image;
-    int2 const     dimensions = reference->dimensions_2();
+    Texture const* reference = items[0].image;
+
+    int2 const dimensions = reference->dimensions().xy();
 
     std::vector<Difference_item> candidates;
     candidates.reserve(items.size() - 1);
@@ -36,7 +37,7 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     for (size_t i = 1, len = items.size(); i < len; ++i) {
         Item const& item = items[i];
 
-        if (item.image->dimensions_2() != dimensions) {
+        if (item.image->dimensions().xy() != dimensions) {
             logging::error("%S does not match reference resolution", item.name);
             continue;
         }

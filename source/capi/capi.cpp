@@ -638,7 +638,7 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
 
     image::Float4 const& buffer = engine->driver.target();
 
-    int2 const d = buffer.description().dimensions_2();
+    auto const d = buffer.description().dimensions();
 
     if (SU_UINT8 == type && 3 == num_channels) {
         struct Parameters {
@@ -646,10 +646,11 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
 
             byte3* target;
 
+            int32_t source_width;
             int32_t target_width;
         };
 
-        Parameters parameters{buffer, reinterpret_cast<byte3*>(destination),
+        Parameters parameters{buffer, reinterpret_cast<byte3*>(destination), d[0],
                               std::min(d[0], int32_t(width))};
 
         engine->threads.run_range(
@@ -658,10 +659,10 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
 
                 byte3* target = parameters.target;
 
-                int2 const d = source.description().dimensions_2();
+                int32_t const source_width = parameters.source_width;
 
                 for (int32_t y = begin; y < end; ++y) {
-                    int32_t i = y * d[0];
+                    int32_t i = y * source_width;
 
                     for (int32_t x = 0, width = parameters.target_width; x < width; ++x, ++i) {
                         float3 const color = spectrum::linear_to_gamma_sRGB(source.at(i).xyz());

@@ -10,7 +10,7 @@ char const* Texture::identifier() {
 float Texture::average_1() const {
     float average(0.f);
 
-    auto const& d = dimensions_3();
+    auto const& d = dimensions();
 
     for (int32_t z = 0, depth = d[2]; z < depth; ++z) {
         for (int32_t y = 0, height = d[1]; y < height; ++y) {
@@ -27,7 +27,7 @@ float Texture::average_1() const {
 float3 Texture::average_3() const {
     float3 average(0.f);
 
-    auto const d = dimensions_2();
+    auto const& d = dimensions();
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
             average += at_3(x, y);
@@ -41,7 +41,7 @@ float3 Texture::average_3() const {
 float3 Texture::average_3(int32_t element) const {
     float3 average(0.f);
 
-    auto const d = dimensions_2();
+    auto const& d = dimensions();
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
             average += at_element_3(x, y, element);

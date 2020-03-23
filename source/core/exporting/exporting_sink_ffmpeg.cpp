@@ -45,7 +45,7 @@ void Ffmpeg::write(image::Float4 const& image, uint32_t /*frame*/, thread::Pool&
         return;
     }
 
-    auto const d = image.description().dimensions_2();
+    auto const d = image.description().dimensions();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
 
