@@ -64,28 +64,34 @@ void Difference_item::calculate_difference(Texture const* other, Scratch* scratc
             float max_dif = 0.f;
             float dif_sum = 0.f;
 
-            for (int32_t i = begin; i < end; ++i) {
-                float3 const va = args.image->at_3(i);
-                float3 const vb = args.other->at_3(i);
+            int32_t const width = args.image->dimensions_2()[0];
 
-                max_val = std::max(max_val, max_component(va));
+            for (int32_t y = begin; y < end; ++y) {
+                for (int32_t x = 0; x < width; ++x) {
+                    float3 const va = args.image->at_3(x, y);
+                    float3 const vb = args.other->at_3(x, y);
 
-                float dif = distance(va, vb);
+                    max_val = std::max(max_val, max_component(va));
 
-                dif = (dif < args.clip[0] || dif > args.clip[1]) ? 0.f : std::min(dif, args.clamp);
+                    float dif = distance(va, vb);
 
-                args.difference[i] = dif;
+                    dif = (dif < args.clip[0] || dif > args.clip[1]) ? 0.f
+                                                                     : std::min(dif, args.clamp);
 
-                max_dif = std::max(max_dif, dif);
+                    int32_t const i    = y * width + x;
+                    args.difference[i] = dif;
 
-                dif_sum += dif * dif;
+                    max_dif = std::max(max_dif, dif);
+
+                    dif_sum += dif * dif;
+                }
             }
 
             args.scratch[id].max_val = max_val;
             args.scratch[id].max_dif = max_dif;
             args.scratch[id].dif_sum = dif_sum;
         },
-        0, num_pixel);
+        0, d[1]);
 
     float max_val = args.scratch[0].max_val;
     float max_dif = args.scratch[0].max_dif;

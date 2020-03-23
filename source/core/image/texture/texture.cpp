@@ -12,8 +12,12 @@ float Texture::average_1() const {
 
     auto const& d = dimensions_3();
 
-    for (int32_t i = 0, len = d[0] * d[1] * d[2]; i < len; ++i) {
-        average += at_1(i);
+    for (int32_t z = 0, depth = d[2]; z < depth; ++z) {
+        for (int32_t y = 0, height = d[1]; y < height; ++y) {
+            for (int32_t x = 0, width = d[0]; x < width; ++x) {
+                average += at_1(x, y, z);
+            }
+        }
     }
 
     auto const df = dimensions_float3();

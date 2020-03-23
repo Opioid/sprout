@@ -11,16 +11,6 @@ Byte1 const& Byte1_unorm::image() const {
     return image_;
 }
 
-float Byte1_unorm::at_1(int32_t i) const {
-    uint8_t value = image_.load(i);
-    return encoding::cached_unorm_to_float(value);
-}
-
-float3 Byte1_unorm::at_3(int32_t i) const {
-    uint8_t value = image_.load(i);
-    return float3(encoding::cached_unorm_to_float(value), 0.f, 0.f);
-}
-
 float Byte1_unorm::at_1(int32_t x, int32_t y) const {
     uint8_t value = image_.load(x, y);
     return encoding::cached_unorm_to_float(value);

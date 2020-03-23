@@ -28,8 +28,6 @@ using Resources = resource::Manager;
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
                    Resources& resources);
 
-void comparison(std::vector<Item> const& items);
-
 int main(int argc, char* argv[]) {
     auto const total_start = std::chrono::high_resolution_clock::now();
 
@@ -139,8 +137,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    //   comparison(items);
-
     return 0;
 }
 
@@ -167,27 +163,5 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
 
             filesystem.pop_mount();
         }
-    }
-}
-
-void comparison(std::vector<Item> const& items) {
-    for (auto const& item : items) {
-        int2 const d = item.image->dimensions_2();
-
-        int32_t const num_pixels = d[0] * d[1];
-
-        uint32_t count = 0;
-
-        for (int32_t i = 0; i < num_pixels; ++i) {
-            float3 const v = item.image->at_3(i);
-
-            float const m = max_component(v);
-
-            if (m >= 1.f) {
-                ++count;
-            }
-        }
-
-        logging::info("%S has " + string::to_string(count) + " pixels >= 1.f", item.name);
     }
 }

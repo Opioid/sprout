@@ -11,9 +11,6 @@ class Byte3_unorm {
 
     Byte3 const& image() const;
 
-    float  at_1(int32_t i) const;
-    float3 at_3(int32_t i) const;
-
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
     float3 at_3(int32_t x, int32_t y) const;

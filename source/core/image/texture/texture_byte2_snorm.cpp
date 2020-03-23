@@ -11,17 +11,6 @@ Byte2 const& Byte2_snorm::image() const {
     return image_;
 }
 
-float Byte2_snorm::at_1(int32_t i) const {
-    auto const value = image_.load(i);
-    return encoding::cached_snorm_to_float(value[0]);
-}
-
-float3 Byte2_snorm::at_3(int32_t i) const {
-    auto const value = image_.load(i);
-    return float3(encoding::cached_snorm_to_float(value[0]),
-                  encoding::cached_snorm_to_float(value[1]), 0.f);
-}
-
 float Byte2_snorm::at_1(int32_t x, int32_t y) const {
     auto const value = image_.load(x, y);
     return encoding::cached_snorm_to_float(value[0]);

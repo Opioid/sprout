@@ -10,14 +10,6 @@ image::Float3 const& Float3::image() const {
     return image_;
 }
 
-float Float3::at_1(int32_t i) const {
-    return image_.load(i)[0];
-}
-
-float3 Float3::at_3(int32_t i) const {
-    return float3(image_.load(i));
-}
-
 float Float3::at_1(int32_t x, int32_t y) const {
     return image_.load(x, y)[0];
 }

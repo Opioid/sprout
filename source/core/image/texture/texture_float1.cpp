@@ -13,16 +13,6 @@ T const& Float1_t<T>::image() const {
 }
 
 template <typename T>
-float Float1_t<T>::at_1(int32_t i) const {
-    return image_.load(i);
-}
-
-template <typename T>
-float3 Float1_t<T>::at_3(int32_t i) const {
-    return float3(image_.load(i), 0.f, 0.f);
-}
-
-template <typename T>
 float Float1_t<T>::at_1(int32_t x, int32_t y) const {
     return image_.load(x, y);
 }

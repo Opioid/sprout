@@ -119,18 +119,6 @@ inline float3 const& Texture::dimensions_float3() const {
     return dimensions_float_;
 }
 
-inline float Texture::at_1(int32_t i) const {
-    TEXTURE_DELEGATE(at_1, i)
-
-    return 0.f;
-}
-
-inline float3 Texture::at_3(int32_t i) const {
-    TEXTURE_DELEGATE(at_3, i)
-
-    return float3(0.f);
-}
-
 inline float Texture::at_1(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_1, x, y)
 
