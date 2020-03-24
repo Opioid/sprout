@@ -20,9 +20,9 @@ class Clearcoat {
 
     float3 attenuation(float n_dot_wo) const;
 
-  protected:
     float3 attenuation(float n_dot_wi, float n_dot_wo) const;
 
+  protected:
     Result evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                       Layer const& layer, bool avoid_caustics) const;
 

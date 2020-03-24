@@ -27,21 +27,6 @@ class Sample_coating_subsurface final
     IoR ior_;
 };
 
-class Sample_coating_subsurface_volumetric final : public volumetric::Sample {
-  public:
-    bxdf::Result evaluate_f(float3 const& wi) const final;
-
-    bxdf::Result evaluate_b(float3 const& wi) const final;
-
-  private:
-    float3 attenuation(float3 const& wi) const;
-
-  public:
-    Layer layer_;
-
-    coating::Clearcoat_layer coating_;
-};
-
 }  // namespace scene::material::substitute
 
 #endif

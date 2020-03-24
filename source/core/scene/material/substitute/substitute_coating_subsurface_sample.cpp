@@ -153,14 +153,11 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi) const {
         auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
                                                     base_.alpha_, ior, schlick);
 
-        float const coating_n_dot_wi = coating_.clamp_n_dot(wi);
-
-        float3 const attenuation = coating_.attenuation(coating_n_dot_wi);
-
         if (Forward) {
-            return {std::min(n_dot_wi, n_dot_wo) * attenuation * ggx.reflection, ggx.pdf()};
+            return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf()};
         }
-        return {attenuation * ggx.reflection, ggx.pdf()};
+
+        return {ggx.reflection, ggx.pdf()};
     }
 
     auto result = Clearcoat_no_lambert::evaluate<Forward>(wi);
@@ -193,38 +190,13 @@ void Sample_coating_subsurface::refract(Sampler& sampler, bxdf::Sample& result) 
 
     float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);
 
-    float3 const attenuation = coating_.attenuation(coating_n_dot_wo);
+    // Approximating the full coating attenuation at entrance, for the benefit of SSS,
+    // which will ignore the border later.
+    // This will probably cause problems for shapes intersecting such materials.
+    float3 const attenuation = coating_.attenuation(0.5f, coating_n_dot_wo);
 
     result.reflection *= n_dot_wi * attenuation;
     result.type.set(bxdf::Type::Caustic);
-}
-
-bxdf::Result Sample_coating_subsurface_volumetric::evaluate_f(float3 const& wi) const {
-    bxdf::Result result = volumetric::Sample::evaluate_f(wi);
-
-    float3 const a = attenuation(wi);
-
-    result.reflection *= a;
-
-    return result;
-}
-
-bxdf::Result Sample_coating_subsurface_volumetric::evaluate_b(float3 const& wi) const {
-    bxdf::Result result = volumetric::Sample::evaluate_b(wi);
-
-    float3 const a = attenuation(wi);
-
-    result.reflection *= a;
-
-    return result;
-}
-
-float3 Sample_coating_subsurface_volumetric::attenuation(float3 const& wi) const {
-    float const n_dot_wi = coating_.clamp_n_dot(wi);
-
-    float3 const attenuation = coating_.attenuation(n_dot_wi);
-
-    return attenuation;
 }
 
 }  // namespace scene::material::substitute

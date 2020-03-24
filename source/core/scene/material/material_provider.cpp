@@ -85,10 +85,10 @@ static Texture_adapter create_texture(Texture_description const& description,
 struct Coating_description {
     float3 color = float3(1.f);
 
-    float attenuation_distance = 1.f;
-    float ior                  = 1.f;
-    float roughness            = 0.f;
-    float thickness            = 0.001f;
+    float attenuation_distance = 0.1f;
+    float ior                  = 1.5f;
+    float roughness            = 0.2f;
+    float thickness            = 0.f;
 
     bool in_nm = false;
 
@@ -877,7 +877,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         return material;
     }
 
-    if (coating.ior > 1.f) {
+    if (coating.thickness > 0.f) {
         Texture_adapter coating_thickness_map;
         Texture_adapter coating_normal_map;
 
