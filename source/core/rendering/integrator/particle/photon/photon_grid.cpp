@@ -38,7 +38,7 @@ static inline uint8_t adjacent(float s, float2 cell_bound) {
 
 static float3 scattering_coefficient(prop::Intersection const& intersection, Worker const& worker);
 
-Grid::Grid() : grid_(nullptr) {}
+Grid::Grid() : dimensions_(0), grid_(nullptr) {}
 
 Grid::~Grid() {
     memory::free_aligned(grid_);
@@ -249,7 +249,7 @@ void Grid::init_cells(uint32_t num_photons, Photon* photons) {
 
     int32_t const num_cells = dimensions_[0] * dimensions_[1] * dimensions_[2] + 1;
 
-    int32_t const len = static_cast<int32_t>(num_photons);
+    int32_t const len = int32_t(num_photons);
 
     int32_t current = 0;
     for (int32_t c = 0; c < num_cells; ++c) {

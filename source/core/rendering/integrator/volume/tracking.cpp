@@ -169,7 +169,7 @@ bool Tracking::transmittance(Ray const& ray, rnd::Generator& rng, Worker& worker
                 }
             }
 
-            SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t());
+            SOFT_ASSERT(scene::offset_f(local_ray.max_t()) > local_ray.min_t());
 
             local_ray.min_t() = scene::offset_f(local_ray.max_t());
             local_ray.max_t() = d;

@@ -115,7 +115,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     }
                 }
 
-                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t());
+                SOFT_ASSERT(scene::offset_f(local_ray.max_t()) > local_ray.min_t());
 
                 local_ray.min_t() = scene::offset_f(local_ray.max_t());
                 local_ray.max_t() = d;
@@ -134,7 +134,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     }
                 }
 
-                SOFT_ASSERT(scene::offset_f(local_ray.max_t) > local_ray.min_t());
+                SOFT_ASSERT(scene::offset_f(local_ray.max_t()) > local_ray.min_t());
 
                 local_ray.min_t() = scene::offset_f(local_ray.max_t());
                 local_ray.max_t() = d;
