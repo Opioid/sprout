@@ -24,26 +24,26 @@ struct alignas(16) Vector4i_a;
 
 using scalar = math::Simd1f;
 
-using byte2  = math::Vector2<uint8_t>;
-using short2 = math::Vector2<int16_t>;
-using float2 = math::Vector2<float>;
-using int2   = math::Vector2<int32_t>;
-using uint2  = math::Vector2<uint32_t>;
-using ulong2 = math::Vector2<uint64_t>;
+using byte2   = math::Vector2<uint8_t>;
+using ushort2 = math::Vector2<uint16_t>;
+using float2  = math::Vector2<float>;
+using int2    = math::Vector2<int32_t>;
+using uint2   = math::Vector2<uint32_t>;
+using ulong2  = math::Vector2<uint64_t>;
 
 using byte3 = math::Vector3<uint8_t>;
 
 // using float3 = math::Vector3<float>;
 using float3 = math::Vector3f_a;
 
-using short3 = math::Vector3<int16_t>;
+using ushort3 = math::Vector3<uint16_t>;
 
 using int3          = math::Vector3<int32_t>;
 using uint3         = math::Vector3<uint32_t>;
 using packed_float3 = math::Vector3<float>;
 
-using byte4  = math::Vector4<uint8_t>;
-using short4 = math::Vector4<int16_t>;
+using byte4   = math::Vector4<uint8_t>;
+using ushort4 = math::Vector4<uint16_t>;
 
 // using float4 = math::Vector4<float>;
 using float4 = math::Vector4f_a;

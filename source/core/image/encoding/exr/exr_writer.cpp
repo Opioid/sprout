@@ -19,7 +19,7 @@ std::string Writer::file_extension() const {
     return "exr";
 }
 
-static void w(std::ostream& stream, int16_t i);
+static void w(std::ostream& stream, uint16_t i);
 static void w(std::ostream& stream, uint32_t i);
 static void w(std::ostream& stream, int32_t i);
 static void w(std::ostream& stream, float f);
@@ -420,7 +420,7 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compress
     return true;
 }
 
-static void w(std::ostream& stream, int16_t i) {
+static void w(std::ostream& stream, uint16_t i) {
     stream.write(reinterpret_cast<const char*>(&i), 2);
 }
 

@@ -344,18 +344,18 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
         }
 
         if (Channel::Type::Half == channels.channels[0].type) {
-            int16_t* const shorts = reinterpret_cast<int16_t* const>(buffer.data());
+            uint16_t* const shorts = reinterpret_cast<uint16_t* const>(buffer.data());
 
             auto& image_s3 = image->short3();
 
             for (int32_t y = 0; y < num_rows_here; ++y) {
                 int32_t const o = 3 * y * dimensions[0];
                 for (int32_t x = 0; x < dimensions[0]; ++x, ++p) {
-                    int16_t const r = shorts[o + 2 * dimensions[0] + x];
-                    int16_t const g = shorts[o + 1 * dimensions[0] + x];
-                    int16_t const b = shorts[o + 0 * dimensions[0] + x];
+                    uint16_t const r = shorts[o + 2 * dimensions[0] + x];
+                    uint16_t const g = shorts[o + 1 * dimensions[0] + x];
+                    uint16_t const b = shorts[o + 0 * dimensions[0] + x];
 
-                    image_s3.store(p, short3(r, g, b));
+                    image_s3.store(p, ushort3(r, g, b));
                 }
             }
         } else {

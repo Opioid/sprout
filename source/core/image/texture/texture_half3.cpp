@@ -48,7 +48,7 @@ float4 Half3::at_4(int32_t x, int32_t y) const {
 }
 
 void Half3::gather_1(int4 const& xy_xy1, float c[4]) const {
-    short3 v[4];
+    ushort3 v[4];
     image_.gather(xy_xy1, v);
 
     c[0] = half_to_float(v[0][0]);
@@ -58,7 +58,7 @@ void Half3::gather_1(int4 const& xy_xy1, float c[4]) const {
 }
 
 void Half3::gather_2(int4 const& xy_xy1, float2 c[4]) const {
-    short3 v[4];
+    ushort3 v[4];
     image_.gather(xy_xy1, v);
 
     c[0] = half_to_float(v[0].xy());
@@ -68,7 +68,7 @@ void Half3::gather_2(int4 const& xy_xy1, float2 c[4]) const {
 }
 
 void Half3::gather_3(int4 const& xy_xy1, float3 c[4]) const {
-    short3 v[4];
+    ushort3 v[4];
     image_.gather(xy_xy1, v);
 
     c[0] = half_to_float(v[0]);
@@ -98,9 +98,7 @@ float2 Half3::at_2(int32_t x, int32_t y, int32_t z) const {
 }
 
 float3 Half3::at_3(int32_t x, int32_t y, int32_t z) const {
-    return float3(image_.load(x, y, z));
-
-    //	return float3(image_.at(x, y, z));
+    return half_to_float(image_.load(x, y, z));
 }
 
 float4 Half3::at_4(int32_t x, int32_t y, int32_t z) const {

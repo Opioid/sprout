@@ -496,29 +496,6 @@ static inline Simd3f interpolate_normal(Simd3f const& u, Simd3f const& v,
     return normalize(v0);
 }
 
-inline float xnorm_to_float(int16_t xnorm) {
-    return float(xnorm) / 511.f;
-}
-
-inline int16_t float_to_xnorm(float x) {
-    return static_cast<int16_t>(x * 511.f);
-}
-
-inline float4 snorm16_to_float(short4 v) {
-    return float4(encoding::snorm16_to_float(v[0]), encoding::snorm16_to_float(v[1]),
-                  encoding::snorm16_to_float(v[2]), xnorm_to_float(v[3]));
-}
-
-inline short4 float_to_snorm16(float3 const& v, float s) {
-    return short4(encoding::float_to_snorm16(v[0]), encoding::float_to_snorm16(v[1]),
-                  encoding::float_to_snorm16(v[2]), float_to_xnorm(s));
-}
-
-inline short4 float_to_snorm16(packed_float3 const& v, float s) {
-    return short4(encoding::float_to_snorm16(v[0]), encoding::float_to_snorm16(v[1]),
-                  encoding::float_to_snorm16(v[2]), float_to_xnorm(s));
-}
-
 inline Vertex_MTC::Vertex_MTC(packed_float3 const& p, packed_float3 const& n,
                               packed_float3 const& t, float2 uv)
     : p(p), n_u(n, uv[0]), t_v(t, uv[1]) {

@@ -128,7 +128,7 @@ static bool read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint3
             // this file is not run length encoded
 
             if constexpr (std::is_same<Image, Short3>::value) {
-                short3 const color = float_to_half(rgbe_to_float3(rgbe));
+                ushort3 const color = float_to_half(rgbe_to_float3(rgbe));
 
                 image.store(0, color);
 
