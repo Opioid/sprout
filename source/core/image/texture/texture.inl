@@ -97,19 +97,11 @@ inline int3 const& Texture::dimensions() const {
     return byte1_unorm_.image().description().dimensions();
 }
 
-inline int2 Texture::back_2() const {
-    return back_.xy();
-}
-
-inline int3 const& Texture::back_3() const {
+inline int3 const& Texture::back() const {
     return back_;
 }
 
-inline float2 Texture::dimensions_float2() const {
-    return dimensions_float_.xy();
-}
-
-inline float3 const& Texture::dimensions_float3() const {
+inline float3 const& Texture::dimensions_float() const {
     return dimensions_float_;
 }
 

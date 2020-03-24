@@ -20,7 +20,7 @@ float Texture::average_1() const {
         }
     }
 
-    auto const df = dimensions_float3();
+    auto const df = dimensions_float();
     return average / (df[0] * df[1] * d[2]);
 }
 
@@ -34,7 +34,7 @@ float3 Texture::average_3() const {
         }
     }
 
-    auto const df = dimensions_float2();
+    auto const df = dimensions_float().xy();
     return average / (df[0] * df[1]);
 }
 
@@ -48,7 +48,7 @@ float3 Texture::average_3(int32_t element) const {
         }
     }
 
-    auto const df = dimensions_float2();
+    auto const df = dimensions_float().xy();
     return average / (df[0] * df[1]);
 }
 

@@ -71,12 +71,12 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::address(float2 uv) const {
 
 template <typename Address_mode_U, typename Address_mode_V>
 int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(Texture const& texture, float2 uv) {
-    auto const d = texture.dimensions_float2();
+    auto const d = texture.dimensions_float().xy();
 
     float const u = Address_mode_U::f(uv[0]);
     float const v = Address_mode_V::f(uv[1]);
 
-    auto const b = texture.back_2();
+    auto const b = texture.back().xy();
 
     return int2(std::min(int32_t(u * d[0]), b[0]), std::min(int32_t(v * d[1]), b[1]));
 }
@@ -169,7 +169,7 @@ float2 Linear_2D<Address_U, Address_V>::address(float2 uv) const {
 
 template <typename Address_U, typename Address_V>
 float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv, int4& xy_xy1) {
-    auto const d = texture.dimensions_float2();
+    auto const d = texture.dimensions_float().xy();
 
     float const u = Address_U::f(uv[0]) * d[0] - 0.5f;
     float const v = Address_V::f(uv[1]) * d[1] - 0.5f;
@@ -180,7 +180,7 @@ float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv, i
     int32_t const x = int32_t(fu);
     int32_t const y = int32_t(fv);
 
-    auto const b = texture.back_2();
+    auto const b = texture.back().xy();
 
     xy_xy1[0] = Address_U::lower_bound(x, b[0]);
     xy_xy1[1] = Address_V::lower_bound(y, b[1]);
@@ -227,13 +227,13 @@ float3 Nearest_3D<Address_mode>::address(float3 const& uvw) const {
 
 template <typename Address_mode>
 int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) {
-    auto const& d = texture.dimensions_float3();
+    auto const& d = texture.dimensions_float();
 
     float const u = Address_mode::f(uvw[0]);
     float const v = Address_mode::f(uvw[1]);
     float const w = Address_mode::f(uvw[2]);
 
-    auto const& b = texture.back_3();
+    auto const& b = texture.back();
 
     return int3(std::min(int32_t(u * d[0]), b[0]), std::min(int32_t(v * d[1]), b[1]),
                 std::min(int32_t(w * d[2]), b[2]));
@@ -331,7 +331,7 @@ float3 Linear_3D<Address_mode>::address(float3 const& uvw) const {
 template <typename Address_mode>
 float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, int3& xyz0,
                                     int3& xyz1) {
-    auto const& d = texture.dimensions_float3();
+    auto const& d = texture.dimensions_float();
 
     float const u = Address_mode::f(uvw[0]) * d[0] - 0.5f;
     float const v = Address_mode::f(uvw[1]) * d[1] - 0.5f;
@@ -345,7 +345,7 @@ float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, i
     int32_t const y = int32_t(fv);
     int32_t const z = int32_t(fw);
 
-    auto const& b = texture.back_3();
+    auto const& b = texture.back();
 
     xyz0[0] = Address_mode::lower_bound(x, b[0]);
     xyz0[1] = Address_mode::lower_bound(y, b[1]);
