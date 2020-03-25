@@ -98,7 +98,7 @@ AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& threads) const {
 
             aabbs_[id] = aabb;
         },
-        0, static_cast<int32_t>(num_photons));
+        0, int32_t(num_photons));
 
     AABB aabb = AABB::empty();
 
