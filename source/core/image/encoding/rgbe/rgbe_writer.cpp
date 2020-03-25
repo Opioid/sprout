@@ -174,6 +174,7 @@ byte4 float_to_rgbe(float4 const& c) {
     if (v < 1e-32f) {
         return byte4(0, 0, 0, 0);
     }
+
     int         e;
     float const f = std::frexp(v, &e);
 
