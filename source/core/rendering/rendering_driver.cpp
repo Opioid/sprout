@@ -401,7 +401,7 @@ void Driver::bake_photons(uint32_t frame) {
     uint32_t num_photons = std::max(settings_num_photons / 10, 1u);
     particle_importance_.set_training(true);
 #else
-    uint32_t num_photons = photon_settings_.num_photons;
+    uint32_t num_photons = settings_num_photons;
     particle_importance_.set_training(false);
 #endif
 

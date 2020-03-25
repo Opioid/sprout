@@ -66,7 +66,7 @@ void Grid::resize(AABB const& aabb) {
 
         dimensions_ = dimensions;
 
-        local_to_texture_ = 1.f / aabb_.extent() * float3(dimensions - int3(2));
+        local_to_texture_ = 1.f / aabb.extent() * float3(dimensions - int3(2));
 
         int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2] + 1;
 

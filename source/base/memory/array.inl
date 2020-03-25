@@ -4,6 +4,8 @@
 #include "align.hpp"
 #include "array.hpp"
 
+#include "base/debug/assert.hpp"
+
 #include <utility>
 
 namespace memory {
@@ -116,11 +118,15 @@ void Array<T>::push_back(T const& v) {
 
 template <typename T>
 T const& Array<T>::operator[](uint32_t i) const {
+    SOFT_ASSERT(i < size_);
+
     return data_[i];
 }
 
 template <typename T>
 T& Array<T>::operator[](uint32_t i) {
+    SOFT_ASSERT(i < size_);
+
     return data_[i];
 }
 
