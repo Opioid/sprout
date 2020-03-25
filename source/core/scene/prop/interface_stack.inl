@@ -82,6 +82,14 @@ inline float Interface_stack::top_ior(Worker const& worker) const {
     return 1.f;
 }
 
+inline float Interface_stack::next_to_bottom_ior(Worker const& worker) const {
+    if (index_ > 1) {
+        return stack_[1].material(worker)->ior();
+    }
+
+    return 1.f;
+}
+
 inline bool Interface_stack::straight(Worker const& worker) const {
     if (index_ > 0) {
         return 1.f == stack_[index_ - 1].material(worker)->ior();

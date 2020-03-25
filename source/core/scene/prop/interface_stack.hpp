@@ -50,6 +50,8 @@ class Interface_stack {
 
     float top_ior(Worker const& worker) const;
 
+    float next_to_bottom_ior(Worker const& worker) const;
+
     bool straight(Worker const& worker) const;
 
     void push(Intersection const& intersection);
