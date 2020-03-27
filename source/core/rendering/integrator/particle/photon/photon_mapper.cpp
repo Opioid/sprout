@@ -127,15 +127,17 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
         float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) /
                           (light_sample.pdf);
 
+        float3 wo1(0.f);
+
         for (; ray.depth < settings_.max_bounces;) {
             float3 const wo = -ray.direction;
 
-            auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics,
-                                                              sampler_, worker);
 
-            //            auto const& material_sample = worker.sample_material(
-            //                ray, wo, intersection, filter, avoid_caustics, from_subsurface,
-            //                sampler_);
+                        auto const& material_sample = worker.sample_material(
+                            ray, wo, wo1, intersection, filter, avoid_caustics, from_subsurface,
+                            sampler_);
+
+            wo1 = wo;
 
             if (material_sample.is_pure_emissive()) {
                 break;
@@ -165,6 +167,13 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                         auto& photon = photons[num_photons];
 
                         float3 radi = radiance;
+
+
+                        if (intersection.subsurface && (intersection.material(worker)->ior() > 1.f)) {
+                            float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
+                            radi *= intersection.material(worker)->ior() / ior_t;
+                        }
+
                         //                        if (intersection.subsurface) {
                         //                            float const ior =
                         //                            intersection.material(worker)->ior();//
