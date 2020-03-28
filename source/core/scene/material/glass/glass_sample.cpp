@@ -17,6 +17,10 @@ static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sam
 static void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
                     float n_dot_t, float eta, bxdf::Sample& result);
 
+Sample::Sample() {
+    properties_.unset(Property::Can_evaluate);
+}
+
 bxdf::Result Sample::evaluate_f(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }
@@ -25,7 +29,7 @@ bxdf::Result Sample::evaluate_b(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
     float const p = sampler.generate_sample_1D();
 
     sample(ior_, p, result);

@@ -21,7 +21,7 @@ bxdf::Result Sample_rough::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_rough::sample(Sampler& sampler, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = color_;
         result.wi         = -wo_;

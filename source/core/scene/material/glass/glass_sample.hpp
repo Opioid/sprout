@@ -7,11 +7,13 @@ namespace scene::material::glass {
 
 class alignas(64) Sample : public material::Sample {
   public:
+    Sample();
+
     bxdf::Result evaluate_f(float3 const& wi) const final;
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override;
+    void sample(Sampler& sampler, bxdf::Sample& result) const override;
 
     void set(float3 const& refraction_color, float ior, float ior_outside);
 

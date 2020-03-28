@@ -10,7 +10,7 @@ class alignas(32) Sample : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
     Layer layer_;
 };

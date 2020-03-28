@@ -11,7 +11,7 @@ class alignas(64) Sample_isotropic : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
     void set(float3 const& ior, float3 const& absorption, float alpha, bool avoid_caustics);
 
@@ -35,7 +35,7 @@ class alignas(64) Sample_anisotropic : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
   private:
     template <bool Forward>

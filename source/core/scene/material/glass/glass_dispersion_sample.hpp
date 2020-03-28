@@ -7,7 +7,7 @@ namespace scene::material::glass {
 
 class Sample_dispersion final : public Sample {
   public:
-    void sample(sampler::Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, bxdf::Sample& result) const final;
 
     void set_dispersion(float abbe, float wavelength);
 

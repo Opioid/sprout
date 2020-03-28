@@ -28,7 +28,7 @@ bxdf::Result Sample_thin::evaluate_b(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
-void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
+void Sample_thin::sample(Sampler& sampler, bxdf::Sample& result) const {
     // Thin material is always double sided, so no need to check hemisphere.
 
     float3 const n = layer_.n_;
