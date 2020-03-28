@@ -4,6 +4,7 @@
 #include "base/math/vector3.inl"
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_types.hpp"
+#include "material_sample_helper.hpp"
 #include "scene/scene_renderstate.hpp"
 
 #ifdef SU_DEBUG
@@ -48,7 +49,7 @@ static inline float non_symmetry_compensation(float3 const& wi, float3 const& wo
     // https://github.com/mmp/pbrt-v3/blob/master/src/integrators/bdpt.cpp#L55
 
     float const numer = std::abs(dot(wo, geo_n) * dot(wi, n));
-    float const denom = std::abs(dot(wo, n) * dot(wi, geo_n));
+    float const denom = std::max(std::abs(dot(wo, n) * dot(wi, geo_n)), Dot_min);
 
     return std::min(numer / denom, 8.f);
 

@@ -27,7 +27,7 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
         result.wi         = -wo_;
         result.pdf        = 1.f;
         result.wavelength = 0.f;
-        result.type.clear(bxdf::Type::Specular_transmission);
+        result.type.clear(bxdf::Type::Straight_transmission);
         return;
     }
 
@@ -93,6 +93,8 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const
 
 void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
                        bool avoid_caustics) {
+    properties_.set(Property::Can_evaluate, ior != ior_outside);
+
     color_ = refraction_color;
 
     f0_ = fresnel::schlick_f0(ior, ior_outside);

@@ -101,6 +101,8 @@ void Sample_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
 }
 
 void Sample_subsurface::set_volumetric(float ior, float ior_outside) {
+    properties_.set(Property::Can_evaluate, ior != ior_outside);
+
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
 }

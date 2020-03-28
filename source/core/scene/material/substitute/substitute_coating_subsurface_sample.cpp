@@ -112,6 +112,8 @@ void Sample_coating_subsurface::sample(Sampler& sampler, bxdf::Sample& result) c
 }
 
 void Sample_coating_subsurface::set_volumetric(float ior, float ior_outside) {
+    properties_.set(Property::Can_evaluate, ior != ior_outside);
+
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
 }
