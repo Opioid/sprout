@@ -727,14 +727,13 @@ static Particle_pool* load_particle_integrator(json::Value const& value, uint32_
                                                uint32_t& num_particles_per_pixel) {
     using namespace rendering::integrator::particle;
 
-    bool const indirect_caustics = json::read_bool(value, "indirect_caustics", true);
-    bool const full_light_path   = json::read_bool(value, "full_light_path", !surface_integrator);
+    bool const full_light_path = json::read_bool(value, "full_light_path", !surface_integrator);
 
     uint32_t const max_bounces = json::read_uint(value, "max_bounces", 8);
 
     num_particles_per_pixel = json::read_uint(value, "particles_per_pixel", 1);
 
-    return new Lighttracer_pool(num_workers, 1, max_bounces, indirect_caustics, full_light_path);
+    return new Lighttracer_pool(num_workers, 1, max_bounces, full_light_path);
 }
 
 void Loader::set_default_integrators(uint32_t num_workers, bool progressive, View& view) {
@@ -769,7 +768,6 @@ static void load_photon_settings(json::Value const& value, Photon_settings& sett
     settings.iteration_threshold = json::read_float(value, "iteration_threshold", 1.f);
     settings.search_radius       = json::read_float(value, "search_radius", 0.002f);
     settings.merge_radius        = json::read_float(value, "merge_radius", 0.001f);
-    settings.indirect_photons    = json::read_bool(value, "indirect_photons", true);
     settings.full_light_path     = json::read_bool(value, "full_light_path", false);
 }
 

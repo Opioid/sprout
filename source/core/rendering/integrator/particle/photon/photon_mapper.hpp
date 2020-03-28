@@ -36,7 +36,6 @@ class Mapper : public Integrator {
     struct Settings {
         uint32_t max_bounces;
 
-        bool indirect_caustics;
         bool full_light_path;
     };
 

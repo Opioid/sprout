@@ -53,7 +53,6 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
         delete photon_mapper_;
 
         Photon_mapper::Settings const ps{photon_settings.max_bounces,
-                                         photon_settings.indirect_photons,
                                          photon_settings.full_light_path};
 
         photon_mapper_ = new Photon_mapper(rng_, ps);

@@ -46,7 +46,6 @@ class alignas(64) Lighttracer final : public Integrator {
         uint32_t min_bounces;
         uint32_t max_bounces;
 
-        bool indirect_caustics;
         bool full_light_path;
     };
 
@@ -83,7 +82,7 @@ class alignas(64) Lighttracer final : public Integrator {
 class Lighttracer_pool final {
   public:
     Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
-                     bool indirect_caustics, bool full_light_path);
+                     bool full_light_path);
 
     ~Lighttracer_pool();
 

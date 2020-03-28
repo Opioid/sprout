@@ -43,9 +43,7 @@ struct Photon_settings {
     float merge_radius         = 0.0025f;
     float coarse_search_radius = 0.1f;
 
-    bool indirect_photons  = false;
-    bool separate_indirect = false;
-    bool full_light_path   = false;
+    bool full_light_path = false;
 };
 
 struct View {

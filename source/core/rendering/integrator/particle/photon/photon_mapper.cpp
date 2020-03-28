@@ -132,10 +132,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
         for (; ray.depth < settings_.max_bounces;) {
             float3 const wo = -ray.direction;
 
-
-                        auto const& material_sample = worker.sample_material(
-                            ray, wo, wo1, intersection, filter, avoid_caustics, from_subsurface,
-                            sampler_);
+            auto const& material_sample = worker.sample_material(
+                ray, wo, wo1, intersection, filter, avoid_caustics, from_subsurface, sampler_);
 
             wo1 = wo;
 
@@ -168,8 +166,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                         float3 radi = radiance;
 
-
-                        if (intersection.subsurface && (intersection.material(worker)->ior() > 1.f)) {
+                        if (intersection.subsurface &&
+                            (intersection.material(worker)->ior() > 1.f)) {
                             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
                             radi *= intersection.material(worker)->ior() / ior_t;
                         }
@@ -197,10 +195,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                             return iteration;
                         }
                     }
-                }
-
-                if (!settings_.indirect_caustics) {
-                    break;
                 }
 
                 if (sample_result.type.is(Bxdf_type::Caustic)) {

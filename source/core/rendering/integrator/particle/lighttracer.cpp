@@ -129,10 +129,6 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
                         }
                     }
                 }
-
-                if (!settings_.indirect_caustics) {
-                    break;
-                }
             }
 
             if (sample_result.type.is(Bxdf_type::Caustic)) {
@@ -312,11 +308,10 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
 }
 
 Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces,
-                                   uint32_t max_bounces, bool indirect_caustics,
-                                   bool full_light_path)
+                                   uint32_t max_bounces, bool full_light_path)
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, indirect_caustics, full_light_path} {
+      settings_{min_bounces, max_bounces, full_light_path} {
     std::memset(static_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
 }
 
