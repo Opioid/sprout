@@ -29,7 +29,7 @@ void Sample_coating_subsurface::sample(Sampler& sampler, bxdf::Sample& result) c
         result.wi         = -wo_;
         result.pdf        = 1.f;
         result.wavelength = 0.f;
-        result.type.clear(bxdf::Type::Specular_transmission);
+        result.type.clear(bxdf::Type::Straight_transmission);
         return;
     }
 
@@ -106,8 +106,6 @@ void Sample_coating_subsurface::sample(Sampler& sampler, bxdf::Sample& result) c
 
             result.reflection *= n_dot_wi * attenuation;
         }
-
-        result.type.set(bxdf::Type::Caustic);
     }
 
     result.wavelength = 0.f;
@@ -175,7 +173,7 @@ void Sample_coating_subsurface::refract(Sampler& sampler, bxdf::Sample& result) 
         result.wi         = -wo_;
         result.pdf        = 1.f;
         result.wavelength = 0.f;
-        result.type.clear(bxdf::Type::Specular_transmission);
+        result.type.clear(bxdf::Type::Straight_transmission);
         return;
     }
 
@@ -196,7 +194,6 @@ void Sample_coating_subsurface::refract(Sampler& sampler, bxdf::Sample& result) 
     float3 const attenuation = coating_.attenuation(0.5f, coating_n_dot_wo);
 
     result.reflection *= n_dot_wi * attenuation;
-    result.type.set(bxdf::Type::Caustic);
 }
 
 }  // namespace scene::material::substitute

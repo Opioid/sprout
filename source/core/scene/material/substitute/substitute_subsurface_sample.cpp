@@ -28,7 +28,7 @@ void Sample_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
         result.wi         = -wo_;
         result.pdf        = 1.f;
         result.wavelength = 0.f;
-        result.type.clear(bxdf::Type::Specular_transmission);
+        result.type.clear(bxdf::Type::Straight_transmission);
         return;
     }
 
@@ -95,8 +95,6 @@ void Sample_subsurface::sample(Sampler& sampler, bxdf::Sample& result) const {
         }
 
         result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, base_.alpha_, ior_.eta_t);
-
-        result.type.set(bxdf::Type::Caustic);
     }
 
     result.wavelength = 0.f;
@@ -170,7 +168,7 @@ void Sample_subsurface::refract(Sampler& sampler, bxdf::Sample& result) const {
         result.wi         = -wo_;
         result.pdf        = 1.f;
         result.wavelength = 0.f;
-        result.type.clear(bxdf::Type::Specular_transmission);
+        result.type.clear(bxdf::Type::Straight_transmission);
         return;
     }
 
@@ -184,7 +182,6 @@ void Sample_subsurface::refract(Sampler& sampler, bxdf::Sample& result) const {
                                                    schlick, xi, result);
 
     result.reflection *= n_dot_wi;
-    result.type.set(bxdf::Type::Caustic);
 }
 
 }  // namespace scene::material::substitute
