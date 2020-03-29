@@ -97,7 +97,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
     Filter const filter = Filter::Undefined;
 
-    bool const avoid_caustics = false;
+    bool constexpr avoid_caustics = false;
 
     Bxdf_sample sample_result;
 
@@ -154,8 +154,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
             if (sample_result.type.no(Bxdf_type::Straight)) {
                 if (sample_result.type.no(Bxdf_type::Specular) &&
-                    (intersection.subsurface || material_sample.same_hemisphere(wo)) &&
-                    (caustic_path || settings_.full_light_path)) {
+                    (intersection.subsurface | material_sample.same_hemisphere(wo)) &&
+                    (caustic_path | settings_.full_light_path)) {
                     if ((!infinite_world || unnatural_limit.intersect(intersection.geo.p))
 #ifdef ISLAND_MODE
                         && frustum.intersect(intersection.geo.p, 0.1f)
@@ -169,7 +169,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                         if (intersection.subsurface &&
                             (intersection.material(worker)->ior() > 1.f)) {
                             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
-                            radi *= intersection.material(worker)->ior() / ior_t;
+                         //   radi *= intersection.material(worker)->ior() / ior_t;
                         }
 
                         //                        if (intersection.subsurface) {
@@ -211,8 +211,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 }
 
                 radiance = nr / continue_prob;
-
-                ++ray.depth;
             }
 
             if (sample_result.type.is(Bxdf_type::Straight)) {
@@ -221,6 +219,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
                                                       intersection.subsurface);
                 ray.set_direction(sample_result.wi);
+                ++ray.depth;
 
                 from_subsurface = false;
             }
