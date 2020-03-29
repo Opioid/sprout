@@ -169,15 +169,10 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                         if (intersection.subsurface &&
                             (intersection.material(worker)->ior() > 1.f)) {
                             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
-                         //   radi *= intersection.material(worker)->ior() / ior_t;
+                            radi *= intersection.material(worker)->ior() / ior_t;
                         }
 
-                        //                        if (intersection.subsurface) {
-                        //                            float const ior =
-                        //                            intersection.material(worker)->ior();//
-                        //                            worker.interface_stack().top_ior(worker); radi
-                        //                            *= ior;
-                        //                        }
+
 
                         photon.p        = intersection.geo.p;
                         photon.wi       = wo;
