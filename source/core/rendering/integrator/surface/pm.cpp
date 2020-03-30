@@ -110,7 +110,9 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
                 result += throughput * worker.photon_li(intersection, material_sample);
             }
 
-            if (sample_result.type.no(Bxdf_type::Transmission)) {
+            if ((sample_result.type.no(Bxdf_type::Transmission) &&
+                 material_sample.same_hemisphere(wo)) ||
+                intersection.subsurface) {
                 break;
             }
         }

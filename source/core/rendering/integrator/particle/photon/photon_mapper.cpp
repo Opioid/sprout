@@ -172,8 +172,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                             radi *= intersection.material(worker)->ior() / ior_t;
                         }
 
-
-
                         photon.p        = intersection.geo.p;
                         photon.wi       = wo;
                         photon.alpha[0] = radi[0];
