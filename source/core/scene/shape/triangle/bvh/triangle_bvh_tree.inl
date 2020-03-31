@@ -501,6 +501,12 @@ void Tree<Data>::interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uin
 }
 
 template <typename Data>
+void Tree<Data>::interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index,
+                                           Simd3f& t, Simd3f& b, Simd3f& n, float2& tc) const {
+    data_.interpolate_data(u, v, index, t, b, n, tc);
+}
+
+template <typename Data>
 Simd3f Tree<Data>::interpolate_shading_normal(Simd3f const& u, Simd3f const& v,
                                               uint32_t index) const {
     return data_.interpolate_shading_normal(u, v, index);
