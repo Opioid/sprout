@@ -5,8 +5,6 @@
 #include "base/math/vector3.hpp"
 #include "scene/material/sampler_settings.hpp"
 
-#include <vector>
-
 namespace math {
 struct Ray;
 }
@@ -59,19 +57,14 @@ class Tree {
     uint32_t num_parts() const;
 
     uint32_t num_triangles() const;
+
     uint32_t num_triangles(uint32_t part) const;
-
-    //    bool intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const;
-
-    //    bool intersect(ray& ray, Node_stack& node_stack) const;
 
     bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
                    scalar& ray_max_t, Node_stack& node_stack, Intersection& intersection) const;
 
     bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
                    scalar& ray_max_t, Node_stack& node_stack) const;
-
-    //    bool intersect_p(ray const& ray, Node_stack& node_stack) const;
 
     bool intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
                      scalar const& ray_max_t, Node_stack& node_stack) const;
@@ -85,15 +78,10 @@ class Tree {
 
     Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
-    void interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
-                                   float2& tc) const;
-
     void interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n,
                                    Simd3f& t, float2& tc) const;
 
     Simd3f interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const;
-
-    float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;
 
     float2 interpolate_triangle_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 

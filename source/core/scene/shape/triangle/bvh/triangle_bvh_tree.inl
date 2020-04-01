@@ -61,108 +61,7 @@ template <typename Data>
 uint32_t Tree<Data>::num_triangles(uint32_t part) const {
     return num_part_triangles_[part];
 }
-/*
-template <typename Data>
-bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack, Intersection& intersection) const {
-    node_stack.push(0xFFFFFFFF);
-    uint32_t n = 0;
 
-    uint32_t index = 0xFFFFFFFF;
-
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_direction(ray.direction.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t());
-    scalar       ray_max_t(ray.max_t());
-    scalar       u;
-    scalar       v;
-
-    while (0xFFFFFFFF != n) {
-        auto const& node = nodes_[n];
-
-        if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
-                if (0 == ray.signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
-                } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
-                }
-
-                continue;
-            }
-
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    index = i;
-                }
-            }
-        }
-
-        n = node_stack.pop();
-    }
-
-    if (index != 0xFFFFFFFF) {
-        ray.max_t() = ray_max_t.x();
-
-        intersection.u = Simd3f(u);
-        intersection.v = Simd3f(v);
-
-        intersection.index = index;
-        return true;
-    }
-
-    return false;
-}
-
-template <typename Data>
-bool Tree<Data>::intersect(ray& ray, Node_stack& node_stack) const {
-    node_stack.push(0xFFFFFFFF);
-    uint32_t n = 0;
-
-    uint32_t index = 0xFFFFFFFF;
-
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_direction(ray.direction.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t());
-    scalar       ray_max_t(ray.max_t());
-
-    while (0xFFFFFFFF != n) {
-        auto const& node = nodes_[n];
-
-        if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
-                if (0 == ray.signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
-                } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
-                }
-
-                continue;
-            }
-
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
-                    index = i;
-                }
-            }
-        }
-
-        n = node_stack.pop();
-    }
-
-    if (index != 0xFFFFFFFF) {
-        ray.max_t() = ray_max_t.x();
-        return true;
-    }
-
-    return false;
-}
-*/
 template <typename Data>
 bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction,
                            scalar const& ray_min_t, scalar& ray_max_t, Node_stack& node_stack,
@@ -262,47 +161,7 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
 
     return false;
 }
-/*
-template <typename Data>
-bool Tree<Data>::intersect_p(ray const& ray, Node_stack& node_stack) const {
-    node_stack.push(0xFFFFFFFF);
-    uint32_t n = 0;
 
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_direction(ray.direction.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t());
-    scalar const ray_max_t(ray.max_t());
-
-    while (0xFFFFFFFF != n) {
-        auto const& node = nodes_[n];
-
-        if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
-                if (0 == ray.signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
-                } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
-                }
-
-                continue;
-            }
-
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
-                    return true;
-                }
-            }
-        }
-
-        n = node_stack.pop();
-    }
-
-    return false;
-}
-*/
 template <typename Data>
 bool Tree<Data>::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
                              scalar const& ray_min_t, scalar const& ray_max_t,
@@ -489,12 +348,6 @@ Simd3f Tree<Data>::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t inde
 }
 
 template <typename Data>
-void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv, float3& n, float3& t,
-                                           float2& tc) const {
-    data_.interpolate_data(index, uv, n, t, tc);
-}
-
-template <typename Data>
 void Tree<Data>::interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index,
                                            Simd3f& n, Simd3f& t, float2& tc) const {
     data_.interpolate_data(u, v, index, n, t, tc);
@@ -504,11 +357,6 @@ template <typename Data>
 Simd3f Tree<Data>::interpolate_shading_normal(Simd3f const& u, Simd3f const& v,
                                               uint32_t index) const {
     return data_.interpolate_shading_normal(u, v, index);
-}
-
-template <typename Data>
-float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const {
-    return data_.interpolate_uv(index, uv);
 }
 
 template <typename Data>

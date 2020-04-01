@@ -37,8 +37,6 @@ class Indexed_data {
 
     Simd3f interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
-    void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
-
     void interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n, Simd3f& t,
                           float2& tc) const;
 
@@ -85,11 +83,12 @@ class Indexed_data {
 
     Index_triangle* triangles_;
 
-    float3* intersection_vertices_;
+    float3* positions_;
 
     SV* shading_vertices_;
 };
 
+/*
 class Indexed_data1 {
   public:
     Indexed_data1();
@@ -120,9 +119,6 @@ class Indexed_data1 {
     void interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n, Simd3f& t,
                           float2& tc) const;
 
-    void interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& t, Simd3f& b, Simd3f& n,
-                          float2& tc) const;
-
     Simd3f interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
     float2 interpolate_uv(uint32_t index, float2 uv) const;
@@ -166,14 +162,14 @@ class Indexed_data1 {
 
     Index_triangle* triangles_;
 
-    float3* intersection_vertices_;
+    float3* positions_;
 
     float4* tangent_frames_;
 
     float2* uvs_;
 };
-
-}  // namespace bvh
+*/
+}  // namespace triangle::bvh
 }  // namespace scene::shape
 
 #endif

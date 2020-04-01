@@ -575,7 +575,7 @@ inline bool intersect_p(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_M
 }
 
 static inline float2 interpolate_uv(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                             float2 uv) {
+                                    float2 uv) {
     float const w = 1.f - uv[0] - uv[1];
 
     return float2(w * a.n_u[3] + uv[0] * b.n_u[3] + uv[1] * c.n_u[3],
