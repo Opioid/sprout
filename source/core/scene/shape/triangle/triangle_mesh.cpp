@@ -94,7 +94,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Simd3f p_w = transform_point(object_to_world, p);
 
-        /*
+
         Simd3f n;
         Simd3f t;
         float2 uv;
@@ -112,8 +112,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         Simd3f n_w     = transform_vector(rotation, n);
         Simd3f t_w     = transform_vector(rotation, t);
         Simd3f b_w     = bitangent_sign * cross(n_w, t_w);
-        */
 
+/*
         Simd3f t;
         Simd3f b;
         Simd3f n;
@@ -130,7 +130,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         Simd3f t_w     = transform_vector(rotation, t);
         Simd3f b_w     = transform_vector(rotation, b);
         Simd3f n_w     = transform_vector(rotation, n);
-
+*/
 
 
         intersection.p     = float3(p_w);

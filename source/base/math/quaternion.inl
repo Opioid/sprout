@@ -210,6 +210,34 @@ static inline Quaternion create(float3x3 const& m) {
     return temp;
 }
 
+// Converting a Rotation Matrix to a Quaternion
+// https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
+
+static inline Quaternion create_also(float3x3 const& m) {
+    float t;
+    Quaternion q;
+
+    if (m.r[2][2] < 0.f) {
+        if (m.r[0][0] > m.r[1][1]) {
+            t = 1.f + m.r[0][0] - m.r[1][1] - m.r[2][2];
+            q = Quaternion(t, m.r[0][1] + m.r[1][0], m.r[2][0] + m.r[0][2], m.r[1][2] - m.r[2][1]);
+        } else {
+            t = 1.f - m.r[0][0] + m.r[1][1] - m.r[2][2];
+            q = Quaternion(m.r[0][1] + m.r[1][0], t, m.r[1][2] + m.r[2][1], m.r[2][0] - m.r[0][2]);
+        }
+    } else {
+        if (m.r[0][0] < -m.r[1][1]) {
+            t = 1.f - m.r[0][0] - m.r[1][1] + m.r[2][2];
+            q = Quaternion(m.r[2][0] + m.r[0][2], m.r[1][2] + m.r[2][1], t, m.r[0][1] - m.r[1][0]);
+        } else {
+            t = 1.f + m.r[0][0] - m.r[1][1] + m.r[2][2];
+            q = Quaternion(m.r[1][2] - m.r[2][1], m.r[2][0] - m.r[0][2], m.r[0][1] - m.r[1][0], t);
+        }
+    }
+
+    return (0.5f / std::sqrt(t)) * q;
+}
+
 static inline float3x3 create_matrix3x3(Quaternion const& q) {
     float const d = dot(q, q);
     float const s = 2.f / d;
@@ -256,6 +284,8 @@ static inline float3x3 create_matrix3x3(Quaternion const& q) {
 
     return m;
 }
+
+// https://github.com/erwincoumans/sce_vectormath/blob/master/include/vectormath/scalar/cpp/mat_aos.h
 
 static inline Quaternion create_rotation_x(float a) {
     return Quaternion(std::sin(a * 0.5f), 0.f, 0.f, std::cos(a * 0.5f));

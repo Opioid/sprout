@@ -91,9 +91,6 @@ class Tree {
     void interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n,
                                    Simd3f& t, float2& tc) const;
 
-    void interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& t,
-                                   Simd3f& b, Simd3f& n, float2& tc) const;
-
     Simd3f interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const;
 
     float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;

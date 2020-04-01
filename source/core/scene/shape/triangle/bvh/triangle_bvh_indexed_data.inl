@@ -9,6 +9,9 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene::shape::triangle::bvh {
 
 template <typename SV>
@@ -583,8 +586,10 @@ float2 Indexed_data1::interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t 
     return float3(uv).xy();
 }
 
-float Indexed_data1::bitangent_sign(uint32_t /*index*/) const {
-    return 1.f;
+float Indexed_data1::bitangent_sign(uint32_t index) const {
+    static float constexpr signs[2] = {1.f, -1.f};
+
+    return signs[triangles_[index].bts];
 }
 
 uint32_t Indexed_data1::part(uint32_t index) const {
@@ -693,26 +698,50 @@ void Indexed_data1::allocate_triangles(uint32_t num_triangles, Vertex_stream con
         float3 const t = vertices.t(i);
         float3 const n = vertices.n(i);
 
-     //   float3 const b0 = (vertices.bitangent_sign(i) ? 1.f : -1.f) * cross(t, n);
+     //   float3 const b = (vertices.bitangent_sign(i) ? 1.f : -1.f) * cross(t, n);
 
         float3 const b = cross(n, t);
 
+        Quaternion const q = quaternion::create(float3x3(t, b, n));
 
-        Quaternion q = quaternion::create(float3x3(t, b, n));
+        Quaternion  qa = quaternion::create_also(float3x3(t, b, n));
 
-        if (q[3] < 0.f && vertices.bitangent_sign(i) == 0) {
-            q[3] = -q[3];
+        qa[3] *= -1.f;
+
+        float3x3 const tf0 = quaternion::create_matrix3x3(q);
+
+   //     q[3] = std::abs(q[3]);
+
+        float3x3 const tf1 = quaternion::create_matrix3x3(qa);
+
+        if (any_greater(abs(tf0.r[0] - tf1.r[0]), 0.01f)) {
+            std::cout << "alarm" << std::endl;
+            std::cout << tf0.r[0] << " " << tf1.r[0] << std::endl;
+            std::cout << tf0.r[1] << " " << tf1.r[1] << std::endl;
+            std::cout << tf0.r[2] << " " << tf1.r[2] << std::endl;
+        } else {
+            std::cout << "not alarm" << std::endl;
         }
 
-        tangent_frames_[i] = q;
+        tangent_frames_[i] = qa;
 
         uvs_[i] = vertices.uv(i);
     }
 }
 
 void Indexed_data1::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
-                                    Vertex_stream const& /*vertices*/, uint32_t current_triangle) {
-    triangles_[current_triangle] = Index_triangle(a, b, c, part);
+                                    Vertex_stream const& vertices, uint32_t current_triangle) {
+    uint8_t bitanget_sign = 0;
+
+    uint8_t const abts = vertices.bitangent_sign(a);
+    uint8_t const bbts = vertices.bitangent_sign(b);
+    uint8_t const cbts = vertices.bitangent_sign(c);
+
+    if ((abts == 1 && bbts == 1) || (bbts == 1 && cbts == 1) || (cbts == 1 && abts == 1)) {
+        bitanget_sign = 1;
+    }
+
+    triangles_[current_triangle] = Index_triangle(a, b, c, bitanget_sign, part);
 }
 
 size_t Indexed_data1::num_bytes() const {
@@ -721,8 +750,8 @@ size_t Indexed_data1::num_bytes() const {
 }
 
 Indexed_data1::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                              uint32_t part)
-    : a(a), b(b), c(c), part(part) {}
+                                                 uint8_t bitangent_sign, uint32_t part)
+    : a(a), b(b), c(c), bts(bitangent_sign), part(part) {}
 
 }  // namespace scene::shape::triangle::bvh
 
