@@ -7,9 +7,6 @@
 
 namespace math {
 
-template <typename T>
-struct Matrix4x4;
-
 /****************************************************************************
  *
  * Generic 3x3 matrix

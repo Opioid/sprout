@@ -393,18 +393,12 @@ static inline void set_rotation(Matrix3x3f_a& m, Vector3f_a const& v, float a) {
     m.r[1][2] = tmp1 - tmp2;
 }
 
-static inline Matrix3x3f_a constexpr lerp(Matrix3x3f_a const& a, Matrix3x3f_a const& b, float t) {
-    float const u = 1.f - t;
-    return u * a + t * b;
-}
+static inline float determinant(Matrix3x3f_a const& m) {
+    float const cofactor00 = m.r[1][1] * m.r[2][2] - m.r[1][2] * m.r[2][1];
+    float const cofactor10 = m.r[1][2] * m.r[2][0] - m.r[1][0] * m.r[2][2];
+    float const cofactor20 = m.r[1][0] * m.r[2][1] - m.r[1][1] * m.r[2][0];
 
-static inline Matrix3x3f_a constexpr clamp(Matrix3x3f_a const& m, float mi, float ma) {
-    return Matrix3x3f_a(
-        std::min(std::max(m.r[0][0], mi), ma), std::min(std::max(m.r[0][1], mi), ma),
-        std::min(std::max(m.r[0][2], mi), ma), std::min(std::max(m.r[1][0], mi), ma),
-        std::min(std::max(m.r[1][1], mi), ma), std::min(std::max(m.r[1][2], mi), ma),
-        std::min(std::max(m.r[2][0], mi), ma), std::min(std::max(m.r[2][1], mi), ma),
-        std::min(std::max(m.r[2][2], mi), ma));
+    return m.r[0][0] * cofactor00 + m.r[0][1] * cofactor10 + m.r[0][2] * cofactor20;
 }
 
 inline Simd3x3f::Simd3x3f(Matrix3x3f_a const& source)
