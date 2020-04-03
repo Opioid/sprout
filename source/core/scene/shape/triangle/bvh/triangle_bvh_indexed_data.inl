@@ -272,7 +272,9 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertex_stream 
     for (uint32_t i = 0; i < num_vertices; ++i) {
         positions_[i] = vertices.p(i);
 
-        shading_vertices_[i] = SV(vertices.n(i), vertices.t(i), vertices.uv(i));
+        auto const [n, t] = vertices.nt(i);
+
+        shading_vertices_[i] = SV(n, t, vertices.uv(i));
     }
 }
 

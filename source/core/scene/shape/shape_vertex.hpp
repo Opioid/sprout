@@ -32,9 +32,12 @@ class Vertex_stream {
 
     virtual float3 p(uint32_t i) const = 0;
 
-    virtual float3 n(uint32_t i) const = 0;
+    struct NT {
+        float3 n;
+        float3 t;
+    };
 
-    virtual float3 t(uint32_t i) const = 0;
+    virtual NT nt(uint32_t i) const = 0;
 
     virtual float2 uv(uint32_t i) const = 0;
 
@@ -52,9 +55,7 @@ class Vertex_stream_interleaved final : public Vertex_stream {
 
     float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const final;
-
-    float3 t(uint32_t i) const final;
+    NT nt(uint32_t i) const final;
 
     float2 uv(uint32_t i) const final;
 
@@ -73,9 +74,7 @@ class Vertex_stream_separate final : public Vertex_stream {
 
     float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const final;
-
-    float3 t(uint32_t i) const final;
+    NT nt(uint32_t i) const final;
 
     float2 uv(uint32_t i) const final;
 
@@ -98,9 +97,7 @@ class Vertex_stream_separate_compact final : public Vertex_stream {
 
     float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const final;
-
-    float3 t(uint32_t i) const final;
+    NT nt(uint32_t i) const final;
 
     float2 uv(uint32_t i) const final;
 
@@ -122,9 +119,7 @@ class Vertex_stream_CAPI final : public Vertex_stream {
 
     float3 p(uint32_t i) const final;
 
-    float3 n(uint32_t i) const final;
-
-    float3 t(uint32_t i) const final;
+    NT nt(uint32_t i) const final;
 
     float2 uv(uint32_t i) const final;
 

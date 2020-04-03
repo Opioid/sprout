@@ -26,12 +26,8 @@ float3 Vertex_stream_interleaved::p(uint32_t i) const {
     return float3(vertices_[i].p);
 }
 
-float3 Vertex_stream_interleaved::n(uint32_t i) const {
-    return float3(vertices_[i].n);
-}
-
-float3 Vertex_stream_interleaved::t(uint32_t i) const {
-    return float3(vertices_[i].t);
+Vertex_stream::NT Vertex_stream_interleaved::nt(uint32_t i) const {
+    return {float3(vertices_[i].n), float3(vertices_[i].t)};
 }
 
 float2 Vertex_stream_interleaved::uv(uint32_t i) const {
@@ -59,12 +55,8 @@ float3 Vertex_stream_separate::p(uint32_t i) const {
     return float3(p_[i]);
 }
 
-float3 Vertex_stream_separate::n(uint32_t i) const {
-    return float3(n_[i]);
-}
-
-float3 Vertex_stream_separate::t(uint32_t i) const {
-    return float3(t_[i]);
+Vertex_stream::NT Vertex_stream_separate::nt(uint32_t i) const {
+    return {float3(n_[i]), float3(t_[i])};
 }
 
 float2 Vertex_stream_separate::uv(uint32_t i) const {
@@ -89,12 +81,8 @@ float3 Vertex_stream_separate_compact::p(uint32_t i) const {
     return float3(p_[i]);
 }
 
-float3 Vertex_stream_separate_compact::n(uint32_t i) const {
-    return float3(n_[i]);
-}
-
-float3 Vertex_stream_separate_compact::t(uint32_t i) const {
-    return tangent(float3(n_[i]));
+Vertex_stream::NT Vertex_stream_separate_compact::nt(uint32_t i) const {
+    return {float3(n_[i]), tangent(float3(n_[i]))};
 }
 
 float2 Vertex_stream_separate_compact::uv(uint32_t /*i*/) const {
@@ -126,12 +114,8 @@ float3 Vertex_stream_CAPI::p(uint32_t i) const {
     return float3(positions_ + i * positions_stride_);
 }
 
-float3 Vertex_stream_CAPI::n(uint32_t i) const {
-    return float3(normals_ + i * normals_stride_);
-}
-
-float3 Vertex_stream_CAPI::t(uint32_t i) const {
-    return float3(tangents_ + i * tangents_stride_);
+Vertex_stream::NT Vertex_stream_CAPI::nt(uint32_t i) const {
+    return {float3(normals_ + i * normals_stride_), float3(tangents_ + i * tangents_stride_)};
 }
 
 float2 Vertex_stream_CAPI::uv(uint32_t i) const {
@@ -140,7 +124,7 @@ float2 Vertex_stream_CAPI::uv(uint32_t i) const {
 
 bool Vertex_stream_CAPI::bitangent_sign(uint32_t i) const {
     if (3 == tangents_stride_) {
-        return 0;
+        return false;
     }
 
     float const sign = (tangents_ + i * tangents_stride_)[3];
