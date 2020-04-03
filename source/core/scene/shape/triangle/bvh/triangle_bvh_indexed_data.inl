@@ -279,15 +279,11 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertex_stream 
 template <typename SV>
 void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
                                     Vertex_stream const& vertices, uint32_t current_triangle) {
-    uint8_t bitanget_sign = 0;
+    bool const abts = vertices.bitangent_sign(a);
+    bool const bbts = vertices.bitangent_sign(b);
+    bool const cbts = vertices.bitangent_sign(c);
 
-    uint8_t const abts = vertices.bitangent_sign(a);
-    uint8_t const bbts = vertices.bitangent_sign(b);
-    uint8_t const cbts = vertices.bitangent_sign(c);
-
-    if ((abts == 1 && bbts == 1) || (bbts == 1 && cbts == 1) || (cbts == 1 && abts == 1)) {
-        bitanget_sign = 1;
-    }
+    bool const bitanget_sign = (abts && bbts) || (bbts && cbts) || (cbts && abts);
 
     triangles_[current_triangle] = Index_triangle(a, b, c, bitanget_sign, part);
 }
@@ -300,8 +296,8 @@ size_t Indexed_data<SV>::num_bytes() const {
 
 template <typename SV>
 Indexed_data<SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                                 uint8_t bitangent_sign, uint32_t part)
-    : a(a), b(b), c(c), bts(bitangent_sign), part(part) {}
+                                                 bool bitangent_sign, uint32_t part)
+    : a(a), b(b), c(c), bts(bitangent_sign ? 1u : 0u), part(part) {}
 
 /*
 Indexed_data1::Indexed_data1()

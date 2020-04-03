@@ -38,7 +38,7 @@ class Vertex_stream {
 
     virtual float2 uv(uint32_t i) const = 0;
 
-    virtual uint8_t bitangent_sign(uint32_t i) const = 0;
+    virtual bool bitangent_sign(uint32_t i) const = 0;
 
   private:
     uint32_t num_vertices_;
@@ -58,7 +58,7 @@ class Vertex_stream_interleaved final : public Vertex_stream {
 
     float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const final;
+    bool bitangent_sign(uint32_t i) const final;
 
   private:
     Vertex const* vertices_;
@@ -79,7 +79,7 @@ class Vertex_stream_separate final : public Vertex_stream {
 
     float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const final;
+    bool bitangent_sign(uint32_t i) const final;
 
   private:
     packed_float3 const* p_;
@@ -104,7 +104,7 @@ class Vertex_stream_separate_compact final : public Vertex_stream {
 
     float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const final;
+    bool bitangent_sign(uint32_t i) const final;
 
   private:
     packed_float3 const* p_;
@@ -128,7 +128,7 @@ class Vertex_stream_CAPI final : public Vertex_stream {
 
     float2 uv(uint32_t i) const final;
 
-    uint8_t bitangent_sign(uint32_t i) const final;
+    bool bitangent_sign(uint32_t i) const final;
 
   private:
     uint32_t positions_stride_;

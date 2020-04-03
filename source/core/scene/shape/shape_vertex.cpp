@@ -38,8 +38,8 @@ float2 Vertex_stream_interleaved::uv(uint32_t i) const {
     return vertices_[i].uv;
 }
 
-uint8_t Vertex_stream_interleaved::bitangent_sign(uint32_t i) const {
-    return vertices_[i].bitangent_sign;
+bool Vertex_stream_interleaved::bitangent_sign(uint32_t i) const {
+    return vertices_[i].bitangent_sign > 0;
 }
 
 Vertex_stream_separate::Vertex_stream_separate(uint32_t num_vertices, packed_float3 const* p,
@@ -71,8 +71,8 @@ float2 Vertex_stream_separate::uv(uint32_t i) const {
     return uv_[i];
 }
 
-uint8_t Vertex_stream_separate::bitangent_sign(uint32_t i) const {
-    return bts_[i];
+bool Vertex_stream_separate::bitangent_sign(uint32_t i) const {
+    return bts_[i] > 0;
 }
 
 Vertex_stream_separate_compact::Vertex_stream_separate_compact(uint32_t             num_vertices,
@@ -101,8 +101,8 @@ float2 Vertex_stream_separate_compact::uv(uint32_t /*i*/) const {
     return float2(0.f);
 }
 
-uint8_t Vertex_stream_separate_compact::bitangent_sign(uint32_t /*i*/) const {
-    return 0;
+bool Vertex_stream_separate_compact::bitangent_sign(uint32_t /*i*/) const {
+    return false;
 }
 
 Vertex_stream_CAPI::Vertex_stream_CAPI(uint32_t num_vertices, uint32_t positions_stride,
@@ -138,14 +138,14 @@ float2 Vertex_stream_CAPI::uv(uint32_t i) const {
     return float2(texture_coordinates_ + i * texture_coordinates_stride_);
 }
 
-uint8_t Vertex_stream_CAPI::bitangent_sign(uint32_t i) const {
+bool Vertex_stream_CAPI::bitangent_sign(uint32_t i) const {
     if (3 == tangents_stride_) {
         return 0;
     }
 
     float const sign = (tangents_ + i * tangents_stride_)[3];
 
-    return sign > 0.f ? 0 : 1;
+    return sign < 0.f;
 }
 
 }  // namespace scene::shape
