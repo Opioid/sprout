@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_SHAPE_VERTEX_HPP
 #define SU_CORE_SCENE_SHAPE_VERTEX_HPP
 
+#include "base/math/quaternion.hpp"
 #include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
 
@@ -86,6 +87,27 @@ class Vertex_stream_separate final : public Vertex_stream {
     packed_float3 const* t_;
     float2 const*        uv_;
     uint8_t const*       bts_;
+};
+
+class Vertex_stream_separate_ts final : public Vertex_stream {
+  public:
+    Vertex_stream_separate_ts(uint32_t num_vertices, packed_float3 const* p, Quaternion const* ts,
+                              float2 const* uv);
+
+    void release() final;
+
+    float3 p(uint32_t i) const final;
+
+    NT nt(uint32_t i) const final;
+
+    float2 uv(uint32_t i) const final;
+
+    bool bitangent_sign(uint32_t i) const final;
+
+  private:
+    packed_float3 const* p_;
+    Quaternion const*    ts_;
+    float2 const*        uv_;
 };
 
 class Vertex_stream_separate_compact final : public Vertex_stream {

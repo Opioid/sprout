@@ -438,7 +438,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     std::string error;
     auto const  root = json::parse_insitu(json_string.data(), error);
     if (!root) {
-        logging::push_error("Shape: " + error);
+        logging::push_error("json: " + error);
         return nullptr;
     }
 
@@ -467,8 +467,9 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
 
     bool interleaved_vertex_stream = false;
 
-    bool has_uvs      = false;
-    bool has_tangents = false;
+    bool tangent_space_as_quaternion = false;
+    bool has_uvs                     = false;
+    bool has_tangents                = false;
 
     for (auto& n : geometry_value.GetObject()) {
         if ("parts" == n.name) {
@@ -499,6 +500,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
                         std::string const semantic_name = json::read_string(ln, "semantic_name");
                         if ("Tangent" == semantic_name) {
                             has_tangents = true;
+                        } else if ("Tangent_space" == semantic_name) {
+                            tangent_space_as_quaternion = true;
                         } else if ("Texture_coordinate" == semantic_name) {
                             has_uvs = true;
                         } else if ("Bitangent_sign" == semantic_name) {
@@ -568,23 +571,35 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
         vertex_stream = new Vertex_stream_interleaved(num_vertices, vertices);
     } else {
         packed_float3* p = new packed_float3[num_vertices];
-        packed_float3* n = new packed_float3[num_vertices];
-
         stream.read(reinterpret_cast<char*>(p), num_vertices * sizeof(packed_float3));
-        stream.read(reinterpret_cast<char*>(n), num_vertices * sizeof(packed_float3));
 
-        if (has_uvs_and_tangents) {
-            packed_float3* t   = new packed_float3[num_vertices];
-            float2*        uv  = new float2[num_vertices];
-            uint8_t*       bts = new uint8_t[num_vertices];
+        if (tangent_space_as_quaternion) {
+            Quaternion* ts = new Quaternion[num_vertices];
+            float2*     uv = new float2[num_vertices];
 
-            stream.read(reinterpret_cast<char*>(t), num_vertices * sizeof(packed_float3));
+            stream.read(reinterpret_cast<char*>(ts), num_vertices * sizeof(Quaternion));
+
             stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
-            stream.read(reinterpret_cast<char*>(bts), num_vertices * sizeof(uint8_t));
 
-            vertex_stream = new Vertex_stream_separate(num_vertices, p, n, t, uv, bts);
+            vertex_stream = new Vertex_stream_separate_ts(num_vertices, p, ts, uv);
+
         } else {
-            vertex_stream = new Vertex_stream_separate_compact(num_vertices, p, n);
+            packed_float3* n = new packed_float3[num_vertices];
+            stream.read(reinterpret_cast<char*>(n), num_vertices * sizeof(packed_float3));
+
+            if (has_uvs_and_tangents) {
+                packed_float3* t   = new packed_float3[num_vertices];
+                float2*        uv  = new float2[num_vertices];
+                uint8_t*       bts = new uint8_t[num_vertices];
+
+                stream.read(reinterpret_cast<char*>(t), num_vertices * sizeof(packed_float3));
+                stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
+                stream.read(reinterpret_cast<char*>(bts), num_vertices * sizeof(uint8_t));
+
+                vertex_stream = new Vertex_stream_separate(num_vertices, p, n, t, uv, bts);
+            } else {
+                vertex_stream = new Vertex_stream_separate_compact(num_vertices, p, n);
+            }
         }
     }
 

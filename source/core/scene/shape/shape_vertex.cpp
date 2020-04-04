@@ -1,4 +1,5 @@
 #include "shape_vertex.hpp"
+#include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 
 namespace scene::shape {
@@ -65,6 +66,40 @@ float2 Vertex_stream_separate::uv(uint32_t i) const {
 
 bool Vertex_stream_separate::bitangent_sign(uint32_t i) const {
     return bts_[i] > 0;
+}
+
+Vertex_stream_separate_ts::Vertex_stream_separate_ts(uint32_t num_vertices, packed_float3 const* p,
+                                                     Quaternion const* ts, float2 const* uv)
+    : Vertex_stream(num_vertices), p_(p), ts_(ts), uv_(uv) {}
+
+void Vertex_stream_separate_ts::release() {
+    delete[] p_;
+    delete[] ts_;
+    delete[] uv_;
+}
+
+float3 Vertex_stream_separate_ts::p(uint32_t i) const {
+    return float3(p_[i]);
+}
+
+Vertex_stream::NT Vertex_stream_separate_ts::nt(uint32_t i) const {
+    Quaternion ts = ts_[i];
+
+    if (ts[3] < 0.f) {
+        ts[3] = -ts[3];
+    }
+
+    float3x3 const tbn = quaternion::create_matrix3x3(ts);
+
+    return {tbn.r[2], tbn.r[0]};
+}
+
+float2 Vertex_stream_separate_ts::uv(uint32_t i) const {
+    return uv_[i];
+}
+
+bool Vertex_stream_separate_ts::bitangent_sign(uint32_t i) const {
+    return ts_[i][3] < 0.f;
 }
 
 Vertex_stream_separate_compact::Vertex_stream_separate_compact(uint32_t             num_vertices,
