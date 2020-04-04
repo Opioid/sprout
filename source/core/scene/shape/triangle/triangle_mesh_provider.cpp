@@ -92,19 +92,28 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     }
 
     if (!handler->has_normals()) {
-        // If no normals were loaded, assign something.
-        // Might be smarter to throw an exception,
-        // or just go ahead and actually compute the geometry normal...
-        for (auto& v : handler->vertices()) {
-            v.n = packed_float3(0.f, 1.f, 0.f);
+        // If no normals were loaded, compute geometry normal.
+        for (auto const& t : handler->triangles()) {
+            float3 const a = float3(handler->vertices()[t.i[0]].p);
+            float3 const b = float3(handler->vertices()[t.i[1]].p);
+            float3 const c = float3(handler->vertices()[t.i[2]].p);
+
+            float3 const e1 = b - a;
+            float3 const e2 = c - a;
+
+            float3 const n = normalize(cross(e1, e2));
+
+            handler->vertices()[t.i[0]].n = packed_float3(n);
+            handler->vertices()[t.i[1]].n = packed_float3(n);
+            handler->vertices()[t.i[2]].n = packed_float3(n);
         }
     }
 
     if (!handler->has_tangents()) {
-        // If no tangents were loaded, compute the tangent space manually
+        // If no tangents were loaded, compute some tangent space manually
         for (auto& v : handler->vertices()) {
-            packed_float3 b;
-            orthonormal_basis(v.n, v.t, b);
+            v.t = tangent(v.n);
+
             v.bitangent_sign = 0;
         }
     }

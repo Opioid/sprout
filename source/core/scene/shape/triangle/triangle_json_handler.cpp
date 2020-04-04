@@ -1,4 +1,5 @@
 #include "triangle_json_handler.hpp"
+#include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 
 namespace scene::shape::triangle {
@@ -187,6 +188,12 @@ bool Json_handler::Key(char const* str, rapidjson::SizeType /*length*/, bool /*c
             current_vertex_         = 0;
             current_vertex_element_ = 0;
             has_tangents_           = true;
+        } else if ("tangent_space" == name) {
+            expected_number_        = Number::Tangent_space;
+            current_vertex_         = 0;
+            current_vertex_element_ = 0;
+            has_normals_            = true;
+            has_tangents_           = true;
         }
 
         return true;
@@ -287,6 +294,9 @@ void Json_handler::handle_vertex(float v) {
         case Number::Tangent:
             add_tangent(v);
             break;
+        case Number::Tangent_space:
+            add_tangent_space(v);
+            break;
         case Number::Texture_coordinate_0:
             add_texture_coordinate(v);
             break;
@@ -324,9 +334,42 @@ void Json_handler::add_tangent(float v) {
         vertices_[current_vertex_].t.v[current_vertex_element_] = v;
     } else if (current_vertex_element_ == 3) {
         vertices_[current_vertex_].bitangent_sign = v > 0.f ? 0 : 1;
-        vertices_[current_vertex_].pad[0]         = 0;
-        vertices_[current_vertex_].pad[1]         = 0;
-        vertices_[current_vertex_].pad[2]         = 0;
+
+        vertices_[current_vertex_].pad[0] = 0;
+        vertices_[current_vertex_].pad[1] = 0;
+        vertices_[current_vertex_].pad[2] = 0;
+    }
+
+    increment_vertex_element(4);
+}
+
+void Json_handler::add_tangent_space(float v) {
+    if (vertices_.size() == current_vertex_) {
+        vertices_.emplace_back();
+    }
+
+    ts_[current_vertex_element_] = v;
+
+    if (current_vertex_element_ == 3) {
+        Quaternion ts = ts_;
+
+        bool bts = false;
+
+        if (ts[3] < 0.f) {
+            ts[3] = -ts[3];
+            bts   = true;
+        }
+
+        float3x3 const tbn = quaternion::create_matrix3x3(ts);
+
+        vertices_[current_vertex_].n = packed_float3(tbn.r[2]);
+        vertices_[current_vertex_].t = packed_float3(tbn.r[0]);
+
+        vertices_[current_vertex_].bitangent_sign = bts ? 1 : 0;
+
+        vertices_[current_vertex_].pad[0] = 0;
+        vertices_[current_vertex_].pad[1] = 0;
+        vertices_[current_vertex_].pad[2] = 0;
     }
 
     increment_vertex_element(4);

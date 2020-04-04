@@ -1,12 +1,13 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_JSON_HANDLER_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_JSON_HANDLER_HPP
 
-#include <cstdint>
-#include <string>
-#include <vector>
 #include "rapidjson/reader.h"
 #include "scene/shape/shape_vertex.hpp"
 #include "triangle_primitive.hpp"
+
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace scene::shape::triangle {
 
@@ -68,6 +69,7 @@ class Json_handler {
     void add_position(float v);
     void add_normal(float v);
     void add_tangent(float v);
+    void add_tangent_space(float v);
     void add_texture_coordinate(float v);
 
     void increment_vertex_element(uint32_t num_elements);
@@ -82,6 +84,7 @@ class Json_handler {
         Texture_coordinate_0,
         Normal,
         Tangent,
+        Tangent_space,
         Ignore
     };
 
@@ -109,6 +112,8 @@ class Json_handler {
 
     uint32_t current_vertex_;
     uint32_t current_vertex_element_;
+
+    Quaternion ts_;
 
     bool has_positions_;
     bool has_normals_;

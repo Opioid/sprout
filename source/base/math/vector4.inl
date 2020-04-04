@@ -155,6 +155,10 @@ static inline constexpr Vector4f_a operator/(Vector4f_a const& a, float s) {
     return Vector4f_a(is * a[0], is * a[1], is * a[2], is * a[3]);
 }
 
+static inline Vector4f_a constexpr operator-(Vector4f_a const& v) {
+    return Vector4f_a(-v[0], -v[1], -v[2], -v[3]);
+}
+
 static inline constexpr Vector4f_a& operator+=(Vector4f_a& a, Vector4f_a const& b) {
     a[0] += b[0];
     a[1] += b[1];
