@@ -151,6 +151,10 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = scene::offset_f(ray.max_t());
+
+            if (sample_result.type.no(Bxdf_type::Transmission)) {
+                ++ray.depth;
+            }
         } else {
             ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
                                                   intersection.subsurface);

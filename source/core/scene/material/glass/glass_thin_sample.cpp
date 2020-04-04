@@ -17,6 +17,7 @@ static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sam
 static void refract(float3 const& wo, float3 const& color, bxdf::Sample& result);
 
 Sample_thin::Sample_thin() {
+    properties_.unset(Property::Can_evaluate);
     properties_.set(Property::Translucent);
 }
 

@@ -170,15 +170,6 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi) const {
 }
 
 void Sample_coating_subsurface::refract(Sampler& sampler, bxdf::Sample& result) const {
-    if (ior_.eta_i == ior_.eta_t) {
-        result.reflection = float3(1.f);
-        result.wi         = -wo_;
-        result.pdf        = 1.f;
-        result.wavelength = 0.f;
-        result.type.clear(bxdf::Type::Straight_transmission);
-        return;
-    }
-
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     fresnel::Schlick1 const schlick(base_.f0_[0]);

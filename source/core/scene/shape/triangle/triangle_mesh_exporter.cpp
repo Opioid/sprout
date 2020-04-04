@@ -262,7 +262,7 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
     // binary stuff
 
     if (!handler.has_texture_coordinates()) {
-        // If no tangents were loaded, explicitely set them to zero.
+        // If no UVs were loaded, explicitely set them to zero.
         // This can potentially help with compression.
         for (auto& v : handler.vertices()) {
             v.uv = float2(0.f);
