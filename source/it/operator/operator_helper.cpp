@@ -1,6 +1,5 @@
 #include "operator_helper.hpp"
 #include "base/string/string.hpp"
-#include "base/thread/thread_pool.hpp"
 #include "core/image/encoding/exr/exr_writer.hpp"
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/encoding/rgbe/rgbe_writer.hpp"

@@ -3,8 +3,8 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
-#include "image/image.hpp"
-#include "miniz/miniz.hpp"
+#include "image/typed_image.hpp"
+#include "miniz/miniz.h"
 
 #include <fstream>
 

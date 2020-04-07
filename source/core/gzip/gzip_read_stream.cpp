@@ -1,7 +1,6 @@
 #include "gzip_read_stream.hpp"
-#include <fstream>
+
 #include <limits>
-#include <string>
 
 namespace gzip {
 

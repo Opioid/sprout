@@ -1,9 +1,10 @@
 #ifndef SU_CORE_GZIP_READ_STREAM
 #define SU_CORE_GZIP_READ_STREAM
 
+#include "miniz/miniz.h"
+
 #include <istream>
 #include <streambuf>
-#include "miniz/miniz.hpp"
 
 namespace gzip {
 

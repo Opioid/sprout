@@ -41,6 +41,8 @@ Mitchell::Mitchell(Mitchell&& other) noexcept
       radius_inv_(other.radius_inv_),
       mitchell_(std::move(other.mitchell_)) {}
 
+Mitchell::~Mitchell() = default;
+
 float Mitchell::radius() const {
     return radius_;
 }

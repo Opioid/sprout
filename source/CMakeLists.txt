@@ -14,10 +14,20 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 option(NAN "Soft assert on NaN" OFF)
 option(Valgrind "Valgrind compatible build" OFF)
+option(IWYU "Inlcude-what-you-use" OFF)
 
 if (${NAN})
 	add_definitions(-DSU_DEBUG)
 endif ()
+
+if (${IWYU})
+    find_program(IWYU_PATH NAMES include-what-you-use iwyu)
+    if(NOT IWYU_PATH)
+        message(FATAL_ERROR "Could not find the program include-what-you-use")
+    endif()
+    set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
+    set(CMAKE_C_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
+endif()
 
 if (UNIX AND NOT APPLE)
 	set(LINUX TRUE)
@@ -90,6 +100,8 @@ elseif (MSVC)
 	add_definitions(-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
     add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
 endif ()
+
+
 
 add_subdirectory(base)
 add_subdirectory(core)

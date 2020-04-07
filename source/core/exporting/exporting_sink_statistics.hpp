@@ -3,10 +3,6 @@
 
 #include "exporting_sink.hpp"
 
-namespace image {
-class Writer;
-}
-
 namespace exporting {
 
 class Statistics final : public Sink {

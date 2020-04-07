@@ -2,7 +2,6 @@
 #define SU_CORE_TAKE_LOADER_HPP
 
 #include "base/json/json_types.hpp"
-#include "base/math/vector2.hpp"
 
 #include <iosfwd>
 #include <string_view>

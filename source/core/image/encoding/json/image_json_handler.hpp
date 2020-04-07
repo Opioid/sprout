@@ -1,9 +1,10 @@
 #ifndef SU_CORE_IMAGE_ENCODING_JSON_HANDLER_HPP
 #define SU_CORE_IMAGE_ENCODING_JSON_HANDLER_HPP
 
-#include <cstdint>
 #include "image/image.hpp"
-#include "rapidjson/reader.h"
+#include "rapidjson/rapidjson.h"
+
+#include <cstdint>
 
 namespace image::encoding::json {
 

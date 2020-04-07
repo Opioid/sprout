@@ -1,6 +1,5 @@
 #include "base/encoding/encoding.inl"
 #include "base/json/json.hpp"
-#include "base/math/interpolated_function_1d.inl"
 #include "base/memory/array.inl"
 #include "base/platform/platform.hpp"
 #include "base/spectrum/rgb.hpp"

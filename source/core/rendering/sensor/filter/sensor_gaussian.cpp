@@ -18,6 +18,8 @@ Gaussian::Gaussian(float radius, float alpha)
 Gaussian::Gaussian(Gaussian&& other) noexcept
     : radius_(other.radius_), gaussian_(std::move(other.gaussian_)) {}
 
+Gaussian::~Gaussian() = default;
+
 float Gaussian::radius() const {
     return radius_;
 }

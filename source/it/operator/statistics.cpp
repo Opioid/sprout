@@ -1,5 +1,4 @@
 #include "statistics.hpp"
-#include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/logging/logging.hpp"

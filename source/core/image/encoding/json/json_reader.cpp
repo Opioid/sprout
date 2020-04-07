@@ -1,7 +1,4 @@
 #include "json_reader.hpp"
-#include <fstream>
-#include <istream>
-#include <string>
 #include "base/encoding/encoding.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
@@ -9,6 +6,10 @@
 #include "image/typed_image.hpp"
 #include "image_json_handler.hpp"
 #include "rapidjson/istreamwrapper.h"
+
+#include <fstream>
+#include <istream>
+#include <string>
 
 namespace image::encoding::json {
 

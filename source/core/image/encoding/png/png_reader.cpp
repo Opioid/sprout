@@ -1,6 +1,4 @@
 #include "png_reader.hpp"
-#include <cstring>
-#include <istream>
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
@@ -8,7 +6,10 @@
 #include "image/image.hpp"
 #include "image/tiled_image.inl"
 #include "logging/logging.hpp"
-#include "miniz/miniz.hpp"
+#include "miniz/miniz.h"
+
+#include <cstring>
+#include <istream>
 
 // based on
 // https://github.com/jansol/LuPng

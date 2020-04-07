@@ -12,6 +12,8 @@ class Gaussian {
 
     Gaussian(Gaussian&& other) noexcept;
 
+    ~Gaussian();
+
     float radius() const;
 
     float evaluate(float d) const;

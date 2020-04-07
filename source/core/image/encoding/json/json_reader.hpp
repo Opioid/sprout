@@ -3,9 +3,12 @@
 
 #include <iosfwd>
 #include <string>
-#include "image/image.hpp"
 
-namespace image::encoding::json {
+namespace image {
+
+class Image;
+
+namespace encoding::json {
 
 class Reader {
   public:
@@ -14,6 +17,7 @@ class Reader {
   private:
 };
 
-}  // namespace image::encoding::json
+}  // namespace encoding::json
+}  // namespace image
 
 #endif

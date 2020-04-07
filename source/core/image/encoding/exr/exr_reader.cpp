@@ -4,15 +4,12 @@
 #include "exr.hpp"
 #include "image/image.hpp"
 #include "logging/logging.hpp"
-#include "miniz/miniz.hpp"
+#include "miniz/miniz.h"
 
 #include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <vector>
-
-#include <iostream>
-#include "base/math/print.hpp"
 
 namespace image::encoding::exr {
 

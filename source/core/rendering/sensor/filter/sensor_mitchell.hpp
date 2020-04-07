@@ -12,6 +12,8 @@ class Mitchell {
 
     Mitchell(Mitchell&& other) noexcept;
 
+    ~Mitchell();
+
     float radius() const;
 
     float evaluate(float d) const;

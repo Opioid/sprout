@@ -1,8 +1,9 @@
 #ifndef SU_IT_OPERATOR_DIFFERENCE_ITEM_HPP
 #define SU_IT_OPERATOR_DIFFERENCE_ITEM_HPP
 
-#include <string>
 #include "base/math/vector.hpp"
+
+#include <string>
 
 namespace image::texture {
 class Texture;

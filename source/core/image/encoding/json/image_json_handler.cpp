@@ -1,7 +1,8 @@
 #include "image_json_handler.hpp"
-#include <string_view>
 #include "base/math/vector3.inl"
 #include "image/typed_image.hpp"
+
+#include <string_view>
 
 namespace image::encoding::json {
 

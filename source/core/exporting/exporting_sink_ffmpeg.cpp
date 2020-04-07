@@ -1,6 +1,5 @@
 #include "exporting_sink_ffmpeg.hpp"
-#include "base/math/vector4.inl"
-#include "base/spectrum/rgb.hpp"
+#include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"
 
