@@ -1,11 +1,11 @@
 #include "file_system.hpp"
-#include <fstream>
-#include <sstream>
-#include <string_view>
 #include "base/memory/unique.inl"
 #include "file.hpp"
 #include "gzip/gzip_read_stream.hpp"
 #include "logging/logging.hpp"
+
+#include <fstream>
+#include <string_view>
 
 namespace file {
 
@@ -33,14 +33,13 @@ Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name
 void System::push_mount(std::string_view folder) {
     // We also have to push empty folders, otherwise popping gets complicated
 
-    std::stringstream stream;
-    stream << folder;
+    std::string buffer(folder);
 
     if (!folder.empty() && folder.back() != '/') {
-        stream << "/";
+        buffer.append("/");
     }
 
-    mount_folders_.push_back(stream.str());
+    mount_folders_.push_back(buffer);
 }
 
 void System::pop_mount() {

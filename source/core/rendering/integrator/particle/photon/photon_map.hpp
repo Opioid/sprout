@@ -2,10 +2,9 @@
 #define SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_MAP_HPP
 
 #include "base/math/aabb.hpp"
-#include "base/math/vector3.hpp"
 #include "base/memory/array.hpp"
 #include "photon_grid.hpp"
-#include "photon_sparse_grid.hpp"
+//#include "photon_sparse_grid.hpp"
 
 namespace scene {
 class Scene;

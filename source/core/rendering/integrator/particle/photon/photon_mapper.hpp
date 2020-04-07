@@ -1,7 +1,6 @@
 #ifndef SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_MAPPER_HPP
 #define SU_RENDERING_INTEGRATOR_PARTICLE_PHOTON_MAPPER_HPP
 
-#include "base/math/vector2.hpp"
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler_random.hpp"
 

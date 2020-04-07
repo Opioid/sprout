@@ -2,7 +2,6 @@
 #include "base/math/aabb.inl"
 #include "base/math/frustum.hpp"
 #include "base/memory/align.hpp"
-#include "image/encoding/png/png_writer.hpp"
 #include "photon.hpp"
 #include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -17,7 +16,6 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/shape/shape_sample.hpp"
 
 #include <iostream>
 

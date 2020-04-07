@@ -1,5 +1,5 @@
 #include "glass_thin_material.hpp"
-#include "base/math/vector4.inl"
+#include "base/math/vector3.inl"
 #include "glass_thin_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "rendering/integrator/integrator_helper.hpp"

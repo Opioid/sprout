@@ -3,7 +3,7 @@
 #include "item.hpp"
 
 #include <algorithm>
-//#include <cmath>
+#include <cmath>
 #include <ostream>
 
 namespace op {

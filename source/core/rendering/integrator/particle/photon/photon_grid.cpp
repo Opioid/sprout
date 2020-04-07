@@ -1,5 +1,4 @@
 #include "photon_grid.hpp"
-#include <algorithm>
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
 #include "base/math/vector3.inl"
@@ -10,10 +9,11 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene_worker.inl"
 #include "scene/shape/shape.hpp"
+
+#include <algorithm>
 
 #include <iostream>
 #include "base/math/print.hpp"

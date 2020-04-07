@@ -1,7 +1,8 @@
 #include "image_testing_reference.hpp"
-#include <fstream>
 #include "base/spectrum/rgb.hpp"
 #include "miniz/miniz.h"
+
+#include <fstream>
 
 namespace image::testing {
 

@@ -15,6 +15,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 option(NAN "Soft assert on NaN" OFF)
 option(Valgrind "Valgrind compatible build" OFF)
 option(IWYU "Inlcude-what-you-use" OFF)
+option(ASAN "clang adress-sanitizer" OFF)
+option(MSAN "clang memory-sanitizer" OFF)
 
 if (${NAN})
 	add_definitions(-DSU_DEBUG)
@@ -27,6 +29,16 @@ if (${IWYU})
     endif()
     set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
     set(CMAKE_C_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
+endif()
+
+if (${ASAN})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+endif()
+
+if (${MSAN})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=memory -fsanitize-memory-track-origins")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=memory -fsanitize-memory-track-origins")
 endif()
 
 if (UNIX AND NOT APPLE)
@@ -49,10 +61,9 @@ if (LINUX)
 	
 	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
-	#strip debug symbols
-	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
+	#strip debug symbols -- doesn't work?
 	if (CMAKE_BUILD_TYPE MATCHES RELEASE)
-		set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
+		set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -s")  ## Strip binary
 		# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsave-optimization-record")
 	endif (CMAKE_BUILD_TYPE MATCHES RELEASE)
 

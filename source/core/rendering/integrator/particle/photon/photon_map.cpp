@@ -1,13 +1,9 @@
 #include "photon_map.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "photon.hpp"
-#include "rendering/integrator/particle/particle_importance.hpp"
-#include "scene/light/light.hpp"
-#include "scene/scene.hpp"
 #include "scene/scene_worker.hpp"
 
 #include <string>
