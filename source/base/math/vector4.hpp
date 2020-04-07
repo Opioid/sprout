@@ -90,7 +90,7 @@ struct alignas(16) Vector4i_a {
 
     constexpr Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw);
 
-    explicit constexpr Vector4i_a(int32_t s);
+    explicit constexpr Vector4i_a(int32_t s) : v{s, s, s, s} {}
 
     constexpr Vector2<int32_t> xy() const;
 

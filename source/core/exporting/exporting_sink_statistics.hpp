@@ -9,7 +9,7 @@ class Writer;
 
 namespace exporting {
 
-class Statistics : public Sink {
+class Statistics final : public Sink {
   public:
     Statistics();
 

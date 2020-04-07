@@ -11,7 +11,7 @@ class Writer;
 
 namespace exporting {
 
-class Image_sequence : public Sink {
+class Image_sequence final : public Sink {
   public:
     Image_sequence(std::string filename, image::Writer* writer);
 

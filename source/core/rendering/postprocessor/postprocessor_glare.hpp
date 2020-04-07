@@ -7,7 +7,7 @@
 
 namespace rendering::postprocessor {
 
-class Glare : public Postprocessor {
+class Glare final : public Postprocessor {
   public:
     enum class Adaption { Scotopic, Mesopic, Photopic };
 

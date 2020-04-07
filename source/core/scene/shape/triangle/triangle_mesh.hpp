@@ -7,11 +7,11 @@
 
 namespace scene::shape::triangle {
 
-class alignas(64) Mesh : public Shape {
+class alignas(64) Mesh final : public Shape {
   public:
     Mesh();
 
-    ~Mesh() override;
+    ~Mesh() final;
 
     Tree& tree();
 

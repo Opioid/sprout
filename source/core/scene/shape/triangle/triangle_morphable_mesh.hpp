@@ -11,7 +11,7 @@ namespace scene::shape::triangle {
 struct Triangle_MT;
 class Morph_target_collection;
 
-class alignas(64) Morphable_mesh : public Shape, public Morphable {
+class alignas(64) Morphable_mesh final : public Shape, public Morphable {
   public:
     Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts);
 

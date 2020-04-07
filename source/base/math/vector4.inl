@@ -224,7 +224,7 @@ inline constexpr Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t
 inline constexpr Vector4i_a::Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw)
     : v{xy[0], xy[1], zw[0], zw[1]} {}
 
-inline constexpr Vector4i_a::Vector4i_a(int32_t s) : v{s, s, s, s} {}
+// inline constexpr Vector4i_a::Vector4i_a(int32_t s) : v{s, s, s, s} {}
 
 inline constexpr Vector2<int32_t> Vector4i_a::xy() const {
     return Vector2<int32_t>(v[0], v[1]);
