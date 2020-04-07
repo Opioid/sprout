@@ -20,7 +20,7 @@ class Aces : public Tonemapper {
 
 class Aces_MJP : public Tonemapper {
   public:
-    Aces_MJP(bool auto_expose, float expsosure);
+    Aces_MJP(bool auto_expose, float exposure);
 
   private:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,

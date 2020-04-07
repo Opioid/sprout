@@ -159,7 +159,7 @@ static inline void write_scanline(std::ostream& stream, Float4 const& image, int
 bool Writer::no_compression(std::ostream& stream, Float4 const& image) const {
     auto const d = image.description().dimensions();
 
-    int64_t const scanline_offset = stream.tellp() + int64_t(d[1] * 8);
+    int64_t const scanline_offset = stream.tellp() + int64_t(d[1]) * 8;
 
     int32_t const num_channels = alpha_ ? 4 : 3;
 
@@ -400,7 +400,7 @@ bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compress
         },
         0, row_blocks);
 
-    int64_t scanline_offset = stream.tellp() + int64_t(row_blocks * 8);
+    int64_t scanline_offset = stream.tellp() + int64_t(row_blocks) * 8;
 
     for (int32_t y = 0; y < row_blocks; ++y) {
         w(stream, scanline_offset);

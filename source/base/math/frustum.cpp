@@ -89,9 +89,9 @@ AABB Frustum::calculate_aabb() const {
     float3 min(100000.f, -100000.f, 100000.f);
     float3 max(-100000.f, 100000.f, -100000.f);
 
-    for (size_t i = 0; i < 3; ++i) {
-        min = math::min(min, points[i]);
-        max = math::max(max, points[i]);
+    for (auto const& p : points) {
+        min = math::min(min, p);
+        max = math::max(max, p);
     }
 
     return AABB(min, max);
