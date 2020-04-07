@@ -2,6 +2,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture.inl"
 #include "item.hpp"
+#include "operator_helper.inl"
 
 namespace op {
 
