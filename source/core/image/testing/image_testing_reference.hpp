@@ -8,4 +8,4 @@ namespace image::testing {
 
 void create_reference_normal_map(int32_t dimensions, std::string const& name);
 
-}  // namespace image
+}  // namespace image::testing

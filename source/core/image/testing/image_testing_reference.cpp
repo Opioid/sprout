@@ -1,6 +1,6 @@
 #include "image_testing_reference.hpp"
-#include "base/spectrum/rgb.hpp"
 #include "base/encoding/encoding.inl"
+#include "base/spectrum/rgb.hpp"
 #include "miniz/miniz.h"
 
 #include <iostream>
@@ -35,12 +35,12 @@ static float3 reference_normal(float2 p, float range) {
 
     float const radius = 1.f - 0.5f * range;
     if (l < radius) {
-        v = float3(vx, vy, 1.f - (l * l));
+        v = float3(vx, vy, 1.f - l);
     } else {
         v = float3(0.f, 0.f, 1.f);
     }
 
-        return normalize(v);
+    return normalize(v);
 
     v = normalize(v);
 
@@ -95,7 +95,7 @@ void create_reference_normal_map(int32_t dimensions, std::string const& name) {
     }
 
     size_t buffer_len = 0;
-    void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgb, dimensions, dimensions, 3,
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(rgb, dimensions, dimensions, 3,
                                                                &buffer_len);
 
     if (!png_buffer) {

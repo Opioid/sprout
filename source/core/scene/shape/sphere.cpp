@@ -345,15 +345,11 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
                     uint32_t sampler_dimension, Sample_to& sample) const {
     float3 const axis = transformation.position - p;
 
-    float const axis_squared_length = squared_length(axis);
+    float const axis_length = length(axis);
 
     float const radius         = transformation.scale_x();
-    float const radius_square  = radius * radius;
-    float const sin_theta_max2 = radius_square / axis_squared_length;
-    float const cos_theta_max  = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
-                                         0.99999995f);
-
-    float const axis_length = std::sqrt(axis_squared_length);
+    float const sin_theta_max2 = pow2(radius / axis_length);
+    float const cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 
     float3 const z = axis / axis_length;
 
