@@ -362,11 +362,16 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
     float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
-    float const b   = dot(axis, dir);
-    float const det = (b * b) - axis_squared_length + radius_square;
+    float3 const v = transformation.position - p;
 
-    if (det > 0.f) {
-        float const dist = std::sqrt(det);
+    float const b = dot(dir, v);
+
+    float3 const remedy_term = v - b * dir;
+
+    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
+
+    if (discriminant >= 0.f) {
+        float const dist = std::sqrt(discriminant);
         float const t    = offset_b(b - dist);
 
         sample = Sample_to(dir, float3(0.f), cone_pdf_uniform(cos_theta_max), t);
