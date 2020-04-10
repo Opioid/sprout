@@ -23,7 +23,7 @@ class Vertex_layout_description {
 }  // namespace scene::shape::triangle
 
 std::ostringstream& operator<<(
-    std::ostringstream&                                                stream,
+    std::ostringstream&                                               stream,
     scene::shape::triangle::Vertex_layout_description::Element const& element);
 
 #endif

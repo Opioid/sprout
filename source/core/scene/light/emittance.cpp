@@ -52,6 +52,7 @@ float3 Emittance::radiance(float area) const {
     if (Quantity::Intensity == quantity_) {
         return value_ / area;
     }
+
     return value_;
 }
 

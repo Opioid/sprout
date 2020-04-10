@@ -43,6 +43,7 @@ static inline void intersect(float hit_t, Ray const& ray,
                              Shape::Transformation const& transformation,
                              Intersection&                intersection) {
     float3 const p = ray.point(hit_t);
+
     float3 const n = normalize(p - transformation.position);
 
     float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, n));
@@ -69,11 +70,13 @@ static inline void intersect(float hit_t, Ray const& ray,
 bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        Intersection& intersection) const {
     float3 const v = transformation.position - ray.origin;
-    float const  b = dot(ray.direction, v);
+
+    float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale_x();
+    float const radius = transformation.scale_x();
+
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant >= 0.f) {
@@ -108,6 +111,7 @@ static inline void intersect_nsf(float hit_t, Ray const& ray,
                                  Shape::Transformation const& transformation,
                                  Intersection&                intersection) {
     float3 const p = ray.point(hit_t);
+
     float3 const n = normalize(p - transformation.position);
 
     float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, n));
@@ -124,11 +128,13 @@ static inline void intersect_nsf(float hit_t, Ray const& ray,
 bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
                            Node_stack& /*node_stack*/, Intersection& intersection) const {
     float3 const v = transformation.position - ray.origin;
-    float const  b = dot(ray.direction, v);
+
+    float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale_x();
+    float const radius = transformation.scale_x();
+
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -162,11 +168,13 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformat
 bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                        Normals& normals) const {
     float3 const v = transformation.position - ray.origin;
-    float const  b = dot(ray.direction, v);
+
+    float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale_x();
+    float const radius = transformation.scale_x();
+
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -206,11 +214,13 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
                          Node_stack& /*node_stack*/) const {
     float3 const v = transformation.position - ray.origin;
-    float const  b = dot(ray.direction, v);
+
+    float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale_x();
+    float const radius = transformation.scale_x();
+
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
@@ -234,16 +244,18 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
 float Sphere::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
                          Filter filter, Worker& worker) const {
     float3 const v = transformation.position - ray.origin;
-    float const  b = dot(ray.direction, v);
+
+    float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale_x();
+    float const radius = transformation.scale_x();
+
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
-        float dist = std::sqrt(discriminant);
-        float t0   = b - dist;
+        float const dist = std::sqrt(discriminant);
+        float const t0   = b - dist;
 
         if (t0 > ray.min_t() && t0 < ray.max_t()) {
             float3 n = normalize(ray.point(t0) - transformation.position);
@@ -258,7 +270,7 @@ float Sphere::visibility(Ray const& ray, Transformation const& transformation, u
                    worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
         }
 
-        float t1 = b + dist;
+        float const t1 = b + dist;
 
         if (t1 > ray.min_t() && t1 < ray.max_t()) {
             float3 n = normalize(ray.point(t1) - transformation.position);
@@ -280,16 +292,18 @@ float Sphere::visibility(Ray const& ray, Transformation const& transformation, u
 bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
                              Filter filter, Worker& worker, float3& ta) const {
     float3 const v = transformation.position - ray.origin;
-    float const  b = dot(ray.direction, v);
+
+    float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius       = transformation.scale_x();
+    float const radius = transformation.scale_x();
+
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
     if (discriminant > 0.f) {
-        float dist = std::sqrt(discriminant);
-        float t0   = b - dist;
+        float const dist = std::sqrt(discriminant);
+        float const t0   = b - dist;
 
         if (t0 > ray.min_t() && t0 < ray.max_t()) {
             float3 n = normalize(ray.point(t0) - transformation.position);
@@ -305,7 +319,7 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
             return true;
         }
 
-        float t1 = b + dist;
+        float const t1 = b + dist;
 
         if (t1 > ray.min_t() && t1 < ray.max_t()) {
             float3 n = normalize(ray.point(t1) - transformation.position);
