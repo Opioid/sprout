@@ -2,9 +2,10 @@
 
 #include "base/math/vector2.hpp"
 
-namespace image {
-namespace testing {
+#include <string>
 
-void create_reference_normal_map(int2 dimensions);
-}
+namespace image::testing {
+
+void create_reference_normal_map(int32_t dimensions, std::string const& name);
+
 }  // namespace image
