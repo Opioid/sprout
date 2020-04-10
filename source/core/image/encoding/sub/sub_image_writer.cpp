@@ -67,7 +67,7 @@ void Writer::write(std::string const& filename, Image const& image) {
     const char header[] = "SUB\000";
     stream.write(header, sizeof(char) * 4);
 
-    std::stringstream jstream;
+    std::ostringstream jstream;
 
     newline(jstream, 0);
     jstream << "{";

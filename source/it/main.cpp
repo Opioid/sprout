@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 
         bool const is_json = string::is_json(args.take);
 
-        auto stream = is_json ? file::Stream_ptr(new std::stringstream(args.take))
+        auto stream = is_json ? file::Stream_ptr(new std::istringstream(args.take))
                               : filesystem.read_stream(args.take, take_name);
 
         if (stream) {

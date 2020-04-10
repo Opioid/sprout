@@ -40,7 +40,7 @@ void Exporter::write(std::string const& filename, Json_handler& handler) {
     const char header[] = "SUB\000";
     stream.write(header, sizeof(char) * 4);
 
-    std::stringstream jstream;
+    std::ostringstream jstream;
 
     newline(jstream, 0);
     jstream << "{";

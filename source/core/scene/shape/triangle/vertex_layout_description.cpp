@@ -6,7 +6,7 @@ namespace scene::shape::triangle {}
 
 using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
 
-void print(std::stringstream& stream, Encoding encoding) {
+void print(std::ostringstream& stream, Encoding encoding) {
     switch (encoding) {
         case Encoding::UInt8:
             stream << "UInt8";
@@ -27,7 +27,7 @@ void print(std::stringstream& stream, Encoding encoding) {
 
 using Element = scene::shape::triangle::Vertex_layout_description::Element;
 
-std::stringstream& operator<<(std::stringstream& stream, Element const& element) {
+std::ostringstream& operator<<(std::ostringstream& stream, Element const& element) {
     stream << "{";
     stream << R"("semantic_name":")" << element.semantic_name << R"(",)";
     stream << R"("semantic_index":)" << element.semantic_index << ",";

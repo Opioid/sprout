@@ -17,7 +17,7 @@ uint32_t average(std::vector<Item> const& items, it::options::Options const& /*o
         } else {
             float3 const a = i.image->average_3();
 
-            std::stringstream stream;
+            std::ostringstream stream;
             stream << float3(round(a[0], 4), round(a[1], 4), round(a[2], 2));
 
             logging::info(stream.str());

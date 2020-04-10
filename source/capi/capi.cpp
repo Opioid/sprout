@@ -180,7 +180,7 @@ int32_t su_load_take(char const* string) {
     {
         bool const is_json = string::is_json(take);
 
-        auto stream = is_json ? file::Stream_ptr(new std::stringstream(take))
+        auto stream = is_json ? file::Stream_ptr(new std::istringstream(take))
                               : engine->resources.filesystem().read_stream(take, take_name);
 
         if (!stream || !take::Loader::load(engine->take, *stream, take_name, engine->progressive,

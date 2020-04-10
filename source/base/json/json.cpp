@@ -45,7 +45,7 @@ static Error calculate_line_number(std::istream& stream, size_t offset) {
 static std::string read_error(rapidjson::Document const& document, std::istream& stream) {
     auto const [line, column] = calculate_line_number(stream, document.GetErrorOffset());
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     sstream << rapidjson::GetParseError_En(document.GetParseError());
     // line number is 0-based, so + 1
     sstream << " (line " << line + 1 << ", column " << column + 1 << ")";

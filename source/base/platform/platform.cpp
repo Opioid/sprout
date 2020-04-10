@@ -7,7 +7,7 @@ namespace platform {
 #include "version.hpp"
 
 std::string build() {
-    std::stringstream stream;
+    std::ostringstream stream;
 
     // Architecture
 #if defined(__LP64__) || defined(_LP64) || defined(_WIN64)
