@@ -1,4 +1,4 @@
- target_sources(base
-  PRIVATE
-  "flags.hpp"
-) 
+target_sources(base
+    PRIVATE
+    "flags.hpp"
+    )
