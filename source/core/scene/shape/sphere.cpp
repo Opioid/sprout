@@ -343,22 +343,21 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
 bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
                     float /*area*/, bool /*two_sided*/, Sampler&              sampler,
                     uint32_t sampler_dimension, Sample_to& sample) const {
-    float3 const axis = transformation.position - p;
+    float3 const v = transformation.position - p;
 
-    float const axis_length = length(axis);
+    float const axis_length = length(v);
 
-    float const radius         = transformation.scale_x();
-    float const sin_theta_max2 = pow2(radius / axis_length);
-    float const cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+    float const radius        = transformation.scale_x();
+    float const sin_theta_max = radius / axis_length;
+    float const cos_theta_max = std::sqrt(
+        std::max(0.f, (1.f - sin_theta_max) * (1.f + sin_theta_max)));
 
-    float3 const z = axis / axis_length;
+    float3 const z = v / axis_length;
 
     auto const [x, y] = orthonormal_basis(z);
 
     float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
     float3 const dir = sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
-
-    float3 const v = transformation.position - p;
 
     float const b = dot(dir, v);
 
@@ -403,12 +402,11 @@ float Sphere::pdf(Ray const&            ray, Intersection const& /*intersection*
                   bool /*total_sphere*/) const {
     float3 const axis = transformation.position - ray.origin;
 
-    float const axis_squared_length = squared_length(axis);
-    float const radius              = transformation.scale_x();
-    float const radius_square       = radius * radius;
-    float const sin_theta_max2      = radius_square / axis_squared_length;
-    float const cos_theta_max       = std::min(std::sqrt(std::max(0.f, 1.f - sin_theta_max2)),
-                                         0.99999995f);
+    float const axis_length = length(axis);
+
+    float const radius         = transformation.scale_x();
+    float const sin_theta_max2 = pow2(radius / axis_length);
+    float const cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 
     return cone_pdf_uniform(cos_theta_max);
 }
