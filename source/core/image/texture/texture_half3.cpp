@@ -11,26 +11,6 @@ image::Short3 const& Half3::image() const {
     return image_;
 }
 
-int32_t Half3::num_elements() const {
-    return image_.description().num_elements_;
-}
-
-int2 Half3::dimensions_2() const {
-    return image_.description().dimensions_.xy();
-}
-
-int3 const& Half3::dimensions_3() const {
-    return image_.description().dimensions_;
-}
-
-float Half3::at_1(int32_t i) const {
-    return half_to_float(image_.load(i)[0]);
-}
-
-float3 Half3::at_3(int32_t i) const {
-    return half_to_float(image_.load(i));
-}
-
 float Half3::at_1(int32_t x, int32_t y) const {
     return half_to_float(image_.load(x, y)[0]);
 }

@@ -321,6 +321,21 @@ static bool all_finite(Vector3<T> const& v) {
 // Aligned 3D float vector
 //==============================================================================
 
+template <typename T>
+constexpr Vector2<T> Vector3_a<T>::xy() const {
+    return Vector2<T>(v[0], v[1]);
+}
+
+template <typename T>
+T constexpr Vector3_a<T>::operator[](uint32_t i) const {
+    return v[i];
+}
+
+template <typename T>
+T constexpr& Vector3_a<T>::operator[](uint32_t i) {
+    return v[i];
+}
+
 inline constexpr Vector3f_a::Vector3f_a(float const* a) : v{a[0], a[1], a[2], 0.f} {}
 
 inline constexpr Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}

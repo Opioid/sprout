@@ -11,14 +11,6 @@ class Half3 {
 
     image::Short3 const& image() const;
 
-    int32_t num_elements() const;
-
-    int2        dimensions_2() const;
-    int3 const& dimensions_3() const;
-
-    float  at_1(int32_t i) const;
-    float3 at_3(int32_t i) const;
-
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
     float3 at_3(int32_t x, int32_t y) const;

@@ -12,6 +12,10 @@ struct Vector2;
 
 template <typename T>
 struct Vector3;
+
+template <typename T>
+struct Vector3_a;
+
 struct alignas(16) Vector3f_a;
 struct alignas(16) Vector3i_a;
 
@@ -36,7 +40,7 @@ using byte3 = math::Vector3<uint8_t>;
 // using float3 = math::Vector3<float>;
 using float3 = math::Vector3f_a;
 
-using ushort3 = math::Vector3<uint16_t>;
+using ushort3 = math::Vector3_a<uint16_t>;
 
 using int3          = math::Vector3<int32_t>;
 using uint3         = math::Vector3<uint32_t>;

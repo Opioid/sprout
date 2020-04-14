@@ -80,6 +80,20 @@ struct Vector3 {
 // Aligned 3D float vector
 //==============================================================================
 
+template <typename T>
+struct Vector3_a {
+    T v[4];
+
+    Vector3_a() = default;
+
+    constexpr Vector3_a(T x, T y, T z) : v{x, y, z, T(0)} {}
+
+    constexpr Vector2<T> xy() const;
+
+    constexpr T  operator[](uint32_t i) const;
+    constexpr T& operator[](uint32_t i);
+};
+
 struct Simd3f;
 
 struct alignas(16) Vector3f_a {
