@@ -22,11 +22,9 @@
 #include "base/debug/assert.hpp"
 #ifdef SU_DEBUG
 #include <iostream>
-#include "base/math/print.hpp"
 #include "base/chrono/chrono.hpp"
+#include "base/math/print.hpp"
 #endif
-
-
 
 namespace scene::shape::triangle {
 

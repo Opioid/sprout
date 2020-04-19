@@ -9,7 +9,6 @@ target_link_libraries(core PRIVATE base)
 add_subdirectory(baking)
 add_subdirectory(exporting)
 add_subdirectory(file)
-add_subdirectory(gzip)
 add_subdirectory(image)
 add_subdirectory(logging)
 add_subdirectory(progress)
@@ -19,7 +18,6 @@ add_subdirectory(sampler)
 add_subdirectory(scene)
 add_subdirectory(take)
 add_subdirectory(testing)
-add_subdirectory(zstd)
 
 target_sources(core
 	PRIVATE

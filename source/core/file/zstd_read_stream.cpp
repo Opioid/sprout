@@ -1,31 +1,27 @@
 #include "zstd_read_stream.hpp"
-#include "zstd/zstd_errors.h"
 
 #include <cstring>
 
-#include <iostream>
-
-namespace zstd {
+namespace file::zstd {
 
 Filebuffer::Filebuffer() : stream_(nullptr), zstd_stream_(nullptr) {
-    read_buffer_size_ = /*8192;//*/ZSTD_DStreamInSize();
-    buffer_size_ = /*8192;//*/ZSTD_DStreamOutSize();
+    read_buffer_size_ = /*8192;//*/ uint32_t(ZSTD_DStreamInSize());
+    buffer_size_      = /*8192;//*/ uint32_t(ZSTD_DStreamOutSize());
 
     read_buffer_ = new char_type[read_buffer_size_];
-    buffer_ = new char_type[buffer_size_];
+    buffer_      = new char_type[buffer_size_];
 }
 
 Filebuffer::~Filebuffer() {
     close();
 
-    delete [] buffer_;
-    delete [] read_buffer_;
+    delete[] buffer_;
+    delete[] read_buffer_;
 }
 
 bool Filebuffer::is_open() const {
     return nullptr != stream_;
 }
-
 
 Filebuffer* Filebuffer::open(std::istream* stream) {
     stream_ = stream;
@@ -64,7 +60,7 @@ Filebuffer::int_type Filebuffer::underflow() {
         return traits_type::eof();
     }
 
- //   char_type* current = gptr();
+    //   char_type* current = gptr();
 
     size_t uncompressed_bytes = 0;
 
@@ -79,28 +75,27 @@ Filebuffer::int_type Filebuffer::underflow() {
             }
 
             zstd_input_.size = read_bytes;
-            zstd_input_.pos = 0;
+            zstd_input_.pos  = 0;
         }
 
-            ZSTD_outBuffer zstd_output = { buffer_, buffer_size_, 0 };
+        ZSTD_outBuffer zstd_output = {buffer_, buffer_size_, 0};
 
-        size_t const ret = ZSTD_decompressStream(zstd_stream_, &zstd_output , &zstd_input_);
+        size_t const ret = ZSTD_decompressStream(zstd_stream_, &zstd_output, &zstd_input_);
 
         if (ZSTD_isError(ret)) {
-            ZSTD_ErrorCode const code = ZSTD_getErrorCode(ret);
             return traits_type::eof();
         }
 
         uncompressed_bytes = zstd_output.pos;
 
-//        if (0 == uncompressed_bytes && 0 == ret && zstd_output.pos < zstd_output.size) {
-//            return traits_type::eof();
-//        }
+        //        if (0 == uncompressed_bytes && 0 == ret && zstd_output.pos < zstd_output.size) {
+        //            return traits_type::eof();
+        //        }
     }
 
     char_type* current = buffer_;
 
-    total_out_ += uncompressed_bytes;
+    total_out_ += pos_type(uncompressed_bytes);
 
     setg(buffer_, current, current + uncompressed_bytes);
 
@@ -235,55 +230,9 @@ std::streamsize Filebuffer::showmanyc() {
 }
 
 void Filebuffer::restart_zstd_stream() {
-    zstd_input_ = { read_buffer_, 0, 0 };
+    zstd_input_ = {read_buffer_, 0, 0};
 
     total_out_ = 0;
 }
 
-Read_stream::Read_stream() : __istream_type(&stream_buffer_) {}
-
-// Read_stream::Read_stream(std::string const& name, std::ios_base::openmode mode) :
-//	__istream_type(&stream_buffer_)/*, name_(name)*/ {
-//	open(name.c_str(), mode);
-//}
-
-// Read_stream::Read_stream(char const* name, std::ios_base::openmode mode) :
-//	__istream_type(&stream_buffer_)/*, name_(name)*/ {
-//	open(name, mode);
-//}
-
-Read_stream::Read_stream(std::istream* stream) : __istream_type(&stream_buffer_) {
-    open(stream);
-}
-
-const Filebuffer* Read_stream::rdbuf() const {
-    return &stream_buffer_;
-}
-
-Filebuffer* Read_stream::rdbuf() {
-    return &stream_buffer_;
-}
-
-bool Read_stream::is_open() const {
-    return rdbuf()->is_open();
-}
-
-// void Read_stream::open(char const* name, std::ios_base::openmode mode) {
-//	if (!rdbuf()->open(name, mode | std::ios_base::in)) {
-//		__istream_type::setstate(std::ios_base::failbit);
-//	}
-//}
-
-void Read_stream::open(std::istream* stream) {
-    if (!rdbuf()->open(stream)) {
-        __istream_type::setstate(std::ios_base::failbit);
-    }
-}
-
-void Read_stream::close() {
-    if (!rdbuf()->close()) {
-        __istream_type::setstate(std::ios_base::failbit);
-    }
-}
-
-}  // namespace gzip
+}  // namespace file::zstd

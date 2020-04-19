@@ -1,12 +1,12 @@
-#ifndef SU_CORE_ZSTD_READ_STREAM
-#define SU_CORE_ZSTD_READ_STREAM
+#ifndef SU_CORE_ZSTD_READ_STREAM_HPP
+#define SU_CORE_ZSTD_READ_STREAM_HPP
 
 #include "zstd/zstd.h"
 
 #include <istream>
 #include <streambuf>
 
-namespace zstd {
+namespace file::zstd {
 
 class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char>> {
   public:
@@ -61,44 +61,6 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
     char_type* buffer_;
 };
 
-class Read_stream : public std::basic_istream<char, std::char_traits<char>> {
-  public:
-    using char_type   = char;
-    using traits_type = std::char_traits<char>;
-    using int_type    = traits_type::int_type;
-    using pos_type    = traits_type::pos_type;
-    using off_type    = traits_type::off_type;
-
-    using __istream_type = std::basic_istream<char, std::char_traits<char>>;
-
-    Read_stream();
-
-    //	explicit Read_stream(std::string const& name,
-    //						 std::ios_base::openmode mode =
-    // std::ios_base::binary);
-
-    //	explicit Read_stream(char const* name,
-    //						 std::ios_base::openmode mode =
-    // std::ios_base::binary);
-
-    explicit Read_stream(std::istream* stream);
-
-    const Filebuffer* rdbuf() const;
-
-    Filebuffer* rdbuf();
-
-    bool is_open() const;
-
-    //	void open(char const* name, std::ios_base::openmode mode = std::ios_base::binary);
-
-    void open(std::istream* stream);
-
-    void close();
-
-  private:
-    Filebuffer stream_buffer_;
-};
-
-}  // namespace gzip
+}  // namespace file::zstd
 
 #endif

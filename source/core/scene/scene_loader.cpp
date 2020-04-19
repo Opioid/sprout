@@ -142,7 +142,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     }
 
 #ifdef SU_DEBUG
-        auto const loading_start = std::chrono::high_resolution_clock::now();
+    auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
 
     std::string resolved_name;
@@ -329,7 +329,7 @@ void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value, 
 
 uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
                            Local_materials const& local_materials, Scene& scene) {
- //   LOGGING_VERBOSE("Loading prop...");
+    //   LOGGING_VERBOSE("Loading prop...");
 
     Shape_ptr shape = Shape_ptr::Null();
 

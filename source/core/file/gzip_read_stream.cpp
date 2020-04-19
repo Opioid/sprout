@@ -2,7 +2,7 @@
 
 #include <limits>
 
-namespace gzip {
+namespace file::gzip {
 
 Filebuffer::Filebuffer() : stream_(nullptr) {}
 
@@ -277,50 +277,4 @@ bool Filebuffer::init_z_stream() {
     return true;
 }
 
-Read_stream::Read_stream() : __istream_type(&stream_buffer_) {}
-
-// Read_stream::Read_stream(std::string const& name, std::ios_base::openmode mode) :
-//	__istream_type(&stream_buffer_)/*, name_(name)*/ {
-//	open(name.c_str(), mode);
-//}
-
-// Read_stream::Read_stream(char const* name, std::ios_base::openmode mode) :
-//	__istream_type(&stream_buffer_)/*, name_(name)*/ {
-//	open(name, mode);
-//}
-
-Read_stream::Read_stream(std::istream* stream) : __istream_type(&stream_buffer_) {
-    open(stream);
-}
-
-const Filebuffer* Read_stream::rdbuf() const {
-    return &stream_buffer_;
-}
-
-Filebuffer* Read_stream::rdbuf() {
-    return &stream_buffer_;
-}
-
-bool Read_stream::is_open() const {
-    return rdbuf()->is_open();
-}
-
-// void Read_stream::open(char const* name, std::ios_base::openmode mode) {
-//	if (!rdbuf()->open(name, mode | std::ios_base::in)) {
-//		__istream_type::setstate(std::ios_base::failbit);
-//	}
-//}
-
-void Read_stream::open(std::istream* stream) {
-    if (!rdbuf()->open(stream)) {
-        __istream_type::setstate(std::ios_base::failbit);
-    }
-}
-
-void Read_stream::close() {
-    if (!rdbuf()->close()) {
-        __istream_type::setstate(std::ios_base::failbit);
-    }
-}
-
-}  // namespace gzip
+}  // namespace file::gzip
