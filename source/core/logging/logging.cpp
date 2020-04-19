@@ -72,6 +72,12 @@ void verbose(std::string const& text) {
     }
 }
 
+void verbose(std::string const& text, float a) {
+    if (log) {
+        log->post(Log::Type::Verbose, text, a);
+    }
+}
+
 void verbose(std::string const& text, std::string const& a) {
     if (log) {
         log->post(Log::Type::Verbose, text, a);

@@ -23,7 +23,10 @@
 #ifdef SU_DEBUG
 #include <iostream>
 #include "base/math/print.hpp"
+#include "base/chrono/chrono.hpp"
 #endif
+
+
 
 namespace scene::shape::triangle {
 
@@ -48,10 +51,16 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
 
     file::Type const type = file::query_type(*stream_pointer);
     if (file::Type::SUB == type) {
+#ifdef SU_DEBUG
+        auto const loading_start = std::chrono::high_resolution_clock::now();
+#endif
+
         Shape* mesh = load_binary(*stream_pointer, resources.threads());
         if (!mesh) {
             logging::error("Loading mesh %S: ", filename);
         }
+
+        LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
 
         return mesh;
     }
@@ -622,6 +631,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
 
     threads.run_async([mesh, num_parts, parts, num_indices, indices, vertex_stream, index_bytes,
                        delta_indices, &threads]() noexcept {
+        LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
+
         memory::Array<Index_triangle> triangles(num_indices / 3);
 
         if (4 == index_bytes) {
@@ -650,6 +661,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
         vertex_stream->release();
 
         delete vertex_stream;
+
+        LOGGING_VERBOSE("Finished asynchronously building triangle mesh BVH.");
     });
 
     return mesh;

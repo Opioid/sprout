@@ -2,6 +2,7 @@
 #include "base/memory/unique.inl"
 #include "file.hpp"
 #include "gzip/gzip_read_stream.hpp"
+#include "zstd/zstd_read_stream.hpp"
 #include "logging/logging.hpp"
 
 #include <fstream>
@@ -17,7 +18,7 @@ Stream_ptr System::read_stream(std::string_view name) const {
 Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
-        logging::push_error("Stream %S could not be opened", std::string(name));
+        logging::push_error("Stream %S could not be opened.", std::string(name));
         return Stream_ptr();
     }
 
@@ -25,6 +26,10 @@ Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name
 
     if (Type::GZIP == type) {
         return Stream_ptr(new gzip::Read_stream(stream));
+    }
+
+    if (Type::ZSTD == type) {
+        return Stream_ptr(new zstd::Read_stream(stream));
     }
 
     return Stream_ptr(stream);

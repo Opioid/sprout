@@ -1,12 +1,12 @@
-#ifndef SU_CORE_GZIP_READ_STREAM
-#define SU_CORE_GZIP_READ_STREAM
+#ifndef SU_CORE_ZSTD_READ_STREAM
+#define SU_CORE_ZSTD_READ_STREAM
 
-#include "miniz/miniz.h"
+#include "zstd/zstd.h"
 
 #include <istream>
 #include <streambuf>
 
-namespace gzip {
+namespace zstd {
 
 class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char>> {
   public:
@@ -23,8 +23,6 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
     ~Filebuffer() final;
 
     bool is_open() const;
-
-    //	Filebuffer* open(char const* filename, std::ios_base::openmode mode);
 
     Filebuffer* open(std::istream* stream);
 
@@ -44,19 +42,23 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
     std::streamsize showmanyc() final;
 
   private:
-    bool init_z_stream();
+    void restart_zstd_stream();
 
     pos_type data_start_;
 
     std::istream* stream_;
 
-    mz_stream z_stream_;
+    ZSTD_DStream* zstd_stream_;
 
-    static uint32_t constexpr Buffer_size = 8192;
+    ZSTD_inBuffer zstd_input_;
 
-    char_type read_buffer_[Buffer_size];
+    pos_type total_out_;
 
-    char_type buffer_[Buffer_size];
+    uint32_t read_buffer_size_;
+    uint32_t buffer_size_;
+
+    char_type* read_buffer_;
+    char_type* buffer_;
 };
 
 class Read_stream : public std::basic_istream<char, std::char_traits<char>> {

@@ -19,8 +19,10 @@ add_subdirectory(sampler)
 add_subdirectory(scene)
 add_subdirectory(take)
 add_subdirectory(testing)
+add_subdirectory(zstd)
 
 target_sources(core
 	PRIVATE
 	"../../thirdparty/include/miniz/miniz.cpp"
+    "../../thirdparty/include/zstd/zstddeclib.cpp"
 )
