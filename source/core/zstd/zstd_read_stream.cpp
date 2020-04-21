@@ -8,24 +8,23 @@
 namespace zstd {
 
 Filebuffer::Filebuffer() : stream_(nullptr), zstd_stream_(nullptr) {
-    read_buffer_size_ = /*8192;//*/ZSTD_DStreamInSize();
-    buffer_size_ = /*8192;//*/ZSTD_DStreamOutSize();
+    read_buffer_size_ = /*8192;//*/ ZSTD_DStreamInSize();
+    buffer_size_      = /*8192;//*/ ZSTD_DStreamOutSize();
 
     read_buffer_ = new char_type[read_buffer_size_];
-    buffer_ = new char_type[buffer_size_];
+    buffer_      = new char_type[buffer_size_];
 }
 
 Filebuffer::~Filebuffer() {
     close();
 
-    delete [] buffer_;
-    delete [] read_buffer_;
+    delete[] buffer_;
+    delete[] read_buffer_;
 }
 
 bool Filebuffer::is_open() const {
     return nullptr != stream_;
 }
-
 
 Filebuffer* Filebuffer::open(std::istream* stream) {
     stream_ = stream;
@@ -64,7 +63,7 @@ Filebuffer::int_type Filebuffer::underflow() {
         return traits_type::eof();
     }
 
- //   char_type* current = gptr();
+    //   char_type* current = gptr();
 
     size_t uncompressed_bytes = 0;
 
@@ -79,12 +78,12 @@ Filebuffer::int_type Filebuffer::underflow() {
             }
 
             zstd_input_.size = read_bytes;
-            zstd_input_.pos = 0;
+            zstd_input_.pos  = 0;
         }
 
-            ZSTD_outBuffer zstd_output = { buffer_, buffer_size_, 0 };
+        ZSTD_outBuffer zstd_output = {buffer_, buffer_size_, 0};
 
-        size_t const ret = ZSTD_decompressStream(zstd_stream_, &zstd_output , &zstd_input_);
+        size_t const ret = ZSTD_decompressStream(zstd_stream_, &zstd_output, &zstd_input_);
 
         if (ZSTD_isError(ret)) {
             ZSTD_ErrorCode const code = ZSTD_getErrorCode(ret);
@@ -93,9 +92,9 @@ Filebuffer::int_type Filebuffer::underflow() {
 
         uncompressed_bytes = zstd_output.pos;
 
-//        if (0 == uncompressed_bytes && 0 == ret && zstd_output.pos < zstd_output.size) {
-//            return traits_type::eof();
-//        }
+        //        if (0 == uncompressed_bytes && 0 == ret && zstd_output.pos < zstd_output.size) {
+        //            return traits_type::eof();
+        //        }
     }
 
     char_type* current = buffer_;
@@ -235,7 +234,7 @@ std::streamsize Filebuffer::showmanyc() {
 }
 
 void Filebuffer::restart_zstd_stream() {
-    zstd_input_ = { read_buffer_, 0, 0 };
+    zstd_input_ = {read_buffer_, 0, 0};
 
     total_out_ = 0;
 }
@@ -286,4 +285,4 @@ void Read_stream::close() {
     }
 }
 
-}  // namespace gzip
+}  // namespace zstd

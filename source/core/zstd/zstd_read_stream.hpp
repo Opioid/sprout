@@ -99,6 +99,6 @@ class Read_stream : public std::basic_istream<char, std::char_traits<char>> {
     Filebuffer stream_buffer_;
 };
 
-}  // namespace gzip
+}  // namespace zstd
 
 #endif

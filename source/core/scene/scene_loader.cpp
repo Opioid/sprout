@@ -142,27 +142,30 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     }
 
 #ifdef SU_DEBUG
-        auto const loading_start = std::chrono::high_resolution_clock::now();
+    auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
 
     std::string resolved_name;
-    auto        stream_pointer = filesystem.read_stream(filename, resolved_name);
 
-    if (!take_mount_folder.empty()) {
-        filesystem.pop_mount();
-    }
+    json::Document_ptr root;
 
-    if (!stream_pointer) {
-        return false;
-    }
+    {
+        auto stream_pointer = filesystem.read_stream(filename, resolved_name);
 
-    std::string const mount_folder(string::parent_directory(resolved_name));
+        if (!take_mount_folder.empty()) {
+            filesystem.pop_mount();
+        }
 
-    std::string error;
-    auto const  root = json::parse(*stream_pointer, error);
-    if (!root) {
-        logging::push_error(error);
-        return false;
+        if (!stream_pointer) {
+            return false;
+        }
+
+        std::string error;
+        root = json::parse(*stream_pointer, error);
+        if (!root) {
+            logging::push_error(error);
+            return false;
+        }
     }
 
     LOGGING_VERBOSE("Parsing scene %f s", chrono::seconds_since(loading_start));
@@ -173,6 +176,8 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
         root->MemberEnd() != materials_node) {
         read_materials(materials_node->value, resolved_name, local_materials);
     }
+
+    std::string const mount_folder(string::parent_directory(resolved_name));
 
     filesystem.push_mount(mount_folder);
 
@@ -329,7 +334,7 @@ void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value, 
 
 uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
                            Local_materials const& local_materials, Scene& scene) {
- //   LOGGING_VERBOSE("Loading prop...");
+    //   LOGGING_VERBOSE("Loading prop...");
 
     Shape_ptr shape = Shape_ptr::Null();
 

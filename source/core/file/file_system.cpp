@@ -2,8 +2,8 @@
 #include "base/memory/unique.inl"
 #include "file.hpp"
 #include "gzip/gzip_read_stream.hpp"
-#include "zstd/zstd_read_stream.hpp"
 #include "logging/logging.hpp"
+#include "zstd/zstd_read_stream.hpp"
 
 #include <fstream>
 #include <string_view>
