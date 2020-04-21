@@ -1,9 +1,10 @@
 #include "file_system.hpp"
 #include "base/memory/unique.inl"
 #include "file.hpp"
-#include "gzip/gzip_read_stream.hpp"
+#include "gzip_read_stream.hpp"
 #include "logging/logging.hpp"
-#include "zstd/zstd_read_stream.hpp"
+#include "read_stream.inl"
+#include "zstd_read_stream.hpp"
 
 #include <fstream>
 #include <string_view>
@@ -25,11 +26,11 @@ Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name
     const Type type = query_type(*stream);
 
     if (Type::GZIP == type) {
-        return Stream_ptr(new gzip::Read_stream(stream));
+        return Stream_ptr(new Read_stream<gzip::Filebuffer>(stream));
     }
 
     if (Type::ZSTD == type) {
-        return Stream_ptr(new zstd::Read_stream(stream));
+        return Stream_ptr(new Read_stream<zstd::Filebuffer>(stream));
     }
 
     return Stream_ptr(stream);
