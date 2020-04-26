@@ -42,29 +42,31 @@ static inline Quaternion create(float3x3 const& m) {
     return (0.5f / std::sqrt(t)) * q;
 }
 
-// https://github.com/erwincoumans/sce_vectormath/blob/master/include/vectormath/scalar/cpp/mat_aos.h
+// https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
 static inline float3x3 create_matrix3x3(Quaternion const& q) {
-    float const qx    = q[0];
-    float const qy    = q[1];
-    float const qz    = q[2];
-    float const qw    = q[3];
-    float const qx2   = qx + qx;
-    float const qy2   = qy + qy;
-    float const qz2   = qz + qz;
-    float const qxqx2 = qx * qx2;
-    float const qxqy2 = qx * qy2;
-    float const qxqz2 = qx * qz2;
-    float const qxqw2 = qw * qx2;
-    float const qyqy2 = qy * qy2;
-    float const qyqz2 = qy * qz2;
-    float const qyqw2 = qw * qy2;
-    float const qzqz2 = qz * qz2;
-    float const qzqw2 = qw * qz2;
+    float const x  = q[0];
+    float const y  = q[1];
+    float const z  = q[2];
+    float const w  = q[3];
+    float const xx = x * x;
+    float const yy = y * y;
+    float const zz = z * z;
+    float const ww = w * w;
+    float const tx = x + x;
+    float const ty = y + y;
+    float const tz = z + z;
+    float const xy = ty * x;
+    float const xz = tz * x;
+    float const yz = ty * z;
+    float const wx = tx * w;
+    float const wy = ty * w;
+    float const wz = tz * w;
+    float const t0 = ww - zz;
+    float const t1 = xx - yy;
 
-    return float3x3((1.f - qyqy2) - qzqz2, qxqy2 - qzqw2, qxqz2 + qyqw2, qxqy2 + qzqw2,
-                    (1.f - qxqx2) - qzqz2, qyqz2 - qxqw2, qxqz2 - qyqw2, qyqz2 + qxqw2,
-                    (1.f - qxqx2) - qyqy2);
+    return float3x3(t0 + t1, xy - wz, xz + wy, xy + wz, t0 - t1, yz - wx, xz - wy, yz + wx,
+                    ww - xx - yy + zz);
 }
 
 static inline Quaternion create_rotation_x(float a) {
