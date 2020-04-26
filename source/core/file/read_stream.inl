@@ -6,15 +6,12 @@
 namespace file {
 
 template <class Filebuffer>
-Read_stream<Filebuffer>::Read_stream(std::istream* stream, uint32_t read_size, char* read_buffer,
-                                     uint32_t size, char* buffer)
-    : __istream_type(&stream_buffer_), stream_buffer_(read_size, read_buffer, size, buffer) {
-    open(stream);
-}
+Read_stream<Filebuffer>::Read_stream() : __istream_type(&stream_buffer_) {}
 
 template <class Filebuffer>
-void Read_stream<Filebuffer>::open(std::istream* stream) {
-    if (!stream_buffer_.open(stream)) {
+void Read_stream<Filebuffer>::open(std::istream* stream, uint32_t read_size, char* read_buffer,
+                                   uint32_t size, char* buffer) {
+    if (!stream_buffer_.open(stream, read_size, read_buffer, size, buffer)) {
         __istream_type::setstate(std::ios_base::failbit);
     }
 }

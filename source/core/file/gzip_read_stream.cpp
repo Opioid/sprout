@@ -4,12 +4,7 @@
 
 namespace file::gzip {
 
-Filebuffer::Filebuffer(uint32_t read_size, char* read_buffer, uint32_t size, char* buffer)
-    : stream_(nullptr),
-      read_buffer_size_(read_size),
-      buffer_size_(size),
-      read_buffer_(read_buffer),
-      buffer_(buffer) {}
+Filebuffer::Filebuffer() : stream_(nullptr) {}
 
 Filebuffer::~Filebuffer() {
     close();
@@ -30,8 +25,15 @@ bool Filebuffer::is_open() const {
 //	return this;
 //}
 
-Filebuffer* Filebuffer::open(std::istream* stream) {
-    stream_ = stream;
+Filebuffer* Filebuffer::open(std::istream* stream, uint32_t read_size, char* read_buffer,
+                             uint32_t size, char* buffer) {
+    close();
+
+    stream_           = stream;
+    read_buffer_size_ = read_size;
+    buffer_size_      = size;
+    read_buffer_      = read_buffer;
+    buffer_           = buffer;
 
     uint8_t header[10];
     stream_->read(reinterpret_cast<char*>(header), sizeof(header));
@@ -77,18 +79,19 @@ Filebuffer* Filebuffer::open(std::istream* stream) {
     return this;
 }
 
-void Filebuffer::close() {
+Filebuffer* Filebuffer::close() {
     // Return failure if this file buf is closed already
     if (!is_open()) {
-        return;
+        return nullptr;
     }
 
     sync();
 
     mz_inflateEnd(&z_stream_);
 
-    delete stream_;
     stream_ = nullptr;
+
+    return this;
 }
 
 uint32_t Filebuffer::read_buffer_size() {

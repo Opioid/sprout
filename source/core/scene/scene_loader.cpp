@@ -150,18 +150,21 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     json::Document_ptr root;
 
     {
-        auto stream_pointer = filesystem.read_stream(filename, resolved_name);
+        auto& stream = filesystem.read_stream(filename, resolved_name);
 
         if (!take_mount_folder.empty()) {
             filesystem.pop_mount();
         }
 
-        if (!stream_pointer) {
+        if (!stream) {
             return false;
         }
 
         std::string error;
-        root = json::parse(*stream_pointer, error);
+        root = json::parse(stream, error);
+
+        filesystem.close_stream(stream);
+
         if (!root) {
             logging::push_error(error);
             return false;

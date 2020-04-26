@@ -33,12 +33,10 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
         return flakes_provider_.create_mask(options);
     }
 
-    auto stream_pointer = resources.filesystem().read_stream(filename, resolved_name);
-    if (!stream_pointer) {
+    auto& stream = resources.filesystem().read_stream(filename, resolved_name);
+    if (!stream) {
         return nullptr;
     }
-
-    auto& stream = *stream_pointer;
 
     file::Type const type = file::query_type(stream);
 

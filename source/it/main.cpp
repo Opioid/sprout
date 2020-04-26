@@ -74,11 +74,11 @@ int main(int argc, char* argv[]) {
 
         bool const is_json = string::is_json(args.take);
 
-        auto stream = is_json ? file::Stream_ptr(new std::istringstream(args.take))
-                              : filesystem.read_stream(args.take, take_name);
+        auto& stream = is_json ? filesystem.string_stream(args.take)
+                               : filesystem.read_stream(args.take, take_name);
 
         if (stream) {
-            load_pipeline(*stream, take_name, pipeline, resources);
+            load_pipeline(stream, take_name, pipeline, resources);
         } else {
             logging::error("Loading take %S: ", args.take);
         }

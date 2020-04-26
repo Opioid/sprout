@@ -18,7 +18,7 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
 
     using __streambuf_type = std::basic_streambuf<char, std::char_traits<char>>;
 
-    Filebuffer(uint32_t read_size, char* read_buffer, uint32_t size, char* buffer);
+    Filebuffer();
 
     ~Filebuffer() final;
 
@@ -26,9 +26,10 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
 
     //	Filebuffer* open(char const* filename, std::ios_base::openmode mode);
 
-    Filebuffer* open(std::istream* stream);
+    Filebuffer* open(std::istream* stream, uint32_t read_size, char* read_buffer, uint32_t size,
+                     char* buffer);
 
-    void close();
+    Filebuffer* close();
 
     static uint32_t read_buffer_size();
 
