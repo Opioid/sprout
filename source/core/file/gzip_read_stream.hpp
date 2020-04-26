@@ -18,7 +18,7 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
 
     using __streambuf_type = std::basic_streambuf<char, std::char_traits<char>>;
 
-    Filebuffer();
+    Filebuffer(uint32_t read_size, char* read_buffer, uint32_t size, char* buffer);
 
     ~Filebuffer() final;
 
@@ -28,7 +28,11 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
 
     Filebuffer* open(std::istream* stream);
 
-    Filebuffer* close();
+    void close();
+
+    static uint32_t read_buffer_size();
+
+    static uint32_t write_buffer_size();
 
   protected:
     int_type underflow() final;
@@ -52,11 +56,11 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
 
     mz_stream z_stream_;
 
-    static uint32_t constexpr Buffer_size = 8192;
+    uint32_t read_buffer_size_;
+    uint32_t buffer_size_;
 
-    char_type read_buffer_[Buffer_size];
-
-    char_type buffer_[Buffer_size];
+    char_type* read_buffer_;
+    char_type* buffer_;
 };
 
 }  // namespace file::gzip

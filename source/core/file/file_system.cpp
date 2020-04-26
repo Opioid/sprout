@@ -11,12 +11,19 @@
 
 namespace file {
 
-Stream_ptr System::read_stream(std::string_view name) const {
+System::System() : read_buffer_size_(0), buffer_size_(0), read_buffer_(nullptr), buffer_(nullptr) {}
+
+System::~System() {
+    delete[] read_buffer_;
+    delete[] buffer_;
+}
+
+Stream_ptr System::read_stream(std::string_view name) {
     std::string resolved_name;
     return read_stream(name, resolved_name);
 }
 
-Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) const {
+Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) {
     auto stream = open_read_stream(name, resolved_name);
     if (!stream) {
         logging::push_error("Stream %S could not be opened.", std::string(name));
@@ -26,11 +33,19 @@ Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name
     const Type type = query_type(*stream);
 
     if (Type::GZIP == type) {
-        return Stream_ptr(new Read_stream<gzip::Filebuffer>(stream));
+        allocate_buffers(gzip::Filebuffer::read_buffer_size(),
+                         gzip::Filebuffer::write_buffer_size());
+
+        return Stream_ptr(new Read_stream<gzip::Filebuffer>(stream, read_buffer_size_, read_buffer_,
+                                                            buffer_size_, buffer_));
     }
 
     if (Type::ZSTD == type) {
-        return Stream_ptr(new Read_stream<zstd::Filebuffer>(stream));
+        allocate_buffers(zstd::Filebuffer::read_buffer_size(),
+                         zstd::Filebuffer::write_buffer_size());
+
+        return Stream_ptr(new Read_stream<zstd::Filebuffer>(stream, read_buffer_size_, read_buffer_,
+                                                            buffer_size_, buffer_));
     }
 
     return Stream_ptr(stream);
@@ -52,7 +67,7 @@ void System::pop_mount() {
     mount_folders_.pop_back();
 }
 
-std::istream* System::open_read_stream(std::string_view name, std::string& resolved_name) const {
+std::istream* System::open_read_stream(std::string_view name, std::string& resolved_name) {
     // TODO: Use something like std::filesytem::exists() when it is available
 
     for (auto const& f : mount_folders_) {
@@ -79,6 +94,22 @@ std::istream* System::open_read_stream(std::string_view name, std::string& resol
 
     delete stream;
     return nullptr;
+}
+
+void System::allocate_buffers(uint32_t read_size, uint32_t size) {
+    if (read_size > read_buffer_size_) {
+        delete[] read_buffer_;
+
+        read_buffer_size_ = read_size;
+        read_buffer_      = new char[read_size];
+    }
+
+    if (size > buffer_size_) {
+        delete[] buffer_;
+
+        buffer_size_ = size;
+        buffer_      = new char[size];
+    }
 }
 
 }  // namespace file

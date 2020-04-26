@@ -4,7 +4,12 @@
 
 namespace file::gzip {
 
-Filebuffer::Filebuffer() : stream_(nullptr) {}
+Filebuffer::Filebuffer(uint32_t read_size, char* read_buffer, uint32_t size, char* buffer)
+    : stream_(nullptr),
+      read_buffer_size_(read_size),
+      buffer_size_(size),
+      read_buffer_(read_buffer),
+      buffer_(buffer) {}
 
 Filebuffer::~Filebuffer() {
     close();
@@ -72,10 +77,10 @@ Filebuffer* Filebuffer::open(std::istream* stream) {
     return this;
 }
 
-Filebuffer* Filebuffer::close() {
+void Filebuffer::close() {
     // Return failure if this file buf is closed already
     if (!is_open()) {
-        return nullptr;
+        return;
     }
 
     sync();
@@ -84,8 +89,14 @@ Filebuffer* Filebuffer::close() {
 
     delete stream_;
     stream_ = nullptr;
+}
 
-    return this;
+uint32_t Filebuffer::read_buffer_size() {
+    return 8192;
+}
+
+uint32_t Filebuffer::write_buffer_size() {
+    return 8192;
 }
 
 Filebuffer::int_type Filebuffer::underflow() {
@@ -99,16 +110,16 @@ Filebuffer::int_type Filebuffer::underflow() {
 
     while (0 == uncompressed_bytes) {
         if (0 == z_stream_.avail_in) {
-            stream_->read(read_buffer_, Buffer_size);
+            stream_->read(read_buffer_, read_buffer_size_);
 
-            uint32_t const read_bytes = *stream_ ? Buffer_size : uint32_t(stream_->gcount());
+            uint32_t const read_bytes = *stream_ ? read_buffer_size_ : uint32_t(stream_->gcount());
 
             z_stream_.avail_in = read_bytes;
             z_stream_.next_in  = reinterpret_cast<uint8_t*>(read_buffer_);
         }
 
         if (0 == z_stream_.avail_out) {
-            z_stream_.avail_out = uint32_t(Buffer_size);
+            z_stream_.avail_out = buffer_size_;
             z_stream_.next_out  = reinterpret_cast<uint8_t*>(buffer_);
 
             current = buffer_;

@@ -18,7 +18,7 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
 
     using __streambuf_type = std::basic_streambuf<char, std::char_traits<char>>;
 
-    Filebuffer();
+    Filebuffer(uint32_t read_size, char* read_buffer, uint32_t size, char* buffer);
 
     ~Filebuffer() final;
 
@@ -26,7 +26,11 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
 
     Filebuffer* open(std::istream* stream);
 
-    Filebuffer* close();
+    void close();
+
+    static uint32_t read_buffer_size();
+
+    static uint32_t write_buffer_size();
 
   protected:
     int_type underflow() final;
@@ -45,14 +49,13 @@ class Filebuffer final : public std::basic_streambuf<char, std::char_traits<char
     void restart_zstd_stream();
 
     pos_type data_start_;
+    pos_type total_out_;
 
     std::istream* stream_;
 
     ZSTD_DStream* zstd_stream_;
 
     ZSTD_inBuffer zstd_input_;
-
-    pos_type total_out_;
 
     uint32_t read_buffer_size_;
     uint32_t buffer_size_;

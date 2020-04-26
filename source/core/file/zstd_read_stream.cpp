@@ -4,19 +4,16 @@
 
 namespace file::zstd {
 
-Filebuffer::Filebuffer() : stream_(nullptr), zstd_stream_(nullptr) {
-    read_buffer_size_ = /*8192;//*/ uint32_t(ZSTD_DStreamInSize());
-    buffer_size_      = /*8192;//*/ uint32_t(ZSTD_DStreamOutSize());
-
-    read_buffer_ = new char_type[read_buffer_size_];
-    buffer_      = new char_type[buffer_size_];
-}
+Filebuffer::Filebuffer(uint32_t read_size, char* read_buffer, uint32_t size, char* buffer)
+    : stream_(nullptr),
+      zstd_stream_(nullptr),
+      read_buffer_size_(read_size),
+      buffer_size_(size),
+      read_buffer_(read_buffer),
+      buffer_(buffer) {}
 
 Filebuffer::~Filebuffer() {
     close();
-
-    delete[] buffer_;
-    delete[] read_buffer_;
 }
 
 bool Filebuffer::is_open() const {
@@ -35,10 +32,10 @@ Filebuffer* Filebuffer::open(std::istream* stream) {
     return this;
 }
 
-Filebuffer* Filebuffer::close() {
+void Filebuffer::close() {
     // Return failure if this file buf is closed already
     if (!is_open()) {
-        return nullptr;
+        return;
     }
 
     sync();
@@ -48,8 +45,14 @@ Filebuffer* Filebuffer::close() {
 
     delete stream_;
     stream_ = nullptr;
+}
 
-    return this;
+uint32_t Filebuffer::read_buffer_size() {
+    return uint32_t(ZSTD_DStreamInSize());
+}
+
+uint32_t Filebuffer::write_buffer_size() {
+    return uint32_t(ZSTD_DStreamOutSize());
 }
 
 // https://facebook.github.io/zstd/zstd_manual.html#Chapter9
