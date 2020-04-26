@@ -1,23 +1,21 @@
 #ifndef SU_BASE_JSON_JSON_HPP
 #define SU_BASE_JSON_JSON_HPP
 
-#include <iosfwd>
-#include <string>
 #include "json_types.hpp"
 #include "math/matrix.hpp"
 #include "math/quaternion.hpp"
 #include "math/transformation.hpp"
 #include "math/vector.hpp"
-#include "memory/unique.hpp"
 #include "rapidjson/document.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace json {
 
-using Document_ptr = memory::Unique_ptr<json::Document>;
+std::string read_error(rapidjson::Document const& document);
 
-Document_ptr parse_insitu(char* buffer, std::string& error);
-Document_ptr parse(std::string_view buffer, std::string& error);
-Document_ptr parse(std::istream& stream, std::string& error);
+json::Document parse(std::istream& stream, std::string& error);
 
 bool read_bool(json::Value const& value);
 bool read_bool(json::Value const& value, std::string_view name, bool default_value);
@@ -72,7 +70,5 @@ std::string read_string(json::Value const& value, std::string_view name,
 void read_transformation(json::Value const& value, math::Transformation& transformation);
 
 }  // namespace json
-
-extern template class memory::Unique_ptr<json::Document>;
 
 #endif

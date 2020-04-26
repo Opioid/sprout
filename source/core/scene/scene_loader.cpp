@@ -146,37 +146,32 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 #endif
 
     std::string resolved_name;
+    auto&       stream = filesystem.read_stream(filename, resolved_name);
 
-    json::Document_ptr root;
+    if (!take_mount_folder.empty()) {
+        filesystem.pop_mount();
+    }
 
-    {
-        auto& stream = filesystem.read_stream(filename, resolved_name);
+    if (!stream) {
+        return false;
+    }
 
-        if (!take_mount_folder.empty()) {
-            filesystem.pop_mount();
-        }
+    std::string error;
+    auto const  root = json::parse(stream, error);
 
-        if (!stream) {
-            return false;
-        }
+    filesystem.close_stream(stream);
 
-        std::string error;
-        root = json::parse(stream, error);
-
-        filesystem.close_stream(stream);
-
-        if (!root) {
-            logging::push_error(error);
-            return false;
-        }
+    if (root.HasParseError()) {
+        logging::push_error(error);
+        return false;
     }
 
     LOGGING_VERBOSE("Parsing scene %f s", chrono::seconds_since(loading_start));
 
     Local_materials local_materials;
 
-    if (auto const materials_node = root->FindMember("materials");
-        root->MemberEnd() != materials_node) {
+    if (auto const materials_node = root.FindMember("materials");
+        root.MemberEnd() != materials_node) {
         read_materials(materials_node->value, resolved_name, local_materials);
     }
 
@@ -184,7 +179,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 
     filesystem.push_mount(mount_folder);
 
-    for (auto const& n : root->GetObject()) {
+    for (auto const& n : root.GetObject()) {
         if ("entities" == n.name) {
             load_entities(n.value, parent_id, parent_transformation, local_materials, scene);
         }

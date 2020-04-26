@@ -105,7 +105,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
     resources.filesystem().close_stream(stream);
 
-    if (!root) {
+    if (root.HasParseError()) {
         logging::push_error(error);
         return false;
     }
@@ -115,7 +115,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     json::Value const* postprocessors_value = nullptr;
     json::Value const* sampler_value        = nullptr;
 
-    for (auto& n : root->GetObject()) {
+    for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
             if (Camera* camera = load_camera(n.value, &scene); camera) {
                 take.view.camera = camera;

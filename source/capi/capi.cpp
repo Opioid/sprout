@@ -118,12 +118,12 @@ static Engine* engine = nullptr;
         return RESULT;        \
     }
 
-#define ASSERT_PARSE(STRING, RESULT)               \
-    std::string error;                             \
-    auto        root = json::parse(STRING, error); \
-    if (!root) {                                   \
-        logging::error(error);                     \
-        return RESULT;                             \
+#define ASSERT_PARSE(STRING, RESULT)            \
+    rapidjson::Document root;                   \
+    root.Parse(STRING);                         \
+    if (root.HasParseError()) {                 \
+        logging::error(json::read_error(root)); \
+        return RESULT;                          \
     }
 
 char const* su_platform_revision() {
@@ -180,11 +180,8 @@ int32_t su_load_take(char const* string) {
     {
         bool const is_json = string::is_json(take);
 
-        //        auto stream = is_json ? file::Stream_ptr(new std::istringstream(take))
-        //                              : engine->resources.filesystem().read_stream(take,
-        //                              take_name);
-
-        auto& stream = engine->resources.filesystem().read_stream(take, take_name);
+        auto& stream = is_json ? engine->resources.filesystem().string_stream(take)
+                               : engine->resources.filesystem().read_stream(take, take_name);
 
         if (!stream || !take::Loader::load(engine->take, stream, take_name, engine->progressive,
                                            engine->scene, engine->resources)) {
@@ -228,7 +225,7 @@ uint32_t su_create_camera(char const* string) {
 
     ASSERT_PARSE(string, prop::Null)
 
-    if (auto camera = take::Loader::load_camera(*root, &engine->scene); camera) {
+    if (auto camera = take::Loader::load_camera(root, &engine->scene); camera) {
         engine->take.view.clear();
 
         engine->take.view.camera = camera;
@@ -318,7 +315,7 @@ int32_t su_create_integrators(char const* string) {
 
     uint32_t const num_workers = engine->resources.threads().num_threads();
 
-    take::Loader::load_integrators(*root, num_workers, false, engine->take.view);
+    take::Loader::load_integrators(root, num_workers, false, engine->take.view);
 
     engine->valid = engine->take.view.valid();
 
@@ -347,7 +344,7 @@ uint32_t su_create_material(char const* string) {
 
     ASSERT_PARSE(string, resource::Null)
 
-    void const* data = reinterpret_cast<void const*>(&(*root));
+    void const* data = reinterpret_cast<void const*>(&root);
 
     auto const material = engine->resources.load<material::Material>("", data);
 

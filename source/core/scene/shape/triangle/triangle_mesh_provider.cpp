@@ -447,15 +447,15 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     stream.read(json_string.data(), std::streamsize(json_size * sizeof(char)));
     json_string[uint32_t(json_size)] = 0;
 
-    std::string error;
-    auto const  root = json::parse_insitu(json_string.data(), error);
-    if (!root) {
-        logging::push_error("json: " + error);
+    rapidjson::Document root;
+    root.ParseInsitu(json_string.data());
+    if (root.HasParseError()) {
+        logging::push_error("json: " + json::read_error(root));
         return nullptr;
     }
 
-    json::Value::ConstMemberIterator const geometry_node = root->FindMember("geometry");
-    if (root->MemberEnd() == geometry_node) {
+    json::Value::ConstMemberIterator const geometry_node = root.FindMember("geometry");
+    if (root.MemberEnd() == geometry_node) {
         logging::push_error("Model has no geometry node.");
         return nullptr;
     }

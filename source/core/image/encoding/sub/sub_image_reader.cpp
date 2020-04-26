@@ -36,15 +36,15 @@ Image* Reader::read(std::istream& stream) {
     stream.read(json_string.data(), std::streamsize(json_size * sizeof(char)));
     json_string[uint32_t(json_size)] = 0;
 
-    std::string error;
-    auto const  root = json::parse_insitu(json_string.data(), error);
-    if (!root) {
-        logging::push_error(error);
+    rapidjson::Document root;
+    root.ParseInsitu(json_string.data());
+    if (root.HasParseError()) {
+        logging::push_error(json::read_error(root));
         return nullptr;
     }
 
-    auto const image_node = root->FindMember("image");
-    if (root->MemberEnd() == image_node) {
+    auto const image_node = root.FindMember("image");
+    if (root.MemberEnd() == image_node) {
         logging::push_error("No image declaration.");
         return nullptr;
     }

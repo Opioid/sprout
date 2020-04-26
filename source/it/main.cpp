@@ -143,12 +143,12 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
                    Resources& resources) {
     std::string error;
     auto const  root = json::parse(stream, error);
-    if (!root) {
+    if (!root.HasParseError()) {
         logging::push_error(error);
         return;
     }
 
-    for (auto& n : root->GetObject()) {
+    for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
             pipeline.camera = take::Loader::load_camera(n.value, nullptr);
         } else if ("post" == n.name || "postprocessors" == n.name) {

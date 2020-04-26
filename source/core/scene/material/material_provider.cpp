@@ -118,16 +118,16 @@ Material* Provider::load(std::string const& filename, Variants const& /*options*
     }
 
     std::string error;
-    auto        root = json::parse(stream, error);
+    auto const  root = json::parse(stream, error);
 
     resources.filesystem().close_stream(stream);
 
-    if (!root) {
+    if (root.HasParseError()) {
         logging::push_error(error);
         return nullptr;
     }
 
-    return load(*root, string::parent_directory(resolved_name), resources);
+    return load(root, string::parent_directory(resolved_name), resources);
 }
 
 Material* Provider::load(void const* data, std::string const&    source_name,

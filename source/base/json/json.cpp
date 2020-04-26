@@ -1,5 +1,4 @@
 #include "json.hpp"
-#include <sstream>
 #include "math/math.hpp"
 #include "math/matrix3x3.inl"
 #include "math/matrix4x4.inl"
@@ -9,7 +8,13 @@
 #include "rapidjson/error/en.h"
 #include "rapidjson/istreamwrapper.h"
 
+#include <sstream>
+
 namespace json {
+
+std::string read_error(rapidjson::Document const& document) {
+    return rapidjson::GetParseError_En(document.GetParseError());
+}
 
 // get the 0-based line number
 struct Error {
@@ -42,7 +47,7 @@ static Error calculate_line_number(std::istream& stream, size_t offset) {
     return {line, column};
 }
 
-static std::string read_error(rapidjson::Document const& document, std::istream& stream) {
+std::string read_error(rapidjson::Document const& document, std::istream& stream) {
     auto const [line, column] = calculate_line_number(stream, document.GetErrorOffset());
 
     std::ostringstream sstream;
@@ -53,42 +58,15 @@ static std::string read_error(rapidjson::Document const& document, std::istream&
     return sstream.str();
 }
 
-memory::Unique_ptr<rapidjson::Document> parse_insitu(char* buffer, std::string& error) {
-    Document_ptr document(new rapidjson::Document);
-
-    document->ParseInsitu(buffer);
-
-    if (document->HasParseError()) {
-        error = rapidjson::GetParseError_En(document->GetParseError());
-        return Document_ptr(nullptr);
-    }
-
-    return document;
-}
-
-memory::Unique_ptr<rapidjson::Document> parse(std::string_view buffer, std::string& error) {
-    Document_ptr document(new rapidjson::Document);
-
-    document->Parse(buffer.data());
-
-    if (document->HasParseError()) {
-        error = rapidjson::GetParseError_En(document->GetParseError());
-        return Document_ptr(nullptr);
-    }
-
-    return document;
-}
-
-memory::Unique_ptr<rapidjson::Document> parse(std::istream& stream, std::string& error) {
+rapidjson::Document parse(std::istream& stream, std::string& error) {
     rapidjson::IStreamWrapper json_stream(stream);
 
-    Document_ptr document(new rapidjson::Document);
+    rapidjson::Document document;
 
-    document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
+    document.ParseStream<0, rapidjson::UTF8<>>(json_stream);
 
-    if (document->HasParseError()) {
-        error = read_error(*document, stream);
-        return Document_ptr(nullptr);
+    if (document.HasParseError()) {
+        error = read_error(document, stream);
     }
 
     return document;
