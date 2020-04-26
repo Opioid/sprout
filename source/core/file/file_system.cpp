@@ -68,7 +68,7 @@ void System::pop_mount() {
 }
 
 std::istream* System::open_read_stream(std::string_view name, std::string& resolved_name) {
-    // TODO: Use something like std::filesytem::exists() when it is available
+    std::ifstream* stream = new std::ifstream();
 
     for (auto const& f : mount_folders_) {
         // Ignore empty folders, because this is handled explicitely
@@ -76,17 +76,20 @@ std::istream* System::open_read_stream(std::string_view name, std::string& resol
             continue;
         }
 
-        resolved_name = f + std::string(name);
+        stream->close();
+        stream->clear();
 
-        std::istream* stream = new std::ifstream(resolved_name, std::ios::binary);
+        resolved_name = f + std::string(name);
+        stream->open(resolved_name, std::ios::binary);
         if (*stream) {
             return stream;
         }
-
-        delete stream;
     }
 
-    std::istream* stream = new std::ifstream(name.data(), std::ios::binary);
+    stream->close();
+    stream->clear();
+
+    stream->open(name.data(), std::ios::binary);
     if (*stream) {
         resolved_name = name;
         return stream;
