@@ -14,17 +14,45 @@ namespace file {
 
 class System {
   public:
+    class Stream_ptr {
+      public:
+        friend System;
+
+        enum class Type { Uncompressed, GZIP, ZSTD, String, Invalid };
+
+        Stream_ptr(System& system, Type type);
+
+        Stream_ptr(Stream_ptr&& other) noexcept;
+
+        ~Stream_ptr();
+
+        operator bool() const;
+
+        bool operator!() const;
+
+        std::istream& operator*() const;
+
+        void close();
+
+      private:
+        System& system_;
+
+        Type type_;
+    };
+
     System();
 
     ~System();
 
-    std::istream& read_stream(std::string_view name);
+    Stream_ptr read_stream(std::string_view name);
 
-    std::istream& read_stream(std::string_view name, std::string& resolved_name);
+    Stream_ptr read_stream(std::string_view name, std::string& resolved_name);
 
-    std::istream& string_stream(std::string const& string);
+    Stream_ptr string_stream(std::string const& string);
 
-    void close_stream(std::istream& stream);
+    std::istream& stream(Stream_ptr const& ptr);
+
+    void close(Stream_ptr& stream);
 
     void push_mount(std::string_view folder);
 
@@ -38,8 +66,10 @@ class System {
     std::ifstream stream_;
 
     Read_stream<gzip::Filebuffer> gzip_stream_;
+
     Read_stream<zstd::Filebuffer> zstd_stream_;
-    std::istringstream            str_stream_;
+
+    std::istringstream str_stream_;
 
     uint32_t read_buffer_size_;
     uint32_t buffer_size_;

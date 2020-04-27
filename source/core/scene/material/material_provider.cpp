@@ -112,15 +112,15 @@ Provider::~Provider() = default;
 
 Material* Provider::load(std::string const& filename, Variants const& /*options*/,
                          Resources& resources, std::string& resolved_name) {
-    auto& stream = resources.filesystem().read_stream(filename, resolved_name);
+    auto stream = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream) {
         return nullptr;
     }
 
     std::string error;
-    auto const  root = json::parse(stream, error);
+    auto const  root = json::parse(*stream, error);
 
-    resources.filesystem().close_stream(stream);
+    stream.close();
 
     if (root.HasParseError()) {
         logging::push_error(error);

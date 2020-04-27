@@ -103,8 +103,6 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
     std::string error;
     auto const  root = json::parse(stream, error);
 
-    resources.filesystem().close_stream(stream);
-
     if (root.HasParseError()) {
         logging::push_error(error);
         return false;

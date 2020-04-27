@@ -133,10 +133,10 @@ int main(int argc, char* argv[]) {
         {
             bool const is_json = string::is_json(args.take);
 
-            auto& stream = is_json ? filesystem.string_stream(args.take)
-                                   : filesystem.read_stream(args.take, take_name);
+            auto stream = is_json ? filesystem.string_stream(args.take)
+                                  : filesystem.read_stream(args.take, take_name);
 
-            if (!stream || !take::Loader::load(take, stream, take_name, false, scene, resources)) {
+            if (!stream || !take::Loader::load(take, *stream, take_name, false, scene, resources)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }

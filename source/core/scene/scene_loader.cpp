@@ -146,7 +146,7 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 #endif
 
     std::string resolved_name;
-    auto&       stream = filesystem.read_stream(filename, resolved_name);
+    auto        stream = filesystem.read_stream(filename, resolved_name);
 
     if (!take_mount_folder.empty()) {
         filesystem.pop_mount();
@@ -157,9 +157,9 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     }
 
     std::string error;
-    auto const  root = json::parse(stream, error);
+    auto const  root = json::parse(*stream, error);
 
-    filesystem.close_stream(stream);
+    stream.close();
 
     if (root.HasParseError()) {
         logging::push_error(error);

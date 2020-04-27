@@ -9,9 +9,36 @@
 #include <fstream>
 #include <string_view>
 
-#include <iostream>
-
 namespace file {
+
+System::Stream_ptr::Stream_ptr(System& system, Type type) : system_(system), type_(type) {}
+
+System::Stream_ptr::Stream_ptr(Stream_ptr&& other) noexcept
+    : system_(other.system_), type_(other.type_) {
+    other.type_ = Type::Invalid;
+}
+
+System::Stream_ptr::~Stream_ptr() {
+    close();
+}
+
+System::Stream_ptr::operator bool() const {
+    return Type::Invalid != type_;
+}
+
+bool System::Stream_ptr::operator!() const {
+    return Type::Invalid == type_;
+}
+
+std::istream& System::Stream_ptr::operator*() const {
+    return system_.stream(*this);
+}
+
+void System::Stream_ptr::close() {
+    if (Type::Invalid != type_) {
+        system_.close(*this);
+    }
+}
 
 System::System() : read_buffer_size_(0), buffer_size_(0), read_buffer_(nullptr), buffer_(nullptr) {}
 
@@ -20,16 +47,16 @@ System::~System() {
     delete[] buffer_;
 }
 
-std::istream& System::read_stream(std::string_view name) {
+System::Stream_ptr System::read_stream(std::string_view name) {
     std::string resolved_name;
     return read_stream(name, resolved_name);
 }
 
-std::istream& System::read_stream(std::string_view name, std::string& resolved_name) {
+System::Stream_ptr System::read_stream(std::string_view name, std::string& resolved_name) {
     auto& stream = open_read_stream(name, resolved_name);
     if (!stream) {
         logging::push_error("Stream %S could not be opened.", std::string(name));
-        return stream;
+        return Stream_ptr(*this, Stream_ptr::Type::Invalid);
     }
 
     const Type type = query_type(stream);
@@ -40,7 +67,7 @@ std::istream& System::read_stream(std::string_view name, std::string& resolved_n
 
         gzip_stream_.open(&stream, read_buffer_size_, read_buffer_, buffer_size_, buffer_);
 
-        return gzip_stream_;
+        return Stream_ptr(*this, Stream_ptr::Type::GZIP);
     }
 
     if (Type::ZSTD == type) {
@@ -49,29 +76,53 @@ std::istream& System::read_stream(std::string_view name, std::string& resolved_n
 
         zstd_stream_.open(&stream, read_buffer_size_, read_buffer_, buffer_size_, buffer_);
 
+        return Stream_ptr(*this, Stream_ptr::Type::ZSTD);
+    }
+
+    return Stream_ptr(*this, Stream_ptr::Type::Uncompressed);
+}
+
+System::Stream_ptr System::string_stream(std::string const& string) {
+    str_stream_.clear();
+    str_stream_.str(string);
+
+    return Stream_ptr(*this, Stream_ptr::Type::String);
+}
+
+std::istream& System::stream(Stream_ptr const& ptr) {
+    if (Stream_ptr::Type::GZIP == ptr.type_) {
+        return gzip_stream_;
+    }
+
+    if (Stream_ptr::Type::ZSTD == ptr.type_) {
         return zstd_stream_;
     }
 
-    return stream;
-}
-
-std::istream& System::string_stream(std::string const& string) {
-    str_stream_.str(string);
-
-    return str_stream_;
-}
-
-void System::close_stream(std::istream& stream) {
-    if (&stream == &gzip_stream_) {
-        gzip_stream_.close();
-    } else if (&stream == &zstd_stream_) {
-        zstd_stream_.close();
-    } else if (&stream == &str_stream_) {
-        str_stream_.str(std::string());
-        str_stream_.clear();
+    if (Stream_ptr::Type::String == ptr.type_) {
+        return str_stream_;
     }
 
-    stream_.close();
+    return stream_;
+}
+
+void System::close(Stream_ptr& stream) {
+    if (Stream_ptr::Type::Invalid == stream.type_) {
+        return;
+    }
+
+    if (Stream_ptr::Type::Uncompressed == stream.type_) {
+        stream_.close();
+    } else if (Stream_ptr::Type::GZIP == stream.type_) {
+        gzip_stream_.close();
+        stream_.close();
+    } else if (Stream_ptr::Type::ZSTD == stream.type_) {
+        zstd_stream_.close();
+        stream_.close();
+    } else if (Stream_ptr::Type::String == stream.type_) {
+        str_stream_.str(std::string());
+    }
+
+    stream.type_ = Stream_ptr::Type::Invalid;
 }
 
 void System::push_mount(std::string_view folder) {

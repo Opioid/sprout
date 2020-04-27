@@ -42,26 +42,23 @@ Provider::~Provider() = default;
 
 Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
                       Resources& resources, std::string& resolved_name) {
-    auto& stream = resources.filesystem().read_stream(filename, resolved_name);
+    auto stream = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream) {
         logging::error("Loading mesh %S: ", filename);
         return nullptr;
     }
 
-    file::Type const type = file::query_type(stream);
-    if (file::Type::SUB == type) {
+    if (file::Type::SUB == file::query_type(*stream)) {
 #ifdef SU_DEBUG
         auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
 
-        Shape* mesh = load_binary(stream, resources.threads());
+        Shape* mesh = load_binary(*stream, resources.threads());
         if (!mesh) {
             logging::error("Loading mesh %S: ", filename);
         }
 
         LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
-
-        resources.filesystem().close_stream(stream);
 
         return mesh;
     }
@@ -69,13 +66,13 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     memory::Unique_ptr<Json_handler> handler(new Json_handler);
 
     {
-        rapidjson::IStreamWrapper json_stream(stream);
+        rapidjson::IStreamWrapper json_stream(*stream);
 
         rapidjson::Reader reader;
 
         reader.Parse(json_stream, *handler);
 
-        resources.filesystem().close_stream(stream);
+        stream.close();
     }
 
     if (!handler->morph_targets().empty()) {
@@ -306,12 +303,12 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
     Json_handler handler;
 
     for (auto& targets : morph_targets) {
-        auto& stream = resources.filesystem().read_stream(targets);
+        auto stream = resources.filesystem().read_stream(targets);
         if (!stream) {
             continue;
         }
 
-        rapidjson::IStreamWrapper json_stream(stream);
+        rapidjson::IStreamWrapper json_stream(*stream);
 
         handler.clear(collection->triangles().empty());
 
@@ -319,7 +316,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 
         reader.Parse(json_stream, handler);
 
-        resources.filesystem().close_stream(stream);
+        stream.close();
 
         if (!handler.has_positions()) {
             continue;

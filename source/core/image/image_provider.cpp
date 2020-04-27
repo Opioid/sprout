@@ -33,15 +33,15 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
         return flakes_provider_.create_mask(options);
     }
 
-    auto& stream = resources.filesystem().read_stream(filename, resolved_name);
+    auto stream = resources.filesystem().read_stream(filename, resolved_name);
     if (!stream) {
         return nullptr;
     }
 
-    file::Type const type = file::query_type(stream);
+    file::Type const type = file::query_type(*stream);
 
     if (file::Type::EXR == type) {
-        return encoding::exr::Reader::read(stream);
+        return encoding::exr::Reader::read(*stream);
     }
 
     if (file::Type::PNG == type) {
@@ -58,24 +58,24 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
         bool invert = false;
         options.query("invert", invert);
 
-        return encoding::png::Reader::read(stream, channels, num_elements, swap_xy, invert);
+        return encoding::png::Reader::read(*stream, channels, num_elements, swap_xy, invert);
     }
 
     if (file::Type::RGBE == type) {
-        return encoding::rgbe::Reader::read(stream);
+        return encoding::rgbe::Reader::read(*stream);
     }
 
     if (file::Type::SUB == type) {
-        return encoding::sub::Reader::read(stream);
+        return encoding::sub::Reader::read(*stream);
     }
 
     if (file::Type::Undefined == type) {
         if ("raw" == string::suffix(filename) || "raw" == string::presuffix(filename)) {
-            return encoding::raw::Reader::read(stream);
+            return encoding::raw::Reader::read(*stream);
         }
 
         if ("json" == string::suffix(filename) || "json" == string::presuffix(filename)) {
-            return encoding::json::Reader::read(stream, filename);
+            return encoding::json::Reader::read(*stream, filename);
         }
     }
 
