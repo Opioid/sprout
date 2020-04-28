@@ -2,17 +2,13 @@
 #define SU_SCENE_SHAPE_NODE_STACK_INL
 
 #include "base/debug/assert.hpp"
-#include "base/memory/align.hpp"
 #include "node_stack.hpp"
 
 namespace scene::shape {
 
-inline Node_stack::Node_stack(uint32_t size)
-    : num_elements_(size), stack_(memory::allocate_aligned<uint32_t>(size)) {}
+inline Node_stack::Node_stack() = default;
 
-inline Node_stack::~Node_stack() {
-    memory::free_aligned(stack_);
-}
+inline Node_stack::~Node_stack() = default;
 
 inline bool Node_stack::empty() const {
     return 0 == end_;
@@ -23,7 +19,7 @@ inline void Node_stack::clear() {
 }
 
 inline void Node_stack::push(uint32_t value) {
-    SOFT_ASSERT(end_ < num_elements_);
+    SOFT_ASSERT(end_ < Num_elements);
 
     stack_[end_++] = value;
 }

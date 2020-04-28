@@ -48,7 +48,7 @@ bool check(const Sample_to& sample) {
 void test() {
     std::cout << "scene::shape::testing::test()" << std::endl;
 
-    Node_stack node_stack(0);
+    Node_stack node_stack;
 
     math::Transformation transformation;
     transformation.position = float3(0.f);

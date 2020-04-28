@@ -1,5 +1,6 @@
 #include "any_key.hpp"
 #include "base/chrono/chrono.hpp"
+#include "base/debug/assert.hpp"
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -118,7 +119,7 @@ int main(int argc, char* argv[]) {
 
     take::Take take;
 
-    uint32_t const max_sample_size = material::Provider::max_sample_size();
+    SOFT_ASSERT(material::Provider::max_sample_size() >= material::Sample_cache::Max_sample_size);
 
     for (;;) {
         logging::info("Loading...");
@@ -157,7 +158,7 @@ int main(int argc, char* argv[]) {
             auto const rendering_start = std::chrono::high_resolution_clock::now();
 
             if (take.view.camera) {
-                rendering::Driver driver(threads, max_sample_size, progressor);
+                rendering::Driver driver(threads, progressor);
 
                 driver.init(take.view, scene, false);
 

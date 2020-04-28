@@ -68,7 +68,7 @@ class Worker : public scene::Worker {
     using Photon_mapper       = integrator::particle::photon::Mapper;
     using Particle_importance = integrator::particle::Importance_cache;
 
-    Worker(uint32_t max_sample_size);
+    Worker();
 
     ~Worker();
 

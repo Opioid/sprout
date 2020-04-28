@@ -50,7 +50,7 @@ class Worker {
     using Interface_stack    = prop::Interface_stack;
     using Sampler            = sampler::Sampler;
 
-    Worker(uint32_t max_sample_size);
+    Worker();
 
     ~Worker();
 
@@ -79,7 +79,7 @@ class Worker {
     material::Sample_cache& sample_cache();
 
     template <typename T>
-    T& sample() const;
+    T& sample();
 
     Texture_sampler_2D const& sampler_2D(uint32_t key, Filter filter) const;
 

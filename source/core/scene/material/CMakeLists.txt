@@ -23,7 +23,6 @@ target_sources(core
     "material_print.hpp"
     "material_provider.cpp"
     "material_provider.hpp"
-    "material_sample_cache.cpp"
     "material_sample_cache.hpp"
     "material_sample_cache.inl"
     "material_sample_helper.hpp"

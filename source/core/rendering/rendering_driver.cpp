@@ -17,11 +17,11 @@ namespace rendering {
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
 
-Driver::Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& progressor)
+Driver::Driver(thread::Pool& threads, progress::Sink& progressor)
     : threads_(threads),
       scene_(nullptr),
       view_(nullptr),
-      workers_(memory::construct_aligned<Camera_worker>(threads.num_threads(), max_sample_size)),
+      workers_(memory::construct_aligned<Camera_worker>(threads.num_threads())),
       frame_(0),
       frame_view_(0),
       frame_iteration_(0),

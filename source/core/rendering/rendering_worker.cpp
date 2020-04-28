@@ -25,7 +25,7 @@
 
 namespace rendering {
 
-Worker::Worker(uint32_t max_sample_size) : scene::Worker(max_sample_size) {}
+Worker::Worker() = default;
 
 Worker::~Worker() {
     delete photon_mapper_;
