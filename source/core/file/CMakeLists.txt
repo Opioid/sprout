@@ -8,6 +8,12 @@ target_sources(core
     "gzip_read_stream.hpp"
     "read_stream.hpp"
     "read_stream.inl"
-    "zstd_read_stream.cpp"
-    "zstd_read_stream.hpp"
     )   
+
+if (${ZSTD})
+    target_sources(core
+        PRIVATE
+        "zstd_read_stream.cpp"
+        "zstd_read_stream.hpp"
+        )
+endif()

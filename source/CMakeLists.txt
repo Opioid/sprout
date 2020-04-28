@@ -13,6 +13,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 option(NAN "Soft assert on NaN" OFF)
+option(ZSTD "Build with ZSTD support" ON)
 option(Valgrind "Valgrind compatible build" OFF)
 option(IWYU "Inlcude-what-you-use" OFF)
 option(ASAN "clang adress-sanitizer" OFF)
@@ -21,6 +22,10 @@ option(MSAN "clang memory-sanitizer" OFF)
 if (${NAN})
 	add_definitions(-DSU_DEBUG)
 endif ()
+
+if (${ZSTD})
+    add_definitions(-DSU_ZSTD)
+endif()
 
 if (${IWYU})
     find_program(IWYU_PATH NAMES include-what-you-use iwyu)

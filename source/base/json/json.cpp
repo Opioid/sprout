@@ -4,7 +4,6 @@
 #include "math/matrix4x4.inl"
 #include "math/quaternion.inl"
 #include "math/vector4.inl"
-#include "memory/unique.inl"
 #include "rapidjson/error/en.h"
 #include "rapidjson/istreamwrapper.h"
 
@@ -294,5 +293,3 @@ void read_transformation(rapidjson::Value const& value, math::Transformation& tr
 }
 
 }  // namespace json
-
-template class memory::Unique_ptr<json::Document>;

@@ -1,13 +1,7 @@
 #include "file_system.hpp"
-#include "base/memory/unique.inl"
 #include "file.hpp"
-#include "gzip_read_stream.hpp"
 #include "logging/logging.hpp"
 #include "read_stream.inl"
-#include "zstd_read_stream.hpp"
-
-#include <fstream>
-#include <string_view>
 
 namespace file {
 
@@ -71,12 +65,17 @@ System::Stream_ptr System::read_stream(std::string_view name, std::string& resol
     }
 
     if (Type::ZSTD == type) {
+#ifdef SU_ZSTD
         allocate_buffers(zstd::Filebuffer::read_buffer_size(),
                          zstd::Filebuffer::write_buffer_size());
 
         zstd_stream_.open(&stream, read_buffer_size_, read_buffer_, buffer_size_, buffer_);
 
         return Stream_ptr(*this, Stream_ptr::Type::ZSTD);
+#else
+        logging::push_error("ZSTD is not supported.", std::string(name));
+        return Stream_ptr(*this, Stream_ptr::Type::Invalid);
+#endif
     }
 
     return Stream_ptr(*this, Stream_ptr::Type::Uncompressed);
@@ -94,9 +93,11 @@ std::istream& System::stream(Stream_ptr const& ptr) {
         return gzip_stream_;
     }
 
+#ifdef SU_ZSTD
     if (Stream_ptr::Type::ZSTD == ptr.type_) {
         return zstd_stream_;
     }
+#endif
 
     if (Stream_ptr::Type::String == ptr.type_) {
         return str_stream_;
@@ -116,8 +117,10 @@ void System::close(Stream_ptr& stream) {
         gzip_stream_.close();
         stream_.close();
     } else if (Stream_ptr::Type::ZSTD == stream.type_) {
+#ifdef SU_ZSTD
         zstd_stream_.close();
         stream_.close();
+#endif
     } else if (Stream_ptr::Type::String == stream.type_) {
         str_stream_.str(std::string());
     }
@@ -187,5 +190,3 @@ void System::allocate_buffers(uint32_t read_size, uint32_t size) {
 }
 
 }  // namespace file
-
-template class memory::Unique_ptr<std::istream>;

@@ -22,5 +22,11 @@ add_subdirectory(testing)
 target_sources(core
 	PRIVATE
 	"../../thirdparty/include/miniz/miniz.cpp"
-    "../../thirdparty/include/zstd/zstddeclib.cpp"
 )
+
+if (${ZSTD})
+    target_sources(core
+        PRIVATE
+        "../../thirdparty/include/zstd/zstddeclib.cpp"
+    )
+endif()

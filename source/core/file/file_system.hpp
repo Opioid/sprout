@@ -3,7 +3,10 @@
 
 #include "gzip_read_stream.hpp"
 #include "read_stream.hpp"
+
+#ifdef SU_ZSTD
 #include "zstd_read_stream.hpp"
+#endif
 
 #include <fstream>
 #include <sstream>
@@ -67,7 +70,9 @@ class System {
 
     Read_stream<gzip::Filebuffer> gzip_stream_;
 
+#ifdef SU_ZSTD
     Read_stream<zstd::Filebuffer> zstd_stream_;
+#endif
 
     std::istringstream str_stream_;
 
