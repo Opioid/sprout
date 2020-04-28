@@ -73,7 +73,7 @@ System::Stream_ptr System::read_stream(std::string_view name, std::string& resol
 
         return Stream_ptr(*this, Stream_ptr::Type::ZSTD);
 #else
-        logging::push_error("ZSTD is not supported.", std::string(name));
+        logging::push_error("ZSTD compression is not supported.");
         return Stream_ptr(*this, Stream_ptr::Type::Invalid);
 #endif
     }

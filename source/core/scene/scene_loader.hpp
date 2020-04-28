@@ -105,7 +105,7 @@ class Loader {
     };
 
     bool load(std::string const& filename, std::string_view take_mount_folder, uint32_t parent_id,
-              math::Transformation const& parent_transformation, Scene& scene);
+              math::Transformation const& parent_transformation, Scene& scene, bool nested);
 
     void read_materials(json::Value const& materials_value, std::string const& source_name,
                         Local_materials& local_materials) const;
