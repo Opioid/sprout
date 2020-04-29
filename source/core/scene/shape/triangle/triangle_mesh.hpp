@@ -91,8 +91,6 @@ class alignas(64) Mesh final : public Shape {
 
     float3 center(uint32_t part) const final;
 
-    size_t num_bytes() const final;
-
   private:
     Tree tree_;
 
@@ -107,9 +105,8 @@ class alignas(64) Mesh final : public Shape {
 
         Distribution_1D::Discrete sample(float r) const;
 
-        size_t num_bytes() const;
+        uint32_t num_triangles = 0;
 
-        uint32_t  num_triangles    = 0;
         uint32_t* triangle_mapping = nullptr;
 
         Distribution_1D distribution;

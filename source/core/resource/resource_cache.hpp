@@ -60,8 +60,6 @@ class Typed_cache final : public Cache {
 
     Resource_ptr<T> store(std::string const& name, Variants const& options, T* resource);
 
-    size_t num_bytes() const;
-
   private:
     struct Entry {
         uint32_t id;

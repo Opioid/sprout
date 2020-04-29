@@ -222,8 +222,4 @@ bool Plane::is_finite() const {
     return false;
 }
 
-size_t Plane::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::shape

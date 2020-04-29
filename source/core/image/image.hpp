@@ -63,8 +63,6 @@ class alignas(64) Image {
     Float3&        float3();
     Float4&        float4();
 
-    size_t num_bytes() const;
-
   private:
     Type const type_;
 

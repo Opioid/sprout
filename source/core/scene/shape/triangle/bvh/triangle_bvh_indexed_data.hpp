@@ -67,8 +67,6 @@ class Indexed_data {
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
                       Vertex_stream const& vertices, uint32_t current_triangle);
 
-    size_t num_bytes() const;
-
     struct alignas(16) Index_triangle {
         Index_triangle(uint32_t a, uint32_t b, uint32_t c, bool bitangent_sign, uint32_t part);
 
@@ -145,8 +143,6 @@ class Indexed_data1 {
 
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
                       Vertex_stream const& vertices, uint32_t current_triangle);
-
-    size_t num_bytes() const;
 
     struct alignas(16) Index_triangle {
         Index_triangle(uint32_t a, uint32_t b, uint32_t c, uint8_t bitangent_sign, uint32_t part);

@@ -33,8 +33,6 @@ class alignas(64) Emissionmap : public Material {
 
     void set_emission_factor(float emission_factor);
 
-    size_t num_bytes() const override;
-
   protected:
     void prepare_sampling_internal(Shape const& shape, int32_t element, bool importance_sampling,
                                    thread::Pool& threads, Scene const& scene);

@@ -69,8 +69,6 @@ class Null final : public Shape {
     float area(uint32_t part, float3 const& scale) const final;
 
     float volume(uint32_t part, float3 const& scale) const final;
-
-    size_t num_bytes() const final;
 };
 
 }  // namespace scene::shape

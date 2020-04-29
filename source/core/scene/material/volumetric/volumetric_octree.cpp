@@ -126,8 +126,4 @@ bool Gridtree::intersect(ray& ray, CM& data) const {
     return true;
 }
 
-size_t Gridtree::num_bytes() const {
-    return sizeof(*this) + num_nodes_ * sizeof(Node) + num_data_ * sizeof(CM);
-}
-
 }  // namespace scene::material::volumetric

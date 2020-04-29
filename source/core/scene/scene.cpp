@@ -528,16 +528,6 @@ void Scene::create_animation_stage(uint32_t entity, animation::Animation* animat
     prop_allocate_frames(entity, true);
 }
 
-size_t Scene::num_bytes() const {
-    size_t num_bytes = 0;
-
-    for (auto& p : props_) {
-        num_bytes += p.num_bytes();
-    }
-
-    return num_bytes + sizeof(*this);
-}
-
 Scene::Transformation const& Scene::prop_animated_transformation_at(
     uint32_t frames_id, uint64_t time, Transformation& transformation) const {
     entity::Keyframe const* frames = &keyframes_[frames_id];

@@ -23,8 +23,6 @@ class Sun_material : public Material {
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
                           scene::Scene const& scene) final;
-
-    size_t num_bytes() const final;
 };
 
 class Sun_baked_material : public Material {
@@ -44,8 +42,6 @@ class Sun_baked_material : public Material {
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
                           scene::Scene const& scene) final;
-
-    size_t num_bytes() const final;
 
   private:
     math::Interpolated_function_1D<float3> emission_;

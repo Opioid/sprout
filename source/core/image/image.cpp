@@ -200,12 +200,6 @@ Float4& Image::float4() {
     return float4_;
 }
 
-size_t Image::num_bytes() const {
-    IMAGE_DELEGATE(num_bytes)
-
-    return 0;
-}
-
 }  // namespace image
 
 #endif

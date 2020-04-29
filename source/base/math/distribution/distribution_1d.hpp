@@ -30,7 +30,6 @@ class Distribution_1D {
     float pdf(uint32_t index) const ;
     float pdf(float u) const ;
 
-    size_t num_bytes() const ;
 
   private:
     void precompute_1D_pdf_cdf(float const* data, size_t len) ;
@@ -67,8 +66,6 @@ class Distribution_lut_1D {
 
     float pdf(uint32_t index) const ;
     float pdf(float u) const ;
-
-    size_t num_bytes() const ;
 
   private:
     uint32_t map(float s) const ;
@@ -115,8 +112,6 @@ class Distribution_implicit_pdf_lut_1D {
     float pdf(float u) const ;
 
     uint32_t lut_size() const ;
-
-    size_t num_bytes() const ;
 
   private:
     uint32_t map(float s) const ;
@@ -165,8 +160,6 @@ class Distribution_implicit_pdf_lut_lin_1D {
     float pdf(float u) const;
 
     uint32_t lut_size() const;
-
-    size_t num_bytes() const;
 
   private:
     uint32_t map(float s) const;

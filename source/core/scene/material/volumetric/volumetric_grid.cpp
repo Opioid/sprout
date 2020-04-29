@@ -56,10 +56,6 @@ Gridtree const* Grid::volume_tree() const {
     return &tree_;
 }
 
-size_t Grid::num_bytes() const {
-    return sizeof(*this) + tree_.num_bytes();
-}
-
 float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
@@ -154,10 +150,6 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
     }
 }
 
-size_t Grid_emission::num_bytes() const {
-    return sizeof(*this) + tree_.num_bytes() + distribution_.num_bytes();
-}
-
 Grid_color::Grid_color(Sampler_settings const& sampler_settings) : Material(sampler_settings) {
     properties_.set(Property::Heterogeneous_volume);
     cc_ = CC{float3(0.5f), float3(0.5f)};
@@ -209,10 +201,6 @@ void Grid_color::commit(thread::Pool& threads, Scene const& scene) {
 
 Gridtree const* Grid_color::volume_tree() const {
     return &tree_;
-}
-
-size_t Grid_color::num_bytes() const {
-    return sizeof(*this) + tree_.num_bytes();
 }
 
 float4 Grid_color::color(float3 const& uvw, Filter filter, Worker const& worker) const {

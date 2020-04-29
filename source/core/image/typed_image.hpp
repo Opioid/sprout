@@ -77,8 +77,6 @@ class alignas(16) Typed_image {
 
     void copy(Typed_image& destination) const;
 
-    size_t num_bytes() const;
-
   private:
     Description description_;
 
@@ -119,8 +117,6 @@ class Typed_sparse_image {
     T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
     void gather(int4 const& xy_xy1, T c[4]) const;
-
-    size_t num_bytes() const;
 
   private:
     int3 coordinates_3(int64_t index) const;

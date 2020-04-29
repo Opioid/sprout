@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_DEBUG_SAMPLE_HPP
+#define SU_CORE_SCENE_MATERIAL_DEBUG_SAMPLE_HPP
 
 #include "scene/material/material_sample.hpp"
 
@@ -16,3 +17,5 @@ class alignas(32) Sample : public material::Sample {
 };
 
 }  // namespace scene::material::debug
+
+#endif

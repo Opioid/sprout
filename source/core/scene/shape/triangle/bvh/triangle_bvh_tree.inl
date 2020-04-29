@@ -441,12 +441,6 @@ void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
     data_.add_triangle(a, b, c, part, vertices, current_triangle);
 }
 
-template <typename Data>
-size_t Tree<Data>::num_bytes() const {
-    return sizeof(*this) + num_nodes_ * sizeof(Node) + num_parts_ * sizeof(uint32_t) +
-           data_.num_bytes();
-}
-
 }  // namespace scene::shape::triangle::bvh
 
 #endif

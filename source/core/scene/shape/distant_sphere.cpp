@@ -262,8 +262,4 @@ bool Distant_sphere::is_finite() const {
     return false;
 }
 
-size_t Distant_sphere::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::shape

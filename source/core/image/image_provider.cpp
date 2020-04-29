@@ -165,12 +165,4 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
     return image;
 }
 
-size_t Provider::num_bytes() const {
-    return sizeof(*this);
-}
-
-size_t Provider::num_bytes(Image const* resource) const {
-    return resource->num_bytes();
-}
-
 }  // namespace image

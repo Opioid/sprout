@@ -53,10 +53,6 @@ inline float Distribution_1D::pdf(float u) const  {
     return pdf_[offset];
 }
 
-inline size_t Distribution_1D::num_bytes() const  {
-    return sizeof(*this) + sizeof(float) * (pdf_.size() + cdf_.size());
-}
-
 inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, size_t len)  {
     float integral = 0.f;
     for (size_t i = 0; i < len; ++i) {
@@ -158,10 +154,6 @@ inline float Distribution_lut_1D::pdf(float u) const  {
 inline size_t Distribution_lut_1D::num_bytes() const  {
     return sizeof(*this) + sizeof(float) * (pdf_.size() + cdf_.size()) +
            sizeof(uint32_t) * lut_.size();
-}
-
-inline uint32_t Distribution_lut_1D::map(float s) const  {
-    return uint32_t(s * lut_range_);
 }
 
 inline void Distribution_lut_1D::precompute_1D_pdf_cdf(float const* data, uint32_t len)  {
@@ -309,10 +301,6 @@ inline float Distribution_implicit_pdf_lut_1D::pdf(float u) const  {
 
 inline uint32_t Distribution_implicit_pdf_lut_1D::lut_size() const  {
     return lut_size_ - 2;
-}
-
-inline size_t Distribution_implicit_pdf_lut_1D::num_bytes() const  {
-    return sizeof(*this) + sizeof(float) * cdf_size_ + sizeof(uint32_t) * lut_size_;
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_1D::map(float s) const  {
@@ -485,10 +473,6 @@ inline float Distribution_implicit_pdf_lut_lin_1D::pdf(float u) const {
 
 inline uint32_t Distribution_implicit_pdf_lut_lin_1D::lut_size() const {
     return lut_size_ - 2;
-}
-
-inline size_t Distribution_implicit_pdf_lut_lin_1D::num_bytes() const {
-    return sizeof(*this) + sizeof(float) * cdf_size_ + sizeof(uint32_t) * lut_size_;
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_lin_1D::map(float s) const {

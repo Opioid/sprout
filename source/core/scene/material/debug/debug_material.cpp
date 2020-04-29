@@ -22,8 +22,4 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-size_t Material::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::material::debug

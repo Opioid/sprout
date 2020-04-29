@@ -84,8 +84,4 @@ void Emissionmap_animated::set_emission_map(Texture_adapter const& emission_map,
     animation_duration_ = animation_duration;
 }
 
-size_t Emissionmap_animated::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::material::light

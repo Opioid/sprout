@@ -28,12 +28,11 @@ class Distribution_3D {
 
     float pdf(float3 const& uvw) const;
 
-    size_t num_bytes() const;
-
   private:
     Distribution_impl marginal_;
 
-    uint32_t         conditional_size_;
+    uint32_t conditional_size_;
+
     Distribution_2D* conditional_;
 
     float    conditional_sizef_;

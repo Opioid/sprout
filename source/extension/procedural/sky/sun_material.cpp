@@ -49,10 +49,6 @@ void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, u
                                     bool /*importance_sampling*/, thread::Pool& /*threads*/,
                                     Scene const& /*scene*/) {}
 
-size_t Sun_material::num_bytes() const {
-    return sizeof(*this);
-}
-
 Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
 
 material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
@@ -108,10 +104,6 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
 
         emission_[i] = radiance;
     }
-}
-
-size_t Sun_baked_material::num_bytes() const {
-    return sizeof(*this);
 }
 
 }  // namespace procedural::sky

@@ -11,8 +11,6 @@ class Material : public material::Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    size_t num_bytes() const final;
-
     void set_materials(material::Material const* a, material::Material const* const b);
 
   private:

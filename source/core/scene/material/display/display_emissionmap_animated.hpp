@@ -15,8 +15,6 @@ class Emissionmap_animated : public light::Emissionmap_animated {
 
     void set_roughness(float roughness);
 
-    size_t num_bytes() const final;
-
   private:
     float alpha_;
 };

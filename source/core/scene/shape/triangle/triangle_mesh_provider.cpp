@@ -260,14 +260,6 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
     return mesh;
 }
 
-size_t Provider::num_bytes() const {
-    return sizeof(*this);
-}
-
-size_t Provider::num_bytes(Shape const* resource) const {
-    return resource->num_bytes();
-}
-
 Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
                              thread::Pool& threads) {
     if (triangles.empty() || vertices.empty() || !num_parts) {

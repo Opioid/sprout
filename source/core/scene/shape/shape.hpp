@@ -140,8 +140,6 @@ class Shape {
 
     virtual Morphable* morphable_shape();
 
-    virtual size_t num_bytes() const = 0;
-
   protected:
     static float constexpr Dot_min = 0.00001f;
 };

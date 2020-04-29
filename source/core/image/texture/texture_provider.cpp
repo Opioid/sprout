@@ -134,14 +134,6 @@ Texture* Provider::load(void const* /*data*/, std::string const& /*source_name*/
     return nullptr;
 }
 
-size_t Provider::num_bytes() const {
-    return sizeof(*this);
-}
-
-size_t Provider::num_bytes(Texture const* /*resource*/) const {
-    return 0;
-}
-
 std::string Provider::encode_name(uint32_t image_id) {
     return "tex:" + std::to_string(image_id);
 }

@@ -68,8 +68,6 @@ class Distant_sphere final : public Shape {
     float volume(uint32_t part, float3 const& scale) const final;
 
     bool is_finite() const final;
-
-    size_t num_bytes() const final;
 };
 
 }  // namespace scene::shape

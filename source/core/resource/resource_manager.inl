@@ -130,16 +130,6 @@ Resource_ptr<T> Manager::store(std::string const& name, T* resource, Variants co
 }
 
 template <typename T>
-size_t Manager::num_bytes() const {
-    Typed_cache<T> const* cache = typed_cache<T>();
-    if (!cache) {
-        return 0;
-    }
-
-    return cache->num_bytes();
-}
-
-template <typename T>
 Typed_cache<T> const* Manager::typed_cache() const {
     auto const cache = caches_.find(T::identifier());
 

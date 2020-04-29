@@ -47,8 +47,6 @@ class Data {
     void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
                       Vertex const* const vertices);
 
-    size_t num_bytes() const;
-
   private:
     uint32_t num_triangles_;
     uint32_t current_triangle_;

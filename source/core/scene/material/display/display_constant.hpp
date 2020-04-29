@@ -16,8 +16,6 @@ class Constant : public Material {
 
     float3 average_radiance(float area, Scene const& scene) const final;
 
-    size_t num_bytes() const final;
-
     void set_emission(float3 const& radiance);
 
     void set_roughness(float roughness);

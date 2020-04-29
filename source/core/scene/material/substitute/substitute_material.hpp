@@ -12,8 +12,6 @@ class alignas(16) Material : public Material_base {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    size_t num_bytes() const final;
-
     static size_t sample_size();
 };
 
@@ -27,8 +25,6 @@ class alignas(16) Frozen : public Material_base {
     void set_snow_normal_map(Texture_adapter const& normal_map);
 
     void set_snow_mask(Texture_adapter const& mask);
-
-    size_t num_bytes() const final;
 
     static size_t sample_size();
 

@@ -70,10 +70,6 @@ float3 Glass_thin::thin_absorption(float3 const& wi, float3 const& n, float2 uv,
     return (1.f - f) * ta;
 }
 
-size_t Glass_thin::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Glass_thin::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }

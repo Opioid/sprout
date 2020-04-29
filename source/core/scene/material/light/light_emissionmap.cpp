@@ -82,10 +82,6 @@ void Emissionmap::set_emission_factor(float emission_factor) {
     emission_factor_ = emission_factor;
 }
 
-size_t Emissionmap::num_bytes() const {
-    return sizeof(*this) + distribution_.num_bytes();
-}
-
 void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                                             bool importance_sampling, thread::Pool& threads,
                                             Scene const& scene) {

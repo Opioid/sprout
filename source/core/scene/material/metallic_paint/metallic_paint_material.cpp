@@ -60,10 +60,6 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-size_t Material::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Material::set_color(float3 const& a, float3 const& b) {
     color_a_ = a;
     color_b_ = b;

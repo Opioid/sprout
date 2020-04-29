@@ -291,12 +291,6 @@ void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t
 }
 
 template <typename SV>
-size_t Indexed_data<SV>::num_bytes() const {
-    return sizeof(*this) + num_triangles_ * sizeof(Index_triangle) +
-           num_vertices_ * (sizeof(float3) + sizeof(SV));
-}
-
-template <typename SV>
 Indexed_data<SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
                                                  bool bitangent_sign, uint32_t part)
     : a(a), b(b), c(c), bts(bitangent_sign ? 1u : 0u), part(part) {}
@@ -733,11 +727,6 @@ void Indexed_data1::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t pa
     }
 
     triangles_[current_triangle] = Index_triangle(a, b, c, bitanget_sign, part);
-}
-
-size_t Indexed_data1::num_bytes() const {
-    return sizeof(*this) + num_triangles_ * sizeof(Index_triangle) +
-           num_vertices_ * (sizeof(float3) + sizeof(float4) + sizeof(float2));
 }
 
 Indexed_data1::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,

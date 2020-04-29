@@ -12,8 +12,6 @@ class Glass_rough : public Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    size_t num_bytes() const final;
-
     void set_normal_map(Texture_adapter const& normal_map);
     void set_roughness_map(Texture_adapter const& roughness_map);
 

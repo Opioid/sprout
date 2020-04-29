@@ -13,8 +13,6 @@ class Homogeneous : public Material {
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const final;
-
-    size_t num_bytes() const override;
 };
 
 }  // namespace scene::material::volumetric

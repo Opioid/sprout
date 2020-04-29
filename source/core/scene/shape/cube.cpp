@@ -324,8 +324,4 @@ float Cube::volume(uint32_t /*part*/, float3 const& scale) const {
     return d[0] * d[1] * d[2];
 }
 
-size_t Cube::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::shape

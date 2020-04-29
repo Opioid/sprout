@@ -18,8 +18,6 @@ class Constant : public Material {
 
     float3 average_radiance(float area, Scene const& scene) const final;
 
-    size_t num_bytes() const final;
-
     ::light::Emittance& emittance();
 
     static size_t sample_size();

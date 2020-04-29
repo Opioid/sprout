@@ -54,10 +54,6 @@ void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, u
                                     bool /*importance_sampling*/, thread::Pool& /*threads*/,
                                     Scene const& /*scene*/) {}
 
-size_t Sky_material::num_bytes() const {
-    return sizeof(*this);
-}
-
 static int2 constexpr Bake_dimensions(256);
 
 Sky_baked_material::Sky_baked_material(Sky& sky)
@@ -187,10 +183,6 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
         // average_emission_ = cache_texture->average_3();
         average_emission_ = sky_.model().evaluate_sky(Model::zenith());
     }
-}
-
-size_t Sky_baked_material::num_bytes() const {
-    return sizeof(*this) + cache_.num_bytes() + distribution_.num_bytes();
 }
 
 float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& transformation,

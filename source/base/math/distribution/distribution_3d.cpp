@@ -64,14 +64,4 @@ float Distribution_3D::pdf(float3 const& uvw) const {
     return uv_pdf * w_pdf;
 }
 
-size_t Distribution_3D::num_bytes() const {
-    size_t num_bytes = 0;
-
-    for (int32_t i = 0, len = conditional_size_; i < len; ++i) {
-        num_bytes += conditional_[i].num_bytes();
-    }
-
-    return sizeof(*this) + marginal_.num_bytes() + num_bytes;
-}
-
 }  // namespace math

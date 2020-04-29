@@ -15,11 +15,6 @@ Material_coating<Coating>::Material_coating(Sampler_settings const& sampler_sett
     : Material_base(sampler_settings, two_sided) {}
 
 template <typename Coating>
-size_t Material_coating<Coating>::num_bytes() const {
-    return sizeof(*this);
-}
-
-template <typename Coating>
 void Material_coating<Coating>::set_coating_thickness_map(Texture_adapter const& thickness_map) {
     coating_thickness_map_ = thickness_map;
 }

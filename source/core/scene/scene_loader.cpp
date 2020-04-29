@@ -128,10 +128,6 @@ Loader::Material_ptr Loader::fallback_material() const {
     return fallback_material_;
 }
 
-size_t Loader::num_bytes() const {
-    return 0;
-}
-
 bool Loader::load(std::string const& filename, std::string_view take_mount_folder,
                   uint32_t parent_id, math::Transformation const& parent_transformation,
                   Scene& scene) {

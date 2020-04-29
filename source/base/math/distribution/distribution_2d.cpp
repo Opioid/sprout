@@ -82,17 +82,6 @@ float Distribution_t_2D<T>::pdf(float2 uv) const {
     return u_pdf * v_pdf;
 }
 
-template <typename T>
-size_t Distribution_t_2D<T>::num_bytes() const {
-    size_t num_bytes = 0;
-
-    for (int32_t i = 0, len = conditional_size_; i < len; ++i) {
-        num_bytes += conditional_[i].num_bytes();
-    }
-
-    return sizeof(*this) + marginal_.num_bytes() + num_bytes;
-}
-
 template class Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
 
 }  // namespace math

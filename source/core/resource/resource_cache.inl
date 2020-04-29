@@ -151,19 +151,6 @@ Resource_ptr<T> Typed_cache<T>::store(std::string const& name, Variants const& o
 }
 
 template <typename T>
-size_t Typed_cache<T>::num_bytes() const {
-    size_t num_bytes = 0;
-
-    for (auto r : resources_) {
-        num_bytes += provider_.num_bytes(r);
-    }
-
-    num_bytes += provider_.num_bytes();
-
-    return num_bytes;
-}
-
-template <typename T>
 bool Typed_cache<T>::check_up_to_date(Entry& entry) const {
     if (entry.generation == generation_ || entry.source_name.empty()) {
         return true;

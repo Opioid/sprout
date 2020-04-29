@@ -37,8 +37,4 @@ void Emissionmap_animated::set_roughness(float roughness) {
     alpha_ = r * r;
 }
 
-size_t Emissionmap_animated::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::material::display

@@ -15,8 +15,4 @@ float3 Homogeneous::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*
     return cc_.a * emission_;
 }
 
-size_t Homogeneous::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::material::volumetric

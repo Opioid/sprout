@@ -41,10 +41,6 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
     return sample;
 }
 
-size_t Material_isotropic::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
@@ -102,10 +98,6 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
     sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
-}
-
-size_t Material_anisotropic::num_bytes() const {
-    return sizeof(*this);
 }
 
 void Material_anisotropic::set_normal_map(Texture_adapter const& normal_map) {

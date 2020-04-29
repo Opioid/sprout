@@ -12,8 +12,6 @@ class Glass_dispersion final : public Glass {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    size_t num_bytes() const final;
-
     void set_abbe(float abbe);
 
     static size_t sample_size();

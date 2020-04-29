@@ -59,10 +59,6 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
     return sample;
 }
 
-size_t Material_subsurface::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
 }

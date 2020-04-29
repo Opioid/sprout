@@ -84,10 +84,6 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
     return sample;
 }
 
-size_t Material_coating_subsurface::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Material_coating_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
 }

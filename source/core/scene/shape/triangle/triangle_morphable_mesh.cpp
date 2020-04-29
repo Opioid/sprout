@@ -285,8 +285,4 @@ void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& t
                   vertices, 4, threads);
 }
 
-size_t Morphable_mesh::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::shape::triangle

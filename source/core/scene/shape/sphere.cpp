@@ -497,8 +497,4 @@ float Sphere::volume(uint32_t /*part*/, float3 const& scale) const {
     return ((4.f / 3.f) * Pi) * (scale[0] * scale[0] * scale[0]);
 }
 
-size_t Sphere::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::shape

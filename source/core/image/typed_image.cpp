@@ -197,13 +197,6 @@ void Typed_image<T>::copy(Typed_image& destination) const {
     std::copy(&data_[0], &data_[description_.num_pixels() - 1], destination.data_);
 }
 
-template <typename T>
-size_t Typed_image<T>::num_bytes() const {
-    return sizeof(*this) +
-           size_t(description_.dimensions_[0]) * size_t(description_.dimensions_[1]) *
-               size_t(description_.dimensions_[2]) * size_t(description_.num_elements_) * sizeof(T);
-}
-
 // template <typename T>
 // Typed_sparse_image<T>::Typed_sparse_image()  = default;
 
@@ -448,21 +441,6 @@ void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const {
     c[1] = T(0);
     c[2] = T(0);
     c[3] = T(0);
-}
-
-template <typename T>
-size_t Typed_sparse_image<T>::num_bytes() const {
-    uint32_t const cell_len = uint32_t(num_cells_[0] * num_cells_[1] * num_cells_[2]);
-
-    size_t num_bytes = cell_len * sizeof(Cell);
-
-    for (uint32_t i = 0; i < cell_len; ++i) {
-        if (cells_[i].data) {
-            num_bytes += Cell_dim * Cell_dim * Cell_dim * sizeof(T);
-        }
-    }
-
-    return num_bytes;
 }
 
 template <typename T>

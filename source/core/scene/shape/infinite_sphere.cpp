@@ -297,8 +297,4 @@ bool Infinite_sphere::is_finite() const {
     return false;
 }
 
-size_t Infinite_sphere::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::shape

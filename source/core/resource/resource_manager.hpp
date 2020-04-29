@@ -68,9 +68,6 @@ class Manager {
     Resource_ptr<T> store(std::string const& name, T* resource,
                           Variants const& options = Variants());
 
-    template <typename T>
-    size_t num_bytes() const;
-
   private:
     template <typename T>
     Typed_cache<T> const* typed_cache() const;

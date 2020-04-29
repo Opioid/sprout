@@ -87,8 +87,6 @@ class Prop {
 
     bool has_tinted_shadow() const;
 
-    size_t num_bytes() const;
-
   private:
     bool visible(uint32_t ray_depth) const;
 

@@ -386,16 +386,6 @@ float3 Mesh::center(uint32_t part) const {
     return distributions_[part].center;
 }
 
-size_t Mesh::num_bytes() const {
-    size_t num_bytes = 0;
-
-    for (uint32_t i = 0, len = tree_.num_parts(); i < len; ++i) {
-        num_bytes += distributions_[i].num_bytes();
-    }
-
-    return sizeof(*this) + tree_.num_bytes() + num_bytes;
-}
-
 Mesh::Distribution::~Distribution() {
     memory::free_aligned(triangle_mapping);
 }
@@ -429,10 +419,6 @@ bool Mesh::Distribution::empty() const {
 Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r) const {
     auto const result = distribution.sample_discrete(r);
     return {triangle_mapping[result.offset], result.pdf};
-}
-
-size_t Mesh::Distribution::num_bytes() const {
-    return sizeof(*this) + num_triangles * sizeof(uint32_t) + distribution.num_bytes();
 }
 
 }  // namespace scene::shape::triangle

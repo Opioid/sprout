@@ -137,14 +137,6 @@ Material* Provider::load(void const* data, std::string const&    source_name,
     return load(*value, string::parent_directory(source_name), resources);
 }
 
-size_t Provider::num_bytes() const {
-    return sizeof(*this);
-}
-
-size_t Provider::num_bytes(Material const* resource) const {
-    return resource->num_bytes();
-}
-
 Material* Provider::create_fallback_material() {
     return new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
 }

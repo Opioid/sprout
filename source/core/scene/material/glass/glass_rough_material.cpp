@@ -46,10 +46,6 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
     return sample;
 }
 
-size_t Glass_rough::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Glass_rough::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }

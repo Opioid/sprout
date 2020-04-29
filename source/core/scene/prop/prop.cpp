@@ -221,8 +221,4 @@ bool Prop::has_tinted_shadow() const {
     return properties_.is(Property::Tinted_shadow);
 }
 
-size_t Prop::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::prop

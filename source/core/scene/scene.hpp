@@ -231,8 +231,6 @@ class Scene {
 
     void create_animation_stage(uint32_t entity, animation::Animation* animation);
 
-    size_t num_bytes() const;
-
   private:
     Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
                                                           Transformation& transformation) const;

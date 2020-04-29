@@ -33,12 +33,11 @@ class Distribution_t_2D {
 
     float pdf(float2 uv) const;
 
-    size_t num_bytes() const;
-
   private:
     Distribution_impl marginal_;
 
-    uint32_t           conditional_size_;
+    uint32_t conditional_size_;
+
     Distribution_impl* conditional_;
 
     float conditional_sizef_;

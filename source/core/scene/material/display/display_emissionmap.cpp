@@ -31,10 +31,6 @@ material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*
     return sample;
 }
 
-size_t Emissionmap::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Emissionmap::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 

@@ -116,11 +116,6 @@ void Data<Intersection_triangle, Shading_triangle>::add_triangle(uint32_t a, uin
     ++current_triangle_;
 }
 
-template <typename Intersection_triangle, typename Shading_triangle>
-size_t Data<Intersection_triangle, Shading_triangle>::num_bytes() const {
-    return num_triangles_ * (sizeof(Intersection_triangle) + sizeof(Shading_triangle));
-}
-
 }  // namespace scene::shape::triangle::bvh
 
 #endif

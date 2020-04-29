@@ -39,10 +39,6 @@ float3 Glass::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
     return absorption_coefficient_;
 }
 
-size_t Glass::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Glass::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }

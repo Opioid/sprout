@@ -37,10 +37,6 @@ material::Sample const& Glass_dispersion::sample(float3 const& wo, Ray const& ra
     return sample;
 }
 
-size_t Glass_dispersion::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Glass_dispersion::set_abbe(float abbe) {
     abbe_ = abbe;
 }

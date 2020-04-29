@@ -156,8 +156,6 @@ class alignas(16) Material {
 
     float ior() const;
 
-    virtual size_t num_bytes() const = 0;
-
   protected:
     float van_de_hulst_anisotropy(uint32_t depth) const;
 

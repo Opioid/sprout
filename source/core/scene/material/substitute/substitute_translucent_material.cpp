@@ -30,10 +30,6 @@ material::Sample const& Material_translucent::sample(float3 const&      wo, Ray 
     return sample;
 }
 
-size_t Material_translucent::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Material_translucent::set_attenuation(float thickness, float attenuation_distance) {
     thickness_            = thickness;
     attenuation_distance_ = attenuation_distance;

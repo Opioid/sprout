@@ -14,8 +14,6 @@ class alignas(64) Material_isotropic : public Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    size_t num_bytes() const final;
-
     void set_normal_map(Texture_adapter const& normal_map);
 
     void set_ior(float3 const& ior);
@@ -41,8 +39,6 @@ class alignas(64) Material_anisotropic : public Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
-
-    size_t num_bytes() const final;
 
     void set_normal_map(Texture_adapter const& normal_map);
     void set_direction_map(Texture_adapter const& direction_map);

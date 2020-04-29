@@ -39,10 +39,6 @@ float3 Constant::average_radiance(float /*area*/, Scene const& /*scene*/) const 
     return emission_;
 }
 
-size_t Constant::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Constant::set_emission(float3 const& radiance) {
     emission_ = radiance;
 }

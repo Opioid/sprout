@@ -87,8 +87,6 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     void morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads) final;
 
-    size_t num_bytes() const final;
-
   private:
     Tree tree_;
 

@@ -28,10 +28,6 @@ class Provider final : public resource::Provider<Material> {
     Material* load(void const* data, std::string const& source_name, Variants const& options,
                    Resources& resources) final;
 
-    size_t num_bytes() const final;
-
-    size_t num_bytes(Material const* resource) const final;
-
     Material* create_fallback_material();
 
   private:

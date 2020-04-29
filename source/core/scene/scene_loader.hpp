@@ -95,8 +95,6 @@ class Loader {
 
     Material_ptr fallback_material() const;
 
-    size_t num_bytes() const;
-
   private:
     struct Local_materials {
         std::string source_name;

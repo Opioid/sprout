@@ -70,8 +70,6 @@ class alignas(64) Gridtree {
 
     bool intersect(ray& ray, CM& data) const;
 
-    size_t num_bytes() const;
-
     static int32_t constexpr Log2_cell_dim = 5;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;
 

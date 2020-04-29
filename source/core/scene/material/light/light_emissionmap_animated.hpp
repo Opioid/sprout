@@ -31,8 +31,6 @@ class Emissionmap_animated : public Emissionmap {
 
     void set_emission_map(Texture_adapter const& emission_map, uint64_t animation_duration);
 
-    size_t num_bytes() const override;
-
   protected:
     uint64_t animation_duration_;
 

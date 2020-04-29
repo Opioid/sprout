@@ -26,8 +26,6 @@ class Sky_material : public Material {
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
                           scene::Scene const& scene) final;
-
-    size_t num_bytes() const final;
 };
 
 class Sky_baked_material : public Material {
@@ -53,8 +51,6 @@ class Sky_baked_material : public Material {
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
                           scene::Scene const& scene) final;
-
-    size_t num_bytes() const final;
 
   private:
     static float3 unclipped_canopy_mapping(Transformation const& transformation, float2 uv);

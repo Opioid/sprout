@@ -29,10 +29,6 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-size_t Material::num_bytes() const {
-    return sizeof(*this);
-}
-
 size_t Material::sample_size() {
     return sizeof(Sample);
 }
@@ -105,10 +101,6 @@ void Frozen::set_snow_normal_map(Texture_adapter const& normal_map) {
 
 void Frozen::set_snow_mask(Texture_adapter const& mask) {
     snow_mask_ = mask;
-}
-
-size_t Frozen::num_bytes() const {
-    return sizeof(*this);
 }
 
 size_t Frozen::sample_size() {

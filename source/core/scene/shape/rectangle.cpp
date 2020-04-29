@@ -359,8 +359,4 @@ float Rectangle::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
 }
 
-size_t Rectangle::num_bytes() const {
-    return sizeof(*this);
-}
-
 }  // namespace scene::shape

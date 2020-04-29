@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_DEBUG_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_DEBUG_MATERIAL_HPP
 
 #include "scene/material/material.hpp"
 
@@ -10,10 +11,8 @@ class alignas(16) Material : public material::Material {
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
-
-    size_t num_bytes() const final;
-
-  private:
 };
 
 }  // namespace scene::material::debug
+
+#endif

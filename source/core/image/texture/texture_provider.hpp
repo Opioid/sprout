@@ -34,10 +34,6 @@ class Provider final : public resource::Provider<Texture> {
     Texture* load(void const* data, std::string const& source_name, Variants const& options,
                   Resources& resources) final;
 
-    size_t num_bytes() const final;
-
-    size_t num_bytes(Texture const* resource) const final;
-
     static std::string encode_name(uint32_t image_id);
 
     static uint32_t decode_name(std::string const& name);

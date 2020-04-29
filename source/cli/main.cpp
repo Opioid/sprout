@@ -37,11 +37,6 @@
 //#include "core/sampler/sampler_test.hpp"
 //#include "core/scene/material/ggx/ggx_integrate.hpp"
 
-#ifdef SU_DEBUG
-static void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
-                                   scene::Scene const& scene);
-#endif
-
 int main(int argc, char* argv[]) {
     using namespace scene;
 
@@ -176,9 +171,6 @@ int main(int argc, char* argv[]) {
             logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
 
             logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
-#ifdef SU_DEBUG
-            log_memory_consumption(resources, scene_loader, scene);
-#endif
         }
 
         if (args.quit) {
@@ -198,26 +190,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-#ifdef SU_DEBUG
-void log_memory_consumption(resource::Manager const& manager, scene::Loader const& loader,
-                            scene::Scene const& scene) {
-    logging::verbose("Memory consumption:");
-
-    size_t const image_num_bytes = manager.num_bytes<image::Image>();
-    logging::verbose("\tImages: " + string::print_bytes(image_num_bytes));
-
-    size_t const material_num_bytes = manager.num_bytes<scene::material::Material>();
-    logging::verbose("\tMaterials: " + string::print_bytes(material_num_bytes));
-
-    size_t const mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
-    logging::verbose("\tMeshes: " + string::print_bytes(mesh_num_bytes));
-
-    size_t const scene_num_bytes = loader.num_bytes() + scene.num_bytes();
-    logging::verbose("\tScene: " + string::print_bytes(scene_num_bytes));
-
-    size_t const total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes +
-                                   scene_num_bytes;
-    logging::verbose("\tTotal: " + string::print_bytes(total_num_bytes));
-}
-#endif

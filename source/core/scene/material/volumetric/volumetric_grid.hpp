@@ -26,8 +26,6 @@ class Grid : public Material {
 
     Gridtree const* volume_tree() const final;
 
-    size_t num_bytes() const override;
-
   protected:
     float density(float3 const& uvw, Filter filter, Worker const& worker) const;
 
@@ -50,8 +48,6 @@ class Grid_emission : public Grid {
                           Transformation const& transformation, float area,
                           bool importance_sampling, thread::Pool& threads,
                           Scene const& scene) final;
-
-    size_t num_bytes() const override;
 
   private:
     Distribution_3D distribution_;
@@ -82,8 +78,6 @@ class Grid_color : public Material {
     void commit(thread::Pool& threads, Scene const& scene) final;
 
     Gridtree const* volume_tree() const final;
-
-    size_t num_bytes() const override;
 
   protected:
     float4 color(float3 const& uvw, Filter filter, Worker const& worker) const;

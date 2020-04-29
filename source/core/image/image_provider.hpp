@@ -36,10 +36,6 @@ class Provider final : public resource::Provider<Image> {
     Image* load(void const* data, std::string const& source_name, Variants const& options,
                 Resources& resources) final;
 
-    size_t num_bytes() const final;
-
-    size_t num_bytes(Image const* resource) const final;
-
   private:
     procedural::flakes::Provider flakes_provider_;
 };

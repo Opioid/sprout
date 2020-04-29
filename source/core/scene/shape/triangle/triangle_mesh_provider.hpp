@@ -54,10 +54,6 @@ class Provider : public resource::Provider<Shape> {
     Shape* load(void const* data, std::string const& source_name, Variants const& options,
                 resource::Manager& resources) final;
 
-    size_t num_bytes() const final;
-
-    size_t num_bytes(Shape const* resource) const final;
-
     static Shape* create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
                               thread::Pool& threads);
 

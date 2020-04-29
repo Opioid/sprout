@@ -22,10 +22,6 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     return material_b_->sample(wo, ray, rs, filter, sampler, worker);
 }
 
-size_t Material::num_bytes() const {
-    return sizeof(*this);
-}
-
 void Material::set_materials(material::Material const* a, material::Material const* b) {
     material_a_ = a;
     material_b_ = b;
