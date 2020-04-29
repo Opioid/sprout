@@ -43,7 +43,7 @@ class Driver {
     using Camera    = scene::camera::Camera;
     using Exporters = memory::Array<exporting::Sink*>;
 
-    Driver(thread::Pool& threads, uint32_t max_sample_size, progress::Sink& progressor);
+    Driver(thread::Pool& threads, progress::Sink& progressor);
 
     ~Driver();
 

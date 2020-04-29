@@ -5,8 +5,12 @@
 
 namespace scene::material {
 
+inline Sample_cache::Sample_cache() = default;
+
+inline Sample_cache::~Sample_cache() = default;
+
 template <typename T>
-T& Sample_cache::get() const {
+T& Sample_cache::get() {
     return *new (buffer_) T;
 }
 

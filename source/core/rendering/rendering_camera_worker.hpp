@@ -7,7 +7,7 @@ namespace rendering {
 
 class alignas(64) Camera_worker : public Worker {
   public:
-    Camera_worker(uint32_t max_sample_size);
+    Camera_worker();
 
     void render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                 uint32_t num_samples);

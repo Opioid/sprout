@@ -62,7 +62,7 @@ inline rnd::Generator& Worker::rng() {
 }
 
 template <typename T>
-T& Worker::sample() const {
+T& Worker::sample() {
     return sample_cache_.get<T>();
 }
 

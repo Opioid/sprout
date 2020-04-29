@@ -23,7 +23,7 @@ using Material_sample    = scene::material::Sample;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 using Texture_sampler_3D = image::texture::Sampler_3D;
 
-Worker::Worker(uint32_t max_sample_size) : node_stack_(128 + 16), sample_cache_(max_sample_size) {}
+Worker::Worker() = default;
 
 Worker::~Worker() = default;
 

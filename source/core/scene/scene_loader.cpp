@@ -66,7 +66,8 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
     math::Transformation const parent_transformation{float3(0.f), float3(1.f),
                                                      quaternion::identity()};
 
-    bool const success = load(filename, take_mount_folder, parent_id, parent_transformation, scene);
+    bool const success = load(filename, take_mount_folder, parent_id, parent_transformation, scene,
+                              false);
 
     resource_manager_.threads().wait_async();
 
@@ -130,7 +131,7 @@ Loader::Material_ptr Loader::fallback_material() const {
 
 bool Loader::load(std::string const& filename, std::string_view take_mount_folder,
                   uint32_t parent_id, math::Transformation const& parent_transformation,
-                  Scene& scene) {
+                  Scene& scene, bool nested) {
     auto& filesystem = resource_manager_.filesystem();
 
     if (!take_mount_folder.empty()) {
@@ -149,6 +150,10 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     }
 
     if (!stream) {
+        if (nested) {
+            logging::error("Loading scene %S: ", filename);
+        }
+
         return false;
     }
 
@@ -158,7 +163,12 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
     stream.close();
 
     if (root.HasParseError()) {
-        logging::push_error(error);
+        if (nested) {
+            logging::error(error);
+        } else {
+            logging::push_error(error);
+        }
+
         return false;
     }
 
@@ -216,7 +226,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
     for (auto const& e : entities_value.GetArray()) {
         if (auto const file_node = e.FindMember("file"); e.MemberEnd() != file_node) {
             std::string const filename = file_node->value.GetString();
-            load(filename, "", parent_id, parent_transformation, scene);
+            load(filename, "", parent_id, parent_transformation, scene, true);
             continue;
         }
 
@@ -328,8 +338,6 @@ void Loader::set_visibility(uint32_t prop, json::Value const& visibility_value, 
 
 uint32_t Loader::load_prop(json::Value const& prop_value, std::string const& name,
                            Local_materials const& local_materials, Scene& scene) {
-    //   LOGGING_VERBOSE("Loading prop...");
-
     Shape_ptr shape = Shape_ptr::Null();
 
     json::Value const* visibility      = nullptr;
@@ -433,6 +441,7 @@ Loader::Shape_ptr Loader::shape(std::string const& type, json::Value const& shap
 
         return shape;
     }
+
     logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
 
     return Shape_ptr::Null();

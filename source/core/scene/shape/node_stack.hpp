@@ -5,9 +5,9 @@
 
 namespace scene::shape {
 
-class Node_stack {
+class alignas(64) Node_stack {
   public:
-    Node_stack(uint32_t size);
+    Node_stack();
 
     ~Node_stack();
 
@@ -20,11 +20,11 @@ class Node_stack {
     uint32_t pop();
 
   private:
-    [[maybe_unused]] uint32_t num_elements_;
+    static uint32_t constexpr Num_elements = 127;
 
     uint32_t end_;
 
-    uint32_t* stack_;
+    uint32_t stack_[Num_elements];
 };
 
 }  // namespace scene::shape
