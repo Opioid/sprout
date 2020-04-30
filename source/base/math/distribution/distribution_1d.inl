@@ -151,11 +151,6 @@ inline float Distribution_lut_1D::pdf(float u) const  {
     return pdf_[offset];
 }
 
-inline size_t Distribution_lut_1D::num_bytes() const  {
-    return sizeof(*this) + sizeof(float) * (pdf_.size() + cdf_.size()) +
-           sizeof(uint32_t) * lut_.size();
-}
-
 inline void Distribution_lut_1D::precompute_1D_pdf_cdf(float const* data, uint32_t len)  {
     float integral = 0.f;
     for (uint32_t i = 0; i < len; ++i) {

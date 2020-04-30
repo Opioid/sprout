@@ -35,7 +35,6 @@
 #include "substitute/substitute_subsurface_material.hpp"
 #include "substitute/substitute_translucent_material.hpp"
 #include "volumetric/volumetric_grid.hpp"
-#include "volumetric/volumetric_height.hpp"
 #include "volumetric/volumetric_homogeneous.hpp"
 
 // #define FROZEN 1
@@ -1143,14 +1142,6 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
         material->set_volumetric_anisotropy(anisotropy);
         return material;
     }
-
-    /*else if (a > 0.f && b > 0.f) {
-            auto material = new volumetric::Height(sampler_settings);
-            material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
-            material->set_anisotropy(anisotropy);
-            material->set_a_b(a, b);
-            return material;
-    }*/
 
     auto material = new Homogeneous(sampler_settings);
     material->set_attenuation(absorption_color, scattering_color, attenuation_distance);

@@ -1,11 +1,7 @@
 target_sources(core
     PRIVATE
-    "volumetric_atmosphere.cpp"
-    "volumetric_atmosphere.hpp"
     "volumetric_grid.cpp"
     "volumetric_grid.hpp"
-    "volumetric_height.cpp"
-    "volumetric_height.hpp"
     "volumetric_homogeneous.cpp"
     "volumetric_homogeneous.hpp"
     "volumetric_material.cpp"
