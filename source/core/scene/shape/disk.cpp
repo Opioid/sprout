@@ -18,7 +18,7 @@
 
 namespace scene::shape {
 
-Disk::Disk() = default;
+Disk::Disk() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
 float3 Disk::object_to_texture_point(float3 const& p) const {
     return (p - float3(-1.f)) * (1.f / float3(2.f, 2.f, 0.2f));

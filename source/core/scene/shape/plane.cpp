@@ -11,7 +11,7 @@
 
 namespace scene::shape {
 
-Plane::Plane() = default;
+Plane::Plane() : Shape(Properties(Property::Analytical)) {}
 
 float3 Plane::object_to_texture_point(float3 const& p) const {
     return p;
@@ -216,10 +216,6 @@ float Plane::area(uint32_t /*part*/, float3 const& /*scale*/) const {
 
 float Plane::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
-}
-
-bool Plane::is_finite() const {
-    return false;
 }
 
 }  // namespace scene::shape

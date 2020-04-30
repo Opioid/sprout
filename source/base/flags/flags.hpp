@@ -9,9 +9,13 @@ template <typename T>
 struct Flags {
     using impl_type = typename std::underlying_type<T>::type;
 
-    Flags() = default;
+    Flags() : values(impl_type(0)) {}
 
-    Flags(T flag) : values(impl_type(flag)) {}
+    Flags(T a) : values(impl_type(a)) {}
+
+    Flags(T a, T b) : values(impl_type(a) | impl_type(b)) {}
+
+    Flags(T a, T b, T c) : values(impl_type(a) | impl_type(b) | impl_type(c)) {}
 
     constexpr bool empty() const {
         return impl_type(0) != values;
@@ -73,7 +77,7 @@ struct Flags {
         values = impl_type(flag);
     }
 
-    impl_type values = impl_type(0);
+    impl_type values;
 };
 
 }  // namespace flags

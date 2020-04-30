@@ -83,10 +83,6 @@ class alignas(64) Mesh final : public Shape {
 
     float volume(uint32_t part, float3 const& scale) const final;
 
-    bool is_complex() const final;
-
-    bool is_analytical() const final;
-
     void prepare_sampling(uint32_t part) final;
 
     float3 center(uint32_t part) const final;

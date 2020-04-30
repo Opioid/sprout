@@ -16,7 +16,7 @@
 
 namespace scene::shape {
 
-Infinite_sphere::Infinite_sphere() = default;
+Infinite_sphere::Infinite_sphere() : Shape(Properties(Property::Analytical)) {}
 
 float3 Infinite_sphere::object_to_texture_point(float3 const& p) const {
     return p;
@@ -291,10 +291,6 @@ float Infinite_sphere::area(uint32_t /*part*/, float3 const& /*scale*/) const {
 
 float Infinite_sphere::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
-}
-
-bool Infinite_sphere::is_finite() const {
-    return false;
 }
 
 }  // namespace scene::shape

@@ -26,8 +26,6 @@
 #include "extension/procedural/sky/sky_provider.hpp"
 #include "options/options.hpp"
 
-#include <sstream>
-
 //#include "core/scene/material/substitute/substitute_test.hpp"
 //#include "core/scene/material/glass/glass_test.hpp"
 //#include "core/testing/testing_cdf.hpp"

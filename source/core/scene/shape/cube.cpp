@@ -18,7 +18,7 @@
 
 namespace scene::shape {
 
-Cube::Cube() = default;
+Cube::Cube() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
 float3 Cube::object_to_texture_point(float3 const& p) const {
     return (p - float3(-1.f)) * (1.f / float3(2.f));

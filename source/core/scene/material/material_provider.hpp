@@ -7,7 +7,6 @@
 #include "debug/debug_material.hpp"
 #include "image/channels.hpp"
 #include "image/texture/texture_types.hpp"
-#include "material_sample_cache.hpp"
 #include "resource/resource_provider.hpp"
 
 namespace scene::material {

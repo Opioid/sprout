@@ -6,6 +6,7 @@
 #include "scene/prop/prop.hpp"
 #include "scene/scene.inl"
 #include "scene/scene_worker.hpp"
+#include "scene/shape/shape.inl"
 
 namespace scene::light {
 

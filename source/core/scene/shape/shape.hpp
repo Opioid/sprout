@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_SHAPE_SHAPE_HPP
 #define SU_CORE_SCENE_SHAPE_SHAPE_HPP
 
+#include "base/flags/flags.hpp"
 #include "base/math/aabb.hpp"
 #include "base/math/matrix.hpp"
 #include "scene/material/sampler_settings.hpp"
@@ -43,7 +44,13 @@ class Shape {
     using Sampler        = sampler::Sampler;
     using Transformation = entity::Composed_transformation;
 
+    enum class Property { Complex = 1 << 0, Finite = 1 << 1, Analytical = 1 << 2 };
+
+    using Properties = flags::Flags<Property>;
+
     static char const* identifier();
+
+    Shape(Properties properties);
 
     virtual ~Shape();
 
@@ -128,11 +135,11 @@ class Shape {
 
     virtual float volume(uint32_t part, float3 const& scale) const = 0;
 
-    virtual bool is_complex() const;
+    bool is_complex() const;
 
-    virtual bool is_finite() const;
+    bool is_finite() const;
 
-    virtual bool is_analytical() const;
+    bool is_analytical() const;
 
     virtual void prepare_sampling(uint32_t part);
 
@@ -142,6 +149,9 @@ class Shape {
 
   protected:
     static float constexpr Dot_min = 0.00001f;
+
+  private:
+    flags::Flags<Property> properties_;
 };
 
 }  // namespace shape

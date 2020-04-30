@@ -1,9 +1,10 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_PROVIDER_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_PROVIDER_HPP
 
+#include "resource/resource_provider.hpp"
+
 #include <string>
 #include <vector>
-#include "resource/resource_provider.hpp"
 
 namespace thread {
 class Pool;

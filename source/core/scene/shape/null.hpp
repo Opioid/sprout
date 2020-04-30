@@ -10,6 +10,7 @@ class Null final : public Shape {
     Null();
 
     float3 object_to_texture_point(float3 const& p) const final;
+
     float3 object_to_texture_vector(float3 const& v) const final;
 
     AABB transformed_aabb(float4x4 const& m) const final;

@@ -9,6 +9,8 @@ char const* Shape::identifier() {
     return "Shape";
 }
 
+Shape::Shape(Properties properties) : properties_(properties) {}
+
 Shape::~Shape() = default;
 
 uint32_t Shape::num_parts() const {
@@ -35,18 +37,6 @@ bool Shape::sample_volume(uint32_t /*part*/, float3 const& /*p*/,
                           Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
                           Sample_to& /*sample*/) const {
     return false;
-}
-
-bool Shape::is_complex() const {
-    return false;
-}
-
-bool Shape::is_finite() const {
-    return true;
-}
-
-bool Shape::is_analytical() const {
-    return true;
 }
 
 void Shape::prepare_sampling(uint32_t /*part*/) {}

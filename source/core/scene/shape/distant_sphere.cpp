@@ -12,7 +12,7 @@
 
 namespace scene::shape {
 
-Distant_sphere::Distant_sphere() = default;
+Distant_sphere::Distant_sphere() : Shape(Properties(Property::Analytical)) {}
 
 float3 Distant_sphere::object_to_texture_point(float3 const& p) const {
     return p;
@@ -256,10 +256,6 @@ float Distant_sphere::area(uint32_t /*part*/, float3 const& scale) const {
 
 float Distant_sphere::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
-}
-
-bool Distant_sphere::is_finite() const {
-    return false;
 }
 
 }  // namespace scene::shape

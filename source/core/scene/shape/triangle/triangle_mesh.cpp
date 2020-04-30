@@ -21,7 +21,10 @@
 
 namespace scene::shape::triangle {
 
-Mesh::Mesh() : distributions_(nullptr), part_materials_(nullptr) {}
+Mesh::Mesh()
+    : Shape(Properties(Property::Complex, Property::Finite)),
+      distributions_(nullptr),
+      part_materials_(nullptr) {}
 
 Mesh::~Mesh() {
     memory::free_aligned(part_materials_);
@@ -352,14 +355,6 @@ float Mesh::area(uint32_t part, float3 const& scale) const {
 float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     // HACK: This only really works for uniform scales!
     return 1.f;
-}
-
-bool Mesh::is_complex() const {
-    return true;
-}
-
-bool Mesh::is_analytical() const {
-    return false;
 }
 
 void Mesh::prepare_sampling(uint32_t part) {

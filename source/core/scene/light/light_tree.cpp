@@ -3,6 +3,7 @@
 #include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "scene/scene.inl"
+#include "scene/shape/shape.inl"
 
 #include "base/debug/assert.hpp"
 

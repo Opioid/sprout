@@ -70,8 +70,6 @@ class Infinite_sphere final : public Shape {
     float area(uint32_t part, float3 const& scale) const final;
 
     float volume(uint32_t part, float3 const& scale) const final;
-
-    bool is_finite() const final;
 };
 
 }  // namespace scene::shape

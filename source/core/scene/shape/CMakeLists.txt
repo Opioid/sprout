@@ -29,6 +29,7 @@ target_sources(core
     "shape_vertex.hpp"
     "shape.cpp"
     "shape.hpp"
+    "shape.inl"
     "sphere.cpp"
     "sphere.hpp"
     )  

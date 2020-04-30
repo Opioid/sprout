@@ -16,7 +16,8 @@
 namespace scene::shape::triangle {
 
 Morphable_mesh::Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts)
-    : collection_(collection),
+    : Shape(Properties(Property::Complex, Property::Finite)),
+      collection_(collection),
       vertices_(memory::allocate_aligned<Vertex>(collection->num_vertices())) {
     tree_.allocate_parts(num_parts);
 }
@@ -259,14 +260,6 @@ float Morphable_mesh::area(uint32_t /*part*/, float3 const& /*scale*/) const {
 
 float Morphable_mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 1.f;
-}
-
-bool Morphable_mesh::is_complex() const {
-    return true;
-}
-
-bool Morphable_mesh::is_analytical() const {
-    return false;
 }
 
 void Morphable_mesh::prepare_sampling(uint32_t /*part*/) {}

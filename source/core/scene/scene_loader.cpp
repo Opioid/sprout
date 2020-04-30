@@ -24,6 +24,7 @@
 #include "shape/infinite_sphere.hpp"
 #include "shape/plane.hpp"
 #include "shape/rectangle.hpp"
+#include "shape/shape.inl"
 #include "shape/sphere.hpp"
 #include "shape/triangle/triangle_mesh.hpp"
 #include "shape/triangle/triangle_mesh_generator.hpp"

@@ -18,7 +18,7 @@
 #include "scene_constants.hpp"
 #include "scene_ray.hpp"
 #include "scene_worker.hpp"
-#include "shape/shape.hpp"
+#include "shape/shape.inl"
 
 #include "base/debug/assert.hpp"
 
