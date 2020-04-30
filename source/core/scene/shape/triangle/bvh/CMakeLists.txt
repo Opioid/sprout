@@ -3,8 +3,6 @@ target_sources(core
 	"triangle_bvh_builder_sah.cpp"
 	"triangle_bvh_builder_sah.hpp"
 	"triangle_bvh_builder_sah.inl"
-	"triangle_bvh_data_interleaved.hpp"
-	"triangle_bvh_data_interleaved.inl"
 	"triangle_bvh_data.hpp"
 	"triangle_bvh_data.inl"
 	"triangle_bvh_helper.cpp"
