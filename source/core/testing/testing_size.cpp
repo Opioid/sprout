@@ -119,10 +119,10 @@ void size() {
 
     print_size<float3>("Intersection_vertex_MT", 16);
 
-    print_size<scene::shape::Canopy>("Canopy", 8);
-    print_size<scene::shape::Distant_sphere>("Distant_sphere", 8);
-    print_size<scene::shape::Sphere>("Sphere", 8);
-    print_size<scene::shape::Infinite_sphere>("Infinite_sphere", 8);
+    print_size<scene::shape::Canopy>("Canopy", 16);
+    print_size<scene::shape::Distant_sphere>("Distant_sphere", 16);
+    print_size<scene::shape::Sphere>("Sphere", 16);
+    print_size<scene::shape::Infinite_sphere>("Infinite_sphere", 16);
     print_size<scene::shape::triangle::Mesh>("Mesh", 128);
     print_size<scene::shape::triangle::Morphable_mesh>("Morphable_mesh", 128);
 
