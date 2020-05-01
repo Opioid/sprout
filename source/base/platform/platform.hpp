@@ -7,7 +7,7 @@ namespace platform {
 
 std::string build();
 
-std::string revision();
+char const* revision();
 }  // namespace platform
 
 #endif

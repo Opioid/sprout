@@ -3,7 +3,6 @@
 
 #include "base/math/aabb.hpp"
 #include "scene_bvh_builder_base.hpp"
-#include "scene_bvh_split_candidate.hpp"
 
 #include <cstddef>
 #include <vector>

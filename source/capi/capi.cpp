@@ -127,7 +127,7 @@ static Engine* engine = nullptr;
     }
 
 char const* su_platform_revision() {
-    return platform::revision().c_str();
+    return platform::revision();
 }
 
 int32_t su_init(bool progressive) {

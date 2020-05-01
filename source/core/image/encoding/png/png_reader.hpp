@@ -1,9 +1,10 @@
 #ifndef SU_CORE_IMAGE_ENCODING_PNG_READER_HPP
 #define SU_CORE_IMAGE_ENCODING_PNG_READER_HPP
 
+#include "image/channels.hpp"
+
 #include <cstdint>
 #include <iosfwd>
-#include "image/channels.hpp"
 
 namespace image {
 

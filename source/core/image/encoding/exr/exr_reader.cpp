@@ -63,10 +63,6 @@ Image* Reader::read(std::istream& stream) {
     // Check version
     stream.read(reinterpret_cast<char*>(header), Signature_size);
 
-    //    std::cout << uint32_t(header[0]) << " " << uint32_t(header[1]) << " " <<
-    //    uint32_t(header[2])
-    //              << " " << uint32_t(header[3]) << std::endl;
-
     std::string attribute_name;
     std::string attribute_type;
 
@@ -332,6 +328,7 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
         if (size < bytes_per_row_block) {
             unsigned long uncompressed_size = uint32_t(bytes_per_row_block);
             if (MZ_OK != mz_uncompress(uncompressed, &uncompressed_size, buffer, uint32_t(size))) {
+                delete image;
                 return nullptr;
             }
 

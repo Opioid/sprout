@@ -110,10 +110,6 @@ bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker,
 }
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const {
-    //	if (!visible(ray.depth)) {
-    //		return false;
-    //	}
-
     if (!visible_in_shadow()) {
         return false;
     }

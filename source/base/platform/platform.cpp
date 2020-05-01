@@ -41,7 +41,7 @@ std::string build() {
     return stream.str();
 }
 
-std::string revision() {
+char const* revision() {
     return GIT_REV;
 }
 

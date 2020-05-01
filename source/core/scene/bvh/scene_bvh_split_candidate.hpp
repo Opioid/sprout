@@ -2,7 +2,6 @@
 #define SU_CORE_SCENE_BVH_SPLIT_CANDIDATE_HPP
 
 #include "base/math/aabb.hpp"
-#include "base/math/plane.hpp"
 
 #include <cstdint>
 #include <vector>

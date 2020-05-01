@@ -70,7 +70,7 @@ struct Info {
 static Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
                            bool invert);
 
-static void read_chunk(std::istream& stream, Chunk& chunk);
+static bool read_chunk(std::istream& stream, Chunk& chunk);
 
 static bool handle_chunk(const Chunk& chunk, Info& info);
 
@@ -83,9 +83,11 @@ static bool parse_data(const Chunk& chunk, Info& info);
 static uint8_t filter(uint8_t byte, Filter filter, const Info& info);
 
 static uint8_t raw(int column, const Info& info);
+
 static uint8_t prior(int column, const Info& info);
 
 static uint8_t average(uint8_t a, uint8_t b);
+
 static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c);
 
 static uint32_t byteswap(uint32_t v);
@@ -101,7 +103,7 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
 
     stream.read(reinterpret_cast<char*>(signature), Signature_size);
 
-    if (0 != memcmp(reinterpret_cast<const void*>(Signature), static_cast<void*>(signature),
+    if (0 != memcmp(reinterpret_cast<void const*>(Signature), static_cast<void*>(signature),
                     Signature_size)) {
         logging::push_error("Bad PNG signature");
         return nullptr;
@@ -114,7 +116,9 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
     info.stream.zfree  = nullptr;
 
     for (;;) {
-        read_chunk(stream, chunk);
+        if (!read_chunk(stream, chunk)) {
+            break;
+        }
 
         if (!handle_chunk(chunk, info)) {
             break;
@@ -268,15 +272,22 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
     return nullptr;
 }
 
-void read_chunk(std::istream& stream, Chunk& chunk) {
+bool read_chunk(std::istream& stream, Chunk& chunk) {
     uint32_t length = 0;
     stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
     chunk.length = byteswap(length);
 
+    // Max chunk length according to spec
+    if (length > 0x7FFFFFFF) {
+        return false;
+    }
+
     if (chunk.capacity < chunk.length) {
         memory::free_aligned(chunk.type);
+
         chunk.capacity = chunk.length;
-        chunk.type     = memory::allocate_aligned<uint8_t>(chunk.length + 4);
+
+        chunk.type = memory::allocate_aligned<uint8_t>(chunk.length + 4);
     }
 
     chunk.data = chunk.type + 4;
@@ -286,6 +297,8 @@ void read_chunk(std::istream& stream, Chunk& chunk) {
     uint32_t crc = 0;
     stream.read(reinterpret_cast<char*>(&crc), sizeof(uint32_t));
     chunk.crc = byteswap(crc);
+
+    return stream.good();
 }
 
 bool handle_chunk(const Chunk& chunk, Info& info) {
@@ -399,7 +412,7 @@ bool parse_data(const Chunk& chunk, Info& info) {
 
         for (uint32_t i = 0; i < decompressed; ++i) {
             if (info.filter_byte) {
-                info.current_filter = static_cast<Filter>(buffer[i]);
+                info.current_filter = Filter(buffer[i]);
                 info.filter_byte    = false;
             } else {
                 uint8_t const raw = filter(buffer[i], info.current_filter, info);
@@ -461,9 +474,9 @@ uint8_t average(uint8_t a, uint8_t b) {
 }
 
 uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
-    int32_t const A  = static_cast<int32_t>(a);
-    int32_t const B  = static_cast<int32_t>(b);
-    int32_t const C  = static_cast<int32_t>(c);
+    int32_t const A  = int32_t(a);
+    int32_t const B  = int32_t(b);
+    int32_t const C  = int32_t(c);
     int32_t const p  = A + B - C;
     int32_t const pa = std::abs(p - A);
     int32_t const pb = std::abs(p - B);
