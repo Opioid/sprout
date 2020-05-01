@@ -4,6 +4,7 @@
 #include "math/matrix4x4.inl"
 #include "math/quaternion.inl"
 #include "math/vector4.inl"
+#include "memory/align.hpp"
 #include "rapidjson/error/en.h"
 #include "rapidjson/istreamwrapper.h"
 
@@ -58,7 +59,11 @@ std::string read_error(rapidjson::Document const& document, std::istream& stream
 }
 
 rapidjson::Document parse(std::istream& stream, std::string& error) {
-    rapidjson::IStreamWrapper json_stream(stream);
+    static size_t constexpr Buffer_size = 8192;
+
+    memory::Buffer<char> buffer(Buffer_size);
+
+    rapidjson::IStreamWrapper json_stream(stream, buffer.data(), Buffer_size);
 
     rapidjson::Document document;
 
