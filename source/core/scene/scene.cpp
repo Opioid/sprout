@@ -49,7 +49,6 @@ Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
     finite_props_.reserve(Num_reserved_props);
     infinite_props_.reserve(3);
     volumes_.reserve(Num_reserved_props);
-    infinite_volumes_.reserve(1);
 }
 
 Scene::~Scene() {

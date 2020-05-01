@@ -159,6 +159,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
 void Builder_base::assign(Build_node* node, References const& references) {
     size_t const num_references = references.size();
     node->primitives.resize(num_references);
+
     for (size_t i = 0; i < num_references; ++i) {
         node->primitives[i] = references[i].primitive();
     }
