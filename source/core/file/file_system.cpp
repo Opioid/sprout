@@ -59,6 +59,7 @@ System::Stream_ptr System::read_stream(std::string_view name, std::string& resol
         allocate_buffers(gzip::Filebuffer::read_buffer_size(),
                          gzip::Filebuffer::write_buffer_size());
 
+        gzip_stream_.clear();
         gzip_stream_.open(&stream, read_buffer_size_, read_buffer_, buffer_size_, buffer_);
 
         return Stream_ptr(*this, Stream_ptr::Type::GZIP);
@@ -69,6 +70,7 @@ System::Stream_ptr System::read_stream(std::string_view name, std::string& resol
         allocate_buffers(zstd::Filebuffer::read_buffer_size(),
                          zstd::Filebuffer::write_buffer_size());
 
+        zstd_stream_.clear();
         zstd_stream_.open(&stream, read_buffer_size_, read_buffer_, buffer_size_, buffer_);
 
         return Stream_ptr(*this, Stream_ptr::Type::ZSTD);

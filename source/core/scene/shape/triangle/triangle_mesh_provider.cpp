@@ -613,6 +613,11 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     stream.seekg(std::streamoff(binary_start + indices_offset));
     stream.read(indices, std::streamsize(indices_size));
 
+    if (stream.gcount() < std::streamsize(indices_size)) {
+        logging::push_error("Could not read all indices.");
+        return nullptr;
+    }
+
     auto mesh = new Mesh;
 
     mesh->allocate_parts(num_parts);

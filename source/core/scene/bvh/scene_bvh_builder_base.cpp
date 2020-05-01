@@ -32,6 +32,14 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
         if (num_primitives <= 0xFF && (float(num_primitives) <= sp.cost() || exhausted)) {
             assign(node, references);
         } else {
+            if (exhausted) {
+                // TODO
+                // Implement a fallback solution that arbitrarily distributes the primitives
+                // to sub-nodes without needing a meaningful splitting plane.
+                logging::warning("Cannot split node further");
+                return;
+            }
+
             node->axis = sp.axis();
 
             References references0;
@@ -43,14 +51,6 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
                 // It means every triangle was (partially) on the same side of the plane.
                 assign(node, references);
             } else {
-                if (exhausted) {
-                    // TODO
-                    // Implement a fallback solution that arbitrarily distributes the primitives
-                    // to sub-nodes without needing a meaningful splitting plane.
-                    logging::warning("Cannot split node further");
-                    return;
-                }
-
                 ++depth;
 
                 references = References();
