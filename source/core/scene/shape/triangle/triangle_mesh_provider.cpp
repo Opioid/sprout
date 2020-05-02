@@ -1,10 +1,7 @@
 #include "triangle_mesh_provider.hpp"
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/distribution/distribution_1d.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/unique.inl"
-#include "base/memory/variant_map.inl"
 #include "bvh/triangle_bvh_builder_sah.inl"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
@@ -63,7 +60,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
         return mesh;
     }
 
-    memory::Unique_ptr<Json_handler> handler(new Json_handler);
+    Json_handler handler;
 
     {
         static size_t constexpr Buffer_size = 8192;
@@ -74,84 +71,83 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
 
         rapidjson::Reader reader;
 
-        reader.Parse(json_stream, *handler);
+        reader.Parse(json_stream, handler);
 
         stream.close();
     }
 
-    if (!handler->morph_targets().empty()) {
-        return load_morphable_mesh(filename, handler->morph_targets(), resources);
+    if (!handler.morph_targets().empty()) {
+        return load_morphable_mesh(filename, handler.morph_targets(), resources);
     }
 
-    if (handler->vertices().empty()) {
+    if (handler.vertices().empty()) {
         logging::error("Mesh %S does not contain vertices.", filename);
         return nullptr;
     }
 
-    if (!handler->has_positions()) {
+    if (!handler.has_positions()) {
         logging::error("Mesh %S does not contain vertex positions.", filename);
         return nullptr;
     }
 
-    if (handler->triangles().empty()) {
+    if (handler.triangles().empty()) {
         logging::error("Mesh %S does not contain indices.", filename);
         return nullptr;
     }
 
-    if (handler->parts().empty()) {
-        handler->create_part();
+    if (handler.parts().empty()) {
+        handler.create_part();
     }
 
-    if (!handler->has_normals()) {
+    if (!handler.has_normals()) {
         // If no normals were loaded, compute geometry normal.
-        for (auto const& t : handler->triangles()) {
-            float3 const a = float3(handler->vertices()[t.i[0]].p);
-            float3 const b = float3(handler->vertices()[t.i[1]].p);
-            float3 const c = float3(handler->vertices()[t.i[2]].p);
+        for (auto const& t : handler.triangles()) {
+            float3 const a = float3(handler.vertices()[t.i[0]].p);
+            float3 const b = float3(handler.vertices()[t.i[1]].p);
+            float3 const c = float3(handler.vertices()[t.i[2]].p);
 
             float3 const e1 = b - a;
             float3 const e2 = c - a;
 
             float3 const n = normalize(cross(e1, e2));
 
-            handler->vertices()[t.i[0]].n = packed_float3(n);
-            handler->vertices()[t.i[1]].n = packed_float3(n);
-            handler->vertices()[t.i[2]].n = packed_float3(n);
+            handler.vertices()[t.i[0]].n = packed_float3(n);
+            handler.vertices()[t.i[1]].n = packed_float3(n);
+            handler.vertices()[t.i[2]].n = packed_float3(n);
         }
     }
 
-    if (!handler->has_tangents()) {
+    if (!handler.has_tangents()) {
         // If no tangents were loaded, compute some tangent space manually
-        for (auto& v : handler->vertices()) {
+        for (auto& v : handler.vertices()) {
             v.t = tangent(v.n);
 
             v.bitangent_sign = 0;
         }
     }
 
-    SOFT_ASSERT(
-        check_and_fix(handler->parts(), handler->triangles(), handler->vertices(), filename));
+    SOFT_ASSERT(check_and_fix(handler.parts(), handler.triangles(), handler.vertices(), filename));
 
     // Exporter::write(filename, *handler);
 
     auto mesh = new Mesh;
 
-    uint32_t const num_parts = uint32_t(handler->parts().size());
+    uint32_t const num_parts = uint32_t(handler.parts().size());
 
     mesh->allocate_parts(num_parts);
 
     for (uint32_t p = 0; p < num_parts; ++p) {
-        mesh->set_material_for_part(p, handler->parts()[p].material_index);
+        mesh->set_material_for_part(p, handler.parts()[p].material_index);
     }
 
     resources.threads().run_async([mesh, handler{std::move(handler)},
                                    &resources]() mutable noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
-        auto& triangles = handler->triangles();
+        auto& triangles = handler.triangles();
 
         uint32_t part = 0;
-        for (auto const& p : handler->parts()) {
+        for (auto const& p : handler.parts()) {
             uint32_t const triangles_start = p.start_index / 3;
             uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
 
@@ -162,7 +158,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
             ++part;
         }
 
-        auto const& vertices = handler->vertices();
+        auto const& vertices = handler.vertices();
 
         Vertex_stream_interleaved const vertex_stream(uint32_t(vertices.size()), vertices.data());
 

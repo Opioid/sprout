@@ -13,6 +13,7 @@ namespace scene::shape::triangle {
 
 struct Part {
     Part() = default;
+
     Part(uint32_t start_index, uint32_t num_indices, uint32_t material_index)
         : start_index(start_index), num_indices(num_indices), material_index(material_index) {}
 
@@ -24,6 +25,10 @@ struct Part {
 class Json_handler {
   public:
     Json_handler();
+
+    Json_handler(Json_handler&& other);
+
+    Json_handler(Json_handler& other);
 
     void clear(bool read_indices = true);
     void create_part();
@@ -104,6 +109,8 @@ class Json_handler {
 
     std::vector<Vertex> vertices_;
 
+    std::vector<std::string> morph_targets_;
+
     Number      expected_number_;
     String_type expected_string_;
     Object      expected_object_;
@@ -120,8 +127,6 @@ class Json_handler {
     bool has_normals_;
     bool has_tangents_;
     bool has_texture_coordinates_;
-
-    std::vector<std::string> morph_targets_;
 };
 
 }  // namespace scene::shape::triangle

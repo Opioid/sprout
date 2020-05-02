@@ -8,6 +8,20 @@ Json_handler::Json_handler() {
     clear();
 }
 
+Json_handler::Json_handler(Json_handler&& other) {
+    parts_.swap(other.parts_);
+    triangles_.swap(other.triangles_);
+    vertices_.swap(other.vertices_);
+    morph_targets_.swap(other.morph_targets_);
+}
+
+Json_handler::Json_handler(Json_handler& other) {
+    parts_.swap(other.parts_);
+    triangles_.swap(other.triangles_);
+    vertices_.swap(other.vertices_);
+    morph_targets_.swap(other.morph_targets_);
+}
+
 void Json_handler::clear(bool read_indices) {
     read_indices_ = read_indices;
     object_level_ = 0;
