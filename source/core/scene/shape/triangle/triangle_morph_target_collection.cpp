@@ -43,7 +43,7 @@ void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread
                 args.vertices[i].uv = lerp(args.va[i].uv, args.vb[i].uv, args.weight);
             }
         },
-        0, static_cast<int32_t>(morph_targets_[0].size()));
+        0, int32_t(morph_targets_[0].size()));
 }
 
 }  // namespace scene::shape::triangle

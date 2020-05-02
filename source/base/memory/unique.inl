@@ -17,7 +17,7 @@ Unique_ptr<T>::Unique_ptr(Unique_ptr&& other) noexcept : value_(other.value_) {
 }
 
 template <class T>
-Unique_ptr<T>::Unique_ptr(Unique_ptr& other)  : value_(other.value_) {
+Unique_ptr<T>::Unique_ptr(Unique_ptr& other) : value_(other.value_) {
     other.value_ = nullptr;
 }
 

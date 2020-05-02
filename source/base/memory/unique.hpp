@@ -25,7 +25,7 @@ class Unique_ptr {
 
     T const& operator*() const;
 
-    T&       operator*();
+    T& operator*();
 
     T const* operator->() const;
 

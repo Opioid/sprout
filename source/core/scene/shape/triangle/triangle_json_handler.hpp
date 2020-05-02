@@ -96,7 +96,7 @@ class Json_handler {
 
     uint32_t object_level_;
 
-    Object   top_object_;
+    Object top_object_;
 
     std::vector<Part> parts_;
 

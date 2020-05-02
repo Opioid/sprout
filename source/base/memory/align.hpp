@@ -101,7 +101,7 @@ class Buffer {
         return data_;
     }
 
-    operator T const*() const {
+    operator T const *() const {
         return data_;
     }
 

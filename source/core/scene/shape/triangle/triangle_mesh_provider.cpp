@@ -144,7 +144,8 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
         mesh->set_material_for_part(p, handler->parts()[p].material_index);
     }
 
-    resources.threads().run_async([mesh, handler{std::move(handler)}, &resources]() mutable noexcept {
+    resources.threads().run_async([mesh, handler{std::move(handler)},
+                                   &resources]() mutable noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
         auto& triangles = handler->triangles();
@@ -281,8 +282,7 @@ Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t 
                        &threads]() noexcept {
         Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
 
-        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream,
-                  threads);
+        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream, threads);
     });
 
     return mesh;
@@ -294,15 +294,19 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 
     Json_handler handler;
 
+    static size_t constexpr Buffer_size = 8192;
+
+    memory::Buffer<char> buffer(Buffer_size);
+
     for (auto& targets : morph_targets) {
         auto stream = resources.filesystem().read_stream(targets);
         if (!stream) {
             continue;
         }
 
-        rapidjson::IStreamWrapper json_stream(*stream);
-
         handler.clear(collection->triangles().empty());
+
+        rapidjson::IStreamWrapper json_stream(*stream, buffer.data(), Buffer_size);
 
         rapidjson::Reader reader;
 
@@ -341,9 +345,9 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
                 uint32_t triangles_end   = (p.start_index + p.num_indices) / 3;
 
                 for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-                    uint32_t a = triangles[i].i[0];
-                    uint32_t b = triangles[i].i[1];
-                    uint32_t c = triangles[i].i[2];
+                    uint32_t const a = triangles[i].i[0];
+                    uint32_t const b = triangles[i].i[1];
+                    uint32_t const c = triangles[i].i[2];
 
                     collection->triangles().emplace_back(a, b, c, part);
                 }
@@ -391,15 +395,15 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
 
             int32_t const a = previous_index + int32_t(indices[j * 3 + 0]);
 
-            t.i[0]          = uint32_t(a);
+            t.i[0] = uint32_t(a);
 
             int32_t const b = a + int32_t(indices[j * 3 + 1]);
 
-            t.i[1]          = uint32_t(b);
+            t.i[1] = uint32_t(b);
 
             int32_t const c = b + int32_t(indices[j * 3 + 2]);
 
-            t.i[2]          = uint32_t(c);
+            t.i[2] = uint32_t(c);
 
             previous_index = c;
 
@@ -635,8 +639,9 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
         mesh->set_material_for_part(p, parts[p].material_index);
     }
 
-    threads.run_async([mesh, num_parts, parts{std::move(parts)}, num_indices, indices{std::move(indices)}, vertex_stream, index_bytes,
-                       delta_indices, &threads]() noexcept {
+    threads.run_async([mesh, num_parts, parts{std::move(parts)}, num_indices,
+                       indices{std::move(indices)}, vertex_stream, index_bytes, delta_indices,
+                       &threads]() noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
         uint32_t const num_triangles = num_indices / 3;

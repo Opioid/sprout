@@ -19,7 +19,8 @@ struct Index_triangle;
 class Morph_target_collection {
   public:
     const std::vector<Index_triangle>& triangles() const;
-    std::vector<Index_triangle>&       triangles();
+
+    std::vector<Index_triangle>& triangles();
 
     uint32_t num_vertices() const;
 

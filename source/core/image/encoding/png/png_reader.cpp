@@ -278,7 +278,7 @@ bool read_chunk(std::istream& stream, Chunk& chunk) {
     chunk.length = byteswap(length);
 
     // Max chunk length according to spec
-    if (length > 0x7FFFFFFF) {
+    if (chunk.length > 0x7FFFFFFF) {
         return false;
     }
 
