@@ -58,7 +58,7 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
         bool invert = false;
         options.query("invert", invert);
 
-        return encoding::png::Reader::read(*stream, channels, num_elements, swap_xy, invert);
+        return png_reader_.read(*stream, channels, num_elements, swap_xy, invert);
     }
 
     if (file::Type::RGBE == type) {

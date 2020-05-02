@@ -6,7 +6,6 @@
 #include "image/image.hpp"
 #include "image/tiled_image.inl"
 #include "logging/logging.hpp"
-#include "miniz/miniz.h"
 
 #include <cstring>
 #include <istream>
@@ -16,26 +15,19 @@
 
 namespace image::encoding::png {
 
-struct Chunk {
-    ~Chunk() {
+Reader::Chunk::~Chunk() {
+    memory::free_aligned(data);
+}
+
+void Reader::Chunk::allocate() {
+    if (capacity < length) {
         memory::free_aligned(data);
+
+        data = memory::allocate_aligned<uint8_t>(length);
+
+        capacity = length;
     }
-
-    void allocate() {
-        if (capacity < length) {
-            memory::free_aligned(data);
-
-            data = memory::allocate_aligned<uint8_t>(length);
-
-            capacity = length;
-        }
-    }
-
-    uint32_t length   = 0;
-    uint32_t capacity = 0;
-
-    uint8_t* data = nullptr;
-};
+}
 
 enum class Color_type {
     Grayscale       = 0,
@@ -45,54 +37,34 @@ enum class Color_type {
     Truecolor_alpha = 6
 };
 
-enum class Filter { None, Sub, Up, Average, Paeth };
+Reader::Info::~Info() {
+    memory::free_aligned(buffer);
+}
 
-struct Info {
-    ~Info() {
+void Reader::Info::allocate() {
+    uint32_t const row_size = uint32_t(width * num_channels);
+
+    uint32_t const buffer_size = row_size * uint32_t(height);
+
+    uint32_t const num_bytes = buffer_size + 2 * row_size;
+
+    if (capacity < num_bytes) {
         memory::free_aligned(buffer);
+
+        buffer = memory::allocate_aligned<uint8_t>(num_bytes);
+
+        current_row_data  = buffer + buffer_size;
+        previous_row_data = current_row_data + row_size;
+
+        capacity = num_bytes;
     }
+}
 
-    void allocate() {
-        uint32_t const row_size = uint32_t(width * num_channels);
+using Info = Reader::Info;
 
-        uint32_t const buffer_size = row_size * uint32_t(height);
+using Chunk = Reader::Chunk;
 
-        uint32_t const num_bytes = buffer_size + 2 * row_size;
-
-        if (capacity < num_bytes) {
-            memory::free_aligned(buffer);
-
-            buffer = memory::allocate_aligned<uint8_t>(num_bytes);
-
-            current_row_data = buffer + buffer_size;
-            previous_row_data = current_row_data + row_size;
-
-            capacity = num_bytes;
-        }
-    }
-
-    // header
-    int32_t width  = 0;
-    int32_t height = 0;
-
-    int32_t num_channels    = 0;
-    int32_t bytes_per_pixel = 0;
-
-    // parsing state
-    Filter  current_filter;
-    bool    filter_byte;
-    int32_t current_byte;
-    int32_t current_byte_total;
-
-    uint32_t capacity = 0;
-
-    uint8_t* buffer = nullptr;
-    uint8_t* current_row_data  = nullptr;
-    uint8_t* previous_row_data = nullptr;
-
-    // miniz
-    mz_stream stream;
-};
+using Filter = Reader::Filter;
 
 static Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
                            bool invert);
@@ -133,20 +105,17 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
         return nullptr;
     }
 
-    Chunk chunk;
-    Info  info;
+    info_.stream.zalloc = nullptr;
+    info_.stream.zfree  = nullptr;
 
-    info.stream.zalloc = nullptr;
-    info.stream.zfree  = nullptr;
-
-    for (; handle_chunk(stream, chunk, info);) {
+    for (; handle_chunk(stream, chunk_, info_);) {
     }
 
-    if (info.stream.zfree) {
-        mz_inflateEnd(&info.stream);
+    if (info_.stream.zfree) {
+        mz_inflateEnd(&info_.stream);
     }
 
-    return create_image(info, channels, num_elements, swap_xy, invert);
+    return create_image(info_, channels, num_elements, swap_xy, invert);
 }
 
 Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
@@ -393,8 +362,8 @@ bool parse_header(Chunk const& chunk, Info& info) {
 }
 
 bool parse_data(Chunk const& chunk, Info& info) {
-    static uint32_t constexpr buffer_size = 8192;
-    uint8_t buffer[buffer_size];
+    static uint32_t constexpr Buffer_size = 8192;
+    uint8_t buffer[Buffer_size];
 
     info.stream.next_in  = chunk.data;
     info.stream.avail_in = chunk.length;
@@ -403,15 +372,15 @@ bool parse_data(Chunk const& chunk, Info& info) {
 
     do {
         info.stream.next_out  = buffer;
-        info.stream.avail_out = buffer_size;
+        info.stream.avail_out = Buffer_size;
 
-        const int status = mz_inflate(&info.stream, MZ_NO_FLUSH);
+        int const status = mz_inflate(&info.stream, MZ_NO_FLUSH);
         if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR &&
             status != MZ_NEED_DICT) {
             return false;
         }
 
-        uint32_t const decompressed = buffer_size - info.stream.avail_out;
+        uint32_t const decompressed = Buffer_size - info.stream.avail_out;
 
         for (uint32_t i = 0; i < decompressed; ++i) {
             if (info.filter_byte) {

@@ -1,6 +1,7 @@
 #ifndef SU_CORE_IMAGE_PROVIDER_HPP
 #define SU_CORE_IMAGE_PROVIDER_HPP
 
+#include "encoding/png/png_reader.hpp"
 #include "procedural/flakes/flakes_provider.hpp"
 #include "resource/resource_provider.hpp"
 
@@ -37,6 +38,8 @@ class Provider final : public resource::Provider<Image> {
                 Resources& resources) final;
 
   private:
+    encoding::png::Reader png_reader_;
+
     procedural::flakes::Provider flakes_provider_;
 };
 
