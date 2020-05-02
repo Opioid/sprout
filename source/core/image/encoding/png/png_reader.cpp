@@ -18,14 +18,13 @@ namespace image::encoding::png {
 
 struct Chunk {
     ~Chunk() {
-        memory::free_aligned(type);
+        memory::free_aligned(data);
     }
 
     uint32_t length   = 0;
     uint32_t capacity = 0;
-    uint8_t* type     = nullptr;
-    uint8_t* data;
-    uint32_t crc;
+
+    uint8_t* data = nullptr;
 };
 
 enum class Color_type {
@@ -72,19 +71,17 @@ static Image* create_image(Info const& info, Channels channels, int32_t num_elem
 
 static bool read_chunk(std::istream& stream, Chunk& chunk);
 
-static bool handle_chunk(const Chunk& chunk, Info& info);
+static bool handle_chunk(std::istream& stream, Chunk& chunk, Info& info);
 
-static bool parse_header(const Chunk& chunk, Info& info);
+static bool parse_header(Chunk const& chunk, Info& info);
 
-static bool parse_lte(const Chunk& chunk, Info& info);
+static bool parse_data(Chunk const& chunk, Info& info);
 
-static bool parse_data(const Chunk& chunk, Info& info);
+static uint8_t filter(uint8_t byte, Filter filter, Info const& info);
 
-static uint8_t filter(uint8_t byte, Filter filter, const Info& info);
+static uint8_t raw(int column, Info const& info);
 
-static uint8_t raw(int column, const Info& info);
-
-static uint8_t prior(int column, const Info& info);
+static uint8_t prior(int column, Info const& info);
 
 static uint8_t average(uint8_t a, uint8_t b);
 
@@ -103,8 +100,7 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
 
     stream.read(reinterpret_cast<char*>(signature), Signature_size);
 
-    if (0 != memcmp(reinterpret_cast<void const*>(Signature), static_cast<void*>(signature),
-                    Signature_size)) {
+    if (0 != std::memcmp(Signature, signature, Signature_size)) {
         logging::push_error("Bad PNG signature");
         return nullptr;
     }
@@ -115,14 +111,7 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
     info.stream.zalloc = nullptr;
     info.stream.zfree  = nullptr;
 
-    for (;;) {
-        if (!read_chunk(stream, chunk)) {
-            break;
-        }
-
-        if (!handle_chunk(chunk, info)) {
-            break;
-        }
+    for (; handle_chunk(stream, chunk, info);) {
     }
 
     if (info.stream.zfree) {
@@ -273,54 +262,55 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
 }
 
 bool read_chunk(std::istream& stream, Chunk& chunk) {
-    uint32_t length = 0;
-    stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
-    chunk.length = byteswap(length);
-
-    // Max chunk length according to spec
-    if (chunk.length > 0x7FFFFFFF) {
-        return false;
-    }
-
     if (chunk.capacity < chunk.length) {
-        memory::free_aligned(chunk.type);
+        memory::free_aligned(chunk.data);
 
         chunk.capacity = chunk.length;
 
-        chunk.type = memory::allocate_aligned<uint8_t>(chunk.length + 4);
+        chunk.data = memory::allocate_aligned<uint8_t>(chunk.length);
     }
 
-    chunk.data = chunk.type + 4;
+    stream.read(reinterpret_cast<char*>(chunk.data), chunk.length);
 
-    stream.read(reinterpret_cast<char*>(chunk.type), chunk.length + 4);
-
-    uint32_t crc = 0;
-    stream.read(reinterpret_cast<char*>(&crc), sizeof(uint32_t));
-    chunk.crc = byteswap(crc);
+    // crc
+    stream.ignore(4);
 
     return stream.good();
 }
 
-bool handle_chunk(const Chunk& chunk, Info& info) {
-    char const* type = reinterpret_cast<char const*>(chunk.type);
+bool handle_chunk(std::istream& stream, Chunk& chunk, Info& info) {
+    uint32_t length = 0;
+    stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
+    length = byteswap(length);
 
-    if (!strncmp("IHDR", type, 4)) {
-        return parse_header(chunk, info);
-    }
-
-    if (!strncmp("PLTE", type, 4)) {
-        return parse_lte(chunk, info);
-    }
-
-    if (!strncmp("IDAT", type, 4)) {
-        return parse_data(chunk, info);
-    }
-
-    if (!strncmp("IEND", type, 4)) {
+    // Max chunk length according to spec
+    if (length > 0x7FFFFFFF) {
         return false;
     }
 
-    return true;
+    chunk.length = length;
+
+    uint32_t type = 0;
+    stream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
+
+    // IHDR: 0x52444849
+    if (0x52444849 == type) {
+        return read_chunk(stream, chunk) && parse_header(chunk, info);
+    }
+
+    // IDAT: 0x54414449
+    if (0x54414449 == type) {
+        return read_chunk(stream, chunk) && parse_data(chunk, info);
+    }
+
+    // IEND: 0x444E4549
+    if (0x444E4549 == type) {
+        return false;
+    }
+
+    stream.ignore(length + 4);
+
+    return stream.good();
 }
 
 static bool header_error(std::string const& text, Info& info) {
@@ -329,7 +319,7 @@ static bool header_error(std::string const& text, Info& info) {
     return false;
 }
 
-bool parse_header(const Chunk& chunk, Info& info) {
+bool parse_header(Chunk const& chunk, Info& info) {
     info.width  = int32_t(byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]));
     info.height = int32_t(byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]));
 
@@ -385,11 +375,7 @@ bool parse_header(const Chunk& chunk, Info& info) {
     return true;
 }
 
-bool parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
-    return true;
-}
-
-bool parse_data(const Chunk& chunk, Info& info) {
+bool parse_data(Chunk const& chunk, Info& info) {
     static uint32_t constexpr buffer_size = 8192;
     uint8_t buffer[buffer_size];
 
@@ -433,7 +419,7 @@ bool parse_data(const Chunk& chunk, Info& info) {
     return true;
 }
 
-uint8_t filter(uint8_t byte, Filter filter, const Info& info) {
+uint8_t filter(uint8_t byte, Filter filter, Info const& info) {
     switch (filter) {
         case Filter::None:
             return byte;
@@ -453,7 +439,7 @@ uint8_t filter(uint8_t byte, Filter filter, const Info& info) {
     }
 }
 
-uint8_t raw(int column, const Info& info) {
+uint8_t raw(int column, Info const& info) {
     if (column < 0) {
         return 0;
     }
@@ -461,7 +447,7 @@ uint8_t raw(int column, const Info& info) {
     return info.current_row_data[column];
 }
 
-uint8_t prior(int column, const Info& info) {
+uint8_t prior(int column, Info const& info) {
     if (column < 0) {
         return 0;
     }

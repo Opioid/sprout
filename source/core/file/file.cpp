@@ -11,27 +11,27 @@ Type query_type(std::istream& stream) {
 
     stream.seekg(0);
 
-    if (!strncmp("\x76\x2F\x31\x01", header, 4)) {
+    if (!std::memcmp("\x76\x2F\x31\x01", header, 4)) {
         return Type::EXR;
     }
 
-    if (!strncmp("\037\213", header, 2)) {
+    if (!std::memcmp("\037\213", header, 2)) {
         return Type::GZIP;
     }
 
-    if (!strncmp("\211PNG", header, 4)) {
+    if (!std::memcmp("\211PNG", header, 4)) {
         return Type::PNG;
     }
 
-    if (!strncmp("#?", header, 2)) {
+    if (!std::memcmp("#?", header, 2)) {
         return Type::RGBE;
     }
 
-    if (!strncmp("SUB\000", header, 4)) {
+    if (!std::memcmp("SUB\000", header, 4)) {
         return Type::SUB;
     }
 
-    if (!strncmp("\x28\xB5\x2F\xFD", header, 4)) {
+    if (!std::memcmp("\x28\xB5\x2F\xFD", header, 4)) {
         return Type::ZSTD;
     }
 

@@ -41,6 +41,8 @@ void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread
                 args.vertices[i].n  = normalize(lerp(args.va[i].n, args.vb[i].n, args.weight));
                 args.vertices[i].t  = normalize(lerp(args.va[i].t, args.vb[i].t, args.weight));
                 args.vertices[i].uv = lerp(args.va[i].uv, args.vb[i].uv, args.weight);
+
+                args.vertices[i].bitangent_sign = args.va[i].bitangent_sign;
             }
         },
         0, int32_t(morph_targets_[0].size()));
