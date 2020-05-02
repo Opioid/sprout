@@ -12,8 +12,12 @@ template <class T>
 Unique_ptr<T>::Unique_ptr(T* value) : value_(value) {}
 
 template <class T>
-Unique_ptr<T>::Unique_ptr(Unique_ptr&& other) noexcept {
-    value_       = other.value_;
+Unique_ptr<T>::Unique_ptr(Unique_ptr&& other) noexcept : value_(other.value_) {
+    other.value_ = nullptr;
+}
+
+template <class T>
+Unique_ptr<T>::Unique_ptr(Unique_ptr& other)  : value_(other.value_) {
     other.value_ = nullptr;
 }
 

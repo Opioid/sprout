@@ -66,7 +66,11 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     memory::Unique_ptr<Json_handler> handler(new Json_handler);
 
     {
-        rapidjson::IStreamWrapper json_stream(*stream);
+        static size_t constexpr Buffer_size = 8192;
+
+        memory::Buffer<char> buffer(Buffer_size);
+
+        rapidjson::IStreamWrapper json_stream(*stream, buffer.data(), Buffer_size);
 
         rapidjson::Reader reader;
 
@@ -132,19 +136,21 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
 
     auto mesh = new Mesh;
 
-    mesh->allocate_parts(uint32_t(handler->parts().size()));
+    uint32_t const num_parts = uint32_t(handler->parts().size());
 
-    for (uint32_t p = 0, len = uint32_t(handler->parts().size()); p < len; ++p) {
+    mesh->allocate_parts(num_parts);
+
+    for (uint32_t p = 0; p < num_parts; ++p) {
         mesh->set_material_for_part(p, handler->parts()[p].material_index);
     }
 
-    resources.threads().run_async([mesh, handler_raw{handler.release()}, &resources]() noexcept {
+    resources.threads().run_async([mesh, handler{std::move(handler)}, &resources]() mutable noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
-        auto& triangles = handler_raw->triangles();
+        auto& triangles = handler->triangles();
 
         uint32_t part = 0;
-        for (auto const& p : handler_raw->parts()) {
+        for (auto const& p : handler->parts()) {
             uint32_t const triangles_start = p.start_index / 3;
             uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
 
@@ -155,14 +161,12 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
             ++part;
         }
 
-        auto const& vertices = handler_raw->vertices();
+        auto const& vertices = handler->vertices();
 
         Vertex_stream_interleaved const vertex_stream(uint32_t(vertices.size()), vertices.data());
 
         build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream,
                   resources.threads());
-
-        delete handler_raw;
 
         LOGGING_VERBOSE("Finished asynchronously building triangle mesh BVH.");
     });
@@ -230,10 +234,10 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
             }
         }
 
-        packed_float3* tangents = nullptr;
+        memory::Buffer<packed_float3> tangents;
 
         if (!desc.tangents) {
-            tangents = memory::allocate_aligned<packed_float3>(desc.num_vertices);
+            tangents.resize(desc.num_vertices);
 
             packed_float3 const* normals = reinterpret_cast<packed_float3 const*>(desc.normals);
 
@@ -251,8 +255,6 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
             desc.uvs ? desc.uvs : empty_uv.v);
 
         build_bvh(*mesh, num_triangles, triangles, vertex_stream, resources.threads());
-
-        memory::free_aligned(tangents);
 
         LOGGING_VERBOSE("Finished asynchronously building triangle mesh BVH.");
     });
@@ -275,15 +277,13 @@ Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t 
         mesh->set_material_for_part(i, i);
     }
 
-    threads.run_async([mesh, triangles_in{std::move(triangles)}, vertices_in{std::move(vertices)},
+    threads.run_async([mesh, triangles{std::move(triangles)}, vertices{std::move(vertices)},
                        &threads]() noexcept {
-        Vertex_stream_interleaved vertex_stream(uint32_t(vertices_in.size()), vertices_in.data());
+        Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
 
-        build_bvh(*mesh, uint32_t(triangles_in.size()), triangles_in.data(), vertex_stream,
+        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream,
                   threads);
     });
-
-    //	build_bvh(*mesh, triangles, vertices, bvh_preset, threads);
 
     return mesh;
 }
@@ -390,12 +390,15 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
             Index_triangle& t = triangles[j];
 
             int32_t const a = previous_index + int32_t(indices[j * 3 + 0]);
+
             t.i[0]          = uint32_t(a);
 
             int32_t const b = a + int32_t(indices[j * 3 + 1]);
+
             t.i[1]          = uint32_t(b);
 
             int32_t const c = b + int32_t(indices[j * 3 + 2]);
+
             t.i[2]          = uint32_t(c);
 
             previous_index = c;
@@ -432,9 +435,9 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     uint64_t json_size = 0;
     stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
 
-    memory::Array<char> json_string(uint32_t(json_size) + 1);
+    memory::Buffer<char> json_string(json_size + 1);
     stream.read(json_string.data(), std::streamsize(json_size * sizeof(char)));
-    json_string[uint32_t(json_size)] = 0;
+    json_string[json_size] = 0;
 
     rapidjson::Document root;
     root.ParseInsitu(json_string.data());
@@ -452,7 +455,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     json::Value const& geometry_value = geometry_node->value;
 
     uint32_t num_parts = 0;
-    Part*    parts     = nullptr;
+
+    memory::Buffer<Part> parts;
 
     uint64_t vertices_offset = 0;
     uint64_t vertices_size   = 0;
@@ -476,7 +480,7 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
         if ("parts" == n.name) {
             num_parts = n.value.Size();
 
-            parts = new Part[num_parts];
+            parts.resize(num_parts);
 
             uint32_t i = 0;
 
@@ -608,13 +612,18 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
         num_indices = uint32_t(indices_size / index_bytes);
     }
 
-    char* indices = new char[indices_size];
+    memory::Buffer<char> indices(indices_size);
 
     stream.seekg(std::streamoff(binary_start + indices_offset));
     stream.read(indices, std::streamsize(indices_size));
 
     if (stream.gcount() < std::streamsize(indices_size)) {
-        logging::push_error("Could not read all indices.");
+        logging::push_error("Could not read all index data.");
+
+        vertex_stream->release();
+
+        delete vertex_stream;
+
         return nullptr;
     }
 
@@ -626,34 +635,33 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
         mesh->set_material_for_part(p, parts[p].material_index);
     }
 
-    threads.run_async([mesh, num_parts, parts, num_indices, indices, vertex_stream, index_bytes,
+    threads.run_async([mesh, num_parts, parts{std::move(parts)}, num_indices, indices{std::move(indices)}, vertex_stream, index_bytes,
                        delta_indices, &threads]() noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
-        memory::Array<Index_triangle> triangles(num_indices / 3);
+        uint32_t const num_triangles = num_indices / 3;
+
+        memory::Buffer<Index_triangle> triangles(num_triangles);
 
         if (4 == index_bytes) {
             if (delta_indices) {
-                int32_t const* indices32 = reinterpret_cast<int32_t const*>(indices);
+                int32_t const* indices32 = reinterpret_cast<int32_t const*>(indices.data());
                 fill_triangles_delta(num_parts, parts, indices32, triangles.data());
             } else {
-                uint32_t const* indices32 = reinterpret_cast<uint32_t const*>(indices);
+                uint32_t const* indices32 = reinterpret_cast<uint32_t const*>(indices.data());
                 fill_triangles(num_parts, parts, indices32, triangles.data());
             }
         } else {
             if (delta_indices) {
-                int16_t const* indices16 = reinterpret_cast<int16_t const*>(indices);
+                int16_t const* indices16 = reinterpret_cast<int16_t const*>(indices.data());
                 fill_triangles_delta(num_parts, parts, indices16, triangles.data());
             } else {
-                uint16_t const* indices16 = reinterpret_cast<uint16_t const*>(indices);
+                uint16_t const* indices16 = reinterpret_cast<uint16_t const*>(indices.data());
                 fill_triangles(num_parts, parts, indices16, triangles.data());
             }
         }
 
-        delete[] indices;
-        delete[] parts;
-
-        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), *vertex_stream, threads);
+        build_bvh(*mesh, num_triangles, triangles.data(), *vertex_stream, threads);
 
         vertex_stream->release();
 

@@ -60,13 +60,48 @@ void destroy_aligned(T* objects, size_t count) {
 template <typename T>
 class Buffer {
   public:
+    Buffer() : data_(nullptr) {}
+
     Buffer(size_t size) : data_(allocate_aligned<T>(size)) {}
+
+    Buffer(Buffer&& other) noexcept : data_(other.data_) {
+        other.data_ = nullptr;
+    }
+
+    // Not really happy with this, but in practice it makes life easiser with std::function
+    Buffer(Buffer& other) : data_(other.data_) {
+        other.data_ = nullptr;
+    }
 
     ~Buffer() {
         free_aligned(data_);
     }
 
+    void resize(size_t size) {
+        free_aligned(data_);
+
+        data_ = allocate_aligned<T>(size);
+    }
+
+    void release() {
+        free_aligned(data_);
+
+        data_ = nullptr;
+    }
+
+    operator bool() const {
+        return data_ != nullptr;
+    }
+
+    T const* data() const {
+        return data_;
+    }
+
     T* data() {
+        return data_;
+    }
+
+    operator T const*() const {
         return data_;
     }
 

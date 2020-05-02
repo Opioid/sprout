@@ -95,6 +95,7 @@ class Json_handler {
     bool read_indices_;
 
     uint32_t object_level_;
+
     Object   top_object_;
 
     std::vector<Part> parts_;

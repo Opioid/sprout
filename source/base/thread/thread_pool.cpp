@@ -71,7 +71,7 @@ void Pool::run_range(Range_program&& program, int32_t begin, int32_t end) {
 void Pool::run_async(Async_program&& program) {
     wait_async();
 
-    async_.program = program;
+    async_.program = std::move(program);
 
     wake_async();
 }
