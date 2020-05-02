@@ -21,6 +21,16 @@ struct Chunk {
         memory::free_aligned(data);
     }
 
+    void allocate() {
+        if (capacity < length) {
+            memory::free_aligned(data);
+
+            data = memory::allocate_aligned<uint8_t>(length);
+
+            capacity = length;
+        }
+    }
+
     uint32_t length   = 0;
     uint32_t capacity = 0;
 
@@ -39,9 +49,26 @@ enum class Filter { None, Sub, Up, Average, Paeth };
 
 struct Info {
     ~Info() {
-        memory::free_aligned(previous_row_data);
-        memory::free_aligned(current_row_data);
         memory::free_aligned(buffer);
+    }
+
+    void allocate() {
+        uint32_t const row_size = uint32_t(width * num_channels);
+
+        uint32_t const buffer_size = row_size * uint32_t(height);
+
+        uint32_t const num_bytes = buffer_size + 2 * row_size;
+
+        if (capacity < num_bytes) {
+            memory::free_aligned(buffer);
+
+            buffer = memory::allocate_aligned<uint8_t>(num_bytes);
+
+            current_row_data = buffer + buffer_size;
+            previous_row_data = current_row_data + row_size;
+
+            capacity = num_bytes;
+        }
     }
 
     // header
@@ -51,14 +78,15 @@ struct Info {
     int32_t num_channels    = 0;
     int32_t bytes_per_pixel = 0;
 
-    uint8_t* buffer = nullptr;
-
     // parsing state
     Filter  current_filter;
     bool    filter_byte;
     int32_t current_byte;
     int32_t current_byte_total;
 
+    uint32_t capacity = 0;
+
+    uint8_t* buffer = nullptr;
     uint8_t* current_row_data  = nullptr;
     uint8_t* previous_row_data = nullptr;
 
@@ -262,13 +290,7 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
 }
 
 bool read_chunk(std::istream& stream, Chunk& chunk) {
-    if (chunk.capacity < chunk.length) {
-        memory::free_aligned(chunk.data);
-
-        chunk.capacity = chunk.length;
-
-        chunk.data = memory::allocate_aligned<uint8_t>(chunk.length);
-    }
+    chunk.allocate();
 
     stream.read(reinterpret_cast<char*>(chunk.data), chunk.length);
 
@@ -356,17 +378,12 @@ bool parse_header(Chunk const& chunk, Info& info) {
         return header_error("Interlaced PNG image not supported.", info);
     }
 
-    info.buffer = memory::allocate_aligned<uint8_t>(
-        uint32_t(info.width * info.height * info.num_channels));
-
     info.current_filter     = Filter::None;
     info.filter_byte        = true;
     info.current_byte       = 0;
     info.current_byte_total = 0;
 
-    uint32_t const row_size = uint32_t(info.width * info.num_channels);
-    info.current_row_data   = memory::allocate_aligned<uint8_t>(row_size);
-    info.previous_row_data  = memory::allocate_aligned<uint8_t>(row_size);
+    info.allocate();
 
     if (MZ_OK != mz_inflateInit(&info.stream)) {
         return header_error("Could not deflate PNG stream.", info);
