@@ -144,6 +144,8 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
             num_channels = 4;
     }
 
+    bool const byte_compatible = num_channels == info.num_channels && !swap_xy && !invert;
+
     num_channels = std::min(num_channels, info.num_channels);
 
     int2 dimensions;
@@ -157,102 +159,118 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
     }
 
     if (1 == num_channels) {
-        Image* image = new Image(Byte1(Description(dimensions, num_elements)));
+        Byte1 image(Description(dimensions, num_elements));
 
-        int32_t c;
+        if (byte_compatible) {
+            std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
+        } else {
+            int32_t c;
 
-        switch (channels) {
-            case Channels::X:
-            default:
-                c = 0;
-                break;
-            case Channels::Y:
-                c = 1;
-                break;
-            case Channels::Z:
-                c = 2;
-                break;
-            case Channels::W:
-                c = 3;
-                break;
-        }
-
-        if (c >= info.num_channels) {
-            c = 0;
-        }
-
-        for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-            int32_t const o = i * info.num_channels;
-
-            uint8_t color = info.buffer[o + c];
-
-            if (invert) {
-                color = 255 - color;
+            switch (channels) {
+                case Channels::X:
+                default:
+                    c = 0;
+                    break;
+                case Channels::Y:
+                    c = 1;
+                    break;
+                case Channels::Z:
+                    c = 2;
+                    break;
+                case Channels::W:
+                    c = 3;
+                    break;
             }
 
-            image->byte1().store(i, color);
+            if (c >= info.num_channels) {
+                c = 0;
+            }
+
+            for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+                int32_t const o = i * info.num_channels;
+
+                uint8_t color = info.buffer[o + c];
+
+                if (invert) {
+                    color = 255 - color;
+                }
+
+                image.store(i, color);
+            }
         }
 
-        return image;
+        return new Image(std::move(image));
     }
 
     if (2 == num_channels) {
-        Image* image = new Image(Byte2(Description(dimensions, num_elements)));
+        Byte2 image(Description(dimensions, num_elements));
 
-        byte2 color(0, 0);
+        if (byte_compatible) {
+            std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
+        } else {
+            byte2 color(0, 0);
 
-        for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-            int32_t const o = i * info.num_channels;
-            for (int32_t c = 0; c < num_channels; ++c) {
-                color.v[c] = info.buffer[o + c];
+            for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+                int32_t const o = i * info.num_channels;
+                for (int32_t c = 0; c < num_channels; ++c) {
+                    color.v[c] = info.buffer[o + c];
+                }
+
+                image.store(i, color);
             }
-
-            image->byte2().store(i, color);
         }
 
-        return image;
+        return new Image(std::move(image));
     }
 
     if (3 == num_channels) {
-        Image* image = new Image(Byte3(Description(dimensions, num_elements)));
+        Byte3 image(Description(dimensions, num_elements));
 
-        byte3 color(0, 0, 0);
+        if (byte_compatible) {
+            std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
+        } else {
+            byte3 color(0, 0, 0);
 
-        for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-            int32_t const o = i * info.num_channels;
-            for (int32_t c = 0; c < num_channels; ++c) {
-                color.v[c] = info.buffer[o + c];
+            for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+                int32_t const o = i * info.num_channels;
+                for (int32_t c = 0; c < num_channels; ++c) {
+                    color.v[c] = info.buffer[o + c];
+                }
+
+                if (swap_xy) {
+                    std::swap(color[0], color[1]);
+                }
+
+                image.store(i, color);
             }
-
-            if (swap_xy) {
-                std::swap(color[0], color[1]);
-            }
-
-            image->byte3().store(i, color);
         }
 
-        return image;
+        return new Image(std::move(image));
     }
 
     if (4 == num_channels) {
-        Image* image = new Image(Byte4(Description(dimensions, num_elements)));
+        Byte4 image(Description(dimensions, num_elements));
 
-        byte4 color(0, 0, 0, 255);
+        if (byte_compatible) {
+            std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
+        } else {
+            byte4 color(0, 0, 0, 255);
 
-        for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-            int32_t const o = i * info.num_channels;
-            for (int32_t c = 0; c < num_channels; ++c) {
-                color.v[c] = info.buffer[o + c];
+            for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+                int32_t const o = i * info.num_channels;
+                for (int32_t c = 0; c < num_channels; ++c) {
+                    color.v[c] = info.buffer[o + c];
+                }
+
+                if (swap_xy) {
+                    std::swap(color[0], color[1]);
+                }
+
+                image.store(i, color);
             }
-
-            if (swap_xy) {
-                std::swap(color[0], color[1]);
-            }
-
-            image->byte4().store(i, color);
         }
 
-        return image;
+        return new Image(std::move(image));
     }
 
     return nullptr;
