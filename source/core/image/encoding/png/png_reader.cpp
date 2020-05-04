@@ -37,11 +37,20 @@ enum class Color_type {
     Truecolor_alpha = 6
 };
 
-Reader::Info::~Info() {
-    memory::free_aligned(buffer);
+Reader::Info::Info() {
+    stream.zalloc = nullptr;
+    stream.zfree  = nullptr;
 }
 
-void Reader::Info::allocate() {
+Reader::Info::~Info() {
+    memory::free_aligned(buffer);
+
+    if (stream.zfree) {
+        mz_inflateEnd(&stream);
+    }
+}
+
+bool Reader::Info::allocate() {
     uint32_t const row_size = uint32_t(width * num_channels);
 
     uint32_t const buffer_size = row_size * uint32_t(height);
@@ -58,6 +67,18 @@ void Reader::Info::allocate() {
 
         capacity = num_bytes;
     }
+
+    if (!stream.zalloc) {
+        if (MZ_OK != mz_inflateInit(&stream)) {
+            return false;
+        }
+    } else {
+        if (MZ_OK != mz_inflateReset(&stream)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 using Info = Reader::Info;
@@ -105,14 +126,7 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
         return nullptr;
     }
 
-    info_.stream.zalloc = nullptr;
-    info_.stream.zfree  = nullptr;
-
     for (; handle_chunk(stream, chunk_, info_);) {
-    }
-
-    if (info_.stream.zfree) {
-        mz_inflateEnd(&info_.stream);
     }
 
     return create_image(info_, channels, num_elements, swap_xy, invert);
@@ -370,10 +384,8 @@ bool parse_header(Chunk const& chunk, Info& info) {
     info.current_byte       = 0;
     info.current_byte_total = 0;
 
-    info.allocate();
-
-    if (MZ_OK != mz_inflateInit(&info.stream)) {
-        return header_error("Could not deflate PNG stream.", info);
+    if (!info.allocate()) {
+        return header_error("Could not deflate PNG buffers.", info);
     }
 
     return true;

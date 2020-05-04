@@ -32,9 +32,11 @@ class Reader {
     enum class Filter { None, Sub, Up, Average, Paeth };
 
     struct Info {
+        Info();
+
         ~Info();
 
-        void allocate();
+        bool allocate();
 
         // header
         int32_t width  = 0;
