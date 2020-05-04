@@ -165,9 +165,12 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
             // start everything from scratch
             stream_->seekg(data_start_);
 
-            mz_inflateEnd(&z_stream_);
+            if (MZ_OK != mz_inflateReset(&z_stream_)) {
+                return pos_type(off_type(-1));
+            }
 
-            init_z_stream();
+            z_stream_.avail_in  = 0;
+            z_stream_.avail_out = 0;
         }
 
         for (mz_ulong const len = mz_ulong(pos); z_stream_.total_out < len;) {
