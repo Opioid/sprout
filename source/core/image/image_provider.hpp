@@ -41,6 +41,8 @@ class Provider final : public resource::Provider<Image> {
     encoding::png::Reader png_reader_;
 
     procedural::flakes::Provider flakes_provider_;
+
+    std::string previous_name_;
 };
 
 }  // namespace image

@@ -38,6 +38,10 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
         return nullptr;
     }
 
+    std::string const previous_name = previous_name_;
+
+    previous_name_ = resolved_name;
+
     file::Type const type = file::query_type(*stream);
 
     if (file::Type::EXR == type) {
@@ -57,6 +61,10 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
 
         bool invert = false;
         options.query("invert", invert);
+
+        if (previous_name == resolved_name) {
+            return png_reader_.create_from_buffer(channels, num_elements, swap_xy, invert);
+        }
 
         return png_reader_.read(*stream, channels, num_elements, swap_xy, invert);
     }

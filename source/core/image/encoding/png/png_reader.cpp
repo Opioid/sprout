@@ -132,6 +132,11 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
     return create_image(info_, channels, num_elements, swap_xy, invert);
 }
 
+Image* Reader::create_from_buffer(Channels channels, int32_t num_elements, bool swap_xy,
+                                  bool invert) const {
+    return create_image(info_, channels, num_elements, swap_xy, invert);
+}
+
 Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
                     bool invert) {
     if (0 == info.num_channels || Channels::None == channels) {

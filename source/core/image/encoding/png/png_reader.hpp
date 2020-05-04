@@ -18,6 +18,9 @@ class Reader {
     Image* read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
                 bool invert);
 
+    Image* create_from_buffer(Channels channels, int32_t num_elements, bool swap_xy,
+                              bool invert) const;
+
     struct Chunk {
         ~Chunk();
 
