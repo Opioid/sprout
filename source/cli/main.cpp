@@ -26,6 +26,10 @@
 #include "extension/procedural/sky/sky_provider.hpp"
 #include "options/options.hpp"
 
+#ifdef SU_DEBUG
+#include "core/scene/material/material_sample_cache.hpp"
+#endif
+
 //#include "core/scene/material/substitute/substitute_test.hpp"
 //#include "core/scene/material/glass/glass_test.hpp"
 //#include "core/testing/testing_cdf.hpp"

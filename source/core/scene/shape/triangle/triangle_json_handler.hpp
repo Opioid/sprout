@@ -28,7 +28,7 @@ class Json_handler {
 
     Json_handler(Json_handler&& other);
 
-    Json_handler(Json_handler& other);
+    Json_handler(Json_handler const& other);
 
     void clear(bool read_indices = true);
     void create_part();
