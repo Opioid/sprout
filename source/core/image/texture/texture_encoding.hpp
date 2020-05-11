@@ -13,7 +13,6 @@ float2 cached_srgb_to_float2(byte3 const& byte);
 float2 cached_srgb_to_float2(byte4 const& byte);
 float3 cached_srgb_to_float3(byte3 const& byte);
 float3 cached_srgb_to_float3(byte4 const& byte);
-float4 cached_srgb_to_float4(byte3 const& byte);
 float4 cached_srgb_to_float4(byte4 const& byte);
 
 void cached_srgb_to_float(byte3 const bytes[4], float c[4]);

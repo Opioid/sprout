@@ -15,7 +15,6 @@ Json_handler::Json_handler(Json_handler&& other) {
     morph_targets_.swap(other.morph_targets_);
 }
 
-
 Json_handler::Json_handler(Json_handler const& other) {
     // MSVC insists on the parameter being const
     // On the one hand I don't like the cast, on the other hand the uggliness is explicit now...

@@ -1,5 +1,6 @@
 #include "sky_model.hpp"
 #include "base/math/matrix3x3.inl"
+#include "base/spectrum/aces.hpp"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
 #include "hosek/ArHosekSkyModel.hpp"
@@ -65,7 +66,11 @@ float3 Model::evaluate_sky(float3 const& wi) const {
                                               wi_dot_s, wl_center)));
     }
 
+#ifdef SU_ACESCG
+    return max(spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ())), 0.f);
+#else
     return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
+#endif
 }
 
 float3 Model::evaluate_sky_and_sun(float3 const& wi) const {
@@ -90,7 +95,11 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const {
                                                     sqrt_cos_theta, gamma, wi_dot_s, wl_center)));
     }
 
+#ifdef SU_ACESCG
+    return max(spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ())), 0.f);
+#else
     return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
+#endif
 }
 
 void Model::release() {

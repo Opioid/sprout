@@ -42,10 +42,6 @@ float3 cached_srgb_to_float3(byte4 const& byte) {
     return float3(srgb_float[byte[0]], srgb_float[byte[1]], srgb_float[byte[2]]);
 }
 
-float4 cached_srgb_to_float4(byte3 const& byte) {
-    return float4(srgb_float[byte[0]], srgb_float[byte[1]], srgb_float[byte[2]], 1.f);
-}
-
 float4 cached_srgb_to_float4(byte4 const& byte) {
     return float4(srgb_float[byte[0]], srgb_float[byte[1]], srgb_float[byte[2]],
                   unorm_float[byte[3]]);

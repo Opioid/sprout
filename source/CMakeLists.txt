@@ -12,12 +12,17 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
+option(ACEScg "Render in ACEScg color space instead of sRGB" ON)
 option(NAN "Soft assert on NaN" OFF)
 option(ZSTD "Build with ZSTD support" ON)
 option(Valgrind "Valgrind compatible build" OFF)
 option(IWYU "Inlcude-what-you-use" OFF)
 option(ASAN "clang adress-sanitizer" OFF)
 option(MSAN "clang memory-sanitizer" OFF)
+
+if (${ACEScg})
+	add_definitions(-DSU_ACESCG)
+endif ()
 
 if (${NAN})
 	add_definitions(-DSU_DEBUG)

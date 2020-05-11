@@ -1,12 +1,13 @@
 target_sources(base
-	PRIVATE
-	"discrete.hpp"
-	"discrete.inl"
-	"interpolated.cpp"
-	"interpolated.hpp"
-	"mapping.cpp"
-	"mapping.hpp"
-	"rgb.hpp"
-	"xyz.cpp"
-	"xyz.hpp"
-	) 
+    PRIVATE
+    "aces.hpp"
+    "discrete.hpp"
+    "discrete.inl"
+    "interpolated.cpp"
+    "interpolated.hpp"
+    "mapping.cpp"
+    "mapping.hpp"
+    "rgb.hpp"
+    "xyz.cpp"
+    "xyz.hpp"
+    )

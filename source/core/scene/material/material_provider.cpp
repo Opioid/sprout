@@ -3,6 +3,7 @@
 #include "base/math/vector4.inl"
 #include "base/memory/array.inl"
 #include "base/memory/variant_map.inl"
+#include "base/spectrum/aces.hpp"
 #include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/string/string.hpp"
@@ -1294,9 +1295,17 @@ float3 read_hex_RGB(std::string const& text) {
                   float(elements[2]) / 255.f);
 }
 
+static inline float3 map_color(float3 const& color) {
+#ifdef SU_ACESCG
+    return spectrum::linear_sRGB_to_AP1(color);
+#else
+    return color;
+#endif
+}
+
 float3 read_color(json::Value const& color_value) {
     if (color_value.IsArray()) {
-        return json::read_float3(color_value);
+        return map_color(json::read_float3(color_value));
     }
 
     if (!color_value.IsString()) {
@@ -1304,7 +1313,7 @@ float3 read_color(json::Value const& color_value) {
     }
 
     std::string const hex_string = json::read_string(color_value);
-    return read_hex_RGB(hex_string);
+    return map_color(read_hex_RGB(hex_string));
 }
 
 float3 read_spectrum(json::Value const& spectrum_value) {
@@ -1315,7 +1324,7 @@ float3 read_spectrum(json::Value const& spectrum_value) {
     for (auto& n : spectrum_value.GetObject()) {
         if ("sRGB" == n.name) {
             float3 const srgb = read_color(n.value);
-            return spectrum::gamma_to_linear_sRGB(srgb);
+            return map_color(spectrum::gamma_to_linear_sRGB(srgb));
         }
 
         if ("RGB" == n.name) {
@@ -1324,7 +1333,7 @@ float3 read_spectrum(json::Value const& spectrum_value) {
 
         if ("temperature" == n.name) {
             float const temperature = json::read_float(n.value);
-            return spectrum::blackbody(std::max(800.f, temperature));
+            return map_color(spectrum::blackbody(std::max(800.f, temperature)));
         }
     }
 

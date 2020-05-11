@@ -1,13 +1,14 @@
 #include "rgbe_reader.hpp"
-#include <cmath>
-#include <istream>
-#include <string>
 #include "base/math/half.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/array.inl"
+#include "base/spectrum/aces.hpp"
 #include "image/image.hpp"
 #include "logging/logging.hpp"
 
+#include <cmath>
+#include <istream>
+#include <string>
 #include <type_traits>
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
@@ -230,7 +231,12 @@ image_float3 rgbe_to_float3(uint8_t rgbe[4]) {
         // nonzero pixel
         float const f = std::ldexp(1.f, int32_t(rgbe[3]) - (128 + 8));
 
+#ifdef SU_ACESCG
+        float3 const srgb(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
+        return image_float3(spectrum::linear_sRGB_to_AP1(srgb));
+#else
         return image_float3(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
+#endif
     }
 
     return image_float3(0.f);
