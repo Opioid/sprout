@@ -39,6 +39,7 @@
 //#include "core/testing/testing_vector.hpp"
 //#include "core/sampler/sampler_test.hpp"
 //#include "core/scene/material/ggx/ggx_integrate.hpp"
+//#include "core/image/texture/texture_encoding.hpp"
 
 int main(int argc, char* argv[]) {
     using namespace scene;
@@ -61,6 +62,7 @@ int main(int argc, char* argv[]) {
     //  sampler::testing::test();
 
     //  scene::material::ggx::integrate();
+    //  image::texture::encoding::create_tables();
 
     //  return 1;
 

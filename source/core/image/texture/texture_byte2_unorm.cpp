@@ -1,7 +1,7 @@
 #include "texture_byte2_unorm.hpp"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
-#include "texture_encoding.hpp"
+#include "texture_encoding.inl"
 
 namespace image::texture {
 
@@ -48,7 +48,10 @@ void Byte2_unorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
     byte2 v[4];
     image_.gather(xy_xy1, v);
 
-    encoding::cached_unorm_to_float(v, c);
+    c[0] = encoding::cached_unorm_to_float(v[0]);
+    c[1] = encoding::cached_unorm_to_float(v[1]);
+    c[2] = encoding::cached_unorm_to_float(v[2]);
+    c[3] = encoding::cached_unorm_to_float(v[3]);
 }
 
 void Byte2_unorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {

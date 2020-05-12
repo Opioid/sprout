@@ -1,7 +1,7 @@
 #include "texture_byte3_snorm.hpp"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
-#include "texture_encoding.hpp"
+#include "texture_encoding.inl"
 
 namespace image::texture {
 
@@ -67,7 +67,10 @@ void Byte3_snorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {
     byte3 v[4];
     image_.gather(xy_xy1, v);
 
-    encoding::cached_snorm_to_float(v, c);
+    c[0] = encoding::cached_snorm_to_float(v[0]);
+    c[1] = encoding::cached_snorm_to_float(v[1]);
+    c[2] = encoding::cached_snorm_to_float(v[2]);
+    c[3] = encoding::cached_snorm_to_float(v[3]);
 }
 
 float Byte3_snorm::at_element_1(int32_t x, int32_t y, int32_t element) const {

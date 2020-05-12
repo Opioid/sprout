@@ -20,6 +20,7 @@ target_sources(core
     "texture_byte4_srgb.hpp"
     "texture_encoding.cpp"
     "texture_encoding.hpp"
+    "texture_encoding.inl"
     "texture_float1.cpp"
     "texture_float1.hpp"
     "texture_float2.cpp"

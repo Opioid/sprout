@@ -374,9 +374,11 @@ void make_f_sd_ss_table(std::ostream& stream) {
 void integrate() {
     std::ofstream stream("../source/core/scene/material/ggx/ggx_integral.inl");
 
+    stream << "#include \"base/memory/const.hpp\"\n\n";
+
     stream << "#include <cstdint>\n\n";
 
-    stream.precision(6);
+    stream.precision(8);
     stream << std::fixed;
 
     make_f_ss_table(stream);

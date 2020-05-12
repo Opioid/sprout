@@ -15,7 +15,6 @@
 #include "texture_byte3_srgb.hpp"
 #include "texture_byte3_unorm.hpp"
 #include "texture_byte4_srgb.hpp"
-#include "texture_encoding.hpp"
 #include "texture_float1.hpp"
 #include "texture_float3.hpp"
 
@@ -24,9 +23,7 @@
 
 namespace image::texture {
 
-Provider::Provider(bool no_textures) : no_textures_(no_textures) {
-    encoding::init();
-}
+Provider::Provider(bool no_textures) : no_textures_(no_textures) {}
 
 Texture* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
                         std::string& resolved_name) {

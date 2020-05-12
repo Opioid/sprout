@@ -1,9 +1,10 @@
 #include "texture_test.hpp"
-#include <iostream>
 #include "base/math/print.hpp"
 #include "base/math/vector3.inl"
 #include "image/image.hpp"
-#include "texture_encoding.hpp"
+#include "texture_encoding.inl"
+
+#include <iostream>
 
 namespace image::texture::testing {
 
