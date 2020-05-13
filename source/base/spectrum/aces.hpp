@@ -27,6 +27,7 @@ static inline float3 constexpr linear_sRGB_to_RRT_SAT(float3 const& srgb) {
                   0.02840f * srgb[0] + 0.13383f * srgb[1] + 0.83777f * srgb[2]);
 }
 
+// ODT_SAT => XYZ => D60_2_D65 => sRGB
 static inline float3 constexpr ODT_SAT_to_linear_sRGB(float3 const& odt) {
     return float3(+1.60475f * odt[0] - 0.53108f * odt[1] - 0.07367f * odt[2],
                   -0.10208f * odt[0] + 1.10813f * odt[1] - 0.00605f * odt[2],
@@ -44,6 +45,44 @@ static inline float3 constexpr ToneTF2(float3 const& x) {
     float3 const b = x * (0.983521 * x + 0.5001330) + 0.274064;
 
     return a / b;
+}
+
+static inline float3 XYZ_to_ACES2065_1(float3 color)
+{
+    float3 out;
+    out[0] = color[0] * 1.0498110175f + color[1] * 0.0000000000f + color[2] * -0.0000974845f;
+    out[1] = color[0] * -0.4959030231f + color[1] * 1.3733130458f + color[2] * 0.0982400361f;
+    out[2] = color[0] * 0.0000000000f + color[1] * 0.0000000000f + color[2] *  0.9912520182f;
+
+    return out;
+}
+
+static inline float3 ACES2065_1_to_ACEScg(float3 color)
+{
+    float3 out;
+    out[0] = color[0] * 1.4514393161f + color[1] * -0.2365107469f + color[2] * -0.2149285693f;
+    out[1] = color[0] * -0.0765537733f + color[1] * 1.1762296998f + color[2] * -0.0996759265f;
+    out[2] = color[0] * 0.0083161484f + color[1] * -0.0060324498f + color[2] *  0.9977163014f;
+
+    return out;
+}
+
+static inline float3 ACES2065_1_to_sRGB(float3 color)
+{
+    float3 out;
+    out[0] = color[0] * 2.5216494298f + color[1] * -1.1368885542f + color[2] * -0.3849175932f;
+    out[1] = color[0] * -0.2752135512f + color[1] * 1.3697051510f + color[2] * -0.0943924508f;
+    out[2] = color[0] * -0.0159250101f + color[1] * -0.1478063681f + color[2] * 1.1638058159f;
+
+    return out;
+
+}
+
+
+static inline float3 XYZ_to_AP1(float3 const xyz) {
+    return float3(  1.6410233797f * xyz[0] + -0.3248032942f * xyz[1] + -0.2364246952f * xyz[2],
+    -0.6636628587f * xyz[0] +  1.6153315917f *xyz[1] +  0.0167563477f * xyz[2],
+    0.0117218943f *  xyz[0] + -0.0082844420f * xyz[1] +  0.9883948585f * xyz[2]);
 }
 
 }  // namespace spectrum

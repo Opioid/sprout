@@ -67,6 +67,13 @@ float3 Model::evaluate_sky(float3 const& wi) const {
     }
 
 #ifdef SU_ACESCG
+
+    float3 const a = max(spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ())), 0.f);
+
+    float3 const b = max(spectrum::ACES2065_1_to_ACEScg(spectrum::XYZ_to_ACES2065_1(radiance.XYZ())), 0.f);
+
+    float3 const c = max(spectrum::XYZ_to_AP1(radiance.XYZ()), 0.f);
+
     return max(spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ())), 0.f);
 #else
     return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
