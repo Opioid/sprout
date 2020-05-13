@@ -833,13 +833,7 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
         float const exposure = json::read_float(n.value, "exposure", 0.f);
 
         if ("ACES" == n.name) {
-            float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
-
-            return new Aces(auto_expose, exposure, hdr_max);
-        }
-
-        if ("ACES_MJP" == n.name) {
-            return new Aces_MJP(auto_expose, exposure);
+            return new Aces(auto_expose, exposure);
         }
 
         if ("Generic" == n.name) {
