@@ -1,10 +1,16 @@
 #include "testing_spectrum.hpp"
-#include <iostream>
 #include "base/chrono/chrono.hpp"
 #include "base/math/print.hpp"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/discrete.inl"
+#include "base/spectrum/mapping.hpp"
+#include "base/spectrum/rgb.hpp"
+#include "base/encoding/encoding.inl"
+#include "core/image/typed_image.hpp"
+#include "core/image/encoding/png/png_writer.hpp"
+
+#include <iostream>
 
 namespace testing {
 
@@ -44,6 +50,33 @@ void spectrum() {
     }
 
     delete[] spectra;
+}
+
+void blackbody() {
+    static uint32_t constexpr Width = 1024;
+    static uint32_t constexpr Height = 256;
+
+    static float constexpr Min = 800.f;
+    static float constexpr Max = 12000.f;
+
+
+    image::Byte3 image(image::Description(int2(Width, Height)));
+
+    for (uint32_t i = 0; i < Width; ++i) {
+        float const t = float(i) / float(Width) * (Max - Min) + Min;
+
+        float3 const color = spectrum::blackbody(t);
+
+        float3 const gamma = spectrum::linear_to_gamma_sRGB(color);
+
+        byte3 const byte = ::encoding::float_to_unorm(gamma);
+
+        for (uint32_t j = 0; j < Height; ++j) {
+            image.store(i, j, byte);
+        }
+    }
+
+    image::encoding::png::Writer::write("blackbody.png", image);
 }
 
 }  // namespace testing

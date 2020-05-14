@@ -81,42 +81,7 @@ float3 blackbody(float temperature) {
     // normalize the result
     xyz /= std::max(xyz[0], std::max(xyz[1], xyz[2]));
 
-    //	return spectrum::XYZ_to_linear_RGB(xyz);
-
-    float3 const rgb = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));
-
-    return normalize(rgb);
-}
-
-float3 blackbody_fast(float temperature) {
-    float arg1 = 1e9f / (temperature * temperature * temperature);
-    float arg2 = 1e6f / (temperature * temperature);
-    float arg3 = 1e3f / temperature;
-
-    float xc = 0.f;
-    if (temperature >= 1667.f && temperature <= 4000.f) {
-        xc = -0.2661239f * arg1 - 0.2343580f * arg2 + 0.8776956f * arg3 + 0.179910f;
-    } else if (temperature > 4000.f && temperature <= 25000.f) {
-        xc = -3.0258469f * arg1 + 2.1070379f * arg2 + 0.2226347f * arg3 + 0.240390f;
-    }
-
-    float xc3 = xc * xc * xc;
-    float xc2 = xc * xc;
-
-    float yc = 0.f;
-    if (temperature >= 1667.f && temperature <= 2222.f) {
-        yc = -1.1063814f * xc3 - 1.34811020f * xc2 + 2.18555832f * xc - 0.20219683f;
-    } else if (temperature > 2222.f && temperature <= 4000.f) {
-        yc = -0.9549476f * xc3 - 1.37418593f * xc2 + 2.09137015f * xc - 0.16748867f;
-    } else if (temperature > 4000.f && temperature <= 25000.f) {
-        yc = 3.0817580f * xc3 - 5.87338670f * xc2 + 3.75112997f * xc - 0.37001483f;
-    }
-
-    float3 xyz(xc / yc, 1.f, (1.f - xc - yc) / yc);
-
-    xyz /= std::max(xyz[0], std::max(xyz[1], xyz[2]));
-
-    return /*normalize*/ (spectrum::XYZ_to_linear_RGB(xyz));
+    return math::max(spectrum::XYZ_to_linear_sRGB_D65(xyz), float3(0.f));
 }
 
 }  // namespace spectrum
