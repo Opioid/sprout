@@ -26,10 +26,6 @@
 #include "extension/procedural/sky/sky_provider.hpp"
 #include "options/options.hpp"
 
-#include "base/math/matrix3x3.inl"
-#include "base/spectrum/aces.hpp"
-#include "base/spectrum/xyz.hpp"
-
 #ifdef SU_DEBUG
 #include "core/scene/material/material_sample_cache.hpp"
 #endif
@@ -68,36 +64,7 @@ int main(int argc, char* argv[]) {
     //  scene::material::ggx::integrate();
     //  image::texture::encoding::create_tables();
 
-
-
-    float3x3 const a ( 3.240970, -1.537383,  -0.498611,
-                     -0.969244,  1.875968f, 0.041555,
-                      0.055630, -0.203977,  1.056972 );
-
-
-    float3x3 const b (0.613097f, 0.339523f, 0.047379f,
-                      0.070194f, 0.916354f, 0.013452f,
-                      0.020616f, 0.109570f, 0.869815f);
-
-    float3x3 const c = b * a;
-
-    float3 const color(0.2, 0.4, 0.6);
-
-
-
-    std::cout << c << std::endl;
-
-
-    std::cout << transform_vector_transposed(c, color) << std::endl;
-
-    std::cout << transform_vector_transposed(b, transform_vector_transposed(a, color)) << std::endl;
-
-    std::cout << spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(color)) << std::endl;
-
-  //  std::cout << transform_vector_transposed(a, color) << std::endl;
- //   std::cout << spectrum::XYZ_to_linear_sRGB_D65(color) << std::endl;
-
-     return 1;
+    //  return 1;
 
     logging::init(new logging::Std_out);
 
