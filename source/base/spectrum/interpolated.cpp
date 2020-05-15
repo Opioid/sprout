@@ -34,10 +34,10 @@ float Interpolated::evaluate(float wl) const {
         float const wl0 = wavelengths_[index - 1];
         float const wl1 = wavelengths_[index];
 
-        float const intensity0 = intensities_[index - 1];
-        float const intensity1 = intensities_[index];
+        float const i0 = intensities_[index - 1];
+        float const i1 = intensities_[index];
 
-        return math::lerp((wl - wl0) / (wl1 - wl0), intensity0, intensity1);
+        return math::lerp(i0, i1, (wl - wl0) / (wl1 - wl0));
     }
 
     return intensities_[index];
@@ -90,7 +90,7 @@ float Interpolated::integrate(float a, float b) const {
 // data for Smits-Style RGB to Spectrum conversion (generated using the octave script
 // tools/octave/genRGB2Spect.m 380 720 64)
 
-float const RGB_to_spectrum_wavelengths[RGB_to_spectrum_num] = {
+float const RGB_to_spectrum_wavelengths[Num_wavelengths] = {
     380.000000f, 385.396825f, 390.793651f, 396.190476f, 401.587302f, 406.984127f, 412.380952f,
     417.777778f, 423.174603f, 428.571429f, 433.968254f, 439.365079f, 444.761905f, 450.158730f,
     455.555556f, 460.952381f, 466.349206f, 471.746032f, 477.142857f, 482.539683f, 487.936508f,
@@ -104,7 +104,7 @@ float const RGB_to_spectrum_wavelengths[RGB_to_spectrum_num] = {
 };
 
 // generated with a whitepoint of wx = .3333; wy = .3333;
-float const RGB_reflector_to_spectrum_white[RGB_to_spectrum_num] = {
+float const RGB_reflector_to_spectrum_white[Num_wavelengths] = {
     1.061030f, 1.059838f, 1.062381f, 1.062877f, 1.063021f, 1.061923f, 1.061572f, 1.062888f,
     1.061735f, 1.063289f, 1.063161f, 1.062499f, 1.061470f, 1.062636f, 1.062777f, 1.062895f,
     1.061217f, 1.061067f, 1.061336f, 1.062410f, 1.063127f, 1.063037f, 1.063283f, 1.061749f,
@@ -115,7 +115,7 @@ float const RGB_reflector_to_spectrum_white[RGB_to_spectrum_num] = {
     1.059869f, 1.062575f, 1.059916f, 1.061512f, 1.062366f, 1.062366f, 1.062525f, 1.062799f,
 };
 
-float const RGB_reflector_to_spectrum_cyan[RGB_to_spectrum_num] = {
+float const RGB_reflector_to_spectrum_cyan[Num_wavelengths] = {
     1.051672f, 1.054489f, 1.053767f, 1.039506f, 1.025542f, 1.012466f, 1.001296f, 0.993209f,
     0.990312f, 0.995077f, 1.008785f, 1.029902f, 1.054126f, 1.051265f, 1.054520f, 1.054375f,
     1.054375f, 1.054112f, 1.054381f, 1.053659f, 1.054385f, 1.054433f, 1.054494f, 1.054539f,
@@ -126,7 +126,7 @@ float const RGB_reflector_to_spectrum_cyan[RGB_to_spectrum_num] = {
     0.000101f, 0.000100f, 0.000127f, 0.000181f, 0.000165f, 0.002356f, 0.003305f, 0.003581f,
 };
 
-float const RGB_reflector_to_spectrum_magenta[RGB_to_spectrum_num] = {
+float const RGB_reflector_to_spectrum_magenta[Num_wavelengths] = {
     1.005960f, 1.005414f,  1.003419f,  1.006313f,  1.006970f,  1.006177f,  1.006667f,  1.006639f,
     1.006342f, 1.006533f,  1.006547f,  1.006796f,  1.006420f,  1.006834f,  1.004855f,  1.005941f,
     1.006866f, 1.006968f,  1.006970f,  0.955928f,  0.775710f,  0.531572f,  0.286389f,  0.089253f,
@@ -137,7 +137,7 @@ float const RGB_reflector_to_spectrum_magenta[RGB_to_spectrum_num] = {
     1.006668f, 1.004931f,  1.004739f,  1.006750f,  1.005938f,  1.006553f,  1.006328f,  1.005428f,
 };
 
-float const RGB_reflector_to_spectrum_yellow[RGB_to_spectrum_num] = {
+float const RGB_reflector_to_spectrum_yellow[Num_wavelengths] = {
     0.049450f, 0.047064f, 0.046437f, 0.044339f, 0.043039f, 0.041840f, 0.040256f, 0.040950f,
     0.036703f, 0.041124f, 0.038681f, 0.035959f, 0.039774f, 0.049554f, 0.065018f, 0.092801f,
     0.127998f, 0.179587f, 0.251809f, 0.336173f, 0.438699f, 0.548859f, 0.666307f, 0.797719f,
@@ -148,7 +148,7 @@ float const RGB_reflector_to_spectrum_yellow[RGB_to_spectrum_num] = {
     1.049756f, 1.049651f, 1.049801f, 1.046984f, 1.049946f, 1.049456f, 1.049784f, 1.049854f,
 };
 
-float const RGB_reflector_to_spectrum_red[RGB_to_spectrum_num] = {
+float const RGB_reflector_to_spectrum_red[Num_wavelengths] = {
     0.170703f, 0.168403f, 0.167387f, 0.165440f, 0.163462f, 0.155088f, 0.142358f, 0.131586f,
     0.106832f, 0.073255f, 0.044089f, 0.014094f, 0.000100f, 0.000100f, 0.000100f, 0.000100f,
     0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f,
@@ -159,7 +159,7 @@ float const RGB_reflector_to_spectrum_red[RGB_to_spectrum_num] = {
     1.004487f, 1.004335f, 1.004087f, 1.004740f, 1.003911f, 1.004729f, 1.004195f, 1.004756f,
 };
 
-float const RGB_reflector_to_spectrum_green[RGB_to_spectrum_num] = {
+float const RGB_reflector_to_spectrum_green[Num_wavelengths] = {
     0.000753f, 0.000300f, 0.001266f, 0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f,
     0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f, 0.000100f,
     0.004897f, 0.106573f, 0.261636f, 0.457782f, 0.665053f, 0.848654f, 0.992186f, 0.999885f,
@@ -170,7 +170,7 @@ float const RGB_reflector_to_spectrum_green[RGB_to_spectrum_num] = {
     0.006536f, 0.000100f, 0.000100f, 0.000100f, 0.004099f, 0.007370f, 0.008285f, 0.004014f,
 };
 
-float const RGB_reflector_to_spectrum_blue[RGB_to_spectrum_num] = {
+float const RGB_reflector_to_spectrum_blue[Num_wavelengths] = {
     0.947148f, 0.948021f, 0.945754f, 0.967222f, 0.985207f, 0.975869f, 0.999998f, 1.000000f,
     0.999498f, 0.996392f, 0.999524f, 0.999971f, 0.999970f, 0.999986f, 0.999890f, 1.000000f,
     0.984324f, 0.945557f, 0.844596f, 0.733946f, 0.616532f, 0.498881f, 0.386794f, 0.278527f,

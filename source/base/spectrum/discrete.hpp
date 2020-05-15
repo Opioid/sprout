@@ -34,6 +34,7 @@ class Discrete_spectral_power_distribution {
     static float constexpr wavelength_center(int32_t bin);
 
     static float constexpr start_wavelength();
+
     static float constexpr end_wavelength();
 
   private:

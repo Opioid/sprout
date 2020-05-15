@@ -13,6 +13,7 @@ class Interpolated {
     ~Interpolated();
 
     float start_wavelength() const;
+
     float end_wavelength() const;
 
     float evaluate(float wl) const;
@@ -26,18 +27,18 @@ class Interpolated {
     float* intensities_;
 };
 
-uint32_t constexpr RGB_to_spectrum_num = 64;
+uint32_t constexpr Num_wavelengths = 64;
 
-extern float const RGB_to_spectrum_wavelengths[RGB_to_spectrum_num];
+extern float const RGB_to_spectrum_wavelengths[Num_wavelengths];
 
 // generated with a whitepoint of wx = .3333; wy = .3333;
-extern float const RGB_reflector_to_spectrum_white[RGB_to_spectrum_num];
-extern float const RGB_reflector_to_spectrum_cyan[RGB_to_spectrum_num];
-extern float const RGB_reflector_to_spectrum_magenta[RGB_to_spectrum_num];
-extern float const RGB_reflector_to_spectrum_yellow[RGB_to_spectrum_num];
-extern float const RGB_reflector_to_spectrum_red[RGB_to_spectrum_num];
-extern float const RGB_reflector_to_spectrum_green[RGB_to_spectrum_num];
-extern float const RGB_reflector_to_spectrum_blue[RGB_to_spectrum_num];
+extern float const RGB_reflector_to_spectrum_white[Num_wavelengths];
+extern float const RGB_reflector_to_spectrum_cyan[Num_wavelengths];
+extern float const RGB_reflector_to_spectrum_magenta[Num_wavelengths];
+extern float const RGB_reflector_to_spectrum_yellow[Num_wavelengths];
+extern float const RGB_reflector_to_spectrum_red[Num_wavelengths];
+extern float const RGB_reflector_to_spectrum_green[Num_wavelengths];
+extern float const RGB_reflector_to_spectrum_blue[Num_wavelengths];
 
 }  // namespace spectrum
 
