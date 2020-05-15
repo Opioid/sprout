@@ -1,6 +1,7 @@
 #include "material.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
+#include "base/spectrum/aces.hpp"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
 #include "collision_coefficients.inl"
@@ -8,6 +9,11 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
+
+//#include "base/spectrum/rgb.hpp"
+//#include "base/encoding/encoding.inl"
+//#include "core/image/typed_image.hpp"
+//#include "core/image/encoding/png/png_writer.hpp"
 
 namespace scene::material {
 
@@ -223,7 +229,7 @@ void Material::init_rainbow() {
 
         temp.set_bin(i, 1.f);
 
-        float3 const rgb = saturate(spectrum::XYZ_to_linear_sRGB_D65(temp.normalized_XYZ()));
+        float3 const rgb = saturate(spectrum::XYZ_to_AP1(temp.normalized_XYZ()));
 
         rainbow_[i] = rgb;
 
@@ -242,7 +248,7 @@ void Material::init_rainbow() {
     /*
     int2 const d(1024, 256);
 
-    image::Image::Description const description(image::Image::Type::Byte3, d);
+    image::Description description(d);
 
     image::Byte3 image(description);
 

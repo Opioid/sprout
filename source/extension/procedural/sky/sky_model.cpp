@@ -15,7 +15,6 @@ Model::Model() {
     }
 
     Spectrum::init(380.f, 720.f);
-    //	Spectrum::init(410.f, 690.f);
 }
 
 Model::~Model() {
@@ -67,16 +66,9 @@ float3 Model::evaluate_sky(float3 const& wi) const {
     }
 
 #ifdef SU_ACESCG
-
-    float3 const a = max(spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ())), 0.f);
-
-    float3 const b = max(spectrum::ACES2065_1_to_ACEScg(spectrum::XYZ_to_ACES2065_1(radiance.XYZ())), 0.f);
-
-    float3 const c = max(spectrum::XYZ_to_AP1(radiance.XYZ()), 0.f);
-
-    return max(spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ())), 0.f);
+    return spectrum::XYZ_to_AP1(radiance.XYZ());
 #else
-    return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
+    return max(spectrum::XYZ_to_sRGB(radiance.XYZ()), 0.f);
 #endif
 }
 
@@ -103,9 +95,9 @@ float3 Model::evaluate_sky_and_sun(float3 const& wi) const {
     }
 
 #ifdef SU_ACESCG
-    return max(spectrum::linear_sRGB_to_AP1(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ())), 0.f);
+    return spectrum::XYZ_to_AP1(radiance.XYZ());
 #else
-    return max(spectrum::XYZ_to_linear_sRGB_D65(radiance.XYZ()), 0.f);
+    return max(spectrum::XYZ_to_sRGB(radiance.XYZ()), 0.f);
 #endif
 }
 

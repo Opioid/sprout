@@ -47,7 +47,7 @@ class Model {
   private:
     void release();
 
-    static int32_t constexpr Num_bands = 12;
+    static int32_t constexpr Num_bands = 10;
 
     using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 

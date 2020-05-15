@@ -19,7 +19,7 @@ static inline float3 constexpr XYZ_to_linear_RGB(float3 const& xyz) {
 // http://terathon.com/blog/rgb-xyz-conversion-matrix-accuracy/
 // This function uses sRGB with illuminant D65
 
-static inline float3 constexpr XYZ_to_linear_sRGB_D65(float3 const& xyz) {
+static inline float3 constexpr XYZ_to_sRGB(float3 const& xyz) {
     return float3(3.240970f * xyz[0] - 1.537383f * xyz[1] - 0.498611f * xyz[2],
                   -0.969244f * xyz[0] + 1.875968f * xyz[1] + 0.041555f * xyz[2],
                   0.055630f * xyz[0] - 0.203977f * xyz[1] + 1.056972f * xyz[2]);

@@ -129,16 +129,22 @@ void Discrete_spectral_power_distribution<N>::init(float start_wavelength, float
 
     rgb_reflector_to_spectrum_white_ = Interpolated(
         RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_white);
+
     rgb_reflector_to_spectrum_cyan_ = Interpolated(RGB_to_spectrum_num, RGB_to_spectrum_wavelengths,
                                                    RGB_reflector_to_spectrum_cyan);
+
     rgb_reflector_to_spectrum_magenta_ = Interpolated(
         RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_magenta);
+
     rgb_reflector_to_spectrum_yellow_ = Interpolated(
         RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_yellow);
+
     rgb_reflector_to_spectrum_red_ = Interpolated(RGB_to_spectrum_num, RGB_to_spectrum_wavelengths,
                                                   RGB_reflector_to_spectrum_red);
+
     rgb_reflector_to_spectrum_green_ = Interpolated(
         RGB_to_spectrum_num, RGB_to_spectrum_wavelengths, RGB_reflector_to_spectrum_green);
+
     rgb_reflector_to_spectrum_blue_ = Interpolated(RGB_to_spectrum_num, RGB_to_spectrum_wavelengths,
                                                    RGB_reflector_to_spectrum_blue);
 }

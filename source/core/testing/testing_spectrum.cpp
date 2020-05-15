@@ -1,14 +1,14 @@
 #include "testing_spectrum.hpp"
 #include "base/chrono/chrono.hpp"
+#include "base/encoding/encoding.inl"
 #include "base/math/print.hpp"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
-#include "base/encoding/encoding.inl"
-#include "core/image/typed_image.hpp"
 #include "core/image/encoding/png/png_writer.hpp"
+#include "core/image/typed_image.hpp"
 
 #include <iostream>
 
@@ -53,12 +53,11 @@ void spectrum() {
 }
 
 void blackbody() {
-    static uint32_t constexpr Width = 1024;
+    static uint32_t constexpr Width  = 1024;
     static uint32_t constexpr Height = 256;
 
     static float constexpr Min = 800.f;
     static float constexpr Max = 12000.f;
-
 
     image::Byte3 image(image::Description(int2(Width, Height)));
 

@@ -6,6 +6,6 @@ namespace testing {
 void spectrum();
 
 void blackbody();
-}
+}  // namespace testing
 
 #endif

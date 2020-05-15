@@ -81,7 +81,7 @@ float3 blackbody(float temperature) {
     // normalize the result
     xyz /= std::max(xyz[0], std::max(xyz[1], xyz[2]));
 
-    return math::max(spectrum::XYZ_to_linear_sRGB_D65(xyz), float3(0.f));
+    return math::max(spectrum::XYZ_to_sRGB(xyz), float3(0.f));
 }
 
 }  // namespace spectrum
