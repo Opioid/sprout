@@ -21,7 +21,7 @@ float3 heatmap(float x) {
     return lerp(colors[id], colors[id + 1], ip);
 }
 
-float planck(float temperature, float wavelength) {
+double planck(float temperature, float wavelength) {
     static float constexpr h = 6.62606896e-34f;  // Plank constant
     static float constexpr c = 2.99792458e+8f;   // Speed of light
     static float constexpr k = 1.38064880e-23f;  // Boltzmann constant
@@ -81,7 +81,7 @@ float3 blackbody(float temperature) {
     // normalize the result
     xyz /= std::max(xyz[0], std::max(xyz[1], xyz[2]));
 
-    return math::max(spectrum::XYZ_to_sRGB(xyz), float3(0.f));
+    return math::max(spectrum::XYZ_to_sRGB(xyz), 0.f);
 }
 
 }  // namespace spectrum

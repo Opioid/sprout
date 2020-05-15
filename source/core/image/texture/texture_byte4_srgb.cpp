@@ -57,10 +57,10 @@ void Byte4_sRGB::gather_3(int4 const& xy_xy1, float3 c[4]) const {
     image_.gather(xy_xy1, v);
 
 #ifdef SU_ACESCG
-    c[0] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[0].xyz()));
-    c[1] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[1].xyz()));
-    c[2] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[2].xyz()));
-    c[3] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[3].xyz()));
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0].xyz()));
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1].xyz()));
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2].xyz()));
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3].xyz()));
 #else
     c[0] = encoding::cached_srgb_to_float(v[0].xyz());
     c[1] = encoding::cached_srgb_to_float(v[1].xyz());

@@ -1297,7 +1297,7 @@ float3 read_hex_RGB(std::string const& text) {
 
 static inline float3 map_color(float3 const& color) {
 #ifdef SU_ACESCG
-    return spectrum::linear_sRGB_to_AP1(color);
+    return spectrum::sRGB_to_AP1(color);
 #else
     return color;
 #endif

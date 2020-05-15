@@ -233,7 +233,7 @@ image_float3 rgbe_to_float3(uint8_t rgbe[4]) {
 
 #ifdef SU_ACESCG
         float3 const srgb(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
-        return image_float3(spectrum::linear_sRGB_to_AP1(srgb));
+        return image_float3(spectrum::sRGB_to_AP1(srgb));
 #else
         return image_float3(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
 #endif

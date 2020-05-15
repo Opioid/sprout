@@ -8,7 +8,7 @@ namespace spectrum {
 // https://www.shadertoy.com/view/WltSRB
 
 // sRGB => XYZ => D65_2_D60 => AP1
-static inline float3 constexpr linear_sRGB_to_AP1(float3 const& srgb) {
+static inline float3 constexpr sRGB_to_AP1(float3 const& srgb) {
     return float3(0.613097f * srgb[0] + 0.339523f * srgb[1] + 0.047379f * srgb[2],
                   0.070194f * srgb[0] + 0.916354f * srgb[1] + 0.013452f * srgb[2],
                   0.020616f * srgb[0] + 0.109570f * srgb[1] + 0.869815f * srgb[2]);

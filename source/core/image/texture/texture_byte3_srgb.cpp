@@ -25,7 +25,7 @@ float2 Byte3_sRGB::at_2(int32_t x, int32_t y) const {
 float3 Byte3_sRGB::at_3(int32_t x, int32_t y) const {
     auto const value = image_.load(x, y);
 #ifdef SU_ACESCG
-    return spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(value));
+    return spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value));
 #else
     return encoding::cached_srgb_to_float(value);
 #endif
@@ -34,7 +34,7 @@ float3 Byte3_sRGB::at_3(int32_t x, int32_t y) const {
 float4 Byte3_sRGB::at_4(int32_t x, int32_t y) const {
     auto const value = image_.load(x, y);
 #ifdef SU_ACESCG
-    return float4(spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(value)));
+    return float4(spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value)));
 #else
     return float4(encoding::cached_srgb_to_float(value));
 #endif
@@ -65,10 +65,10 @@ void Byte3_sRGB::gather_3(int4 const& xy_xy1, float3 c[4]) const {
     image_.gather(xy_xy1, v);
 
 #ifdef SU_ACESCG
-    c[0] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[0]));
-    c[1] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]));
-    c[2] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]));
-    c[3] = spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]));
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0]));
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]));
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]));
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]));
 #else
     c[0] = encoding::cached_srgb_to_float(v[0]);
     c[1] = encoding::cached_srgb_to_float(v[1]);
@@ -91,7 +91,7 @@ float2 Byte3_sRGB::at_element_2(int32_t x, int32_t y, int32_t element) const {
 float3 Byte3_sRGB::at_element_3(int32_t x, int32_t y, int32_t element) const {
     auto const value = image_.load_element(x, y, element);
 #ifdef SU_ACESCG
-    return spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(value));
+    return spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value));
 #else
     return encoding::cached_srgb_to_float(value);
 #endif
@@ -111,7 +111,7 @@ float2 Byte3_sRGB::at_2(int32_t x, int32_t y, int32_t z) const {
 float3 Byte3_sRGB::at_3(int32_t x, int32_t y, int32_t z) const {
     auto const value = image_.load(x, y, z);
 #ifdef SU_ACESCG
-    return spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(value));
+    return spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value));
 #else
     return encoding::cached_srgb_to_float(value);
 #endif
@@ -120,7 +120,7 @@ float3 Byte3_sRGB::at_3(int32_t x, int32_t y, int32_t z) const {
 float4 Byte3_sRGB::at_4(int32_t x, int32_t y, int32_t z) const {
     auto const value = image_.load(x, y, z);
 #ifdef SU_ACESCG
-    return float4(spectrum::linear_sRGB_to_AP1(encoding::cached_srgb_to_float(value)));
+    return float4(spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value)));
 #else
     return float4(encoding::cached_srgb_to_float(value));
 #endif
