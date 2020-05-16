@@ -20,7 +20,8 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
     for (int32_t i = 0; i < N; ++i) {
         float const a = wavelengths_[i];
         float const b = wavelengths_[i + 1];
-        values_[i]    = interpolated.integrate(a, b) / (b - a);
+
+        values_[i] = interpolated.integrate(a, b) / (b - a);
     }
 }
 
@@ -71,19 +72,6 @@ float constexpr Discrete_spectral_power_distribution<N>::value(int32_t bin) cons
 template <int32_t N>
 void Discrete_spectral_power_distribution<N>::set_bin(int32_t bin, float value) {
     values_[bin] = value;
-}
-
-template <int32_t N>
-void Discrete_spectral_power_distribution<N>::set_at_wavelength(float lambda, float value) {
-    if (lambda < wavelengths_[0] || lambda > wavelengths_[N]) {
-        return;
-    }
-
-    uint32_t idx = 0;
-    for (idx = 0; lambda > wavelengths_[idx + 1]; idx++) {
-    }
-
-    values_[idx] = value;
 }
 
 template <int32_t N>

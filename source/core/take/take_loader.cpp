@@ -578,12 +578,12 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
                                              bool progressive, bool lighttracer) {
     using namespace rendering::integrator::surface;
 
-    uint32_t const default_min_bounces = 4;
-    uint32_t const default_max_bounces = 8;
+    uint32_t constexpr Default_min_bounces = 4;
+    uint32_t constexpr Default_max_bounces = 8;
 
     Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
 
-    bool const default_caustics = true;
+    bool constexpr Default_caustics = true;
 
     for (auto& n : value.GetObject()) {
         if ("AO" == n.name) {
@@ -603,10 +603,10 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
 
         if ("PM" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
-                                                         default_min_bounces);
+                                                         Default_min_bounces);
 
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
-                                                         default_max_bounces);
+                                                         Default_max_bounces);
 
             bool const photons_only_through_specular = /*true;  //*/ lighttracer;
 
@@ -618,12 +618,12 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
-                                                         default_min_bounces);
+                                                         Default_min_bounces);
 
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
-                                                         default_max_bounces);
+                                                         Default_max_bounces);
 
-            bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+            bool const enable_caustics = json::read_bool(n.value, "caustics", Default_caustics);
 
             return new Pathtracer_pool(num_workers, progressive, num_samples, min_bounces,
                                        max_bounces, enable_caustics);
@@ -633,14 +633,14 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
-                                                         default_min_bounces);
+                                                         Default_min_bounces);
 
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
-                                                         default_max_bounces);
+                                                         Default_max_bounces);
 
             load_light_sampling(n.value, light_sampling);
 
-            bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+            bool const enable_caustics = json::read_bool(n.value, "caustics", Default_caustics);
 
             return new Pathtracer_DL_pool(num_workers, progressive, num_samples, min_bounces,
                                           max_bounces, light_sampling, enable_caustics);
@@ -650,14 +650,14 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
             uint32_t const num_samples = json::read_uint(n.value, "num_samples", 1);
 
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
-                                                         default_min_bounces);
+                                                         Default_min_bounces);
 
             uint32_t const max_bounces = json::read_uint(n.value, "max_bounces",
-                                                         default_max_bounces);
+                                                         Default_max_bounces);
 
             load_light_sampling(n.value, light_sampling);
 
-            bool const enable_caustics = json::read_bool(n.value, "caustics", default_caustics) &&
+            bool const enable_caustics = json::read_bool(n.value, "caustics", Default_caustics) &&
                                          !lighttracer;
 
             bool const photons_only_through_specular = lighttracer;

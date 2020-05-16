@@ -87,9 +87,6 @@ float Interpolated::integrate(float a, float b) const {
     return integral;
 }
 
-// data for Smits-Style RGB to Spectrum conversion (generated using the octave script
-// tools/octave/genRGB2Spect.m 380 720 64)
-
 float const RGB_to_spectrum_wavelengths[Num_wavelengths] = {
     380.000000f, 385.396825f, 390.793651f, 396.190476f, 401.587302f, 406.984127f, 412.380952f,
     417.777778f, 423.174603f, 428.571429f, 433.968254f, 439.365079f, 444.761905f, 450.158730f,

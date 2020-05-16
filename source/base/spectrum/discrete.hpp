@@ -21,8 +21,6 @@ class Discrete_spectral_power_distribution {
 
     void set_bin(int32_t bin, float value);
 
-    void set_at_wavelength(float lambda, float value);
-
     float3 constexpr XYZ() const;
 
     float3 constexpr normalized_XYZ() const;
