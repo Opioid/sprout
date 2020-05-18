@@ -5,6 +5,11 @@
 
 namespace spectrum {
 
+// Some matrices are from the internet, e.g:
+// https://www.shadertoy.com/view/WltSRB
+// https://github.com/ampas/aces-dev/blob/master/transforms/ctl/README-MATRIX.md
+// Others were generated with aces.py
+
 // sRGB => XYZ => D65_2_D60 => AP1
 static inline float3 constexpr sRGB_to_AP1(float3 const& srgb) {
     return float3(0.613097f * srgb[0] + 0.339523f * srgb[1] + 0.047379f * srgb[2],
