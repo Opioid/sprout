@@ -98,11 +98,7 @@ struct Coating_description {
 
 static void read_coating_description(json::Value const& value, Coating_description& description);
 
-static float3 read_hex_RGB(std::string const& text);
-
 static float3 read_color(json::Value const& color_value);
-
-static float3 read_spectrum(json::Value const& spectrum_value);
 
 Provider::Provider(bool force_debug_material) : force_debug_material_(force_debug_material) {
     Material::init_rainbow();
@@ -433,7 +429,7 @@ Material* load_light(json::Value const& light_value, Resources& resources) {
 
             auto const s = n.value.FindMember("spectrum");
             if (n.value.MemberEnd() != s) {
-                color = read_spectrum(s->value);
+                color = read_color(s->value);
             }
 
             value = json::read_float(n.value, "value", value);
@@ -1267,7 +1263,7 @@ void read_coating_description(json::Value const& value, Coating_description& des
     }
 }
 
-float3 read_hex_RGB(std::string const& text) {
+static float3 read_hex_RGB(std::string const& text) {
     if (7 != text.length() || '#' != text[0]) {
         return float3(0.f);
     }
@@ -1308,36 +1304,39 @@ float3 read_color(json::Value const& color_value) {
         return map_color(json::read_float3(color_value));
     }
 
+    if (color_value.IsObject()) {
+        float3 rgb(0.f);
+
+        bool linear = true;
+
+        for (auto& n : color_value.GetObject()) {
+            if ("sRGB" == n.name) {
+                rgb = read_color(n.value);
+            }
+
+            if ("temperature" == n.name) {
+                float const temperature = json::read_float(n.value);
+                rgb = spectrum::blackbody(std::max(800.f, temperature));
+            }
+
+            if ("linear" == n.name) {
+                linear = json::read_bool(n.value);
+            }
+        }
+
+        if (!linear) {
+            rgb = spectrum::gamma_to_linear_sRGB(rgb);
+        }
+
+        return map_color(rgb);
+    }
+
     if (!color_value.IsString()) {
         return float3(0.f);
     }
 
     std::string const hex_string = json::read_string(color_value);
     return map_color(read_hex_RGB(hex_string));
-}
-
-float3 read_spectrum(json::Value const& spectrum_value) {
-    if (!spectrum_value.IsObject()) {
-        return float3(0.f);
-    }
-
-    for (auto& n : spectrum_value.GetObject()) {
-        if ("sRGB" == n.name) {
-            float3 const srgb = read_color(n.value);
-            return map_color(spectrum::gamma_to_linear_sRGB(srgb));
-        }
-
-        if ("RGB" == n.name) {
-            return read_color(n.value);
-        }
-
-        if ("temperature" == n.name) {
-            float const temperature = json::read_float(n.value);
-            return map_color(spectrum::blackbody(std::max(800.f, temperature)));
-        }
-    }
-
-    return float3(0.f);
 }
 
 uint32_t Provider::max_sample_size() {
