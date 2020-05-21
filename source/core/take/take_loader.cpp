@@ -170,6 +170,14 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
             load_postprocessors(*postprocessors_value, resources, take.view.pipeline);
 
             filesystem.pop_mount();
+        } else {
+#ifdef SU_ACESCG
+            using namespace rendering::postprocessor::tonemapping;
+
+            bool constexpr Auto_expose = false;
+            float constexpr Exposure = 0.f;
+            take.view.pipeline.add(new Linear(Auto_expose, Exposure));
+#endif
         }
 
         if (exporter_value) {

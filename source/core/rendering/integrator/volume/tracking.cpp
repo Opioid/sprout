@@ -403,7 +403,7 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
 
             t_out = t;
             w     = lw * ws;
-            li    = float3(0.);
+            li    = float3(0.f);
             return Event::Scatter;
         }
 
