@@ -21,7 +21,7 @@ float3 heatmap(float x) {
     return lerp(colors[id], colors[id + 1], ip);
 }
 
-double planck(float temperature, float wavelength) {
+static float planck(float temperature, float wavelength) {
     static float constexpr h = 6.62606896e-34f;  // Plank constant
     static float constexpr c = 2.99792458e+8f;   // Speed of light
     static float constexpr k = 1.38064880e-23f;  // Boltzmann constant
