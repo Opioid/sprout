@@ -177,7 +177,9 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             float3     vtr;
             auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
 
-            result += throughput * vli;
+            if (treat_as_singular) {
+                result += throughput * vli;
+            }
 
             throughput *= vtr;
 

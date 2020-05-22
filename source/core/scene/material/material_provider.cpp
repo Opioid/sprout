@@ -1124,6 +1124,7 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
             material->set_volumetric_anisotropy(anisotropy);
             return material;
         }
+
         auto material = new Grid(sampler_settings, density_map);
         material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
         material->set_emission(emission);
@@ -1316,6 +1317,7 @@ float3 read_color(json::Value const& color_value) {
 
             if ("temperature" == n.name) {
                 float const temperature = json::read_float(n.value);
+
                 rgb = spectrum::blackbody(std::max(800.f, temperature));
             }
 

@@ -102,24 +102,25 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
 
 static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
                                  float3 const& n, Transformation const& transformation,
-                                 Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                                 Sample_to& result) {
+                                 bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
+                                 Worker const& worker, Sample_to& result) {
     if (!worker.scene().prop_shape(prop)->sample_volume(part, p, transformation, volume, sampler,
                                                         sampler_dimension, result)) {
         return false;
     }
 
-    if (dot(result.wi, n) <= 0.f) {
-        return false;
+    if (dot(result.wi, n) > 0.f || total_sphere) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
                                        float3 const& n, Transformation const& transformation,
-                                       Sampler& sampler, uint32_t sampler_dimension,
-                                       Worker const& worker, Sample_to& result) {
+                                       bool total_sphere, Sampler& sampler,
+                                       uint32_t sampler_dimension, Worker const& worker,
+                                       Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
@@ -134,7 +135,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
         return false;
     }
 
-    if (dot(result.wi, n) > 0.f) {
+    if (dot(result.wi, n) > 0.f || total_sphere) {
         result.pdf() *= rs.pdf;
         return true;
     }
@@ -155,11 +156,11 @@ inline bool Light::sample(float3 const& p, float3 const& n, Transformation const
             return prop_image_sample(prop_, part_, extent_, p, n, transformation, total_sphere,
                                      sampler, sampler_dimension, worker, result);
         case Type::Volume:
-            return volume_sample(prop_, part_, extent_, p, n, transformation, sampler,
+            return volume_sample(prop_, part_, extent_, p, n, transformation, total_sphere, sampler,
                                  sampler_dimension, worker, result);
         case Type::Volume_image:
-            return volume_image_sample(prop_, part_, extent_, p, n, transformation, sampler,
-                                       sampler_dimension, worker, result);
+            return volume_image_sample(prop_, part_, extent_, p, n, transformation, total_sphere,
+                                       sampler, sampler_dimension, worker, result);
     }
 
     return false;

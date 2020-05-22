@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
 
     take::Take take;
 
-    SOFT_ASSERT(material::Provider::max_sample_size() >= material::Sample_cache::Max_sample_size);
+    SOFT_ASSERT(material::Sample_cache::Max_sample_size >= material::Provider::max_sample_size());
 
     for (;;) {
         logging::info("Loading...");
