@@ -239,9 +239,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                     // This is the direct eye-light connection for the volume case.
                     result_li += vli;
                 } else {
-                    result_li += throughput * connect_light_volume(vli, ray, intersection,
-                                                                   previous_bxdf_pdf, state,
-                                                                   worker);
+                    float const w = connect_light_volume(ray, intersection, previous_bxdf_pdf,
+                                                         state, worker);
+
+                    result_li += w * throughput * vli;
                 }
 
                 SOFT_ASSERT(all_finite_and_positive(result_li));
@@ -436,12 +437,11 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
     return radiance;
 }
 
-float3 Pathtracer_MIS::connect_light_volume(float3 const& vli, Ray const& ray,
-                                            Intersection const& intersection, float bxdf_pdf,
-                                            Path_state state, Worker& worker) const {
+float Pathtracer_MIS::connect_light_volume(Ray const& ray, Intersection const& intersection,
+                                           float bxdf_pdf, Path_state state, Worker& worker) const {
     uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_light(light_id)) {
-        return float3(0.f);
+        return 0.f;
     }
 
     float light_pdf = 0.f;
@@ -456,7 +456,7 @@ float3 Pathtracer_MIS::connect_light_volume(float3 const& vli, Ray const& ray,
                                            Filter::Nearest, worker);
 
         if (0.f == ls_pdf) {
-            return float3(0.f);
+            return 0.f;
         }
 
         light_pdf = ls_pdf * light.pdf;
@@ -464,7 +464,7 @@ float3 Pathtracer_MIS::connect_light_volume(float3 const& vli, Ray const& ray,
 
     float const weight = power_heuristic(bxdf_pdf, light_pdf);
 
-    return weight * vli;
+    return weight;
 }
 
 sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {

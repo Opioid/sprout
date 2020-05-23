@@ -66,8 +66,8 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
                          Bxdf_sample sample_result, Path_state state, Filter filter, Worker& worker,
                          bool& pure_emissive);
 
-    float3 connect_light_volume(float3 const& vli, Ray const& ray, Intersection const& intersection,
-                                float bxdf_pdf, Path_state state, Worker& worker) const;
+    float connect_light_volume(Ray const& ray, Intersection const& intersection, float bxdf_pdf,
+                               Path_state state, Worker& worker) const;
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 
