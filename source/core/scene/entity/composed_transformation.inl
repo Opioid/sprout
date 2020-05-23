@@ -58,26 +58,27 @@ inline float3 Composed_transformation::world_to_object_vector(float3 const& v) c
 }
 
 inline float3 Composed_transformation::object_to_world_point(float3 const& v) const {
-    return Vector3f_a(
-        rotation.r[0][3] *
-                (v[0] * rotation.r[0][0] + v[1] * rotation.r[1][0] + v[2] * rotation.r[2][0]) +
-            position[0],
-        rotation.r[1][3] *
-                (v[0] * rotation.r[0][1] + v[1] * rotation.r[1][1] + v[2] * rotation.r[2][1]) +
-            position[1],
-        rotation.r[2][3] *
-                (v[0] * rotation.r[0][2] + v[1] * rotation.r[1][2] + v[2] * rotation.r[2][2]) +
-            position[2]);
+    float3 const s(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
+
+    float3 const a = s[0] * rotation.r[0];
+    float3 const b = s[1] * rotation.r[1];
+    float3 const c = s[2] * rotation.r[2];
+
+    return Vector3f_a((v[0] * a[0] + v[1] * b[0] + v[2] * c[0]) + position[0],
+                      (v[0] * a[1] + v[1] * b[1] + v[2] * c[1]) + position[1],
+                      (v[0] * a[2] + v[1] * b[2] + v[2] * c[2]) + position[2]);
 }
 
 inline float3 Composed_transformation::object_to_world_vector(float3 const& v) const {
-    return Vector3f_a(
-        rotation.r[0][3] *
-            (v[0] * rotation.r[0][0] + v[1] * rotation.r[1][0] + v[2] * rotation.r[2][0]),
-        rotation.r[1][3] *
-            (v[0] * rotation.r[0][1] + v[1] * rotation.r[1][1] + v[2] * rotation.r[2][1]),
-        rotation.r[2][3] *
-            (v[0] * rotation.r[0][2] + v[1] * rotation.r[1][2] + v[2] * rotation.r[2][2]));
+    float3 const s(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
+
+    float3 const a = s[0] * rotation.r[0];
+    float3 const b = s[1] * rotation.r[1];
+    float3 const c = s[2] * rotation.r[2];
+
+    return Vector3f_a((v[0] * a[0] + v[1] * b[0] + v[2] * c[0]),
+                      (v[0] * a[1] + v[1] * b[1] + v[2] * c[1]),
+                      (v[0] * a[2] + v[1] * b[2] + v[2] * c[2]));
 }
 
 }  // namespace scene::entity
