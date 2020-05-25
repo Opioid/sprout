@@ -1050,7 +1050,7 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
 
     Texture_adapter density_map;
     Texture_adapter color_map;
-    Texture_adapter emission_map;
+    Texture_adapter temperature_map;
 
     float3 color(0.6f, 0.6f, 0.6f);
     bool   use_absorption_color = false;
@@ -1101,10 +1101,10 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
                     color_map = create_texture(texture_description, options, resources);
                 }
 
-                /*else if ("Emission" == texture_description.usage) {
+                else if ("Temperature" == texture_description.usage) {
                     options.set("usage", Texture_usage::Color);
-                    emission_map = create_texture(texture_description, options, resources);
-                }*/
+                    temperature_map = create_texture(texture_description, options, resources);
+                }
             }
         } else if ("sampler" == n.name) {
             read_sampler_settings(n.value, sampler_settings);
@@ -1117,11 +1117,12 @@ Material* load_volumetric(json::Value const& volumetric_value, Resources& resour
     using namespace volumetric;
 
     if (density_map.is_valid()) {
-        if (any_greater_zero(emission)) {
+        if (any_greater_zero(emission) || temperature_map.is_valid()) {
             auto material = new Grid_emission(sampler_settings, density_map);
             material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
             material->set_emission(emission);
             material->set_volumetric_anisotropy(anisotropy);
+            material->set_temperature_map(temperature_map);
             return material;
         }
 

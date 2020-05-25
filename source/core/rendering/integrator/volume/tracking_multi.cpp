@@ -108,8 +108,9 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     }
 
                     if (Event::Absorb == result) {
-                        tr                 = w;
-                        ray.max_t()        = t;
+                        tr          = w;
+                        ray.max_t() = t;
+                        // This is in local space on purpose!
                         intersection.geo.p = local_ray.point(t);
                         return Event::Absorb;
                     }

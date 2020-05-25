@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 
 #include "base/math/distribution/distribution_3d.hpp"
+#include "base/math/interpolated_function_1d.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "volumetric_material.hpp"
 #include "volumetric_octree.hpp"
@@ -15,12 +16,12 @@ class Grid : public Material {
     ~Grid() override;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
-                             Worker const& worker) const final;
+                             Worker const& worker) const override;
 
     CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const final;
 
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
-                                        Worker const& worker) const final;
+                                        Worker const& worker) const override;
 
     void commit(thread::Pool& threads, Scene const& scene) final;
 
@@ -40,6 +41,12 @@ class Grid_emission : public Grid {
 
     ~Grid_emission() override;
 
+    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
+                             Worker const& worker) const final;
+
+    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                        Worker const& worker) const final;
+
     Sample_3D radiance_sample(float3 const& r3) const final;
 
     float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const final;
@@ -49,7 +56,13 @@ class Grid_emission : public Grid {
                           bool importance_sampling, thread::Pool& threads,
                           Scene const& scene) final;
 
+    void set_temperature_map(Texture_adapter const& temperature_map);
+
   private:
+    Texture_adapter temperature_;
+
+    Interpolated_function_1D<float3> blackbody_;
+
     Distribution_3D distribution_;
 
     float3 average_emission_;

@@ -1,5 +1,6 @@
 #include "volumetric_grid.hpp"
 #include "base/math/distribution/distribution_1d.inl"
+#include "base/math/interpolated_function_1d.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"
 #include "base/memory/array.inl"
@@ -70,6 +71,32 @@ Grid_emission::Grid_emission(Sampler_settings const& sampler_settings, Texture_a
 
 Grid_emission::~Grid_emission() = default;
 
+float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
+                                        Filter filter, Worker const& worker) const {
+    float const d = density(uvw, filter, worker);
+
+    auto const& sampler = worker.sampler_3D(sampler_key(), filter);
+
+    float const t = temperature_.sample_1(worker, sampler, uvw);
+
+    float3 const c = blackbody_(t);
+
+    return d * cc_.a * c;
+}
+
+CCE Grid_emission::collision_coefficients_emission(float3 const& uvw, Filter filter,
+                                                   Worker const& worker) const {
+    float const d = density(uvw, filter, worker);
+
+    auto const& sampler = worker.sampler_3D(sampler_key(), filter);
+
+    float const t = temperature_.sample_1(worker, sampler, uvw);
+
+    float3 const c = blackbody_(t);
+
+    return {{d * cc_.a, d * cc_.s}, c};
+}
+
 Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const {
     auto const result = distribution_.sample_continuous(r3);
 
@@ -92,9 +119,24 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
         return;
     }
 
-    auto const& texture = density_.texture(scene);
+    if (temperature_.is_valid()) {
+        static uint32_t constexpr Num_samples = 16;
 
-    float3 const emission = cc_.a * emission_;
+        static float constexpr Start = 1400.f;
+        static float constexpr End   = 5000.f;
+
+        blackbody_.allocate(0.f, 1.6f, Num_samples);
+
+        for (uint32_t i = 0; i < Num_samples; ++i) {
+            float const t = Start + float(i) / float(Num_samples - 1) * (End - Start);
+
+            float3 const c = spectrum::blackbody(t);
+
+            blackbody_[i] = emission_ * c;
+        }
+    }
+
+    auto const& texture = density_.texture(scene);
 
     if (importance_sampling) {
         auto const& d = texture.dimensions();
@@ -103,36 +145,79 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         memory::Array<float3> ars(threads.num_threads());
 
-        threads.run_range(
-            [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
-                                                            int32_t end) noexcept {
-                auto luminance = memory::Buffer<float>(uint32_t(d[0]));
+        if (temperature_.is_valid()) {
+            auto const& tt = temperature_.texture(scene);
 
-                float3 ar(0.f);
+            threads.run_range(
+                [this, &conditional_2d, &ars, &texture, &tt, d](uint32_t id, int32_t begin,
+                                                                int32_t end) noexcept {
+                    auto luminance = memory::Buffer<float>(uint32_t(d[0]));
 
-                for (int32_t z = begin; z < end; ++z) {
-                    auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
+                    float3 const a = cc_.a;
 
-                    for (int32_t y = 0; y < d[1]; ++y) {
-                        for (int32_t x = 0; x < d[0]; ++x) {
-                            float const density = texture.at_1(x, y, z);
+                    float3 ar(0.f);
 
-                            float3 const radiance = density * emission;
+                    for (int32_t z = begin; z < end; ++z) {
+                        auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
 
-                            luminance[x] = spectrum::luminance(radiance);
+                        for (int32_t y = 0; y < d[1]; ++y) {
+                            for (int32_t x = 0; x < d[0]; ++x) {
+                                float const density = texture.at_1(x, y, z);
 
-                            ar += radiance;
+                                float const t = tt.at_1(x, y, z);
+
+                                float3 const c = blackbody_(t);
+
+                                float3 const radiance = density * c * a;
+
+                                luminance[x] = spectrum::luminance(radiance);
+
+                                ar += radiance;
+                            }
+
+                            conditional[y].init(luminance, uint32_t(d[0]));
                         }
 
-                        conditional[y].init(luminance, uint32_t(d[0]));
+                        conditional_2d[z].init();
                     }
 
-                    conditional_2d[z].init();
-                }
+                    ars[id] = ar;
+                },
+                0, d[2]);
+        } else {
+            float3 const emission = cc_.a * emission_;
 
-                ars[id] = ar;
-            },
-            0, d[2]);
+            threads.run_range(
+                [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
+                                                                int32_t end) noexcept {
+                    auto luminance = memory::Buffer<float>(uint32_t(d[0]));
+
+                    float3 ar(0.f);
+
+                    for (int32_t z = begin; z < end; ++z) {
+                        auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
+
+                        for (int32_t y = 0; y < d[1]; ++y) {
+                            for (int32_t x = 0; x < d[0]; ++x) {
+                                float const density = texture.at_1(x, y, z);
+
+                                float3 const radiance = density * emission;
+
+                                luminance[x] = spectrum::luminance(radiance);
+
+                                ar += radiance;
+                            }
+
+                            conditional[y].init(luminance, uint32_t(d[0]));
+                        }
+
+                        conditional_2d[z].init();
+                    }
+
+                    ars[id] = ar;
+                },
+                0, d[2]);
+        }
 
         float3 ar(0.f);
         for (auto const& a : ars) {
@@ -147,8 +232,14 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         distribution_.init();
     } else {
+        float3 const emission = cc_.a * emission_;
+
         average_emission_ = texture.average_1() * emission;
     }
+}
+
+void Grid_emission::set_temperature_map(Texture_adapter const& temperature_map) {
+    temperature_ = temperature_map;
 }
 
 Grid_color::Grid_color(Sampler_settings const& sampler_settings) : Material(sampler_settings) {
