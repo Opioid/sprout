@@ -49,7 +49,8 @@ void Grid::commit(thread::Pool& threads, Scene const& scene) {
     Octree_builder builder;
     builder.build(tree_, texture, cm_, threads);
 
-    properties_.set(Property::Scattering_volume, any_greater_zero(cc_.s));
+    properties_.set(Property::Scattering_volume,
+                    any_greater_zero(cc_.s) || any_greater_zero(emission_));
 }
 
 Gridtree const* Grid::volume_tree() const {

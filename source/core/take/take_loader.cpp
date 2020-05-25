@@ -176,6 +176,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
 
             bool constexpr Auto_expose = false;
             float constexpr Exposure   = 0.f;
+
+            take.view.pipeline.reserve(1);
             take.view.pipeline.add(new Linear(Auto_expose, Exposure));
 #endif
         }
