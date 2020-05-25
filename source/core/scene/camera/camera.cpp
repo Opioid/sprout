@@ -38,7 +38,8 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
         Transformation temp;
         auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
-        Ray ray(transformation.position, normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t);
+        Ray ray(transformation.position, normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t, 0, 0.f,
+                time);
 
         prop::Intersection intersection;
 
