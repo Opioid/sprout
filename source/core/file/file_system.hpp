@@ -61,6 +61,8 @@ class System {
 
     void pop_mount();
 
+    void set_frame(uint32_t frame);
+
   private:
     std::istream& open_read_stream(std::string_view name, std::string& resolved_name);
 
@@ -83,6 +85,8 @@ class System {
     char* buffer_;
 
     std::vector<std::string> mount_folders_;
+
+    std::string frame_string_;
 };
 
 }  // namespace file

@@ -1,4 +1,5 @@
 #include "file_system.hpp"
+#include "base/string/string.hpp"
 #include "file.hpp"
 #include "logging/logging.hpp"
 #include "read_stream.inl"
@@ -146,7 +147,17 @@ void System::pop_mount() {
     mount_folders_.pop_back();
 }
 
+void System::set_frame(uint32_t frame) {
+    frame_string_ = string::to_string(frame);
+}
+
 std::istream& System::open_read_stream(std::string_view name, std::string& resolved_name) {
+    std::string modified_name = std::string(name);
+
+    if (size_t const pos = modified_name.find("{FRAME}"); std::string::npos != pos) {
+        modified_name.replace(pos, 7, frame_string_);
+    }
+
     for (auto const& f : mount_folders_) {
         // Ignore empty folders, because this is handled explicitely
         if (f.empty()) {
@@ -156,7 +167,7 @@ std::istream& System::open_read_stream(std::string_view name, std::string& resol
         stream_.close();
         stream_.clear();
 
-        resolved_name = f + std::string(name);
+        resolved_name = f + modified_name;
         stream_.open(resolved_name, std::ios::binary);
         if (stream_) {
             return stream_;
@@ -166,9 +177,9 @@ std::istream& System::open_read_stream(std::string_view name, std::string& resol
     stream_.close();
     stream_.clear();
 
-    stream_.open(name.data(), std::ios::binary);
+    stream_.open(modified_name, std::ios::binary);
     if (stream_) {
-        resolved_name = name;
+        resolved_name = modified_name;
         return stream_;
     }
 
