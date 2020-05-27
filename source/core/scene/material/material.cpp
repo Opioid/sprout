@@ -132,10 +132,6 @@ CCE Material::collision_coefficients_emission(float3 const& /*uvw*/, Filter /*fi
     return {cc_, emission_};
 }
 
-CM Material::control_medium() const {
-    return cm_;
-}
-
 volumetric::Gridtree const* Material::volume_tree() const {
     return nullptr;
 }

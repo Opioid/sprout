@@ -21,6 +21,11 @@ static bool read_image_type(json::Value const& value, Image::Type& type) {
             type = Image::Type::Float1;
             return true;
         }
+
+        if ("Float2" == node->value) {
+            type = Image::Type::Float2;
+            return true;
+        }
     }
 
     return false;
@@ -112,16 +117,16 @@ Image* Reader::read(std::istream& stream) {
             return nullptr;
         }
 
+        Description const description(dimensions);
+
+        memory::Bitfield field(description.num_pixels());
+
+        stream.seekg(std::streamoff(binary_start + topology_offset));
+        stream.read(reinterpret_cast<char*>(field.data()), std::streamsize(field.num_bytes()));
+
+        stream.seekg(std::streamoff(binary_start + pixels_offset));
+
         if (Image::Type::Byte1 == type) {
-            Description description(dimensions);
-
-            memory::Bitfield field(description.num_pixels());
-
-            stream.seekg(std::streamoff(binary_start + topology_offset));
-            stream.read(reinterpret_cast<char*>(field.data()), std::streamsize(field.num_bytes()));
-
-            stream.seekg(std::streamoff(binary_start + pixels_offset));
-
             auto image = new Image(Byte1(description));
 
             uint8_t* data = image->byte1().data();
@@ -139,17 +144,8 @@ Image* Reader::read(std::istream& stream) {
             return image;
         }
 
-        /*if (Image::Type::Float1 == type)*/ {
+        if (Image::Type::Float1 == type) {
             static bool constexpr sparse = true;
-
-            Description description(dimensions);
-
-            memory::Bitfield field(description.num_pixels());
-
-            stream.seekg(std::streamoff(binary_start + topology_offset));
-            stream.read(reinterpret_cast<char*>(field.data()), std::streamsize(field.num_bytes()));
-
-            stream.seekg(std::streamoff(binary_start + pixels_offset));
 
             if (sparse) {
                 auto image = new Image(Float1_sparse(description));
@@ -177,6 +173,24 @@ Image* Reader::read(std::istream& stream) {
                     data[i] = density;
                 } else {
                     data[i] = 0.f;
+                }
+            }
+
+            return image;
+        }
+
+        if (Image::Type::Float2 == type) {
+            auto image = new Image(Float2(description));
+
+            float2* data = image->float2().data();
+
+            for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
+                if (field.get(i)) {
+                    float2 value;
+                    stream.read(reinterpret_cast<char*>(&value), sizeof(float));
+                    data[i] = value;
+                } else {
+                    data[i] = float2(0.f);
                 }
             }
 

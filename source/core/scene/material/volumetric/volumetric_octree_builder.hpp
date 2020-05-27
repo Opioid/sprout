@@ -19,7 +19,7 @@ class Octree_builder {
   public:
     using Texture = image::texture::Texture;
 
-    void build(Gridtree& tree, Texture const& texture, CM const& cm, thread::Pool& threads);
+    void build(Gridtree& tree, Texture const& texture, CC const* ccs, thread::Pool& threads);
 
   private:
     struct Build_node {
@@ -31,12 +31,14 @@ class Octree_builder {
     };
 
     struct Splitter {
-        void split(Build_node* node, Box const& box, Texture const& texture, CM const& cm,
+        void split(Build_node* node, Box const& box, Texture const& texture, CC const* ccs,
                    uint32_t depth);
 
         uint32_t num_nodes = 0;
         uint32_t num_data  = 0;
     };
+
+    void inner_build();
 
     void serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data);
 

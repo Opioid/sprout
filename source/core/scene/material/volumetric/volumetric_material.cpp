@@ -51,8 +51,6 @@ void Material::set_attenuation(float3 const& absorption_color, float3 const& sca
         cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
     }
 
-    cm_ = CM(cc_);
-
     attenuation_distance_ = distance;
 }
 

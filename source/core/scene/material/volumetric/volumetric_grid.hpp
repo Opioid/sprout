@@ -23,7 +23,7 @@ class Grid : public Material {
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const override;
 
-    void commit(thread::Pool& threads, Scene const& scene) final;
+    void commit(thread::Pool& threads, Scene const& scene) override;
 
     Gridtree const* volume_tree() const final;
 
@@ -46,6 +46,8 @@ class Grid_emission : public Grid {
 
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const final;
+
+    void commit(thread::Pool& threads, Scene const& scene) final;
 
     Sample_3D radiance_sample(float3 const& r3) const final;
 

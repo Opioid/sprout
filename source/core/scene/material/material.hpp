@@ -121,8 +121,6 @@ class alignas(16) Material {
     virtual CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                                 Worker const& worker) const;
 
-    CM control_medium() const;
-
     virtual volumetric::Gridtree const* volume_tree() const;
 
     float similarity_relation_scale(uint32_t depth) const;
@@ -178,7 +176,6 @@ class alignas(16) Material {
     Texture_adapter mask_;
 
     CC cc_;
-    CM cm_;
 
     float3 emission_;
 

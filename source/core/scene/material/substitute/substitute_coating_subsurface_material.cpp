@@ -28,7 +28,7 @@ void Material_coating_subsurface::commit(thread::Pool& threads, Scene const& sce
         auto const& texture = density_map_.texture(scene);
 
         volumetric::Octree_builder builder;
-        builder.build(tree_, texture, cm_, threads);
+        builder.build(tree_, texture, &cc_, threads);
     }
 
     properties_.set(Property::Scattering_volume, color_map_.is_valid() || any_greater_zero(cc_.s));
@@ -95,8 +95,6 @@ void Material_coating_subsurface::set_attenuation(float3 const& absorption_color
     } else {
         cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
     }
-
-    cm_ = CM(cc_);
 
     attenuation_distance_ = distance;
 }

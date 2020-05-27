@@ -16,6 +16,7 @@
 #include "texture_byte3_unorm.hpp"
 #include "texture_byte4_srgb.hpp"
 #include "texture_float1.hpp"
+#include "texture_float2.hpp"
 #include "texture_float3.hpp"
 
 #include "base/debug/assert.hpp"
@@ -115,6 +116,10 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
 
     if (Image::Type::Float1_sparse == image->type()) {
         return new Texture(Float1_sparse(image->float1_sparse()));
+    }
+
+    if (Image::Type::Float2 == image->type()) {
+        return new Texture(Float2(image->float2()));
     }
 
     if (Image::Type::Float3 == image->type()) {

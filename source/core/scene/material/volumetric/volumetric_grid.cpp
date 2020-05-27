@@ -48,7 +48,7 @@ void Grid::commit(thread::Pool& threads, Scene const& scene) {
     auto const& texture = density_.texture(scene);
 
     Octree_builder builder;
-    builder.build(tree_, texture, cm_, threads);
+    builder.build(tree_, texture, &cc_, threads);
 
     properties_.set(Property::Scattering_volume,
                     any_greater_zero(cc_.s) || any_greater_zero(emission_));
@@ -73,28 +73,53 @@ Grid_emission::~Grid_emission() = default;
 
 float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
                                         Filter filter, Worker const& worker) const {
-    float const d = density(uvw, filter, worker);
-
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float const t = temperature_.sample_1(worker, sampler, uvw);
+    float const d = density_.sample_1(worker, sampler, uvw);
 
-    float3 const c = blackbody_(t);
+    if (temperature_.is_valid()) {
+        float const t = temperature_.sample_1(worker, sampler, uvw);
 
-    return d * cc_.a * c;
+        float3 const c = blackbody_(t);
+
+        return d * cc_.a * c;
+    }
+
+    return d * cc_.a * emission_;
 }
 
 CCE Grid_emission::collision_coefficients_emission(float3 const& uvw, Filter filter,
                                                    Worker const& worker) const {
-    float const d = density(uvw, filter, worker);
-
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float const t = temperature_.sample_1(worker, sampler, uvw);
+    float const d = density_.sample_1(worker, sampler, uvw);
 
-    float3 const c = blackbody_(t);
+    if (temperature_.is_valid()) {
+        float const t = temperature_.sample_1(worker, sampler, uvw);
 
-    return {{d * cc_.a, d * cc_.s}, c};
+        float3 const c = blackbody_(t);
+
+        return {{d * cc_.a, d * cc_.s}, c};
+    }
+
+    return {{d * cc_.a, d * cc_.s}, emission_};
+}
+
+void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
+    auto const& texture = density_.texture(scene);
+
+    Octree_builder builder;
+
+    if (1 == texture.num_channels()) {
+        builder.build(tree_, texture, &cc_, threads);
+    } else {
+        CC const ccs[] = {cc_, CC{cc_.a, float3(0.f)}};
+
+        builder.build(tree_, texture, ccs, threads);
+    }
+
+    properties_.set(Property::Scattering_volume,
+                    any_greater_zero(cc_.s) || any_greater_zero(emission_));
 }
 
 Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const {
@@ -245,7 +270,6 @@ void Grid_emission::set_temperature_map(Texture_adapter const& temperature_map) 
 Grid_color::Grid_color(Sampler_settings const& sampler_settings) : Material(sampler_settings) {
     properties_.set(Property::Heterogeneous_volume);
     cc_ = CC{float3(0.5f), float3(0.5f)};
-    cm_ = CM(cc_);
 }
 
 Grid_color::~Grid_color() = default;
@@ -287,8 +311,10 @@ void Grid_color::set_attenuation(float scattering_factor, float distance) {
 void Grid_color::commit(thread::Pool& threads, Scene const& scene) {
     auto const& texture = color_.texture(scene);
 
+    CC const hack{float3(attenuation_distance_), float3(scattering_factor_)};
+
     Octree_builder builder;
-    builder.build(tree_, texture, CM(attenuation_distance_, scattering_factor_), threads);
+    builder.build(tree_, texture, &hack, threads);
 }
 
 Gridtree const* Grid_color::volume_tree() const {
