@@ -30,6 +30,9 @@
 #include "shape/triangle/triangle_mesh_generator.hpp"
 #include "take/take.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 #ifdef SU_DEBUG
 #include "base/chrono/chrono.hpp"
 #endif
@@ -281,6 +284,15 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
                 children = &n.value;
             } else if ("visibility" == n.name) {
                 visibility = &n.value;
+            }
+        }
+
+        if (1 == scene.prop_shape(entity_id)->num_parts()) {
+            auto const material = scene.prop_material(entity_id, 0);
+
+            if (material->is_heterogeneous_volume()) {
+                auto const bounds = material->volume_texture_space_bounds(scene);
+                std::cout << bounds.min << ", " << bounds.max << std::endl;
             }
         }
 

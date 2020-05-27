@@ -123,6 +123,12 @@ class alignas(16) Material {
 
     virtual volumetric::Gridtree const* volume_tree() const;
 
+    struct Boxi {
+        int3 min;
+        int3 max;
+    };
+    virtual Boxi volume_texture_space_bounds(Scene const& scene) const;
+
     float similarity_relation_scale(uint32_t depth) const;
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,

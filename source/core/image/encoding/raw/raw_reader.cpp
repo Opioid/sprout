@@ -30,7 +30,7 @@ Image* Reader::read(std::istream& stream) {
 
     int3 const dimensions(69, 171, 67);
 
-    Description description(dimensions);
+    Description description(dimensions, 1, int3(0));
 
     auto volume = new Image(Float1(description));
 

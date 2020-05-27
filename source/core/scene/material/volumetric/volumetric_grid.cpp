@@ -58,6 +58,12 @@ Gridtree const* Grid::volume_tree() const {
     return &tree_;
 }
 
+Material::Boxi Grid::volume_texture_space_bounds(Scene const& scene) const {
+    auto const& texture = density_.texture(scene);
+
+    return {texture.offset(), texture.dimensions()};
+}
+
 float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 

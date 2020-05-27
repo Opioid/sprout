@@ -67,6 +67,8 @@ Image* Reader::read(std::istream& stream) {
         return nullptr;
     }
 
+    int3 const offset = ::json::read_int3(description_node->value, "offset", int3(0));
+
     Image::Type type;
 
     if (!read_image_type(description_node->value, type)) {
@@ -100,6 +102,8 @@ Image* Reader::read(std::istream& stream) {
 
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 
+    Description const description(dimensions, 1, offset);
+
     if (topology_node->value.MemberEnd() != topology_node) {
         uint64_t topology_offset = 0;
         uint64_t topology_size   = 0;
@@ -116,8 +120,6 @@ Image* Reader::read(std::istream& stream) {
             logging::push_error("Empty topology.");
             return nullptr;
         }
-
-        Description const description(dimensions);
 
         memory::Bitfield field(description.num_pixels());
 
@@ -201,8 +203,6 @@ Image* Reader::read(std::istream& stream) {
     stream.seekg(std::streamoff(binary_start + pixels_offset));
 
     if (Image::Type::Byte1 == type) {
-        Description description(dimensions);
-
         auto image = new Image(Byte1(description));
 
         stream.read(reinterpret_cast<char*>(image->byte1().data()), std::streamsize(pixels_size));
@@ -210,9 +210,7 @@ Image* Reader::read(std::istream& stream) {
         return image;
     }
 
-    /*if (Image::Type::Float1 == type)*/ {
-        Description description(dimensions);
-
+    /*if (Image::Type::Float1 =b type)*/ {
         auto image = new Image(Float1(description));
 
         stream.read(reinterpret_cast<char*>(image->float1().data()), std::streamsize(pixels_size));

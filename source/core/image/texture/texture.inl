@@ -105,6 +105,12 @@ inline float3 const& Texture::dimensions_float() const {
     return dimensions_float_;
 }
 
+inline int3 const& Texture::offset() const {
+    TEXTURE_DELEGATE(image().description().offset)
+
+    return byte1_unorm_.image().description().offset();
+}
+
 inline float Texture::at_1(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_1, x, y)
 

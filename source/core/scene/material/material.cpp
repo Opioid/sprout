@@ -136,6 +136,10 @@ volumetric::Gridtree const* Material::volume_tree() const {
     return nullptr;
 }
 
+Material::Boxi Material::volume_texture_space_bounds(Scene const& /*scene*/) const {
+    return {int3(0), int3(0)};
+}
+
 float Material::similarity_relation_scale(uint32_t depth) const {
     float const gs = van_de_hulst_anisotropy(depth);
 

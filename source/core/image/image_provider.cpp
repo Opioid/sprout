@@ -99,19 +99,21 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
 
     uint32_t pixel_width = 0;
 
+    image::Description const image_desc(desc.dimensions, desc.num_elements, int3(0));
+
     if (Description::Pixel_type::Byte == desc.pixel_type) {
         switch (desc.num_channels) {
             case 1:
-                image = new Image(Byte1(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte1(image_desc));
                 break;
             case 2:
-                image = new Image(Byte2(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte2(image_desc));
                 break;
             case 3:
-                image = new Image(Byte3(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte3(image_desc));
                 break;
             case 4:
-                image = new Image(Byte4(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Byte4(image_desc));
                 break;
             default:
                 break;
@@ -121,16 +123,16 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
     } else if (Description::Pixel_type::Float == desc.pixel_type) {
         switch (desc.num_channels) {
             case 1:
-                image = new Image(Float1(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float1(image_desc));
                 break;
             case 2:
-                image = new Image(Float2(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float2(image_desc));
                 break;
             case 3:
-                image = new Image(Float3(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float3(image_desc));
                 break;
             case 4:
-                image = new Image(Float4(image::Description(desc.dimensions, desc.num_elements)));
+                image = new Image(Float4(image_desc));
                 break;
             default:
                 break;

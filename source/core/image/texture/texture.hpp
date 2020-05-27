@@ -45,6 +45,8 @@ class alignas(64) Texture {
 
     float3 const& dimensions_float() const;
 
+    int3 const& offset() const;
+
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
     float3 at_3(int32_t x, int32_t y) const;

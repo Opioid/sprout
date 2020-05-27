@@ -6,13 +6,13 @@
 
 namespace image {
 
-Description::Description() : dimensions_(0), num_elements_(0) {}
+Description::Description() : dimensions_(0), num_elements_(0), offset_() {}
 
 Description::Description(int2 dimensions, int32_t num_elements)
-    : dimensions_(dimensions, 1), num_elements_(num_elements) {}
+    : dimensions_(dimensions, 1), num_elements_(num_elements), offset_(0) {}
 
-Description::Description(int3 const& dimensions, int32_t num_elements)
-    : dimensions_(dimensions), num_elements_(num_elements) {}
+Description::Description(int3 const& dimensions, int32_t num_elements, int3 const& offset)
+    : dimensions_(dimensions), num_elements_(num_elements), offset_(offset) {}
 
 uint64_t Description::num_pixels() const {
     return uint64_t(dimensions_[0]) * uint64_t(dimensions_[1]) * uint64_t(dimensions_[2]) *
@@ -33,6 +33,10 @@ int32_t Description::volume() const {
 
 int32_t Description::num_elements() const {
     return num_elements_;
+}
+
+int3 const& Description::offset() const {
+    return offset_;
 }
 
 template <typename T>
@@ -82,7 +86,7 @@ void Typed_image<T>::resize(Description const& description) {
 
 template <typename T>
 void Typed_image<T>::clear(T v) {
-    for (int32_t i = 0, len = description_.volume(); i < len; ++i) {
+    for (int64_t i = 0, len = description_.num_pixels(); i < len; ++i) {
         data_[i] = v;
     }
 }

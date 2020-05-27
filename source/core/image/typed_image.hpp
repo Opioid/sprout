@@ -9,7 +9,7 @@ namespace image {
 struct Description {
     Description();
     Description(int2 dimensions, int32_t num_elements = 1);
-    Description(int3 const& dimensions, int32_t num_elements = 1);
+    Description(int3 const& dimensions, int32_t num_elements, int3 const& offset);
 
     uint64_t num_pixels() const;
 
@@ -21,9 +21,13 @@ struct Description {
 
     int32_t num_elements() const;
 
+    int3 const& offset() const;
+
     int3 dimensions_;
 
     int32_t num_elements_;
+
+    int3 offset_;
 };
 
 template <typename T>
