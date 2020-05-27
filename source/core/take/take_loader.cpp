@@ -96,8 +96,8 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
 static void load_light_sampling(json::Value const& value, Light_sampling& sampling);
 
-bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
-                  Scene& scene, Resources& resources) {
+bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
+                  uint32_t start_frame, bool progressive, Scene& scene, Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -187,6 +187,10 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         }
 
         set_default_exporter(take);
+    }
+
+    if (start_frame != 0xFFFFFFFF) {
+        take.view.start_frame = start_frame;
     }
 
     set_default_integrators(num_threads, progressive, take.view);

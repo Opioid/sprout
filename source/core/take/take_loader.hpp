@@ -34,8 +34,8 @@ class Loader {
     using Pipeline  = rendering::postprocessor::Pipeline;
     using Resources = resource::Manager;
 
-    static bool load(Take& take, std::istream& stream, std::string_view take_name, bool progressive,
-                     Scene& scene, Resources& resources);
+    static bool load(Take& take, std::istream& stream, std::string_view take_name,
+                     uint32_t start_frame, bool progressive, Scene& scene, Resources& resources);
 
     static Camera* load_camera(json::Value const& camera_value, Scene* scene);
 

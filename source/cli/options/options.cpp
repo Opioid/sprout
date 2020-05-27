@@ -61,6 +61,8 @@ bool handle_all(std::string const& command, std::string const& parameter, Option
 bool handle(std::string const& command, std::string const& parameter, Options& result) {
     if ("help" == command || "h" == command) {
         help();
+    } else if ("frame" == command) {
+        result.start_frame = std::atoi(parameter.data());
     } else if ("input" == command || "i" == command) {
         result.take = parameter;
     } else if ("mount" == command || "m" == command) {
@@ -107,6 +109,8 @@ Usage:
   sprout [OPTION...]
 
   -h, --help                  Print help.
+      --frame    int          Index of the frame to render.
+                              Overrides starting_frame specified in take file.
   -i, --input    file/string  Path of the take file to render,
                               or json-string describing the take.
   -m, --mount    path+        Specifies a mount point for the data

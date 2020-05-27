@@ -136,7 +136,8 @@ int main(int argc, char* argv[]) {
             auto stream = is_json ? filesystem.string_stream(args.take)
                                   : filesystem.read_stream(args.take, take_name);
 
-            if (!stream || !take::Loader::load(take, *stream, take_name, false, scene, resources)) {
+            if (!stream || !take::Loader::load(take, *stream, take_name, args.start_frame, false,
+                                               scene, resources)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }

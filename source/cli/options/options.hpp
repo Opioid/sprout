@@ -1,6 +1,7 @@
 #ifndef SU_CLI_OPTIONS_OPTIONS_HPP
 #define SU_CLI_OPTIONS_OPTIONS_HPP
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,9 @@ struct Options {
 
     std::vector<std::string> mounts;
 
-    int threads = 0;
+    int32_t threads = 0;
+
+    uint32_t start_frame = 0xFFFFFFFF;
 
     bool no_textures    = false;
     bool debug_material = false;
