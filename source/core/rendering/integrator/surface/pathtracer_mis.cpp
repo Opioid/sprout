@@ -171,7 +171,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             SOFT_ASSERT(all_finite_and_positive(result_li));
         }
 
-        float const previous_bxdf_pdf = sample_result.pdf;
+        float effective_bxdf_pdf = sample_result.pdf;
 
         // Material BSDF importance sample
         material_sample.sample(material_sampler(ray.depth), sample_result);
@@ -187,6 +187,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
             state.set(State::Treat_as_singular, sample_result.type.is(Bxdf_type::Specular));
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
             state.unset(State::Treat_as_singular);
+
+            effective_bxdf_pdf = sample_result.pdf;
 
             if (state.is(State::Primary_ray)) {
                 state.unset(State::Primary_ray);
@@ -239,7 +241,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                     // This is the direct eye-light connection for the volume case.
                     result_li += vli;
                 } else {
-                    float const w = connect_light_volume(ray, intersection, previous_bxdf_pdf,
+                    float const w = connect_light_volume(ray, intersection, effective_bxdf_pdf,
                                                          state, worker);
 
                     result_li += w * throughput * vli;
@@ -269,7 +271,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         SOFT_ASSERT(all_finite(result_li));
 
         if (sample_result.type.is(Bxdf_type::Straight) & state.no(State::Treat_as_singular)) {
-            sample_result.pdf = previous_bxdf_pdf;
+            sample_result.pdf = effective_bxdf_pdf;
         } else {
             state.set(State::Is_translucent, material_sample.is_translucent());
             geo_n = material_sample.geometric_normal();

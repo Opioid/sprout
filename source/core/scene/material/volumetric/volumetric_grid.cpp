@@ -153,8 +153,8 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
     if (temperature_.is_valid()) {
         static uint32_t constexpr Num_samples = 16;
 
-        static float constexpr Start = 1400.f;
-        static float constexpr End   = 5000.f;
+        static float constexpr Start = 1000.f;
+        static float constexpr End   = 5400.f;
 
         blackbody_.allocate(0.f, 1.6f, Num_samples);
 
