@@ -290,9 +290,9 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             if (material->is_heterogeneous_volume()) {
                 auto const bounds = material->volume_texture_space_bounds(scene);
 
-                float const voxel_scale = 0.5f * transformation.scale[0];
+                float const voxel_scale = transformation.scale[0];
 
-                transformation.scale = voxel_scale * float3(bounds.max);
+                transformation.scale = 0.5f * voxel_scale * float3(bounds.max);
 
                 transformation.position += transformation.scale + voxel_scale * float3(bounds.min);
             }
