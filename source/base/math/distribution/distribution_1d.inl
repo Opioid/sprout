@@ -490,7 +490,7 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
         cdf_size_ = cdf_size;
         cdf_      = memory::allocate_aligned<float>(cdf_size);
 
-        cdf_[0] = 0.f;
+        cdf_[0] = 1.f;
         cdf_[1] = 1.f;
         cdf_[2] = 1.f;
 
