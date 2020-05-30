@@ -36,6 +36,10 @@ void Material::set_mask(Texture_adapter const& mask) {
     mask_ = mask;
 }
 
+void Material::set_emission(float3 const& emission) {
+    emission_ = emission;
+}
+
 void Material::set_ior(float ior) {
     ior_ = ior;
 }

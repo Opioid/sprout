@@ -65,6 +65,8 @@ class alignas(16) Material {
 
     void set_mask(Texture_adapter const& mask);
 
+    void set_emission(float3 const& emission);
+
     void set_ior(float ior);
 
     void set_volumetric_anisotropy(float anisotropy);

@@ -43,6 +43,8 @@ class Grid_emission : public Grid {
 
     ~Grid_emission() override;
 
+    float3 average_radiance(float volume, Scene const& scene) const final;
+
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 

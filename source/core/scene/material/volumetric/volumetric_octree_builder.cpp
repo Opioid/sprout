@@ -147,6 +147,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
             return;
         }
     } else if (2 == texture.num_channels()) {
+        /*
         float2 min_density(1.f);
         float2 max_density(0.f);
 
@@ -186,6 +187,35 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
         float const majorant_mu_s = cmmax.majorant_mu_s;
 
         float const diff = max_component(max_density - min_density);
+        */
+
+        float min_density = 1.f;
+        float max_density = 0.f;
+
+        for (int32_t z = minb[2]; z < maxb[2]; ++z) {
+            for (int32_t y = minb[1]; y < maxb[1]; ++y) {
+                for (int32_t x = minb[0]; x < maxb[0]; ++x) {
+                    float const density = texture.at_1(x, y, z);
+
+                    min_density = std::min(density, min_density);
+                    max_density = std::max(density, max_density);
+                }
+            }
+        }
+
+        if (min_density > max_density) {
+            min_density = 0.f;
+            max_density = 0.f;
+        }
+
+        CM cm(ccs[0]);
+
+        float const minorant_mu_a = min_density * cm.minorant_mu_a;
+        float const minorant_mu_s = min_density * cm.minorant_mu_s;
+        float const majorant_mu_a = max_density * cm.majorant_mu_a;
+        float const majorant_mu_s = max_density * cm.majorant_mu_s;
+
+        float const diff = max_density - min_density;
 
         if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || any_less(maxb - minb, w)) {
             for (auto& c : node->children) {

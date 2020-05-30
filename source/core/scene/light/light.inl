@@ -137,6 +137,10 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
 
     if (dot(result.wi, n) > 0.f || total_sphere) {
         result.pdf() *= rs.pdf;
+
+        //        float const t = result.t();
+
+        //        result.pdf() *= rs.pdf * t;
         return true;
     }
 
@@ -178,6 +182,10 @@ static inline float3 volume_evaluate(uint32_t prop, uint32_t part, float volume,
     auto const material = worker.scene().prop_material(prop, part);
 
     return material->evaluate_radiance(sample.wi, sample.uvw, volume, filter, worker);
+
+    //    float const t = sample.t();
+
+    //    return t * material->evaluate_radiance(sample.wi, sample.uvw, volume, filter, worker);
 }
 
 inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const {
@@ -447,6 +455,10 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume,
     float const material_pdf = material->emission_pdf(intersection.p, filter, worker);
 
     return shape_pdf * material_pdf;
+
+    //    float const t = ray.max_t();
+
+    //    return shape_pdf * material_pdf * t;
 }
 
 inline float Light::pdf(Ray const& ray, Intersection const& intersection, bool total_sphere,

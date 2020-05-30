@@ -77,38 +77,70 @@ Grid_emission::Grid_emission(Sampler_settings const& sampler_settings, Texture_a
 
 Grid_emission::~Grid_emission() = default;
 
+float3 Grid_emission::average_radiance(float /*volume*/, Scene const& /*scene*/) const {
+    return average_emission_;
+}
+
 float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
                                         Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float const d = density_.sample_1(worker, sampler, uvw);
+    if (2 == density_.texture(worker.scene()).num_channels()) {
+        float2 const d = density_.sample_2(worker, sampler, uvw);
 
-    if (temperature_.is_valid()) {
-        float const t = temperature_.sample_1(worker, sampler, uvw);
+        if (temperature_.is_valid()) {
+            float const t = temperature_.sample_1(worker, sampler, uvw);
 
-        float3 const c = blackbody_(t);
+            float3 const c = blackbody_(t);
 
-        return d * cc_.a * c;
+            return (d[0] * d[1]) * cc_.a * c;
+        }
+
+        return (d[0] * d[1]) * cc_.a * emission_;
+    } else {
+        float const d = density_.sample_1(worker, sampler, uvw);
+
+        if (temperature_.is_valid()) {
+            float const t = temperature_.sample_1(worker, sampler, uvw);
+
+            float3 const c = blackbody_(t);
+
+            return d * cc_.a * c;
+        }
+
+        return d * cc_.a * emission_;
     }
-
-    return d * cc_.a * emission_;
 }
 
 CCE Grid_emission::collision_coefficients_emission(float3 const& uvw, Filter filter,
                                                    Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float const d = density_.sample_1(worker, sampler, uvw);
+    if (2 == density_.texture(worker.scene()).num_channels()) {
+        float2 const d = density_.sample_2(worker, sampler, uvw);
 
-    if (temperature_.is_valid()) {
-        float const t = temperature_.sample_1(worker, sampler, uvw);
+        if (temperature_.is_valid()) {
+            float const t = temperature_.sample_1(worker, sampler, uvw);
 
-        float3 const c = blackbody_(t);
+            float3 const c = blackbody_(t);
 
-        return {{d * cc_.a, d * cc_.s}, c};
+            return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * c};
+        }
+
+        return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * emission_};
+    } else {
+        float const d = density_.sample_1(worker, sampler, uvw);
+
+        if (temperature_.is_valid()) {
+            float const t = temperature_.sample_1(worker, sampler, uvw);
+
+            float3 const c = blackbody_(t);
+
+            return {{d * cc_.a, d * cc_.s}, c};
+        }
+
+        return {{d * cc_.a, d * cc_.s}, emission_};
     }
-
-    return {{d * cc_.a, d * cc_.s}, emission_};
 }
 
 void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
@@ -126,6 +158,44 @@ void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
 
     properties_.set(Property::Scattering_volume,
                     any_greater_zero(cc_.s) || any_greater_zero(emission_));
+
+    if (temperature_.is_valid()) {
+        static uint32_t constexpr Num_samples = 16;
+
+        // fire
+        //        static float constexpr Start = 1000.f;
+        //        static float constexpr End   = 5400.f;
+
+        //        blackbody_.allocate(0.f, 1.6f, Num_samples);
+
+        // explosion
+        static float constexpr Start = 2000.f;
+        static float constexpr End   = 5800.f;
+
+        blackbody_.allocate(0.f, 1.2f, Num_samples);
+
+        for (uint32_t i = 0; i < Num_samples; ++i) {
+            float const t = Start + float(i) / float(Num_samples - 1) * (End - Start);
+
+            float3 const c = spectrum::blackbody(t);
+
+            blackbody_[i] = emission_ * c;
+        }
+    }
+
+    //    auto const& tt = density_.texture(scene);
+
+    //    float max_t = 0.f;
+
+    //    for (int32_t z = 0; z < tt.dimensions()[2]; ++z) {
+    //        for (int32_t y = 0; y < tt.dimensions()[1]; ++y) {
+    //            for (int32_t x = 0; x < tt.dimensions()[0]; ++x) {
+    //                max_t = std::max(max_t, tt.at_1(x, y, z));
+    //            }
+    //        }
+    //    }
+
+    //    std::cout << max_t << std::endl;
 }
 
 Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const {
@@ -137,7 +207,9 @@ Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const 
 float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return distribution_.pdf(sampler.address(uvw)) * total_weight_;
+    float const pdf = distribution_.pdf(sampler.address(uvw)) * total_weight_;
+
+    return pdf;
 }
 
 void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
@@ -148,23 +220,6 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
         return;
-    }
-
-    if (temperature_.is_valid()) {
-        static uint32_t constexpr Num_samples = 16;
-
-        static float constexpr Start = 1000.f;
-        static float constexpr End   = 5400.f;
-
-        blackbody_.allocate(0.f, 1.6f, Num_samples);
-
-        for (uint32_t i = 0; i < Num_samples; ++i) {
-            float const t = Start + float(i) / float(Num_samples - 1) * (End - Start);
-
-            float3 const c = spectrum::blackbody(t);
-
-            blackbody_[i] = emission_ * c;
-        }
     }
 
     auto const& texture = density_.texture(scene);
@@ -188,28 +243,54 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
                     float3 ar(0.f);
 
-                    for (int32_t z = begin; z < end; ++z) {
-                        auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
+                    if (2 == texture.num_channels()) {
+                        for (int32_t z = begin; z < end; ++z) {
+                            auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
 
-                        for (int32_t y = 0; y < d[1]; ++y) {
-                            for (int32_t x = 0; x < d[0]; ++x) {
-                                float const density = texture.at_1(x, y, z);
+                            for (int32_t y = 0; y < d[1]; ++y) {
+                                for (int32_t x = 0; x < d[0]; ++x) {
+                                    float2 const density = texture.at_2(x, y, z);
 
-                                float const t = tt.at_1(x, y, z);
+                                    float const t = tt.at_1(x, y, z);
 
-                                float3 const c = blackbody_(t);
+                                    float3 const c = blackbody_(t);
 
-                                float3 const radiance = density * c * a;
+                                    float3 const radiance = density[0] * density[1] * c * a;
 
-                                luminance[x] = spectrum::luminance(radiance);
+                                    luminance[x] = spectrum::luminance(radiance);
 
-                                ar += radiance;
+                                    ar += radiance;
+                                }
+
+                                conditional[y].init(luminance, uint32_t(d[0]));
                             }
 
-                            conditional[y].init(luminance, uint32_t(d[0]));
+                            conditional_2d[z].init();
                         }
+                    } else {
+                        for (int32_t z = begin; z < end; ++z) {
+                            auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
 
-                        conditional_2d[z].init();
+                            for (int32_t y = 0; y < d[1]; ++y) {
+                                for (int32_t x = 0; x < d[0]; ++x) {
+                                    float const density = texture.at_1(x, y, z);
+
+                                    float const t = tt.at_1(x, y, z);
+
+                                    float3 const c = blackbody_(t);
+
+                                    float3 const radiance = density * c * a;
+
+                                    luminance[x] = spectrum::luminance(radiance);
+
+                                    ar += radiance;
+                                }
+
+                                conditional[y].init(luminance, uint32_t(d[0]));
+                            }
+
+                            conditional_2d[z].init();
+                        }
                     }
 
                     ars[id] = ar;

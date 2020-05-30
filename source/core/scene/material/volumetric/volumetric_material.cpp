@@ -39,7 +39,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     return sample;
 }
 
-float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const {
+float3 Material::average_radiance(float /*volume*/, Scene const& /*scene*/) const {
     return cc_.a * emission_;
 }
 
@@ -52,10 +52,6 @@ void Material::set_attenuation(float3 const& absorption_color, float3 const& sca
     }
 
     attenuation_distance_ = distance;
-}
-
-void Material::set_emission(float3 const& emission) {
-    emission_ = emission;
 }
 
 size_t Material::sample_size() {
