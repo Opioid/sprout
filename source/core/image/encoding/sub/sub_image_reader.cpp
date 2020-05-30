@@ -189,7 +189,7 @@ Image* Reader::read(std::istream& stream) {
             for (uint64_t i = 0, len = description.num_pixels(); i < len; ++i) {
                 if (field.get(i)) {
                     float2 value;
-                    stream.read(reinterpret_cast<char*>(&value), sizeof(float));
+                    stream.read(reinterpret_cast<char*>(&value), sizeof(float2));
                     data[i] = value;
                 } else {
                     data[i] = float2(0.f);

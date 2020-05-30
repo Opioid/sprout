@@ -18,6 +18,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
+#include "base/debug/assert.hpp"
+
 //#define ONLY_CAUSTICS
 
 using namespace scene;
@@ -190,6 +192,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             throughput *= vtr;
 
             if ((Event::Abort == hit) | (Event::Absorb == hit)) {
+                SOFT_ASSERT(all_finite_and_positive(result));
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

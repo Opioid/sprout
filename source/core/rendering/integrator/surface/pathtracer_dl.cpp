@@ -18,6 +18,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace rendering::integrator::surface {
 
 using namespace scene;
@@ -184,6 +186,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
             throughput *= vtr;
 
             if ((Event::Abort == hit) | (Event::Absorb == hit)) {
+                SOFT_ASSERT(all_finite_and_positive(result));
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {

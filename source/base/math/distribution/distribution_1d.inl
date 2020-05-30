@@ -1,9 +1,10 @@
 #ifndef SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_1D_INL
 #define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_1D_INL
 
-#include <algorithm>
 #include "distribution_1d.hpp"
 #include "memory/align.hpp"
+
+#include <algorithm>
 
 #include "debug/assert.hpp"
 
@@ -378,7 +379,7 @@ inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1
       cdf_size_(0),
       lut_(nullptr),
       cdf_(nullptr),
-      integral_(0.f),
+      integral_(-1.f),
       size_(0.f),
       lut_range_(0.f) {}
 

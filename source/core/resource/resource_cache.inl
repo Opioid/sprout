@@ -69,7 +69,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
 
 #ifdef SU_DEBUG
     std::ostringstream stream;
-    stream << "Loaded " << T::identifier() << " resource \"" << filename << "\"";
+    stream << "Loaded " << T::identifier() << " resource \"" << resolved_name << "\"";
     LOGGING_VERBOSE(stream.str());
 #endif
 
