@@ -73,7 +73,7 @@ class Grid_emission : public Grid {
 
     float3 average_emission_;
 
-    float total_weight_;
+    float total_weight_inv_;
 };
 
 class Grid_color : public Material {
