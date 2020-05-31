@@ -93,10 +93,10 @@ float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
 
             float3 const c = blackbody_(t);
 
-            return (total_weight_inv_ * d[0] * d[1]) * cc_.a * c ;
+            return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * c ;
         }
 
-        return (total_weight_inv_ * d[0] * d[1]) * cc_.a * emission_;
+        return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * emission_;
     } else {
         float const d = density_.sample_1(worker, sampler, uvw);
 
@@ -105,10 +105,10 @@ float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
 
             float3 const c = blackbody_(t);
 
-            return total_weight_inv_ * d * cc_.a * c;
+            return /*total_weight_inv_ **/ d * cc_.a * c;
         }
 
-        return total_weight_inv_ * d * cc_.a * emission_;
+        return /*total_weight_inv_ **/ d * cc_.a * emission_;
     }
 }
 
@@ -201,13 +201,13 @@ void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
 Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const {
     auto const result = distribution_.sample_continuous(r3);
 
-    return {result.uvw, result.pdf};
+    return {result.uvw, result.pdf * total_weight_};
 }
 
 float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float const pdf = distribution_.pdf(sampler.address(uvw));
+    float const pdf = distribution_.pdf(sampler.address(uvw)) * total_weight_;
 
     return pdf;
 }
@@ -339,6 +339,8 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
         float const total_weight = float(d[0] * d[1] * d[2]);
 
         average_emission_ = ar / total_weight;
+
+        total_weight_ = total_weight;
 
         total_weight_inv_ = 1.f / total_weight;
 
