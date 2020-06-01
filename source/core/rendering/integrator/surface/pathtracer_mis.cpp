@@ -380,9 +380,9 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 
     float const light_pdf = light_sample.pdf() * light_weight;
 
-    float const weight = power_heuristic(light_pdf, bxdf.pdf());
+    float const weight = predivided_power_heuristic(light_pdf, bxdf.pdf());
 
-    return (weight / light_pdf) * (tr * radiance * bxdf.reflection);
+    return weight * (tr * radiance * bxdf.reflection);
 }
 
 float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,

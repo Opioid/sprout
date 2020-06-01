@@ -38,6 +38,11 @@ static inline float power_heuristic(float f_pdf, float g_pdf) {
     return f2 / (f2 + g_pdf * g_pdf);
 }
 
+// == power_heuristic(a, b) / a
+static inline float predivided_power_heuristic(float f_pdf, float g_pdf) {
+    return f_pdf / (f_pdf * f_pdf + g_pdf * g_pdf);
+}
+
 static inline bool russian_roulette(float3& throughput, float r) {
     float const continuation_probability = max_component(throughput);
 
