@@ -79,10 +79,7 @@ class alignas(16) Material {
     virtual const Sample& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, Sampler& sampler, Worker& worker) const = 0;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float2 uv, float area, Filter filter,
-                                     Worker const& worker) const;
-
-    virtual float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume,
+    virtual float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent,
                                      Filter filter, Worker const& worker) const;
 
     virtual float3 average_radiance(float area_or_volume, Scene const& scene) const;

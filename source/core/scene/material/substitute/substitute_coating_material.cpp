@@ -11,9 +11,12 @@ namespace scene::material::substitute {
 Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_coating<Clearcoat_data>(sampler_settings, two_sided) {}
 
-float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                             Filter filter, Worker const& worker) const {
+float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
+                                             float /*extent*/, Filter            filter,
+                                             Worker const& worker) const {
     if (emission_map_.is_valid()) {
+        float2 const uv = uvw.xy();
+
         auto const&  sampler  = worker.sampler_2D(sampler_key(), filter);
         float3 const radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
 

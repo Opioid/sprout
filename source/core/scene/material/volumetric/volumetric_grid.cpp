@@ -93,7 +93,7 @@ float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
 
             float3 const c = blackbody_(t);
 
-            return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * c ;
+            return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * c;
         }
 
         return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * emission_;

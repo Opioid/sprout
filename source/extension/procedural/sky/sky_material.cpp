@@ -40,7 +40,7 @@ material::Sample const& Sky_material::sample(float3 const&      wo, scene::Ray c
     return sample;
 }
 
-float3 Sky_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
+float3 Sky_material::evaluate_radiance(float3 const& wi, float3 const& /*uvw*/, float /*extent*/,
                                        Filter /*filter*/, Worker const& /*worker*/) const {
     return sky_.model().evaluate_sky(wi);
 }
@@ -81,13 +81,14 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene:
     return sample;
 }
 
-float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                             Filter filter, Worker const& worker) const {
+float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
+                                             float /*extent*/, Filter            filter,
+                                             Worker const& worker) const {
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    return sampler.sample_3(cache_texture_, uv);
+    return sampler.sample_3(cache_texture_, uvw.xy());
 
-    //    return emission_map_.sample_3(worker, sampler, uv);
+    //    return emission_map_.sample_3(worker, sampler, uvw.xy());
 }
 
 float3 Sky_baked_material::average_radiance(float /*area*/, Scene const& /*scene*/) const {

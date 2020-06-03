@@ -17,11 +17,11 @@ void Material_base::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Caustic, !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha);
 }
 
-float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
+float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*extent*/,
                                         Filter filter, Worker const& worker) const {
     if (emission_map_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-        return emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
+        return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy());
     }
 
     return float3(0.f);

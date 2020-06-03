@@ -44,10 +44,11 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
     return sample;
 }
 
-float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float2 uv, float /*area*/,
-                                               Filter filter, Worker const& worker) const {
+float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
+                                               float /*extent*/, Filter            filter,
+                                               Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
-    return emission_factor_ * emission_map_.sample_3(worker, sampler, uv, element_);
+    return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy(), element_);
 }
 
 float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,

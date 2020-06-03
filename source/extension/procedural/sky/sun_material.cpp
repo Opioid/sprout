@@ -35,7 +35,7 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
     return sample;
 }
 
-float3 Sun_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
+float3 Sun_material::evaluate_radiance(float3 const& wi, float3 const& /*uvw*/, float /*extent*/,
                                        Filter /*filter*/, const Worker& /*worker*/) const {
     return sky_.model().evaluate_sky_and_sun(wi);
 }
@@ -67,8 +67,9 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
     return sample;
 }
 
-float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float2 /*uv*/, float /*area*/,
-                                             Filter /*filter*/, const Worker& /*worker*/) const {
+float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float3 const& /*uvw*/,
+                                             float /*extent*/, Filter /*filter*/,
+                                             const Worker& /*worker*/) const {
     float3 const radiance = emission_(sky_.sun_v(wi));
 
     SOFT_ASSERT(all_finite_and_positive(radiance));

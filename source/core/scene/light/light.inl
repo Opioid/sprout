@@ -166,33 +166,14 @@ inline bool Light::sample(float3 const& p, float3 const& n, Transformation const
     return false;
 }
 
-static inline float3 prop_evaluate(uint32_t prop, uint32_t part, float area,
-                                   Sample_to const& sample, Filter filter, Worker const& worker) {
-    auto const material = worker.scene().prop_material(prop, part);
-
-    return material->evaluate_radiance(sample.wi, sample.uvw.xy(), area, filter, worker);
-}
-
-static inline float3 volume_evaluate(uint32_t prop, uint32_t part, float volume,
-                                     Sample_to const& sample, Filter filter, Worker const& worker) {
-    auto const material = worker.scene().prop_material(prop, part);
-
-    return material->evaluate_radiance(sample.wi, sample.uvw, volume, filter, worker);
-}
-
 inline float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const {
-    switch (type_) {
-        case Type::Null:
-            return float3(0.f);
-        case Type::Prop:
-        case Type::Prop_image:
-            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
-        case Type::Volume:
-        case Type::Volume_image:
-            return volume_evaluate(prop_, part_, extent_, sample, filter, worker);
+    if (Type::Null == type_) {
+        return float3(0.f);
     }
 
-    return float3(0.f);
+    auto const material = worker.scene().prop_material(prop_, part_);
+
+    return material->evaluate_radiance(sample.wi, sample.uvw, extent_, filter, worker);
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
@@ -344,27 +325,16 @@ inline bool Light::sample(Transformation const& transformation, Sampler& sampler
     return false;
 }
 
-static inline float3 prop_evaluate(uint32_t prop, uint32_t part, float area,
-                                   Sample_from const& sample, Filter filter, Worker const& worker) {
-    auto const material = worker.scene().prop_material(prop, part);
-
-    return material->evaluate_radiance(-sample.dir, sample.uv, area, filter, worker);
-}
-
 inline float3 Light::evaluate(Sample_from const& sample, Filter filter,
                               Worker const& worker) const {
-    switch (type_) {
-        case Type::Null:
-            return float3(0.f);
-        case Type::Prop:
-        case Type::Prop_image:
-            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
-        case Type::Volume:
-        case Type::Volume_image:
-            return prop_evaluate(prop_, part_, extent_, sample, filter, worker);
+    if (Type::Null == type_) {
+        return float3(0.f);
     }
 
-    return float3(0.f);
+    auto const material = worker.scene().prop_material(prop_, part_);
+
+    return material->evaluate_radiance(-sample.dir, float3(sample.uv, 0.f), extent_, filter,
+                                       worker);
 }
 
 inline bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
