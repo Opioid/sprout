@@ -58,19 +58,11 @@ float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, 
     return float3(0.f);
 }
 
-float3 Material::average_radiance(float /*area_or_volume*/, Scene const& /*scene*/) const {
+float3 Material::average_radiance(float /*extent*/, Scene const& /*scene*/) const {
     return float3(0.f);
 }
 
-Material::Sample_2D Material::radiance_sample(float2 r2) const {
-    return {r2, 1.f};
-}
-
-float Material::emission_pdf(float2 /*uv*/, Filter /*filter*/, Worker const& /*worker*/) const {
-    return 1.f;
-}
-
-Material::Sample_3D Material::radiance_sample(float3 const& r3) const {
+Material::Radiance_sample Material::radiance_sample(float3 const& r3) const {
     return {r3, 1.f};
 }
 

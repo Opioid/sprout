@@ -198,7 +198,7 @@ void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
     //    std::cout << max_t << std::endl;
 }
 
-Grid_emission::Sample_3D Grid_emission::radiance_sample(float3 const& r3) const {
+Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3 const& r3) const {
     auto const result = distribution_.sample_continuous(r3);
 
     return {result.uvw, result.pdf * total_weight_};

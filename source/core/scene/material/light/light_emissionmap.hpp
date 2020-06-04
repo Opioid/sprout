@@ -20,9 +20,9 @@ class alignas(64) Emissionmap : public Material {
 
     float3 average_radiance(float area, Scene const& scene) const final;
 
-    Sample_2D radiance_sample(float2 r2) const final;
+    Radiance_sample radiance_sample(float3 const& r3) const final;
 
-    float emission_pdf(float2 uv, Filter filter, Worker const& worker) const final;
+    float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,

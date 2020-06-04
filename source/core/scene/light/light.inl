@@ -79,21 +79,21 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
-    auto const rs = material->radiance_sample(s2d);
-    if (0.f == rs.pdf) {
+    auto const rs = material->radiance_sample(float3(s2d, 0.f));
+    if (0.f == rs.pdf()) {
         return false;
     }
 
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uv, transformation, area, two_sided,
-                                                 result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw.xy(), transformation, area,
+                                                 two_sided, result)) {
         return false;
     }
 
     if (dot(result.wi, n) > 0.f || total_sphere) {
-        result.pdf() *= rs.pdf;
+        result.pdf() *= rs.pdf();
         return true;
     }
 
@@ -127,7 +127,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
     float const  s1d = sampler.generate_sample_1D(sampler_dimension);
 
     auto const rs = material->radiance_sample(float3(s2d, s1d));
-    if (0.f == rs.pdf) {
+    if (0.f == rs.pdf()) {
         return false;
     }
 
@@ -136,7 +136,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
     }
 
     if (dot(result.wi, n) > 0.f || total_sphere) {
-        result.pdf() *= rs.pdf;
+        result.pdf() *= rs.pdf();
         return true;
     }
 
@@ -203,8 +203,8 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     float2 const s2d = sampler.generate_sample_2D(sampler_dimension);
 
-    auto const rs = material->radiance_sample(s2d);
-    if (0.f == rs.pdf) {
+    auto const rs = material->radiance_sample(float3(s2d, 0.f));
+    if (0.f == rs.pdf()) {
         return false;
     }
 
@@ -213,12 +213,12 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     float2 const importance_uv = sampler.generate_sample_2D();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop_shape(prop)->sample(part, rs.uv, transformation, area, two_sided,
+    if (!worker.scene().prop_shape(prop)->sample(part, rs.uvw.xy(), transformation, area, two_sided,
                                                  importance_uv, bounds, result)) {
         return false;
     }
 
-    result.pdf *= rs.pdf;
+    result.pdf *= rs.pdf();
 
     return true;
 }
@@ -279,8 +279,8 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     float2 const s2d0 = sampler.generate_sample_2D(sampler_dimension);
 
-    auto const rs = material->radiance_sample(s2d0);
-    if (0.f == rs.pdf) {
+    auto const rs = material->radiance_sample(float3(s2d0, 0.f));
+    if (0.f == rs.pdf()) {
         return false;
     }
 
@@ -294,12 +294,12 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     }
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop_shape(prop)->sample(part, rs.uv, transformation, area, two_sided,
+    if (!worker.scene().prop_shape(prop)->sample(part, rs.uvw.xy(), transformation, area, two_sided,
                                                  importance_uv.uv, bounds, result)) {
         return false;
     }
 
-    result.pdf *= rs.pdf * importance_uv.pdf;
+    result.pdf *= rs.pdf() * importance_uv.pdf;
 
     return true;
 }
@@ -394,7 +394,7 @@ static inline float prop_image_pdf(uint32_t prop, uint32_t part, float area, Ray
     float const shape_pdf = worker.scene().prop_shape(prop)->pdf_uv(
         ray, intersection, transformation, area, two_sided);
 
-    float const material_pdf = material->emission_pdf(intersection.uv, filter, worker);
+    float const material_pdf = material->emission_pdf(float3(intersection.uv, 0.f), filter, worker);
 
     return shape_pdf * material_pdf;
 }

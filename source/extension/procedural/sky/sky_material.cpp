@@ -95,16 +95,17 @@ float3 Sky_baked_material::average_radiance(float /*area*/, Scene const& /*scene
     return average_emission_;
 }
 
-Material::Sample_2D Sky_baked_material::radiance_sample(float2 r2) const {
-    auto const result = distribution_.sample_continuous(r2);
+Material::Radiance_sample Sky_baked_material::radiance_sample(float3 const& r3) const {
+    auto const result = distribution_.sample_continuous(r3.xy());
 
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Sky_baked_material::emission_pdf(float2 uv, Filter filter, Worker const& worker) const {
+float Sky_baked_material::emission_pdf(float3 const& uvw, Filter filter,
+                                       Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    return distribution_.pdf(sampler.address(uv)) * total_weight_;
+    return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }
 
 void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,

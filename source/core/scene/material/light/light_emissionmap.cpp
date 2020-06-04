@@ -47,16 +47,16 @@ float3 Emissionmap::average_radiance(float /*area*/, Scene const& /*scene*/) con
     return average_emission_;
 }
 
-Material::Sample_2D Emissionmap::radiance_sample(float2 r2) const {
-    auto const result = distribution_.sample_continuous(r2);
+Material::Radiance_sample Emissionmap::radiance_sample(float3 const& r3) const {
+    auto const result = distribution_.sample_continuous(r3.xy());
 
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Emissionmap::emission_pdf(float2 uv, Filter filter, Worker const& worker) const {
+float Emissionmap::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    return distribution_.pdf(sampler.address(uv)) * total_weight_;
+    return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }
 
 void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
@@ -94,13 +94,13 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 
-        float2 const idf = 1.f / float2(d);
-
-        float const ef = emission_factor_;
-
         threads.run_range(
-            [conditional, &artws, &shape, &texture, d, idf, element, ef](uint32_t id, int32_t begin,
-                                                                         int32_t end) noexcept {
+            [conditional, &artws, &shape, &texture, element](uint32_t id, int32_t begin,
+                                                             int32_t end) noexcept {
+                auto const d = texture.dimensions().xy();
+
+                float2 const idf = 1.f / float2(d);
+
                 auto luminance = memory::Buffer<float>(uint32_t(d[0]));
 
                 float4 artw(0.f);
@@ -113,7 +113,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const radiance = ef * texture.at_element_3(x, y, element);
+                        float3 const radiance = texture.at_element_3(x, y, element);
 
                         float3 const wr = uv_weight * radiance;
 
@@ -134,7 +134,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
             artw += a;
         }
 
-        average_emission_ = artw.xyz() / artw[3];
+        average_emission_ = (emission_factor_ / artw[3]) * artw.xyz();
 
         total_weight_ = artw[3];
 

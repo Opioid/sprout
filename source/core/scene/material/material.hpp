@@ -82,21 +82,20 @@ class alignas(16) Material {
     virtual float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent,
                                      Filter filter, Worker const& worker) const;
 
-    virtual float3 average_radiance(float area_or_volume, Scene const& scene) const;
+    virtual float3 average_radiance(float extent, Scene const& scene) const;
 
-    struct Sample_2D {
-        float2 uv;
-        float  pdf;
-    };
-    virtual Sample_2D radiance_sample(float2 r2) const;
+    struct Radiance_sample {
+        inline Radiance_sample(float2 uv, float pdf) : uvw{uv[0], uv[1], 0.f, pdf} {}
 
-    virtual float emission_pdf(float2 uv, Filter filter, Worker const& worker) const;
+        inline Radiance_sample(float3 const& uvw, float pdf) : uvw{uvw[0], uvw[1], uvw[2], pdf} {}
 
-    struct Sample_3D {
+        inline float pdf() const {
+            return uvw[3];
+        }
+
         float3 uvw;
-        float  pdf;
     };
-    virtual Sample_3D radiance_sample(float3 const& r3) const;
+    virtual Radiance_sample radiance_sample(float3 const& r3) const;
 
     virtual float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const;
 
