@@ -48,14 +48,14 @@ class Grid_emission : public Grid {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
+    Radiance_sample radiance_sample(float3 const& r3) const final;
+
+    float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const final;
+
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const final;
 
     void commit(thread::Pool& threads, Scene const& scene) final;
-
-    Radiance_sample radiance_sample(float3 const& r3) const final;
-
-    float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,

@@ -85,61 +85,51 @@ float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
                                         Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
+    float3 const emission = temperature_.is_valid()
+                                ? blackbody_(temperature_.sample_1(worker, sampler, uvw))
+                                : emission_;
+
     if (2 == density_.texture(worker.scene()).num_channels()) {
         float2 const d = density_.sample_2(worker, sampler, uvw);
 
-        if (temperature_.is_valid()) {
-            float const t = temperature_.sample_1(worker, sampler, uvw);
-
-            float3 const c = blackbody_(t);
-
-            return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * c;
-        }
-
-        return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * emission_;
+        return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * emission;
     } else {
         float const d = density_.sample_1(worker, sampler, uvw);
 
-        if (temperature_.is_valid()) {
-            float const t = temperature_.sample_1(worker, sampler, uvw);
-
-            float3 const c = blackbody_(t);
-
-            return /*total_weight_inv_ **/ d * cc_.a * c;
-        }
-
-        return /*total_weight_inv_ **/ d * cc_.a * emission_;
+        return /*total_weight_inv_ **/ d * cc_.a * emission;
     }
+}
+
+Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3 const& r3) const {
+    auto const result = distribution_.sample_continuous(r3);
+
+    return {result.uvw, result.pdf * total_weight_};
+}
+
+float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
+    auto& sampler = worker.sampler_3D(sampler_key(), filter);
+
+    float const pdf = distribution_.pdf(sampler.address(uvw)) * total_weight_;
+
+    return pdf;
 }
 
 CCE Grid_emission::collision_coefficients_emission(float3 const& uvw, Filter filter,
                                                    Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
+    float3 const emission = temperature_.is_valid()
+                                ? blackbody_(temperature_.sample_1(worker, sampler, uvw))
+                                : emission_;
+
     if (2 == density_.texture(worker.scene()).num_channels()) {
         float2 const d = density_.sample_2(worker, sampler, uvw);
 
-        if (temperature_.is_valid()) {
-            float const t = temperature_.sample_1(worker, sampler, uvw);
-
-            float3 const c = blackbody_(t);
-
-            return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * c};
-        }
-
-        return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * emission_};
+        return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * emission};
     } else {
         float const d = density_.sample_1(worker, sampler, uvw);
 
-        if (temperature_.is_valid()) {
-            float const t = temperature_.sample_1(worker, sampler, uvw);
-
-            float3 const c = blackbody_(t);
-
-            return {{d * cc_.a, d * cc_.s}, c};
-        }
-
-        return {{d * cc_.a, d * cc_.s}, emission_};
+        return {{d * cc_.a, d * cc_.s}, emission};
     }
 }
 
@@ -196,20 +186,6 @@ void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
     //    }
 
     //    std::cout << max_t << std::endl;
-}
-
-Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3 const& r3) const {
-    auto const result = distribution_.sample_continuous(r3);
-
-    return {result.uvw, result.pdf * total_weight_};
-}
-
-float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
-    auto& sampler = worker.sampler_3D(sampler_key(), filter);
-
-    float const pdf = distribution_.pdf(sampler.address(uvw)) * total_weight_;
-
-    return pdf;
 }
 
 void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,

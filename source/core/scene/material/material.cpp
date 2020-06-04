@@ -53,12 +53,12 @@ void Material::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
                         thread::Pool& /*threads*/, Scene const& /*scene*/) {}
 
-float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, float /*extent*/,
-                                   Filter /*filter*/, Worker const& /*worker*/) const {
+float3 Material::average_radiance(float /*extent*/, Scene const& /*scene*/) const {
     return float3(0.f);
 }
 
-float3 Material::average_radiance(float /*extent*/, Scene const& /*scene*/) const {
+float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, float /*extent*/,
+                                   Filter /*filter*/, Worker const& /*worker*/) const {
     return float3(0.f);
 }
 

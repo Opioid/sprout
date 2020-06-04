@@ -79,10 +79,10 @@ class alignas(16) Material {
     virtual Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, Sampler& sampler, Worker& worker) const = 0;
 
+    virtual float3 average_radiance(float extent, Scene const& scene) const;
+
     virtual float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent,
                                      Filter filter, Worker const& worker) const;
-
-    virtual float3 average_radiance(float extent, Scene const& scene) const;
 
     struct Radiance_sample {
         inline Radiance_sample(float2 uv, float pdf) : uvw{uv[0], uv[1], 0.f, pdf} {}
