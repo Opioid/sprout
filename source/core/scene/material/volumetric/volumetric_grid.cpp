@@ -215,8 +215,6 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                                                                 int32_t end) noexcept {
                     auto luminance = memory::Buffer<float>(uint32_t(d[0]));
 
-                    float3 const a = cc_.a;
-
                     float3 ar(0.f);
 
                     if (2 == texture.num_channels()) {
@@ -231,7 +229,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
                                     float3 const c = blackbody_(t);
 
-                                    float3 const radiance = density[0] * density[1] * c * a;
+                                    float3 const radiance = density[0] * density[1] * c;
 
                                     luminance[x] = spectrum::luminance(radiance);
 
@@ -255,7 +253,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
                                     float3 const c = blackbody_(t);
 
-                                    float3 const radiance = density * c * a;
+                                    float3 const radiance = density * c;
 
                                     luminance[x] = spectrum::luminance(radiance);
 
@@ -273,7 +271,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                 },
                 0, d[2]);
         } else {
-            float3 const emission = cc_.a * emission_;
+            float3 const emission = emission_;
 
             threads.run_range(
                 [&emission, &conditional_2d, &ars, &texture, d](uint32_t id, int32_t begin,
@@ -314,7 +312,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         float const total_weight = float(d[0] * d[1] * d[2]);
 
-        average_emission_ = ar / total_weight;
+        average_emission_ = cc_.a * ar / total_weight;
 
         total_weight_ = total_weight;
 
