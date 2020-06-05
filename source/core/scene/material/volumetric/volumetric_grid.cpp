@@ -92,24 +92,24 @@ float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
     if (2 == density_.texture(worker.scene()).num_channels()) {
         float2 const d = density_.sample_2(worker, sampler, uvw);
 
-        return (/*total_weight_inv_ **/ d[0] * d[1]) * cc_.a * emission;
+        return (d[0] * d[1]) * a_norm_ * emission;
     } else {
         float const d = density_.sample_1(worker, sampler, uvw);
 
-        return /*total_weight_inv_ **/ d * cc_.a * emission;
+        return d * a_norm_ * emission;
     }
 }
 
 Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3 const& r3) const {
     auto const result = distribution_.sample_continuous(r3);
 
-    return {result.uvw, result.pdf * total_weight_};
+    return {result.uvw, result.pdf * pdf_factor_};
 }
 
 float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float const pdf = distribution_.pdf(sampler.address(uvw)) * total_weight_;
+    float const pdf = distribution_.pdf(sampler.address(uvw)) * pdf_factor_;
 
     return pdf;
 }
@@ -305,20 +305,22 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                 0, d[2]);
         }
 
+        distribution_.init();
+
         float3 ar(0.f);
         for (auto const& a : ars) {
             ar += a;
         }
 
-        float const total_weight = float(d[0] * d[1] * d[2]);
+        float const num_pixels = float(d[0] * d[1] * d[2]);
 
-        average_emission_ = cc_.a * ar / total_weight;
+        average_emission_ = cc_.a * ar / num_pixels;
 
-        total_weight_ = total_weight;
+        float const majorant_a = max_component(cc_.a);
 
-        total_weight_inv_ = 1.f / total_weight;
+        a_norm_ = majorant_a / cc_.a;
 
-        distribution_.init();
+        pdf_factor_ = num_pixels / majorant_a;
     } else {
         float3 const emission = cc_.a * emission_;
 
