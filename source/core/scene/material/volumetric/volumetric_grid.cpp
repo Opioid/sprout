@@ -160,7 +160,7 @@ void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
 
         // explosion
         static float constexpr Start = 2000.f;
-        static float constexpr End   = 5800.f;
+        static float constexpr End   = 5000.f;
 
         blackbody_.allocate(0.f, 1.2f, Num_samples);
 
