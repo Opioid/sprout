@@ -226,16 +226,19 @@ void read_pixels(std::istream& stream, uint32_t num_pixels, Image& image, int32_
     }
 }
 
+// https://cbloomrants.blogspot.com/2020/06/widespread-error-in-radiance-hdr-rgbe.html
 image_float3 rgbe_to_float3(uint8_t rgbe[4]) {
     if (rgbe[3] > 0) {
         // nonzero pixel
         float const f = std::ldexp(1.f, int32_t(rgbe[3]) - (128 + 8));
 
+        float3 const srgb((float(rgbe[0]) + 0.5f) * f, (float(rgbe[1]) + 0.5f) * f,
+                          (float(rgbe[2]) + 0.5f) * f);
+
 #ifdef SU_ACESCG
-        float3 const srgb(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
         return image_float3(spectrum::sRGB_to_AP1(srgb));
 #else
-        return image_float3(float(rgbe[0]) * f, float(rgbe[1]) * f, float(rgbe[2]) * f);
+        return image_float3(srgb);
 #endif
     }
 

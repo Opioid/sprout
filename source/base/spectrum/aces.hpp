@@ -51,8 +51,8 @@ static inline float3 constexpr RRT_and_ODT(float3 const& x) {
 }
 
 static inline float3 constexpr ToneTF2(float3 const& x) {
-    float3 const a = x * (x + 0.0822192);
-    float3 const b = x * (0.983521 * x + 0.5001330) + 0.274064;
+    float3 const a = x * (x + 0.0822192f);
+    float3 const b = x * (0.983521f * x + 0.5001330f) + 0.274064f;
 
     return a / b;
 }
