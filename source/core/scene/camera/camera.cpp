@@ -64,6 +64,10 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
     on_update(time, worker);
 }
 
+Ray_differential Camera::calculate_ray_differential(float3 const& /*p*/, uint64_t /*time*/, Scene const& /*scene*/) const {
+    return Ray_differential();
+}
+
 Frustum Camera::frustum() const {
     return Frustum();
 }
@@ -114,6 +118,10 @@ rendering::sensor::Sensor& Camera::sensor() const {
 
 void Camera::set_sensor(Sensor* sensor) {
     sensor_ = sensor;
+}
+
+void Camera::set_differential_scale(float scale) {
+    differential_scale_ = scale;
 }
 
 prop::Interface_stack const& Camera::interface_stack() const {

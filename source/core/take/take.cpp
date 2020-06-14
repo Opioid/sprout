@@ -38,6 +38,8 @@ void View::clear() {
 void View::init(thread::Pool& threads) {
     if (camera) {
         pipeline.init(*camera, threads);
+
+        camera->set_differential_scale(1.f / std::sqrt(num_samples_per_pixel));
     }
 }
 

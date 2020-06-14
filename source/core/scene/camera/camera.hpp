@@ -29,6 +29,7 @@ struct Composed_transformation;
 }  // namespace entity
 
 struct Ray;
+struct Ray_differential;
 class Scene;
 class Worker;
 
@@ -69,6 +70,8 @@ class Camera {
                         Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                         Sample_to& sample) const = 0;
 
+    virtual Ray_differential calculate_ray_differential(float3 const& p, uint64_t time, Scene const& scene) const;
+
     virtual Frustum frustum() const;
 
     void set_parameters(json::Value const& parameters);
@@ -82,6 +85,8 @@ class Camera {
     Sensor& sensor() const;
 
     void set_sensor(Sensor* sensor);
+
+    void set_differential_scale(float scale);
 
     prop::Interface_stack const& interface_stack() const;
 
@@ -113,6 +118,8 @@ class Camera {
 
     uint64_t frame_step_     = scene::Units_per_second / 60;
     uint64_t frame_duration_ = frame_step_;
+
+    float differential_scale_;
 };
 
 }  // namespace camera

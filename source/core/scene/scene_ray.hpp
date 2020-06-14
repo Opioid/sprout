@@ -18,6 +18,15 @@ struct Ray : public ray {
     uint64_t time;
 };
 
+struct Ray_differential {
+    float3 origin;
+    float3 direction;
+    float3 x_origin;
+    float3 x_direction;
+    float3 y_origin;
+    float3 y_direction;
+};
+
 }  // namespace scene
 
 #endif

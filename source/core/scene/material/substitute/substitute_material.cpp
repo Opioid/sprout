@@ -15,7 +15,7 @@ namespace scene::material::substitute {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Material::sample(float3 const&      wo, Ray const& ray,
                                          Renderstate const& rs, Filter filter, Sampler& /*sampler*/,
                                          Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
@@ -24,7 +24,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, rs.ior, sampler, worker, sample);
+    set_sample(wo, ray, rs, rs.ior, sampler, worker, sample);
 
     return sample;
 }
@@ -36,7 +36,7 @@ size_t Material::sample_size() {
 Frozen::Frozen(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
-material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
+material::Sample const& Frozen::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                        Filter filter, Sampler& /*sampler*/, Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
@@ -44,7 +44,7 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, rs, rs.ior, sampler, worker, sample);
+    set_sample(wo, ray, rs, rs.ior, sampler, worker, sample);
 
     float2 const r2(worker.rng().random_float(), worker.rng().random_float());
 

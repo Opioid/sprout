@@ -36,7 +36,7 @@ void Material_coating_subsurface::commit(thread::Pool& threads, Scene const& sce
     properties_.set(Property::Heterogeneous_volume, density_map_.is_valid());
 }
 
-material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ray const& /*ray*/,
+material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ray const& ray,
                                                             Renderstate const& rs, Filter filter,
                                                             Sampler& /*sampler*/,
                                                             Worker& worker) const {
@@ -68,7 +68,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
 
     float const coating_ior = lerp(rs.ior, coating_.ior, weight);
 
-    set_sample(wo, rs, coating_ior, sampler, worker, sample);
+    set_sample(wo, ray, rs, coating_ior, sampler, worker, sample);
 
     set_coating_basis(wo, rs, sampler, worker, sample);
 
