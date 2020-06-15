@@ -31,7 +31,7 @@ class Material_base : public material::Material {
     using Texture_sampler_2D = image::texture::Sampler_2D;
 
     template <typename Sample>
-    void set_sample(float3 const& wo, Ray const& ray, Renderstate const& rs, float ior_outside,
+    void set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
                     Texture_sampler_2D const& sampler, Worker const& worker, Sample& sample) const;
 
     Texture_adapter color_map_;

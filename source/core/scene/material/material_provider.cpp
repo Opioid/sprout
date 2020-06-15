@@ -760,6 +760,9 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     float3 absorption_color(0.f);
     float3 scattering_color(0.f);
 
+    float3 checkers[2];
+    bool   is_checkers = false;
+
     float roughness             = 0.9f;
     float metallic              = 0.f;
     float ior                   = 1.46f;
@@ -773,6 +776,13 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     for (auto const& n : substitute_value.GetObject()) {
         if ("color" == n.name) {
             color = read_color(n.value);
+        } else if ("checkers" == n.name) {
+            auto const ca = n.value.GetArray();
+
+            checkers[0] = read_color(ca[0]);
+            checkers[1] = read_color(ca[1]);
+
+            is_checkers = true;
         } else if ("metal_preset" == n.name) {
             float3 eta;
             float3 k;
@@ -1025,6 +1035,24 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         return material;
     }
 #endif
+
+    if (is_checkers) {
+        auto material = new substitute::Checkers(sampler_settings, two_sided);
+
+        material->set_mask(mask);
+        material->set_color_map(color_map);
+        material->set_normal_map(normal_map);
+        material->set_surface_map(surface_map);
+        material->set_emission_map(emission_map);
+
+        material->set_checkers(checkers[0], checkers[1]);
+        material->set_ior(ior);
+        material->set_roughness(roughness);
+        material->set_metallic(metallic);
+        material->set_emission_factor(emission_factor);
+
+        return material;
+    }
 
     auto material = new substitute::Material(sampler_settings, two_sided);
 

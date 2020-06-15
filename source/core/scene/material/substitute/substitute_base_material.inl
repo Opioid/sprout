@@ -22,33 +22,10 @@ static inline float3 f0_to_a_b(float3 const& f0) {
     return 6.f * (1.f - f0);
 }
 
-// https://www.iquilezles.org/www/articles/checkerfiltering/checkerfiltering.htm
-
-static inline float checkers(float2 uv) {
-    float const a = sign(frac(uv[0] * 0.5f) - 0.5f);
-    float const b = sign(frac(uv[1] * 0.5f) - 0.5f);
-
-    return 0.5f - 0.5f * a * b;
-}
-
-// triangular signal
-static inline float2 tri(float2 x) {
-    float hx = frac(x[0] * 0.5f) - 0.5f;
-    float hy = frac(x[1] * 0.5f) - 0.5f;
-    return float2(1.f - 2.f * std::abs(hx), 1.f - 2.f * std::abs(hy));
-}
-
-static inline float checkersGrad(float2 uv, float w) {
-    //  vec2 w = max(abs(ddx), abs(ddy)) + 0.01;    // filter kernel
-    float2 const i = (tri(uv + 0.5f * w) - tri(uv - 0.5f * w)) /
-                     w;                // analytical integral (box filter)
-    return 0.5f - 0.5f * i[0] * i[1];  // xor pattern
-}
-
 template <typename Sample>
-void Material_base::set_sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                               float ior_outside, Texture_sampler_2D const& sampler,
-                               Worker const& worker, Sample& sample) const {
+void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
+                               Texture_sampler_2D const& sampler, Worker const& worker,
+                               Sample& sample) const {
     sample.set_basis(rs.geo_n, rs.n, wo);
 
     if (normal_map_.is_valid()) {
@@ -60,19 +37,7 @@ void Material_base::set_sample(float3 const& wo, Ray const& ray, Renderstate con
 
     float3 color;
     if (color_map_.is_valid()) {
-        //   color = color_map_.sample_3(worker, sampler, rs.uv);
-
-        // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
-
-        // anti-aliased checker hack
-        float const fp = worker.ray_footprint(rs, ray.time);
-
-        float const w = fp;  // 0.0001f;
-
-        float const t = checkersGrad(2.f * rs.uv, w);
-
-        color = lerp(float3(1.f), float3(0.f), t);
-
+        color = color_map_.sample_3(worker, sampler, rs.uv);
     } else {
         color = color_;
     }

@@ -15,8 +15,8 @@ namespace scene::material::substitute {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                         Filter  filter, Sampler& /*sampler*/,
+material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
+                                         Renderstate const& rs, Filter filter, Sampler& /*sampler*/,
                                          Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
@@ -24,7 +24,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, ray, rs, rs.ior, sampler, worker, sample);
+    set_sample(wo, rs, rs.ior, sampler, worker, sample);
 
     return sample;
 }
@@ -33,10 +33,101 @@ size_t Material::sample_size() {
     return sizeof(Sample);
 }
 
+Checkers::Checkers(Sampler_settings const& sampler_settings, bool two_sided)
+    : Material_base(sampler_settings, two_sided) {}
+
+// https://www.iquilezles.org/www/articles/checkerfiltering/checkerfiltering.htm
+
+static inline float checkers(float2 uv) {
+    float const a = sign(frac(uv[0] * 0.5f) - 0.5f);
+    float const b = sign(frac(uv[1] * 0.5f) - 0.5f);
+
+    return 0.5f - 0.5f * a * b;
+}
+
+// triangular signal
+static inline float2 tri(float2 x) {
+    float const hx = frac(x[0] * 0.5f) - 0.5f;
+    float const hy = frac(x[1] * 0.5f) - 0.5f;
+    return float2(1.f - 2.f * std::abs(hx), 1.f - 2.f * std::abs(hy));
+}
+
+static inline float checkers_grad(float2 uv, float w) {
+    //  vec2 w = max(abs(ddx), abs(ddy)) + 0.01;    // filter kernel
+
+    // analytical integral (box filter)
+    float2 const i = (tri(uv + 0.5f * w) - tri(uv - 0.5f * w)) / w;
+
+    // xor pattern
+    return 0.5f - 0.5f * i[0] * i[1];
+}
+
+material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+                                         Filter  filter, Sampler& /*sampler*/,
+                                         Worker& worker) const {
+    SOFT_ASSERT(!rs.subsurface);
+
+    auto& sample = worker.sample<Sample>();
+
+    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
+
+    sample.set_basis(rs.geo_n, rs.n, wo);
+
+    if (normal_map_.is_valid()) {
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
+        sample.layer_.set_tangent_frame(n);
+    } else {
+        sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
+    }
+
+    // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
+
+    // anti-aliased checker hack
+    float const fp = worker.ray_footprint(rs, ray.time);
+
+    float const t = checkers_grad(2.f * rs.uv, fp);
+
+    float3 const color = lerp(checkers_[0], checkers_[1], t);
+
+    float2 surface;
+    if (surface_map_.is_valid()) {
+        surface = surface_map_.sample_2(worker, sampler, rs.uv);
+
+        float const r = ggx::map_roughness(surface[0]);
+
+        surface[0] = r * r;
+    } else {
+        surface[0] = alpha_;
+        surface[1] = metallic_;
+    }
+
+    float3 radiance;
+    if (emission_map_.is_valid()) {
+        radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
+    } else {
+        radiance = float3(0.f);
+    }
+
+    sample.set_radiance(radiance);
+    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[0], surface[1],
+                     rs.avoid_caustics);
+
+    return sample;
+}
+
+void Checkers::set_checkers(float3 const& a, float3 const& b) {
+    checkers_[0] = a;
+    checkers_[1] = b;
+}
+
+size_t Checkers::sample_size() {
+    return sizeof(Sample);
+}
+
 Frozen::Frozen(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
-material::Sample const& Frozen::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
                                        Filter filter, Sampler& /*sampler*/, Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
@@ -44,7 +135,7 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& ray, Renders
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    set_sample(wo, ray, rs, rs.ior, sampler, worker, sample);
+    set_sample(wo, rs, rs.ior, sampler, worker, sample);
 
     float2 const r2(worker.rng().random_float(), worker.rng().random_float());
 
