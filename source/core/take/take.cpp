@@ -39,7 +39,10 @@ void View::init(thread::Pool& threads) {
     if (camera) {
         pipeline.init(*camera, threads);
 
-        camera->set_differential_scale(1.f / std::sqrt(num_samples_per_pixel));
+        uint32_t const spp = num_samples_per_pixel > 0 ? num_samples_per_pixel
+                                                       : num_particles_per_pixel;
+
+        camera->set_sample_spacing(1.f / std::sqrt(float(spp)));
     }
 }
 

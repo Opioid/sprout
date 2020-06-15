@@ -70,7 +70,8 @@ class Camera {
                         Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
                         Sample_to& sample) const = 0;
 
-    virtual Ray_differential calculate_ray_differential(float3 const& p, uint64_t time, Scene const& scene) const;
+    virtual Ray_differential calculate_ray_differential(float3 const& p, uint64_t time,
+                                                        Scene const& scene) const;
 
     virtual Frustum frustum() const;
 
@@ -86,7 +87,7 @@ class Camera {
 
     void set_sensor(Sensor* sensor);
 
-    void set_differential_scale(float scale);
+    void set_sample_spacing(float spacing);
 
     prop::Interface_stack const& interface_stack() const;
 
@@ -119,7 +120,7 @@ class Camera {
     uint64_t frame_step_     = scene::Units_per_second / 60;
     uint64_t frame_duration_ = frame_step_;
 
-    float differential_scale_;
+    float sample_spacing_;
 };
 
 }  // namespace camera

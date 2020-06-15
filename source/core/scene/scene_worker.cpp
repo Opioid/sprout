@@ -137,4 +137,27 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
     return intersection.sample(wo, ray, filter, avoid_caustics, sampler, *this);
 }
 
+float Worker::ray_footprint(Renderstate const& rs, uint64_t time) const {
+    Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
+
+    float const plane_d = dot(rs.geo_n, rs.p);
+
+    float const x_denom = -dot(rs.geo_n, rd.x_direction);
+    float const x_numer = dot(rs.geo_n, rd.x_origin) - plane_d;
+    float const x_hit_t = x_numer / x_denom;
+
+    float3 const x_p = rd.x_origin + x_hit_t * rd.x_direction;
+
+    float const y_denom = -dot(rs.geo_n, rd.y_direction);
+    float const y_numer = dot(rs.geo_n, rd.y_origin) - plane_d;
+    float const y_hit_t = y_numer / y_denom;
+
+    float3 const y_p = rd.y_origin + y_hit_t * rd.y_direction;
+
+    float const x_sd = squared_distance(rs.p, x_p);
+    float const y_sd = squared_distance(rs.p, y_p);
+
+    return std::sqrt(std::max(x_sd, y_sd));
+}
+
 }  // namespace scene

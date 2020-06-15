@@ -35,7 +35,7 @@ void Material_subsurface::commit(thread::Pool& threads, Scene const& scene) {
     properties_.set(Property::Heterogeneous_volume, density_map_.is_valid());
 }
 
-material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray const& ray,
+material::Sample const& Material_subsurface::sample(float3 const& wo, Ray const& ray,
                                                     Renderstate const& rs, Filter filter,
                                                     Sampler& /*sampler*/, Worker& worker) const {
     if (rs.subsurface) {

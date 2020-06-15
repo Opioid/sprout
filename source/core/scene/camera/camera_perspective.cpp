@@ -152,7 +152,8 @@ bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, f
     return true;
 }
 
-Ray_differential Perspective::calculate_ray_differential(float3 const& p, uint64_t time, Scene const& scene) const {
+Ray_differential Perspective::calculate_ray_differential(float3 const& p, uint64_t time,
+                                                         Scene const& scene) const {
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
@@ -163,10 +164,10 @@ Ray_differential Perspective::calculate_ray_differential(float3 const& p, uint64
     float3 const d_x_w = transformation.object_to_world_vector(d_x_);
     float3 const d_y_w = transformation.object_to_world_vector(d_y_);
 
-    float const ds = differential_scale_;
+    float const ss = sample_spacing_;
 
-    float3 const x_dir_w = normalize(dir_w + ds * d_x_w);
-    float3 const y_dir_w = normalize(dir_w + ds * d_y_w);
+    float3 const x_dir_w = normalize(dir_w + ss * d_x_w);
+    float3 const y_dir_w = normalize(dir_w + ss * d_y_w);
 
     return Ray_differential{p_w, dir_w, p_w, x_dir_w, p_w, y_dir_w};
 }

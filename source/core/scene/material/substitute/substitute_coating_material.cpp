@@ -39,7 +39,7 @@ float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float3 const&
     return float3(0.f);
 }
 
-material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray const& ray,
+material::Sample const& Material_clearcoat::sample(float3 const& wo, Ray const& ray,
                                                    Renderstate const& rs, Filter filter,
                                                    Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_clearcoat>();
@@ -95,7 +95,7 @@ size_t Material_clearcoat::sample_size() {
 Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_coating<Thinfilm_data>(sampler_settings, two_sided) {}
 
-material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray const& ray,
+material::Sample const& Material_thinfilm::sample(float3 const& wo, Ray const& ray,
                                                   Renderstate const& rs, Filter filter,
                                                   Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_thinfilm>();
