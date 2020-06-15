@@ -44,8 +44,8 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
         intersection.b     = b;
         intersection.n     = normal;
         intersection.geo_n = normal;
-        intersection.uv[0] = dot(t, p) * transformation.scale_x();
-        intersection.uv[1] = dot(b, p) * transformation.scale_y();
+        intersection.uv[0] = dot(t, p);
+        intersection.uv[1] = dot(b, p);
 
         intersection.part = 0;
 
@@ -72,8 +72,8 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
 
         intersection.p     = p;
         intersection.geo_n = normal;
-        intersection.uv[0] = dot(t, p) * transformation.scale_x();
-        intersection.uv[1] = dot(b, p) * transformation.scale_y();
+        intersection.uv[0] = dot(t, p);
+        intersection.uv[1] = dot(b, p);
 
         intersection.part = 0;
 
