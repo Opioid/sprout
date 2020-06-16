@@ -74,9 +74,9 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    float4 const dd = 2.f * worker.screenspace_differential(rs, ray.time);
+    float4 const dd = scale_ * worker.screenspace_differential(rs, ray.time);
 
-    float const t = checkers_grad(2.f * rs.uv, dd.xy(), dd.zw());
+    float const t = checkers_grad(scale_ * rs.uv, dd.xy(), dd.zw());
 
     float3 const color = lerp(checkers_[0], checkers_[1], t);
 
@@ -109,6 +109,8 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
 void Checkers::set_checkers(float3 const& a, float3 const& b) {
     checkers_[0] = a;
     checkers_[1] = b;
+
+    scale_ = 2.f;
 }
 
 size_t Checkers::sample_size() {

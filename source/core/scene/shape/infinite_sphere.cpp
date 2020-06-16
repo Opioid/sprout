@@ -293,4 +293,8 @@ float Infinite_sphere::volume(uint32_t /*part*/, float3 const& /*scale*/) const 
     return 0.f;
 }
 
+Shape::Differential_surface Infinite_sphere::differential_surface(uint32_t /*primitive*/) const {
+    return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
+}
+
 }  // namespace scene::shape

@@ -14,6 +14,7 @@
 #include "scene_constants.hpp"
 #include "scene_ray.inl"
 #include "shape/node_stack.inl"
+#include "shape/shape.hpp"
 
 namespace scene {
 
@@ -152,79 +153,46 @@ static float4 calculate_screenspace_differential(float3 const& p, float3 const& 
 
     // Compute uv offsets at offset-ray intersection points
     // Choose two dimensions to use for ray offset computations
-    //    int2 dim;
-    //    if (std::abs(n[0]) > std::abs(n[1]) && std::abs(n[0]) > std::abs(n[2])) {
-    //        dim = int2(1,2);
-    //    } else if (std::abs(n[1]) > std::abs(n[2])) {
-    //        dim = int2(0,2);
-    //    } else {
-    //        dim = int2(0,1);
-    //    }
+    int2 dim;
+    if (std::abs(n[0]) > std::abs(n[1]) && std::abs(n[0]) > std::abs(n[2])) {
+        dim = int2(1, 2);
+    } else if (std::abs(n[1]) > std::abs(n[2])) {
+        dim = int2(0, 2);
+    } else {
+        dim = int2(0, 1);
+    }
 
-    int2 const dim = int2(0, 2);
+    // Initialize A, bx, and by matrices for offset computation
+    float const a[2][2] = {{dpdu[dim[0]], dpdv[dim[0]]}, {dpdu[dim[1]], dpdv[dim[1]]}};
 
-    // Initialize A, Bx, and By matrices for offset computation
-    float A[2][2];
-    A[0][0] = dpdu[dim[0]];
-    A[0][1] = dpdv[dim[0]];
-    A[1][0] = dpdu[dim[1]];
-    A[1][1] = dpdv[dim[1]];
+    float2 const bx(px[dim[0]] - p[dim[0]], px[dim[1]] - p[dim[1]]);
+    float2 const by(py[dim[0]] - p[dim[0]], py[dim[1]] - p[dim[1]]);
 
-    float2 Bx(px[dim[0]] - p[dim[0]], px[dim[1]] - p[dim[1]]);
-    float2 By(py[dim[0]] - p[dim[0]], py[dim[1]] - p[dim[1]]);
-
-    //    float dudx, dvdx, dudy, dvdy;
-
-    //    // Solve two linear systems to get uv offsets
-    //    auto solveLinearSystem2x2 = [](float A[2][2], const float2& B, float& x0, float& x1) ->
-    //    bool {
-    //        float det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
-
-    //        if (abs(det) < 0.000001f) {
-    //            return false;
-    //        }
-
-    //        x0 = (A[1][1] * B[0] - A[0][1] * B[1]) / det;
-    //        x1 = (A[0][0] * B[1] - A[1][0] * B[0]) / det;
-
-    //        if (std::isnan(x0) || std::isnan(x1)) {
-    //            return false;
-    //        }
-
-    //        return true;
-    //    };
-
-    //    if (!solveLinearSystem2x2(A, Bx, dudx, dvdx)) {
-    //        dudx = dvdx = 0.0f;
-    //    }
-
-    //    if (!solveLinearSystem2x2(A, By, dudy, dvdy)) {
-    //        dudy = dvdy = 0.0f;
-    //    }
-
-    float const det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+    float const det = a[0][0] * a[1][1] - a[0][1] * a[1][0];
 
     if (std::abs(det) < 1e-10f) {
         return float4(0.f);
     }
 
-    float const dudx = (A[1][1] * Bx[0] - A[0][1] * Bx[1]) / det;
-    float const dvdx = (A[0][0] * Bx[1] - A[1][0] * Bx[0]) / det;
+    float const dudx = (a[1][1] * bx[0] - a[0][1] * bx[1]) / det;
+    float const dvdx = (a[0][0] * bx[1] - a[1][0] * bx[0]) / det;
 
-    float const dudy = (A[1][1] * By[0] - A[0][1] * By[1]) / det;
-    float const dvdy = (A[0][0] * By[1] - A[1][0] * By[0]) / det;
+    float const dudy = (a[1][1] * by[0] - a[0][1] * by[1]) / det;
+    float const dvdy = (a[0][0] * by[1] - a[1][0] * by[0]) / det;
 
-    return float4(dudx, dudy, dvdx, dvdy);
+    return float4(dudx, dvdx, dudy, dvdy);
 }
 
 float4 Worker::screenspace_differential(Renderstate const& rs, uint64_t time) const {
     Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
 
-    float3 const dpdu(1.f, 0.f, 0.f);
-    float3 const dpdv(0.f, -1.f, 0.f);
+    entity::Composed_transformation temp;
+    auto const& transformation = scene_->prop_transformation_at(rs.prop, time, temp);
 
-    float3 const dpdu_w = rs.tangent_to_world(dpdu);
-    float3 const dpdv_w = rs.tangent_to_world(dpdv);
+    auto const ds = scene_->prop_shape(rs.prop)->differential_surface(rs.primitive);
+
+    float3 const dpdu_w = transformation.object_to_world_vector(ds.dpdu);
+    float3 const dpdv_w = transformation.object_to_world_vector(ds.dpdv);
 
     return calculate_screenspace_differential(rs.p, rs.geo_n, rd, dpdu_w, dpdv_w);
 }

@@ -115,14 +115,14 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         Simd3f t_w     = transform_vector(rotation, t);
         Simd3f b_w     = bitangent_sign * cross(n_w, t_w);
 
-        intersection.p     = float3(p_w);
-        intersection.t     = float3(t_w);
-        intersection.b     = float3(b_w);
-        intersection.n     = float3(n_w);
-        intersection.geo_n = float3(geo_n_w);
-
-        intersection.uv   = uv;
-        intersection.part = part;
+        intersection.p         = float3(p_w);
+        intersection.t         = float3(t_w);
+        intersection.b         = float3(b_w);
+        intersection.n         = float3(n_w);
+        intersection.geo_n     = float3(geo_n_w);
+        intersection.uv        = uv;
+        intersection.part      = part;
+        intersection.primitive = pi.index;
 
         SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
@@ -162,10 +162,11 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
 
-        intersection.p     = float3(p_w);
-        intersection.geo_n = float3(geo_n_w);
-        intersection.uv    = uv;
-        intersection.part  = part;
+        intersection.p         = float3(p_w);
+        intersection.geo_n     = float3(geo_n_w);
+        intersection.uv        = uv;
+        intersection.part      = part;
+        intersection.primitive = pi.index;
 
         return true;
     }
@@ -355,6 +356,48 @@ float Mesh::area(uint32_t part, float3 const& scale) const {
 float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     // HACK: This only really works for uniform scales!
     return 1.f;
+}
+
+Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const {
+    float3 pa;
+    float3 pb;
+    float3 pc;
+
+    float2 uva;
+    float2 uvb;
+    float2 uvc;
+
+    tree_.triangle(primitive, pa, pb, pc, uva, uvb, uvc);
+
+    float2 const duv02       = uva - uvc;
+    float2 const duv12       = uvb - uvc;
+    float const  determinant = duv02[0] * duv12[1] - duv02[1] * duv12[0];
+
+    float3 dpdu, dpdv;
+
+    float3 const dp02 = pa - pc;
+    float3 const dp12 = pb - pc;
+
+    if (std::abs(determinant) == 0.f) {
+        float3 const ng = normalize(cross(pc - pa, pb - pa));
+
+        if (std::abs(ng[0]) > std::abs(ng[1])) {
+            dpdu = float3(-ng[2], 0, ng[0]) / std::sqrt(ng[0] * ng[0] + ng[2] * ng[2]);
+        } else {
+            dpdu = float3(0, ng[2], -ng[1]) / std::sqrt(ng[1] * ng[1] + ng[2] * ng[2]);
+        }
+
+        dpdv = cross(ng, dpdu);
+    } else {
+        float const invdet = 1.f / determinant;
+
+        dpdu = invdet * (duv12[1] * dp02 - duv02[1] * dp12);
+        dpdv = invdet * (-duv12[0] * dp02 + duv02[0] * dp12);
+    }
+
+    return {dpdu, dpdv};
+
+    //  return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
 }
 
 void Mesh::prepare_sampling(uint32_t part) {

@@ -28,6 +28,8 @@ class alignas(16) Checkers : public Material_base {
 
   private:
     float3 checkers_[2];
+
+    float scale_;
 };
 
 class alignas(16) Frozen : public Material_base {

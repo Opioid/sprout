@@ -70,6 +70,8 @@ class Cube final : public Shape {
     float area(uint32_t part, float3 const& scale) const final;
 
     float volume(uint32_t part, float3 const& scale) const final;
+
+    Differential_surface differential_surface(uint32_t primitive) const final;
 };
 
 }  // namespace scene::shape

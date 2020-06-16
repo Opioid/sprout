@@ -15,6 +15,7 @@ struct Intersection {
     float2 uv;     // texture coordinates
 
     uint32_t part;
+    uint32_t primitive;
 };
 
 struct Normals {

@@ -28,6 +28,7 @@ struct Renderstate {
 
     uint32_t prop;
     uint32_t part;
+    uint32_t primitive;
 
     bool subsurface;
     bool avoid_caustics;

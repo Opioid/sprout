@@ -83,6 +83,8 @@ class alignas(64) Mesh final : public Shape {
 
     float volume(uint32_t part, float3 const& scale) const final;
 
+    Differential_surface differential_surface(uint32_t primitive) const final;
+
     void prepare_sampling(uint32_t part) final;
 
     float3 center(uint32_t part) const final;

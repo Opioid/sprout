@@ -233,6 +233,20 @@ float3 Indexed_data<SV>::center(uint32_t index) const {
 }
 
 template <typename SV>
+void Indexed_data<SV>::triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva,
+                                float2& uvb, float2& uvc) const {
+    auto const tri = triangles_[index];
+
+    pa = positions_[tri.a];
+    pb = positions_[tri.b];
+    pc = positions_[tri.c];
+
+    uva = float2(shading_vertices_[tri.a].n_u[3], shading_vertices_[tri.a].t_v[3]);
+    uvb = float2(shading_vertices_[tri.b].n_u[3], shading_vertices_[tri.b].t_v[3]);
+    uvc = float2(shading_vertices_[tri.c].n_u[3], shading_vertices_[tri.c].t_v[3]);
+}
+
+template <typename SV>
 void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
     SOFT_ASSERT(index < num_triangles_);
 

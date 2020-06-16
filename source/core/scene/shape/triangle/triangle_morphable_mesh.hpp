@@ -77,6 +77,8 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     float volume(uint32_t part, float3 const& scale) const final;
 
+    Differential_surface differential_surface(uint32_t primitive) const final;
+
     void prepare_sampling(uint32_t part) final;
 
     Morphable* morphable_shape() final;

@@ -262,6 +262,10 @@ float Morphable_mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 1.f;
 }
 
+Shape::Differential_surface Morphable_mesh::differential_surface(uint32_t /*primitive*/) const {
+    return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
+}
+
 void Morphable_mesh::prepare_sampling(uint32_t /*part*/) {}
 
 Morphable* Morphable_mesh::morphable_shape() {

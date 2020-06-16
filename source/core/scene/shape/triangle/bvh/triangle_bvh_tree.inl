@@ -399,6 +399,12 @@ float3 Tree<Data>::triangle_center(uint32_t index) const {
     return data_.center(index);
 }
 
+template <typename Data>
+void Tree<Data>::triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva,
+                          float2& uvb, float2& uvc) const {
+    return data_.triangle(index, pa, pb, pc, uva, uvb, uvc);
+}
+
 // template <typename Data>
 // void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const
 //     {

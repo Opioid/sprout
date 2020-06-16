@@ -27,12 +27,10 @@ AABB Plane::transformed_aabb(float4x4 const& /*m*/) const {
 
 bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                       Intersection& intersection) const {
-    float3 const& normal = transformation.rotation.r[2];
+    float3 const n = transformation.rotation.r[2];
 
-    float const d     = dot(normal, transformation.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
-    float const hit_t = numer / denom;
+    float const d     = dot(n, transformation.position);
+    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 const p = ray.point(hit_t);
@@ -42,8 +40,8 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
         intersection.p     = p;
         intersection.t     = t;
         intersection.b     = b;
-        intersection.n     = normal;
-        intersection.geo_n = normal;
+        intersection.n     = n;
+        intersection.geo_n = n;
         intersection.uv[0] = dot(t, p);
         intersection.uv[1] = dot(b, p);
 
@@ -58,12 +56,10 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
 
 bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformation,
                           Node_stack& /*node_stack*/, Intersection& intersection) const {
-    float3 const& normal = transformation.rotation.r[2];
+    float3 const n = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(n, transformation.position);
+    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
@@ -71,7 +67,7 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
         float3 b = -transformation.rotation.r[1];
 
         intersection.p     = p;
-        intersection.geo_n = normal;
+        intersection.geo_n = n;
         intersection.uv[0] = dot(t, p);
         intersection.uv[1] = dot(b, p);
 
@@ -86,18 +82,16 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
 
 bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
                       Normals& normals) const {
-    float3 const& normal = transformation.rotation.r[2];
+    float3 const n = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(n, transformation.position);
+    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         ray.max_t() = hit_t;
 
-        normals.geo_n = normal;
-        normals.n     = normal;
+        normals.geo_n = n;
+        normals.n     = n;
 
         return true;
     }
@@ -107,24 +101,20 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
 
 bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
                         Node_stack& /*node_stack*/) const {
-    float3 const& normal = transformation.rotation.r[2];
+    float3 const n = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(n, transformation.position);
+    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     return (hit_t > ray.min_t()) & (hit_t < ray.max_t());
 }
 
 float Plane::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
                         Filter filter, Worker& worker) const {
-    float3 const& normal = transformation.rotation.r[2];
+    float3 const n = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(n, transformation.position);
+    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
@@ -138,18 +128,16 @@ float Plane::visibility(Ray const& ray, Transformation const& transformation, ui
 
 bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
                             Filter filter, Worker& worker, float3& ta) const {
-    float3 const& normal = transformation.rotation.r[2];
+    float3 const n = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(n, transformation.position);
+    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
         float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
 
-        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
+        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv,
                                                                       ray.time, filter, worker);
         return true;
     }
@@ -216,6 +204,10 @@ float Plane::area(uint32_t /*part*/, float3 const& /*scale*/) const {
 
 float Plane::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
     return 0.f;
+}
+
+Shape::Differential_surface Plane::differential_surface(uint32_t /*primitive*/) const {
+    return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
 }
 
 }  // namespace scene::shape

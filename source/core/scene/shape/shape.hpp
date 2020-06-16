@@ -135,6 +135,12 @@ class Shape {
 
     virtual float volume(uint32_t part, float3 const& scale) const = 0;
 
+    struct Differential_surface {
+        float3 dpdu;
+        float3 dpdv;
+    };
+    virtual Differential_surface differential_surface(uint32_t primitive) const = 0;
+
     bool is_complex() const;
 
     bool is_finite() const;
