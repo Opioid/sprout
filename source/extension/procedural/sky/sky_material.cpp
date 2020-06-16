@@ -10,6 +10,7 @@
 #include "core/image/texture/texture_sampler.hpp"
 #include "core/scene/entity/composed_transformation.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
+#include "core/scene/material/material.inl"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene_renderstate.hpp"

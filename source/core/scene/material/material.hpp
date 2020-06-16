@@ -85,13 +85,11 @@ class alignas(16) Material {
                                      Filter filter, Worker const& worker) const;
 
     struct Radiance_sample {
-        inline Radiance_sample(float2 uv, float pdf) : uvw{uv[0], uv[1], 0.f, pdf} {}
+        Radiance_sample(float2 uv, float pdf);
 
-        inline Radiance_sample(float3 const& uvw, float pdf) : uvw{uvw[0], uvw[1], uvw[2], pdf} {}
+        Radiance_sample(float3 const& uvw, float pdf);
 
-        inline float pdf() const {
-            return uvw[3];
-        }
+        float pdf() const;
 
         float3 uvw;
     };

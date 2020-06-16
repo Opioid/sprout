@@ -8,6 +8,7 @@
 #include "image/texture/texture.inl"
 #include "image/texture/texture_adapter.inl"
 #include "light_material_sample.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"

@@ -12,6 +12,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/material.inl"
 #include "scene/scene_worker.hpp"
 #include "volumetric_octree_builder.hpp"
 

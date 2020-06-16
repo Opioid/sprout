@@ -32,6 +32,7 @@ target_sources(core
     "material_test.hpp"
     "material.cpp"
     "material.hpp"
+    "material.inl"
     "sampler_cache.cpp"
     "sampler_cache.hpp"
     "sampler_settings.cpp"

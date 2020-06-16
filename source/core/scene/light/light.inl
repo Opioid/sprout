@@ -5,6 +5,7 @@
 #include "light.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
+#include "scene/material/material.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/scene.hpp"

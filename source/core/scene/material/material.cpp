@@ -1,4 +1,4 @@
-#include "material.hpp"
+#include "material.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
 #include "base/spectrum/aces.hpp"
