@@ -22,7 +22,7 @@ class alignas(16) Checkers : public Material_base {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_checkers(float3 const& a, float3 const& b);
+    void set_checkers(float3 const& a, float3 const& b, float scale);
 
     static size_t sample_size();
 

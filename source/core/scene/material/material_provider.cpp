@@ -761,7 +761,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     float3 scattering_color(0.f);
 
     float3 checkers[2];
-    bool   is_checkers = false;
+    float checkers_scale = 0.f;
 
     float roughness             = 0.9f;
     float metallic              = 0.f;
@@ -777,12 +777,16 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         if ("color" == n.name) {
             color = read_color(n.value);
         } else if ("checkers" == n.name) {
-            auto const ca = n.value.GetArray();
+            for (auto const& cn : n.value.GetObject()) {
+                if ("scale" == cn.name) {
+                    checkers_scale = json::read_float(cn.value);
+                } else if ("colors" == cn.name) {
+                    auto const ca = cn.value.GetArray();
 
-            checkers[0] = read_color(ca[0]);
-            checkers[1] = read_color(ca[1]);
-
-            is_checkers = true;
+                    checkers[0] = read_color(ca[0]);
+                    checkers[1] = read_color(ca[1]);
+                }
+            }
         } else if ("metal_preset" == n.name) {
             float3 eta;
             float3 k;
@@ -1036,7 +1040,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     }
 #endif
 
-    if (is_checkers) {
+    if (checkers_scale > 0.f) {
         auto material = new substitute::Checkers(sampler_settings, two_sided);
 
         material->set_mask(mask);
@@ -1045,7 +1049,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         material->set_surface_map(surface_map);
         material->set_emission_map(emission_map);
 
-        material->set_checkers(checkers[0], checkers[1]);
+        material->set_checkers(checkers[0], checkers[1], checkers_scale);
         material->set_ior(ior);
         material->set_roughness(roughness);
         material->set_metallic(metallic);

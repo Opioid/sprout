@@ -106,11 +106,11 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
     return sample;
 }
 
-void Checkers::set_checkers(float3 const& a, float3 const& b) {
+void Checkers::set_checkers(float3 const& a, float3 const& b, float scale) {
     checkers_[0] = a;
     checkers_[1] = b;
 
-    scale_ = 2.f;
+    scale_ = scale;
 }
 
 size_t Checkers::sample_size() {
