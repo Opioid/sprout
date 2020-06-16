@@ -71,6 +71,10 @@ struct alignas(16) Vector4f_a {
     template <typename T>
     explicit constexpr Vector4f_a(Vector4<T> const& a);
 
+    Vector2<float> constexpr xy() const;
+
+    Vector2<float> constexpr zw() const;
+
     Vector3f_a constexpr xyz() const;
 
     float constexpr  operator[](uint32_t i) const;

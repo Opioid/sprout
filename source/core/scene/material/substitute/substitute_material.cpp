@@ -38,13 +38,6 @@ Checkers::Checkers(Sampler_settings const& sampler_settings, bool two_sided)
 
 // https://www.iquilezles.org/www/articles/checkerfiltering/checkerfiltering.htm
 
-static inline float checkers(float2 uv) {
-    float const a = sign(frac(uv[0] * 0.5f) - 0.5f);
-    float const b = sign(frac(uv[1] * 0.5f) - 0.5f);
-
-    return 0.5f - 0.5f * a * b;
-}
-
 // triangular signal
 static inline float2 tri(float2 x) {
     float const hx = frac(x[0] * 0.5f) - 0.5f;
@@ -52,8 +45,9 @@ static inline float2 tri(float2 x) {
     return float2(1.f - 2.f * std::abs(hx), 1.f - 2.f * std::abs(hy));
 }
 
-static inline float checkers_grad(float2 uv, float w) {
-    //  vec2 w = max(abs(ddx), abs(ddy)) + 0.01;    // filter kernel
+static inline float checkers_grad(float2 uv, float2 ddx, float2 ddy) {
+    // filter kernel
+    float2 const w = max(abs(ddx), abs(ddy)) + 0.0001f;
 
     // analytical integral (box filter)
     float2 const i = (tri(uv + 0.5f * w) - tri(uv - 0.5f * w)) / w;
@@ -80,12 +74,9 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
+    float4 const dd = 2.f * worker.screenspace_differential(rs, ray.time);
 
-    // anti-aliased checker hack
-    float const fp = worker.ray_footprint(rs, ray.time);
-
-    float const t = checkers_grad(2.f * rs.uv, fp);
+    float const t = checkers_grad(2.f * rs.uv, dd.xy(), dd.zw());
 
     float3 const color = lerp(checkers_[0], checkers_[1], t);
 

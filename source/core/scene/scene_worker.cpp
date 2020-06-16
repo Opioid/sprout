@@ -137,27 +137,96 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
     return intersection.sample(wo, ray, filter, avoid_caustics, sampler, *this);
 }
 
-float Worker::ray_footprint(Renderstate const& rs, uint64_t time) const {
+// https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
+static float4 calculate_screenspace_differential(float3 const& p, float3 const& n,
+                                                 Ray_differential const& rd, float3 const& dpdu,
+                                                 float3 const& dpdv) {
+    // Compute offset-ray intersection points with tangent plane
+    float const d = dot(n, p);
+
+    float const tx = -(dot(n, rd.x_origin) - d) / dot(n, rd.x_direction);
+    float const ty = -(dot(n, rd.y_origin) - d) / dot(n, rd.y_direction);
+
+    float3 const px = rd.x_origin + tx * rd.x_direction;
+    float3 const py = rd.y_origin + ty * rd.y_direction;
+
+    // Compute uv offsets at offset-ray intersection points
+    // Choose two dimensions to use for ray offset computations
+    //    int2 dim;
+    //    if (std::abs(n[0]) > std::abs(n[1]) && std::abs(n[0]) > std::abs(n[2])) {
+    //        dim = int2(1,2);
+    //    } else if (std::abs(n[1]) > std::abs(n[2])) {
+    //        dim = int2(0,2);
+    //    } else {
+    //        dim = int2(0,1);
+    //    }
+
+    int2 const dim = int2(0, 2);
+
+    // Initialize A, Bx, and By matrices for offset computation
+    float A[2][2];
+    A[0][0] = dpdu[dim[0]];
+    A[0][1] = dpdv[dim[0]];
+    A[1][0] = dpdu[dim[1]];
+    A[1][1] = dpdv[dim[1]];
+
+    float2 Bx(px[dim[0]] - p[dim[0]], px[dim[1]] - p[dim[1]]);
+    float2 By(py[dim[0]] - p[dim[0]], py[dim[1]] - p[dim[1]]);
+
+    //    float dudx, dvdx, dudy, dvdy;
+
+    //    // Solve two linear systems to get uv offsets
+    //    auto solveLinearSystem2x2 = [](float A[2][2], const float2& B, float& x0, float& x1) ->
+    //    bool {
+    //        float det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+
+    //        if (abs(det) < 0.000001f) {
+    //            return false;
+    //        }
+
+    //        x0 = (A[1][1] * B[0] - A[0][1] * B[1]) / det;
+    //        x1 = (A[0][0] * B[1] - A[1][0] * B[0]) / det;
+
+    //        if (std::isnan(x0) || std::isnan(x1)) {
+    //            return false;
+    //        }
+
+    //        return true;
+    //    };
+
+    //    if (!solveLinearSystem2x2(A, Bx, dudx, dvdx)) {
+    //        dudx = dvdx = 0.0f;
+    //    }
+
+    //    if (!solveLinearSystem2x2(A, By, dudy, dvdy)) {
+    //        dudy = dvdy = 0.0f;
+    //    }
+
+    float const det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+
+    if (std::abs(det) < 1e-10f) {
+        return float4(0.f);
+    }
+
+    float const dudx = (A[1][1] * Bx[0] - A[0][1] * Bx[1]) / det;
+    float const dvdx = (A[0][0] * Bx[1] - A[1][0] * Bx[0]) / det;
+
+    float const dudy = (A[1][1] * By[0] - A[0][1] * By[1]) / det;
+    float const dvdy = (A[0][0] * By[1] - A[1][0] * By[0]) / det;
+
+    return float4(dudx, dudy, dvdx, dvdy);
+}
+
+float4 Worker::screenspace_differential(Renderstate const& rs, uint64_t time) const {
     Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
 
-    float const plane_d = dot(rs.geo_n, rs.p);
+    float3 const dpdu(1.f, 0.f, 0.f);
+    float3 const dpdv(0.f, -1.f, 0.f);
 
-    float const x_denom = -dot(rs.geo_n, rd.x_direction);
-    float const x_numer = dot(rs.geo_n, rd.x_origin) - plane_d;
-    float const x_hit_t = x_numer / x_denom;
+    float3 const dpdu_w = rs.tangent_to_world(dpdu);
+    float3 const dpdv_w = rs.tangent_to_world(dpdv);
 
-    float3 const x_p = rd.x_origin + x_hit_t * rd.x_direction;
-
-    float const y_denom = -dot(rs.geo_n, rd.y_direction);
-    float const y_numer = dot(rs.geo_n, rd.y_origin) - plane_d;
-    float const y_hit_t = y_numer / y_denom;
-
-    float3 const y_p = rd.y_origin + y_hit_t * rd.y_direction;
-
-    float const x_sd = squared_distance(rs.p, x_p);
-    float const y_sd = squared_distance(rs.p, y_p);
-
-    return std::sqrt(std::max(x_sd, y_sd));
+    return calculate_screenspace_differential(rs.p, rs.geo_n, rd, dpdu_w, dpdv_w);
 }
 
 }  // namespace scene

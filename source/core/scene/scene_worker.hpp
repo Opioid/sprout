@@ -104,7 +104,7 @@ class Worker {
                                            bool avoid_caustics, bool straight_border,
                                            Sampler& sampler);
 
-    float ray_footprint(Renderstate const& rs, uint64_t time) const;
+    float4 screenspace_differential(Renderstate const& rs, uint64_t time) const;
 
   protected:
     rnd::Generator rng_;
