@@ -59,14 +59,10 @@ bool Pipeline::has_alpha_transparency(bool alpha_in) const {
 }
 
 void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) {
-    if (postprocessors_.empty()) {
+    if (0 == postprocessors_.size() % 2) {
         sensor.resolve(threads, target);
     } else {
-        if (0 == postprocessors_.size() % 2) {
-            sensor.resolve(threads, target);
-        } else {
-            sensor.resolve(threads, scratch_);
-        }
+        sensor.resolve(threads, scratch_);
     }
 }
 
@@ -86,49 +82,41 @@ void Pipeline::apply(image::Float4& target, thread::Pool& threads) {
 }
 
 void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads) {
-    if (postprocessors_.empty()) {
-        sensor.resolve(threads, target);
+    image::Float4* targets[2];
+
+    if (0 == postprocessors_.size() % 2) {
+        targets[0] = &target;
+        targets[1] = &scratch_;
     } else {
-        image::Float4* targets[2];
+        targets[0] = &scratch_;
+        targets[1] = &target;
+    }
 
-        if (0 == postprocessors_.size() % 2) {
-            targets[0] = &target;
-            targets[1] = &scratch_;
-        } else {
-            targets[0] = &scratch_;
-            targets[1] = &target;
-        }
+    sensor.resolve(threads, *targets[0]);
 
-        sensor.resolve(threads, *targets[0]);
-
-        for (auto pp : postprocessors_) {
-            pp->apply(*targets[0], *targets[1], threads);
-            std::swap(targets[0], targets[1]);
-        }
+    for (auto pp : postprocessors_) {
+        pp->apply(*targets[0], *targets[1], threads);
+        std::swap(targets[0], targets[1]);
     }
 }
 
 void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
                                 thread::Pool& threads) {
-    if (postprocessors_.empty()) {
-        sensor.resolve_accumulate(threads, target);
+    image::Float4* targets[2];
+
+    if (0 == postprocessors_.size() % 2) {
+        targets[0] = &target;
+        targets[1] = &scratch_;
     } else {
-        image::Float4* targets[2];
+        targets[0] = &scratch_;
+        targets[1] = &target;
+    }
 
-        if (0 == postprocessors_.size() % 2) {
-            targets[0] = &target;
-            targets[1] = &scratch_;
-        } else {
-            targets[0] = &scratch_;
-            targets[1] = &target;
-        }
+    sensor.resolve_accumulate(threads, *targets[0]);
 
-        sensor.resolve_accumulate(threads, *targets[0]);
-
-        for (auto pp : postprocessors_) {
-            pp->apply(*targets[0], *targets[1], threads);
-            std::swap(targets[0], targets[1]);
-        }
+    for (auto pp : postprocessors_) {
+        pp->apply(*targets[0], *targets[1], threads);
+        std::swap(targets[0], targets[1]);
     }
 }
 
