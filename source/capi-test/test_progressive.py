@@ -71,7 +71,7 @@ sprout.su_register_progress(progstartfunc, progtickfunc)
 
 sprout.su_mount(c_char_p(b"../../data/"))
 
-sprout.su_load_take(c_char_p(b"takes/cornell.take"))
+sprout.su_load_take(c_char_p(b"takes/embergen.take"))
 
 Int2 = c_int32 * 2
 
@@ -106,6 +106,7 @@ def restart():
     frame_iteration = 0
     frame_next_display = 1
     sprout.su_start_render_frame(0)
+    sprout.su_set_expected_iterations(1)
 
 restart()
 
@@ -124,6 +125,8 @@ def update(frame_number):
         label.set_text(str(frame_iteration))
 
         frame_next_display *= 2
+
+        sprout.su_set_expected_iterations(frame_next_display - frame_iteration)
 
     frame_iteration += 1
 

@@ -102,6 +102,8 @@ SU_LIBRARY_API int32_t su_export_frame(uint32_t frame);
 
 SU_LIBRARY_API int32_t su_start_render_frame(uint32_t frame);
 
+SU_LIBRARY_API int32_t su_set_expected_iterations(uint32_t iterations);
+
 SU_LIBRARY_API int32_t su_render_iteration(void);
 
 SU_LIBRARY_API int32_t su_postprocess(void);

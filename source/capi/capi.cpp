@@ -118,6 +118,14 @@ static Engine* engine = nullptr;
         return RESULT;        \
     }
 
+#define ASSERT_VALID_ENGINE() \
+    if (!engine) {            \
+        return -1;            \
+    }                         \
+    if (!engine->valid) {     \
+        return -2;            \
+    }
+
 #define ASSERT_PARSE(STRING, RESULT)            \
     rapidjson::Document root;                   \
     root.Parse(STRING);                         \
@@ -615,6 +623,14 @@ int32_t su_start_render_frame(uint32_t frame) {
     engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
     engine->driver.start_frame(frame);
+
+    return 0;
+}
+
+SU_LIBRARY_API int32_t su_set_expected_iterations(uint32_t iterations) {
+    ASSERT_VALID_ENGINE()
+
+    engine->take.view.camera->set_sample_spacing(1.f / std::sqrt(float(iterations)));
 
     return 0;
 }
