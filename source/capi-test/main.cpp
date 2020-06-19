@@ -15,6 +15,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
     su_register_progress(&progress_start, &progress_tick);
 
+    su_mount("../data");
+
     if (su_load_take("takes/imrod.take")) {
         return 1;
     }

@@ -107,8 +107,6 @@ def restart():
     frame_next_display = 1
     sprout.su_start_render_frame(0)
 
-    print("restart")
-
 restart()
 
 def update(frame_number):

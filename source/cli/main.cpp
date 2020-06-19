@@ -143,8 +143,6 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        filesystem.set_frame(take.view.start_frame);
-
         if (success && !scene_loader.load(take.scene_filename, take_name, take, scene)) {
             logging::error("Loading scene %S: ", take.scene_filename);
             success = false;

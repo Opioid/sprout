@@ -159,6 +159,12 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         }
     }
 
+    if (start_frame != 0xFFFFFFFF) {
+        take.view.start_frame = start_frame;
+    }
+
+    resources.filesystem().set_frame(take.view.start_frame);
+
     if (take.view.camera) {
         if (postprocessors_value) {
             std::string_view const take_mount_folder = string::parent_directory(take_name);
@@ -179,10 +185,6 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         }
 
         set_default_exporter(take);
-    }
-
-    if (start_frame != 0xFFFFFFFF) {
-        take.view.start_frame = start_frame;
     }
 
     set_default_integrators(num_threads, progressive, take.view);
