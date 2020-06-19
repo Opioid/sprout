@@ -99,30 +99,37 @@ im = fig.figimage(image)
 
 label = plt.figtext(0.0, 1.0, "0", color=(1.0, 1.0, 0.0), verticalalignment="top")
 
-sprout.su_start_render_frame(0)
+def restart():
+    global frame_iteration
+    global frame_next_display
 
-frame_iteration = 0
+    frame_iteration = 0
+    frame_next_display = 1
+    sprout.su_start_render_frame(0)
+
+    print("restart")
+
+restart()
 
 def update(frame_number):
     global frame_iteration
+    global frame_next_display
 
     sprout.su_render_iteration(frame_iteration)
 
-    sprout.su_copy_framebuffer(0, resolution[0], resolution[1], 3, image)
+    if frame_iteration >= frame_next_display:
+        sprout.su_post_process()
+        sprout.su_copy_framebuffer(0, resolution[0], resolution[1], 3, image)
 
-    im.set_data(image)
+        im.set_data(image)
 
-    label.set_text(str(frame_iteration))
+        label.set_text(str(frame_iteration))
+
+        frame_next_display *= 2
 
     frame_iteration += 1
 
 animation = FuncAnimation(fig, update, interval=1)
-
-def restart():
-    global frame_iteration
-
-    frame_iteration = 0
-    sprout.su_start_render_frame(0)
 
 def press(event):
     if "left" == event.key or "a" == event.key:
@@ -150,6 +157,7 @@ def press(event):
 
     if "e" == event.key:
         global frame_iteration
+        sprout.su_post_process()
         sprout.su_export_frame(frame_iteration)
 
 fig.canvas.mpl_connect('key_press_event', press)

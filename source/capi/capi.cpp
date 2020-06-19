@@ -631,6 +631,18 @@ int32_t su_render_iteration() {
     return 0;
 }
 
+int32_t su_post_process() {
+    ASSERT_ENGINE(-1)
+
+    if (!engine->valid) {
+        return -2;
+    }
+
+    engine->driver.post_process();
+
+    return 0;
+}
+
 int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint32_t num_channels,
                             uint8_t* destination) {
     ASSERT_ENGINE(-1)
