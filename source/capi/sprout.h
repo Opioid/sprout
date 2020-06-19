@@ -104,7 +104,7 @@ SU_LIBRARY_API int32_t su_start_render_frame(uint32_t frame);
 
 SU_LIBRARY_API int32_t su_render_iteration(void);
 
-SU_LIBRARY_API int32_t su_post_process(void);
+SU_LIBRARY_API int32_t su_postprocess(void);
 
 SU_LIBRARY_API int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height,
                                            uint32_t num_channels, uint8_t* destination);

@@ -118,7 +118,7 @@ def update(frame_number):
     sprout.su_render_iteration(frame_iteration)
 
     if frame_iteration >= frame_next_display:
-        sprout.su_post_process()
+        sprout.su_postprocess()
         sprout.su_copy_framebuffer(0, resolution[0], resolution[1], 3, image)
 
         im.set_data(image)
@@ -157,7 +157,7 @@ def press(event):
 
     if "e" == event.key:
         global frame_iteration
-        sprout.su_post_process()
+        sprout.su_postprocess()
         sprout.su_export_frame(frame_iteration)
 
 fig.canvas.mpl_connect('key_press_event', press)

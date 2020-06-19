@@ -761,7 +761,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     float3 scattering_color(0.f);
 
     float3 checkers[2];
-    float checkers_scale = 0.f;
+    float  checkers_scale = 0.f;
 
     float roughness             = 0.9f;
     float metallic              = 0.f;

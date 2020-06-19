@@ -64,7 +64,7 @@ class Driver {
 
     void render(uint32_t frame, uint32_t iteration);
 
-    void post_process();
+    void postprocess();
 
     void export_frame(uint32_t frame, Exporters& exporters) const;
 

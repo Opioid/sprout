@@ -171,16 +171,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
 
             filesystem.pop_mount();
         } else {
-#ifdef SU_ACESCG
-            using namespace rendering::postprocessor::tonemapping;
-
-            bool constexpr Auto_expose = false;
-
-            float constexpr Exposure = 0.f;
-
-            take.view.pipeline.reserve(1);
-            take.view.pipeline.add(new Linear(Auto_expose, Exposure));
-#endif
+            set_default_postprocessor(take);
         }
 
         if (exporter_value) {
@@ -944,6 +935,21 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
     }
 
     return exporters;
+}
+
+void Loader::set_default_postprocessor(Take& take) {
+#ifdef SU_ACESCG
+    if (take.view.pipeline.empty()) {
+        using namespace rendering::postprocessor::tonemapping;
+
+        bool constexpr Auto_expose = false;
+
+        float constexpr Exposure = 0.f;
+
+        take.view.pipeline.reserve(1);
+        take.view.pipeline.add(new Linear(Auto_expose, Exposure));
+    }
+#endif
 }
 
 void Loader::set_default_exporter(Take& take) {

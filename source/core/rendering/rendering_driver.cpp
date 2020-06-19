@@ -152,7 +152,7 @@ void Driver::render(uint32_t frame) {
         camera.sensor().fix_zero_weights();
     }
 
-    post_process();
+    postprocess();
 
     auto const pp_duration = chrono::seconds_since(pp_start);
     logging::info("Post-process time %f s", pp_duration);
@@ -179,7 +179,7 @@ void Driver::render(uint32_t frame, uint32_t iteration) {
     render_frame_forward(frame, iteration);
 }
 
-void Driver::post_process() {
+void Driver::postprocess() {
     auto& camera = *view_->camera;
 
     if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {

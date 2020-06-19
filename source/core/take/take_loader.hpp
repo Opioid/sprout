@@ -47,6 +47,8 @@ class Loader {
     static void load_postprocessors(json::Value const& pp_value, Resources& resources,
                                     Pipeline& pipeline);
 
+    static void set_default_postprocessor(Take& take);
+
     static void set_default_exporter(Take& take);
 };
 

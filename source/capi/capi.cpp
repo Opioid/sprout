@@ -208,6 +208,8 @@ int32_t su_create_defaults() {
 
     take::Loader::set_default_integrators(num_workers, engine->progressive, engine->take.view);
 
+    take::Loader::set_default_postprocessor(engine->take);
+
     take::Loader::set_default_exporter(engine->take);
 
     scene::camera::Camera const* camera = engine->take.view.camera;
@@ -631,14 +633,14 @@ int32_t su_render_iteration() {
     return 0;
 }
 
-int32_t su_post_process() {
+int32_t su_postprocess() {
     ASSERT_ENGINE(-1)
 
     if (!engine->valid) {
         return -2;
     }
 
-    engine->driver.post_process();
+    engine->driver.postprocess();
 
     return 0;
 }
