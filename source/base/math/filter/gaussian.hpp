@@ -20,6 +20,7 @@ class Gaussian_functor {
     float alpha_;
 };
 
+/*
 class Gaussian_functor_1 {
   public:
     Gaussian_functor_1(float squared_radius, float alpha)
@@ -33,6 +34,7 @@ class Gaussian_functor_1 {
     float exp_;
     float alpha_;
 };
+*/
 
 }  // namespace math::filter
 
