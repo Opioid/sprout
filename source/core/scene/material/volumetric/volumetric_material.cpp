@@ -39,7 +39,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     return sample;
 }
 
-float3 Material::average_radiance(float /*volume*/, Scene const& /*scene*/) const {
+float3 Material::average_radiance(float /*volume*/) const {
     return cc_.a * emission_;
 }
 

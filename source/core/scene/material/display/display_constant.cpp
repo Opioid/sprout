@@ -35,7 +35,7 @@ float3 Constant::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, 
     return emission_;
 }
 
-float3 Constant::average_radiance(float /*area*/, Scene const& /*scene*/) const {
+float3 Constant::average_radiance(float /*area*/) const {
     return emission_;
 }
 

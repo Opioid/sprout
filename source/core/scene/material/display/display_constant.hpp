@@ -14,7 +14,7 @@ class Constant : public Material {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              Worker const& worker) const final;
 
-    float3 average_radiance(float area, Scene const& scene) const final;
+    float3 average_radiance(float area) const final;
 
     void set_emission(float3 const& radiance);
 

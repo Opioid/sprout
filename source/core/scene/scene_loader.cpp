@@ -103,7 +103,7 @@ void Loader::create_light(uint32_t prop_id, Scene& scene) {
     auto const shape = scene.prop_shape(prop_id);
 
     for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
-        if (auto const material = scene.prop_material(prop_id, i); material->is_emissive(scene)) {
+        if (auto const material = scene.prop_material(prop_id, i); material->is_emissive()) {
             if (material->is_scattering_volume()) {
                 if (shape->is_analytical() && material->has_emission_map()) {
                     scene.create_prop_volume_image_light(prop_id, i);

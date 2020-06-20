@@ -78,7 +78,7 @@ Grid_emission::Grid_emission(Sampler_settings const& sampler_settings, Texture_a
 
 Grid_emission::~Grid_emission() = default;
 
-float3 Grid_emission::average_radiance(float /*volume*/, Scene const& /*scene*/) const {
+float3 Grid_emission::average_radiance(float /*volume*/) const {
     return average_emission_;
 }
 

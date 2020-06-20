@@ -44,7 +44,7 @@ float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, f
     return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy());
 }
 
-float3 Emissionmap::average_radiance(float /*area*/, Scene const& /*scene*/) const {
+float3 Emissionmap::average_radiance(float /*area*/) const {
     return average_emission_;
 }
 

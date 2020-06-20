@@ -46,7 +46,7 @@ float3 Sky_material::evaluate_radiance(float3 const& wi, float3 const& /*uvw*/, 
     return sky_.model().evaluate_sky(wi);
 }
 
-float3 Sky_material::average_radiance(float /*area*/, Scene const& /*scene*/) const {
+float3 Sky_material::average_radiance(float /*area*/) const {
     return sky_.model().evaluate_sky(Model::zenith());
 }
 
@@ -92,7 +92,7 @@ float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float3 const&
     //    return emission_map_.sample_3(worker, sampler, uvw.xy());
 }
 
-float3 Sky_baked_material::average_radiance(float /*area*/, Scene const& /*scene*/) const {
+float3 Sky_baked_material::average_radiance(float /*area*/) const {
     return average_emission_;
 }
 

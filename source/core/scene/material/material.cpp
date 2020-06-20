@@ -53,7 +53,7 @@ void Material::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
                         thread::Pool& /*threads*/, Scene const& /*scene*/) {}
 
-float3 Material::average_radiance(float /*extent*/, Scene const& /*scene*/) const {
+float3 Material::average_radiance(float /*extent*/) const {
     return float3(0.f);
 }
 
@@ -170,12 +170,12 @@ bool Material::has_emission_map() const {
     return properties_.is(Property::Emission_map);
 }
 
-bool Material::is_emissive(Scene const& scene) const {
+bool Material::is_emissive() const {
     if (properties_.is(Property::Emission_map)) {
         return true;
     }
 
-    float3 const e = average_radiance(1.f, scene);
+    float3 const e = average_radiance(1.f);
     return any_greater_zero(e);
 }
 

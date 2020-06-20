@@ -13,8 +13,12 @@ namespace scene::material::substitute {
 Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
-void Material_base::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+void Material_base::commit(thread::Pool& /*threads*/, Scene const& scene) {
     properties_.set(Property::Caustic, !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha);
+
+    if (emission_map_.is_valid()) {
+        average_emission_ = emission_map_.texture(scene).average_3();
+    }
 }
 
 float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*extent*/,
@@ -27,9 +31,9 @@ float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
     return float3(0.f);
 }
 
-float3 Material_base::average_radiance(float /*area*/, Scene const& scene) const {
+float3 Material_base::average_radiance(float /*area*/) const {
     if (emission_map_.is_valid()) {
-        return emission_factor_ * emission_map_.texture(scene).average_3();
+        return emission_factor_ * average_emission_;
     }
 
     return float3(0.f);

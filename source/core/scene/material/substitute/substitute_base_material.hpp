@@ -14,7 +14,7 @@ class Material_base : public material::Material {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              Worker const& worker) const override;
 
-    float3 average_radiance(float area, Scene const& scene) const final;
+    float3 average_radiance(float area) const final;
 
     void set_color_map(Texture_adapter const& color_map);
     void set_normal_map(Texture_adapter const& normal_map);
@@ -40,6 +40,7 @@ class Material_base : public material::Material {
     Texture_adapter emission_map_;
 
     float3 color_;
+    float3 average_emission_;
 
     float alpha_;
     float metallic_;

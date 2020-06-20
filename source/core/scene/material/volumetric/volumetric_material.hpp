@@ -14,7 +14,7 @@ class Material : public material::Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float3 average_radiance(float volume, Scene const& scene) const override;
+    float3 average_radiance(float volume) const override;
 
     void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
                          float distance);

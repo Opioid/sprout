@@ -91,7 +91,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
         Event event = Event::Pass;
 
-        if (material.is_emissive(worker.scene())) {
+        if (material.is_emissive()) {
             for (; local_ray.min_t() < d;) {
                 if (Tracking::CM cm; tree.intersect(local_ray, cm)) {
                     cm.minorant_mu_s *= srs;
@@ -165,7 +165,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
     Event event = Event::Pass;
 
-    if (material.is_emissive(worker.scene())) {
+    if (material.is_emissive()) {
         auto const cce = material.collision_coefficients_emission();
 
         float      t;

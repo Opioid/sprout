@@ -40,7 +40,7 @@ float3 Sun_material::evaluate_radiance(float3 const& wi, float3 const& /*uvw*/, 
     return sky_.model().evaluate_sky_and_sun(wi);
 }
 
-float3 Sun_material::average_radiance(float /*area*/, Scene const& /*scene*/) const {
+float3 Sun_material::average_radiance(float /*area*/) const {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
@@ -77,7 +77,7 @@ float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float3 const& /*u
     return radiance;
 }
 
-float3 Sun_baked_material::average_radiance(float /*area*/, Scene const& /*scene*/) const {
+float3 Sun_baked_material::average_radiance(float /*area*/) const {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 

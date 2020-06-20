@@ -20,7 +20,7 @@ class Sky_material : public Material {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
-    float3 average_radiance(float area, scene::Scene const& scene) const final;
+    float3 average_radiance(float area) const final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
@@ -41,7 +41,7 @@ class Sky_baked_material : public Material {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
-    float3 average_radiance(float area, scene::Scene const& scene) const final;
+    float3 average_radiance(float area) const final;
 
     Radiance_sample radiance_sample(float3 const& r3) const final;
 

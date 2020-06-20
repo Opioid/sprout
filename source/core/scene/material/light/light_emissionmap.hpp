@@ -18,7 +18,7 @@ class alignas(64) Emissionmap : public Material {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              Worker const& worker) const override;
 
-    float3 average_radiance(float area, Scene const& scene) const final;
+    float3 average_radiance(float area) const final;
 
     Radiance_sample radiance_sample(float3 const& r3) const final;
 
