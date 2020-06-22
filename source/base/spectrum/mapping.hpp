@@ -7,6 +7,8 @@ namespace spectrum {
 
 float3 heatmap(float x);
 
+byte3 turbo(float x);
+
 float3 blackbody(float temperature);
 
 }  // namespace spectrum

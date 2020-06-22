@@ -257,12 +257,15 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     byte3* bytes = memory::allocate_aligned<byte3>(num_pixels);
 
     float const im = max_value > 0.f ? 1.f / max_value : 1.f;
+
     for (uint32_t i = 0; i < num_pixels; ++i) {
         float const n = data[i] * im;
 
-        float3 const hm = spectrum::heatmap(n);
+        //    float3 const hm = spectrum::heatmap(n);
 
-        bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
+        //    bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
+
+        bytes[i] = spectrum::turbo(n);
     }
 
     size_t buffer_len = 0;
@@ -300,9 +303,11 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
             for (int32_t i = begin; i < end; ++i) {
                 float const n = data[i] * im;
 
-                float3 const hm = spectrum::heatmap(n);
+                //   float3 const hm = spectrum::heatmap(n);
 
-                bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
+                //  bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
+
+                bytes[i] = spectrum::turbo(n);
             }
         },
         0, dimensions[0] * dimensions[1]);
