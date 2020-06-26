@@ -9,14 +9,12 @@ namespace image::texture::encoding {
 void create_tables() {
     std::ofstream stream("../source/core/image/texture/texture_encoding_tables.inl");
 
-    stream << "#include \"base/memory/const.hpp\"\n\n";
-
     stream.precision(8);
     stream << std::fixed;
 
     static uint32_t constexpr Num_samples = 256;
 
-    stream << "SU_GLOBALCONST(float) SRGB_FLOAT[" << Num_samples << "] = {\n";
+    stream << "inline float constexpr SRGB_FLOAT[" << Num_samples << "] = {\n";
 
     stream << "    ";
 
@@ -34,7 +32,7 @@ void create_tables() {
 
     stream << "};\n\n";
 
-    stream << "SU_GLOBALCONST(float) SNORM_FLOAT[" << Num_samples << "] = {\n";
+    stream << "inline float constexpr SNORM_FLOAT[" << Num_samples << "] = {\n";
 
     stream << "    ";
 
@@ -52,7 +50,7 @@ void create_tables() {
 
     stream << "};\n\n";
 
-    stream << "SU_GLOBALCONST(float) UNORM_FLOAT[" << Num_samples << "] = {\n";
+    stream << "inline float constexpr UNORM_FLOAT[" << Num_samples << "] = {\n";
 
     stream << "    ";
 

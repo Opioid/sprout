@@ -3,8 +3,6 @@
 
 #include <iterator>
 
-// http://www.scratchapixel.com/old/lessons/3d-advanced-lessons/blackbody/spectrum-of-blackbodies/
-
 namespace spectrum {
 
 float3 heatmap(float x) {
@@ -22,6 +20,8 @@ float3 heatmap(float x) {
 }
 
 byte3 turbo(float x) {
+    // https://gist.github.com/mikhailov-work/6a308c20e494d9e0ccc29036b28faa7a
+
     static unsigned char constexpr turbo_srgb_bytes[256][3] = {
         {48, 18, 59},    {50, 21, 67},    {51, 24, 74},   {52, 27, 81},   {53, 30, 88},
         {54, 33, 95},    {55, 36, 102},   {56, 39, 109},  {57, 42, 115},  {58, 45, 121},
@@ -80,6 +80,8 @@ byte3 turbo(float x) {
 
     return byte3(turbo_srgb_bytes[i][0], turbo_srgb_bytes[i][1], turbo_srgb_bytes[i][2]);
 }
+
+// http://www.scratchapixel.com/old/lessons/3d-advanced-lessons/blackbody/spectrum-of-blackbodies/
 
 static float planck(float temperature, float wavelength) {
     static float constexpr h = 6.62606896e-34f;  // Plank constant

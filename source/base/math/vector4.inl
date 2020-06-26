@@ -213,6 +213,10 @@ static inline Vector4f_a constexpr min(Vector4f_a const& a, Vector4f_a const& b)
                       std::min(a[3], b[3]));
 }
 
+static inline float constexpr average(Vector4f_a const& c) {
+    return (c[0] + c[1] + c[2] + c[3]) / 4.f;
+}
+
 static inline bool all_finite(Vector4f_a const& v) {
     return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]) && std::isfinite(v[3]);
 }

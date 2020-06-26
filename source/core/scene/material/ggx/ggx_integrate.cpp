@@ -201,9 +201,9 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
 void make_f_ss_table(std::ostream& stream) {
     uint32_t constexpr Num_samples = 32;
 
-    stream << "SU_GLOBALCONST(uint32_t) E_size = " << Num_samples << ";\n\n";
+    stream << "inline uint32_t constexpr E_size = " << Num_samples << ";\n\n";
 
-    stream << "SU_GLOBALCONST(float) E[" << Num_samples << "][" << Num_samples << "] = {\n";
+    stream << "inline float constexpr E[" << Num_samples << "][" << Num_samples << "] = {\n";
 
     float constexpr step = 1.f / float(Num_samples - 1);
 
@@ -250,9 +250,9 @@ void make_f_ss_table(std::ostream& stream) {
 void make_f_s_ss_table(std::ostream& stream) {
     uint32_t constexpr Num_samples = 32;
 
-    stream << "SU_GLOBALCONST(uint32_t) E_s_size = " << Num_samples << ";\n\n";
+    stream << "inline uint32_t constexpr E_s_size = " << Num_samples << ";\n\n";
 
-    stream << "SU_GLOBALCONST(float) E_s[" << Num_samples << "][" << Num_samples << "]["
+    stream << "inline float constexpr E_s[" << Num_samples << "][" << Num_samples << "]["
            << Num_samples << "] = {\n";
 
     float constexpr step = 1.f / float(Num_samples - 1);
@@ -312,9 +312,9 @@ void make_f_s_ss_table(std::ostream& stream) {
 void make_f_sd_ss_table(std::ostream& stream) {
     uint32_t constexpr Num_samples = 32;
 
-    stream << "static uint32_t constexpr E_sd_size = " << Num_samples << ";\n\n";
+    stream << "inline uint32_t constexpr E_sd_size = " << Num_samples << ";\n\n";
 
-    stream << "static float constexpr E_sd[" << Num_samples << "][" << Num_samples << "]["
+    stream << "inline float constexpr E_sd[" << Num_samples << "][" << Num_samples << "]["
            << Num_samples << "] = {\n";
 
     float constexpr step = 1.f / float(Num_samples - 1);
@@ -373,8 +373,6 @@ void make_f_sd_ss_table(std::ostream& stream) {
 
 void integrate() {
     std::ofstream stream("../source/core/scene/material/ggx/ggx_integral.inl");
-
-    stream << "#include \"base/memory/const.hpp\"\n\n";
 
     stream << "#include <cstdint>\n\n";
 

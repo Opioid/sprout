@@ -7,8 +7,7 @@ namespace rendering::sensor::filter {
 
 Gaussian::Gaussian(float radius, float alpha)
     : radius_(radius),
-      gaussian_(0.f, radius * radius, 16, math::filter::Gaussian_functor(radius * radius, alpha))
-{
+      gaussian_(0.f, radius * radius, 16, math::filter::Gaussian_functor(radius * radius, alpha)) {
     float const i = integral(64);
     gaussian_.scale(1.f / i);
 }

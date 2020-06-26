@@ -6,7 +6,6 @@ target_sources(base
     "array.inl"
     "bitfield.hpp"
     "bitfield.inl"
-    "const.hpp"
     "tiled_array.hpp"
     "tiled_array.inl"
     "unique.hpp"

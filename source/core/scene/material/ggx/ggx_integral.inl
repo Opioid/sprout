@@ -1,11 +1,8 @@
-#include "base/memory/const.hpp"
-
 #include <cstdint>
 
-SU_GLOBALCONST(uint32_t) E_size = 32;
+inline uint32_t constexpr E_size = 32;
 
-SU_GLOBALCONST(float)
-E[32][32] = {
+inline float constexpr E[32][32] = {
     // alpha 0.00000000
     {1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f,
      1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f,
@@ -230,10 +227,9 @@ E[32][32] = {
      0.38609406f, 0.37637076f, 0.36711332f, 0.35831791f, 0.34998795f, 0.34206650f, 0.33439109f,
      0.32723227f, 0.32025775f, 0.31366307f, 0.30735630f}};
 
-SU_GLOBALCONST(uint32_t) E_s_size = 32;
+inline uint32_t constexpr E_s_size = 32;
 
-SU_GLOBALCONST(float)
-E_s[32][32][32] = {
+inline float constexpr E_s[32][32][32] = {
     // IoR 1.00000000
     {// alpha 0.00000000
      {1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f,
