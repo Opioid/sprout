@@ -9,13 +9,13 @@
 namespace math {
 
 template <typename T>
-static constexpr T Pi_t = T(3.14159265358979323846);
+inline T constexpr Pi_t = T(3.14159265358979323846);
 
 template <typename T>
-static constexpr T Pi_inv_t = T(0.318309886183790671538);
+inline T constexpr Pi_inv_t = T(0.318309886183790671538);
 
-static float constexpr Pi     = Pi_t<float>;
-static float constexpr Pi_inv = Pi_inv_t<float>;
+inline float constexpr Pi     = Pi_t<float>;
+inline float constexpr Pi_inv = Pi_inv_t<float>;
 
 template <typename T>
 static T constexpr degrees_to_radians(T degrees) {
