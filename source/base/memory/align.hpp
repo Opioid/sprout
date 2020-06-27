@@ -5,7 +5,7 @@
 
 namespace memory {
 
-static size_t constexpr L1_cache_line_size = 64;
+inline size_t constexpr L1_cache_line_size = 64;
 
 void* allocate_aligned(size_t size);
 

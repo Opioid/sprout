@@ -25,7 +25,7 @@ static inline float3 constexpr XYZ_to_sRGB(float3 const& xyz) {
                   0.055630f * xyz[0] - 0.203977f * xyz[1] + 1.056972f * xyz[2]);
 }
 
-uint32_t constexpr CIE_XYZ_Num = (830 - 360) + 1;  // 471
+inline uint32_t constexpr CIE_XYZ_Num = (830 - 360) + 1;  // 471
 
 extern float const CIE_X_360_830_1nm[CIE_XYZ_Num];
 extern float const CIE_Y_360_830_1nm[CIE_XYZ_Num];

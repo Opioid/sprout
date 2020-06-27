@@ -38,10 +38,10 @@ static inline float ilm_ep_dielectric(float n_dot_wo, float alpha, float ior) {
 //    return 1.f / E_sd_tex(n_dot_wo, alpha, ior - 1.f);
 //}
 
-float constexpr Min_roughness = 0.01314f;
+inline float constexpr Min_roughness = 0.01314f;
 
-float constexpr Min_alpha  = Min_roughness * Min_roughness;
-float constexpr Min_alpha2 = Min_alpha * Min_alpha;
+inline float constexpr Min_alpha  = Min_roughness * Min_roughness;
+inline float constexpr Min_alpha2 = Min_alpha * Min_alpha;
 
 static inline float clamp_roughness(float roughness) {
     return std::max(roughness, Min_roughness);

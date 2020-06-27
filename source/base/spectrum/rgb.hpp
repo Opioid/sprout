@@ -84,7 +84,7 @@ static inline float constexpr luminance(float3 const& c) {
 #endif
 }
 
-float constexpr CIE_constant = 683.002f;
+inline float constexpr CIE_constant = 683.002f;
 
 static inline float constexpr watt_to_lumen(float3 const& c) {
     return CIE_constant * luminance(c);

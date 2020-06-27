@@ -9,12 +9,12 @@
 namespace scene {
 
 // offset_b(std::numeric_limits<float>::max());
-float constexpr Ray_max_t = 3.4027715434167032e+38f;
+inline float constexpr Ray_max_t = 3.4027715434167032e+38f;
 
 // std::nextafter(Ray_max_t, 0.f);
-float constexpr Almost_ray_max_t = 3.4027713405926072e+38f;
+inline float constexpr Almost_ray_max_t = 3.4027713405926072e+38f;
 
-uint64_t constexpr Units_per_second = 705600000;
+inline uint64_t constexpr Units_per_second = 705600000;
 
 static inline uint64_t time(double dtime) {
     return uint64_t(std::llrint(double(Units_per_second) * dtime));
@@ -35,9 +35,9 @@ static inline int32_t float_as_int(float x) {
     return i;
 }
 
-static float constexpr Origin      = 1.f / 32.f;
-static float constexpr Float_scale = 1.f / 65536.f;
-static float constexpr Int_scale   = 256.f;
+inline float constexpr Origin      = 1.f / 32.f;
+inline float constexpr Float_scale = 1.f / 65536.f;
+inline float constexpr Int_scale   = 256.f;
 
 static inline float3 offset_ray(float3 const& p, float3 const& n) {
     int3 const of_i(Int_scale * n);

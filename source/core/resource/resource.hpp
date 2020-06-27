@@ -5,7 +5,7 @@
 
 namespace resource {
 
-static uint32_t constexpr Null = 0xFFFFFFFF;
+inline uint32_t constexpr Null = 0xFFFFFFFF;
 
 template <typename T>
 struct Resource_ptr {

@@ -100,7 +100,9 @@ the model.
 
 // Uses Sep 9 pattern / Aug 23 mean dataset
 
-constexpr hk_real datasetXYZ1[] = {
+#include "ArHosekSkyModelReal.hpp"
+
+inline hk_real constexpr datasetXYZ1[] = {
     // albedo 0, turbidity 1
     -1.117001e+000,
     -1.867262e-001,
@@ -1203,7 +1205,7 @@ constexpr hk_real datasetXYZ1[] = {
     6.232887e-001,
 };
 
-constexpr hk_real datasetXYZRad1[] = {
+inline hk_real constexpr datasetXYZRad1[] = {
     // albedo 0, turbidity 1
     1.560219e+000,
     1.417388e+000,
@@ -1346,7 +1348,7 @@ constexpr hk_real datasetXYZRad1[] = {
     2.523432e+001,
 };
 
-constexpr hk_real datasetXYZ2[] = {
+inline hk_real constexpr datasetXYZ2[] = {
     // albedo 0, turbidity 1
     -1.127942e+000,
     -1.905548e-001,
@@ -2449,7 +2451,7 @@ constexpr hk_real datasetXYZ2[] = {
     6.118645e-001,
 };
 
-constexpr hk_real datasetXYZRad2[] = {
+inline hk_real constexpr datasetXYZRad2[] = {
     // albedo 0, turbidity 1
     1.632341e+000,
     1.395230e+000,
@@ -2592,7 +2594,7 @@ constexpr hk_real datasetXYZRad2[] = {
     2.641780e+001,
 };
 
-constexpr hk_real datasetXYZ3[] = {
+inline hk_real constexpr datasetXYZ3[] = {
     // albedo 0, turbidity 1
     -1.310023e+000,
     -4.407658e-001,
@@ -3695,7 +3697,7 @@ constexpr hk_real datasetXYZ3[] = {
     6.791814e-001,
 };
 
-constexpr hk_real datasetXYZRad3[] = {
+inline hk_real constexpr datasetXYZRad3[] = {
     // albedo 0, turbidity 1
     1.168084e+000,
     2.156455e+000,
@@ -3838,6 +3840,6 @@ constexpr hk_real datasetXYZRad3[] = {
     3.110255e+001,
 };
 
-constexpr const hk_real* datasetsXYZ[] = {datasetXYZ1, datasetXYZ2, datasetXYZ3};
+inline constexpr const hk_real* datasetsXYZ[] = {datasetXYZ1, datasetXYZ2, datasetXYZ3};
 
-constexpr const hk_real* datasetsXYZRad[] = {datasetXYZRad1, datasetXYZRad2, datasetXYZRad3};
+inline constexpr const hk_real* datasetsXYZRad[] = {datasetXYZRad1, datasetXYZRad2, datasetXYZRad3};
