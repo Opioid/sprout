@@ -33,6 +33,10 @@ class Sensor {
 
     void resize(int2 dimensions, int32_t num_layers);
 
+    void set_variance(int2 pixel, float variance);
+
+    void export_variance() const;
+
     virtual int32_t filter_radius_int() const = 0;
 
     virtual int4 isolated_tile(int4 const& tile) const = 0;
@@ -69,6 +73,8 @@ class Sensor {
     int2 dimensions_;
 
     int32_t num_layers_;
+
+    float* variance_;
 };
 
 }  // namespace rendering::sensor

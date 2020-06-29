@@ -198,6 +198,8 @@ void Driver::export_frame(uint32_t frame, Exporters& exporters) const {
 
     auto const export_duration = chrono::seconds_since(export_start);
     logging::info("Export time %f s", export_duration);
+
+    view_->camera->sensor().export_variance();
 }
 
 void Driver::render_frame_backward(uint32_t frame) {

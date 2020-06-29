@@ -51,16 +51,52 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
 
             int2 const pixel(x, y);
 
-            for (uint32_t i = num_samples; i > 0; --i) {
+            double m_oldM, m_newM, m_oldS, m_newS;
+
+            uint32_t n = 0;
+
+            float rendered_samples = float(num_samples - 1);
+
+            for (uint32_t i = num_samples; i > 0; --i, ++n) {
                 sampler::Camera_sample const sample = sampler_->generate_camera_sample(pixel);
+
+                float avg = 0.f;
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
                     float4 const color = li(ray, camera.interface_stack());
                     sensor.add_sample(sample, color, isolated_bounds, offset, crop);
+
+                    avg = average(color);
                 } else {
                     sensor.add_sample(sample, float4(0.f), isolated_bounds, offset, crop);
                 }
+
+                // https://www.johndcook.com/blog/standard_deviation/
+                if (0 == n) {
+                    m_oldM = m_newM = avg;
+                    m_oldS          = 0.0;
+                } else {
+                    m_newM = m_oldM + (avg - m_oldM) / n;
+                    m_newS = m_oldS + (avg - m_oldM) * (avg - m_newM);
+
+                    // set up for next iteration
+                    m_oldM = m_newM;
+                    m_oldS = m_newS;
+                }
+
+                if (n > 16) {
+                    float const variance = m_newS / (n - 1);
+
+                    if (variance <= 0.0001f) {
+                        rendered_samples = float(n);
+                        break;
+                    }
+                }
             }
+
+            float const variance = m_newS / (num_samples - 1);
+            sensor.set_variance(pixel, variance);
+            //  sensor.set_variance(pixel, rendered_samples);
         }
     }
 }
