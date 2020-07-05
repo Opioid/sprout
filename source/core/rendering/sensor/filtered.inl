@@ -9,21 +9,10 @@ namespace rendering::sensor {
 
 template <class Base, class Clamp, class F>
 Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter)
-    : clamp_(clamp), filter_(std::move(filter)) {}
+    : Base(int32_t(std::ceil(filter.radius()))), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 Filtered<Base, Clamp, F>::~Filtered() = default;
-
-template <class Base, class Clamp, class F>
-int32_t Filtered<Base, Clamp, F>::filter_radius_int() const {
-    return int32_t(std::ceil(filter_.radius()));
-}
-
-template <class Base, class Clamp, class F>
-int4 Filtered<Base, Clamp, F>::isolated_tile(int4 const& tile) const {
-    int32_t const r = filter_radius_int();
-    return tile + int4(r, r, -r, -r);
-}
 
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 const& color,

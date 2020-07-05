@@ -1,7 +1,6 @@
 #ifndef SU_CORE_RENDERING_SENSOR_SENSOR_HPP
 #define SU_CORE_RENDERING_SENSOR_SENSOR_HPP
 
-#include <cstddef>
 #include "base/math/vector2.hpp"
 #include "image/typed_image_fwd.hpp"
 
@@ -21,7 +20,7 @@ class Sensor {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
 
-    Sensor();
+    Sensor(int32_t filter_radius);
 
     virtual ~Sensor();
 
@@ -33,9 +32,9 @@ class Sensor {
 
     void resize(int2 dimensions, int32_t num_layers);
 
-    virtual int32_t filter_radius_int() const = 0;
+    int32_t filter_radius_int() const;
 
-    virtual int4 isolated_tile(int4 const& tile) const = 0;
+    int4 isolated_tile(int4 const& tile) const;
 
     virtual void set_layer(int32_t layer) = 0;
 
@@ -67,6 +66,8 @@ class Sensor {
     virtual void on_resize(int2 dimensions, int32_t num_layers) = 0;
 
     int2 dimensions_;
+
+    int32_t const filter_radius_;
 
     int32_t num_layers_;
 };

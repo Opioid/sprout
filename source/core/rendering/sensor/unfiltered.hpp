@@ -18,10 +18,6 @@ class Unfiltered final : public Base {
 
     Unfiltered(Clamp const& clamp);
 
-    int32_t filter_radius_int() const final;
-
-    int4 isolated_tile(int4 const& tile) const final;
-
     void add_sample(Sample const& sample, float4 const& color, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
