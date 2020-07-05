@@ -36,14 +36,16 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
     isolated_bounds[2] -= isolated_bounds[0];
     isolated_bounds[3] -= isolated_bounds[1];
 
-    int2 const r = camera.resolution();
+    int32_t const fr = sensor.filter_radius_int();
+
+    int2 const r = camera.resolution() + 2 * fr;
 
     uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
 
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
-        uint64_t const o1 = uint64_t(y * r[0]) + o0;
+        uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
-            rng_.start(0, o1 + uint64_t(x));
+            rng_.start(0, o1 + uint64_t(x + fr));
 
             sampler_->start_pixel();
             surface_integrator_->start_pixel();
