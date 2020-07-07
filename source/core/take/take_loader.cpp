@@ -34,7 +34,6 @@
 #include "rendering/postprocessor/tonemapping/generic.hpp"
 #include "rendering/postprocessor/tonemapping/linear.hpp"
 #include "rendering/postprocessor/tonemapping/piecewise.hpp"
-#include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filter/sensor_gaussian.hpp"
 #include "rendering/sensor/filter/sensor_mitchell.hpp"
@@ -867,12 +866,6 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
 
             return new Piecewise(auto_expose, exposure, toe_strength, toe_length, shoulder_strength,
                                  shoulder_length, shoulder_angle);
-        }
-
-        if ("Uncharted" == n.name) {
-            float const hdr_max = json::read_float(n.value, "hdr_max", 1.f);
-
-            return new Uncharted(auto_expose, exposure, hdr_max);
         }
     }
 
