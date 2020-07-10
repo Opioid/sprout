@@ -632,7 +632,21 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     mesh->allocate_parts(num_parts);
 
     for (uint32_t p = 0; p < num_parts; ++p) {
-        mesh->set_material_for_part(p, parts[p].material_index);
+        auto const& part = parts[p];
+
+        if (part.start_index + part.num_indices > num_indices) {
+            logging::push_error("Part indices out of bounds.");
+
+            delete mesh;
+
+            vertex_stream->release();
+
+            delete vertex_stream;
+
+            return nullptr;
+        }
+
+        mesh->set_material_for_part(p, part.material_index);
     }
 
     threads.run_async([mesh, num_parts, parts{std::move(parts)}, num_indices,

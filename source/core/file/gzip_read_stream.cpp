@@ -174,7 +174,9 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
         }
 
         for (mz_ulong const len = mz_ulong(pos); z_stream_.total_out < len;) {
-            underflow();
+            if (traits_type::eof() == underflow()) {
+                return pos_type(off_type(-1));
+            }
         }
 
         pos_type const difference = z_stream_.total_out - pos;
