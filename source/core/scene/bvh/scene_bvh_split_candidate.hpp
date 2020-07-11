@@ -9,14 +9,12 @@
 namespace scene::bvh {
 
 struct Reference {
-    Reference();
-
     uint32_t primitive() const;
 
     void set(Simd3f const& min, Simd3f const& max, uint32_t primitive);
 
-    void clip_min(float d, uint8_t axis);
-    void clip_max(float d, uint8_t axis);
+    Reference clipped_min(float d, uint8_t axis) const;
+    Reference clipped_max(float d, uint8_t axis) const;
 
     struct alignas(16) Vector {
         float    v[3];

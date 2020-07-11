@@ -80,7 +80,6 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
 
     uint32_t const num_references = uint32_t(references.size());
 
-    float3 const halfsize = aabb.halfsize();
     float3 const position = aabb.position();
 
     split_candidates_.emplace_back(X, position, true);
@@ -95,7 +94,9 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
             split_candidates_.emplace_back(Z, max, false);
         }
     } else {
-        float3 const& min = aabb.min();
+        float3 const halfsize = aabb.halfsize();
+
+        float3 const min = aabb.min();
 
         float3 const step = (2.f * halfsize) / float(num_slices_);
         for (uint32_t i = 1, len = num_slices_; i < len; ++i) {

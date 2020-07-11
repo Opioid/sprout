@@ -7,28 +7,35 @@
 
 namespace scene::bvh {
 
-inline Reference::Reference() = default;
-
 inline uint32_t Reference::primitive() const {
     return bounds[0].index;
 }
 
 inline void Reference::set(Simd3f const& min, Simd3f const& max, uint32_t primitive) {
     float3 const tmp(min);
-    bounds[0].v[0]  = tmp[0];
-    bounds[0].v[1]  = tmp[1];
-    bounds[0].v[2]  = tmp[2];
+    bounds[0].v[0] = tmp[0];
+    bounds[0].v[1] = tmp[1];
+    bounds[0].v[2] = tmp[2];
+
     bounds[0].index = primitive;
 
     simd::store_float4(bounds[1].v, max.v);
 }
 
-inline void Reference::clip_min(float d, uint8_t axis) {
-    bounds[0].v[axis] = std::max(d, bounds[0].v[axis]);
+inline Reference Reference::clipped_min(float d, uint8_t axis) const {
+    Vector bounds0 = bounds[0];
+
+    bounds0.v[axis] = std::max(d, bounds0.v[axis]);
+
+    return {{bounds0, bounds[1]}};
 }
 
-inline void Reference::clip_max(float d, uint8_t axis) {
-    bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
+inline Reference Reference::clipped_max(float d, uint8_t axis) const {
+    Vector bounds1 = bounds[1];
+
+    bounds1.v[axis] = std::min(d, bounds1.v[axis]);
+
+    return {{bounds[0], bounds1}};
 }
 
 inline Split_candidate::Split_candidate(uint8_t split_axis, float3 const& p, bool spatial)
@@ -111,25 +118,21 @@ inline void Split_candidate::distribute(References const& references, References
     if (spatial_) {
         for (auto const& r : references) {
             if (behind(r.bounds[1].v)) {
-                references0.push_back(r);
+                references0.emplace_back(r);
             } else if (!behind(r.bounds[0].v)) {
-                references1.push_back(r);
+                references1.emplace_back(r);
             } else {
-                Reference r0 = r;
-                r0.clip_max(d_, axis_);
-                references0.push_back(r0);
+                references0.emplace_back(r.clipped_max(d_, axis_));
 
-                Reference r1 = r;
-                r1.clip_min(d_, axis_);
-                references1.push_back(r1);
+                references1.emplace_back(r.clipped_min(d_, axis_));
             }
         }
     } else {
         for (auto const& r : references) {
             if (behind(r.bounds[1].v)) {
-                references0.push_back(r);
+                references0.emplace_back(r);
             } else {
-                references1.push_back(r);
+                references1.emplace_back(r);
             }
         }
     }
