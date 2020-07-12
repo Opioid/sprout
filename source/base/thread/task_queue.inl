@@ -29,11 +29,6 @@ void Task_queue<T>::clear() {
 }
 
 template <typename T>
-void Task_queue<T>::restart() {
-    current_consume_ = 0;
-}
-
-template <typename T>
 void Task_queue<T>::push(T const& task) {
     uint32_t const current = top_++;
 

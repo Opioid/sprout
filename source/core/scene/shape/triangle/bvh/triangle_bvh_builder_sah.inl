@@ -31,7 +31,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
 
         References references(num_triangles);
 
-        memory::Array<Simd_AABB> aabbs(threads.num_threads());
+        memory::Array<Simd_AABB> aabbs(threads.num_threads() /*, AABB::empty()*/);
 
         threads.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin,
@@ -52,6 +52,7 @@ void Builder_SAH::build(Tree<Data>& tree, uint32_t num_triangles, Triangles tria
                 }
 
                 aabbs[id] = aabb;
+                // aabbs[id].merge_assign(aabb);
             },
             0, num_triangles);
 

@@ -31,7 +31,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
 
             References references(indices.size());
 
-            memory::Array<Simd_AABB> taabbs(threads.num_threads());
+            memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, AABB::empty()*/);
 
             threads.run_range(
                 [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin,
@@ -49,6 +49,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
                     }
 
                     taabbs[id] = aabb;
+                    // taabbs[id].merge_assign(aabb);
                 },
                 0, int32_t(indices.size()));
 
