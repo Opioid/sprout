@@ -132,10 +132,10 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
         }
     } else {
         threads.run_range(
-            [this, &references, aabb_surface_area](uint32_t /*id*/, int32_t sc_begin,
-                                                   int32_t sc_end) noexcept {
+            [&scs = split_candidates_, &references, aabb_surface_area](
+                uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) noexcept {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
-                    split_candidates_[uint32_t(i)].evaluate(references, aabb_surface_area);
+                    scs[uint32_t(i)].evaluate(references, aabb_surface_area);
                 }
             },
             0, int32_t(split_candidates_.size()));
