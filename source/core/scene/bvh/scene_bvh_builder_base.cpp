@@ -94,27 +94,31 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
             split_candidates_.emplace_back(Z, max, false);
         }
     } else {
-        float3 const halfsize = aabb.halfsize();
+        float3 const extent = 2.f * aabb.halfsize();
 
         float3 const min = aabb.min();
 
-        float3 const step = (2.f * halfsize) / float(num_slices_);
-        for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
-            float const fi = float(i);
+        uint32_t const la = index_max_component(extent);
 
-            float3 const slice_x(min[0] + fi * step[0], position[1], position[2]);
-            split_candidates_.emplace_back(X, slice_x, false);
+        float const step = (extent[la]) / float(num_slices_);
 
-            float3 const slice_y(position[0], min[1] + fi * step[1], position[2]);
-            split_candidates_.emplace_back(Y, slice_y, false);
+        for (uint32_t a = 0; a < 3; ++a) {
+            float const extent_a = extent[a];
 
-            float3 const slice_z(position[0], position[1], min[2] + fi * step[2]);
-            split_candidates_.emplace_back(Z, slice_z, false);
+            uint32_t const num_steps = uint32_t(std::ceil(extent_a / step));
 
-            if (depth < spatial_split_threshold_) {
-                split_candidates_.emplace_back(X, slice_x, true);
-                split_candidates_.emplace_back(Y, slice_y, true);
-                split_candidates_.emplace_back(Z, slice_z, true);
+            float const step_a = extent_a / float(num_steps);
+
+            for (uint32_t i = 1; i < num_steps; ++i) {
+                float const fi = float(i);
+
+                float3 slice = position;
+                slice[a]     = min[a] + fi * step_a;
+                split_candidates_.emplace_back(a, slice, false);
+
+                if (depth < spatial_split_threshold_) {
+                    split_candidates_.emplace_back(a, slice, true);
+                }
             }
         }
     }
