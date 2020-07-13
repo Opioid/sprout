@@ -53,6 +53,8 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
     Simd_AABB box_1(aabb_1_);
 
     if (spatial_) {
+        bool used_spatial = false;
+
         for (auto const& r : references) {
             Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
@@ -70,14 +72,20 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
 
                 box_0.merge_assign(b);
                 box_1.merge_assign(b);
+
+                used_spatial = true;
             }
         }
 
         aabb_0_.set_min_max(box_0.min, box_0.max);
-        aabb_0_.clip_max(d_, axis_);
-
         aabb_1_.set_min_max(box_1.min, box_1.max);
-        aabb_1_.clip_min(d_, axis_);
+
+        if (used_spatial) {
+            aabb_0_.clip_max(d_, axis_);
+            aabb_1_.clip_min(d_, axis_);
+        } else {
+            spatial_ = false;
+        }
     } else {
         for (auto const& r : references) {
             Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
