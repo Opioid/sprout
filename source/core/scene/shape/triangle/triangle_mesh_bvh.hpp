@@ -8,10 +8,11 @@ namespace scene::shape::triangle {
 
 using Shading_vertex_type = struct Shading_vertex_MTC;
 
-extern template class bvh::Tree<bvh::Indexed_data<Shading_vertex_type>>;
+using Indexed_shading_data = bvh::Indexed_data<Shading_vertex_type>;
 
-using Tree = bvh::Tree<bvh::Indexed_data<Shading_vertex_type>>;
-// using Tree = bvh::Tree<bvh::Indexed_data1>;
+extern template class bvh::Tree<Indexed_shading_data>;
+
+using Tree = bvh::Tree<Indexed_shading_data>;
 
 }  // namespace scene::shape::triangle
 

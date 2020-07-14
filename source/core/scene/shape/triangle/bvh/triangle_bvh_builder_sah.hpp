@@ -3,6 +3,7 @@
 
 #include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
+#include "scene/shape/triangle/triangle_mesh_bvh.hpp"
 
 #include <vector>
 
@@ -27,9 +28,6 @@ struct Index_triangle;
 
 namespace bvh {
 
-template <typename Data>
-class Tree;
-
 class Builder_SAH : private scene::bvh::Builder_base {
   public:
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
@@ -37,16 +35,14 @@ class Builder_SAH : private scene::bvh::Builder_base {
     using Triangles = Index_triangle const* const;
     using Vertices  = Vertex_stream const&;
 
-    template <typename Data>
-    void build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
+    void build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
                uint32_t max_primitives, thread::Pool& threads);
 
   private:
     using Reference  = scene::bvh::Reference;
     using References = std::vector<Reference>;
 
-    template <typename Data>
-    void serialize(Build_node* node, Triangles triangles, Vertices vertices, Tree<Data>& tree,
+    void serialize(Build_node* node, Triangles triangles, Vertices vertices, triangle::Tree& tree,
                    uint32_t& current_triangle);
 };
 

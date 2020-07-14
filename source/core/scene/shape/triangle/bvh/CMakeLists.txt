@@ -1,14 +1,13 @@
 target_sources(core
-	PRIVATE
-	"triangle_bvh_builder_sah.cpp"
-	"triangle_bvh_builder_sah.hpp"
-	"triangle_bvh_builder_sah.inl"
-	"triangle_bvh_data.hpp"
-	"triangle_bvh_data.inl"
-	"triangle_bvh_helper.cpp"
-	"triangle_bvh_helper.hpp"
-	"triangle_bvh_indexed_data.hpp"
-	"triangle_bvh_indexed_data.inl"
-	"triangle_bvh_tree.hpp"
-	"triangle_bvh_tree.inl"
-	)
+    PRIVATE
+    "triangle_bvh_builder_sah.cpp"
+    "triangle_bvh_builder_sah.hpp"
+    "triangle_bvh_data.hpp"
+    "triangle_bvh_data.inl"
+    "triangle_bvh_helper.cpp"
+    "triangle_bvh_helper.hpp"
+    "triangle_bvh_indexed_data.hpp"
+    "triangle_bvh_indexed_data.inl"
+    "triangle_bvh_tree.hpp"
+    "triangle_bvh_tree.inl"
+    )
