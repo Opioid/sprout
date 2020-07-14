@@ -13,11 +13,11 @@
 
 namespace scene::shape::triangle::bvh {
 
-Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold)
-    : Builder_base(num_slices, sweep_threshold) {}
+Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
+    : Builder_base(num_slices, sweep_threshold, max_primitives) {}
 
 void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles,
-                        Vertices vertices, uint32_t max_primitives, thread::Pool& threads) {
+                        Vertices vertices, thread::Pool& threads) {
     Build_node root;
 
     {
@@ -60,7 +60,7 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
         num_nodes_      = 1;
         num_references_ = 0;
 
-        split(&root, references, AABB(aabb.min, aabb.max), max_primitives, 0, threads);
+        split(&root, references, AABB(aabb.min, aabb.max), 0, threads);
     }
 
     tree.allocate_triangles(num_references_, vertices);

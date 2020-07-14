@@ -23,16 +23,16 @@ void Builder_base::Build_node::allocate(uint8_t num_primitives) {
     primitives = memory::allocate_aligned<uint32_t>(num_primitives);
 }
 
-Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold)
-    : num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
+Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
+    : num_slices_(num_slices), sweep_threshold_(sweep_threshold), max_primitives_(max_primitives) {}
 
-void Builder_base::split(Build_node* node, References& references, AABB const& aabb,
-                         uint32_t max_primitives, uint32_t depth, thread::Pool& threads) {
+void Builder_base::split(Build_node* node, References& references, AABB const& aabb, uint32_t depth,
+                         thread::Pool& threads) {
     node->aabb = aabb;
 
     uint32_t const num_primitives = uint32_t(references.size());
 
-    if (num_primitives <= max_primitives) {
+    if (num_primitives <= max_primitives_) {
         assign(node, references);
     } else {
         bool                  exhausted;
@@ -65,12 +65,12 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
                 references = References();
 
                 node->children[0] = new Build_node;
-                split(node->children[0], references0, sp.aabb_0(), max_primitives, depth, threads);
+                split(node->children[0], references0, sp.aabb_0(), depth, threads);
 
                 references0 = References();
 
                 node->children[1] = new Build_node;
-                split(node->children[1], references1, sp.aabb_1(), max_primitives, depth, threads);
+                split(node->children[1], references1, sp.aabb_1(), depth, threads);
 
                 num_nodes_ += 2;
             }

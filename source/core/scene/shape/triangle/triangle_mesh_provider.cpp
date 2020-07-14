@@ -373,8 +373,8 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 
 void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
                          Vertex_stream const& vertices, thread::Pool& threads) {
-    bvh::Builder_SAH builder(16, 64);
-    builder.build(mesh.tree(), num_triangles, triangles, vertices, 4, threads);
+    bvh::Builder_SAH builder(16, 64, 4);
+    builder.build(mesh.tree(), num_triangles, triangles, vertices, threads);
 }
 
 template <typename Index>

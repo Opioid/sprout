@@ -9,7 +9,7 @@
 
 namespace scene::bvh {
 
-Builder::Builder() : Builder_base(16, 64) {}
+Builder::Builder() : Builder_base(16, 64, 4) {}
 
 Builder::~Builder() = default;
 
@@ -61,7 +61,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
             num_nodes_      = 1;
             num_references_ = 0;
 
-            split(&root, references, AABB(aabb.min, aabb.max), 4, 0, threads);
+            split(&root, references, AABB(aabb.min, aabb.max), 0, threads);
         }
 
         tree.alllocate_indices(num_references_);

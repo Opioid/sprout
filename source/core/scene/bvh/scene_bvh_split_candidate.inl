@@ -118,8 +118,9 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
     num_side_1_ = num_side_1;
 }
 
-inline void Split_candidate::distribute(References const&  __restrict references, References&  __restrict references0,
-                                        References&  __restrict references1) const {
+inline void Split_candidate::distribute(References const& __restrict references,
+                                        References& __restrict references0,
+                                        References& __restrict references1) const {
     references0.reserve(num_side_0_);
     references1.reserve(num_side_1_);
 

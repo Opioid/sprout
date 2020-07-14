@@ -32,8 +32,8 @@ class Split_candidate {
 
     void evaluate(References const& references, float aabb_surface_area);
 
-    void distribute(References const& __restrict references, References&  __restrict references0,
-                    References&  __restrict references1) const;
+    void distribute(References const& __restrict references, References& __restrict references0,
+                    References& __restrict references1) const;
 
     float cost() const;
 

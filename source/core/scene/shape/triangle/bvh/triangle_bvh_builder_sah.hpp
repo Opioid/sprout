@@ -30,13 +30,13 @@ namespace bvh {
 
 class Builder_SAH : private scene::bvh::Builder_base {
   public:
-    Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
+    Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
 
     using Triangles = Index_triangle const* const;
     using Vertices  = Vertex_stream const&;
 
     void build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
-               uint32_t max_primitives, thread::Pool& threads);
+               thread::Pool& threads);
 
   private:
     using Reference  = scene::bvh::Reference;

@@ -280,9 +280,9 @@ void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& t
 
     Vertex_stream_interleaved vertices(collection_->num_vertices(), vertices_);
 
-    bvh::Builder_SAH builder(16, 64);
+    bvh::Builder_SAH builder(16, 64, 4);
     builder.build(tree_, uint32_t(collection_->triangles().size()), collection_->triangles().data(),
-                  vertices, 4, threads);
+                  vertices, threads);
 }
 
 }  // namespace scene::shape::triangle
