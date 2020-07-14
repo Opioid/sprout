@@ -4,9 +4,6 @@
 #include "base/math/aabb.hpp"
 #include "scene_bvh_split_candidate.hpp"
 
-#include <cstdint>
-#include <vector>
-
 namespace thread {
 class Pool;
 }
@@ -30,7 +27,7 @@ class Builder_base {
 
         uint32_t start_index = 0;
         uint8_t  num_indices = 0;
-        uint8_t  axis;
+        uint8_t  axis        = 0;
 
         uint32_t* primitives = nullptr;
 

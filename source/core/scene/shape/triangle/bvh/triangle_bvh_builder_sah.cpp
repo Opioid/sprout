@@ -53,7 +53,7 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
             0, num_triangles);
 
         Simd_AABB aabb(AABB::empty());
-        for (auto& b : aabbs) {
+        for (auto const& b : aabbs) {
             aabb.merge_assign(b);
         }
 

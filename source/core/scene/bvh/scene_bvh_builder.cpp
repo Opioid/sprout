@@ -54,7 +54,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
                 0, int32_t(indices.size()));
 
             Simd_AABB aabb(AABB::empty());
-            for (auto& b : taabbs) {
+            for (auto const& b : taabbs) {
                 aabb.merge_assign(b);
             }
 
