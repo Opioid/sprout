@@ -48,8 +48,6 @@ class Builder_SAH : private scene::bvh::Builder_base {
     template <typename Data>
     void serialize(Build_node* node, Triangles triangles, Vertices vertices, Tree<Data>& tree,
                    uint32_t& current_triangle);
-
-    void assign(Build_node* node, References const& references);
 };
 
 }  // namespace bvh
