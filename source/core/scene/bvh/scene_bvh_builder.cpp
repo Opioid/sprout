@@ -25,9 +25,9 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
         nodes_ = tree.allocate_nodes(0);
     } else {
         {
-            float const log2_num_triangles = std::log2(float(indices.size()));
+            float const log2_num_primitives = std::log2(float(indices.size()));
 
-            spatial_split_threshold_ = uint32_t(std::lrint(log2_num_triangles / 2.f));
+            spatial_split_threshold_ = uint32_t(std::lrint(log2_num_primitives / 2.f));
 
             References references(indices.size());
 
@@ -88,13 +88,14 @@ void Builder::serialize(Build_node* node, Tree& tree, uint32_t& current_prop) {
 
         serialize(node->children[1], tree, current_prop);
     } else {
-        uint8_t const num_primitives = uint8_t(node->end_index - node->start_index);
+        uint8_t const num_primitives = node->num_indices;
         n.set_leaf_node(node->start_index, num_primitives);
 
+        uint32_t const* const primitives = node->primitives;
+
         uint32_t i = current_prop;
-        for (auto const p : node->primitives) {
-            tree.indices_[i] = p;
-            ++i;
+        for (uint32_t p = 0, len = node->num_indices; p < len; ++p, ++i) {
+            tree.indices_[i] = primitives[p];
         }
 
         current_prop = i;

@@ -24,14 +24,15 @@ class Builder_base {
 
         ~Build_node();
 
+        void allocate(uint8_t num_primitives);
+
         AABB aabb;
 
+        uint32_t start_index = 0;
+        uint8_t num_indices = 0;
         uint8_t axis;
 
-        std::vector<uint32_t> primitives;
-
-        uint32_t start_index = 0;
-        uint32_t end_index   = 0;
+        uint32_t* primitives = nullptr;
 
         Build_node* children[2] = {nullptr, nullptr};
     };

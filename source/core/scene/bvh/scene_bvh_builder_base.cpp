@@ -1,5 +1,6 @@
 #include "scene_bvh_builder_base.hpp"
 #include "base/math/aabb.inl"
+#include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "logging/logging.hpp"
 #include "scene_bvh_node.inl"
@@ -10,8 +11,16 @@ namespace scene::bvh {
 Builder_base::Build_node::Build_node() = default;
 
 Builder_base::Build_node::~Build_node() {
+    memory::free_aligned(primitives);
+
     delete children[0];
     delete children[1];
+}
+
+void Builder_base::Build_node::allocate(uint8_t num_primitives) {
+    num_indices = num_primitives;
+
+    primitives = memory::allocate_aligned<uint32_t>(num_primitives);
 }
 
 Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold)
@@ -162,16 +171,18 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
 }
 
 void Builder_base::assign(Build_node* node, References const& references) {
-    size_t const num_references = references.size();
-    node->primitives.resize(num_references);
+    uint8_t const num_references = uint8_t(references.size());
 
-    for (size_t i = 0; i < num_references; ++i) {
+    node->allocate(num_references);
+
+    for (uint8_t i = 0; i < num_references; ++i) {
         node->primitives[i] = references[i].primitive();
     }
 
     node->start_index = num_references_;
+    node->num_indices = num_references;
+
     num_references_ += uint32_t(num_references);
-    node->end_index = num_references_;
 }
 
 bvh::Node& Builder_base::new_node() {
