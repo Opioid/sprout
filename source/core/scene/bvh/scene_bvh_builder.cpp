@@ -3,6 +3,7 @@
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "scene/scene.inl"
+#include "scene_bvh_builder_base.inl"
 #include "scene_bvh_node.inl"
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
@@ -20,7 +21,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
     build_nodes_.emplace_back();
 
     if (indices.empty()) {
-        build_nodes_[0].aabb = AABB(float3(-1.f), float3(1.f));
+        build_nodes_[0].set_aabb({float3(-1.f), float3(1.f)});
 
         tree.alllocate_indices(0);
         tree.allocate_nodes(0);
@@ -70,7 +71,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
         serialize(tree);
     }
 
-    tree.aabb_ = build_nodes_[0].aabb;
+    tree.aabb_ = build_nodes_[0].aabb();
 }
 
 void Builder::serialize(Tree& tree) const {
@@ -79,17 +80,17 @@ void Builder::serialize(Tree& tree) const {
 
         auto& n = tree.nodes()[id];
 
-        n.set_aabb(node.aabb.min().v, node.aabb.max().v);
+        n.set_aabb(node.min().v, node.max().v);
 
         if (0xFFFFFFFF != node.children[0]) {
-            n.set_split_node(node.children[1], node.axis);
+            n.set_split_node(node.children[1], node.axis());
         } else {
-            uint8_t const num_primitives = node.num_indices;
-            n.set_leaf_node(node.start_index, num_primitives);
+            uint8_t const num_primitives = node.num_indices();
+            n.set_leaf_node(node.start_index(), num_primitives);
 
             uint32_t const* const primitives = node.primitives;
 
-            for (uint32_t p = 0, len = node.num_indices; p < len; ++p, ++i) {
+            for (uint32_t p = 0, len = node.num_indices(); p < len; ++p, ++i) {
                 tree.indices_[i] = primitives[p];
             }
         }

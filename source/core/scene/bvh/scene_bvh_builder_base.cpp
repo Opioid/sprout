@@ -1,4 +1,4 @@
-#include "scene_bvh_builder_base.hpp"
+#include "scene_bvh_builder_base.inl"
 #include "base/math/aabb.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -8,38 +8,18 @@
 
 namespace scene::bvh {
 
-Builder_base::Build_node::Build_node() = default;
-
-Builder_base::Build_node::Build_node(Build_node&& other)
-    : aabb(other.aabb),
-      start_index(other.start_index),
-      num_indices(other.num_indices),
-      axis(other.axis),
-      primitives(other.primitives),
-      children{other.children[0], other.children[1]} {
-    other.primitives = nullptr;
-}
-
-Builder_base::Build_node::~Build_node() {
-    memory::free_aligned(primitives);
-}
-
-void Builder_base::Build_node::allocate(uint8_t num_primitives) {
-    num_indices = num_primitives;
-
-    primitives = memory::allocate_aligned<uint32_t>(num_primitives);
-}
-
 Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
     : num_slices_(num_slices), sweep_threshold_(sweep_threshold), max_primitives_(max_primitives) {
     split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
 }
 
+Builder_base::~Builder_base() = default;
+
 void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                          thread::Pool& threads) {
     Build_node& node = build_nodes_[node_id];
 
-    node.aabb = aabb;
+    node.set_aabb(aabb);
 
     uint32_t const num_primitives = uint32_t(references.size());
 
@@ -60,7 +40,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
                 return;
             }
 
-            node.axis = sp.axis();
+            node.max_.axis = sp.axis();
 
             References references0;
             References references1;
@@ -194,8 +174,8 @@ void Builder_base::assign(Build_node& node, References const& references) {
         node.primitives[i] = references[i].primitive();
     }
 
-    node.start_index = num_references_;
-    node.num_indices = num_references;
+    node.min_.start_index = num_references_;
+    node.max_.num_indices = num_references;
 
     num_references_ += uint32_t(num_references);
 }

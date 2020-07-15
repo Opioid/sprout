@@ -16,11 +16,11 @@ namespace scene::bvh {
 class Node;
 struct Tree;
 
-class Builder : private Builder_base {
+class Builder final : private Builder_base {
   public:
     Builder();
 
-    ~Builder();
+    ~Builder() final;
 
     void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
                thread::Pool& threads);

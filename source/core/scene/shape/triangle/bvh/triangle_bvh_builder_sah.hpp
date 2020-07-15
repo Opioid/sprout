@@ -28,9 +28,11 @@ struct Index_triangle;
 
 namespace bvh {
 
-class Builder_SAH : private scene::bvh::Builder_base {
+class Builder_SAH final : private scene::bvh::Builder_base {
   public:
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
+
+    ~Builder_SAH() final;
 
     using Triangles = Index_triangle const* const;
     using Vertices  = Vertex_stream const&;

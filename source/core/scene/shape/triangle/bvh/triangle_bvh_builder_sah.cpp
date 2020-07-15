@@ -4,6 +4,7 @@
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "logging/logging.hpp"
+#include "scene/bvh/scene_bvh_builder_base.inl"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_split_candidate.inl"
 #include "scene/shape/shape_vertex.hpp"
@@ -15,6 +16,8 @@ namespace scene::shape::triangle::bvh {
 
 Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
     : Builder_base(num_slices, sweep_threshold, max_primitives) {}
+
+Builder_SAH::~Builder_SAH() = default;
 
 void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles,
                         Vertices vertices, thread::Pool& threads) {
@@ -76,17 +79,17 @@ void Builder_SAH::serialize(Triangles triangles, Vertices vertices, triangle::Tr
 
         auto& n = tree.nodes()[id];
 
-        n.set_aabb(node.aabb.min().v, node.aabb.max().v);
+        n.set_aabb(node.min().v, node.max().v);
 
         if (0xFFFFFFFF != node.children[0]) {
-            n.set_split_node(node.children[1], node.axis);
+            n.set_split_node(node.children[1], node.axis());
         } else {
-            uint8_t const num_primitives = node.num_indices;
-            n.set_leaf_node(node.start_index, num_primitives);
+            uint8_t const num_primitives = node.num_indices();
+            n.set_leaf_node(node.start_index(), num_primitives);
 
             uint32_t const* const primitives = node.primitives;
 
-            for (uint32_t p = 0, len = node.num_indices; p < len; ++p, ++i) {
+            for (uint32_t p = 0, len = node.num_indices(); p < len; ++p, ++i) {
                 auto const& t = triangles[primitives[p]];
                 tree.add_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
             }
