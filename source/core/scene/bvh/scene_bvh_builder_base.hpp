@@ -13,11 +13,7 @@ namespace scene::bvh {
 class Node;
 
 class Builder_base {
-  protected:
-    Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
-
-    virtual ~Builder_base();
-
+  public:
     struct Build_node {
         Build_node();
 
@@ -60,6 +56,11 @@ class Builder_base {
 
         uint32_t children[2] = {0xFFFFFFFF, 0xFFFFFFFF};
     };
+
+  protected:
+    Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
+
+    virtual ~Builder_base();
 
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                thread::Pool& threads);
