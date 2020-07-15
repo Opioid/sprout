@@ -67,37 +67,34 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
     tree.allocate_triangles(num_references_, vertices);
     tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
-    uint32_t current_triangle = 0;
-    serialize(0, triangles, vertices, tree, current_triangle);
+    serialize(triangles, vertices, tree);
 }
 
-void Builder_SAH::serialize(uint32_t node_id, Triangles triangles, Vertices vertices,
-                            triangle::Tree& tree, uint32_t& current_triangle) const {
-    Build_node const& node = build_nodes_[node_id];
+void Builder_SAH::serialize(Triangles triangles, Vertices vertices, triangle::Tree& tree) const {
+    for (uint32_t id = 0, i = 0, num_nodes = build_nodes_.size(); id < num_nodes; ++id) {
+        Build_node const& node = build_nodes_[id];
 
-    auto& n = tree.nodes()[node_id];
+        auto& n = tree.nodes()[id];
 
-    n.set_aabb(node.aabb.min().v, node.aabb.max().v);
+        n.set_aabb(node.aabb.min().v, node.aabb.max().v);
 
-    if (0xFFFFFFFF != node.children[0]) {
-        serialize(node.children[0], triangles, vertices, tree, current_triangle);
+        if (0xFFFFFFFF != node.children[0]) {
+            //    serialize(node.children[0], triangles, vertices, tree, current_triangle);
 
-        n.set_split_node(node.children[1], node.axis);
+            n.set_split_node(node.children[1], node.axis);
 
-        serialize(node.children[1], triangles, vertices, tree, current_triangle);
-    } else {
-        uint8_t const num_primitives = node.num_indices;
-        n.set_leaf_node(node.start_index, num_primitives);
+            //    serialize(node.children[1], triangles, vertices, tree, current_triangle);
+        } else {
+            uint8_t const num_primitives = node.num_indices;
+            n.set_leaf_node(node.start_index, num_primitives);
 
-        uint32_t const* const primitives = node.primitives;
+            uint32_t const* const primitives = node.primitives;
 
-        uint32_t i = current_triangle;
-        for (uint32_t p = 0, len = node.num_indices; p < len; ++p, ++i) {
-            auto const& t = triangles[primitives[p]];
-            tree.add_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
+            for (uint32_t p = 0, len = node.num_indices; p < len; ++p, ++i) {
+                auto const& t = triangles[primitives[p]];
+                tree.add_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
+            }
         }
-
-        current_triangle = i;
     }
 }
 
