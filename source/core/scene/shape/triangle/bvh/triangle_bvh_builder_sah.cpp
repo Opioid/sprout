@@ -79,11 +79,7 @@ void Builder_SAH::serialize(Triangles triangles, Vertices vertices, triangle::Tr
         n.set_aabb(node.aabb.min().v, node.aabb.max().v);
 
         if (0xFFFFFFFF != node.children[0]) {
-            //    serialize(node.children[0], triangles, vertices, tree, current_triangle);
-
             n.set_split_node(node.children[1], node.axis);
-
-            //    serialize(node.children[1], triangles, vertices, tree, current_triangle);
         } else {
             uint8_t const num_primitives = node.num_indices;
             n.set_leaf_node(node.start_index, num_primitives);
