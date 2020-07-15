@@ -24,7 +24,9 @@ void Builder_base::Build_node::allocate(uint8_t num_primitives) {
 }
 
 Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
-    : num_slices_(num_slices), sweep_threshold_(sweep_threshold), max_primitives_(max_primitives) {}
+    : num_slices_(num_slices), sweep_threshold_(sweep_threshold), max_primitives_(max_primitives) {
+    split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
+}
 
 void Builder_base::split(Build_node* node, References& references, AABB const& aabb, uint32_t depth,
                          thread::Pool& threads) {
