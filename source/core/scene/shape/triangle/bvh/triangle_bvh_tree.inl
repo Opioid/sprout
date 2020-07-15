@@ -27,14 +27,17 @@ Tree<Data>::~Tree() {
 }
 
 template <typename Data>
-scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
+void Tree<Data>::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
         memory::free_aligned(nodes_);
         nodes_ = memory::allocate_aligned<Node>(num_nodes);
     }
+}
 
+template <typename Data>
+scene::bvh::Node* Tree<Data>::nodes() {
     return nodes_;
 }
 

@@ -10,11 +10,18 @@ namespace scene::bvh {
 
 Builder_base::Build_node::Build_node() = default;
 
+Builder_base::Build_node::Build_node(Build_node&& other)
+    : aabb(other.aabb),
+      start_index(other.start_index),
+      num_indices(other.num_indices),
+      axis(other.axis),
+      primitives(other.primitives),
+      children{other.children[0], other.children[1]} {
+    other.primitives = nullptr;
+}
+
 Builder_base::Build_node::~Build_node() {
     memory::free_aligned(primitives);
-
-    delete children[0];
-    delete children[1];
 }
 
 void Builder_base::Build_node::allocate(uint8_t num_primitives) {
@@ -28,9 +35,11 @@ Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32
     split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
 }
 
-void Builder_base::split(Build_node* node, References& references, AABB const& aabb, uint32_t depth,
+void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                          thread::Pool& threads) {
-    node->aabb = aabb;
+    Build_node& node = build_nodes_[node_id];
+
+    node.aabb = aabb;
 
     uint32_t const num_primitives = uint32_t(references.size());
 
@@ -51,7 +60,7 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
                 return;
             }
 
-            node->axis = sp.axis();
+            node.axis = sp.axis();
 
             References references0;
             References references1;
@@ -66,15 +75,19 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
 
                 references = References();
 
-                node->children[0] = new Build_node;
-                split(node->children[0], references0, sp.aabb_0(), depth, threads);
+                uint32_t const child0 = build_nodes_.size();
+                build_nodes_.emplace_back();
+
+                build_nodes_[node_id].children[0] = child0;
+                split(child0, references0, sp.aabb_0(), depth, threads);
 
                 references0 = References();
 
-                node->children[1] = new Build_node;
-                split(node->children[1], references1, sp.aabb_1(), depth, threads);
+                uint32_t const child1 = build_nodes_.size();
+                build_nodes_.emplace_back();
 
-                num_nodes_ += 2;
+                build_nodes_[node_id].children[1] = child1;
+                split(child1, references1, sp.aabb_1(), depth, threads);
             }
         }
     }
@@ -172,27 +185,19 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     return sp;
 }
 
-void Builder_base::assign(Build_node* node, References const& references) {
+void Builder_base::assign(Build_node& node, References const& references) {
     uint8_t const num_references = uint8_t(references.size());
 
-    node->allocate(num_references);
+    node.allocate(num_references);
 
     for (uint8_t i = 0; i < num_references; ++i) {
-        node->primitives[i] = references[i].primitive();
+        node.primitives[i] = references[i].primitive();
     }
 
-    node->start_index = num_references_;
-    node->num_indices = num_references;
+    node.start_index = num_references_;
+    node.num_indices = num_references;
 
     num_references_ += uint32_t(num_references);
-}
-
-bvh::Node& Builder_base::new_node() {
-    return nodes_[current_node_++];
-}
-
-uint32_t Builder_base::current_node_index() const {
-    return current_node_;
 }
 
 }  // namespace scene::bvh

@@ -15,14 +15,15 @@ Builder::~Builder() = default;
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
                     thread::Pool& threads) {
-    Build_node root;
+    build_nodes_.reserve(std::max((3 * uint32_t(indices.size())) / max_primitives_, 1u));
+    build_nodes_.clear();
+    build_nodes_.emplace_back();
 
     if (indices.empty()) {
-        root.aabb = AABB(float3(-1.f), float3(1.f));
+        build_nodes_[0].aabb = AABB(float3(-1.f), float3(1.f));
 
         tree.alllocate_indices(0);
-
-        nodes_ = tree.allocate_nodes(0);
+        tree.allocate_nodes(0);
     } else {
         {
             float const log2_num_primitives = std::log2(float(indices.size()));
@@ -58,43 +59,43 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
                 aabb.merge_assign(b);
             }
 
-            num_nodes_      = 1;
             num_references_ = 0;
 
-            split(&root, references, AABB(aabb.min, aabb.max), 0, threads);
+            split(0, references, AABB(aabb.min, aabb.max), 0, threads);
         }
 
         tree.alllocate_indices(num_references_);
-
-        nodes_ = tree.allocate_nodes(num_nodes_);
-
-        current_node_ = 0;
+        tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
         uint32_t current_prop = 0;
-        serialize(&root, tree, current_prop);
+
+        serialize(0, tree, current_prop);
     }
 
-    tree.aabb_ = root.aabb;
+    tree.aabb_ = build_nodes_[0].aabb;
 }
 
-void Builder::serialize(Build_node* node, Tree& tree, uint32_t& current_prop) {
-    auto& n = new_node();
-    n.set_aabb(node->aabb.min().v, node->aabb.max().v);
+void Builder::serialize(uint32_t node_id, Tree& tree, uint32_t& current_prop) const {
+    Build_node const& node = build_nodes_[node_id];
 
-    if (node->children[0]) {
-        serialize(node->children[0], tree, current_prop);
+    auto& n = tree.nodes()[node_id];
 
-        n.set_split_node(current_node_index(), node->axis);
+    n.set_aabb(node.aabb.min().v, node.aabb.max().v);
 
-        serialize(node->children[1], tree, current_prop);
+    if (0xFFFFFFFF != node.children[0]) {
+        serialize(node.children[0], tree, current_prop);
+
+        n.set_split_node(node.children[1], node.axis);
+
+        serialize(node.children[1], tree, current_prop);
     } else {
-        uint8_t const num_primitives = node->num_indices;
-        n.set_leaf_node(node->start_index, num_primitives);
+        uint8_t const num_primitives = node.num_indices;
+        n.set_leaf_node(node.start_index, num_primitives);
 
-        uint32_t const* const primitives = node->primitives;
+        uint32_t const* const primitives = node.primitives;
 
         uint32_t i = current_prop;
-        for (uint32_t p = 0, len = node->num_indices; p < len; ++p, ++i) {
+        for (uint32_t p = 0, len = node.num_indices; p < len; ++p, ++i) {
             tree.indices_[i] = primitives[p];
         }
 

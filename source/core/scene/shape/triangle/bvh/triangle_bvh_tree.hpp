@@ -50,7 +50,9 @@ class Tree {
     using Material  = material::Material;
     using Materials = Material const* const*;
 
-    Node* allocate_nodes(uint32_t num_nodes);
+    void allocate_nodes(uint32_t num_nodes);
+
+    Node* nodes();
 
     AABB aabb() const;
 
@@ -117,7 +119,8 @@ class Tree {
     uint32_t num_nodes_;
     uint32_t num_parts_;
 
-    Node*     nodes_;
+    Node* nodes_;
+
     uint32_t* num_part_triangles_;
 
     Data data_;
