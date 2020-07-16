@@ -75,7 +75,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
 }
 
 void Builder::serialize(Tree& tree) const {
-    for (uint32_t id = 0, i = 0, num_nodes = build_nodes_.size(); id < num_nodes; ++id) {
+    for (uint32_t id = 0, i = 0, num_nodes = uint32_t(build_nodes_.size()); id < num_nodes; ++id) {
         Build_node const& node = build_nodes_[id];
 
         auto& n = tree.nodes()[id];

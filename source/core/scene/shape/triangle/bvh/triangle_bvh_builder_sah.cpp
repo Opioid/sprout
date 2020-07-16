@@ -47,7 +47,8 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
                     auto const min = triangle_min(a, b, c);
                     auto const max = triangle_max(a, b, c);
 
-                    references[i].set(min, max, uint32_t(i));
+                    uint32_t const ui = uint32_t(i);
+                    references[ui].set(min, max, ui);
 
                     aabb.merge_assign(min, max);
                 }
@@ -55,7 +56,7 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
                 aabbs[id] = aabb;
                 // aabbs[id].merge_assign(aabb);
             },
-            0, num_triangles);
+            0, int32_t(num_triangles));
 
         Simd_AABB aabb(AABB::empty());
         for (auto const& b : aabbs) {
@@ -74,7 +75,7 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
 }
 
 void Builder_SAH::serialize(Triangles triangles, Vertices vertices, triangle::Tree& tree) const {
-    for (uint32_t id = 0, i = 0, num_nodes = build_nodes_.size(); id < num_nodes; ++id) {
+    for (uint32_t id = 0, i = 0, num_nodes = uint32_t(build_nodes_.size()); id < num_nodes; ++id) {
         Build_node const& node = build_nodes_[id];
 
         auto& n = tree.nodes()[id];

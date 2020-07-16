@@ -55,7 +55,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
 
                 references = References();
 
-                uint32_t const child0 = build_nodes_.size();
+                uint32_t const child0 = uint32_t(build_nodes_.size());
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[0] = child0;
@@ -63,7 +63,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
 
                 references0 = References();
 
-                uint32_t const child1 = build_nodes_.size();
+                uint32_t const child1 = uint32_t(build_nodes_.size());
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[1] = child1;
@@ -106,7 +106,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
 
         float const step = (extent[la]) / float(num_slices_);
 
-        for (uint32_t a = 0; a < 3; ++a) {
+        for (uint8_t a = 0; a < 3; ++a) {
             float const extent_a = extent[a];
 
             uint32_t const num_steps = uint32_t(std::ceil(extent_a / step));
