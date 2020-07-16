@@ -293,15 +293,15 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertex_stream 
 }
 
 template <typename SV>
-void Indexed_data<SV>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
-                                    Vertex_stream const& vertices, uint32_t current_triangle) {
+void Indexed_data<SV>::set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
+                                    Vertex_stream const& vertices, uint32_t triangle_id) {
     bool const abts = vertices.bitangent_sign(a);
     bool const bbts = vertices.bitangent_sign(b);
     bool const cbts = vertices.bitangent_sign(c);
 
     bool const bitanget_sign = (abts && bbts) || (bbts && cbts) || (cbts && abts);
 
-    triangles_[current_triangle] = Index_triangle(a, b, c, bitanget_sign, part);
+    triangles_[triangle_id] = Index_triangle(a, b, c, bitanget_sign, part);
 }
 
 template <typename SV>

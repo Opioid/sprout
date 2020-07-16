@@ -44,7 +44,8 @@ class Builder_SAH final : private scene::bvh::Builder_base {
     using Reference  = scene::bvh::Reference;
     using References = std::vector<Reference>;
 
-    void serialize(Triangles triangles, Vertices vertices, triangle::Tree& tree, thread::Pool& threads) const;
+    void serialize(Triangles triangles, Vertices vertices, triangle::Tree& tree,
+                   thread::Pool& threads) const;
 };
 
 }  // namespace bvh

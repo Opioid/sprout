@@ -67,8 +67,8 @@ class Indexed_data {
 
     void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices);
 
-    void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
-                      Vertex_stream const& vertices, uint32_t current_triangle);
+    void set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
+                      Vertex_stream const& vertices, uint32_t triangle_id);
 
     struct alignas(16) Index_triangle {
         Index_triangle(uint32_t a, uint32_t b, uint32_t c, bool bitangent_sign, uint32_t part);
