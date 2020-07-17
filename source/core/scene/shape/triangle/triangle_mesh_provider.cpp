@@ -49,19 +49,17 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     }
 
     if (file::Type::SUB == file::query_type(*stream)) {
-#ifdef SU_DEBUG
-        auto const loading_start = std::chrono::high_resolution_clock::now();
-#endif
-
         Shape* mesh = load_binary(*stream, resources.threads());
         if (!mesh) {
             logging::error("Loading mesh %S: ", filename);
         }
 
-        LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
-
         return mesh;
     }
+
+#ifdef SU_DEBUG
+        auto const loading_start = std::chrono::high_resolution_clock::now();
+#endif
 
     Json_handler handler;
 
@@ -143,7 +141,9 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
         mesh->set_material_for_part(p, handler.parts()[p].material_index);
     }
 
-    resources.threads().run_async([mesh, handler{std::move(handler)},
+    LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
+
+    resources.threads().run_async([this, mesh, handler{std::move(handler)},
                                    &resources]() mutable noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
@@ -433,6 +433,10 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
 }
 
 Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
+#ifdef SU_DEBUG
+        auto const loading_start = std::chrono::high_resolution_clock::now();
+#endif
+
     stream.seekg(4);
 
     uint64_t json_size = 0;
@@ -651,6 +655,8 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
 
         mesh->set_material_for_part(p, part.material_index);
     }
+
+    LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
 
     threads.run_async([mesh, num_parts, parts{std::move(parts)}, num_indices,
                        indices{std::move(indices)}, vertex_stream, index_bytes, delta_indices,
