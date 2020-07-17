@@ -77,10 +77,11 @@ Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/, Resources
 
     calculate_normals(triangles, vertices);
 
-    auto mesh = triangle::Provider::create_mesh(triangles, vertices, num_parts,
-                                                resources.threads());
+ //   auto mesh = triangle::Provider::create_mesh(triangles, vertices, num_parts,
+ //                                               resources.threads());
 
-    return resources.store<Shape>(mesh);
+ //   return resources.store<Shape>(mesh);
+    return Shape_ptr::Null();
 }
 
 void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,

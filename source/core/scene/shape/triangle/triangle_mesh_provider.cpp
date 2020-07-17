@@ -262,31 +262,6 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
     return mesh;
 }
 
-Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
-                             thread::Pool& threads) {
-    if (triangles.empty() || vertices.empty() || !num_parts) {
-        logging::error("No mesh data.");
-        return nullptr;
-    }
-
-    auto mesh = new Mesh;
-
-    mesh->allocate_parts(num_parts);
-
-    for (uint32_t i = 0; i < num_parts; ++i) {
-        mesh->set_material_for_part(i, i);
-    }
-
-    threads.run_async([mesh, triangles{std::move(triangles)}, vertices{std::move(vertices)},
-                       &threads]() noexcept {
-        Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
-
-        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream, threads);
-    });
-
-    return mesh;
-}
-
 Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
                                      Resources& resources) {
     auto collection = new Morph_target_collection;
@@ -368,6 +343,31 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
     uint32_t const num_parts = uint32_t(handler.parts().size());
 
     auto mesh = new Morphable_mesh(collection, num_parts);
+
+    return mesh;
+}
+
+Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
+                             thread::Pool& threads) {
+    if (triangles.empty() || vertices.empty() || !num_parts) {
+        logging::error("No mesh data.");
+        return nullptr;
+    }
+
+    auto mesh = new Mesh;
+
+    mesh->allocate_parts(num_parts);
+
+    for (uint32_t i = 0; i < num_parts; ++i) {
+        mesh->set_material_for_part(i, i);
+    }
+
+    threads.run_async([mesh, triangles{std::move(triangles)}, vertices{std::move(vertices)},
+                       &threads]() noexcept {
+        Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
+
+        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream, threads);
+    });
 
     return mesh;
 }
