@@ -58,7 +58,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     }
 
 #ifdef SU_DEBUG
-        auto const loading_start = std::chrono::high_resolution_clock::now();
+    auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
 
     Json_handler handler;
@@ -434,7 +434,7 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
 
 Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
 #ifdef SU_DEBUG
-        auto const loading_start = std::chrono::high_resolution_clock::now();
+    auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
 
     stream.seekg(4);

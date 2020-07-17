@@ -68,33 +68,38 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
         tree.alllocate_indices(num_references_);
         tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
-        serialize(tree);
+        serialize(tree, threads);
     }
 
     tree.aabb_ = build_nodes_[0].aabb();
 }
 
-void Builder::serialize(Tree& tree) const {
-    for (uint32_t id = 0, i = 0, num_nodes = uint32_t(build_nodes_.size()); id < num_nodes; ++id) {
-        Build_node const& node = build_nodes_[id];
+void Builder::serialize(Tree& tree, thread::Pool& threads) const {
+    threads.run_range(
+        [this, &tree](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t id = begin; id < end; ++id) {
+                Build_node const& node = build_nodes_[id];
 
-        auto& n = tree.nodes()[id];
+                auto& n = tree.nodes()[id];
 
-        n.set_aabb(node.min().v, node.max().v);
+                n.set_aabb(node.min().v, node.max().v);
 
-        if (0xFFFFFFFF != node.children[0]) {
-            n.set_split_node(node.children[1], node.axis());
-        } else {
-            uint8_t const num_primitives = node.num_indices();
-            n.set_leaf_node(node.start_index(), num_primitives);
+                if (0xFFFFFFFF != node.children[0]) {
+                    n.set_split_node(node.children[1], node.axis());
+                } else {
+                    uint32_t      i              = node.start_index();
+                    uint8_t const num_primitives = node.num_indices();
+                    n.set_leaf_node(i, num_primitives);
 
-            uint32_t const* const primitives = node.primitives;
+                    uint32_t const* const primitives = node.primitives;
 
-            for (uint32_t p = 0, len = node.num_indices(); p < len; ++p, ++i) {
-                tree.indices_[i] = primitives[p];
+                    for (uint32_t p = 0, len = uint32_t(num_primitives); p < len; ++p, ++i) {
+                        tree.indices_[i] = primitives[p];
+                    }
+                }
             }
-        }
-    }
+        },
+        0, int32_t(build_nodes_.size()));
 }
 
 }  // namespace scene::bvh

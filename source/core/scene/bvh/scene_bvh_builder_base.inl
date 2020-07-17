@@ -13,7 +13,7 @@ inline Builder_base::Build_node::Build_node(Build_node&& other)
 }
 
 inline Builder_base::Build_node::~Build_node() {
-    delete [] primitives;
+    delete[] primitives;
 }
 
 inline void Builder_base::Build_node::allocate(uint8_t num_primitives) {
