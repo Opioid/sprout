@@ -143,7 +143,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
 
     LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
 
-    resources.threads().run_async([this, mesh, handler{std::move(handler)},
+    resources.threads().run_async([mesh, handler{std::move(handler)},
                                    &resources]() mutable noexcept {
         LOGGING_VERBOSE("Started asynchronously building triangle mesh BVH.");
 
