@@ -4,6 +4,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"
 #include "base/memory/array.inl"
+#include "base/memory/buffer.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"

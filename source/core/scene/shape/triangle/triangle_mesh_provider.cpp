@@ -3,6 +3,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "base/memory/buffer.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "bvh/triangle_bvh_builder_sah.hpp"
 #include "file/file.hpp"

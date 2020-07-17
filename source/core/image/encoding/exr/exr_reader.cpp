@@ -1,6 +1,6 @@
 #include "exr_reader.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
+#include "base/memory/buffer.hpp"
 #include "exr.hpp"
 #include "image/image.hpp"
 #include "logging/logging.hpp"

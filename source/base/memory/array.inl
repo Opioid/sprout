@@ -1,7 +1,6 @@
 #ifndef SU_BASE_MEMORY_ARRAY_INL
 #define SU_BASE_MEMORY_ARRAY_INL
 
-#include "align.hpp"
 #include "array.hpp"
 
 #include "base/debug/assert.hpp"
@@ -14,7 +13,7 @@ template <typename T>
 Array<T>::Array() : capacity_(0), size_(0), data_(nullptr) {}
 
 template <typename T>
-Array<T>::Array(uint32_t size) : capacity_(size), size_(size), data_(allocate_aligned<T>(size)) {}
+Array<T>::Array(uint32_t size) : capacity_(size), size_(size), data_(new T[size]) {}
 
 template <typename T>
 Array<T>::Array(uint32_t size, T const& def) : Array<T>(size) {
@@ -25,7 +24,7 @@ Array<T>::Array(uint32_t size, T const& def) : Array<T>(size) {
 
 template <typename T>
 Array<T>::Array(std::initializer_list<T> list)
-    : capacity_(uint32_t(list.size())), size_(0), data_(allocate_aligned<T>(list.size())) {
+    : capacity_(uint32_t(list.size())), size_(0), data_(new T[list.size()]) {
     for (auto e : list) {
         push_back(e);
     }
@@ -41,7 +40,7 @@ Array<T>::Array(Array&& other) noexcept
 
 template <typename T>
 Array<T>::~Array() {
-    free_aligned(data_);
+    delete[] data_;
 }
 
 template <typename T>
@@ -88,7 +87,7 @@ void Array<T>::clear() {
 
 template <typename T>
 void Array<T>::release() {
-    free_aligned(data_);
+    delete[] data_;
     data_ = nullptr;
 
     size_     = 0;
@@ -156,11 +155,11 @@ void Array<T>::allocate(uint32_t capacity) {
         return;
     }
 
-    free_aligned(data_);
+    delete[] data_;
 
     capacity_ = capacity;
 
-    data_ = allocate_aligned<T>(capacity);
+    data_ = new T[capacity];
 }
 
 template <typename T>
@@ -168,10 +167,10 @@ Concurrent_array<T>::Concurrent_array() : capacity_(0), size_(0), data_(nullptr)
 
 template <typename T>
 Concurrent_array<T>::Concurrent_array(uint32_t size)
-    : capacity_(size), size_(size), data_(allocate_aligned<T>(size)) {}
+    : capacity_(size), size_(size), data_(new T[size]) {}
 
 template <typename T>
-Concurrent_array<T>::Concurrent_array(uint32_t size, T const& def) : Array<T>(size) {
+Concurrent_array<T>::Concurrent_array(uint32_t size, T const& def) : Concurrent_array<T>(size) {
     for (uint32_t i = 0; i < size; ++i) {
         data_[i] = def;
     }
@@ -179,7 +178,7 @@ Concurrent_array<T>::Concurrent_array(uint32_t size, T const& def) : Array<T>(si
 
 template <typename T>
 Concurrent_array<T>::Concurrent_array(std::initializer_list<T> list)
-    : capacity_(uint32_t(list.size())), size_(0), data_(allocate_aligned<T>(list.size())) {
+    : capacity_(uint32_t(list.size())), size_(0), data_(new T[list.size()]) {
     for (auto e : list) {
         push_back(e);
     }
@@ -195,7 +194,7 @@ Concurrent_array<T>::Concurrent_array(Concurrent_array&& other) noexcept
 
 template <typename T>
 Concurrent_array<T>::~Concurrent_array() {
-    free_aligned(data_);
+    delete[] data_;
 }
 
 template <typename T>
@@ -245,7 +244,7 @@ void Concurrent_array<T>::clear() {
 
 template <typename T>
 void Concurrent_array<T>::release() {
-    free_aligned(data_);
+    delete[] data_;
     data_ = nullptr;
 
     size_     = 0;
@@ -309,11 +308,11 @@ void Concurrent_array<T>::allocate(uint32_t capacity) {
         return;
     }
 
-    free_aligned(data_);
+    delete[] data_;
 
     capacity_ = capacity;
 
-    data_ = allocate_aligned<T>(capacity);
+    data_ = new T[capacity];
 }
 
 }  // namespace memory

@@ -3,6 +3,7 @@
 
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
+#include "base/memory/array.inl"
 #include "scene_bvh_split_candidate.hpp"
 
 namespace scene::bvh {

@@ -5,6 +5,7 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "base/memory/buffer.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"

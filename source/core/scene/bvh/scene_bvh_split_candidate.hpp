@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_BVH_SPLIT_CANDIDATE_HPP
 
 #include "base/math/aabb.hpp"
+#include "base/memory/array.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -24,7 +25,7 @@ struct Reference {
     Vector bounds[2];
 };
 
-using References = std::vector<Reference>;
+using References = memory::Array<Reference>;
 
 class Split_candidate {
   public:

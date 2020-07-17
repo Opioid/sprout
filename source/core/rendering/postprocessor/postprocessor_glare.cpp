@@ -1,8 +1,8 @@
 #include "postprocessor_glare.hpp"
 #include "base/math/exp.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/array.inl"
+#include "base/memory/buffer.hpp"
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
@@ -20,7 +20,7 @@ Glare::Glare(Adaption adaption, float threshold, float intensity)
       kernel_(nullptr) {}
 
 Glare::~Glare() {
-    memory::free_aligned(kernel_);
+    delete[] kernel_;
 }
 
 static inline float f0(float theta) {
@@ -52,7 +52,7 @@ void Glare::init(Camera const& camera, thread::Pool& threads) {
 
     float const angle = math::radians_to_degrees(std::sqrt(camera.pixel_solid_angle()));
 
-    kernel_ = memory::allocate_aligned<float3>(buffer_size);
+    kernel_ = new float3[buffer_size];
 
     spectrum::Interpolated const CIE_X(spectrum::CIE_XYZ_Num, spectrum::CIE_Wavelengths_360_830_1nm,
                                        spectrum::CIE_X_360_830_1nm);

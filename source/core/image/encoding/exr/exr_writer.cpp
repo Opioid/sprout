@@ -2,6 +2,7 @@
 #include "base/math/half.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
+#include "base/memory/buffer.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/typed_image.hpp"
 #include "miniz/miniz.h"

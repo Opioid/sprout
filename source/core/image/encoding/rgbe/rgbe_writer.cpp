@@ -1,6 +1,6 @@
 #include "rgbe_writer.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
+#include "base/memory/buffer.hpp"
 #include "image/typed_image.hpp"
 
 #include <cmath>

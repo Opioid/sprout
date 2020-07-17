@@ -4,6 +4,7 @@ target_sources(base
     "align.cpp"
     "array.hpp"
     "array.inl"
+    "buffer.hpp"
     "bitfield.hpp"
     "bitfield.inl"
     "tiled_array.hpp"

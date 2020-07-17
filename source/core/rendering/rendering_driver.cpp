@@ -1,6 +1,7 @@
 #include "rendering_driver.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/memory/array.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"

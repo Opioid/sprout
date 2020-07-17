@@ -4,6 +4,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
+#include "base/memory/buffer.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture.inl"
