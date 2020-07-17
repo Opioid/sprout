@@ -8,6 +8,8 @@
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
 
+#include <algorithm>
+
 namespace scene::bvh {
 
 Builder::Builder() : Builder_base(16, 64, 4) {}
@@ -87,15 +89,13 @@ void Builder::serialize(Tree& tree, thread::Pool& threads) const {
                 if (0xFFFFFFFF != node.children[0]) {
                     n.set_split_node(node.children[1], node.axis());
                 } else {
-                    uint32_t      i              = node.start_index();
-                    uint8_t const num_primitives = node.num_indices();
-                    n.set_leaf_node(i, num_primitives);
+                    uint32_t const i   = node.start_index();
+                    uint8_t const  num = node.num_indices();
+                    n.set_leaf_node(i, num);
 
                     uint32_t const* const primitives = node.primitives;
 
-                    for (uint32_t p = 0, len = uint32_t(num_primitives); p < len; ++p, ++i) {
-                        tree.indices_[i] = primitives[p];
-                    }
+                    std::copy(primitives, primitives + num, &tree.indices_[i]);
                 }
             }
         },
