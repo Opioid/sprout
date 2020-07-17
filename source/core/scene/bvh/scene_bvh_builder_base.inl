@@ -1,4 +1,3 @@
-#include "base/memory/align.hpp"
 #include "scene_bvh_builder_base.hpp"
 
 namespace scene::bvh {
@@ -14,13 +13,13 @@ inline Builder_base::Build_node::Build_node(Build_node&& other)
 }
 
 inline Builder_base::Build_node::~Build_node() {
-    memory::free_aligned(primitives);
+    delete [] primitives;
 }
 
 inline void Builder_base::Build_node::allocate(uint8_t num_primitives) {
     max_.num_indices = num_primitives;
 
-    primitives = memory::allocate_aligned<uint32_t>(num_primitives);
+    primitives = new uint32_t[num_primitives];
 }
 
 inline float3 Builder_base::Build_node::min() const {
