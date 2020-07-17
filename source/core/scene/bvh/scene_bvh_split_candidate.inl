@@ -127,21 +127,21 @@ inline void Split_candidate::distribute(References const& __restrict references,
     if (spatial_) {
         for (auto const& r : references) {
             if (behind(r.bounds[1].v)) {
-                references0.emplace_back(r);
+                references0.push_back(r);
             } else if (!behind(r.bounds[0].v)) {
-                references1.emplace_back(r);
+                references1.push_back(r);
             } else {
-                references0.emplace_back(r.clipped_max(d_, axis_));
+                references0.push_back(r.clipped_max(d_, axis_));
 
-                references1.emplace_back(r.clipped_min(d_, axis_));
+                references1.push_back(r.clipped_min(d_, axis_));
             }
         }
     } else {
         for (auto const& r : references) {
             if (behind(r.bounds[1].v)) {
-                references0.emplace_back(r);
+                references0.push_back(r);
             } else {
-                references1.emplace_back(r);
+                references1.push_back(r);
             }
         }
     }
