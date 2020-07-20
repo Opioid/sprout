@@ -17,6 +17,13 @@ Builder_base::~Builder_base() = default;
 
 void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                          thread::Pool& threads) {
+    num_active_tasks_ = 0;
+
+    split(node_id, references, aabb, depth, threads, true);
+}
+
+void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
+                         thread::Pool& threads, bool multi_thread) {
     Build_node& node = build_nodes_[node_id];
 
     node.set_aabb(aabb);
@@ -59,7 +66,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[0] = child0;
-                split(child0, references0, sp.aabb_0(), depth, threads);
+                split(child0, references0, sp.aabb_0(), depth, threads, multi_thread);
 
                 references0 = References();
 
@@ -67,7 +74,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[1] = child1;
-                split(child1, references1, sp.aabb_1(), depth, threads);
+                split(child1, references1, sp.aabb_1(), depth, threads, multi_thread);
             }
         }
     }

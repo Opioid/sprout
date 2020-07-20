@@ -64,6 +64,9 @@ class Builder_base {
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                thread::Pool& threads);
 
+    void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
+               thread::Pool& threads, bool multi_thread);
+
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
                                     bool& exhausted, thread::Pool& threads);
 
@@ -77,9 +80,24 @@ class Builder_base {
 
     uint32_t spatial_split_threshold_;
 
+    uint32_t num_active_tasks_;
+
     std::vector<Split_candidate> split_candidates_;
 
     std::vector<Build_node> build_nodes_;
+
+    struct Task {
+        Builder_base* builder;
+
+        uint32_t root;
+        uint32_t depth;
+
+        References references;
+
+        AABB aabb;
+    };
+
+    std::vector<Task> tasks_;
 };
 
 }  // namespace scene::bvh
