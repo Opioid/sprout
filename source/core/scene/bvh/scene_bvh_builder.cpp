@@ -33,7 +33,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
 
             spatial_split_threshold_ = uint32_t(std::lrint(log2_num_primitives / 2.f));
 
-            References references(indices.size());
+            References references(uint32_t(indices.size()));
 
             memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, AABB::empty()*/);
 

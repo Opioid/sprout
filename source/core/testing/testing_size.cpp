@@ -145,7 +145,7 @@ void size() {
     print_size<image::texture::Adapter>("texture::Adapter", 8);
 
     print_size<scene::bvh::Split_candidate>("Split_candidate", 96);
-    print_size<scene::bvh::Builder_base::Build_node>("bvh::Build_node", 48);
+    print_size<scene::bvh::Build_node>("bvh::Build_node", 48);
 
     print_size<scene::shape::Node_stack>("scene::shape::Node_stack", 512);
 

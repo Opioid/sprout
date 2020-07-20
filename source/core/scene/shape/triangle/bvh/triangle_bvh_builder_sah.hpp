@@ -30,9 +30,11 @@ namespace bvh {
 
 class Builder_SAH final : private scene::bvh::Builder_base {
   public:
+    using Build_node = scene::bvh::Build_node;
+
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
 
-    ~Builder_SAH() final;
+    ~Builder_SAH();
 
     using Triangles = Index_triangle const* const;
     using Vertices  = Vertex_stream const&;

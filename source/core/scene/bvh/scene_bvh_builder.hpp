@@ -20,7 +20,7 @@ class Builder final : private Builder_base {
   public:
     Builder();
 
-    ~Builder() final;
+    ~Builder();
 
     void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
                thread::Pool& threads);

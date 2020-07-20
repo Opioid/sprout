@@ -2,9 +2,9 @@
 
 namespace scene::bvh {
 
-inline Builder_base::Build_node::Build_node() = default;
+inline Build_node::Build_node() = default;
 
-inline Builder_base::Build_node::Build_node(Build_node&& other)
+inline Build_node::Build_node(Build_node&& other)
     : min_(other.min_),
       max_(other.max_),
       primitives(other.primitives),
@@ -12,29 +12,29 @@ inline Builder_base::Build_node::Build_node(Build_node&& other)
     other.primitives = nullptr;
 }
 
-inline Builder_base::Build_node::~Build_node() {
+inline Build_node::~Build_node() {
     delete[] primitives;
 }
 
-inline void Builder_base::Build_node::allocate(uint8_t num_primitives) {
+inline void Build_node::allocate(uint8_t num_primitives) {
     max_.num_indices = num_primitives;
 
     primitives = new uint32_t[num_primitives];
 }
 
-inline float3 Builder_base::Build_node::min() const {
+inline float3 Build_node::min() const {
     return float3(min_.v);
 }
 
-inline float3 Builder_base::Build_node::max() const {
+inline float3 Build_node::max() const {
     return float3(max_.v);
 }
 
-inline AABB Builder_base::Build_node::aabb() const {
+inline AABB Build_node::aabb() const {
     return {float3(min_.v), float3(max_.v)};
 }
 
-inline void Builder_base::Build_node::set_aabb(AABB const& aabb) {
+inline void Build_node::set_aabb(AABB const& aabb) {
     min_.v[0] = aabb.bounds[0][0];
     min_.v[1] = aabb.bounds[0][1];
     min_.v[2] = aabb.bounds[0][2];
@@ -44,15 +44,15 @@ inline void Builder_base::Build_node::set_aabb(AABB const& aabb) {
     max_.v[2] = aabb.bounds[1][2];
 }
 
-inline uint32_t Builder_base::Build_node::start_index() const {
+inline uint32_t Build_node::start_index() const {
     return min_.start_index;
 }
 
-inline uint8_t Builder_base::Build_node::num_indices() const {
+inline uint8_t Build_node::num_indices() const {
     return max_.num_indices;
 }
 
-inline uint8_t Builder_base::Build_node::axis() const {
+inline uint8_t Build_node::axis() const {
     return max_.axis;
 }
 

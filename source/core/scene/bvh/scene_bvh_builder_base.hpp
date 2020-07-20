@@ -12,55 +12,54 @@ namespace scene::bvh {
 
 class Node;
 
-class Builder_base {
-  public:
-    struct Build_node {
-        Build_node();
+struct Build_node {
+    Build_node();
 
-        Build_node(Build_node&& other);
+    Build_node(Build_node&& other);
 
-        ~Build_node();
+    ~Build_node();
 
-        void allocate(uint8_t num_primitives);
+    void allocate(uint8_t num_primitives);
 
-        float3 min() const;
+    float3 min() const;
 
-        float3 max() const;
+    float3 max() const;
 
-        AABB aabb() const;
+    AABB aabb() const;
 
-        void set_aabb(AABB const& aabb);
+    void set_aabb(AABB const& aabb);
 
-        uint32_t start_index() const;
+    uint32_t start_index() const;
 
-        uint8_t num_indices() const;
+    uint8_t num_indices() const;
 
-        uint8_t axis() const;
+    uint8_t axis() const;
 
-        struct alignas(16) Min {
-            float    v[3];
-            uint32_t start_index;
-        };
-
-        struct alignas(16) Max {
-            float   v[3];
-            uint8_t axis;
-            uint8_t num_indices;
-            uint8_t pad[2];
-        };
-
-        Min min_;
-        Max max_;
-
-        uint32_t* primitives = nullptr;
-
-        uint32_t children[2] = {0xFFFFFFFF, 0xFFFFFFFF};
+    struct alignas(16) Min {
+        float    v[3];
+        uint32_t start_index;
     };
 
+    struct alignas(16) Max {
+        float   v[3];
+        uint8_t axis;
+        uint8_t num_indices;
+        uint8_t pad[2];
+    };
+
+    Min min_;
+    Max max_;
+
+    uint32_t* primitives = nullptr;
+
+    uint32_t children[2] = {0xFFFFFFFF, 0xFFFFFFFF};
+};
+
+class Builder_base {
   protected:
     Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
 
-    virtual ~Builder_base();
+    ~Builder_base();
 
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                thread::Pool& threads);
