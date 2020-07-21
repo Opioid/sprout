@@ -218,15 +218,21 @@ void Builder_base::assign(Build_node& node, References const& references) {
     num_references_ += uint32_t(num_references);
 }
 
+void Builder_base::reserve(uint32_t num_primitives) {
+    build_nodes_.reserve(std::max((3 * num_primitives) / max_primitives_, 1u));
+    build_nodes_.clear();
+    build_nodes_.emplace_back();
+}
+
 void Builder_base::work_on_tasks(thread::Pool& threads) {
     threads.run_range([this, &threads](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
         for (int32_t i = begin; i < end; ++i) {
             auto& t = tasks_[i];
 
+            t.builder->reserve(t.references.size());
             t.builder->split(0, t.references, t.aabb, t.depth, threads, false);
         }
     }, 0, int32_t(num_active_tasks_));
-
 
     num_active_tasks_ = 0;
 }

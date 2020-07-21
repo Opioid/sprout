@@ -72,6 +72,8 @@ class Builder_base {
 
     void assign(Build_node& node, References const& references);
 
+    void reserve(uint32_t num_primitives);
+
     void work_on_tasks(thread::Pool& threads);
 
     uint32_t const num_slices_;

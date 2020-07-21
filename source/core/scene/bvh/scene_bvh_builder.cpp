@@ -18,9 +18,9 @@ Builder::~Builder() = default;
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
                     thread::Pool& threads) {
-    build_nodes_.reserve(std::max((3 * uint32_t(indices.size())) / max_primitives_, 1u));
-    build_nodes_.clear();
-    build_nodes_.emplace_back();
+    uint32_t const num_primitives = uint32_t(indices.size());
+
+    reserve(num_primitives);
 
     if (indices.empty()) {
         build_nodes_[0].set_aabb({float3(-1.f), float3(1.f)});
@@ -29,7 +29,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
         tree.allocate_nodes(0);
     } else {
         {
-            References references(uint32_t(indices.size()));
+            References references(num_primitives);
 
             memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, AABB::empty()*/);
 

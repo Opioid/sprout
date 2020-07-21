@@ -21,9 +21,7 @@ Builder_SAH::~Builder_SAH() = default;
 
 void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles,
                         Vertices vertices, thread::Pool& threads) {
-    build_nodes_.reserve((3 * num_triangles) / max_primitives_);
-    build_nodes_.clear();
-    build_nodes_.emplace_back();
+    reserve(num_triangles);
 
     {
         References references(num_triangles);
