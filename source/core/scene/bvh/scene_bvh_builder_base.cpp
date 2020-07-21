@@ -8,8 +8,10 @@
 
 namespace scene::bvh {
 
-Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
-    : num_slices_(num_slices), sweep_threshold_(sweep_threshold), max_primitives_(max_primitives) {
+static uint32_t constexpr Parallelize_splitting_plane_evalute_threshold = 1024;
+
+Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives, uint32_t spatial_split_threshold)
+    : num_slices_(num_slices), sweep_threshold_(sweep_threshold), max_primitives_(max_primitives), spatial_split_threshold_(spatial_split_threshold) {
     split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
 }
 
@@ -17,9 +19,23 @@ Builder_base::~Builder_base() = default;
 
 void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                          thread::Pool& threads) {
+    float const log2_num_triangles = std::log2(float(references.size()));
+
+    spatial_split_threshold_ = uint32_t(std::lrint(log2_num_triangles / 2.f));
+
+    if (tasks_.empty()) {
+        tasks_.resize(threads.num_threads());
+
+        for (auto& t : tasks_) {
+            t.builder = new Builder_base(num_slices_, sweep_threshold_, max_primitives_, spatial_split_threshold_);
+        }
+    }
+
     num_active_tasks_ = 0;
 
     split(node_id, references, aabb, depth, threads, true);
+
+    work_on_tasks(threads);
 }
 
 void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
@@ -33,6 +49,21 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
     if (num_primitives <= max_primitives_) {
         assign(node, references);
     } else {
+        if (multi_thread && num_primitives < Parallelize_splitting_plane_evalute_threshold) {
+            if (num_active_tasks_ == tasks_.size()) {
+                work_on_tasks(threads);
+            }
+
+            auto& t = tasks_[num_active_tasks_++];
+
+            t.root = node_id;
+            t.depth = depth;
+            t.aabb = aabb;
+            t.references = std::move(references);
+
+            return;
+        }
+
         bool                  exhausted;
         Split_candidate const sp = splitting_plane(references, aabb, depth, exhausted, threads);
 
@@ -137,7 +168,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     float const aabb_surface_area = aabb.surface_area();
 
     // Arbitrary heuristic for starting the thread pool
-    if (num_references < 1024) {
+    if (num_references < Parallelize_splitting_plane_evalute_threshold) {
         for (auto& sc : split_candidates_) {
             sc.evaluate(references, aabb_surface_area);
         }
@@ -185,6 +216,19 @@ void Builder_base::assign(Build_node& node, References const& references) {
     node.max_.num_indices = num_references;
 
     num_references_ += uint32_t(num_references);
+}
+
+void Builder_base::work_on_tasks(thread::Pool& threads) {
+    threads.run_range([this, &threads](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+        for (int32_t i = begin; i < end; ++i) {
+            auto& t = tasks_[i];
+
+            t.builder->split(0, t.references, t.aabb, t.depth, threads, false);
+        }
+    }, 0, int32_t(num_active_tasks_));
+
+
+    num_active_tasks_ = 0;
 }
 
 }  // namespace scene::bvh

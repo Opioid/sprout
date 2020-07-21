@@ -26,10 +26,6 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
     build_nodes_.emplace_back();
 
     {
-        float const log2_num_triangles = std::log2(float(num_triangles));
-
-        spatial_split_threshold_ = uint32_t(std::lrint(log2_num_triangles / 2.f));
-
         References references(num_triangles);
 
         memory::Array<Simd_AABB> aabbs(threads.num_threads() /*, AABB::empty()*/);

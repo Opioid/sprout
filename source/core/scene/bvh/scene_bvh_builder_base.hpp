@@ -57,7 +57,7 @@ struct Build_node {
 
 class Builder_base {
   protected:
-    Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
+    Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives, uint32_t spatial_split_threshold = 0);
 
     ~Builder_base();
 
@@ -72,13 +72,15 @@ class Builder_base {
 
     void assign(Build_node& node, References const& references);
 
+    void work_on_tasks(thread::Pool& threads);
+
     uint32_t const num_slices_;
     uint32_t const sweep_threshold_;
     uint32_t const max_primitives_;
 
-    uint32_t num_references_;
-
     uint32_t spatial_split_threshold_;
+
+    uint32_t num_references_;
 
     uint32_t num_active_tasks_;
 
@@ -92,9 +94,9 @@ class Builder_base {
         uint32_t root;
         uint32_t depth;
 
-        References references;
-
         AABB aabb;
+
+        References references;
     };
 
     std::vector<Task> tasks_;
