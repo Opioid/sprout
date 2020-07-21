@@ -6,6 +6,8 @@
 #include "scene_bvh_node.inl"
 #include "scene_bvh_split_candidate.inl"
 
+#include <iostream>
+
 namespace scene::bvh {
 
 static uint32_t constexpr Parallelize_splitting_plane_evalute_threshold = 1024;
@@ -15,7 +17,11 @@ Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32
     split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
 }
 
-Builder_base::~Builder_base() = default;
+Builder_base::~Builder_base() {
+    for (auto& t : tasks_) {
+        delete t.builder;
+    }
+}
 
 void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                          thread::Pool& threads) {
@@ -234,7 +240,46 @@ void Builder_base::work_on_tasks(thread::Pool& threads) {
         }
     }, 0, int32_t(num_active_tasks_));
 
+    uint32_t const active_tasks = num_active_tasks_;
+
     num_active_tasks_ = 0;
+
+    for (uint32_t i = 0; i < active_tasks; ++i) {
+        uint32_t const node_offset = uint32_t(build_nodes_.size());
+
+        Task const& task = tasks_[i];
+
+        if (1 == task.builder->build_nodes_.size()) {
+            std::cout << "task was only assign?" << std::endl;
+            continue;
+        }
+
+        Build_node& parent = build_nodes_[task.root];
+
+        std::vector<Build_node>& children = task.builder->build_nodes_;
+
+        parent.children[0] = children[0].children[0] + node_offset;
+        parent.children[1] = children[0].children[1] + node_offset;
+
+        for (auto& sn : children) {
+            build_nodes_.emplace_back();
+
+            Build_node& dn = build_nodes_[build_nodes_.size() - 1];
+
+            dn.min_ = sn.min_;
+         //   dn.min_.s
+            dn.max_ = sn.max_;
+
+            dn.primitives = sn.primitives;
+            sn.primitives = nullptr;
+
+            dn.children[0] = sn.children[0] + node_offset;
+            dn.children[1] = sn.children[1] + node_offset;
+        }
+
+    }
+
+
 }
 
 }  // namespace scene::bvh
