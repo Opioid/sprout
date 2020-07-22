@@ -48,6 +48,8 @@ class Builder_SAH final : private scene::bvh::Builder_base {
 
     void serialize(Triangles triangles, Vertices vertices, triangle::Tree& tree,
                    thread::Pool& threads) const;
+
+    void serialize(uint32_t node_id, Triangles triangles, Vertices vertices, triangle::Tree& tree, uint32_t& current_triangle) const;
 };
 
 }  // namespace bvh

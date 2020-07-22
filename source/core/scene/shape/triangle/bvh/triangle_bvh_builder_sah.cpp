@@ -57,45 +57,78 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
             aabb.merge_assign(b);
         }
 
-        num_references_ = 0;
-
-        split(0, references, AABB(aabb.min, aabb.max), 0, threads);
+        split(references, AABB(aabb.min, aabb.max), threads);
     }
 
     tree.allocate_triangles(num_references_, vertices);
     tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
-    serialize(triangles, vertices, tree, threads);
+//    serialize(triangles, vertices, tree, threads);
+
+    uint32_t current_triangle = 0;
+    serialize(0, triangles, vertices, tree, current_triangle);
 }
 
 void Builder_SAH::serialize(Triangles triangles, Vertices vertices, triangle::Tree& tree,
                             thread::Pool& threads) const {
-    threads.run_range(
-        [this, triangles, &vertices, &tree](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            for (int32_t id = begin; id < end; ++id) {
-                Build_node const& node = build_nodes_[uint32_t(id)];
+//    threads.run_range(
+//        [this, triangles, &vertices, &tree](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+//            for (int32_t id = begin; id < end; ++id) {
+//                Build_node const& node = build_nodes_[uint32_t(id)];
 
-                auto& n = tree.nodes()[id];
+//                auto& n = tree.nodes()[id];
 
-                n.set_aabb(node.min().v, node.max().v);
+//                n.set_aabb(node.min().v, node.max().v);
 
-                if (0xFFFFFFFF != node.children[0]) {
-                    n.set_split_node(node.children[1], node.axis());
-                } else {
-                    uint32_t      i              = node.start_index();
-                    uint8_t const num_primitives = node.num_indices();
-                    n.set_leaf_node(i, num_primitives);
+//                if (0xFFFFFFFF != node.children[0]) {
+//                    n.set_split_node(node.children[1], node.axis());
+//                } else {
+//                    uint32_t      i              = node.start_index();
+//                    uint8_t const num_primitives = node.num_indices();
+//                    n.set_leaf_node(i, num_primitives);
 
-                    uint32_t const* const primitives = node.primitives;
+//                    uint32_t const* const primitives = node.primitives;
 
-                    for (uint32_t p = 0, len = uint32_t(num_primitives); p < len; ++p, ++i) {
-                        auto const& t = triangles[primitives[p]];
-                        tree.set_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
-                    }
-                }
-            }
-        },
-        0, int32_t(build_nodes_.size()));
+//                    for (uint32_t p = 0, len = uint32_t(num_primitives); p < len; ++p, ++i) {
+//                        auto const& t = triangles[primitives[p]];
+//                        tree.set_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
+//                    }
+//                }
+//            }
+//        },
+//        0, int32_t(build_nodes_.size()));
+}
+
+void Builder_SAH::serialize(uint32_t node_id, Triangles triangles, Vertices vertices,
+                            triangle::Tree& tree, uint32_t& current_triangle) const {
+    Build_node const& node = build_nodes_[node_id];
+
+    auto& n = tree.nodes()[node_id];
+
+    n.set_aabb(node.min().v, node.max().v);
+
+    if (0xFFFFFFFF != node.children[0]) {
+        serialize(node.children[0], triangles, vertices, tree, current_triangle);
+
+        n.set_split_node(node.children[1], node.axis());
+
+        serialize(node.children[1], triangles, vertices, tree, current_triangle);
+    } else {
+        uint32_t i = current_triangle;
+
+        uint8_t const num_primitives = node.num_indices();
+        n.set_leaf_node(/*node.start_index()*/i, num_primitives);
+
+        uint32_t const* const primitives = node.primitives;
+
+
+        for (uint32_t p = 0, len = node.num_indices(); p < len; ++p, ++i) {
+            auto const& t = triangles[primitives[p]];
+            tree.set_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
+        }
+
+        current_triangle = i;
+    }
 }
 
 }  // namespace scene::shape::triangle::bvh

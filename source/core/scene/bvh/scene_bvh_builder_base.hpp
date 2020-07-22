@@ -61,7 +61,7 @@ class Builder_base {
 
     ~Builder_base();
 
-    void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
+    void split(References& references, AABB const& aabb,
                thread::Pool& threads);
 
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,

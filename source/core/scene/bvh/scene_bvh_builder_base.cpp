@@ -23,7 +23,7 @@ Builder_base::~Builder_base() {
     }
 }
 
-void Builder_base::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
+void Builder_base::split(References& references, AABB const& aabb,
                          thread::Pool& threads) {
     float const log2_num_triangles = std::log2(float(references.size()));
 
@@ -39,7 +39,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
 
     num_active_tasks_ = 0;
 
-    split(node_id, references, aabb, depth, threads, true);
+    split(0, references, aabb, 0, threads, true);
 
     work_on_tasks(threads);
 }
@@ -228,9 +228,13 @@ void Builder_base::reserve(uint32_t num_primitives) {
     build_nodes_.reserve(std::max((3 * num_primitives) / max_primitives_, 1u));
     build_nodes_.clear();
     build_nodes_.emplace_back();
+
+    num_references_ = 0;
 }
 
 void Builder_base::work_on_tasks(thread::Pool& threads) {
+    uint32_t const active_tasks = num_active_tasks_;
+
     threads.run_range([this, &threads](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
         for (int32_t i = begin; i < end; ++i) {
             auto& t = tasks_[i];
@@ -238,44 +242,64 @@ void Builder_base::work_on_tasks(thread::Pool& threads) {
             t.builder->reserve(t.references.size());
             t.builder->split(0, t.references, t.aabb, t.depth, threads, false);
         }
-    }, 0, int32_t(num_active_tasks_));
-
-    uint32_t const active_tasks = num_active_tasks_;
+    }, 0, int32_t(active_tasks));
 
     num_active_tasks_ = 0;
 
     for (uint32_t i = 0; i < active_tasks; ++i) {
-        uint32_t const node_offset = uint32_t(build_nodes_.size());
+
 
         Task const& task = tasks_[i];
 
-        if (1 == task.builder->build_nodes_.size()) {
+        num_references_ += task.builder->num_references_;
+
+        std::vector<Build_node>& children = task.builder->build_nodes_;
+
+        if (children.empty()) {
+            std::cout << "doesn't make sense" << std::endl;
+        }
+
+        if (1 == children.size()) {
             std::cout << "task was only assign?" << std::endl;
             continue;
         }
 
         Build_node& parent = build_nodes_[task.root];
 
-        std::vector<Build_node>& children = task.builder->build_nodes_;
+
+        parent.min_ = children[0].min_;
+        parent.max_ = children[0].max_;
+
+        uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);// - task.root - 1;
 
         parent.children[0] = children[0].children[0] + node_offset;
         parent.children[1] = children[0].children[1] + node_offset;
 
-        for (auto& sn : children) {
-            build_nodes_.emplace_back();
+//        if (parent.primitives != nullptr) {
+//            std::cout << "ok" << std::endl;
+//        }
 
-            Build_node& dn = build_nodes_[build_nodes_.size() - 1];
+
+
+        for (size_t c = 1, len = children.size(); c < len; ++c) {
+
+    //    for (auto& sn : children) {
+            Build_node& sn = children[c];
+
+            Build_node& dn = build_nodes_.emplace_back();
 
             dn.min_ = sn.min_;
-         //   dn.min_.s
             dn.max_ = sn.max_;
 
             dn.primitives = sn.primitives;
             sn.primitives = nullptr;
 
-            dn.children[0] = sn.children[0] + node_offset;
-            dn.children[1] = sn.children[1] + node_offset;
+            if (0xFFFFFFFF != sn.children[0]) {
+                dn.children[0] = sn.children[0] + node_offset;
+                dn.children[1] = sn.children[1] + node_offset;
+            }
         }
+
 
     }
 

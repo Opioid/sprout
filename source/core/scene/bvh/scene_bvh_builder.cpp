@@ -58,9 +58,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
                 aabb.merge_assign(b);
             }
 
-            num_references_ = 0;
-
-            split(0, references, AABB(aabb.min, aabb.max), 0, threads);
+            split(references, AABB(aabb.min, aabb.max), threads);
         }
 
         tree.alllocate_indices(num_references_);
