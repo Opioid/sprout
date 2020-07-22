@@ -266,18 +266,15 @@ void Builder_base::work_on_tasks(thread::Pool& threads) {
 
         Build_node& parent = build_nodes_[task.root];
 
+        Build_node& child = children[0];
 
-        parent.min_ = children[0].min_;
-        parent.max_ = children[0].max_;
+        parent.min_ = child.min_;
+        parent.max_ = child.max_;
 
         uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);// - task.root - 1;
 
-        parent.children[0] = children[0].children[0] + node_offset;
-        parent.children[1] = children[0].children[1] + node_offset;
-
-//        if (parent.primitives != nullptr) {
-//            std::cout << "ok" << std::endl;
-//        }
+        parent.children[0] = child.children[0] + node_offset;
+        parent.children[1] = child.children[1] + node_offset;
 
 
 
