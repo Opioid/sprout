@@ -62,38 +62,38 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
         }
 
         tree.alllocate_indices(num_references_);
-        tree.allocate_nodes(uint32_t(build_nodes_.size()));
+        nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
-        serialize(tree, threads);
+        uint32_t current_prop = 0;
+        serialize(0, tree, current_prop);
     }
 
     tree.aabb_ = build_nodes_[0].aabb();
 }
 
-void Builder::serialize(Tree& tree, thread::Pool& threads) const {
-    threads.run_range(
-        [this, &tree](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            for (int32_t id = begin; id < end; ++id) {
-                Build_node const& node = build_nodes_[id];
+void Builder::serialize(uint32_t node_id, Tree& tree, uint32_t& current_prop) {
+    Build_node const& node = build_nodes_[node_id];
 
-                auto& n = tree.nodes()[id];
+    auto& n = new_node();
+    n.set_aabb(node.min().v, node.max().v);
 
-                n.set_aabb(node.min().v, node.max().v);
+    if (0xFFFFFFFF != node.children[0]) {
+        serialize(node.children[0], tree, current_prop);
 
-                if (0xFFFFFFFF != node.children[0]) {
-                    n.set_split_node(node.children[1], node.axis());
-                } else {
-                    uint32_t const i   = node.start_index();
-                    uint8_t const  num = node.num_indices();
-                    n.set_leaf_node(i, num);
+        n.set_split_node(current_node_index(), node.axis());
 
-                    uint32_t const* const primitives = node.primitives;
+        serialize(node.children[1], tree, current_prop);
+    } else {
+        uint32_t const i   = current_prop;
+        uint8_t const  num = node.num_indices();
+        n.set_leaf_node(i, num);
 
-                    std::copy(primitives, primitives + num, &tree.indices_[i]);
-                }
-            }
-        },
-        0, int32_t(build_nodes_.size()));
+        uint32_t const* const primitives = node.primitives;
+
+        std::copy(primitives, primitives + num, &tree.indices_[i]);
+
+        current_prop += num;
+    }
 }
 
 }  // namespace scene::bvh

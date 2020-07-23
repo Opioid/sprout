@@ -26,7 +26,7 @@ class Builder final : private Builder_base {
                thread::Pool& threads);
 
   private:
-    void serialize(Tree& tree, thread::Pool& threads) const;
+    void serialize(uint32_t node_id, Tree& tree, uint32_t& current_prop);
 };
 
 }  // namespace scene::bvh

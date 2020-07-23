@@ -14,13 +14,15 @@ inline Tree::~Tree() {
     memory::free_aligned(nodes_);
 }
 
-inline void Tree::allocate_nodes(uint32_t num_nodes) {
+inline bvh::Node* Tree::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
         memory::free_aligned(nodes_);
         nodes_ = memory::allocate_aligned<Node>(num_nodes);
     }
+
+    return nodes_;
 }
 
 inline bvh::Node* Tree::nodes() {

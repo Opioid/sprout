@@ -50,7 +50,7 @@ class Tree {
     using Material  = material::Material;
     using Materials = Material const* const*;
 
-    void allocate_nodes(uint32_t num_nodes);
+    Node* allocate_nodes(uint32_t num_nodes);
 
     Node* nodes();
 

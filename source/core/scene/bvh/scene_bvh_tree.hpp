@@ -14,7 +14,7 @@ struct Tree {
 
     using Node = bvh::Node;
 
-    void allocate_nodes(uint32_t num_nodes);
+    Node* allocate_nodes(uint32_t num_nodes);
 
     Node* nodes();
 

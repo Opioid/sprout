@@ -10,10 +10,14 @@
 
 namespace scene::bvh {
 
-static uint32_t constexpr Parallelize_splitting_plane_evalute_threshold = 1024;
+static uint32_t constexpr Parallelize_splitting_plane_evalute_threshold = 2048;
 
-Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives, uint32_t spatial_split_threshold)
-    : num_slices_(num_slices), sweep_threshold_(sweep_threshold), max_primitives_(max_primitives), spatial_split_threshold_(spatial_split_threshold) {
+Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
+                           uint32_t spatial_split_threshold)
+    : num_slices_(num_slices),
+      sweep_threshold_(sweep_threshold),
+      max_primitives_(max_primitives),
+      spatial_split_threshold_(spatial_split_threshold) {
     split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
 }
 
@@ -23,8 +27,7 @@ Builder_base::~Builder_base() {
     }
 }
 
-void Builder_base::split(References& references, AABB const& aabb,
-                         thread::Pool& threads) {
+void Builder_base::split(References& references, AABB const& aabb, thread::Pool& threads) {
     float const log2_num_triangles = std::log2(float(references.size()));
 
     spatial_split_threshold_ = uint32_t(std::lrint(log2_num_triangles / 2.f));
@@ -33,7 +36,8 @@ void Builder_base::split(References& references, AABB const& aabb,
         tasks_.resize(threads.num_threads());
 
         for (auto& t : tasks_) {
-            t.builder = new Builder_base(num_slices_, sweep_threshold_, max_primitives_, spatial_split_threshold_);
+            t.builder = new Builder_base(num_slices_, sweep_threshold_, max_primitives_,
+                                         spatial_split_threshold_);
         }
     }
 
@@ -62,9 +66,9 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
 
             auto& t = tasks_[num_active_tasks_++];
 
-            t.root = node_id;
-            t.depth = depth;
-            t.aabb = aabb;
+            t.root       = node_id;
+            t.depth      = depth;
+            t.aabb       = aabb;
             t.references = std::move(references);
 
             return;
@@ -180,7 +184,7 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
         }
     } else {
         threads.run_range(
-            [& scs = split_candidates_, &references, aabb_surface_area](
+            [&scs = split_candidates_, &references, aabb_surface_area](
                 uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) noexcept {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
                     scs[uint32_t(i)].evaluate(references, aabb_surface_area);
@@ -230,25 +234,27 @@ void Builder_base::reserve(uint32_t num_primitives) {
     build_nodes_.emplace_back();
 
     num_references_ = 0;
+
+    current_node_ = 0;
 }
 
 void Builder_base::work_on_tasks(thread::Pool& threads) {
     uint32_t const active_tasks = num_active_tasks_;
 
-    threads.run_range([this, &threads](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-        for (int32_t i = begin; i < end; ++i) {
-            auto& t = tasks_[i];
+    threads.run_range(
+        [this, &threads](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t i = begin; i < end; ++i) {
+                auto& t = tasks_[i];
 
-            t.builder->reserve(t.references.size());
-            t.builder->split(0, t.references, t.aabb, t.depth, threads, false);
-        }
-    }, 0, int32_t(active_tasks));
+                t.builder->reserve(t.references.size());
+                t.builder->split(0, t.references, t.aabb, t.depth, threads, false);
+            }
+        },
+        0, int32_t(active_tasks));
 
     num_active_tasks_ = 0;
 
     for (uint32_t i = 0; i < active_tasks; ++i) {
-
-
         Task const& task = tasks_[i];
 
         num_references_ += task.builder->num_references_;
@@ -271,16 +277,13 @@ void Builder_base::work_on_tasks(thread::Pool& threads) {
         parent.min_ = child.min_;
         parent.max_ = child.max_;
 
-        uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);// - task.root - 1;
+        uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);  // - task.root - 1;
 
         parent.children[0] = child.children[0] + node_offset;
         parent.children[1] = child.children[1] + node_offset;
 
-
-
         for (size_t c = 1, len = children.size(); c < len; ++c) {
-
-    //    for (auto& sn : children) {
+            //    for (auto& sn : children) {
             Build_node& sn = children[c];
 
             Build_node& dn = build_nodes_.emplace_back();
@@ -296,11 +299,15 @@ void Builder_base::work_on_tasks(thread::Pool& threads) {
                 dn.children[1] = sn.children[1] + node_offset;
             }
         }
-
-
     }
+}
 
+bvh::Node& Builder_base::new_node() {
+    return nodes_[current_node_++];
+}
 
+uint32_t Builder_base::current_node_index() const {
+    return current_node_;
 }
 
 }  // namespace scene::bvh
