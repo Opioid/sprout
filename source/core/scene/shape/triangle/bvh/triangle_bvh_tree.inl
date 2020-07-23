@@ -39,11 +39,6 @@ scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 }
 
 template <typename Data>
-scene::bvh::Node* Tree<Data>::nodes() {
-    return nodes_;
-}
-
-template <typename Data>
 AABB Tree<Data>::aabb() const {
     if (nodes_) {
         return AABB(float3(nodes_[0].min()), float3(nodes_[0].max()));

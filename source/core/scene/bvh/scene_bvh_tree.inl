@@ -25,10 +25,6 @@ inline bvh::Node* Tree::allocate_nodes(uint32_t num_nodes) {
     return nodes_;
 }
 
-inline bvh::Node* Tree::nodes() {
-    return nodes_;
-}
-
 inline void Tree::alllocate_indices(uint32_t num_indices) {
     if (num_indices != num_indices_) {
         num_indices_ = num_indices;

@@ -16,8 +16,6 @@ struct Tree {
 
     Node* allocate_nodes(uint32_t num_nodes);
 
-    Node* nodes();
-
     void alllocate_indices(uint32_t num_indices);
 
     uint32_t num_nodes_   = 0;

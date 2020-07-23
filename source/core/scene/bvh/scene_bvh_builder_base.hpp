@@ -29,15 +29,13 @@ struct Build_node {
 
     void set_aabb(AABB const& aabb);
 
-    uint32_t start_index() const;
-
     uint8_t num_indices() const;
 
     uint8_t axis() const;
 
     struct alignas(16) Min {
         float    v[3];
-        uint32_t start_index;
+        uint32_t pad;
     };
 
     struct alignas(16) Max {

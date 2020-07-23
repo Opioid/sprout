@@ -44,10 +44,6 @@ inline void Build_node::set_aabb(AABB const& aabb) {
     max_.v[2] = aabb.bounds[1][2];
 }
 
-inline uint32_t Build_node::start_index() const {
-    return min_.start_index;
-}
-
 inline uint8_t Build_node::num_indices() const {
     return max_.num_indices;
 }

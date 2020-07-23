@@ -6,8 +6,6 @@
 #include "scene_bvh_node.inl"
 #include "scene_bvh_split_candidate.inl"
 
-#include <iostream>
-
 namespace scene::bvh {
 
 static uint32_t constexpr Parallelize_splitting_plane_evalute_threshold = 2048;
@@ -101,7 +99,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
             } else {
                 ++depth;
 
-                references = References();
+                references.release();
 
                 uint32_t const child0 = uint32_t(build_nodes_.size());
                 build_nodes_.emplace_back();
@@ -109,7 +107,7 @@ void Builder_base::split(uint32_t node_id, References& references, AABB const& a
                 build_nodes_[node_id].children[0] = child0;
                 split(child0, references0, sp.aabb_0(), depth, threads, multi_thread);
 
-                references0 = References();
+                references0.release();
 
                 uint32_t const child1 = uint32_t(build_nodes_.size());
                 build_nodes_.emplace_back();
@@ -222,7 +220,6 @@ void Builder_base::assign(Build_node& node, References const& references) {
         node.primitives[i] = references[i].primitive();
     }
 
-    node.min_.start_index = num_references_;
     node.max_.num_indices = num_references;
 
     num_references_ += uint32_t(num_references);
@@ -261,12 +258,8 @@ void Builder_base::work_on_tasks(thread::Pool& threads) {
 
         std::vector<Build_node>& children = task.builder->build_nodes_;
 
-        if (children.empty()) {
-            std::cout << "doesn't make sense" << std::endl;
-        }
-
         if (1 == children.size()) {
-            std::cout << "task was only assign?" << std::endl;
+            logging::error("task was only assign?");
             continue;
         }
 
@@ -277,13 +270,12 @@ void Builder_base::work_on_tasks(thread::Pool& threads) {
         parent.min_ = child.min_;
         parent.max_ = child.max_;
 
-        uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);  // - task.root - 1;
+        uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);
 
         parent.children[0] = child.children[0] + node_offset;
         parent.children[1] = child.children[1] + node_offset;
 
         for (size_t c = 1, len = children.size(); c < len; ++c) {
-            //    for (auto& sn : children) {
             Build_node& sn = children[c];
 
             Build_node& dn = build_nodes_.emplace_back();
