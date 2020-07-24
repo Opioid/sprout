@@ -214,9 +214,7 @@ void Kernel::reserve(uint32_t num_primitives) {
 }
 
 void Kernel::work_on_tasks(thread::Pool& threads) {
-    uint32_t const active_tasks = num_active_tasks_;
-
-    if (0 == active_tasks) {
+    if (0 == num_active_tasks_) {
         return;
     }
 
@@ -238,9 +236,7 @@ void Kernel::work_on_tasks(thread::Pool& threads) {
         }
     });
 
-    num_active_tasks_ = 0;
-
-    for (uint32_t i = 0; i < active_tasks; ++i) {
+    for (uint32_t i = 0, len = num_active_tasks_; i < len; ++i) {
         Task const& task = tasks_[i];
 
         num_references_ += task.kernel->num_references_;
@@ -282,6 +278,8 @@ void Kernel::work_on_tasks(thread::Pool& threads) {
             }
         }
     }
+
+    num_active_tasks_ = 0;
 }
 
 Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
