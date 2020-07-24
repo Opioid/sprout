@@ -220,17 +220,23 @@ void Kernel::work_on_tasks(thread::Pool& threads) {
         return;
     }
 
-    threads.run_range(
-        [this, &threads](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            for (int32_t i = begin; i < end; ++i) {
-                auto& t = tasks_[i];
+    current_task_ = 0;
 
-                t.kernel->reserve(t.references.size());
-                t.kernel->split(0, t.references, t.aabb, t.depth, threads);
-                t.references.release();
+    threads.run_parallel([this, &threads](uint32_t /*id*/) noexcept {
+        for (;;) {
+            uint32_t const current = current_task_.fetch_add(1, std::memory_order_relaxed);
+
+            if (current >= num_active_tasks_) {
+                return;
             }
-        },
-        0, int32_t(active_tasks));
+
+            auto& t = tasks_[current];
+
+            t.kernel->reserve(t.references.size());
+            t.kernel->split(0, t.references, t.aabb, t.depth, threads);
+            t.references.release();
+        }
+    });
 
     num_active_tasks_ = 0;
 

@@ -4,6 +4,8 @@
 #include "base/math/aabb.hpp"
 #include "scene_bvh_split_candidate.hpp"
 
+#include <atomic>
+
 namespace thread {
 class Pool;
 }
@@ -103,6 +105,8 @@ class Kernel {
     };
 
     memory::Array<Task> tasks_;
+
+    std::atomic<uint32_t> current_task_;
 };
 
 class Builder_base : protected Kernel {
