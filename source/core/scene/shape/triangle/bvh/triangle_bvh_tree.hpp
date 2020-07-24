@@ -52,7 +52,6 @@ class Tree {
 
     Node* allocate_nodes(uint32_t num_nodes);
 
-
     AABB aabb() const;
 
     uint32_t num_parts() const;
