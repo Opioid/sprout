@@ -62,7 +62,7 @@ class Kernel {
 
   protected:
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
-               thread::Pool& threads, bool multi_thread);
+               thread::Pool& threads);
 
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
                                     bool& exhausted, thread::Pool& threads);

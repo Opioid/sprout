@@ -8,7 +8,8 @@
 
 namespace scene::bvh {
 
-static uint32_t constexpr Parallelize_splitting_plane_evalute_threshold = 2048;
+static uint32_t constexpr Parallelize_split_candidate_threshold = 1024;
+static uint32_t constexpr Parallelize_building_threshold        = 2048;
 
 Kernel::Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
                uint32_t spatial_split_threshold)
@@ -26,7 +27,7 @@ Kernel::~Kernel() {
 }
 
 void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
-                   thread::Pool& threads, bool multi_thread) {
+                   thread::Pool& threads) {
     Build_node& node = build_nodes_[node_id];
 
     node.set_aabb(aabb);
@@ -36,7 +37,8 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
     if (num_primitives <= max_primitives_) {
         assign(node, references);
     } else {
-        if (multi_thread && num_primitives < Parallelize_splitting_plane_evalute_threshold) {
+        if (!threads.is_running_parallel() && !tasks_.empty() &&
+            num_primitives < Parallelize_building_threshold) {
             if (num_active_tasks_ == tasks_.size()) {
                 work_on_tasks(threads);
             }
@@ -84,7 +86,7 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[0] = child0;
-                split(child0, references0, sp.aabb_0(), depth, threads, multi_thread);
+                split(child0, references0, sp.aabb_0(), depth, threads);
 
                 references0.release();
 
@@ -92,7 +94,7 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[1] = child1;
-                split(child1, references1, sp.aabb_1(), depth, threads, multi_thread);
+                split(child1, references1, sp.aabb_1(), depth, threads);
             }
         }
     }
@@ -154,7 +156,7 @@ Split_candidate Kernel::splitting_plane(References const& references, AABB const
     float const aabb_surface_area = aabb.surface_area();
 
     // Arbitrary heuristic for starting the thread pool
-    if (num_references < Parallelize_splitting_plane_evalute_threshold) {
+    if (threads.is_running_parallel() || num_references < Parallelize_split_candidate_threshold) {
         for (auto& sc : split_candidates_) {
             sc.evaluate(references, aabb_surface_area);
         }
@@ -214,13 +216,18 @@ void Kernel::reserve(uint32_t num_primitives) {
 void Kernel::work_on_tasks(thread::Pool& threads) {
     uint32_t const active_tasks = num_active_tasks_;
 
+    if (0 == active_tasks) {
+        return;
+    }
+
     threads.run_range(
         [this, &threads](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 auto& t = tasks_[i];
 
                 t.kernel->reserve(t.references.size());
-                t.kernel->split(0, t.references, t.aabb, t.depth, threads, false);
+                t.kernel->split(0, t.references, t.aabb, t.depth, threads);
+                t.references.release();
             }
         },
         0, int32_t(active_tasks));
@@ -234,17 +241,18 @@ void Kernel::work_on_tasks(thread::Pool& threads) {
 
         std::vector<Build_node>& children = task.kernel->build_nodes_;
 
-        if (1 == children.size()) {
-            logging::error("task was only assign?");
-            continue;
-        }
-
         Build_node& parent = build_nodes_[task.root];
 
         Build_node& child = children[0];
 
         parent.min_ = child.min_;
         parent.max_ = child.max_;
+
+        if (1 == children.size()) {
+            parent.primitives = child.primitives;
+            child.primitives  = nullptr;
+            continue;
+        }
 
         uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);
 
@@ -281,8 +289,10 @@ void Builder_base::split(References& references, AABB const& aabb, thread::Pool&
 
     spatial_split_threshold_ = uint32_t(std::lrint(log2_num_references / 2.f));
 
-    if (tasks_.empty()) {
-        tasks_.resize(threads.num_threads());
+    uint32_t const num_tasks = references.size() / Parallelize_building_threshold;
+
+    if (tasks_.empty() && num_tasks >= 2) {
+        tasks_.resize(num_tasks);
 
         for (auto& t : tasks_) {
             t.kernel = new Kernel(num_slices_, sweep_threshold_, max_primitives_,
@@ -292,7 +302,7 @@ void Builder_base::split(References& references, AABB const& aabb, thread::Pool&
 
     num_active_tasks_ = 0;
 
-    Kernel::split(0, references, aabb, 0, threads, true);
+    Kernel::split(0, references, aabb, 0, threads);
 
     work_on_tasks(threads);
 }

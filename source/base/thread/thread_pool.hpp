@@ -25,6 +25,8 @@ class Pool {
 
     uint32_t num_threads() const;
 
+    bool is_running_parallel() const;
+
     void run_parallel(Parallel_program&& program);
 
     void run_range(Range_program&& program, int32_t begin, int32_t end);
@@ -70,6 +72,8 @@ class Pool {
     uint32_t num_threads_;
 
     bool quit_ = false;
+
+    bool running_parallel_ = false;
 
     Parallel_program parallel_program_;
 

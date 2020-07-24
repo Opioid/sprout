@@ -48,6 +48,10 @@ uint32_t Pool::num_threads() const {
     return num_threads_;
 }
 
+bool Pool::is_running_parallel() const {
+    return running_parallel_;
+}
+
 void Pool::run_parallel(Parallel_program&& program) {
     parallel_program_ = program;
 
@@ -94,6 +98,8 @@ uint32_t Pool::num_threads(int32_t request) {
 }
 
 void Pool::wake_all() {
+    running_parallel_ = true;
+
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
         auto& u = uniques_[i];
 
@@ -105,6 +111,8 @@ void Pool::wake_all() {
 }
 
 void Pool::wake_all(int32_t begin, int32_t end) {
+    running_parallel_ = true;
+
 #ifdef GRANULAR_TASKS
     float const range     = float(end - begin);
     float const num_tasks = float(tasks_.size());
@@ -157,6 +165,8 @@ void Pool::wait_all() {
         std::unique_lock<std::mutex> lock(u.mutex);
         u.done_signal.wait(lock, [&u]() { return !u.wake; });
     }
+
+    running_parallel_ = false;
 }
 
 void Pool::loop(uint32_t id) {
