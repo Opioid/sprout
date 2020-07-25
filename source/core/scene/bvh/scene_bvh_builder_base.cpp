@@ -20,11 +20,7 @@ Kernel::Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primi
     split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
 }
 
-Kernel::~Kernel() {
-    for (auto& t : tasks_) {
-        delete t.kernel;
-    }
-}
+Kernel::~Kernel() = default;
 
 void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                    thread::Pool& threads) {
@@ -38,7 +34,7 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
         assign(node, references);
     } else {
         if (!threads.is_running_parallel() && !tasks_.empty() &&
-            num_primitives < Parallelize_building_threshold) {
+            (num_primitives < Parallelize_building_threshold || depth == parallel_build_depth_)) {
             if (num_active_tasks_ == tasks_.size()) {
                 work_on_tasks(threads);
             }
@@ -282,9 +278,12 @@ void Kernel::work_on_tasks(thread::Pool& threads) {
     num_active_tasks_ = 0;
 }
 
-Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
-                           uint32_t spatial_split_threshold)
-    : Kernel(num_slices, sweep_threshold, max_primitives, spatial_split_threshold) {}
+Kernel::Task::~Task() {
+    delete kernel;
+}
+
+Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
+    : Kernel(num_slices, sweep_threshold, max_primitives) {}
 
 Builder_base::~Builder_base() {}
 
@@ -293,7 +292,10 @@ void Builder_base::split(References& references, AABB const& aabb, thread::Pool&
 
     spatial_split_threshold_ = uint32_t(std::lrint(log2_num_references / 2.f));
 
-    uint32_t const num_tasks = references.size() / Parallelize_building_threshold;
+    parallel_build_depth_ = 6;
+
+    uint32_t const num_tasks = std::min(exp2(parallel_build_depth_),
+                                        references.size() / Parallelize_building_threshold);
 
     if (tasks_.empty() && num_tasks >= 2) {
         tasks_.resize(num_tasks);

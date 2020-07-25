@@ -85,6 +85,8 @@ class Kernel {
 
     uint32_t spatial_split_threshold_;
 
+    uint32_t parallel_build_depth_;
+
     uint32_t num_references_;
 
     uint32_t num_active_tasks_;
@@ -94,6 +96,8 @@ class Kernel {
     std::vector<Build_node> build_nodes_;
 
     struct Task {
+        ~Task();
+
         Kernel* kernel;
 
         uint32_t root;
@@ -111,8 +115,7 @@ class Kernel {
 
 class Builder_base : protected Kernel {
   protected:
-    Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
-                 uint32_t spatial_split_threshold = 0);
+    Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
 
     ~Builder_base();
 
