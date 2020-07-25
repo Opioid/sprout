@@ -23,7 +23,7 @@ Kernel::Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primi
 Kernel::~Kernel() = default;
 
 void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
-                   thread::Pool& threads) {
+                   thread::Pool& threads, Tasks& tasks) {
     Build_node& node = build_nodes_[node_id];
 
     node.set_aabb(aabb);
@@ -33,18 +33,11 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
     if (num_primitives <= max_primitives_) {
         assign(node, references);
     } else {
-        if (!threads.is_running_parallel() && !tasks_.empty() &&
+        if (!threads.is_running_parallel() && tasks.capacity() > 0 &&
             (num_primitives < Parallelize_building_threshold || depth == parallel_build_depth_)) {
-            if (num_active_tasks_ == tasks_.size()) {
-                work_on_tasks(threads);
-            }
-
-            auto& t = tasks_[num_active_tasks_++];
-
-            t.root       = node_id;
-            t.depth      = depth;
-            t.aabb       = aabb;
-            t.references = std::move(references);
+            tasks.emplace_back(Task(new Kernel(num_slices_, sweep_threshold_, max_primitives_,
+                                               spatial_split_threshold_),
+                                    node_id, depth, aabb, std::move(references)));
 
             return;
         }
@@ -82,7 +75,7 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[0] = child0;
-                split(child0, references0, sp.aabb_0(), depth, threads);
+                split(child0, references0, sp.aabb_0(), depth, threads, tasks);
 
                 references0.release();
 
@@ -90,7 +83,7 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[1] = child1;
-                split(child1, references1, sp.aabb_1(), depth, threads);
+                split(child1, references1, sp.aabb_1(), depth, threads, tasks);
             }
         }
     }
@@ -209,32 +202,30 @@ void Kernel::reserve(uint32_t num_primitives) {
     num_references_ = 0;
 }
 
-void Kernel::work_on_tasks(thread::Pool& threads) {
-    if (0 == num_active_tasks_) {
+void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
+    if (tasks.empty()) {
         return;
     }
 
     current_task_ = 0;
 
-    threads.run_parallel([this, &threads](uint32_t /*id*/) noexcept {
+    threads.run_parallel([this, &threads, &tasks](uint32_t /*id*/) noexcept {
         for (;;) {
             uint32_t const current = current_task_.fetch_add(1, std::memory_order_relaxed);
 
-            if (current >= num_active_tasks_) {
+            if (current >= uint32_t(tasks.size())) {
                 return;
             }
 
-            auto& t = tasks_[current];
+            auto& t = tasks[current];
 
             t.kernel->reserve(t.references.size());
-            t.kernel->split(0, t.references, t.aabb, t.depth, threads);
+            t.kernel->split(0, t.references, t.aabb, t.depth, threads, tasks);
             t.references.release();
         }
     });
 
-    for (uint32_t i = 0, len = num_active_tasks_; i < len; ++i) {
-        Task const& task = tasks_[i];
-
+    for (auto const& task : tasks) {
         num_references_ += task.kernel->num_references_;
 
         std::vector<Build_node>& children = task.kernel->build_nodes_;
@@ -274,8 +265,21 @@ void Kernel::work_on_tasks(thread::Pool& threads) {
             }
         }
     }
+}
 
-    num_active_tasks_ = 0;
+Kernel::Task::Task() = default;
+
+Kernel::Task::Task(Kernel* kernel, uint32_t root, uint32_t depth, AABB const& aabb,
+                   References&& references)
+    : kernel(kernel), root(root), depth(depth), aabb(aabb), references(std::move(references)) {}
+
+Kernel::Task::Task(Task&& other)
+    : kernel(other.kernel),
+      root(other.root),
+      depth(other.depth),
+      aabb(other.aabb),
+      references(std::move(other.references)) {
+    other.kernel = nullptr;
 }
 
 Kernel::Task::~Task() {
@@ -297,20 +301,15 @@ void Builder_base::split(References& references, AABB const& aabb, thread::Pool&
     uint32_t const num_tasks = std::min(exp2(parallel_build_depth_),
                                         references.size() / Parallelize_building_threshold);
 
-    if (tasks_.empty() && num_tasks >= 2) {
-        tasks_.resize(num_tasks);
+    Tasks tasks;
 
-        for (auto& t : tasks_) {
-            t.kernel = new Kernel(num_slices_, sweep_threshold_, max_primitives_,
-                                  spatial_split_threshold_);
-        }
+    if (num_tasks > 2) {
+        tasks.reserve(num_tasks);
     }
 
-    num_active_tasks_ = 0;
+    Kernel::split(0, references, aabb, 0, threads, tasks);
 
-    Kernel::split(0, references, aabb, 0, threads);
-
-    work_on_tasks(threads);
+    work_on_tasks(threads, tasks);
 }
 
 void Builder_base::reserve(uint32_t num_primitives) {

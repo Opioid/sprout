@@ -62,9 +62,30 @@ class Kernel {
 
     ~Kernel();
 
-  protected:
+    struct Task {
+        Task();
+
+        Task(Kernel* kernel, uint32_t root, uint32_t depth, AABB const& aabb,
+             References&& references);
+
+        Task(Task&& other);
+
+        ~Task();
+
+        Kernel* kernel = nullptr;
+
+        uint32_t root;
+        uint32_t depth;
+
+        AABB aabb;
+
+        References references;
+    };
+
+    using Tasks = std::vector<Task>;
+
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
-               thread::Pool& threads);
+               thread::Pool& threads, Tasks& tasks);
 
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
                                     bool& exhausted, thread::Pool& threads);
@@ -72,12 +93,6 @@ class Kernel {
     void assign(Build_node& node, References const& references);
 
     void reserve(uint32_t num_primitives);
-
-    void work_on_tasks(thread::Pool& threads);
-
-    Node& new_node();
-
-    uint32_t current_node_index() const;
 
     uint32_t const num_slices_;
     uint32_t const sweep_threshold_;
@@ -89,28 +104,9 @@ class Kernel {
 
     uint32_t num_references_;
 
-    uint32_t num_active_tasks_;
-
     std::vector<Split_candidate> split_candidates_;
 
     std::vector<Build_node> build_nodes_;
-
-    struct Task {
-        ~Task();
-
-        Kernel* kernel;
-
-        uint32_t root;
-        uint32_t depth;
-
-        AABB aabb;
-
-        References references;
-    };
-
-    memory::Array<Task> tasks_;
-
-    std::atomic<uint32_t> current_task_;
 };
 
 class Builder_base : protected Kernel {
@@ -121,6 +117,8 @@ class Builder_base : protected Kernel {
 
     void split(References& references, AABB const& aabb, thread::Pool& threads);
 
+    void work_on_tasks(thread::Pool& threads, Tasks& tasks);
+
     void reserve(uint32_t num_primitives);
 
     Node& new_node();
@@ -130,6 +128,8 @@ class Builder_base : protected Kernel {
     uint32_t current_node_;
 
     Node* nodes_;
+
+    std::atomic<uint32_t> current_task_;
 };
 
 }  // namespace scene::bvh
