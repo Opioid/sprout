@@ -8,8 +8,7 @@
 
 namespace scene::bvh {
 
-static uint32_t constexpr Parallelize_split_candidate_threshold = 1024;
-static uint32_t constexpr Parallelize_building_threshold        = 2048;
+static uint32_t constexpr Parallelize_threshold = 1024;
 
 Kernel::Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
                uint32_t spatial_split_threshold)
@@ -34,7 +33,7 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
         assign(node, references);
     } else {
         if (!threads.is_running_parallel() && tasks.capacity() > 0 &&
-            (num_primitives < Parallelize_building_threshold || depth == parallel_build_depth_)) {
+            (num_primitives < Parallelize_threshold || depth == parallel_build_depth_)) {
             tasks.emplace_back(Task(new Kernel(num_slices_, sweep_threshold_, max_primitives_,
                                                spatial_split_threshold_),
                                     node_id, depth, aabb, std::move(references)));
@@ -145,7 +144,7 @@ Split_candidate Kernel::splitting_plane(References const& references, AABB const
     float const aabb_surface_area = aabb.surface_area();
 
     // Arbitrary heuristic for starting the thread pool
-    if (threads.is_running_parallel() || num_references < Parallelize_split_candidate_threshold) {
+    if (threads.is_running_parallel() || num_references < Parallelize_threshold) {
         for (auto& sc : split_candidates_) {
             sc.evaluate(references, aabb_surface_area);
         }
@@ -299,7 +298,7 @@ void Builder_base::split(References& references, AABB const& aabb, thread::Pool&
     parallel_build_depth_ = 6;
 
     uint32_t const num_tasks = std::min(exp2(parallel_build_depth_),
-                                        references.size() / Parallelize_building_threshold);
+                                        references.size() / Parallelize_threshold);
 
     Tasks tasks;
 
