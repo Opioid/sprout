@@ -208,23 +208,25 @@ void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
 
     current_task_ = 0;
 
-    threads.run_parallel([this, &threads, &tasks](uint32_t /*id*/) noexcept {
-        uint32_t const num_tasks = uint32_t(tasks.size());
+    threads.run_parallel(
+        [this, &threads, &tasks](uint32_t /*id*/) noexcept {
+            uint32_t const num_tasks = uint32_t(tasks.size());
 
-        for (;;) {
-            uint32_t const current = current_task_.fetch_add(1, std::memory_order_relaxed);
+            for (;;) {
+                uint32_t const current = current_task_.fetch_add(1, std::memory_order_relaxed);
 
-            if (current >= num_tasks) {
-                return;
+                if (current >= num_tasks) {
+                    return;
+                }
+
+                Task& t = tasks[current];
+
+                t.kernel->reserve(t.references.size());
+                t.kernel->split(0, t.references, t.aabb, t.depth, threads, tasks);
+                t.references.release();
             }
-
-            Task& t = tasks[current];
-
-            t.kernel->reserve(t.references.size());
-            t.kernel->split(0, t.references, t.aabb, t.depth, threads, tasks);
-            t.references.release();
-        }
-    });
+        },
+        uint32_t(tasks.size()));
 
     for (auto const& task : tasks) {
         num_references_ += task.kernel->num_references_;

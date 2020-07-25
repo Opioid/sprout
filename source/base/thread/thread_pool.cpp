@@ -28,7 +28,7 @@ Pool::Pool(uint32_t num_threads)
 Pool::~Pool() {
     quit_ = true;
 
-    wake_all();
+    wake_all(num_threads_);
 
     for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
         threads_[i].join();
@@ -52,14 +52,17 @@ bool Pool::is_running_parallel() const {
     return running_parallel_;
 }
 
-void Pool::run_parallel(Parallel_program&& program) {
+void Pool::run_parallel(Parallel_program&& program, uint32_t num_tasks_hint) {
     parallel_program_ = program;
 
     range_program_ = nullptr;
 
-    wake_all();
+    uint32_t const num_tasks = num_tasks_hint ? std::min(num_tasks_hint, num_threads_)
+                                              : num_threads_;
 
-    wait_all();
+    wake_all(num_tasks);
+
+    wait_all(num_tasks);
 }
 
 void Pool::run_range(Range_program&& program, int32_t begin, int32_t end) {
@@ -69,7 +72,7 @@ void Pool::run_range(Range_program&& program, int32_t begin, int32_t end) {
 
     wake_all(begin, end);
 
-    wait_all();
+    wait_all(num_threads_);
 }
 
 void Pool::run_async(Async_program&& program) {
@@ -97,10 +100,10 @@ uint32_t Pool::num_threads(int32_t request) {
     return std::min(available_threads, uint32_t(std::max(request, 1)));
 }
 
-void Pool::wake_all() {
+void Pool::wake_all(uint32_t num_tasks) {
     running_parallel_ = true;
 
-    for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
+    for (uint32_t i = 0; i < num_tasks; ++i) {
         auto& u = uniques_[i];
 
         std::unique_lock<std::mutex> lock(u.mutex);
@@ -158,8 +161,8 @@ void Pool::wake_async() {
     async_.wake_signal.notify_one();
 }
 
-void Pool::wait_all() {
-    for (uint32_t i = 0, len = num_threads_; i < len; ++i) {
+void Pool::wait_all(uint32_t num_tasks) {
+    for (uint32_t i = 0; i < num_tasks; ++i) {
         auto& u = uniques_[i];
 
         std::unique_lock<std::mutex> lock(u.mutex);
