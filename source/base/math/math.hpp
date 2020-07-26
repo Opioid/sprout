@@ -60,7 +60,7 @@ static T constexpr lerp(T a, T b, T t) {
 
 template <typename T>
 static T exp2(T x) {
-    return std::pow(T(2), x);
+    return T(std::pow(T(2), x));
 }
 
 template <typename T>

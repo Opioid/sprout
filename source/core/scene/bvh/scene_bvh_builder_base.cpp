@@ -301,7 +301,7 @@ void Builder_base::split(References& references, AABB const& aabb, thread::Pool&
 
     parallel_build_depth_ = 6;
 
-    uint32_t const num_tasks = std::min(exp2(parallel_build_depth_),
+    uint32_t const num_tasks = std::min(math::exp2(parallel_build_depth_),
                                         references.size() / Parallelize_threshold);
 
     Tasks tasks;
