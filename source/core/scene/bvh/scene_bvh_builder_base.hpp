@@ -65,8 +65,7 @@ class Kernel {
     struct Task {
         Task();
 
-        Task(Kernel* kernel, uint32_t root, uint32_t depth, AABB const& aabb,
-             References&& references);
+        Task(Kernel* k, uint32_t rt, uint32_t d, AABB const& box, References&& refs);
 
         Task(Task&& other);
 

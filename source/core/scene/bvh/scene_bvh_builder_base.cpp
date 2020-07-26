@@ -272,9 +272,8 @@ void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
 
 Kernel::Task::Task() = default;
 
-Kernel::Task::Task(Kernel* kernel, uint32_t root, uint32_t depth, AABB const& aabb,
-                   References&& references)
-    : kernel(kernel), root(root), depth(depth), aabb(aabb), references(std::move(references)) {}
+Kernel::Task::Task(Kernel* k, uint32_t rt, uint32_t d, AABB const& box, References&& refs)
+    : kernel(k), root(rt), depth(d), aabb(box), references(std::move(refs)) {}
 
 Kernel::Task::Task(Task&& other)
     : kernel(other.kernel),
