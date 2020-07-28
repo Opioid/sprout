@@ -17,8 +17,8 @@ inline float3 Node::max() const {
     return float3(max_.v);
 }
 
-inline uint32_t Node::next() const {
-    return min_.next_or_data;
+inline uint32_t Node::children() const {
+    return min_.children_or_data;
 }
 
 inline uint8_t Node::axis() const {
@@ -30,11 +30,11 @@ inline uint8_t Node::num_primitives() const {
 }
 
 inline uint32_t Node::indices_start() const {
-    return min_.next_or_data;
+    return min_.children_or_data;
 }
 
 inline uint32_t Node::indices_end() const {
-    return min_.next_or_data + uint32_t(max_.num_primitives);
+    return min_.children_or_data + uint32_t(max_.num_primitives);
 }
 
 inline void Node::set_aabb(float const* min, float const* max) {
@@ -47,15 +47,15 @@ inline void Node::set_aabb(float const* min, float const* max) {
     max_.v[2] = max[2];
 }
 
-inline void Node::set_split_node(uint32_t next_node, uint8_t axis) {
-    min_.next_or_data   = next_node;
-    max_.axis           = axis;
-    max_.num_primitives = 0;
+inline void Node::set_split_node(uint32_t children, uint8_t axis) {
+    min_.children_or_data = children;
+    max_.axis             = axis;
+    max_.num_primitives   = 0;
 }
 
 inline void Node::set_leaf_node(uint32_t start_primitive, uint8_t num_primitives) {
-    min_.next_or_data   = start_primitive;
-    max_.num_primitives = num_primitives;
+    min_.children_or_data = start_primitive;
+    max_.num_primitives   = num_primitives;
 }
 
 // This test is presented in the paper

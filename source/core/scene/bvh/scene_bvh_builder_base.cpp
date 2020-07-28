@@ -73,13 +73,13 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 uint32_t const child0 = uint32_t(build_nodes_.size());
                 build_nodes_.emplace_back();
 
+                uint32_t const child1 = uint32_t(build_nodes_.size());
+                build_nodes_.emplace_back();
+
                 build_nodes_[node_id].children[0] = child0;
                 split(child0, references0, sp.aabb_0(), depth, threads, tasks);
 
                 references0.release();
-
-                uint32_t const child1 = uint32_t(build_nodes_.size());
-                build_nodes_.emplace_back();
 
                 build_nodes_[node_id].children[1] = child1;
                 split(child1, references1, sp.aabb_1(), depth, threads, tasks);

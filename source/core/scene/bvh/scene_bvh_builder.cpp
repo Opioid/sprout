@@ -65,24 +65,31 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
         nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
         uint32_t current_prop = 0;
-        serialize(0, tree, current_prop);
+        new_node();
+        serialize(0, 0, tree, current_prop);
     }
 
     tree.aabb_ = build_nodes_[0].aabb();
 }
 
-void Builder::serialize(uint32_t node_id, Tree& tree, uint32_t& current_prop) {
-    Build_node const& node = build_nodes_[node_id];
+void Builder::serialize(uint32_t source_node, uint32_t dest_node, Tree& tree,
+                        uint32_t& current_prop) {
+    Build_node const& node = build_nodes_[source_node];
 
-    auto& n = new_node();
+    auto& n = nodes_[dest_node];
     n.set_aabb(node.min().v, node.max().v);
 
     if (0xFFFFFFFF != node.children[0]) {
-        serialize(node.children[0], tree, current_prop);
+        uint32_t const child0 = current_node_index();
 
-        n.set_split_node(current_node_index(), node.axis());
+        n.set_split_node(child0, node.axis());
 
-        serialize(node.children[1], tree, current_prop);
+        new_node();
+        new_node();
+
+        serialize(node.children[0], child0, tree, current_prop);
+
+        serialize(node.children[1], child0 + 1, tree, current_prop);
     } else {
         uint32_t const i   = current_prop;
         uint8_t const  num = node.num_indices();

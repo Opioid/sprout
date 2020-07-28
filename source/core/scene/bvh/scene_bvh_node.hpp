@@ -18,7 +18,7 @@ class Node {
 
     float3 max() const;
 
-    uint32_t next() const;
+    uint32_t children() const;
 
     uint8_t axis() const;
 
@@ -30,7 +30,7 @@ class Node {
 
     void set_aabb(float const* min, float const* max);
 
-    void set_split_node(uint32_t next_node, uint8_t axis);
+    void set_split_node(uint32_t children, uint8_t axis);
 
     void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives);
 
@@ -40,7 +40,7 @@ class Node {
   private:
     struct alignas(16) Min {
         float    v[3];
-        uint32_t next_or_data;
+        uint32_t children_or_data;
     };
 
     struct alignas(16) Max {

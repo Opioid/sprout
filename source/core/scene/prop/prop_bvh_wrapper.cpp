@@ -59,12 +59,15 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -131,12 +134,15 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersec
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -201,12 +207,15 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) c
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -265,12 +274,15 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -330,12 +342,15 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -397,12 +412,15 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_primitives()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;

@@ -64,23 +64,29 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
     nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
     uint32_t current_triangle = 0;
-    serialize(0, triangles, vertices, tree, current_triangle);
+    new_node();
+    serialize(0, 0, triangles, vertices, tree, current_triangle);
 }
 
-void Builder_SAH::serialize(uint32_t node_id, Triangles triangles, Vertices vertices,
-                            triangle::Tree& tree, uint32_t& current_triangle) {
-    Build_node const& node = build_nodes_[node_id];
+void Builder_SAH::serialize(uint32_t source_node, uint32_t dest_node, Triangles triangles,
+                            Vertices vertices, triangle::Tree& tree, uint32_t& current_triangle) {
+    Build_node const& node = build_nodes_[source_node];
 
-    auto& n = new_node();
+    auto& n = nodes_[dest_node];
 
     n.set_aabb(node.min().v, node.max().v);
 
     if (0xFFFFFFFF != node.children[0]) {
-        serialize(node.children[0], triangles, vertices, tree, current_triangle);
+        uint32_t const child0 = current_node_index();
 
-        n.set_split_node(current_node_index(), node.axis());
+        n.set_split_node(child0, node.axis());
 
-        serialize(node.children[1], triangles, vertices, tree, current_triangle);
+        new_node();
+        new_node();
+
+        serialize(node.children[0], child0, triangles, vertices, tree, current_triangle);
+
+        serialize(node.children[1], child0 + 1, triangles, vertices, tree, current_triangle);
     } else {
         uint32_t      i   = current_triangle;
         uint8_t const num = node.num_indices();
