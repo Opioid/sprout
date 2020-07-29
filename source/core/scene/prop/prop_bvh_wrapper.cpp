@@ -58,7 +58,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -133,7 +133,7 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersec
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -206,7 +206,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) c
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -273,7 +273,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -341,7 +341,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
         auto& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -411,7 +411,7 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
         auto& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 

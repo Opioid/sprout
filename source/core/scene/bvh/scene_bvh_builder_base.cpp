@@ -1,4 +1,4 @@
-#include "scene_bvh_builder_base.inl"
+#include "scene_bvh_builder_base.hpp"
 #include "base/math/aabb.inl"
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -23,7 +23,7 @@ Kernel::~Kernel() = default;
 
 void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
                    thread::Pool& threads, Tasks& tasks) {
-    Build_node& node = build_nodes_[node_id];
+    Node& node = build_nodes_[node_id];
 
     node.set_aabb(aabb);
 
@@ -55,9 +55,6 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 return;
             }
 
-            node.max_.axis        = sp.axis();
-            node.max_.num_indices = 0;
-
             References references0;
             References references1;
             sp.distribute(references, references0, references1);
@@ -72,11 +69,12 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 references.release();
 
                 uint32_t const child0 = uint32_t(build_nodes_.size());
-                build_nodes_.emplace_back();
+
+                build_nodes_[node_id].set_split_node(child0, sp.axis());
 
                 build_nodes_.emplace_back();
+                build_nodes_.emplace_back();
 
-                build_nodes_[node_id].min_.children_or_data = child0;
                 split(child0, references0, sp.aabb_0(), depth, threads, tasks);
 
                 references0.release();
@@ -178,18 +176,14 @@ Split_candidate Kernel::splitting_plane(References const& references, AABB const
     return sp;
 }
 
-void Kernel::assign(Build_node& node, References const& references) {
+void Kernel::assign(Node& node, References const& references) {
     uint8_t const num_references = uint8_t(references.size());
 
-    node.allocate(num_references);
-
-    node.min_.children_or_data = uint32_t(reference_ids_.size());
+    node.set_leaf_node(uint32_t(reference_ids_.size()), num_references);
 
     for (uint8_t i = 0; i < num_references; ++i) {
         reference_ids_.push_back(references[i].primitive());
     }
-
-    node.max_.num_indices = num_references;
 }
 
 void Kernel::reserve(uint32_t num_primitives) {
@@ -228,14 +222,11 @@ void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
         uint32_t(tasks.size()));
 
     for (auto const& task : tasks) {
-        std::vector<Build_node>& children = task.kernel->build_nodes_;
+        std::vector<Node> const& children = task.kernel->build_nodes_;
 
-        Build_node& parent = build_nodes_[task.root];
+        Node& parent = build_nodes_[task.root];
 
-        Build_node& child = children[0];
-
-        parent.min_ = child.min_;
-        parent.max_ = child.max_;
+        parent = children[0];
 
         if (1 == children.size()) {
             continue;
@@ -248,22 +239,12 @@ void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
         reference_ids_.insert(reference_ids_.end(), task.kernel->reference_ids_.begin(),
                               task.kernel->reference_ids_.end());
 
-        parent.min_.children_or_data = child.min_.children_or_data + node_offset;
+        parent.offset(node_offset);
 
         for (size_t c = 1, len = children.size(); c < len; ++c) {
-            Build_node& sn = children[c];
+            Node const& sn = children[c];
 
-            Build_node& dn = build_nodes_.emplace_back();
-
-            dn.min_ = sn.min_;
-            dn.max_ = sn.max_;
-
-            if (0 == sn.max_.num_indices) {
-                dn.min_.children_or_data = sn.min_.children_or_data + node_offset;
-
-            } else {
-                dn.min_.children_or_data = sn.min_.children_or_data + reference_offset;
-            }
+            build_nodes_.emplace_back(sn, 0 == sn.num_indices() ? node_offset : reference_offset);
         }
     }
 }

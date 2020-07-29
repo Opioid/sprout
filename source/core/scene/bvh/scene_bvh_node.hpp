@@ -6,7 +6,8 @@
 
 namespace math {
 struct ray;
-}
+struct AABB;
+}  // namespace math
 
 namespace scene::bvh {
 
@@ -14,15 +15,19 @@ class Node {
   public:
     Node();
 
+    Node(Node const& other, uint32_t offset);
+
     float3 min() const;
 
     float3 max() const;
+
+    AABB aabb() const;
 
     uint32_t children() const;
 
     uint8_t axis() const;
 
-    uint8_t num_primitives() const;
+    uint8_t num_indices() const;
 
     uint32_t indices_start() const;
 
@@ -30,9 +35,13 @@ class Node {
 
     void set_aabb(float const* min, float const* max);
 
+    void set_aabb(AABB const& aabb);
+
     void set_split_node(uint32_t children, uint8_t axis);
 
     void set_leaf_node(uint32_t start_primitive, uint8_t num_primitives);
+
+    void offset(uint32_t offset);
 
     bool intersect_p(Simd3f const& origin, Simd3f const& inv_direction, scalar const& min_t,
                      scalar const& max_t) const;
@@ -46,7 +55,7 @@ class Node {
     struct alignas(16) Max {
         float   v[3];
         uint8_t axis;
-        uint8_t num_primitives;
+        uint8_t num_indices;
         uint8_t pad[2];
     };
 

@@ -4,7 +4,6 @@
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "logging/logging.hpp"
-#include "scene/bvh/scene_bvh_builder_base.inl"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_split_candidate.inl"
 #include "scene/shape/shape_vertex.hpp"
@@ -70,13 +69,13 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
 
 void Builder_SAH::serialize(uint32_t source_node, uint32_t dest_node, Triangles triangles,
                             Vertices vertices, triangle::Tree& tree, uint32_t& current_triangle) {
-    Build_node const& node = build_nodes_[source_node];
+    Node const& node = build_nodes_[source_node];
 
     auto& n = nodes_[dest_node];
 
     n.set_aabb(node.min().v, node.max().v);
 
-    if (0 == node.max_.num_indices) {
+    if (0 == node.num_indices()) {
         uint32_t const child0 = current_node_index();
 
         n.set_split_node(child0, node.axis());
@@ -84,7 +83,7 @@ void Builder_SAH::serialize(uint32_t source_node, uint32_t dest_node, Triangles 
         new_node();
         new_node();
 
-        uint32_t const source_child0 = node.min_.children_or_data;
+        uint32_t const source_child0 = node.children();
 
         serialize(source_child0, child0, triangles, vertices, tree, current_triangle);
 
@@ -94,7 +93,7 @@ void Builder_SAH::serialize(uint32_t source_node, uint32_t dest_node, Triangles 
         uint8_t const num = node.num_indices();
         n.set_leaf_node(i, num);
 
-        uint32_t const ro = node.min_.children_or_data;
+        uint32_t const ro = node.children();
 
         for (uint32_t p = ro, end = ro + uint32_t(num); p < end; ++p, ++i) {
             auto const& t = triangles[reference_ids_[p]];

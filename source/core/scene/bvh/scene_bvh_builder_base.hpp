@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_BVH_BUILDER_BASE_HPP
 
 #include "base/math/aabb.hpp"
+#include "scene_bvh_node.hpp"
 #include "scene_bvh_split_candidate.hpp"
 
 #include <atomic>
@@ -11,39 +12,6 @@ class Pool;
 }
 
 namespace scene::bvh {
-
-class Node;
-
-struct Build_node {
-    void allocate(uint8_t num_primitives);
-
-    float3 min() const;
-
-    float3 max() const;
-
-    AABB aabb() const;
-
-    void set_aabb(AABB const& aabb);
-
-    uint8_t num_indices() const;
-
-    uint8_t axis() const;
-
-    struct alignas(16) Min {
-        float    v[3];
-        uint32_t children_or_data;
-    };
-
-    struct alignas(16) Max {
-        float   v[3];
-        uint8_t axis;
-        uint8_t num_indices;
-        uint8_t pad[2];
-    };
-
-    Min min_;
-    Max max_;
-};
 
 class Kernel {
   public:
@@ -79,7 +47,7 @@ class Kernel {
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
                                     bool& exhausted, thread::Pool& threads);
 
-    void assign(Build_node& node, References const& references);
+    void assign(Node& node, References const& references);
 
     void reserve(uint32_t num_primitives);
 
@@ -95,7 +63,7 @@ class Kernel {
 
     std::vector<Split_candidate> split_candidates_;
 
-    std::vector<Build_node> build_nodes_;
+    std::vector<Node> build_nodes_;
 };
 
 class Builder_base : protected Kernel {

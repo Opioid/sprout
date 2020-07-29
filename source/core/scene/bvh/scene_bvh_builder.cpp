@@ -3,7 +3,6 @@
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "scene/scene.inl"
-#include "scene_bvh_builder_base.inl"
 #include "scene_bvh_node.inl"
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
@@ -74,12 +73,12 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
 
 void Builder::serialize(uint32_t source_node, uint32_t dest_node, Tree& tree,
                         uint32_t& current_prop) {
-    Build_node const& node = build_nodes_[source_node];
+    Node const& node = build_nodes_[source_node];
 
     auto& n = nodes_[dest_node];
     n.set_aabb(node.min().v, node.max().v);
 
-    if (0 == node.max_.num_indices) {
+    if (0 == node.num_indices()) {
         uint32_t const child0 = current_node_index();
 
         n.set_split_node(child0, node.axis());
@@ -87,7 +86,7 @@ void Builder::serialize(uint32_t source_node, uint32_t dest_node, Tree& tree,
         new_node();
         new_node();
 
-        uint32_t const source_child0 = node.min_.children_or_data;
+        uint32_t const source_child0 = node.children();
 
         serialize(source_child0, child0, tree, current_prop);
 
@@ -97,7 +96,7 @@ void Builder::serialize(uint32_t source_node, uint32_t dest_node, Tree& tree,
         uint8_t const  num = node.num_indices();
         n.set_leaf_node(i, num);
 
-        uint32_t const* begin = &reference_ids_[node.min_.children_or_data];
+        uint32_t const* begin = &reference_ids_[node.children()];
         uint32_t const* end   = begin + num;
         std::copy(begin, end, &tree.indices_[i]);
 

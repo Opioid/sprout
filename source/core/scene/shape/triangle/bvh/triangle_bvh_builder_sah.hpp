@@ -30,8 +30,6 @@ namespace bvh {
 
 class Builder_SAH final : private scene::bvh::Builder_base {
   public:
-    using Build_node = scene::bvh::Build_node;
-
     Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
 
     ~Builder_SAH();
@@ -43,6 +41,7 @@ class Builder_SAH final : private scene::bvh::Builder_base {
                thread::Pool& threads);
 
   private:
+    using Node       = scene::bvh::Node;
     using Reference  = scene::bvh::Reference;
     using References = scene::bvh::References;
 

@@ -97,7 +97,7 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
         auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -150,7 +150,7 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
         auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -198,7 +198,7 @@ bool Tree<Data>::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_directi
         auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -255,7 +255,7 @@ float Tree<Data>::visibility(ray& ray, uint64_t time, uint32_t entity, Filter fi
         auto& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
@@ -322,7 +322,7 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
         auto& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
                 uint32_t const a = node.children();
                 uint32_t const b = a + 1;
 
