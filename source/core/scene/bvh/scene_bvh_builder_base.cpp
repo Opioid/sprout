@@ -55,7 +55,8 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 return;
             }
 
-            node.max_.axis = sp.axis();
+            node.max_.axis        = sp.axis();
+            node.max_.num_indices = 0;
 
             References references0;
             References references1;
@@ -73,16 +74,14 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
                 uint32_t const child0 = uint32_t(build_nodes_.size());
                 build_nodes_.emplace_back();
 
-                uint32_t const child1 = uint32_t(build_nodes_.size());
                 build_nodes_.emplace_back();
 
-                build_nodes_[node_id].children[0] = child0;
+                build_nodes_[node_id].min_.children_or_data = child0;
                 split(child0, references0, sp.aabb_0(), depth, threads, tasks);
 
                 references0.release();
 
-                build_nodes_[node_id].children[1] = child1;
-                split(child1, references1, sp.aabb_1(), depth, threads, tasks);
+                split(child0 + 1, references1, sp.aabb_1(), depth, threads, tasks);
             }
         }
     }
@@ -184,13 +183,13 @@ void Kernel::assign(Build_node& node, References const& references) {
 
     node.allocate(num_references);
 
+    node.min_.children_or_data = uint32_t(reference_ids_.size());
+
     for (uint8_t i = 0; i < num_references; ++i) {
-        node.primitives[i] = references[i].primitive();
+        reference_ids_.push_back(references[i].primitive());
     }
 
     node.max_.num_indices = num_references;
-
-    num_references_ += uint32_t(num_references);
 }
 
 void Kernel::reserve(uint32_t num_primitives) {
@@ -198,7 +197,7 @@ void Kernel::reserve(uint32_t num_primitives) {
     build_nodes_.clear();
     build_nodes_.emplace_back();
 
-    num_references_ = 0;
+    reference_ids_.reserve((num_primitives * 12) / 10);
 }
 
 void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
@@ -229,8 +228,6 @@ void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
         uint32_t(tasks.size()));
 
     for (auto const& task : tasks) {
-        num_references_ += task.kernel->num_references_;
-
         std::vector<Build_node>& children = task.kernel->build_nodes_;
 
         Build_node& parent = build_nodes_[task.root];
@@ -241,15 +238,17 @@ void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
         parent.max_ = child.max_;
 
         if (1 == children.size()) {
-            parent.primitives = child.primitives;
-            child.primitives  = nullptr;
             continue;
         }
 
         uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);
 
-        parent.children[0] = child.children[0] + node_offset;
-        parent.children[1] = child.children[1] + node_offset;
+        uint32_t const reference_offset = uint32_t(reference_ids_.size());
+
+        reference_ids_.insert(reference_ids_.end(), task.kernel->reference_ids_.begin(),
+                              task.kernel->reference_ids_.end());
+
+        parent.min_.children_or_data = child.min_.children_or_data + node_offset;
 
         for (size_t c = 1, len = children.size(); c < len; ++c) {
             Build_node& sn = children[c];
@@ -259,12 +258,11 @@ void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
             dn.min_ = sn.min_;
             dn.max_ = sn.max_;
 
-            dn.primitives = sn.primitives;
-            sn.primitives = nullptr;
+            if (0 == sn.max_.num_indices) {
+                dn.min_.children_or_data = sn.min_.children_or_data + node_offset;
 
-            if (0xFFFFFFFF != sn.children[0]) {
-                dn.children[0] = sn.children[0] + node_offset;
-                dn.children[1] = sn.children[1] + node_offset;
+            } else {
+                dn.min_.children_or_data = sn.min_.children_or_data + reference_offset;
             }
         }
     }

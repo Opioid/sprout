@@ -2,24 +2,8 @@
 
 namespace scene::bvh {
 
-inline Build_node::Build_node() = default;
-
-inline Build_node::Build_node(Build_node&& other)
-    : min_(other.min_),
-      max_(other.max_),
-      primitives(other.primitives),
-      children{other.children[0], other.children[1]} {
-    other.primitives = nullptr;
-}
-
-inline Build_node::~Build_node() {
-    delete[] primitives;
-}
-
 inline void Build_node::allocate(uint8_t num_primitives) {
     max_.num_indices = num_primitives;
-
-    primitives = new uint32_t[num_primitives];
 }
 
 inline float3 Build_node::min() const {

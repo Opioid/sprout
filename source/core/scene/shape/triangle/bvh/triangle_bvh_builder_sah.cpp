@@ -60,7 +60,7 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
         split(references, AABB(aabb.min, aabb.max), threads);
     }
 
-    tree.allocate_triangles(num_references_, vertices);
+    tree.allocate_triangles(uint32_t(reference_ids_.size()), vertices);
     nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
     uint32_t current_triangle = 0;
@@ -76,7 +76,7 @@ void Builder_SAH::serialize(uint32_t source_node, uint32_t dest_node, Triangles 
 
     n.set_aabb(node.min().v, node.max().v);
 
-    if (0xFFFFFFFF != node.children[0]) {
+    if (0 == node.max_.num_indices) {
         uint32_t const child0 = current_node_index();
 
         n.set_split_node(child0, node.axis());
@@ -84,18 +84,20 @@ void Builder_SAH::serialize(uint32_t source_node, uint32_t dest_node, Triangles 
         new_node();
         new_node();
 
-        serialize(node.children[0], child0, triangles, vertices, tree, current_triangle);
+        uint32_t const source_child0 = node.min_.children_or_data;
 
-        serialize(node.children[1], child0 + 1, triangles, vertices, tree, current_triangle);
+        serialize(source_child0, child0, triangles, vertices, tree, current_triangle);
+
+        serialize(source_child0 + 1, child0 + 1, triangles, vertices, tree, current_triangle);
     } else {
         uint32_t      i   = current_triangle;
         uint8_t const num = node.num_indices();
         n.set_leaf_node(i, num);
 
-        uint32_t const* const primitives = node.primitives;
+        uint32_t const ro = node.min_.children_or_data;
 
-        for (uint32_t p = 0, len = uint32_t(num); p < len; ++p, ++i) {
-            auto const& t = triangles[primitives[p]];
+        for (uint32_t p = ro, end = ro + uint32_t(num); p < end; ++p, ++i) {
+            auto const& t = triangles[reference_ids_[p]];
             tree.set_triangle(t.i[0], t.i[1], t.i[2], t.part, vertices, i);
         }
 

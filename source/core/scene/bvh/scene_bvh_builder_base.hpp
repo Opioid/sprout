@@ -15,12 +15,6 @@ namespace scene::bvh {
 class Node;
 
 struct Build_node {
-    Build_node();
-
-    Build_node(Build_node&& other);
-
-    ~Build_node();
-
     void allocate(uint8_t num_primitives);
 
     float3 min() const;
@@ -37,7 +31,7 @@ struct Build_node {
 
     struct alignas(16) Min {
         float    v[3];
-        uint32_t pad;
+        uint32_t children_or_data;
     };
 
     struct alignas(16) Max {
@@ -49,10 +43,6 @@ struct Build_node {
 
     Min min_;
     Max max_;
-
-    uint32_t* primitives = nullptr;
-
-    uint32_t children[2] = {0xFFFFFFFF, 0xFFFFFFFF};
 };
 
 class Kernel {
@@ -101,7 +91,7 @@ class Kernel {
 
     uint32_t parallel_build_depth_;
 
-    uint32_t num_references_;
+    std::vector<uint32_t> reference_ids_;
 
     std::vector<Split_candidate> split_candidates_;
 
