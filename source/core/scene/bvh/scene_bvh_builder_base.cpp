@@ -277,7 +277,7 @@ void Builder_base::split(References& references, AABB const& aabb, thread::Pool&
 
     spatial_split_threshold_ = uint32_t(std::lrint(log2_num_references / 2.f));
 
-    parallel_build_depth_ = 6;
+    parallel_build_depth_ = std::min(spatial_split_threshold_, 6u);
 
     uint32_t const num_tasks = std::min(math::exp2(parallel_build_depth_),
                                         references.size() / Parallelize_threshold);
