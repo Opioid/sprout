@@ -6,7 +6,6 @@ target_include_directories(core PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_
 
 target_link_libraries(core PRIVATE base)
 
-add_subdirectory(baking)
 add_subdirectory(exporting)
 add_subdirectory(file)
 add_subdirectory(image)

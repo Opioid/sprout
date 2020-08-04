@@ -114,11 +114,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
 
     for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
-            if (Camera* camera = load_camera(n.value, &scene); camera) {
-                take.view.camera = camera;
-            } else {
-                return false;
-            }
+            take.view.camera = load_camera(n.value, &scene);
         } else if ("export" == n.name) {
             exporter_value = &n.value;
         } else if ("start_frame" == n.name) {
@@ -127,7 +123,6 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
             take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
             integrator_value = &n.value;
-
         } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
@@ -135,6 +130,11 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         } else if ("scene" == n.name) {
             take.scene_filename = n.value.GetString();
         }
+    }
+
+    if (!take.view.camera) {
+        logging::push_error("No camera specified.");
+        return false;
     }
 
     if (take.scene_filename.empty()) {
@@ -164,27 +164,25 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
 
     resources.filesystem().set_frame(take.view.start_frame);
 
-    if (take.view.camera) {
-        if (postprocessors_value) {
-            std::string_view const take_mount_folder = string::parent_directory(take_name);
+    if (postprocessors_value) {
+        std::string_view const take_mount_folder = string::parent_directory(take_name);
 
-            auto& filesystem = resources.filesystem();
+        auto& filesystem = resources.filesystem();
 
-            filesystem.push_mount(take_mount_folder);
+        filesystem.push_mount(take_mount_folder);
 
-            load_postprocessors(*postprocessors_value, resources, take.view.pipeline);
+        load_postprocessors(*postprocessors_value, resources, take.view.pipeline);
 
-            filesystem.pop_mount();
-        } else {
-            set_default_postprocessor(take);
-        }
-
-        if (exporter_value) {
-            take.exporters = load_exporters(*exporter_value, take.view);
-        }
-
-        set_default_exporter(take);
+        filesystem.pop_mount();
+    } else {
+        set_default_postprocessor(take);
     }
+
+    if (exporter_value) {
+        take.exporters = load_exporters(*exporter_value, take.view);
+    }
+
+    set_default_exporter(take);
 
     set_default_integrators(num_threads, progressive, take.view);
 
