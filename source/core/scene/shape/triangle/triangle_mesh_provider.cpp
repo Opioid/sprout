@@ -2,7 +2,10 @@
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
-#include "bvh/triangle_bvh_builder_sah.inl"
+#include "base/memory/align.hpp"
+#include "base/memory/buffer.hpp"
+#include "base/thread/thread_pool.hpp"
+#include "bvh/triangle_bvh_builder_sah.hpp"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
 #include "logging/logging.hpp"
@@ -46,19 +49,17 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     }
 
     if (file::Type::SUB == file::query_type(*stream)) {
-#ifdef SU_DEBUG
-        auto const loading_start = std::chrono::high_resolution_clock::now();
-#endif
-
         Shape* mesh = load_binary(*stream, resources.threads());
         if (!mesh) {
             logging::error("Loading mesh %S: ", filename);
         }
 
-        LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
-
         return mesh;
     }
+
+#ifdef SU_DEBUG
+    auto const loading_start = std::chrono::high_resolution_clock::now();
+#endif
 
     Json_handler handler;
 
@@ -139,6 +140,8 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     for (uint32_t p = 0; p < num_parts; ++p) {
         mesh->set_material_for_part(p, handler.parts()[p].material_index);
     }
+
+    LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
 
     resources.threads().run_async([mesh, handler{std::move(handler)},
                                    &resources]() mutable noexcept {
@@ -259,31 +262,6 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
     return mesh;
 }
 
-Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
-                             thread::Pool& threads) {
-    if (triangles.empty() || vertices.empty() || !num_parts) {
-        logging::error("No mesh data.");
-        return nullptr;
-    }
-
-    auto mesh = new Mesh;
-
-    mesh->allocate_parts(num_parts);
-
-    for (uint32_t i = 0; i < num_parts; ++i) {
-        mesh->set_material_for_part(i, i);
-    }
-
-    threads.run_async([mesh, triangles{std::move(triangles)}, vertices{std::move(vertices)},
-                       &threads]() noexcept {
-        Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
-
-        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream, threads);
-    });
-
-    return mesh;
-}
-
 Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
                                      Resources& resources) {
     auto collection = new Morph_target_collection;
@@ -369,10 +347,35 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
     return mesh;
 }
 
+Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
+                             thread::Pool& threads) {
+    if (triangles.empty() || vertices.empty() || !num_parts) {
+        logging::error("No mesh data.");
+        return nullptr;
+    }
+
+    auto mesh = new Mesh;
+
+    mesh->allocate_parts(num_parts);
+
+    for (uint32_t i = 0; i < num_parts; ++i) {
+        mesh->set_material_for_part(i, i);
+    }
+
+    threads.run_async([mesh, triangles{std::move(triangles)}, vertices{std::move(vertices)},
+                       &threads]() noexcept {
+        Vertex_stream_interleaved vertex_stream(uint32_t(vertices.size()), vertices.data());
+
+        build_bvh(*mesh, uint32_t(triangles.size()), triangles.data(), vertex_stream, threads);
+    });
+
+    return mesh;
+}
+
 void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
                          Vertex_stream const& vertices, thread::Pool& threads) {
-    bvh::Builder_SAH builder(16, 64);
-    builder.build(mesh.tree(), num_triangles, triangles, vertices, 4, threads);
+    bvh::Builder_SAH builder(16, 64, 4);
+    builder.build(mesh.tree(), num_triangles, triangles, vertices, threads);
 }
 
 template <typename Index>
@@ -430,6 +433,10 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
 }
 
 Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
+#ifdef SU_DEBUG
+    auto const loading_start = std::chrono::high_resolution_clock::now();
+#endif
+
     stream.seekg(4);
 
     uint64_t json_size = 0;
@@ -632,8 +639,24 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
     mesh->allocate_parts(num_parts);
 
     for (uint32_t p = 0; p < num_parts; ++p) {
-        mesh->set_material_for_part(p, parts[p].material_index);
+        auto const& part = parts[p];
+
+        if (part.start_index + part.num_indices > num_indices) {
+            logging::push_error("Part indices out of bounds.");
+
+            delete mesh;
+
+            vertex_stream->release();
+
+            delete vertex_stream;
+
+            return nullptr;
+        }
+
+        mesh->set_material_for_part(p, part.material_index);
     }
+
+    LOGGING_VERBOSE("Parsing mesh %f s", chrono::seconds_since(loading_start));
 
     threads.run_async([mesh, num_parts, parts{std::move(parts)}, num_indices,
                        indices{std::move(indices)}, vertex_stream, index_bytes, delta_indices,

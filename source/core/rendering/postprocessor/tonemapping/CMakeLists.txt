@@ -10,6 +10,4 @@ target_sources(core
     "piecewise.hpp"
     "tonemapper.cpp"
     "tonemapper.hpp"
-    "uncharted.cpp"
-    "uncharted.hpp"
     ) 

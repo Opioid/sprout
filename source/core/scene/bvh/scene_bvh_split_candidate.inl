@@ -3,11 +3,10 @@
 
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
+#include "base/memory/array.inl"
 #include "scene_bvh_split_candidate.hpp"
 
 namespace scene::bvh {
-
-inline Reference::Reference() = default;
 
 inline uint32_t Reference::primitive() const {
     return bounds[0].index;
@@ -15,20 +14,29 @@ inline uint32_t Reference::primitive() const {
 
 inline void Reference::set(Simd3f const& min, Simd3f const& max, uint32_t primitive) {
     float3 const tmp(min);
-    bounds[0].v[0]  = tmp[0];
-    bounds[0].v[1]  = tmp[1];
-    bounds[0].v[2]  = tmp[2];
+    bounds[0].v[0] = tmp[0];
+    bounds[0].v[1] = tmp[1];
+    bounds[0].v[2] = tmp[2];
+
     bounds[0].index = primitive;
 
     simd::store_float4(bounds[1].v, max.v);
 }
 
-inline void Reference::clip_min(float d, uint8_t axis) {
-    bounds[0].v[axis] = std::max(d, bounds[0].v[axis]);
+inline Reference Reference::clipped_min(float d, uint8_t axis) const {
+    Vector bounds0 = bounds[0];
+
+    bounds0.v[axis] = std::max(d, bounds0.v[axis]);
+
+    return {{bounds0, bounds[1]}};
 }
 
-inline void Reference::clip_max(float d, uint8_t axis) {
-    bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
+inline Reference Reference::clipped_max(float d, uint8_t axis) const {
+    Vector bounds1 = bounds[1];
+
+    bounds1.v[axis] = std::min(d, bounds1.v[axis]);
+
+    return {{bounds[0], bounds1}};
 }
 
 inline Split_candidate::Split_candidate(uint8_t split_axis, float3 const& p, bool spatial)
@@ -46,6 +54,8 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
     Simd_AABB box_1(aabb_1_);
 
     if (spatial_) {
+        bool used_spatial = false;
+
         for (auto const& r : references) {
             Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
@@ -63,14 +73,20 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
 
                 box_0.merge_assign(b);
                 box_1.merge_assign(b);
+
+                used_spatial = true;
             }
         }
 
         aabb_0_.set_min_max(box_0.min, box_0.max);
         aabb_1_.set_min_max(box_1.min, box_1.max);
 
-        aabb_0_.clip_max(d_, axis_);
-        aabb_1_.clip_min(d_, axis_);
+        if (used_spatial) {
+            aabb_0_.clip_max(d_, axis_);
+            aabb_1_.clip_min(d_, axis_);
+        } else {
+            spatial_ = false;
+        }
     } else {
         for (auto const& r : references) {
             Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
@@ -103,8 +119,9 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
     num_side_1_ = num_side_1;
 }
 
-inline void Split_candidate::distribute(References const& references, References& references0,
-                                        References& references1) const {
+inline void Split_candidate::distribute(References const& __restrict references,
+                                        References& __restrict references0,
+                                        References& __restrict references1) const {
     references0.reserve(num_side_0_);
     references1.reserve(num_side_1_);
 
@@ -115,13 +132,9 @@ inline void Split_candidate::distribute(References const& references, References
             } else if (!behind(r.bounds[0].v)) {
                 references1.push_back(r);
             } else {
-                Reference r0 = r;
-                r0.clip_max(d_, axis_);
-                references0.push_back(r0);
+                references0.push_back(r.clipped_max(d_, axis_));
 
-                Reference r1 = r;
-                r1.clip_min(d_, axis_);
-                references1.push_back(r1);
+                references1.push_back(r.clipped_min(d_, axis_));
             }
         }
     } else {

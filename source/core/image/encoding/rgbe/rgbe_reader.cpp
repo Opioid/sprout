@@ -1,7 +1,7 @@
 #include "rgbe_reader.hpp"
 #include "base/math/half.inl"
 #include "base/math/vector4.inl"
-#include "base/memory/array.inl"
+#include "base/memory/buffer.hpp"
 #include "base/spectrum/aces.hpp"
 #include "image/image.hpp"
 #include "logging/logging.hpp"

@@ -25,7 +25,9 @@ class Pool {
 
     uint32_t num_threads() const;
 
-    void run_parallel(Parallel_program&& program);
+    bool is_running_parallel() const;
+
+    void run_parallel(Parallel_program&& program, uint32_t num_tasks_hint = 0);
 
     void run_range(Range_program&& program, int32_t begin, int32_t end);
 
@@ -36,12 +38,12 @@ class Pool {
     static uint32_t num_threads(int32_t request);
 
   private:
-    void wake_all();
+    void wake_all(uint32_t num_tasks);
     void wake_all(int32_t begin, int32_t end);
 
     void wake_async();
 
-    void wait_all();
+    void wait_all(uint32_t num_tasks);
 
     struct Unique {
         int32_t begin = 0;
@@ -70,6 +72,8 @@ class Pool {
     uint32_t num_threads_;
 
     bool quit_ = false;
+
+    bool running_parallel_ = false;
 
     Parallel_program parallel_program_;
 

@@ -110,14 +110,15 @@ class Tree {
 
     void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices);
 
-    void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
-                      Vertex_stream const& vertices, uint32_t current_triangle);
+    void set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+                      Vertex_stream const& vertices, uint32_t triangle_id);
 
   private:
     uint32_t num_nodes_;
     uint32_t num_parts_;
 
-    Node*     nodes_;
+    Node* nodes_;
+
     uint32_t* num_part_triangles_;
 
     Data data_;

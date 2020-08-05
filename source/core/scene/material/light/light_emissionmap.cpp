@@ -3,6 +3,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/array.inl"
+#include "base/memory/buffer.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.inl"

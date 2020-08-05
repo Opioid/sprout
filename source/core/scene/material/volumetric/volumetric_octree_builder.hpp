@@ -25,7 +25,7 @@ class Octree_builder {
     struct Build_node {
         ~Build_node();
 
-        Build_node* children[8];
+        Build_node* children;
 
         CM data;
     };

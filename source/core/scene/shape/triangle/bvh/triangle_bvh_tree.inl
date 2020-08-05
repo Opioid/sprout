@@ -59,6 +59,20 @@ uint32_t Tree<Data>::num_triangles() const {
 
 template <typename Data>
 uint32_t Tree<Data>::num_triangles(uint32_t part) const {
+    uint32_t const num_part_triangles = num_part_triangles_[part];
+
+    if (0xFFFFFFFF != num_part_triangles) {
+        return num_part_triangles;
+    }
+
+    for (uint32_t i = 0; i < num_parts_; ++i) {
+        num_part_triangles_[i] = 0;
+    }
+
+    for (uint32_t i = 0, len = data_.num_triangles(); i < len; ++i) {
+        ++num_part_triangles_[data_.part(i)];
+    }
+
     return num_part_triangles_[part];
 }
 
@@ -83,13 +97,16 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
         auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -133,13 +150,16 @@ bool Tree<Data>::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction
         auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -178,13 +198,16 @@ bool Tree<Data>::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_directi
         auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -232,13 +255,16 @@ float Tree<Data>::visibility(ray& ray, uint64_t time, uint32_t entity, Filter fi
         auto& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -296,13 +322,16 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
         auto& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_primitives()) {
+            if (0 == node.num_indices()) {
+                uint32_t const a = node.children();
+                uint32_t const b = a + 1;
+
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(node.next());
-                    ++n;
+                    node_stack.push(b);
+                    n = a;
                 } else {
-                    node_stack.push(n + 1);
-                    n = node.next();
+                    node_stack.push(a);
+                    n = b;
                 }
 
                 continue;
@@ -430,7 +459,7 @@ void Tree<Data>::allocate_parts(uint32_t num_parts) {
     }
 
     for (uint32_t i = 0; i < num_parts; ++i) {
-        num_part_triangles_[i] = 0;
+        num_part_triangles_[i] = 0xFFFFFFFF;
     }
 }
 
@@ -440,11 +469,9 @@ void Tree<Data>::allocate_triangles(uint32_t num_triangles, Vertex_stream const&
 }
 
 template <typename Data>
-void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
-                              Vertex_stream const& vertices, uint32_t current_triangle) {
-    ++num_part_triangles_[part];
-
-    data_.add_triangle(a, b, c, part, vertices, current_triangle);
+void Tree<Data>::set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
+                              Vertex_stream const& vertices, uint32_t triangle_id) {
+    data_.set_triangle(a, b, c, part, vertices, triangle_id);
 }
 
 }  // namespace scene::shape::triangle::bvh

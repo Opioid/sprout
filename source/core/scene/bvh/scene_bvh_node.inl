@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_BVH_NODE_INL
 #define SU_CORE_SCENE_BVH_NODE_INL
 
+#include "base/math/aabb.inl"
 #include "base/math/ray.hpp"
 #include "base/math/vector3.inl"
 #include "scene_bvh_node.hpp"
@@ -8,6 +9,11 @@
 namespace scene::bvh {
 
 inline Node::Node() = default;
+
+inline Node::Node(Node const& other, uint32_t offset)
+    : min_{{other.min_.v[0], other.min_.v[1], other.min_.v[2]},
+           offset + other.min_.children_or_data},
+      max_{other.max_} {}
 
 inline float3 Node::min() const {
     return float3(min_.v);
@@ -17,24 +23,28 @@ inline float3 Node::max() const {
     return float3(max_.v);
 }
 
-inline uint32_t Node::next() const {
-    return min_.next_or_data;
+inline uint32_t Node::children() const {
+    return min_.children_or_data;
 }
 
 inline uint8_t Node::axis() const {
     return max_.axis;
 }
 
-inline uint8_t Node::num_primitives() const {
-    return max_.num_primitives;
+inline uint8_t Node::num_indices() const {
+    return max_.num_indices;
 }
 
 inline uint32_t Node::indices_start() const {
-    return min_.next_or_data;
+    return min_.children_or_data;
 }
 
 inline uint32_t Node::indices_end() const {
-    return min_.next_or_data + uint32_t(max_.num_primitives);
+    return min_.children_or_data + uint32_t(max_.num_indices);
+}
+
+inline AABB Node::aabb() const {
+    return {float3(min_.v), float3(max_.v)};
 }
 
 inline void Node::set_aabb(float const* min, float const* max) {
@@ -47,15 +57,29 @@ inline void Node::set_aabb(float const* min, float const* max) {
     max_.v[2] = max[2];
 }
 
-inline void Node::set_split_node(uint32_t next_node, uint8_t axis) {
-    min_.next_or_data   = next_node;
-    max_.axis           = axis;
-    max_.num_primitives = 0;
+inline void Node::set_aabb(AABB const& aabb) {
+    min_.v[0] = aabb.bounds[0][0];
+    min_.v[1] = aabb.bounds[0][1];
+    min_.v[2] = aabb.bounds[0][2];
+
+    max_.v[0] = aabb.bounds[1][0];
+    max_.v[1] = aabb.bounds[1][1];
+    max_.v[2] = aabb.bounds[1][2];
+}
+
+inline void Node::set_split_node(uint32_t children, uint8_t axis) {
+    min_.children_or_data = children;
+    max_.axis             = axis;
+    max_.num_indices      = 0;
 }
 
 inline void Node::set_leaf_node(uint32_t start_primitive, uint8_t num_primitives) {
-    min_.next_or_data   = start_primitive;
-    max_.num_primitives = num_primitives;
+    min_.children_or_data = start_primitive;
+    max_.num_indices      = num_primitives;
+}
+
+inline void Node::offset(uint32_t offset) {
+    min_.children_or_data += offset;
 }
 
 // This test is presented in the paper

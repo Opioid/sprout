@@ -1,9 +1,10 @@
 #ifndef SU_EXTENSION_PROCEDURAL_MESH_GRASS_HPP
 #define SU_EXTENSION_PROCEDURAL_MESH_GRASS_HPP
 
-#include <vector>
 #include "base/math/vector3.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_generator.hpp"
+
+#include <vector>
 
 namespace scene::shape {
 
@@ -21,7 +22,7 @@ class Grass : public scene::shape::triangle::Generator {
   public:
     using Shape = scene::shape::Shape;
 
-    virtual Shape_ptr create_mesh(json::Value const& mesh_value, Resources& resources) final;
+    Shape_ptr create_mesh(json::Value const& mesh_value, Resources& resources) final;
 
   private:
     void add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,

@@ -6,7 +6,7 @@
 
 namespace rendering::sensor {
 
-Opaque::Opaque() : layers_(nullptr), pixels_(nullptr) {}
+Opaque::Opaque(int32_t filter_radius) : Sensor(filter_radius), layers_(nullptr), pixels_(nullptr) {}
 
 Opaque::~Opaque() {
     memory::free_aligned(layers_);

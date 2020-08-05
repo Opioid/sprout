@@ -55,12 +55,12 @@ class Provider : public resource::Provider<Shape> {
     Shape* load(void const* data, std::string const& source_name, Variants const& options,
                 resource::Manager& resources) final;
 
-    static Shape* create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
-                              thread::Pool& threads);
-
   private:
     Shape* load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
                                Resources& resources);
+
+    static Shape* create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
+                              thread::Pool& threads);
 
     static void build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
                           Vertex_stream const& vertices, thread::Pool& threads);

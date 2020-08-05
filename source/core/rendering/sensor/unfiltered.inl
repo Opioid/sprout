@@ -8,17 +8,7 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp>
-Unfiltered<Base, Clamp>::Unfiltered(Clamp const& clamp) : clamp_(clamp) {}
-
-template <class Base, class Clamp>
-int32_t Unfiltered<Base, Clamp>::filter_radius_int() const {
-    return 0;
-}
-
-template <class Base, class Clamp>
-int4 Unfiltered<Base, Clamp>::isolated_tile(int4 const& tile) const {
-    return tile;
-}
+Unfiltered<Base, Clamp>::Unfiltered(Clamp const& clamp) : Base(0), clamp_(clamp) {}
 
 template <class Base, class Clamp>
 void Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4 const& color,

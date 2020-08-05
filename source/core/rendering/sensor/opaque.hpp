@@ -7,7 +7,7 @@ namespace rendering::sensor {
 
 class Opaque : public Sensor {
   public:
-    Opaque();
+    Opaque(int32_t filter_radius);
 
     ~Opaque() override;
 

@@ -4,7 +4,7 @@
 #include "math/matrix4x4.inl"
 #include "math/quaternion.inl"
 #include "math/vector4.inl"
-#include "memory/align.hpp"
+#include "memory/buffer.hpp"
 #include "rapidjson/error/en.h"
 #include "rapidjson/istreamwrapper.h"
 

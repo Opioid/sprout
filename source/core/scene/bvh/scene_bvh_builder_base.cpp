@@ -1,5 +1,6 @@
 #include "scene_bvh_builder_base.hpp"
 #include "base/math/aabb.inl"
+#include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "logging/logging.hpp"
 #include "scene_bvh_node.inl"
@@ -7,25 +8,39 @@
 
 namespace scene::bvh {
 
-Builder_base::Build_node::Build_node() = default;
+static uint32_t constexpr Parallelize_threshold = 1024;
 
-Builder_base::Build_node::~Build_node() {
-    delete children[0];
-    delete children[1];
+Kernel::Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
+               uint32_t spatial_split_threshold)
+    : num_slices_(num_slices),
+      sweep_threshold_(sweep_threshold),
+      max_primitives_(max_primitives),
+      spatial_split_threshold_(spatial_split_threshold) {
+    split_candidates_.reserve(std::max(3 * sweep_threshold, 3 * num_slices));
 }
 
-Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold)
-    : num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
+Kernel::~Kernel() = default;
 
-void Builder_base::split(Build_node* node, References& references, AABB const& aabb,
-                         uint32_t max_primitives, uint32_t depth, thread::Pool& threads) {
-    node->aabb = aabb;
+void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
+                   thread::Pool& threads, Tasks& tasks) {
+    Node& node = build_nodes_[node_id];
+
+    node.set_aabb(aabb);
 
     uint32_t const num_primitives = uint32_t(references.size());
 
-    if (num_primitives <= max_primitives) {
+    if (num_primitives <= max_primitives_) {
         assign(node, references);
     } else {
+        if (!threads.is_running_parallel() && tasks.capacity() > 0 &&
+            (num_primitives < Parallelize_threshold || depth == parallel_build_depth_)) {
+            tasks.emplace_back(Task(new Kernel(num_slices_, sweep_threshold_, max_primitives_,
+                                               spatial_split_threshold_),
+                                    node_id, depth, aabb, std::move(references)));
+
+            return;
+        }
+
         bool                  exhausted;
         Split_candidate const sp = splitting_plane(references, aabb, depth, exhausted, threads);
 
@@ -40,8 +55,6 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
                 return;
             }
 
-            node->axis = sp.axis();
-
             References references0;
             References references1;
             sp.distribute(references, references0, references1);
@@ -53,25 +66,27 @@ void Builder_base::split(Build_node* node, References& references, AABB const& a
             } else {
                 ++depth;
 
-                references = References();
+                references.release();
 
-                node->children[0] = new Build_node;
-                split(node->children[0], references0, sp.aabb_0(), max_primitives, depth, threads);
+                uint32_t const child0 = uint32_t(build_nodes_.size());
 
-                references0 = References();
+                build_nodes_[node_id].set_split_node(child0, sp.axis());
 
-                node->children[1] = new Build_node;
-                split(node->children[1], references1, sp.aabb_1(), max_primitives, depth, threads);
+                build_nodes_.emplace_back();
+                build_nodes_.emplace_back();
 
-                num_nodes_ += 2;
+                split(child0, references0, sp.aabb_0(), depth, threads, tasks);
+
+                references0.release();
+
+                split(child0 + 1, references1, sp.aabb_1(), depth, threads, tasks);
             }
         }
     }
 }
 
-Split_candidate Builder_base::splitting_plane(References const& references, AABB const& aabb,
-                                              uint32_t depth, bool& exhausted,
-                                              thread::Pool& threads) {
+Split_candidate Kernel::splitting_plane(References const& references, AABB const& aabb,
+                                        uint32_t depth, bool& exhausted, thread::Pool& threads) {
     static uint8_t constexpr X = 0;
     static uint8_t constexpr Y = 1;
     static uint8_t constexpr Z = 2;
@@ -80,7 +95,6 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
 
     uint32_t const num_references = uint32_t(references.size());
 
-    float3 const halfsize = aabb.halfsize();
     float3 const position = aabb.position();
 
     split_candidates_.emplace_back(X, position, true);
@@ -95,25 +109,31 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
             split_candidates_.emplace_back(Z, max, false);
         }
     } else {
-        float3 const& min = aabb.min();
+        float3 const extent = 2.f * aabb.halfsize();
 
-        float3 const step = (2.f * halfsize) / float(num_slices_);
-        for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
-            float const fi = float(i);
+        float3 const min = aabb.min();
 
-            float3 const slice_x(min[0] + fi * step[0], position[1], position[2]);
-            split_candidates_.emplace_back(X, slice_x, false);
+        uint32_t const la = index_max_component(extent);
 
-            float3 const slice_y(position[0], min[1] + fi * step[1], position[2]);
-            split_candidates_.emplace_back(Y, slice_y, false);
+        float const step = (extent[la]) / float(num_slices_);
 
-            float3 const slice_z(position[0], position[1], min[2] + fi * step[2]);
-            split_candidates_.emplace_back(Z, slice_z, false);
+        for (uint8_t a = 0; a < 3; ++a) {
+            float const extent_a = extent[a];
 
-            if (depth < spatial_split_threshold_) {
-                split_candidates_.emplace_back(X, slice_x, true);
-                split_candidates_.emplace_back(Y, slice_y, true);
-                split_candidates_.emplace_back(Z, slice_z, true);
+            uint32_t const num_steps = uint32_t(std::ceil(extent_a / step));
+
+            float const step_a = extent_a / float(num_steps);
+
+            for (uint32_t i = 1; i < num_steps; ++i) {
+                float const fi = float(i);
+
+                float3 slice = position;
+                slice[a]     = min[a] + fi * step_a;
+                split_candidates_.emplace_back(a, slice, false);
+
+                if (depth < spatial_split_threshold_) {
+                    split_candidates_.emplace_back(a, slice, true);
+                }
             }
         }
     }
@@ -121,16 +141,16 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     float const aabb_surface_area = aabb.surface_area();
 
     // Arbitrary heuristic for starting the thread pool
-    if (num_references < 1024) {
+    if (threads.is_running_parallel() || num_references < Parallelize_threshold) {
         for (auto& sc : split_candidates_) {
             sc.evaluate(references, aabb_surface_area);
         }
     } else {
         threads.run_range(
-            [this, &references, aabb_surface_area](uint32_t /*id*/, int32_t sc_begin,
-                                                   int32_t sc_end) noexcept {
+            [&scs = split_candidates_, &references, aabb_surface_area](
+                uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) noexcept {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
-                    split_candidates_[uint32_t(i)].evaluate(references, aabb_surface_area);
+                    scs[uint32_t(i)].evaluate(references, aabb_surface_area);
                 }
             },
             0, int32_t(split_candidates_.size()));
@@ -156,17 +176,127 @@ Split_candidate Builder_base::splitting_plane(References const& references, AABB
     return sp;
 }
 
-void Builder_base::assign(Build_node* node, References const& references) {
-    size_t const num_references = references.size();
-    node->primitives.resize(num_references);
+void Kernel::assign(Node& node, References const& references) {
+    uint8_t const num_references = uint8_t(references.size());
 
-    for (size_t i = 0; i < num_references; ++i) {
-        node->primitives[i] = references[i].primitive();
+    node.set_leaf_node(uint32_t(reference_ids_.size()), num_references);
+
+    for (uint8_t i = 0; i < num_references; ++i) {
+        reference_ids_.push_back(references[i].primitive());
+    }
+}
+
+void Kernel::reserve(uint32_t num_primitives) {
+    build_nodes_.reserve(std::max((3 * num_primitives) / max_primitives_, 1u));
+    build_nodes_.clear();
+    build_nodes_.emplace_back();
+
+    reference_ids_.reserve((num_primitives * 12) / 10);
+}
+
+void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
+    if (tasks.empty()) {
+        return;
     }
 
-    node->start_index = num_references_;
-    num_references_ += uint32_t(num_references);
-    node->end_index = num_references_;
+    current_task_ = 0;
+
+    threads.run_parallel(
+        [this, &threads, &tasks](uint32_t /*id*/) noexcept {
+            uint32_t const num_tasks = uint32_t(tasks.size());
+
+            for (;;) {
+                uint32_t const current = current_task_.fetch_add(1, std::memory_order_relaxed);
+
+                if (current >= num_tasks) {
+                    return;
+                }
+
+                Task& t = tasks[current];
+
+                t.kernel->reserve(t.references.size());
+                t.kernel->split(0, t.references, t.aabb, t.depth, threads, tasks);
+                t.references.release();
+            }
+        },
+        uint32_t(tasks.size()));
+
+    for (auto const& task : tasks) {
+        std::vector<Node> const& children = task.kernel->build_nodes_;
+
+        Node& parent = build_nodes_[task.root];
+
+        parent = children[0];
+
+        if (1 == children.size()) {
+            continue;
+        }
+
+        uint32_t const node_offset = uint32_t(build_nodes_.size() - 1);
+
+        uint32_t const reference_offset = uint32_t(reference_ids_.size());
+
+        reference_ids_.insert(reference_ids_.end(), task.kernel->reference_ids_.begin(),
+                              task.kernel->reference_ids_.end());
+
+        parent.offset(node_offset);
+
+        for (size_t c = 1, len = children.size(); c < len; ++c) {
+            Node const& sn = children[c];
+
+            build_nodes_.emplace_back(sn, 0 == sn.num_indices() ? node_offset : reference_offset);
+        }
+    }
+}
+
+Kernel::Task::Task() = default;
+
+Kernel::Task::Task(Kernel* k, uint32_t rt, uint32_t d, AABB const& box, References&& refs)
+    : kernel(k), root(rt), depth(d), aabb(box), references(std::move(refs)) {}
+
+Kernel::Task::Task(Task&& other)
+    : kernel(other.kernel),
+      root(other.root),
+      depth(other.depth),
+      aabb(other.aabb),
+      references(std::move(other.references)) {
+    other.kernel = nullptr;
+}
+
+Kernel::Task::~Task() {
+    delete kernel;
+}
+
+Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
+    : Kernel(num_slices, sweep_threshold, max_primitives) {}
+
+Builder_base::~Builder_base() {}
+
+void Builder_base::split(References& references, AABB const& aabb, thread::Pool& threads) {
+    float const log2_num_references = std::log2(float(references.size()));
+
+    spatial_split_threshold_ = uint32_t(std::lrint(log2_num_references / 2.f));
+
+    parallel_build_depth_ = std::min(spatial_split_threshold_, 6u);
+
+    uint32_t const num_tasks = std::min(math::exp2(parallel_build_depth_),
+                                        references.size() / Parallelize_threshold);
+
+    Tasks tasks;
+
+    if (num_tasks > 2) {
+        tasks.reserve(num_tasks);
+    }
+
+    Kernel::split(0, references, aabb, 0, threads, tasks);
+
+    work_on_tasks(threads, tasks);
+}
+
+void Builder_base::reserve(uint32_t num_primitives) {
+    Kernel::reserve(num_primitives);
+
+    current_node_ = 0;
 }
 
 bvh::Node& Builder_base::new_node() {

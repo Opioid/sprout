@@ -7,7 +7,8 @@
 
 namespace rendering::sensor {
 
-Sensor::Sensor() : dimensions_(0), num_layers_(0), variance_(nullptr) {}
+Sensor::Sensor(int32_t filter_radius)
+    : dimensions_(0), filter_radius_(filter_radius), num_layers_(0), variance_(nullptr) {}
 
 Sensor::~Sensor() {
     delete[] variance_;
@@ -57,6 +58,15 @@ void Sensor::set_variance(int2 pixel, float variance) {
 
 void Sensor::export_variance() const {
     image::encoding::png::Writer::write_heatmap("variance.png", variance_, dimensions_);
+}
+
+int32_t Sensor::filter_radius_int() const {
+    return filter_radius_;
+}
+
+int4 Sensor::isolated_tile(int4 const& tile) const {
+    int32_t const r = filter_radius_;
+    return tile + int4(r, r, -r, -r);
 }
 
 }  // namespace rendering::sensor

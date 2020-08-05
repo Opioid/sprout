@@ -10,6 +10,7 @@
 #include "rendering/rendering_camera_worker.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
+#include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/entity/composed_transformation.hpp"
@@ -87,17 +88,17 @@ void size() {
 
     print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
-    print_size<scene::material::Material>("material::Material", 112);
+    print_size<scene::material::Material>("material::Material", 96);
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
-    print_size<scene::material::debug::Material>("debug::Material", 112);
+    print_size<scene::material::debug::Material>("debug::Material", 96);
     print_size<scene::material::debug::Sample>("debug::Sample", 160);
 
-    print_size<scene::material::glass::Glass>("glass::Glass", 192);
+    print_size<scene::material::glass::Glass>("glass::Glass", 176);
     print_size<scene::material::glass::Sample>("glass::Sample", 192);
 
-    print_size<scene::material::light::Constant>("light::Constant", 144);
-    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 256);
+    print_size<scene::material::light::Constant>("light::Constant", 128);
+    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
     print_size<scene::material::light::Sample>("light::Sample", 128);
 
     print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 192);
@@ -135,7 +136,7 @@ void size() {
 
     print_size<scene::shape::Vertex>("Vertex", 48);
 
-    print_size<image::Byte3>("image::Byte3", 32);
+    print_size<image::Byte3>("image::Byte3", 48);
 
     print_size<image::texture::Texture>("texture::Texture", 64);
 

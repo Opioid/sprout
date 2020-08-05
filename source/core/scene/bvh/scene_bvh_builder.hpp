@@ -16,7 +16,7 @@ namespace scene::bvh {
 class Node;
 struct Tree;
 
-class Builder : private Builder_base {
+class Builder final : private Builder_base {
   public:
     Builder();
 
@@ -26,7 +26,7 @@ class Builder : private Builder_base {
                thread::Pool& threads);
 
   private:
-    void serialize(Build_node* node, Tree& tree, uint32_t& current_prop);
+    void serialize(uint32_t source_node, uint32_t dest_node, Tree& tree, uint32_t& current_prop);
 };
 
 }  // namespace scene::bvh

@@ -128,7 +128,9 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
         }
 
         for (pos_type const len = pos; total_out_ < len;) {
-            underflow();
+            if (traits_type::eof() == underflow()) {
+                return pos_type(off_type(-1));
+            }
         }
 
         pos_type const difference = total_out_ - pos;

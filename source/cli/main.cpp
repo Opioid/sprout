@@ -4,7 +4,6 @@
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
-#include "core/baking/baking_driver.hpp"
 #include "core/file/file_system.hpp"
 #include "core/image/image.hpp"
 #include "core/image/image_provider.hpp"
@@ -157,22 +156,11 @@ int main(int argc, char* argv[]) {
 
             auto const rendering_start = std::chrono::high_resolution_clock::now();
 
-            if (take.view.camera) {
-                rendering::Driver driver(threads, progressor);
+            rendering::Driver driver(threads, progressor);
 
-                driver.init(take.view, scene, false);
+            driver.init(take.view, scene, false);
 
-                driver.render(take.exporters);
-            } else {
-                //			baking::Driver
-                // driver(take->surface_integrator_pool,
-                //								  take->volume_integrator_pool,
-                //								  take->sampler_pool);
-
-                //			driver.render(scene, take->view, thread_pool,
-                //*take->exporter, progressor);
-                logging::error("No camera specified.");
-            }
+            driver.render(take.exporters);
 
             logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
 

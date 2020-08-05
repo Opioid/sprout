@@ -2,8 +2,8 @@
 #include "base/atomic/atomic.hpp"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/vector2.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/array.inl"
+#include "base/memory/buffer.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "scene/light/light.hpp"
@@ -11,14 +11,14 @@
 
 namespace rendering::integrator::particle {
 
-Importance::Importance() : importance_(memory::allocate_aligned<Weight>(Dimensions * Dimensions)) {
+Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]) {
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
         importance_[i] = {0.f, 0};
     }
 }
 
 Importance::~Importance() {
-    memory::free_aligned(importance_);
+    delete[] importance_;
 }
 
 void Importance::increment(float2 uv, float weight) {

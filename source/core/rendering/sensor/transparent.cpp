@@ -6,7 +6,8 @@
 
 namespace rendering::sensor {
 
-Transparent::Transparent() : layers_(nullptr), pixels_(nullptr) {}
+Transparent::Transparent(int32_t filter_radius)
+    : Sensor(filter_radius), layers_(nullptr), pixels_(nullptr) {}
 
 Transparent::~Transparent() {
     memory::free_aligned(layers_);

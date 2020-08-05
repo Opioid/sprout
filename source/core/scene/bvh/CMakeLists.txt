@@ -1,5 +1,5 @@
 target_sources(core
-	PRIVATE
+    PRIVATE
     "scene_bvh_builder.cpp"
     "scene_bvh_builder.hpp"
     "scene_bvh_builder_base.cpp"

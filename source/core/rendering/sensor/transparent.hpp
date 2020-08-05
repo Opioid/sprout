@@ -8,7 +8,7 @@ namespace rendering::sensor {
 
 class Transparent : public Sensor {
   public:
-    Transparent();
+    Transparent(int32_t filter_radius);
 
     ~Transparent() override;
 

@@ -7,31 +7,30 @@
 #include "scene_bvh_split_candidate.inl"
 #include "scene_bvh_tree.inl"
 
+#include <algorithm>
+
 namespace scene::bvh {
 
-Builder::Builder() : Builder_base(16, 64) {}
+Builder::Builder() : Builder_base(16, 64, 4) {}
 
 Builder::~Builder() = default;
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
                     thread::Pool& threads) {
-    Build_node root;
+    uint32_t const num_primitives = uint32_t(indices.size());
+
+    reserve(num_primitives);
 
     if (indices.empty()) {
-        root.aabb = AABB(float3(-1.f), float3(1.f));
+        build_nodes_[0].set_aabb({float3(-1.f), float3(1.f)});
 
         tree.alllocate_indices(0);
-
-        nodes_ = tree.allocate_nodes(0);
+        tree.allocate_nodes(0);
     } else {
         {
-            float const log2_num_triangles = std::log2(float(indices.size()));
+            References references(num_primitives);
 
-            spatial_split_threshold_ = uint32_t(std::lrint(log2_num_triangles / 2.f));
-
-            References references(indices.size());
-
-            memory::Array<Simd_AABB> taabbs(threads.num_threads());
+            memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, AABB::empty()*/);
 
             threads.run_range(
                 [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin,
@@ -49,54 +48,59 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
                     }
 
                     taabbs[id] = aabb;
+                    // taabbs[id].merge_assign(aabb);
                 },
                 0, int32_t(indices.size()));
 
             Simd_AABB aabb(AABB::empty());
-            for (auto& b : taabbs) {
+            for (auto const& b : taabbs) {
                 aabb.merge_assign(b);
             }
 
-            num_nodes_      = 1;
-            num_references_ = 0;
-
-            split(&root, references, AABB(aabb.min, aabb.max), 4, 0, threads);
+            split(references, AABB(aabb.min, aabb.max), threads);
         }
 
-        tree.alllocate_indices(num_references_);
-
-        nodes_ = tree.allocate_nodes(num_nodes_);
-
-        current_node_ = 0;
+        tree.alllocate_indices(uint32_t(reference_ids_.size()));
+        nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
         uint32_t current_prop = 0;
-        serialize(&root, tree, current_prop);
+        new_node();
+        serialize(0, 0, tree, current_prop);
     }
 
-    tree.aabb_ = root.aabb;
+    tree.aabb_ = build_nodes_[0].aabb();
 }
 
-void Builder::serialize(Build_node* node, Tree& tree, uint32_t& current_prop) {
-    auto& n = new_node();
-    n.set_aabb(node->aabb.min().v, node->aabb.max().v);
+void Builder::serialize(uint32_t source_node, uint32_t dest_node, Tree& tree,
+                        uint32_t& current_prop) {
+    Node const& node = build_nodes_[source_node];
 
-    if (node->children[0]) {
-        serialize(node->children[0], tree, current_prop);
+    auto& n = nodes_[dest_node];
+    n.set_aabb(node.min().v, node.max().v);
 
-        n.set_split_node(current_node_index(), node->axis);
+    if (0 == node.num_indices()) {
+        uint32_t const child0 = current_node_index();
 
-        serialize(node->children[1], tree, current_prop);
+        n.set_split_node(child0, node.axis());
+
+        new_node();
+        new_node();
+
+        uint32_t const source_child0 = node.children();
+
+        serialize(source_child0, child0, tree, current_prop);
+
+        serialize(source_child0 + 1, child0 + 1, tree, current_prop);
     } else {
-        uint8_t const num_primitives = uint8_t(node->end_index - node->start_index);
-        n.set_leaf_node(node->start_index, num_primitives);
+        uint32_t const i   = current_prop;
+        uint8_t const  num = node.num_indices();
+        n.set_leaf_node(i, num);
 
-        uint32_t i = current_prop;
-        for (auto const p : node->primitives) {
-            tree.indices_[i] = p;
-            ++i;
-        }
+        uint32_t const* begin = &reference_ids_[node.children()];
+        uint32_t const* end   = begin + num;
+        std::copy(begin, end, &tree.indices_[i]);
 
-        current_prop = i;
+        current_prop += num;
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
+#include "scene/shape/triangle/triangle_mesh_bvh.hpp"
 
 #include <vector>
 
@@ -27,29 +28,25 @@ struct Index_triangle;
 
 namespace bvh {
 
-template <typename Data>
-class Tree;
-
-class Builder_SAH : private scene::bvh::Builder_base {
+class Builder_SAH final : private scene::bvh::Builder_base {
   public:
-    Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
+    Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
+
+    ~Builder_SAH();
 
     using Triangles = Index_triangle const* const;
     using Vertices  = Vertex_stream const&;
 
-    template <typename Data>
-    void build(Tree<Data>& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
-               uint32_t max_primitives, thread::Pool& threads);
+    void build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
+               thread::Pool& threads);
 
   private:
+    using Node       = scene::bvh::Node;
     using Reference  = scene::bvh::Reference;
-    using References = std::vector<Reference>;
+    using References = scene::bvh::References;
 
-    template <typename Data>
-    void serialize(Build_node* node, Triangles triangles, Vertices vertices, Tree<Data>& tree,
-                   uint32_t& current_triangle);
-
-    void assign(Build_node* node, References const& references);
+    void serialize(uint32_t source_node, uint32_t dest_node, Triangles triangles, Vertices vertices,
+                   triangle::Tree& tree, uint32_t& current_triangle);
 };
 
 }  // namespace bvh

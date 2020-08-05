@@ -21,10 +21,6 @@ class Filtered : public Base {
 
     ~Filtered() override;
 
-    int32_t filter_radius_int() const final;
-
-    int4 isolated_tile(int4 const& tile) const final;
-
   protected:
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& isolated,
                       int4 const& bounds);
