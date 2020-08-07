@@ -78,7 +78,7 @@ class Builder_base : protected Kernel {
 
     void reserve(uint32_t num_primitives);
 
-    Node& new_node();
+    void new_node();
 
     uint32_t current_node_index() const;
 

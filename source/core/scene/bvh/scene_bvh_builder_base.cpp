@@ -299,8 +299,8 @@ void Builder_base::reserve(uint32_t num_primitives) {
     current_node_ = 0;
 }
 
-bvh::Node& Builder_base::new_node() {
-    return nodes_[current_node_++];
+void Builder_base::new_node() {
+    current_node_++;
 }
 
 uint32_t Builder_base::current_node_index() const {
