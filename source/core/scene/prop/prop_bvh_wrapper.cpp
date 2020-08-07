@@ -338,7 +338,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
     uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
-        auto& node = nodes[n];
+        auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_indices()) {
@@ -408,7 +408,7 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
     uint32_t const* finite_props = tree_.indices_;
 
     while (!node_stack.empty()) {
-        auto& node = nodes[n];
+        auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_indices()) {

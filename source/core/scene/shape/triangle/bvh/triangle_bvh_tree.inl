@@ -230,8 +230,7 @@ template <typename Data>
 float Tree<Data>::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
                              Worker& worker) const {
     auto& node_stack = worker.node_stack();
-    //	node_stack.clear();
-    //	node_stack.push(0);
+
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -250,9 +249,8 @@ float Tree<Data>::visibility(ray& ray, uint64_t time, uint32_t entity, Filter fi
     scalar u;
     scalar v;
 
-    //	while (!node_stack.empty()) {
     while (0xFFFFFFFF != n) {
-        auto& node = nodes_[n];
+        auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_indices()) {
@@ -297,8 +295,7 @@ template <typename Data>
 bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker& worker,
                             float3& ta) const {
     auto& node_stack = worker.node_stack();
-    //	node_stack.clear();
-    //	node_stack.push(0);
+
     node_stack.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -317,9 +314,8 @@ bool Tree<Data>::absorption(ray& ray, uint64_t time, uint32_t entity, Filter fil
     scalar u;
     scalar v;
 
-    //	while (!node_stack.empty()) {
     while (0xFFFFFFFF != n) {
-        auto& node = nodes_[n];
+        auto const& node = nodes_[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
             if (0 == node.num_indices()) {
