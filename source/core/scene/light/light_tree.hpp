@@ -15,11 +15,7 @@ namespace light {
 class Light;
 
 struct Build_node {
-    Build_node();
-
-    ~Build_node();
-
-    void gather(uint32_t const* orders);
+    void gather(uint32_t const* orders, Build_node* nodes);
 
     float3 center;
 
@@ -28,9 +24,7 @@ struct Build_node {
     uint32_t middle;
     uint32_t end;
 
-    uint32_t light;
-
-    Build_node* children[2];
+    uint32_t children_or_light;
 };
 
 class Tree {
@@ -55,7 +49,7 @@ class Tree {
 
         uint32_t middle;
 
-        uint32_t next_or_light;
+        uint32_t children_or_light;
     };
 
     Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
@@ -83,19 +77,25 @@ class Tree {
 
 class Tree_builder {
   public:
+    Tree_builder();
+
+    ~Tree_builder();
+
     void build(Tree& tree, Scene const& scene);
 
   private:
     using Lights = std::vector<uint32_t>;
 
-    void split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights& lights,
+    void split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Lights& lights,
                Scene const& scene);
 
-    void serialize(Build_node* node);
+    void serialize(uint32_t num_nodes);
+
+    Build_node* build_nodes_;
 
     Tree::Node* nodes_;
 
-    uint32_t current_;
+    uint32_t current_node_;
 
     uint32_t light_order_;
 };
