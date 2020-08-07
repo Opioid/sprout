@@ -7,9 +7,7 @@
 namespace scene::material::volumetric {
 
 Octree_builder::Build_node::~Build_node() {
-    for (auto c : children) {
-        delete c;
-    }
+    delete[] children;
 }
 
 void Octree_builder::build(Gridtree& tree, Texture const& texture, CC const* ccs,
@@ -128,9 +126,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
                                     lcm.majorant_mu_s - lcm.minorant_mu_s);
 
         if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || any_less(maxb - minb, w)) {
-            for (auto& c : node->children) {
-                c = nullptr;
-            }
+            node->children = nullptr;
 
             auto& data = node->data;
 
@@ -183,9 +179,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
         float const diff = max_density - min_density;
 
         if (Gridtree::Log2_cell_dim - 3 == depth || diff < 0.1f || any_less(maxb - minb, w)) {
-            for (auto& c : node->children) {
-                c = nullptr;
-            }
+            node->children = nullptr;
 
             auto& data = node->data;
 
@@ -215,66 +209,60 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
 
     int3 const center = box.bounds[0] + half;
 
+    node->children = new Build_node[8];
+
     {
         Box const sub{{box.bounds[0], center}};
 
-        node->children[0] = new Build_node;
-        split(node->children[0], sub, texture, ccs, depth);
+        split(&node->children[0], sub, texture, ccs, depth);
     }
 
     {
         Box const sub{{int3(center[0], box.bounds[0][1], box.bounds[0][2]),
                        int3(box.bounds[1][0], center[1], center[2])}};
 
-        node->children[1] = new Build_node;
-        split(node->children[1], sub, texture, ccs, depth);
+        split(&node->children[1], sub, texture, ccs, depth);
     }
 
     {
         Box const sub{{int3(box.bounds[0][0], center[1], box.bounds[0][2]),
                        int3(center[0], box.bounds[1][1], center[2])}};
 
-        node->children[2] = new Build_node;
-        split(node->children[2], sub, texture, ccs, depth);
+        split(&node->children[2], sub, texture, ccs, depth);
     }
 
     {
         Box const sub{{int3(center[0], center[1], box.bounds[0][2]),
                        int3(box.bounds[1][0], box.bounds[1][1], center[2])}};
 
-        node->children[3] = new Build_node;
-        split(node->children[3], sub, texture, ccs, depth);
+        split(&node->children[3], sub, texture, ccs, depth);
     }
 
     {
         Box const sub{{int3(box.bounds[0][0], box.bounds[0][1], center[2]),
                        int3(center[0], center[1], box.bounds[1][2])}};
 
-        node->children[4] = new Build_node;
-        split(node->children[4], sub, texture, ccs, depth);
+        split(&node->children[4], sub, texture, ccs, depth);
     }
 
     {
         Box const sub{{int3(center[0], box.bounds[0][1], center[2]),
                        int3(box.bounds[1][0], center[1], box.bounds[1][2])}};
 
-        node->children[5] = new Build_node;
-        split(node->children[5], sub, texture, ccs, depth);
+        split(&node->children[5], sub, texture, ccs, depth);
     }
 
     {
         Box const sub{{int3(box.bounds[0][0], center[1], center[2]),
                        int3(center[0], box.bounds[1][1], box.bounds[1][2])}};
 
-        node->children[6] = new Build_node;
-        split(node->children[6], sub, texture, ccs, depth);
+        split(&node->children[6], sub, texture, ccs, depth);
     }
 
     {
         Box const sub{{center, box.bounds[1]}};
 
-        node->children[7] = new Build_node;
-        split(node->children[7], sub, texture, ccs, depth);
+        split(&node->children[7], sub, texture, ccs, depth);
     }
 
     num_nodes += 8;
@@ -283,14 +271,14 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
 void Octree_builder::serialize(Build_node* node, uint32_t current, uint32_t& next, uint32_t& data) {
     auto& n = nodes_[current];
 
-    if (node->children[0]) {
+    if (node->children) {
         n.set_children(next);
 
         current = next;
         next += 8;
 
         for (uint32_t i = 0; i < 8; ++i) {
-            serialize(node->children[i], current + i, next, data);
+            serialize(&node->children[i], current + i, next, data);
         }
     } else if (!node->data.is_empty()) {
         n.set_data(data);
