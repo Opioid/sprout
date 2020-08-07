@@ -5,6 +5,8 @@
 #include "scene/material/collision_coefficients.hpp"
 #include "volumetric_octree.hpp"
 
+#include <atomic>
+
 namespace image::texture {
 class Texture;
 }
@@ -45,6 +47,8 @@ class Octree_builder {
     Node* nodes_;
 
     CM* data_;
+
+    std::atomic<uint32_t> current_task_;
 };
 
 }  // namespace scene::material::volumetric
