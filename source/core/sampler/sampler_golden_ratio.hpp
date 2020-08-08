@@ -5,7 +5,7 @@
 
 namespace sampler {
 
-class alignas(64) Golden_ratio final : public Sampler {
+class alignas(32) Golden_ratio final : public Sampler {
   public:
     Golden_ratio();
 
@@ -23,8 +23,7 @@ class alignas(64) Golden_ratio final : public Sampler {
     void generate_2D(rnd::Generator& rng, uint32_t dimension);
     void generate_1D(rnd::Generator& rng, uint32_t dimension);
 
-    float2* samples_2D_;
-    float*  samples_1D_;
+    float* samples_;
 };
 
 extern template class Typed_pool<Golden_ratio>;
