@@ -113,12 +113,13 @@ class Worker {
 
     rnd::Generator rng_;
 
+    Interface_stack interface_stack_;
+    Interface_stack interface_stack_temp_;
+
     shape::Node_stack node_stack_;
 
     material::Sample_cache sample_cache_;
 
-    Interface_stack interface_stack_;
-    Interface_stack interface_stack_temp_;
 };
 
 }  // namespace scene

@@ -148,9 +148,9 @@ void size() {
 
     print_size<scene::shape::Node_stack>("scene::shape::Node_stack", 512);
 
-    print_size<scene::Worker>("scene::Worker", 1152);
-    print_size<rendering::Worker>("rendering::Worker", 1216);
-    print_size<rendering::Camera_worker>("rendering::Camera_worker", 1216);
+    print_size<scene::Worker>("scene::Worker", 1088);
+    print_size<rendering::Worker>("rendering::Worker", 1152);
+    print_size<rendering::Camera_worker>("rendering::Camera_worker", 1152);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 128);
     print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 192);
