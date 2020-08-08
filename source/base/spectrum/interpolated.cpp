@@ -1,20 +1,17 @@
 #include "interpolated.hpp"
 #include "math/math.hpp"
-#include "memory/align.hpp"
 
 namespace spectrum {
 
 Interpolated::Interpolated(uint32_t len, float const* wavelengths, float const* intensities)
-    : num_elements_(len),
-      wavelengths_(memory::allocate_aligned<float>(len)),
-      intensities_(memory::allocate_aligned<float>(len)) {
+    : num_elements_(len), wavelengths_(new float[len]), intensities_(new float[len]) {
     std::copy(wavelengths, wavelengths + len, wavelengths_);
     std::copy(intensities, intensities + len, intensities_);
 }
 
 Interpolated::~Interpolated() {
-    memory::free_aligned(intensities_);
-    memory::free_aligned(wavelengths_);
+    delete[] intensities_;
+    delete[] wavelengths_;
 }
 
 float Interpolated::start_wavelength() const {

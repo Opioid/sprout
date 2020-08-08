@@ -4,7 +4,6 @@
 #include "base/math/aabb.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/material/material.hpp"
 #include "scene/scene.inl"
@@ -23,7 +22,7 @@ template <typename Data>
 Tree<Data>::~Tree() {
     delete[] num_part_triangles_;
 
-    memory::free_aligned(nodes_);
+    delete[] nodes_;
 }
 
 template <typename Data>
@@ -31,8 +30,8 @@ scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
-        memory::free_aligned(nodes_);
-        nodes_ = memory::allocate_aligned<Node>(num_nodes);
+        delete[] nodes_;
+        nodes_ = new Node[num_nodes];
     }
 
     return nodes_;

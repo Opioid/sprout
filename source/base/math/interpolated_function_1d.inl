@@ -3,7 +3,6 @@
 
 #include "interpolated_function_1d.hpp"
 #include "math/math.hpp"
-#include "memory/align.hpp"
 
 namespace math {
 
@@ -27,7 +26,7 @@ Interpolated_function_1D<T>::Interpolated_function_1D(float range_begin, float r
     : range_end_(range_end),
       num_samples_(num_samples),
       back_(num_samples - 1),
-      samples_(memory::allocate_aligned<T>(num_samples)) {
+      samples_(new T[num_samples]) {
     float const range = range_end - range_begin;
 
     float const interval = range / float(num_samples - 1);
@@ -42,20 +41,20 @@ Interpolated_function_1D<T>::Interpolated_function_1D(float range_begin, float r
 
 template <typename T>
 Interpolated_function_1D<T>::~Interpolated_function_1D() {
-    memory::free_aligned(samples_);
+    delete[] samples_;
 }
 
 template <typename T>
 void Interpolated_function_1D<T>::allocate(float range_begin, float range_end,
                                            uint32_t num_samples) {
     if (num_samples_ != num_samples) {
-        memory::free_aligned(samples_);
+        delete[] samples_;
 
         num_samples_ = num_samples;
 
         back_ = num_samples - 1;
 
-        samples_ = memory::allocate_aligned<T>(num_samples);
+        samples_ = new T[num_samples];
     }
 
     range_end_ = range_end;

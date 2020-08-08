@@ -20,8 +20,7 @@ inline bool Interface::matches(Intersection const& intersection) const {
     return (prop == intersection.prop) & (part == intersection.geo.part);
 }
 
-inline Interface_stack::Interface_stack()
-    : index_(0), stack_(new Interface[Num_entries]) {}
+inline Interface_stack::Interface_stack() : index_(0), stack_(new Interface[Num_entries]) {}
 
 inline Interface_stack::Interface_stack(Interface_stack const& other)
     : stack_(new Interface[Num_entries]) {
@@ -29,7 +28,7 @@ inline Interface_stack::Interface_stack(Interface_stack const& other)
 }
 
 inline Interface_stack::~Interface_stack() {
-    delete [] stack_;
+    delete[] stack_;
 }
 
 inline void Interface_stack::operator=(Interface_stack const& other) {

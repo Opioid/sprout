@@ -1,7 +1,6 @@
 #include "transparent.hpp"
 #include "base/atomic/atomic.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 #include "image/typed_image.hpp"
 
 namespace rendering::sensor {
@@ -10,7 +9,7 @@ Transparent::Transparent(int32_t filter_radius)
     : Sensor(filter_radius), layers_(nullptr), pixels_(nullptr) {}
 
 Transparent::~Transparent() {
-    memory::free_aligned(layers_);
+    delete[] layers_;
 }
 
 void Transparent::set_layer(int32_t layer) {
@@ -100,9 +99,9 @@ void Transparent::on_resize(int2 dimensions, int32_t num_layers) {
     int32_t const len = dimensions[0] * dimensions[1] * num_layers;
 
     if (len != current_len) {
-        memory::free_aligned(layers_);
+        delete[] layers_;
 
-        layers_ = memory::allocate_aligned<Pixel>(uint32_t(len));
+        layers_ = new Pixel[uint32_t(len)];
 
         pixels_ = layers_;
     }

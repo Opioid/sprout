@@ -14,7 +14,7 @@ namespace light {
 
 class Light;
 
-struct Build_node {
+struct alignas(32) Build_node {
     void gather(uint32_t const* orders, Build_node* nodes);
 
     float3 center;
@@ -38,7 +38,7 @@ class Tree {
         float    pdf;
     };
 
-    struct Node {
+    struct alignas(32) Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
 
         float3 center;

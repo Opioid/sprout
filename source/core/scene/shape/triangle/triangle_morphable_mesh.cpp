@@ -4,7 +4,6 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "bvh/triangle_bvh_builder_sah.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
@@ -21,12 +20,12 @@ namespace scene::shape::triangle {
 Morphable_mesh::Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts)
     : Shape(Properties(Property::Complex, Property::Finite)),
       collection_(collection),
-      vertices_(memory::allocate_aligned<Vertex>(collection->num_vertices())) {
+      vertices_(new Vertex[collection->num_vertices()]) {
     tree_.allocate_parts(num_parts);
 }
 
 Morphable_mesh::~Morphable_mesh() {
-    memory::free_aligned(vertices_);
+    delete[] vertices_;
     delete collection_;
 }
 

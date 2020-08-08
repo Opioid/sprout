@@ -1,6 +1,5 @@
 #include "light_tree.hpp"
 #include "base/math/distribution/distribution_1d.inl"
-#include "base/memory/align.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "scene/scene.inl"
 #include "scene/shape/shape.inl"
@@ -41,9 +40,9 @@ Tree::Tree()
       infinite_light_powers_(nullptr) {}
 
 Tree::~Tree() {
-    memory::free_aligned(infinite_light_powers_);
-    memory::free_aligned(light_orders_);
-    memory::free_aligned(nodes_);
+    delete[] infinite_light_powers_;
+    delete[] light_orders_;
+    delete[] nodes_;
 }
 
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
@@ -154,23 +153,23 @@ void Tree::allocate(uint32_t num_finite_lights, uint32_t num_infinite_lights) {
     uint32_t const current_num_lights = num_finite_lights_ + num_infinite_lights_;
 
     if (current_num_lights != num_lights) {
-        memory::free_aligned(light_orders_);
+        delete[] light_orders_;
 
-        light_orders_ = memory::allocate_aligned<uint32_t>(num_lights);
+        light_orders_ = new uint32_t[num_lights];
     }
 
     if (num_finite_lights_ != num_finite_lights) {
-        memory::free_aligned(nodes_);
+        delete[] nodes_;
 
         uint32_t const num_nodes = 2 * num_finite_lights - 1;
 
-        nodes_ = memory::allocate_aligned<Node>(num_nodes);
+        nodes_ = new Node[num_nodes];
     }
 
     if (num_infinite_lights_ != num_infinite_lights) {
-        memory::free_aligned(infinite_light_powers_);
+        delete[] infinite_light_powers_;
 
-        infinite_light_powers_ = memory::allocate_aligned<float>(num_infinite_lights);
+        infinite_light_powers_ = new float[num_infinite_lights];
     }
 
     num_finite_lights_   = num_finite_lights;

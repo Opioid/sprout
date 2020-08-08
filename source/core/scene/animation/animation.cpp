@@ -2,7 +2,6 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/scene.inl"
 #include "scene/shape/morphable.hpp"
@@ -12,10 +11,10 @@ namespace scene::animation {
 Animation::Animation(uint32_t num_frames, uint32_t num_interpolated_frames)
     : last_frame_(0),
       num_keyframes_(num_frames),
-      keyframes_(memory::allocate_aligned<Keyframe>(num_frames + num_interpolated_frames)) {}
+      keyframes_(new Keyframe[num_frames + num_interpolated_frames]) {}
 
 Animation::~Animation() {
-    memory::free_aligned(keyframes_);
+    delete[] keyframes_;
 }
 
 void Animation::set(uint32_t index, Keyframe const& keyframe) {

@@ -1,20 +1,17 @@
 #ifndef SU_BASE_THREAD_TASK_QUEUE_INL
 #define SU_BASE_THREAD_TASK_QUEUE_INL
 
-#include "memory/align.hpp"
 #include "task_queue.hpp"
 
 namespace thread {
 
 template <typename T>
 Task_queue<T>::Task_queue(uint32_t num_tasks)
-    : num_tasks_(num_tasks),
-      tasks_(memory::allocate_aligned<T>(num_tasks)),
-      current_consume_(num_tasks) {}
+    : num_tasks_(num_tasks), tasks_(new T[num_tasks]), current_consume_(num_tasks) {}
 
 template <typename T>
 Task_queue<T>::~Task_queue() {
-    memory::free_aligned(tasks_);
+    delete[] tasks_;
 }
 
 template <typename T>

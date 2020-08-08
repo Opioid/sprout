@@ -1,6 +1,5 @@
 #include "sampler.hpp"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "camera_sample.hpp"
 
 namespace sampler {
@@ -15,7 +14,7 @@ Sampler::Sampler(rnd::Generator& rng)
       current_sample_1D_(nullptr) {}
 
 Sampler::~Sampler() {
-    memory::free_aligned(current_sample_2D_);
+    delete[] current_sample_2D_;
 }
 
 void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
@@ -24,14 +23,13 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
 
     if (num_samples != num_samples_ || num_samples_per_iteration != num_samples_per_iteration_ ||
         num_dimensions_2D != num_dimensions_2D_ || num_dimensions_1D != num_dimensions_1D_) {
-        memory::free_aligned(current_sample_2D_);
+        delete[] current_sample_2D_;
 
         num_samples_               = num_samples;
         num_samples_per_iteration_ = num_samples_per_iteration;
 
         num_dimensions_2D_ = num_dimensions_2D;
-        current_sample_2D_ = memory::allocate_aligned<uint32_t>(num_dimensions_2D +
-                                                                num_dimensions_1D);
+        current_sample_2D_ = new uint32_t[num_dimensions_2D + num_dimensions_1D];
 
         num_dimensions_1D_ = num_dimensions_1D;
         current_sample_1D_ = current_sample_2D_ + num_dimensions_2D;

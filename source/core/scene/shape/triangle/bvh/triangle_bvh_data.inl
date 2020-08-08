@@ -2,7 +2,6 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_DATA_INL
 
 #include "base/math/sampling.inl"
-#include "base/memory/align.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "triangle_bvh_data.hpp"
 
@@ -17,8 +16,8 @@ Data<Intersection_triangle, Shading_triangle>::Data()
 
 template <typename Intersection_triangle, typename Shading_triangle>
 Data<Intersection_triangle, Shading_triangle>::~Data() {
-    memory::free_aligned(intersection_triangles_);
-    memory::free_aligned(shading_triangles_);
+    delete[] intersection_triangles_;
+    delete[] shading_triangles_;
 }
 
 template <typename Intersection_triangle, typename Shading_triangle>
@@ -96,11 +95,11 @@ void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(
     num_triangles_    = num_triangles;
     current_triangle_ = 0;
 
-    memory::free_aligned(intersection_triangles_);
-    memory::free_aligned(shading_triangles_);
+    delete[] intersection_triangles_;
+    delete[] shading_triangles_;
 
-    intersection_triangles_ = memory::allocate_aligned<Intersection_triangle>(num_triangles);
-    shading_triangles_      = memory::allocate_aligned<Shading_triangle>(num_triangles);
+    intersection_triangles_ = new Intersection_triangle[num_triangles];
+    shading_triangles_      = new Shading_triangle[num_triangles];
 }
 
 template <typename Intersection_triangle, typename Shading_triangle>
