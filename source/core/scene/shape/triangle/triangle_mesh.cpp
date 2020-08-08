@@ -4,7 +4,6 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/buffer.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
@@ -28,8 +27,8 @@ Mesh::Mesh()
       part_materials_(nullptr) {}
 
 Mesh::~Mesh() {
-    memory::free_aligned(part_materials_);
-    memory::destroy_aligned(distributions_, tree_.num_parts());
+    delete[] part_materials_;
+    delete[] distributions_;
 }
 
 Tree& Mesh::tree() {
@@ -39,9 +38,9 @@ Tree& Mesh::tree() {
 void Mesh::allocate_parts(uint32_t num_parts) {
     tree_.allocate_parts(num_parts);
 
-    distributions_ = memory::construct_aligned<Distribution>(num_parts);
+    distributions_ = new Distribution[num_parts];
 
-    part_materials_ = memory::allocate_aligned<uint32_t>(num_parts);
+    part_materials_ = new uint32_t[num_parts];
 }
 
 void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
@@ -426,7 +425,7 @@ float3 Mesh::center(uint32_t part) const {
 }
 
 Mesh::Distribution::~Distribution() {
-    memory::free_aligned(triangle_mapping);
+    delete[] triangle_mapping;
 }
 
 void Mesh::Distribution::init(uint32_t part, Tree const& tree) {
@@ -436,7 +435,7 @@ void Mesh::Distribution::init(uint32_t part, Tree const& tree) {
 
     num_triangles = num;
 
-    triangle_mapping = memory::allocate_aligned<uint32_t>(num);
+    triangle_mapping = new uint32_t[num];
 
     for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_part(t) == part) {

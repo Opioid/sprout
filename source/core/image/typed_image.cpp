@@ -1,6 +1,5 @@
 #include "typed_image.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 
 #include <cstring>
 
@@ -44,7 +43,7 @@ Typed_image<T>::Typed_image() : data_(nullptr) {}
 
 template <typename T>
 Typed_image<T>::Typed_image(Description const& description)
-    : description_(description), data_(memory::allocate_aligned<T>(description.num_pixels())) {}
+    : description_(description), data_(new T[description.num_pixels()]) {}
 
 template <typename T>
 Typed_image<T>::Typed_image(Typed_image&& other) noexcept
@@ -54,7 +53,7 @@ Typed_image<T>::Typed_image(Typed_image&& other) noexcept
 
 template <typename T>
 Typed_image<T>::~Typed_image() {
-    memory::free_aligned(data_);
+    delete[] data_;
 }
 
 template <typename T>
@@ -76,12 +75,12 @@ void Typed_image<T>::resize(Description const& description) {
         return;
     }
 
-    memory::free_aligned(data_);
+    delete[] data_;
 
     description_.dimensions_   = description.dimensions_;
     description_.num_elements_ = description.num_elements_;
 
-    data_ = memory::allocate_aligned<T>(description_.num_pixels());
+    data_ = new T[description_.num_pixels()];
 }
 
 template <typename T>
@@ -215,7 +214,7 @@ Typed_sparse_image<T>::Typed_sparse_image(Description const& description)
 
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
-    cells_ = memory::allocate_aligned<Cell>(uint32_t(cell_len));
+    cells_ = new Cell[uint32_t(cell_len)];
 
     for (int32_t i = 0; i < cell_len; ++i) {
         cells_[i].data  = nullptr;
@@ -235,10 +234,10 @@ Typed_sparse_image<T>::~Typed_sparse_image() {
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
     for (int32_t i = 0; i < cell_len; ++i) {
-        memory::free_aligned(cells_[i].data);
+        delete[] cells_[i].data;
     }
 
-    memory::free_aligned(cells_);
+    delete[] cells_;
 }
 
 template <typename T>
@@ -280,7 +279,7 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) {
     Cell& cell = cells_[cell_index];
 
     if (!cell.data) {
-        cell.data = memory::allocate_aligned<T>(len);
+        cell.data = new T[len];
 
         std::memset(cell.data, 0, len * sizeof(T));
     }
@@ -305,7 +304,7 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) {
         }
 
         if (homogeneous) {
-            memory::free_aligned(cell.data);
+            delete[] cell.data;
 
             cell.data  = nullptr;
             cell.value = value;

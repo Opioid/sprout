@@ -1,7 +1,6 @@
 #include "rendering_driver.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/array.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
@@ -22,7 +21,7 @@ Driver::Driver(thread::Pool& threads, progress::Sink& progressor)
     : threads_(threads),
       scene_(nullptr),
       view_(nullptr),
-      workers_(memory::construct_aligned<Camera_worker>(threads.num_threads())),
+      workers_(new Camera_worker[threads.num_threads()]),
       frame_(0),
       frame_view_(0),
       frame_iteration_(0),
@@ -32,7 +31,7 @@ Driver::Driver(thread::Pool& threads, progress::Sink& progressor)
 Driver::~Driver() {
     delete[] photon_infos_;
 
-    memory::destroy_aligned(workers_, threads_.num_threads());
+    delete[] workers_;
 }
 
 void Driver::init(take::View& view, Scene& scene, bool progressive) {

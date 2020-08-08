@@ -1,7 +1,6 @@
 #include "distribution_2d.hpp"
 #include "distribution_1d.inl"
 #include "math/vector2.inl"
-#include "memory/align.hpp"
 
 namespace math {
 
@@ -10,16 +9,16 @@ Distribution_t_2D<T>::Distribution_t_2D() : conditional_size_(0), conditional_(n
 
 template <typename T>
 Distribution_t_2D<T>::~Distribution_t_2D() {
-    memory::destroy_aligned(conditional_, conditional_size_);
+    delete[] conditional_;
 }
 
 template <typename T>
 typename Distribution_t_2D<T>::Distribution_impl* Distribution_t_2D<T>::allocate(uint32_t num) {
     if (conditional_size_ != num) {
-        memory::destroy_aligned(conditional_, conditional_size_);
+        delete[] conditional_;
 
         conditional_size_ = num;
-        conditional_      = memory::construct_aligned<Distribution_impl>(num);
+        conditional_      = new Distribution_impl[num];
     }
 
     return conditional_;
@@ -39,7 +38,7 @@ template <typename T>
 void Distribution_t_2D<T>::init() {
     uint32_t const num_conditional = conditional_size_;
 
-    float* integrals = memory::allocate_aligned<float>(num_conditional);
+    float* integrals = new float[num_conditional];
 
     for (uint32_t i = 0; i < num_conditional; ++i) {
         integrals[i] = conditional_[i].integral();
@@ -50,7 +49,7 @@ void Distribution_t_2D<T>::init() {
     conditional_sizef_ = float(num_conditional);
     conditional_max_   = num_conditional - 1;
 
-    memory::free_aligned(integrals);
+    delete[] integrals;
 }
 
 template <typename T>

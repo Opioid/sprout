@@ -1,6 +1,5 @@
 #include "pathtracer_mis.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"

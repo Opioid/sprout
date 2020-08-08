@@ -125,10 +125,10 @@ void Importance::filter(float* buffer, thread::Pool& threads) const {
 }
 
 Importance_cache::Importance_cache()
-    : buffer_(memory::allocate_aligned<float>(Importance::Dimensions * Importance::Dimensions)) {}
+    : buffer_(new float[Importance::Dimensions * Importance::Dimensions]) {}
 
 Importance_cache::~Importance_cache() {
-    memory::free_aligned(buffer_);
+    delete[] buffer_;
 }
 
 void Importance_cache::init(scene::Scene const& scene) {

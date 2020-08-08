@@ -71,6 +71,8 @@ class Indexed_data {
                       Vertex_stream const& vertices, uint32_t triangle_id);
 
     struct alignas(16) Index_triangle {
+        Index_triangle();
+
         Index_triangle(uint32_t a, uint32_t b, uint32_t c, bool bitangent_sign, uint32_t part);
 
         uint32_t a, b, c;

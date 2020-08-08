@@ -3,7 +3,6 @@
 
 #include "base/math/quaternion.inl"
 #include "base/math/sampling.inl"
-#include "base/memory/align.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "triangle_bvh_indexed_data.hpp"
 
@@ -21,9 +20,9 @@ Indexed_data<SV>::Indexed_data()
 
 template <typename SV>
 Indexed_data<SV>::~Indexed_data() {
-    memory::free_aligned(shading_vertices_);
-    memory::free_aligned(positions_);
-    memory::free_aligned(triangles_);
+    delete[] shading_vertices_;
+    delete[] positions_;
+    delete[] triangles_;
 }
 
 template <typename SV>
@@ -274,13 +273,13 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertex_stream 
         num_triangles_ = num_triangles;
         num_vertices_  = num_vertices;
 
-        memory::free_aligned(shading_vertices_);
-        memory::free_aligned(positions_);
-        memory::free_aligned(triangles_);
+        delete[] shading_vertices_;
+        delete[] positions_;
+        delete[] triangles_;
 
-        triangles_        = memory::allocate_aligned<Index_triangle>(num_triangles);
-        positions_        = memory::allocate_aligned<float3>(num_vertices);
-        shading_vertices_ = memory::allocate_aligned<SV>(num_vertices);
+        triangles_        = new Index_triangle[num_triangles];
+        positions_        = new float3[num_vertices];
+        shading_vertices_ = new SV[num_vertices];
     }
 
     for (uint32_t i = 0; i < num_vertices; ++i) {
@@ -303,6 +302,9 @@ void Indexed_data<SV>::set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t
 
     triangles_[triangle_id] = Index_triangle(a, b, c, bitanget_sign, part);
 }
+
+template <typename SV>
+Indexed_data<SV>::Index_triangle::Index_triangle() = default;
 
 template <typename SV>
 Indexed_data<SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,

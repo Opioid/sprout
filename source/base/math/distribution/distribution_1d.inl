@@ -2,7 +2,6 @@
 #define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_1D_INL
 
 #include "distribution_1d.hpp"
-#include "memory/align.hpp"
 
 #include <algorithm>
 
@@ -384,8 +383,8 @@ inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1
       lut_range_(0.f) {}
 
 inline Distribution_implicit_pdf_lut_lin_1D::~Distribution_implicit_pdf_lut_lin_1D() {
-    memory::free_aligned(cdf_);
-    memory::free_aligned(lut_);
+    delete[] cdf_;
+    delete[] lut_;
 }
 
 inline void Distribution_implicit_pdf_lut_lin_1D::init(float const* data, uint32_t len,
@@ -483,12 +482,12 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
     }
 
     if (0.f == integral && 0.f != integral_) {
-        memory::free_aligned(cdf_);
+        delete[] cdf_;
 
         uint32_t const cdf_size = 3;
 
         cdf_size_ = cdf_size;
-        cdf_      = memory::allocate_aligned<float>(cdf_size);
+        cdf_      = new float[cdf_size];
 
         cdf_[0] = 1.f;
         cdf_[1] = 1.f;
@@ -501,10 +500,10 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(float co
     }
 
     if (uint32_t const cdf_size = len + 2; cdf_size_ != cdf_size) {
-        memory::free_aligned(cdf_);
+        delete[] cdf_;
 
         cdf_size_ = cdf_size;
-        cdf_      = memory::allocate_aligned<float>(cdf_size);
+        cdf_      = new float[cdf_size];
     }
 
     cdf_[0] = 0.f;
@@ -524,10 +523,10 @@ inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) {
     uint32_t const padded_lut_size = lut_size + 2;
 
     if (padded_lut_size != lut_size_) {
-        memory::free_aligned(lut_);
+        delete[] lut_;
 
         lut_size_  = padded_lut_size;
-        lut_       = memory::allocate_aligned<uint32_t>(padded_lut_size);
+        lut_       = new uint32_t[padded_lut_size];
         lut_range_ = float(lut_size);
     }
 

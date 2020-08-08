@@ -1,7 +1,6 @@
 #include "sampler_golden_ratio.hpp"
 #include "base/math/sample_distribution.inl"
 #include "base/math/vector2.inl"
-#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/random/shuffle.hpp"
 #include "sampler.inl"
@@ -14,7 +13,7 @@ Golden_ratio::Golden_ratio(rnd::Generator& rng)
     : Sampler(rng), samples_2D_(nullptr), samples_1D_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
-    memory::free_aligned(samples_2D_);
+    delete[] samples_2D_;
 }
 
 float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
@@ -42,10 +41,10 @@ float Golden_ratio::generate_sample_1D(uint32_t dimension) {
 }
 
 void Golden_ratio::on_resize() {
-    memory::free_aligned(samples_2D_);
+    delete[] samples_2D_;
 
-    float* buffer = memory::allocate_aligned<float>(num_samples_ * 2 * num_dimensions_2D_ +
-                                                    num_samples_ * num_dimensions_1D_);
+    float* buffer =
+        new float[num_samples_ * 2 * num_dimensions_2D_ + num_samples_ * num_dimensions_1D_];
 
     samples_2D_ = reinterpret_cast<float2*>(buffer);
     samples_1D_ = buffer + num_samples_ * 2 * num_dimensions_2D_;

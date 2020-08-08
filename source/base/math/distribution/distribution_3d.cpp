@@ -7,15 +7,15 @@ namespace math {
 Distribution_3D::Distribution_3D() : conditional_size_(0), conditional_(nullptr) {}
 
 Distribution_3D::~Distribution_3D() {
-    memory::destroy_aligned(conditional_, conditional_size_);
+    delete[] conditional_;
 }
 
 Distribution_2D* Distribution_3D::allocate(uint32_t num) {
     if (conditional_size_ != num) {
-        memory::destroy_aligned(conditional_, conditional_size_);
+        delete[] conditional_;
 
         conditional_size_ = num;
-        conditional_      = memory::construct_aligned<Distribution_2D>(num);
+        conditional_      = new Distribution_2D[num];
     }
 
     return conditional_;
@@ -24,7 +24,7 @@ Distribution_2D* Distribution_3D::allocate(uint32_t num) {
 void Distribution_3D::init() {
     uint32_t const num_conditional = conditional_size_;
 
-    float* integrals = memory::allocate_aligned<float>(num_conditional);
+    float* integrals = new float[num_conditional];
 
     for (uint32_t i = 0; i < num_conditional; ++i) {
         integrals[i] = conditional_[i].integral();
@@ -35,7 +35,7 @@ void Distribution_3D::init() {
     conditional_sizef_ = float(num_conditional);
     conditional_max_   = num_conditional - 1;
 
-    memory::free_aligned(integrals);
+    delete[] integrals;
 }
 
 float Distribution_3D::integral() const {

@@ -107,6 +107,10 @@ class Worker {
     float4 screenspace_differential(Renderstate const& rs, uint64_t time) const;
 
   protected:
+    Scene const* scene_;
+
+    Camera const* camera_;
+
     rnd::Generator rng_;
 
     shape::Node_stack node_stack_;
@@ -115,10 +119,6 @@ class Worker {
 
     Interface_stack interface_stack_;
     Interface_stack interface_stack_temp_;
-
-    Scene const* scene_;
-
-    Camera const* camera_;
 };
 
 }  // namespace scene
