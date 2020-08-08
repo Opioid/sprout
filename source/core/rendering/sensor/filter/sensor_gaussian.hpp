@@ -14,8 +14,6 @@ class Gaussian {
 
     ~Gaussian();
 
-    float radius() const;
-
     float evaluate(float d) const;
 
     float evaluate(float2 p) const;
@@ -23,11 +21,9 @@ class Gaussian {
   private:
     //  float gaussian(float d) const;
 
-    float integral(uint32_t num_samples) const;
+    float integral(uint32_t num_samples, float radius) const;
 
-    float radius_;
-
-    Interpolated_function_1D<float> gaussian_;
+    Interpolated_function_1D_N<float, 30> gaussian_;
 };
 
 /*

@@ -8,8 +8,8 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter)
-    : Base(int32_t(std::ceil(filter.radius()))), clamp_(clamp), filter_(std::move(filter)) {}
+Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius)
+    : Base(filter_radius), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 Filtered<Base, Clamp, F>::~Filtered() = default;
@@ -71,7 +71,7 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 
 template <class Base, class Clamp, class F>
 Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp const& clamp, F&& filter)
-    : Filtered_base(clamp, std::move(filter)) {}
+    : Filtered_base(clamp, std::move(filter), 1) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
@@ -146,7 +146,7 @@ void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 
 template <class Base, class Clamp, class F>
 Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp const& clamp, F&& filter)
-    : Filtered_base(clamp, std::move(filter)) {}
+    : Filtered_base(clamp, std::move(filter), 2) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
@@ -268,8 +268,9 @@ void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter)
-    : Filtered_base(clamp, std::move(filter)) {}
+Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius)
+    : Filtered_base(clamp, std::move(filter), int32_t(std::ceil(filter_radius))),
+      filter_radius_(filter_radius) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
@@ -281,7 +282,7 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
     int32_t const py = offset[1] + sample.pixel[1];
 
     int32_t const r  = Filtered_base::filter_radius_int();
-    float const   rf = Filtered_base::filter_.radius();
+    float const   rf = filter_radius_;
 
     for (int32_t ky = -r; ky <= r; ++ky) {
         for (int32_t kx = -r; kx <= r; ++kx) {
@@ -305,7 +306,7 @@ void Filtered_inf<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
     int32_t const py = offset[1] + sample.pixel[1];
 
     int32_t const r  = Filtered_base::filter_radius_int();
-    float const   rf = Filtered_base::filter_.radius();
+    float const   rf = filter_radius_;
 
     for (int32_t ky = -r; ky <= r; ++ky) {
         for (int32_t kx = -r; kx <= r; ++kx) {

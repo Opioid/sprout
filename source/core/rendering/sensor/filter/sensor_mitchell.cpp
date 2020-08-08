@@ -30,22 +30,12 @@ struct Functor {
 };
 
 Mitchell::Mitchell(float radius, float b, float c)
-    : radius_(radius),
-      radius_inv_(1.f / radius),
-      mitchell_(0.f, 1.f, 16, Functor(b, c)),
-      b_(b),
-      c_(c) {}
+    : radius_inv_(1.f / radius), mitchell_(0.f, 1.f, 16, Functor(b, c)), b_(b), c_(c) {}
 
 Mitchell::Mitchell(Mitchell&& other) noexcept
-    : radius_(other.radius_),
-      radius_inv_(other.radius_inv_),
-      mitchell_(std::move(other.mitchell_)) {}
+    : radius_inv_(other.radius_inv_), mitchell_(std::move(other.mitchell_)) {}
 
 Mitchell::~Mitchell() = default;
-
-float Mitchell::radius() const {
-    return radius_;
-}
 
 float Mitchell::evaluate(float d) const {
     return mitchell(d * radius_inv_);

@@ -42,6 +42,36 @@ class Interpolated_function_1D {
     T* samples_ = nullptr;
 };
 
+template <typename T, uint32_t N>
+class Interpolated_function_1D_N {
+  public:
+    Interpolated_function_1D_N();
+
+    template <typename F>
+    Interpolated_function_1D_N(float range_begin, float range_end, F f);
+
+    void allocate(float range_begin, float range_end);
+
+    void from_array(float range_begin, float range_end, T const t[N]);
+
+    void scale(T s);
+
+    T operator()(float x) const;
+
+    template <typename I>
+    T const& operator[](I i) const;
+
+    template <typename I>
+    T& operator[](I i);
+
+  private:
+    float range_end_;
+
+    float inverse_interval_;
+
+    T samples_[N];
+};
+
 }  // namespace math
 
 #endif

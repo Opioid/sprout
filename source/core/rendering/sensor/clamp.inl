@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_CLAMP_INL
 #define SU_CORE_RENDERING_SENSOR_CLAMP_INL
 
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "clamp.hpp"
 
 namespace rendering::sensor::clamp {

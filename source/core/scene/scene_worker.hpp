@@ -119,7 +119,6 @@ class Worker {
     shape::Node_stack node_stack_;
 
     material::Sample_cache sample_cache_;
-
 };
 
 }  // namespace scene

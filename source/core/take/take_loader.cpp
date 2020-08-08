@@ -337,12 +337,12 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
 }
 
 template <typename Filter>
-Filter load_filter(json::Value const& /*filter_value*/);
+Filter load_filter(json::Value const& /*filter_value*/, float& radius);
 
 template <>
-rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value) {
-    float radius = 1.f;
-    float alpha  = 1.8f;
+rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value, float& radius) {
+    radius      = 1.f;
+    float alpha = 1.8f;
 
     for (auto& n : filter_value.GetObject()) {
         if ("Gaussian" == n.name) {
@@ -357,10 +357,10 @@ rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value)
 }
 
 template <>
-rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value) {
-    float radius = 2.f;
-    float b      = 1.f / 3.f;
-    float c      = 1.f / 3.f;
+rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value, float& radius) {
+    radius  = 2.f;
+    float b = 1.f / 3.f;
+    float c = 1.f / 3.f;
 
     for (auto& n : filter_value.GetObject()) {
         if ("Mitchell" == n.name) {
@@ -381,34 +381,36 @@ static Sensor* make_filtered_sensor(float3 const& clamp_max, json::Value const& 
 
     bool const clamp = !any_negative(clamp_max);
 
-    Filter filter = load_filter<Filter>(filter_value);
+    float  radius;
+    Filter filter = load_filter<Filter>(filter_value, radius);
 
     if (clamp) {
-        if (filter.radius() <= 1.f) {
+        if (radius <= 1.f) {
             return new Filtered_1p0<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                                 std::move(filter));
         }
 
-        if (filter.radius() <= 2.f) {
+        if (radius <= 2.f) {
             return new Filtered_2p0<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                                 std::move(filter));
         }
 
         return new Filtered_inf<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
-                                                            std::move(filter));
+                                                            std::move(filter), radius);
     }
 
-    if (filter.radius() <= 1.f) {
+    if (radius <= 1.f) {
         return new Filtered_1p0<Base, clamp::Identity, Filter>(clamp::Identity(),
                                                                std::move(filter));
     }
 
-    if (filter.radius() <= 2.f) {
+    if (radius <= 2.f) {
         return new Filtered_2p0<Base, clamp::Identity, Filter>(clamp::Identity(),
                                                                std::move(filter));
     }
 
-    return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter));
+    return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter),
+                                                           radius);
 }
 
 enum class Sensor_filter_type { Undefined, Gaussian, Mitchell };

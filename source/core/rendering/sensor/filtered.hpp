@@ -15,9 +15,9 @@ class Filter;
 }
 
 template <class Base, class Clamp, class F>
-class Filtered : public Base {
+class alignas(64) Filtered : public Base {
   public:
-    Filtered(Clamp const& clamp, F&& filter);
+    Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius);
 
     ~Filtered() override;
 
@@ -80,13 +80,16 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_inf(Clamp const& clamp, F&& filter);
+    Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius);
 
     void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;
+
+  private:
+    float filter_radius_;
 };
 
 }  // namespace rendering::sensor

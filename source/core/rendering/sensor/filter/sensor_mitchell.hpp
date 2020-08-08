@@ -14,8 +14,6 @@ class Mitchell {
 
     ~Mitchell();
 
-    float radius() const;
-
     float evaluate(float d) const;
 
     float evaluate(float2 p) const;
@@ -23,7 +21,6 @@ class Mitchell {
   private:
     float mitchell(float x) const;
 
-    float radius_;
     float radius_inv_;
 
     Interpolated_function_1D<float> mitchell_;
