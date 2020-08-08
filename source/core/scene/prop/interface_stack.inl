@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_PROP_INTERFACE_STACK_INL
 #define SU_CORE_SCENE_PROP_INTERFACE_STACK_INL
 
-#include "base/memory/align.hpp"
 #include "interface_stack.hpp"
 #include "prop.hpp"
 #include "prop_intersection.hpp"
@@ -22,15 +21,15 @@ inline bool Interface::matches(Intersection const& intersection) const {
 }
 
 inline Interface_stack::Interface_stack()
-    : index_(0), stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
+    : index_(0), stack_(new Interface[Num_entries]) {}
 
 inline Interface_stack::Interface_stack(Interface_stack const& other)
-    : stack_(memory::allocate_aligned<Interface>(Num_entries)) {
+    : stack_(new Interface[Num_entries]) {
     *this = other;
 }
 
 inline Interface_stack::~Interface_stack() {
-    memory::free_aligned(stack_);
+    delete [] stack_;
 }
 
 inline void Interface_stack::operator=(Interface_stack const& other) {

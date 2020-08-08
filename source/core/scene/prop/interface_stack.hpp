@@ -18,7 +18,7 @@ namespace prop {
 struct Intersection;
 class Prop;
 
-struct Interface {
+struct alignas(16) Interface {
     material::Material const* material(Worker const& worker) const;
 
     bool matches(Intersection const& intersection) const;
