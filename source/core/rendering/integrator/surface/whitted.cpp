@@ -5,7 +5,6 @@
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.inl"
-#include "scene/light/light_sampling.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"

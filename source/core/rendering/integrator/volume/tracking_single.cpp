@@ -9,7 +9,6 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/light/light.inl"
-#include "scene/light/light_sampling.inl"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"

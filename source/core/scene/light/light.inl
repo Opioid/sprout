@@ -3,35 +3,12 @@
 
 #include "base/math/vector3.inl"
 #include "light.hpp"
-
 #include "scene/entity/composed_transformation.inl"
-#include "scene/material/material.inl"
-#include "scene/prop/prop.hpp"
-#include "scene/prop/prop_intersection.hpp"
 #include "scene/scene.hpp"
-#include "scene/scene_ray.hpp"
-
-#include "scene/shape/shape.hpp"
-#include "scene/shape/shape_sample.hpp"
 
 namespace scene::light {
 
 using Transformation = entity::Composed_transformation;
-using Filter         = material::Sampler_settings::Filter;
-using Sample_to      = shape::Sample_to;
-using Sample_from    = shape::Sample_from;
-using Sampler        = sampler::Sampler;
-
-inline Light::Light(Type type, uint32_t prop, uint32_t part)
-    : type_(type), prop_(prop), part_(part), extent_(0.f) {}
-
-inline float Light::area() const {
-    return extent_;
-}
-
-inline void Light::set_extent(float extent) {
-    extent_ = extent;
-}
 
 inline Transformation const& Light::transformation_at(uint64_t time, Transformation& transformation,
                                                       Scene const& scene) const {

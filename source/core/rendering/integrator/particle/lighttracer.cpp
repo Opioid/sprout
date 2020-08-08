@@ -11,7 +11,6 @@
 #include "sampler/camera_sample.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
-#include "scene/light/light_sampling.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"

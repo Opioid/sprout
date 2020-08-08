@@ -9,7 +9,6 @@
 #include "rendering/rendering_worker.inl"
 #include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
-#include "scene/light/light_sampling.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
@@ -18,6 +17,7 @@
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/shape/shape_sample.hpp"
 
 #include <iostream>
 
