@@ -3,7 +3,6 @@
 
 #include "interpolated_function_2d.hpp"
 #include "math.hpp"
-#include "memory/align.hpp"
 #include "vector2.inl"
 
 namespace math {
@@ -29,7 +28,7 @@ Interpolated_function_2D<T>::Interpolated_function_2D(float2 range_begin, float2
 
 template <typename T>
 Interpolated_function_2D<T>::~Interpolated_function_2D() {
-    memory::free_aligned(samples_);
+    delete[] samples_;
 }
 
 template <typename T>
@@ -38,9 +37,9 @@ void Interpolated_function_2D<T>::from_array(float2 range_begin, float2 range_en
     uint32_t const area = num_samples[0] * num_samples[1];
 
     if (num_samples_[0] * num_samples_[1] != area) {
-        memory::free_aligned(samples_);
+        delete[] samples_;
 
-        samples_ = memory::allocate_aligned<T>(area);
+        samples_ = new T[area];
     }
 
     num_samples_ = num_samples;

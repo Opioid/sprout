@@ -3,7 +3,6 @@
 
 #include "interpolated_function_3d.hpp"
 #include "math.hpp"
-#include "memory/align.hpp"
 #include "vector3.inl"
 
 namespace math {
@@ -30,7 +29,7 @@ Interpolated_function_3D<T>::Interpolated_function_3D(float3 const& range_begin,
 
 template <typename T>
 Interpolated_function_3D<T>::~Interpolated_function_3D() {
-    memory::free_aligned(samples_);
+    delete[] samples_;
 }
 
 template <typename T>
@@ -39,9 +38,9 @@ void Interpolated_function_3D<T>::from_array(float3 const& range_begin, float3 c
     uint32_t const volume = num_samples[0] * num_samples[1] * num_samples[2];
 
     if (num_samples_[0] * num_samples_[1] * num_samples_[2] != volume) {
-        memory::free_aligned(samples_);
+        delete[] samples_;
 
-        samples_ = memory::allocate_aligned<T>(volume);
+        samples_ = new T[volume];
     }
 
     num_samples_ = num_samples;
