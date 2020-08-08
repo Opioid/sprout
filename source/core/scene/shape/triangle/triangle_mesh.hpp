@@ -97,7 +97,7 @@ class alignas(64) Mesh final : public Shape {
 
         ~Distribution();
 
-        void init(uint32_t part, const Tree& tree);
+        void init(uint32_t part, Tree const& tree);
 
         bool empty() const;
 

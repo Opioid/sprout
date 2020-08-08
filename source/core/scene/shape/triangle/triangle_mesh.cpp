@@ -429,7 +429,7 @@ Mesh::Distribution::~Distribution() {
     memory::free_aligned(triangle_mapping);
 }
 
-void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
+void Mesh::Distribution::init(uint32_t part, Tree const& tree) {
     uint32_t const num = tree.num_triangles(part);
 
     memory::Buffer<float> areas(num);
