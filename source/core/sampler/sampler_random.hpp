@@ -5,7 +5,7 @@
 
 namespace sampler {
 
-class alignas(64) Random : public Sampler {
+class alignas(32) Random : public Sampler {
   public:
     Random(rnd::Generator& rng);
 

@@ -18,7 +18,7 @@ class Sampler {
     virtual ~Sampler();
 
     void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
+                uint16_t num_dimensions_2D, uint16_t num_dimensions_1D);
 
     void start_pixel();
 
@@ -40,13 +40,11 @@ class Sampler {
     rnd::Generator& rng_;
 
     uint32_t num_samples_;
-    uint32_t num_samples_per_iteration_;
 
-    uint32_t num_dimensions_2D_;
-    uint32_t num_dimensions_1D_;
+    uint16_t num_dimensions_2D_;
+    uint16_t num_dimensions_1D_;
 
-    uint32_t* current_sample_2D_;
-    uint32_t* current_sample_1D_;
+    uint32_t* current_sample_;
 };
 
 class Pool {
@@ -62,13 +60,13 @@ class Pool {
 };
 
 template <typename T>
-class Typed_pool : public Pool {
+class Typed_pool final : public Pool {
   public:
     Typed_pool(uint32_t num_samplers);
 
-    ~Typed_pool() override;
+    ~Typed_pool() final;
 
-    Sampler* get(uint32_t id, rnd::Generator& rng) const override;
+    Sampler* get(uint32_t id, rnd::Generator& rng) const final;
 
   protected:
     T* samplers_;

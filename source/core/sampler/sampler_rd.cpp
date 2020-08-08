@@ -112,7 +112,7 @@ void RD::generate_2D(uint32_t dimension) {
 
     float2* begin = samples_2D_ + dimension * Num_batch;
 
-    uint32_t& current_sample = current_sample_2D_[dimension];
+    uint32_t& current_sample = current_sample_[dimension];
 
     for (uint32_t i = 0; i < Num_batch; ++i) {
         uint32_t const n = ++current_sample;
@@ -130,7 +130,7 @@ void RD::generate_1D(uint32_t dimension) {
 
     float* begin = samples_1D_ + dimension * Num_batch;
 
-    uint32_t& current_sample = current_sample_1D_[dimension];
+    uint32_t& current_sample = current_sample_[num_dimensions_2D_ + dimension];
 
     for (uint32_t i = 0; i < Num_batch; ++i) {
         float const n = float(++current_sample);
