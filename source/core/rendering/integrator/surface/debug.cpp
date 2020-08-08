@@ -11,12 +11,11 @@
 
 namespace rendering::integrator::surface {
 
-Debug::Debug(rnd::Generator& rng, Settings const& settings)
-    : Integrator(rng), settings_(settings), sampler_(rng) {}
+Debug::Debug(Settings const& settings) : settings_(settings) {}
 
 void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
-void Debug::start_pixel() {}
+void Debug::start_pixel(rnd::Generator& /*rng*/) {}
 
 float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker,
                  Interface_stack const& initial_stack) {
@@ -61,10 +60,10 @@ Debug_pool::Debug_pool(uint32_t num_integrators, Debug::Settings::Vector vector)
     settings_.vector = vector;
 }
 
-Integrator* Debug_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* Debug_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Debug(rng, settings_);
+        return new (&integrators_[id]) Debug(settings_);
     }
 
     return &integrators_[id];

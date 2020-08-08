@@ -71,32 +71,32 @@ class alignas(16) Light {
     bool is_finite(Scene const& scene) const;
 
     bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
-                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
-                Worker const& worker, Sample_to& result) const;
+                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
+                Sample_to& result) const;
 
     float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const;
 
     bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
-                AABB const& bounds, Worker const& worker, Sample_from& result) const;
+                AABB const& bounds, Worker& worker, Sample_from& result) const;
 
     bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
-                Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+                Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
 
     float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const;
 
     bool sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
-                Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
+                Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
                 Sample_to& result) const;
 
     bool sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                Worker const& worker, Sample_to& result) const;
+                Worker& worker, Sample_to& result) const;
 
     bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
-                Worker const& worker, Sample_from& result) const;
+                Worker& worker, Sample_from& result) const;
 
     bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+                Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
 
     float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,

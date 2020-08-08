@@ -22,22 +22,25 @@ using namespace image::procedural;
 
 static float constexpr Dot_radius = 0.004f;
 
-void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target);
+void render_set(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+                Byte3& target);
 
-void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target);
+void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+                 Byte3& target);
 
 void render_triangle(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target);
 
-void render_triangle_heitz(std::string const& name, Sampler& sampler, Renderer& renderer,
-                           Byte3& target);
+void render_triangle_heitz(std::string const& name, Sampler& sampler, rnd::Generator& rng,
+                           Renderer& renderer, Byte3& target);
 
-void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& renderer,
-                         Byte3& target);
+void render_triangle_one(std::string const& name, Sampler& sampler, rnd::Generator& rng,
+                         Renderer& renderer, Byte3& target);
 
-void render_quad(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target);
-
-void render_quad(std::string const& name, Sampler& sampler, float2 center, Renderer& renderer,
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
                  Byte3& target);
+
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, float2 center,
+                 Renderer& renderer, Byte3& target);
 
 // https://drive.google.com/file/d/1J-183vt4BrN9wmqItECIjjLIKwm29qSg/view
 static inline float2 sample_triangle_uniform_heitz(float2 uv) {
@@ -112,32 +115,33 @@ void test() {
     {
         rnd::Generator rng(0, 0);
 
-        Golden_ratio sampler(rng);
+        Golden_ratio sampler;
 
         sampler.resize(num_samples, 1, 1, 1);
-        render_set("golden_ratio", sampler, renderer, target);
+        render_set("golden_ratio", sampler, rng, renderer, target);
     }
 
     {
         rnd::Generator rng(0, 0);
 
-        RD sampler(rng);
+        RD sampler;
 
         sampler.resize(num_samples, 1, 1, 1);
-        render_set("rd", sampler, renderer, target);
+        render_set("rd", sampler, rng, renderer, target);
     }
 
     {
         rnd::Generator rng(0, 0);
 
-        Random sampler(rng);
+        Random sampler;
 
         sampler.resize(num_samples, 1, 1, 1);
-        render_set("random", sampler, renderer, target);
+        render_set("random", sampler, rng, renderer, target);
     }
 }
 
-void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
+void render_set(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+                Byte3& target) {
     //    render_disk(name + "_disk_0.png", sampler, renderer, target);
     //    render_disk(name + "_disk_1.png", sampler, renderer, target);
 
@@ -150,11 +154,12 @@ void render_set(std::string const& name, Sampler& sampler, Renderer& renderer, B
     //    render_triangle_one(name + "_triangle_one_0.png", sampler, renderer, target);
     //    render_triangle_one(name + "_triangle_one_1.png", sampler, renderer, target);
 
-    render_quad(name + "_quad_0.png", sampler, renderer, target);
-    render_quad(name + "_quad_1.png", sampler, renderer, target);
+    render_quad(name + "_quad_0.png", sampler, rng, renderer, target);
+    render_quad(name + "_quad_1.png", sampler, rng, renderer, target);
 }
 
-void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
+void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+                 Byte3& target) {
     std::cout << name << ": ";
 
     float2 const center(0.5f, 0.5f);
@@ -168,13 +173,13 @@ void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, 
 
     float const n = 1.f / float(segment_len);
 
-    sampler.start_pixel();
+    sampler.start_pixel(rng);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
     float2 average(0.f);
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ds = 0.5f * (sample_disk_concentric(s) + float2(1.f));
         average += n * ds;
         renderer.draw_circle(ds, Dot_radius);
@@ -186,7 +191,7 @@ void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, 
 
     average = float2(0.f);
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ds = 0.5f * (sample_disk_concentric(s) + float2(1.f));
         average += n * ds;
         renderer.draw_circle(ds, Dot_radius);
@@ -198,7 +203,7 @@ void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, 
 
     average = float2(0.f);
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ds = 0.5f * (sample_disk_concentric(s) + float2(1.f));
         average += n * ds;
         renderer.draw_circle(ds, Dot_radius);
@@ -210,7 +215,7 @@ void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, 
 
     average = float2(0.f);
     for (uint32_t i = 0, len = num_samples / 4; i < len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ds = 0.5f * (sample_disk_concentric(s) + float2(1.f));
         average += n * ds;
         renderer.draw_circle(ds, Dot_radius);
@@ -223,7 +228,8 @@ void render_disk(std::string const& name, Sampler& sampler, Renderer& renderer, 
     encoding::png::Writer::write(name, target);
 }
 
-void render_triangle(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
+void render_triangle(std::string const& name, Sampler& sampler, rnd::Generator& rng,
+                     Renderer& renderer, Byte3& target) {
     std::cout << name << ": " << std::endl;
 
     renderer.set_brush(float3(0.18f));
@@ -233,12 +239,12 @@ void render_triangle(std::string const& name, Sampler& sampler, Renderer& render
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel();
+    sampler.start_pixel(rng);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -247,7 +253,7 @@ void render_triangle(std::string const& name, Sampler& sampler, Renderer& render
     renderer.set_brush(float3(0.f, 0.7f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -256,7 +262,7 @@ void render_triangle(std::string const& name, Sampler& sampler, Renderer& render
     renderer.set_brush(float3(0.f, 0.f, 1.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -265,7 +271,7 @@ void render_triangle(std::string const& name, Sampler& sampler, Renderer& render
     renderer.set_brush(float3(0.7f, 0.7f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -276,8 +282,8 @@ void render_triangle(std::string const& name, Sampler& sampler, Renderer& render
     encoding::png::Writer::write(name, target);
 }
 
-void render_triangle_heitz(std::string const& name, Sampler& sampler, Renderer& renderer,
-                           Byte3& target) {
+void render_triangle_heitz(std::string const& name, Sampler& sampler, rnd::Generator& rng,
+                           Renderer& renderer, Byte3& target) {
     std::cout << name << ": " << std::endl;
 
     renderer.set_brush(float3(0.18f));
@@ -287,12 +293,12 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, Renderer& 
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel();
+    sampler.start_pixel(rng);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform_heitz(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -301,7 +307,7 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, Renderer& 
     renderer.set_brush(float3(0.f, 0.7f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform_heitz(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -310,7 +316,7 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, Renderer& 
     renderer.set_brush(float3(0.f, 0.f, 1.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform_heitz(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -319,7 +325,7 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, Renderer& 
     renderer.set_brush(float3(0.7f, 0.7f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform_heitz(s);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -330,8 +336,8 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, Renderer& 
     encoding::png::Writer::write(name, target);
 }
 
-void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& renderer,
-                         Byte3& target) {
+void render_triangle_one(std::string const& name, Sampler& sampler, rnd::Generator& rng,
+                         Renderer& renderer, Byte3& target) {
     std::cout << name << ": " << std::endl;
 
     renderer.set_brush(float3(0.18f));
@@ -341,12 +347,12 @@ void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& re
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel();
+    sampler.start_pixel(rng);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s[1]);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -355,7 +361,7 @@ void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& re
     renderer.set_brush(float3(0.f, 0.7f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s[1]);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -364,7 +370,7 @@ void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& re
     renderer.set_brush(float3(0.f, 0.f, 1.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s[1]);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -373,7 +379,7 @@ void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& re
     renderer.set_brush(float3(0.7f, 0.7f, 0.f));
 
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s  = sampler.generate_sample_2D();
+        float2 const s  = sampler.generate_sample_2D(rng);
         float2 const ts = sample_triangle_uniform(s[1]);
 
         renderer.draw_circle(ts, Dot_radius);
@@ -384,7 +390,8 @@ void render_triangle_one(std::string const& name, Sampler& sampler, Renderer& re
     encoding::png::Writer::write(name, target);
 }
 
-void render_quad(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target) {
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+                 Byte3& target) {
     std::cout << name << std::endl;
 
     renderer.set_brush(float3(0.18f));
@@ -394,32 +401,32 @@ void render_quad(std::string const& name, Sampler& sampler, Renderer& renderer, 
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel();
+    sampler.start_pixel(rng);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s = sampler.generate_sample_2D();
+        float2 const s = sampler.generate_sample_2D(rng);
         //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 
     renderer.set_brush(float3(0.f, 0.7f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s = sampler.generate_sample_2D();
+        float2 const s = sampler.generate_sample_2D(rng);
         //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 
     renderer.set_brush(float3(0.f, 0.f, 1.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s = sampler.generate_sample_2D();
+        float2 const s = sampler.generate_sample_2D(rng);
         //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 
     renderer.set_brush(float3(0.7f, 0.7f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s = sampler.generate_sample_2D();
+        float2 const s = sampler.generate_sample_2D(rng);
         //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
@@ -429,18 +436,18 @@ void render_quad(std::string const& name, Sampler& sampler, Renderer& renderer, 
     encoding::png::Writer::write(name, target);
 }
 
-void render_quad(std::string const& name, Sampler& sampler, float2 center, Renderer& renderer,
-                 Byte3& target) {
+void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, float2 center,
+                 Renderer& renderer, Byte3& target) {
     renderer.set_brush(float3(0.18f));
     renderer.clear();
 
     uint32_t const num_samples = sampler.num_samples();
 
-    sampler.start_pixel();
+    sampler.start_pixel(rng);
 
     renderer.set_brush(float3(0.8f, 0.8f, 0.8f));
     for (uint32_t i = 0; i < num_samples; ++i) {
-        float2 const s = sampler.generate_sample_2D();
+        float2 const s = sampler.generate_sample_2D(rng);
 
         float2 const d = s - center;
         //		float const scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));

@@ -22,13 +22,13 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool photons_not_only_through_specular;
     };
 
-    Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive);
+    Pathtracer_MIS(Settings const& settings, bool progressive);
 
     ~Pathtracer_MIS() final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(rnd::Generator& rng) final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) final;
@@ -92,7 +92,7 @@ class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
                         uint32_t min_bounces, uint32_t max_bounces, Light_sampling light_sampling,
                         bool enable_caustics, bool photons_only_through_specular);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     Pathtracer_MIS::Settings settings_;

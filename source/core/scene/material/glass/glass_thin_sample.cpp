@@ -28,7 +28,7 @@ bxdf::Result Sample_thin::evaluate_b(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
-void Sample_thin::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample_thin::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
     // Thin material is always double sided, so no need to check hemisphere.
 
     float3 const n = layer_.n_;
@@ -49,7 +49,7 @@ void Sample_thin::sample(Sampler& sampler, bxdf::Sample& result) const {
         f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
     }
 
-    float const p = sampler.generate_sample_1D();
+    float const p = sampler.generate_sample_1D(rng);
 
     if (p <= f) {
         reflect(wo_, n, n_dot_wo, result);

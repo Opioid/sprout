@@ -191,8 +191,8 @@ bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*transform
 }
 
 bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
-                  float /*area*/, bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                  Sample_to& sample) const {
+                  float /*area*/, bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
+                  uint32_t sampler_dimension, Sample_to& sample) const {
     float3 const axis                = transformation.position - p;
     float const  axis_squared_length = squared_length(axis);
     float const  radius              = transformation.scale_x();
@@ -206,7 +206,7 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 
     auto const [x, y] = orthonormal_basis(z);
 
-    float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
+    float2 const r2  = sampler.generate_sample_2D(rng, sampler_dimension);
     float3 const dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
     float const d = axis_length - radius;  // this is not accurate
@@ -217,16 +217,17 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& tran
 }
 
 bool Cube::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
-                  bool /*two_sided*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                  float2 /*importance_uv*/, AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+                  bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
+                  uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
 bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
-                         float volume, Sampler& sampler, uint32_t sampler_dimension,
-                         Sample_to& sample) const {
-    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
-    float const  r1 = sampler.generate_sample_1D(sampler_dimension);
+                         float volume, Sampler& sampler, rnd::Generator& rng,
+                         uint32_t sampler_dimension, Sample_to& sample) const {
+    float2 const r2 = sampler.generate_sample_2D(rng, sampler_dimension);
+    float const  r1 = sampler.generate_sample_1D(rng, sampler_dimension);
 
     float3 const r3(r2, r1);
     float3 const xyz  = 2.f * (r3 - 0.5f);

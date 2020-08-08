@@ -22,15 +22,13 @@
 
 namespace rendering::integrator::surface {
 
-PM::PM(rnd::Generator& rng, Settings const& settings, bool progressive)
-    : Integrator(rng),
-      settings_(settings),
-      sampler_(rng),
+PM::PM(Settings const& settings, bool progressive)
+    : settings_(settings),
       sampler_pool_(progressive ? nullptr
                                 : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(i, rng);
+            material_samplers_[i] = sampler_pool_->get(i);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -51,11 +49,11 @@ void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     }
 }
 
-void PM::start_pixel() {
-    sampler_.start_pixel();
+void PM::start_pixel(rnd::Generator& rng) {
+    sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {
-        s->start_pixel();
+        s->start_pixel(rng);
     }
 }
 
@@ -93,7 +91,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
             break;
         }
 
-        material_sample.sample(material_sampler(ray.depth), sample_result);
+        material_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -179,10 +177,10 @@ PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounce
       settings_{min_bounces, max_bounces, !photons_only_through_specular},
       progressive_(progressive) {}
 
-Integrator* PM_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* PM_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) PM(rng, settings_, progressive_);
+        return new (&integrators_[id]) PM(settings_, progressive_);
     }
 
     return &integrators_[id];

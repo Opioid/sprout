@@ -5,10 +5,6 @@
 
 #include <cstdint>
 
-namespace rnd {
-class Generator;
-}
-
 namespace scene {
 
 namespace entity {
@@ -46,7 +42,15 @@ class Scene;
 
 }  // namespace scene
 
-namespace rendering::integrator {
+namespace rnd {
+class Generator;
+}
+
+namespace rendering {
+
+class Worker;
+
+namespace integrator {
 
 struct Light_sampling {
     enum class Strategy { Single, All };
@@ -71,18 +75,16 @@ class Integrator {
     using Intersection    = scene::prop::Intersection;
     using Visibility      = scene::shape::Visibility;
 
-    Integrator(rnd::Generator& rng);
+    Integrator();
 
     virtual ~Integrator();
 
     virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) = 0;
 
-    virtual void start_pixel() = 0;
-
-  protected:
-    rnd::Generator& rng_;
+    virtual void start_pixel(rnd::Generator& rng) = 0;
 };
 
-}  // namespace rendering::integrator
+}  // namespace integrator
+}  // namespace rendering
 
 #endif

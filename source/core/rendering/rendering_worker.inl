@@ -4,6 +4,7 @@
 #include "rendering/integrator/particle/lighttracer.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "rendering_worker.hpp"
+#include "scene/scene_worker.inl"
 
 namespace rendering {
 

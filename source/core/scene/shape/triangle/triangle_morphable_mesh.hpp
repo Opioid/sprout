@@ -44,12 +44,12 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
                          Filter filter, Worker& worker, float3& ta) const final;
 
     bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                bool two_sided, sampler::Sampler& sampler, uint32_t sampler_dimension,
-                Sample_to& sample) const final;
+                bool two_sided, sampler::Sampler& sampler, rnd::Generator& rng,
+                uint32_t sampler_dimension, Sample_to& sample) const final;
 
     bool sample(uint32_t part, Transformation const& transformation, float area, bool two_sided,
-                sampler::Sampler& sampler, uint32_t sampler_dimension, float2 importance_uv,
-                AABB const& bounds, Sample_from& sample) const final;
+                sampler::Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
+                float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;
 
     float pdf(Ray const& ray, shape::Intersection const& intersection,
               Transformation const& transformation, float area, bool two_sided,

@@ -51,7 +51,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     return {ggx.reflection, ggx.pdf()};
 }
 
-void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -61,7 +61,7 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
 
     fresnel::Schlick const schlick(f0_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, schlick, xi,
                                                    result);

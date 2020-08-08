@@ -7,6 +7,7 @@
 #include "rendering/rendering_worker.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.inl"
+#include "scene/light/light_sampling.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
@@ -24,16 +25,14 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
-Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive)
-    : Integrator(rng),
-      settings_(settings),
-      sampler_(rng),
+Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
+    : settings_(settings),
       sampler_pool_(progressive ? nullptr
                                 : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(2 * i + 0, rng);
-            light_samplers_[i]    = sampler_pool_->get(2 * i + 1, rng);
+            material_samplers_[i] = sampler_pool_->get(2 * i + 0);
+            light_samplers_[i]    = sampler_pool_->get(2 * i + 1);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -72,15 +71,15 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
     }
 }
 
-void Pathtracer_MIS::start_pixel() {
-    sampler_.start_pixel();
+void Pathtracer_MIS::start_pixel(rnd::Generator& rng) {
+    sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {
-        s->start_pixel();
+        s->start_pixel(rng);
     }
 
     for (auto s : light_samplers_) {
-        s->start_pixel();
+        s->start_pixel(rng);
     }
 }
 
@@ -173,7 +172,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         float effective_bxdf_pdf = sample_result.pdf;
 
         // Material BSDF importance sample
-        material_sample.sample(material_sampler(ray.depth), sample_result);
+        material_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -293,7 +292,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         if (ray.depth >= settings_.min_bounces) {
-            if (russian_roulette(throughput, sampler_.generate_sample_1D())) {
+            if (russian_roulette(throughput, sampler_.generate_sample_1D(worker.rng()))) {
                 break;
             }
         }
@@ -321,11 +320,13 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
     float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface,
                                               translucent);
 
+    auto& rng = worker.rng();
+
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         float3 const n = material_sample.geometric_normal();
 
         for (uint32_t i = num_samples; i > 0; --i) {
-            float const select = light_sampler(ray.depth).generate_sample_1D(1);
+            float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
             // auto const light = worker.scene().random_light(select);
             auto const light = worker.scene().random_light(p, n, translucent, select);
@@ -493,10 +494,10 @@ Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progress
                 light_sampling, !enable_caustics, !photons_only_through_specular},
       progressive_(progressive) {}
 
-Integrator* Pathtracer_MIS_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* Pathtracer_MIS_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer_MIS(rng, settings_, progressive_);
+        return new (&integrators_[id]) Pathtracer_MIS(settings_, progressive_);
     }
 
     return &integrators_[id];

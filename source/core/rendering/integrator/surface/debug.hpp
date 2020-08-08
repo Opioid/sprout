@@ -13,11 +13,11 @@ class alignas(64) Debug final : public Integrator {
         Vector vector;
     };
 
-    Debug(rnd::Generator& rng, Settings const& settings);
+    Debug(Settings const& settings);
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(rnd::Generator& rng) final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) final;
@@ -32,7 +32,7 @@ class Debug_pool final : public Typed_pool<Debug> {
   public:
     Debug_pool(uint32_t num_integrators, Debug::Settings::Vector vector);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     Debug::Settings settings_;

@@ -5,6 +5,7 @@
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/light/light.inl"
+#include "scene/light/light_sampling.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
@@ -16,16 +17,15 @@
 
 namespace rendering::integrator::surface {
 
-Whitted::Whitted(rnd::Generator& rng, Settings const& settings)
-    : Integrator(rng), settings_(settings), sampler_(rng) {}
+Whitted::Whitted(Settings const& settings) : settings_(settings) {}
 
 void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
     uint32_t const num_lights = scene.num_lights();
     sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
 }
 
-void Whitted::start_pixel() {
-    sampler_.start_pixel();
+void Whitted::start_pixel(rnd::Generator& rng) {
+    sampler_.start_pixel(rng);
 }
 
 float4 Whitted::li(Ray& ray, Intersection& intersection, Worker& worker,
@@ -130,10 +130,10 @@ Whitted_pool::Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples)
     settings_.num_light_samples_reciprocal = 1.f / float(num_light_samples);
 }
 
-Integrator* Whitted_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* Whitted_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Whitted(rng, settings_);
+        return new (&integrators_[id]) Whitted(settings_);
     }
 
     return &integrators_[id];

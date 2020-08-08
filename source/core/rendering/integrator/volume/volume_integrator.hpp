@@ -13,7 +13,7 @@ namespace integrator::volume {
 
 class Integrator : public integrator::Integrator {
   public:
-    Integrator(rnd::Generator& rng);
+    Integrator();
 
     virtual ~Integrator();
 
@@ -29,7 +29,7 @@ class Pool {
 
     virtual ~Pool();
 
-    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const = 0;
+    virtual Integrator* get(uint32_t id) const = 0;
 
   protected:
     uint32_t num_integrators_;

@@ -27,7 +27,8 @@ class Cubic_stereoscopic final : public Stereoscopic {
                       Ray& ray) const final;
 
     bool sample(uint32_t view, int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
-                uint32_t sampler_dimension, Scene const& scene, Sample_to& sample) const final;
+                rnd::Generator& rng, uint32_t sampler_dimension, Scene const& scene,
+                Sample_to& sample) const final;
 
     void set_interpupillary_distance_falloff(float ipd_falloff);
 

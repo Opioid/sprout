@@ -2,6 +2,7 @@ target_sources(core
     PRIVATE
     "emittance.cpp"
     "emittance.hpp"
+    "light_sampling.inl"
     "light.cpp"
     "light.hpp"
     "light.inl"

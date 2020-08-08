@@ -24,9 +24,9 @@ Typed_pool<T>::~Typed_pool() {
 }
 
 template <typename T>
-Sampler* Typed_pool<T>::get(uint32_t id, rnd::Generator& rng) const {
+Sampler* Typed_pool<T>::get(uint32_t id) const {
     if (uint32_t const zero = 0; 0 == std::memcmp(&zero, static_cast<void*>(&samplers_[id]), 4)) {
-        return new (&samplers_[id]) T(rng);
+        return new (&samplers_[id]) T();
     }
 
     return &samplers_[id];

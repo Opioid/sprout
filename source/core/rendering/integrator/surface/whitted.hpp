@@ -18,11 +18,11 @@ class alignas(64) Whitted final : public Integrator {
         float    num_light_samples_reciprocal;
     };
 
-    Whitted(rnd::Generator& rng, Settings const& settings);
+    Whitted(Settings const& settings);
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(rnd::Generator& rng) final;
 
     float4 li(Ray& ray, Intersection& intersection, Worker& worker,
               Interface_stack const& initial_stack) final;
@@ -42,7 +42,7 @@ class Whitted_pool final : public Typed_pool<Whitted> {
   public:
     Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     Whitted::Settings settings_;

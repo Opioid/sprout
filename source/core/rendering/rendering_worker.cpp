@@ -39,14 +39,14 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     scene::Worker::init(scene, camera);
 
     if (surfaces) {
-        surface_integrator_ = surfaces->get(id, rng_);
+        surface_integrator_ = surfaces->get(id);
         surface_integrator_->prepare(scene, num_samples_per_pixel);
     }
 
-    volume_integrator_ = volumes.get(id, rng_);
+    volume_integrator_ = volumes.get(id);
     volume_integrator_->prepare(scene, num_samples_per_pixel);
 
-    sampler_ = samplers.get(id, rng_);
+    sampler_ = samplers.get(id);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
     if (photon_settings.num_photons > 0) {
@@ -55,14 +55,14 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
         Photon_mapper::Settings const ps{photon_settings.max_bounces,
                                          photon_settings.full_light_path};
 
-        photon_mapper_ = new Photon_mapper(rng_, ps);
+        photon_mapper_ = new Photon_mapper(ps);
         photon_mapper_->prepare(scene, 0);
     }
 
     photon_map_ = photon_map;
 
     if (lighttracers) {
-        lighttracer_ = lighttracers->get(id, rng_);
+        lighttracer_ = lighttracers->get(id);
         lighttracer_->prepare(scene, num_particles_per_chunk);
     }
 

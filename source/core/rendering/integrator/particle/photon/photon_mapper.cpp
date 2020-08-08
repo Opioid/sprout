@@ -9,6 +9,7 @@
 #include "rendering/rendering_worker.inl"
 #include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
+#include "scene/light/light_sampling.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
@@ -24,11 +25,8 @@
 
 namespace rendering::integrator::particle::photon {
 
-Mapper::Mapper(rnd::Generator& rng, Settings const& settings)
-    : Integrator(rng),
-      settings_(settings),
-      sampler_(rng),
-      photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
+Mapper::Mapper(Settings const& settings)
+    : settings_(settings), photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
 
 Mapper::~Mapper() {
     memory::free_aligned(photons_);
@@ -38,7 +36,7 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) {
     sampler_.resize(1, 1, 1, 1);
 }
 
-void Mapper::start_pixel() {}
+void Mapper::start_pixel(rnd::Generator& /*rng*/) {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t /*iteration*/,
                       Worker& worker) {
@@ -140,7 +138,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 break;
             }
 
-            material_sample.sample(sampler_, sample_result);
+            material_sample.sample(sampler_, worker.rng(), sample_result);
             if (0.f == sample_result.pdf) {
                 break;
             }
@@ -198,7 +196,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                 float const continue_prob = std::min(1.f, avg);
 
-                if (sampler_.generate_sample_1D() > continue_prob) {
+                if (sampler_.generate_sample_1D(worker.rng()) > continue_prob) {
                     break;
                 }
 
@@ -267,11 +265,13 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
 bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                                 Light& light_out, uint32_t& light_id, Sample_from& light_sample) {
-    float const select = sampler_.generate_sample_1D(1);
+    auto& rng = worker.rng();
+
+    float const select = sampler_.generate_sample_1D(rng, 1);
 
     auto const light = worker.scene().random_light(select);
 
-    uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(2));
+    uint64_t const time = worker.absolute_time(frame, sampler_.generate_sample_1D(rng, 2));
 
     Importance const& importance = worker.particle_importance().importance(light.id);
 

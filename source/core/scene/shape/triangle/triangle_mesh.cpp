@@ -244,10 +244,10 @@ bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
 }
 
 bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                  bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
+                  bool two_sided, Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
                   Sample_to& sample) const {
-    float const  r  = sampler.generate_sample_1D(sampler_dimension);
-    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
+    float const  r  = sampler.generate_sample_1D(rng, sampler_dimension);
+    float2 const r2 = sampler.generate_sample_2D(rng, sampler_dimension);
     auto const   s  = distributions_[part].sample(r);
 
     float3 sv;
@@ -275,12 +275,13 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
 }
 
 bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
-                  bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                  float2 importance_uv, AABB const& /*bounds*/, Sample_from& sample) const {
-    float const r = sampler.generate_sample_1D(sampler_dimension);
+                  bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
+                  uint32_t sampler_dimension, float2 importance_uv, AABB const& /*bounds*/,
+                  Sample_from& sample) const {
+    float const r = sampler.generate_sample_1D(rng, sampler_dimension);
     auto const  s = distributions_[part].sample(r);
 
-    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+    float2 const r0 = sampler.generate_sample_2D(rng, sampler_dimension);
 
     float3 sv;
     float2 tc;

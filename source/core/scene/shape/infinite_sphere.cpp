@@ -126,11 +126,11 @@ bool Infinite_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& 
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& n,
                              Transformation const& transformation, float /*area*/,
-                             bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                             Sample_to& sample) const {
+                             bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
+                             uint32_t sampler_dimension, Sample_to& sample) const {
     auto const [x, y] = orthonormal_basis(n);
 
-    float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
+    float2 const uv  = sampler.generate_sample_2D(rng, sampler_dimension);
     float3 const dir = sample_oriented_hemisphere_uniform(uv, x, y, n);
 
     float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, dir));
@@ -147,9 +147,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
                              Transformation const& transformation, float /*area*/,
-                             bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                             Sample_to& sample) const {
-    float2 const uv  = sampler.generate_sample_2D(sampler_dimension);
+                             bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
+                             uint32_t sampler_dimension, Sample_to& sample) const {
+    float2 const uv  = sampler.generate_sample_2D(rng, sampler_dimension);
     float3 const dir = sample_sphere_uniform(uv);
 
     float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, dir));
@@ -166,8 +166,9 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
 
 bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
                              float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                             uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
-                             AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+                             rnd::Generator& /*rng*/, uint32_t /*sampler_dimension*/,
+                             float2 /*importance_uv*/, AABB const& /*bounds*/,
+                             Sample_from& /*sample*/) const {
     return false;
 }
 

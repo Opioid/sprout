@@ -47,14 +47,14 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
             rng_.start(0, o1 + uint64_t(x + fr));
 
-            sampler_->start_pixel();
-            surface_integrator_->start_pixel();
-            volume_integrator_->start_pixel();
+            sampler_->start_pixel(rng());
+            surface_integrator_->start_pixel(rng());
+            volume_integrator_->start_pixel(rng());
 
             int2 const pixel(x, y);
 
             for (uint32_t i = num_samples; i > 0; --i) {
-                sampler::Camera_sample const sample = sampler_->generate_camera_sample(pixel);
+                auto const sample = sampler_->generate_camera_sample(rng(), pixel);
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
                     float4 const color = li(ray, camera.interface_stack());
@@ -70,7 +70,7 @@ void Camera_worker::render(uint32_t frame, uint32_t view, uint32_t iteration, in
 void Camera_worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     Camera const& camera = *camera_;
 
-    lighttracer_->start_pixel();
+    lighttracer_->start_pixel(rng());
 
     for (uint64_t i = range[0]; i < range[1]; ++i) {
         rng_.start(0, i + offset);

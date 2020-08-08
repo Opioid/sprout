@@ -27,15 +27,16 @@ uint32_t Shape::part_id_to_material_id(uint32_t part) const {
 
 bool Shape::sample(uint32_t part, float3 const& p, float3 const& /*n*/,
                    Transformation const& transformation, float area, bool two_sided,
-                   Sampler& sampler, uint32_t sampler_dimension, Sample_to& sample) const {
-    return this->sample(part, p, transformation, area, two_sided, sampler, sampler_dimension,
+                   Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
+                   Sample_to& sample) const {
+    return this->sample(part, p, transformation, area, two_sided, sampler, rng, sampler_dimension,
                         sample);
 }
 
 bool Shape::sample_volume(uint32_t /*part*/, float3 const& /*p*/,
                           Transformation const& /*transformation*/, float /*volume*/,
-                          Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                          Sample_to& /*sample*/) const {
+                          Sampler& /*sampler*/, rnd::Generator& /*rng*/,
+                          uint32_t /*sampler_dimension*/, Sample_to& /*sample*/) const {
     return false;
 }
 

@@ -18,17 +18,17 @@ bxdf::Result Sample_translucent::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample_translucent::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
-    float const p = sampler.generate_sample_1D();
+    float const p = sampler.generate_sample_1D(rng);
 
     if (thickness_ > 0.f) {
         float const t = transparency_;
 
         if (p < 0.5f) {
             float const n_dot_wi = lambert::Isotropic::reflect(base_.diffuse_color_, layer_,
-                                                               sampler, result);
+                                                               sampler, rng, result);
 
             // This is the least attempt we can do at energy conservation
             float const n_dot_wo = layer_.clamp_n_dot(wo_);
@@ -46,18 +46,18 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
             float const o = 1.f - t;
 
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, layer_, o, sampler, base_.avoid_caustics_, result);
+                base_.diffuse_sample(wo_, layer_, o, sampler, rng, base_.avoid_caustics_, result);
             } else {
-                base_.gloss_sample(wo_, layer_, o, sampler, result);
+                base_.gloss_sample(wo_, layer_, o, sampler, rng, result);
             }
         }
 
         result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
-            base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
+            base_.diffuse_sample(wo_, layer_, sampler, rng, base_.avoid_caustics_, result);
         } else {
-            base_.gloss_sample(wo_, layer_, sampler, result);
+            base_.gloss_sample(wo_, layer_, sampler, rng, result);
         }
     }
 

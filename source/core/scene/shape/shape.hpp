@@ -14,6 +14,10 @@ namespace sampler {
 class Sampler;
 }
 
+namespace rnd {
+class Generator;
+}
+
 namespace scene {
 
 namespace material {
@@ -87,19 +91,21 @@ class Shape {
 
     virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
                         Transformation const& transformation, float area, bool two_sided,
-                        Sampler& sampler, uint32_t sampler_dimension, Sample_to& sample) const;
+                        Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
+                        Sample_to& sample) const;
 
     virtual bool sample(uint32_t part, float3 const& p, Transformation const& transformation,
-                        float area, bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                        Sample_to& sample) const = 0;
+                        float area, bool two_sided, Sampler& sampler, rnd::Generator& rng,
+                        uint32_t sampler_dimension, Sample_to& sample) const = 0;
 
     virtual bool sample_volume(uint32_t part, float3 const& p, Transformation const& transformation,
-                               float volume, Sampler& sampler, uint32_t sampler_dimension,
-                               Sample_to& sample) const;
+                               float volume, Sampler& sampler, rnd::Generator& rng,
+                               uint32_t sampler_dimension, Sample_to& sample) const;
 
     virtual bool sample(uint32_t part, Transformation const& transformation, float area,
-                        bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
-                        float2 importance_uv, AABB const& bounds, Sample_from& sample) const = 0;
+                        bool two_sided, Sampler& sampler, rnd::Generator& rng,
+                        uint32_t sampler_dimension, float2 importance_uv, AABB const& bounds,
+                        Sample_from& sample) const = 0;
 
     // All pdf functions implicitely assume that the passed
     // ray/intersection/transformation combination actually lead to a hit.

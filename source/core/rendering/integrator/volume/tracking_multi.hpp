@@ -11,11 +11,11 @@ namespace rendering::integrator::volume {
 
 class alignas(64) Tracking_multi final : public Integrator {
   public:
-    Tracking_multi(rnd::Generator& rng);
+    Tracking_multi();
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(rnd::Generator& rng) final;
 
     bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
 
@@ -27,7 +27,7 @@ class Tracking_multi_pool final : public Typed_pool<Tracking_multi> {
   public:
     Tracking_multi_pool(uint32_t num_integrators);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 };
 
 }  // namespace rendering::integrator::volume

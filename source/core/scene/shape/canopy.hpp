@@ -34,12 +34,12 @@ class Canopy final : public Shape {
                          Filter filter, Worker& worker, float3& ta) const final;
 
     bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
+                bool two_sided, Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
                 Sample_to& sample) const final;
 
     bool sample(uint32_t part, Transformation const& transformation, float area, bool two_sided,
-                Sampler& sampler, uint32_t sampler_dimension, float2 importance_uv,
-                AABB const& bounds, Sample_from& sample) const final;
+                Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
+                float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;
 
     float pdf(Ray const& ray, Intersection const& intersection,
               Transformation const& transformation, float area, bool two_sided,

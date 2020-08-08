@@ -15,21 +15,21 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
     }
 
     if (1.f == base_.metallic_) {
-        base_.pure_gloss_sample(wo_, layer_, sampler, result);
+        base_.pure_gloss_sample(wo_, layer_, sampler, rng, result);
     } else {
-        float const p = sampler.generate_sample_1D();
+        float const p = sampler.generate_sample_1D(rng);
 
         if (p < 0.5f) {
-            base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
+            base_.diffuse_sample(wo_, layer_, sampler, rng, base_.avoid_caustics_, result);
         } else {
-            base_.gloss_sample(wo_, layer_, sampler, result);
+            base_.gloss_sample(wo_, layer_, sampler, rng, result);
         }
     }
 

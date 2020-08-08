@@ -13,7 +13,7 @@ class Sample_subsurface final : public Sample_base {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const final;
 
     void set_volumetric(float ior, float ior_outside);
 
@@ -23,7 +23,7 @@ class Sample_subsurface final : public Sample_base {
     template <bool Forward>
     bxdf::Result evaluate(float3 const& wi) const;
 
-    void refract(Sampler& sampler, bxdf::Sample& result) const;
+    void refract(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const;
 
     IoR ior_;
 };

@@ -9,6 +9,7 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/light/light.inl"
+#include "scene/light/light_sampling.inl"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
@@ -27,15 +28,13 @@ namespace rendering::integrator::volume {
 
 using namespace scene;
 
-Tracking_single::Tracking_single(rnd::Generator& rng, bool progressive)
-    : Integrator(rng),
-      sampler_(rng),
-      sampler_pool_(progressive ? nullptr
+Tracking_single::Tracking_single(bool progressive)
+    : sampler_pool_(progressive ? nullptr
                                 : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(2 * i + 0, rng);
-            light_samplers_[i]    = sampler_pool_->get(2 * i + 1, rng);
+            material_samplers_[i] = sampler_pool_->get(2 * i + 0);
+            light_samplers_[i]    = sampler_pool_->get(2 * i + 1);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -64,15 +63,15 @@ void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_p
     }
 }
 
-void Tracking_single::start_pixel() {
-    sampler_.start_pixel();
+void Tracking_single::start_pixel(rnd::Generator& rng) {
+    sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {
-        s->start_pixel();
+        s->start_pixel(rng);
     }
 
     for (auto s : light_samplers_) {
-        s->start_pixel();
+        s->start_pixel(rng);
     }
 }
 /*
@@ -180,7 +179,7 @@ average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f / (ms
 }
 */
 bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& tr) {
-    return Tracking::transmittance(ray, rng_, worker, tr);
+    return Tracking::transmittance(ray, worker, tr);
 }
 
 Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter,
@@ -210,6 +209,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
     auto const& material = *interface->material(worker);
 
+    auto& rng = worker.rng();
+
     if (!material.is_scattering_volume()) {
         // Basically the "glass" case
         float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
@@ -227,8 +228,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         float3 w(1.f);
         for (; local_ray.min_t() < d;) {
             if (Tracking::CM data; tree.intersect(local_ray, data)) {
-                if (float t; Tracking::tracking(local_ray, data, material, 1.f, filter, rng_,
-                                                worker, t, w)) {
+                if (float t;
+                    Tracking::tracking(local_ray, data, material, 1.f, filter, worker, t, w)) {
                     li = w * direct_light(ray, ray.point(t), intersection, worker);
                     tr = float3(0.f);
                     return Event::Pass;
@@ -253,7 +254,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         tr = exp(-(d - ray.min_t()) * attenuation);
 
-        float const r = rng_.random_float();
+        float const r = rng.random_float();
         float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
         float3 const p = ray.point(ray.min_t() + t);
@@ -303,12 +304,12 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             */
         } else {
             // Distance sampling
-            float const r = material_sampler(ray.depth).generate_sample_1D(0);
+            float const r = material_sampler(ray.depth).generate_sample_1D(rng, 0);
             float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
             float3 const p = ray.point(ray.min_t() + t);
 
-            float const select = light_sampler(ray.depth).generate_sample_1D(1);
+            float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
             auto const light = worker.scene().random_light(p, float3(0.f), true, select);
 
@@ -335,12 +336,12 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         tr = exp(-(d - ray.min_t()) * attenuation);
 
-        float const rs = material_sampler(ray.depth).generate_sample_1D(0);
+        float const rs = material_sampler(ray.depth).generate_sample_1D(rng, 0);
         float const ts = -std::log(1.f - rs * (1.f - average(tr))) / average(attenuation);
 
         float3 const ps = ray.point(ray.min_t() + ts);
 
-        float const select = light_sampler(ray.depth).generate_sample_1D(1);
+        float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
         auto const light = worker.scene().random_light(ps, float3(0.f), true, select);
 
@@ -356,7 +357,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         float const theta_a = std::atan2(ray.min_t() - delta, D);
         float const theta_b = std::atan2(d - delta, D);
 
-        float const r = material_sampler(ray.depth).generate_sample_1D(1);  // rng_.random_float();
+        float const r = material_sampler(ray.depth).generate_sample_1D(rng,
+                                                                       1);  // rng_.random_float();
         float const t = D * std::tan(lerp(theta_a, theta_b, r));
 
         float const sample_t = delta + t;
@@ -393,7 +395,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
 float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
                                      Intersection const& intersection, Worker& worker) {
-    auto const light = worker.scene().random_light(rng_.random_float());
+    auto const light = worker.scene().random_light(worker.rng().random_float());
 
     return direct_light(light.ref, light.pdf, ray, position, intersection, worker);
 }
@@ -444,10 +446,10 @@ sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) {
 Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progressive)
     : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
 
-Integrator* Tracking_single_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* Tracking_single_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Tracking_single(rng, progressive_);
+        return new (&integrators_[id]) Tracking_single(progressive_);
     }
 
     return &integrators_[id];

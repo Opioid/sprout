@@ -18,6 +18,10 @@ struct Camera_sample;
 struct Camera_sample_to;
 }  // namespace sampler
 
+namespace rnd {
+class Generator;
+}
+
 namespace rendering::sensor {
 class Sensor;
 }
@@ -67,8 +71,8 @@ class Camera {
                               Scene const& scene, Ray& ray) const = 0;
 
     virtual bool sample(uint32_t view, int4 const& bounds, uint64_t time, float3 const& p,
-                        Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
-                        Sample_to& sample) const = 0;
+                        Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
+                        Scene const& scene, Sample_to& sample) const = 0;
 
     virtual Ray_differential calculate_ray_differential(float3 const& p, uint64_t time,
                                                         Scene const& scene) const;

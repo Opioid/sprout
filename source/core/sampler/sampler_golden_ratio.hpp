@@ -7,21 +7,21 @@ namespace sampler {
 
 class alignas(64) Golden_ratio final : public Sampler {
   public:
-    Golden_ratio(rnd::Generator& rng);
+    Golden_ratio();
 
     ~Golden_ratio() final;
 
-    float2 generate_sample_2D(uint32_t dimension = 0) final;
+    float2 generate_sample_2D(rnd::Generator& rng, uint32_t dimension = 0) final;
 
-    float generate_sample_1D(uint32_t dimension = 0) final;
+    float generate_sample_1D(rnd::Generator& rng, uint32_t dimension = 0) final;
 
   private:
     void on_resize() final;
 
-    void on_start_pixel() final;
+    void on_start_pixel(rnd::Generator& rng) final;
 
-    void generate_2D(uint32_t dimension);
-    void generate_1D(uint32_t dimension);
+    void generate_2D(rnd::Generator& rng, uint32_t dimension);
+    void generate_1D(rnd::Generator& rng, uint32_t dimension);
 
     float2* samples_2D_;
     float*  samples_1D_;

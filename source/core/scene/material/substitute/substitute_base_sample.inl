@@ -138,10 +138,11 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
-                                           bool avoid_caustics, bxdf::Sample& result) const {
+                                           rnd::Generator& rng, bool avoid_caustics,
+                                           bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_, diffuse_color_, xi,
                                             result);
@@ -168,10 +169,11 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 template <typename Diffuse>
 void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
                                            float diffuse_factor, Sampler& sampler,
-                                           bool avoid_caustics, bxdf::Sample& result) const {
+                                           rnd::Generator& rng, bool avoid_caustics,
+                                           bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_,
                                             diffuse_factor * diffuse_color_, xi, result);
@@ -197,13 +199,13 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
-                                         bxdf::Sample& result) const {
+                                         rnd::Generator& rng, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
     // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
                                                    result);
@@ -218,13 +220,14 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, float diffuse_factor,
-                                         Sampler& sampler, bxdf::Sample& result) const {
+                                         Sampler& sampler, rnd::Generator& rng,
+                                         bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
     // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
                                                    result);
@@ -240,13 +243,14 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, f
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, Layer const& layer,
-                                              Sampler& sampler, bxdf::Sample& result) const {
+                                              Sampler& sampler, rnd::Generator& rng,
+                                              bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
     // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
                                                    result);

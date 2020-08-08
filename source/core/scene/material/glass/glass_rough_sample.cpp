@@ -21,7 +21,7 @@ bxdf::Result Sample_rough::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_rough::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample_rough::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
         result.reflection = color_;
         result.wi         = -wo_;
@@ -37,7 +37,7 @@ void Sample_rough::sample(Sampler& sampler, bxdf::Sample& result) const {
 
     IoR const ior = ior_.swapped(same_side);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float        n_dot_h;
     float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
@@ -64,7 +64,7 @@ void Sample_rough::sample(Sampler& sampler, bxdf::Sample& result) const {
         f = fresnel::schlick(cos_x, f0_);
     }
 
-    if (sampler.generate_sample_1D() <= f) {
+    if (sampler.generate_sample_1D(rng) <= f) {
         float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                        wo_dot_h, layer, alpha_, result);
 

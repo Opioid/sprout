@@ -15,7 +15,7 @@ bxdf::Result Sample_isotropic::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_isotropic::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample_isotropic::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -25,7 +25,7 @@ void Sample_isotropic::sample(Sampler& sampler, bxdf::Sample& result) const {
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, conductor, xi,
                                                    result);
@@ -77,7 +77,7 @@ bxdf::Result Sample_anisotropic::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_anisotropic::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample_anisotropic::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -87,7 +87,7 @@ void Sample_anisotropic::sample(Sampler& sampler, bxdf::Sample& result) const {
 
     fresnel::Conductor const conductor(layer_.ior_, layer_.absorption_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.generate_sample_2D(rng);
 
     float const n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor, xi, result);
     result.reflection *= n_dot_wi;

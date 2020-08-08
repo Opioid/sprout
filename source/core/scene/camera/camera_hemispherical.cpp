@@ -63,7 +63,7 @@ bool Hemispherical::generate_ray(Sample const& sample, uint32_t frame, uint32_t 
 }
 
 bool Hemispherical::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
-                           float3 const& /*p*/, Sampler& /*sampler*/,
+                           float3 const& /*p*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
                            uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
                            Sample_to& /*sample*/) const {
     return false;

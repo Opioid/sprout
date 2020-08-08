@@ -9,32 +9,31 @@
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio(rnd::Generator& rng)
-    : Sampler(rng), samples_2D_(nullptr), samples_1D_(nullptr) {}
+Golden_ratio::Golden_ratio() : samples_2D_(nullptr), samples_1D_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
     delete[] samples_2D_;
 }
 
-float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
+float2 Golden_ratio::generate_sample_2D(rnd::Generator& rng, uint32_t dimension) {
     SOFT_ASSERT(current_sample_[dimension] < num_samples_);
 
     uint32_t const current = current_sample_[dimension]++;
 
     if (0 == current) {
-        generate_2D(dimension);
+        generate_2D(rng, dimension);
     }
 
     return samples_2D_[dimension * num_samples_ + current];
 }
 
-float Golden_ratio::generate_sample_1D(uint32_t dimension) {
+float Golden_ratio::generate_sample_1D(rnd::Generator& rng, uint32_t dimension) {
     SOFT_ASSERT(current_sample_1D_[num_dimensions_2D_ + dimension] < num_samples_);
 
     uint32_t const current = current_sample_[num_dimensions_2D_ + dimension]++;
 
     if (0 == current) {
-        generate_1D(dimension);
+        generate_1D(rng, dimension);
     }
 
     return samples_1D_[dimension * num_samples_ + current];
@@ -50,26 +49,26 @@ void Golden_ratio::on_resize() {
     samples_1D_ = buffer + num_samples_ * 2 * num_dimensions_2D_;
 }
 
-void Golden_ratio::on_start_pixel() {}
+void Golden_ratio::on_start_pixel(rnd::Generator& /*rng*/) {}
 
-void Golden_ratio::generate_2D(uint32_t dimension) {
-    float2 const r(rng_.random_float(), rng_.random_float());
+void Golden_ratio::generate_2D(rnd::Generator& rng, uint32_t dimension) {
+    float2 const r(rng.random_float(), rng.random_float());
 
     float2* begin = samples_2D_ + dimension * num_samples_;
 
     golden_ratio(begin, num_samples_, r);
 
-    rnd::biased_shuffle(begin, num_samples_, rng_);
+    rnd::biased_shuffle(begin, num_samples_, rng);
 }
 
-void Golden_ratio::generate_1D(uint32_t dimension) {
-    float const r = rng_.random_float();
+void Golden_ratio::generate_1D(rnd::Generator& rng, uint32_t dimension) {
+    float const r = rng.random_float();
 
     float* begin = samples_1D_ + dimension * num_samples_;
 
     golden_ratio(begin, num_samples_, r);
 
-    rnd::biased_shuffle(begin, num_samples_, rng_);
+    rnd::biased_shuffle(begin, num_samples_, rng);
 }
 
 template class Typed_pool<Golden_ratio>;

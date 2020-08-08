@@ -29,8 +29,8 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     return {float3(phase), phase};
 }
 
-void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
-    float2 const r2 = sampler.generate_sample_2D();
+void Sample::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
+    float2 const r2 = sampler.generate_sample_2D(rng);
 
     float4 const ps = sample(wo_, r2);
 

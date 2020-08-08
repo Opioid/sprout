@@ -27,7 +27,7 @@ struct Setup {
 
 void test() {
     rnd::Generator  rng(0, 0);
-    sampler::Random sampler(rng);
+    sampler::Random sampler;
     sampler.resize(0, 1, 1, 1);
 
     std::cout << "substitute::testing::test()" << std::endl;

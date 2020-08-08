@@ -8,6 +8,10 @@ namespace sampler {
 class Sampler;
 }
 
+namespace rnd {
+class Generator;
+}
+
 namespace scene {
 
 struct Renderstate;
@@ -58,7 +62,7 @@ class Sample {
 
     virtual bxdf::Result evaluate_b(float3 const& wi) const = 0;
 
-    virtual void sample(Sampler& sampler, bxdf::Sample& result) const = 0;
+    virtual void sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const = 0;
 
     float3 const& radiance() const;
 

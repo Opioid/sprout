@@ -8,13 +8,13 @@ namespace rendering::integrator::volume {
 
 class alignas(64) Tracking_single final : public Integrator {
   public:
-    Tracking_single(rnd::Generator& rng, bool progressive);
+    Tracking_single(bool progressive);
 
     ~Tracking_single();
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(rnd::Generator& rng) final;
 
     bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
 
@@ -47,7 +47,7 @@ class Tracking_single_pool final : public Typed_pool<Tracking_single> {
   public:
     Tracking_single_pool(uint32_t num_integrators, bool progressive);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     bool progressive_;

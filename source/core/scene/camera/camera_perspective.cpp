@@ -82,8 +82,8 @@ bool Perspective::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*
 }
 
 bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, float3 const& p,
-                         Sampler& sampler, uint32_t sampler_dimension, Scene const& scene,
-                         Sample_to& sample) const {
+                         Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
+                         Scene const& scene, Sample_to& sample) const {
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
 
@@ -96,7 +96,7 @@ bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, f
     float3 out_dir;
 
     if (lens_radius_ > 0.f) {
-        float2 const uv = sampler.generate_sample_2D(sampler_dimension);
+        float2 const uv = sampler.generate_sample_2D(rng, sampler_dimension);
 
         float2 const lens = sample_disk_concentric(uv);
 

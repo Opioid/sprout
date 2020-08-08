@@ -67,8 +67,8 @@ bool Spherical_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, 
 
 bool Spherical_stereoscopic::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
                                     float3 const& /*p*/, Sampler& /*sampler*/,
-                                    uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
-                                    Sample_to& /*sample*/) const {
+                                    rnd::Generator& /*rng*/, uint32_t /*sampler_dimension*/,
+                                    Scene const& /*scene*/, Sample_to& /*sample*/) const {
     return false;
 }
 

@@ -13,7 +13,7 @@ class alignas(64) Sample : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(Sampler& sampler, bxdf::Sample& result) const override;
+    void sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const override;
 
     void set(float3 const& refraction_color, float ior, float ior_outside);
 

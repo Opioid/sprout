@@ -341,7 +341,7 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
 }
 
 bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, Sampler&              sampler,
+                    float /*area*/, bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
                     uint32_t sampler_dimension, Sample_to& sample) const {
     float3 const v = transformation.position - p;
 
@@ -356,7 +356,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     auto const [x, y] = orthonormal_basis(z);
 
-    float2 const r2  = sampler.generate_sample_2D(sampler_dimension);
+    float2 const r2  = sampler.generate_sample_2D(rng, sampler_dimension);
     float3 const dir = sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
     float const b = dot(dir, v);
@@ -378,9 +378,10 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 }
 
 bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
-                    bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                    float2 importance_uv, AABB const& /*bounds*/, Sample_from& sample) const {
-    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+                    bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
+                    uint32_t sampler_dimension, float2 importance_uv, AABB const& /*bounds*/,
+                    Sample_from& sample) const {
+    float2 const r0 = sampler.generate_sample_2D(rng, sampler_dimension);
     float3 const ls = sample_sphere_uniform(r0);
 
     float3 const ws = transformation.position + (transformation.scale_x() * ls);

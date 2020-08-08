@@ -7,6 +7,10 @@ namespace sampler {
 class Sampler;
 }
 
+namespace rng {
+class Generator;
+}
+
 namespace scene::material {
 
 namespace bxdf {
@@ -24,7 +28,7 @@ class Isotropic {
     static bxdf::Result reflection(float3 const& color, float n_dot_wi, Layer const& layer);
 
     static float reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
-                         bxdf::Sample& result);
+                         rnd::Generator& rng, bxdf::Sample& result);
 };
 
 }  // namespace lambert

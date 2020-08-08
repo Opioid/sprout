@@ -14,15 +14,15 @@
 
 namespace rendering::integrator::surface {
 
-static sampler::Sampler* create_sampler(rnd::Generator& rng, bool progressive) {
+static sampler::Sampler* create_sampler(bool progressive) {
     if (progressive) {
-        return new sampler::Random(rng);
+        return new sampler::Random();
     }
-    return new sampler::Golden_ratio(rng);
+    return new sampler::Golden_ratio();
 }
 
-AO::AO(rnd::Generator& rng, Settings const& settings, bool progressive)
-    : Integrator(rng), settings_(settings), sampler_(create_sampler(rng, progressive)) {}
+AO::AO(Settings const& settings, bool progressive)
+    : settings_(settings), sampler_(create_sampler(progressive)) {}
 
 AO::~AO() {
     delete sampler_;
@@ -32,8 +32,8 @@ void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 
-void AO::start_pixel() {
-    sampler_->start_pixel();
+void AO::start_pixel(rnd::Generator& rng) {
+    sampler_->start_pixel(rng);
 }
 
 float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
@@ -55,7 +55,7 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
     occlusion_ray.time    = ray.time;
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
-        float2 const sample = sampler_->generate_sample_2D();
+        float2 const sample = sampler_->generate_sample_2D(worker.rng());
 
         //		float3 ws = intersection.geo.tangent_to_world(hs);
 
@@ -81,10 +81,10 @@ AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_sample
     settings_.radius      = radius;
 }
 
-Integrator* AO_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* AO_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) AO(rng, settings_, progressive_);
+        return new (&integrators_[id]) AO(settings_, progressive_);
     }
 
     return &integrators_[id];

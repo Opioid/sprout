@@ -10,15 +10,13 @@ class Interface_stack;
 
 namespace rendering {
 
-class Worker;
-
 namespace integrator::surface {
 
 class Integrator : public integrator::Integrator {
   public:
     using Interface_stack = scene::prop::Interface_stack;
 
-    Integrator(rnd::Generator& rng);
+    Integrator();
 
     ~Integrator() override;
 
@@ -32,7 +30,7 @@ class Pool {
 
     virtual ~Pool();
 
-    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const = 0;
+    virtual Integrator* get(uint32_t id) const = 0;
 
   protected:
     uint32_t num_integrators_;

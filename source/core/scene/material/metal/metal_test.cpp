@@ -14,7 +14,7 @@ namespace scene::material::metal::testing {
 
 struct Setup {
     void test(float3 const& wi, float3 const& wo, float3 const& t, float3 const& b, float3 const& n,
-              sampler::Sampler& sampler);
+              sampler::Sampler& sampler, rnd::Generator& rng);
 
     float3 ior;
     float3 absorption;
@@ -23,7 +23,7 @@ struct Setup {
 
 void test() {
     rnd::Generator  rng(0, 0);
-    sampler::Random sampler(rng);
+    sampler::Random sampler;
     sampler.resize(0, 1, 1, 1);
 
     std::cout << "metal::testing::test()" << std::endl;
@@ -41,17 +41,17 @@ void test() {
     float3 wo = n;
     float3 wi = arbitrary;  // n;
 
-    setup.test(wi, wo, t, b, n, sampler);
+    setup.test(wi, wo, t, b, n, sampler, rng);
 
-    setup.test(t, t, t, b, n, sampler);
-    setup.test(t, b, t, b, n, sampler);
-    setup.test(t, n, t, b, n, sampler);
-    setup.test(b, t, t, b, n, sampler);
-    setup.test(b, b, t, b, n, sampler);
-    setup.test(b, n, t, b, n, sampler);
-    setup.test(n, t, t, b, n, sampler);
-    setup.test(n, b, t, b, n, sampler);
-    setup.test(n, n, t, b, n, sampler);
+    setup.test(t, t, t, b, n, sampler, rng);
+    setup.test(t, b, t, b, n, sampler, rng);
+    setup.test(t, n, t, b, n, sampler, rng);
+    setup.test(b, t, t, b, n, sampler, rng);
+    setup.test(b, b, t, b, n, sampler, rng);
+    setup.test(b, n, t, b, n, sampler, rng);
+    setup.test(n, t, t, b, n, sampler, rng);
+    setup.test(n, b, t, b, n, sampler, rng);
+    setup.test(n, n, t, b, n, sampler, rng);
 
     /*
     Sample sample;
@@ -104,7 +104,7 @@ void test() {
 }
 
 void Setup::test(float3 const& wi, float3 const& /*wo*/, float3 const& t, float3 const& b,
-                 float3 const& n, sampler::Sampler& sampler) {
+                 float3 const& n, sampler::Sampler& sampler, rnd::Generator& rng) {
     Sample_isotropic sample;
 
     sample.set(ior, absorption, roughness, false);
@@ -118,7 +118,7 @@ void Setup::test(float3 const& wi, float3 const& /*wo*/, float3 const& t, float3
     }
 
     bxdf::Sample result;
-    sample.sample(sampler, result);
+    sample.sample(sampler, rng, result);
 
     print(result);
 }
