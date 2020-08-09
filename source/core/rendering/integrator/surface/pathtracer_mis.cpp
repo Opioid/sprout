@@ -59,14 +59,13 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 
     uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
 
-    if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
-        for (auto s : light_samplers_) {
-            s->resize(num_samples_per_pixel, num_light_samples, 1, 2);
-        }
-    } else {
-        for (auto s : light_samplers_) {
-            s->resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
-        }
+    bool const single = Light_sampling::Strategy::Single == settings_.light_sampling.strategy;
+
+    uint16_t const nd2 = single ? 1 : num_lights;
+    uint16_t const nd1 = single ? 2 : num_lights;
+
+    for (auto s : light_samplers_) {
+        s->resize(num_samples_per_pixel, num_light_samples, nd2, nd1);
     }
 }
 
