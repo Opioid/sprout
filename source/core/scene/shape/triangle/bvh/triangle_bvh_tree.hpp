@@ -58,8 +58,6 @@ class Tree {
 
     uint32_t num_triangles() const;
 
-    uint32_t num_triangles(uint32_t part) const;
-
     bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
                    scalar& ray_max_t, Node_stack& node_stack, Intersection& intersection) const;
 
@@ -102,9 +100,7 @@ class Tree {
     void triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva, float2& uvb,
                   float2& uvc) const;
 
-    //    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const ;
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
-    //    void sample(uint32_t index, float2 r2, float3& p) const ;
 
     void allocate_parts(uint32_t num_parts);
 
@@ -118,8 +114,6 @@ class Tree {
     uint32_t num_parts_;
 
     Node* nodes_;
-
-    uint32_t* num_part_triangles_;
 
     Indexed_data data_;
 };

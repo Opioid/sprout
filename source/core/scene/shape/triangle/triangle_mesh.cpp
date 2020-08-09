@@ -391,27 +391,35 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     }
 
     return {dpdu, dpdv};
-
-    //  return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
 }
 
 void Mesh::prepare_sampling(uint32_t part) {
-    if (parts_[part].empty()) {
-        auto& d = parts_[part];
+    auto& p = parts_[part];
 
-        d.init(part, tree_);
+    if (0xFFFFFFFF == p.num_triangles) {
+        for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
+            parts_[i].num_triangles = 0;
+        }
+
+        for (uint32_t i = 0, len = tree_.num_triangles(); i < len; ++i) {
+            ++parts_[tree_.triangle_part(i)].num_triangles;
+        }
+    }
+
+    if (p.empty()) {
+        p.init(part, tree_);
 
         float3 center(0.f);
 
-        float const n = 1.f / float(d.num_triangles);
+        float const n = 1.f / float(p.num_triangles);
 
-        for (uint32_t i = 0, len = d.num_triangles; i < len; ++i) {
-            uint32_t const t = d.triangle_mapping[i];
+        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
+            uint32_t const t = p.triangle_mapping[i];
 
             center += n * tree_.triangle_center(t);
         }
 
-        d.center = center;
+        p.center = center;
     }
 }
 
@@ -424,11 +432,9 @@ Mesh::Part::~Part() {
 }
 
 void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
-    uint32_t const num = tree.num_triangles(part);
+    uint32_t const num = num_triangles;
 
     memory::Buffer<float> areas(num);
-
-    num_triangles = num;
 
     triangle_mapping = new uint32_t[num];
 
@@ -442,7 +448,7 @@ void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
         }
     }
 
-    distribution.init(areas, num_triangles);
+    distribution.init(areas, num);
 }
 
 bool Mesh::Part::empty() const {

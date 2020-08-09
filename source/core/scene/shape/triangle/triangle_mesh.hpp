@@ -105,7 +105,7 @@ class alignas(64) Mesh final : public Shape {
 
         uint32_t material;
 
-        uint32_t num_triangles = 0;
+        uint32_t num_triangles = 0xFFFFFFFF;
 
         uint32_t* triangle_mapping = nullptr;
 

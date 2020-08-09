@@ -14,11 +14,9 @@
 
 namespace scene::shape::triangle::bvh {
 
-Tree::Tree() : num_nodes_(0), num_parts_(0), nodes_(nullptr), num_part_triangles_(nullptr) {}
+Tree::Tree() : num_nodes_(0), num_parts_(0), nodes_(nullptr) {}
 
 Tree::~Tree() {
-    delete[] num_part_triangles_;
-
     delete[] nodes_;
 }
 
@@ -47,24 +45,6 @@ uint32_t Tree::num_parts() const {
 
 uint32_t Tree::num_triangles() const {
     return data_.num_triangles();
-}
-
-uint32_t Tree::num_triangles(uint32_t part) const {
-    uint32_t const num_part_triangles = num_part_triangles_[part];
-
-    if (0xFFFFFFFF != num_part_triangles) {
-        return num_part_triangles;
-    }
-
-    for (uint32_t i = 0; i < num_parts_; ++i) {
-        num_part_triangles_[i] = 0;
-    }
-
-    for (uint32_t i = 0, len = data_.num_triangles(); i < len; ++i) {
-        ++num_part_triangles_[data_.part(i)];
-    }
-
-    return num_part_triangles_[part];
 }
 
 bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
@@ -400,31 +380,12 @@ void Tree::triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& 
     return data_.triangle(index, pa, pb, pc, uva, uvb, uvc);
 }
 
-//
-// void Tree::sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const
-//     {
-//    data_.sample(index, r2, p, n, tc);
-//}
-
 void Tree::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
     data_.sample(index, r2, p, tc);
 }
 
-//
-// void Tree::sample(uint32_t index, float2 r2, float3& p) const  {
-//    data_.sample(index, r2, p);
-//}
-
 void Tree::allocate_parts(uint32_t num_parts) {
-    if (num_parts != num_parts_) {
-        num_parts_ = num_parts;
-        delete[] num_part_triangles_;
-        num_part_triangles_ = new uint32_t[num_parts];
-    }
-
-    for (uint32_t i = 0; i < num_parts; ++i) {
-        num_part_triangles_[i] = 0xFFFFFFFF;
-    }
+    num_parts_ = num_parts;
 }
 
 void Tree::allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) {
