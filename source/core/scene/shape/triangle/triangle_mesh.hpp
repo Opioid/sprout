@@ -92,16 +92,18 @@ class alignas(64) Mesh final : public Shape {
   private:
     bvh::Tree tree_;
 
-    struct Distribution {
+    struct Part {
         using Distribution_1D = math::Distribution_implicit_pdf_lut_lin_1D;
 
-        ~Distribution();
+        ~Part();
 
         void init(uint32_t part, bvh::Tree const& tree);
 
         bool empty() const;
 
         Distribution_1D::Discrete sample(float r) const;
+
+        uint32_t material;
 
         uint32_t num_triangles = 0;
 
@@ -112,9 +114,7 @@ class alignas(64) Mesh final : public Shape {
         float3 center;
     };
 
-    Distribution* distributions_;
-
-    uint32_t* part_materials_;
+    Part* parts_;
 };
 
 }  // namespace scene::shape::triangle

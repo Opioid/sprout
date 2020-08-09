@@ -21,14 +21,10 @@
 
 namespace scene::shape::triangle {
 
-Mesh::Mesh()
-    : Shape(Properties(Property::Complex, Property::Finite)),
-      distributions_(nullptr),
-      part_materials_(nullptr) {}
+Mesh::Mesh() : Shape(Properties(Property::Complex, Property::Finite)), parts_(nullptr) {}
 
 Mesh::~Mesh() {
-    delete[] part_materials_;
-    delete[] distributions_;
+    delete[] parts_;
 }
 
 bvh::Tree& Mesh::tree() {
@@ -38,13 +34,11 @@ bvh::Tree& Mesh::tree() {
 void Mesh::allocate_parts(uint32_t num_parts) {
     tree_.allocate_parts(num_parts);
 
-    distributions_ = new Distribution[num_parts];
-
-    part_materials_ = new uint32_t[num_parts];
+    parts_ = new Part[num_parts];
 }
 
 void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
-    part_materials_[part] = material;
+    parts_[part].material = material;
 }
 
 float3 Mesh::object_to_texture_point(float3 const& p) const {
@@ -67,14 +61,14 @@ uint32_t Mesh::num_materials() const {
     uint32_t id = 0;
 
     for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
-        id = std::max(id, part_materials_[i]);
+        id = std::max(id, parts_[i].material);
     }
 
     return id + 1;
 }
 
 uint32_t Mesh::part_id_to_material_id(uint32_t part) const {
-    return part_materials_[part];
+    return parts_[part].material;
 }
 
 bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
@@ -248,7 +242,7 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
                   Sample_to& sample) const {
     float const  r  = sampler.generate_sample_1D(rng, sampler_dimension);
     float2 const r2 = sampler.generate_sample_2D(rng, sampler_dimension);
-    auto const   s  = distributions_[part].sample(r);
+    auto const   s  = parts_[part].sample(r);
 
     float3 sv;
     float2 tc;
@@ -279,7 +273,7 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
                   uint32_t sampler_dimension, float2 importance_uv, AABB const& /*bounds*/,
                   Sample_from& sample) const {
     float const r = sampler.generate_sample_1D(rng, sampler_dimension);
-    auto const  s = distributions_[part].sample(r);
+    auto const  s = parts_[part].sample(r);
 
     float2 const r0 = sampler.generate_sample_2D(rng, sampler_dimension);
 
@@ -351,7 +345,7 @@ float Mesh::uv_weight(float2 /*uv*/) const {
 
 float Mesh::area(uint32_t part, float3 const& scale) const {
     // HACK: This only really works for uniform scales!
-    return distributions_[part].distribution.integral() * (scale[0] * scale[1]);
+    return parts_[part].distribution.integral() * (scale[0] * scale[1]);
 }
 
 float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
@@ -402,8 +396,8 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
 }
 
 void Mesh::prepare_sampling(uint32_t part) {
-    if (distributions_[part].empty()) {
-        auto& d = distributions_[part];
+    if (parts_[part].empty()) {
+        auto& d = parts_[part];
 
         d.init(part, tree_);
 
@@ -422,14 +416,14 @@ void Mesh::prepare_sampling(uint32_t part) {
 }
 
 float3 Mesh::center(uint32_t part) const {
-    return distributions_[part].center;
+    return parts_[part].center;
 }
 
-Mesh::Distribution::~Distribution() {
+Mesh::Part::~Part() {
     delete[] triangle_mapping;
 }
 
-void Mesh::Distribution::init(uint32_t part, bvh::Tree const& tree) {
+void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
     uint32_t const num = tree.num_triangles(part);
 
     memory::Buffer<float> areas(num);
@@ -451,11 +445,11 @@ void Mesh::Distribution::init(uint32_t part, bvh::Tree const& tree) {
     distribution.init(areas, num_triangles);
 }
 
-bool Mesh::Distribution::empty() const {
+bool Mesh::Part::empty() const {
     return nullptr == triangle_mapping;
 }
 
-Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r) const {
+Mesh::Part::Distribution_1D::Discrete Mesh::Part::sample(float r) const {
     auto const result = distribution.sample_discrete(r);
     return {triangle_mapping[result.offset], result.pdf};
 }
