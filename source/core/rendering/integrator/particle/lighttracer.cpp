@@ -56,8 +56,8 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
     // ---
     // Frustum const frustum = worker.camera().frustum();
 
-    AABB const& world_bounds = settings_.full_light_path ? worker.scene().aabb()
-                                                         : worker.scene().caustic_aabb();
+    AABB const world_bounds = settings_.full_light_path ? worker.scene().aabb()
+                                                        : worker.scene().caustic_aabb();
 
     AABB const frustum_bounds = world_bounds;  //.intersection(frustum.calculate_aabb());
     // ---

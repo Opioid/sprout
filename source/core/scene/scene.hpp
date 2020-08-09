@@ -99,7 +99,7 @@ class Scene {
 
     void finish();
 
-    AABB const& aabb() const;
+    AABB aabb() const;
 
     AABB caustic_aabb() const;
 

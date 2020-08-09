@@ -24,8 +24,6 @@ struct Tree {
     Node* nodes_ = nullptr;
 
     uint32_t* indices_ = nullptr;
-
-    AABB aabb_;
 };
 
 }  // namespace scene::bvh

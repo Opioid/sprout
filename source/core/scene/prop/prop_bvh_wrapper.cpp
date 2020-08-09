@@ -22,8 +22,8 @@ void BVH_wrapper::set_props(std::vector<uint32_t> const& infinite_props,
     props_ = props.data();
 }
 
-AABB const& BVH_wrapper::aabb() const {
-    return tree_.aabb_;
+AABB BVH_wrapper::aabb() const {
+    return tree_.nodes_[0].aabb();
 }
 
 bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection) const {

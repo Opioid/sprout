@@ -99,7 +99,7 @@ void Scene::finish() {
     light_powers_.resize(uint32_t(lights_.size()));
 }
 
-AABB const& Scene::aabb() const {
+AABB Scene::aabb() const {
     return prop_bvh_.aabb();
 }
 
