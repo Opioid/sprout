@@ -12,8 +12,6 @@ target_sources(core
     "triangle_mesh_provider.hpp"
     "triangle_mesh.cpp"
     "triangle_mesh.hpp"
-    "triangle_mesh_bvh.cpp"
-    "triangle_mesh_bvh.hpp"
     "triangle_morph_target_collection.cpp"
     "triangle_morph_target_collection.hpp"
     "triangle_morphable_mesh.cpp"

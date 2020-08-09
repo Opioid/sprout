@@ -1,11 +1,11 @@
 #include "triangle_mesh.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/buffer.hpp"
-#include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
@@ -31,7 +31,7 @@ Mesh::~Mesh() {
     delete[] distributions_;
 }
 
-Tree& Mesh::tree() {
+bvh::Tree& Mesh::tree() {
     return tree_;
 }
 
@@ -429,7 +429,7 @@ Mesh::Distribution::~Distribution() {
     delete[] triangle_mapping;
 }
 
-void Mesh::Distribution::init(uint32_t part, Tree const& tree) {
+void Mesh::Distribution::init(uint32_t part, bvh::Tree const& tree) {
     uint32_t const num = tree.num_triangles(part);
 
     memory::Buffer<float> areas(num);

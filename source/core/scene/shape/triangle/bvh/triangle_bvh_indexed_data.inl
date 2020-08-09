@@ -10,28 +10,24 @@
 
 namespace scene::shape::triangle::bvh {
 
-template <typename SV>
-Indexed_data<SV>::Indexed_data()
+inline Indexed_data::Indexed_data()
     : num_triangles_(0),
       num_vertices_(0),
       triangles_(nullptr),
       positions_(nullptr),
       shading_vertices_(nullptr) {}
 
-template <typename SV>
-Indexed_data<SV>::~Indexed_data() {
+inline Indexed_data::~Indexed_data() {
     delete[] shading_vertices_;
     delete[] positions_;
     delete[] triangles_;
 }
 
-template <typename SV>
-uint32_t Indexed_data<SV>::num_triangles() const {
+inline uint32_t Indexed_data::num_triangles() const {
     return num_triangles_;
 }
 
-template <typename SV>
-bool Indexed_data<SV>::intersect(uint32_t index, ray& ray, float2& uv) const {
+inline bool Indexed_data::intersect(uint32_t index, ray& ray, float2& uv) const {
     auto const t = triangles_[index];
 
     float3 const a = positions_[t.a];
@@ -41,8 +37,7 @@ bool Indexed_data<SV>::intersect(uint32_t index, ray& ray, float2& uv) const {
     return triangle::intersect(a, b, c, ray, uv);
 }
 
-template <typename SV>
-bool Indexed_data<SV>::intersect_p(uint32_t index, ray const& ray) const {
+inline bool Indexed_data::intersect_p(uint32_t index, ray const& ray) const {
     auto const tri = triangles_[index];
 
     float3 const a = positions_[tri.a];
@@ -52,9 +47,9 @@ bool Indexed_data<SV>::intersect_p(uint32_t index, ray const& ray) const {
     return triangle::intersect_p(a, b, c, ray);
 }
 
-template <typename SV>
-bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                                 scalar& max_t, uint32_t index, scalar& u, scalar& v) const {
+inline bool Indexed_data::intersect(Simd3f const& origin, Simd3f const& direction,
+                                    scalar const& min_t, scalar& max_t, uint32_t index, scalar& u,
+                                    scalar& v) const {
     auto const tri = triangles_[index];
 
     float const* a = positions_[tri.a].v;
@@ -64,9 +59,8 @@ bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, 
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
 
-template <typename SV>
-bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                                 scalar& max_t, uint32_t index) const {
+inline bool Indexed_data::intersect(Simd3f const& origin, Simd3f const& direction,
+                                    scalar const& min_t, scalar& max_t, uint32_t index) const {
     auto const tri = triangles_[index];
 
     float const* a = positions_[tri.a].v;
@@ -76,9 +70,9 @@ bool Indexed_data<SV>::intersect(Simd3f const& origin, Simd3f const& direction, 
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
 }
 
-template <typename SV>
-bool Indexed_data<SV>::intersect_p(Simd3f const& origin, Simd3f const& direction,
-                                   scalar const& min_t, scalar const& max_t, uint32_t index) const {
+inline bool Indexed_data::intersect_p(Simd3f const& origin, Simd3f const& direction,
+                                      scalar const& min_t, scalar const& max_t,
+                                      uint32_t index) const {
     auto const tri = triangles_[index];
 
     float const* a = positions_[tri.a].v;
@@ -88,8 +82,7 @@ bool Indexed_data<SV>::intersect_p(Simd3f const& origin, Simd3f const& direction
     return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
 }
 
-template <typename SV>
-float3 Indexed_data<SV>::interpolate_p(float2 uv, uint32_t index) const {
+inline float3 Indexed_data::interpolate_p(float2 uv, uint32_t index) const {
     auto const tri = triangles_[index];
 
     float3 const ap = positions_[tri.a];
@@ -101,8 +94,7 @@ float3 Indexed_data<SV>::interpolate_p(float2 uv, uint32_t index) const {
     return p;
 }
 
-template <typename SV>
-Simd3f Indexed_data<SV>::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const {
+inline Simd3f Indexed_data::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const {
     auto const tri = triangles_[index];
 
     Simd3f const ap(positions_[tri.a].v);
@@ -112,9 +104,8 @@ Simd3f Indexed_data<SV>::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_
     return triangle::interpolate_p(ap, bp, cp, u, v);
 }
 
-template <typename SV>
-void Indexed_data<SV>::interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n,
-                                        Simd3f& t, float2& tc) const {
+inline void Indexed_data::interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index,
+                                           Simd3f& n, Simd3f& t, float2& tc) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -124,9 +115,8 @@ void Indexed_data<SV>::interpolate_data(Simd3f const& u, Simd3f const& v, uint32
     triangle::interpolate_data(u, v, a, b, c, n, t, tc);
 }
 
-template <typename SV>
-Simd3f Indexed_data<SV>::interpolate_shading_normal(Simd3f const& u, Simd3f const& v,
-                                                    uint32_t index) const {
+inline Simd3f Indexed_data::interpolate_shading_normal(Simd3f const& u, Simd3f const& v,
+                                                       uint32_t index) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -136,8 +126,7 @@ Simd3f Indexed_data<SV>::interpolate_shading_normal(Simd3f const& u, Simd3f cons
     return triangle::interpolate_normal(u, v, a, b, c);
 }
 
-template <typename SV>
-float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const {
+inline float2 Indexed_data::interpolate_uv(uint32_t index, float2 uv) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -147,8 +136,7 @@ float2 Indexed_data<SV>::interpolate_uv(uint32_t index, float2 uv) const {
     return triangle::interpolate_uv(a, b, c, uv);
 }
 
-template <typename SV>
-float2 Indexed_data<SV>::interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const {
+inline float2 Indexed_data::interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -158,20 +146,17 @@ float2 Indexed_data<SV>::interpolate_uv(Simd3f const& u, Simd3f const& v, uint32
     return triangle::interpolate_uv(u, v, a, b, c);
 }
 
-template <typename SV>
-float Indexed_data<SV>::bitangent_sign(uint32_t index) const {
+inline float Indexed_data::bitangent_sign(uint32_t index) const {
     static float constexpr signs[2] = {1.f, -1.f};
 
     return signs[triangles_[index].bts];
 }
 
-template <typename SV>
-uint32_t Indexed_data<SV>::part(uint32_t index) const {
+inline uint32_t Indexed_data::part(uint32_t index) const {
     return triangles_[index].part;
 }
 
-template <typename SV>
-float3 Indexed_data<SV>::normal(uint32_t index) const {
+inline float3 Indexed_data::normal(uint32_t index) const {
     auto const tri = triangles_[index];
 
     float3 const a = positions_[tri.a];
@@ -184,8 +169,7 @@ float3 Indexed_data<SV>::normal(uint32_t index) const {
     return normalize(cross(e1, e2));
 }
 
-template <typename SV>
-Simd3f Indexed_data<SV>::normal_v(uint32_t index) const {
+inline Simd3f Indexed_data::normal_v(uint32_t index) const {
     auto const tri = triangles_[index];
 
     Simd3f const ap(positions_[tri.a].v);
@@ -198,8 +182,7 @@ Simd3f Indexed_data<SV>::normal_v(uint32_t index) const {
     return normalize(cross(e1, e2));
 }
 
-template <typename SV>
-float Indexed_data<SV>::area(uint32_t index) const {
+inline float Indexed_data::area(uint32_t index) const {
     auto const tri = triangles_[index];
 
     float3 const a = positions_[tri.a];
@@ -209,8 +192,7 @@ float Indexed_data<SV>::area(uint32_t index) const {
     return triangle::area(a, b, c);
 }
 
-template <typename SV>
-float Indexed_data<SV>::area(uint32_t index, float3 const& scale) const {
+inline float Indexed_data::area(uint32_t index, float3 const& scale) const {
     auto const tri = triangles_[index];
 
     float3 const a = positions_[tri.a];
@@ -220,8 +202,7 @@ float Indexed_data<SV>::area(uint32_t index, float3 const& scale) const {
     return triangle::area(a, b, c, scale);
 }
 
-template <typename SV>
-float3 Indexed_data<SV>::center(uint32_t index) const {
+inline float3 Indexed_data::center(uint32_t index) const {
     auto const tri = triangles_[index];
 
     float3 const a = positions_[tri.a];
@@ -231,9 +212,8 @@ float3 Indexed_data<SV>::center(uint32_t index) const {
     return (a + b + c) / 3.f;
 }
 
-template <typename SV>
-void Indexed_data<SV>::triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva,
-                                float2& uvb, float2& uvc) const {
+inline void Indexed_data::triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva,
+                                   float2& uvb, float2& uvc) const {
     auto const tri = triangles_[index];
 
     pa = positions_[tri.a];
@@ -245,8 +225,7 @@ void Indexed_data<SV>::triangle(uint32_t index, float3& pa, float3& pb, float3& 
     uvc = float2(shading_vertices_[tri.c].n_u[3], shading_vertices_[tri.c].t_v[3]);
 }
 
-template <typename SV>
-void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
+inline void Indexed_data::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
     SOFT_ASSERT(index < num_triangles_);
 
     float2 const uv = sample_triangle_uniform(r2);
@@ -266,8 +245,8 @@ void Indexed_data<SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) 
     tc = triangle::interpolate_uv(sa, sb, sc, uv);
 }
 
-template <typename SV>
-void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices) {
+inline void Indexed_data::allocate_triangles(uint32_t             num_triangles,
+                                             Vertex_stream const& vertices) {
     uint32_t const num_vertices = vertices.num_vertices();
     if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
         num_triangles_ = num_triangles;
@@ -291,9 +270,8 @@ void Indexed_data<SV>::allocate_triangles(uint32_t num_triangles, Vertex_stream 
     }
 }
 
-template <typename SV>
-void Indexed_data<SV>::set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
-                                    Vertex_stream const& vertices, uint32_t triangle_id) {
+inline void Indexed_data::set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
+                                       Vertex_stream const& vertices, uint32_t triangle_id) {
     bool const abts = vertices.bitangent_sign(a);
     bool const bbts = vertices.bitangent_sign(b);
     bool const cbts = vertices.bitangent_sign(c);
@@ -303,12 +281,10 @@ void Indexed_data<SV>::set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t
     triangles_[triangle_id] = Index_triangle(a, b, c, bitanget_sign, part);
 }
 
-template <typename SV>
-Indexed_data<SV>::Index_triangle::Index_triangle() = default;
+inline Indexed_data::Index_triangle::Index_triangle() = default;
 
-template <typename SV>
-Indexed_data<SV>::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-                                                 bool bitangent_sign, uint32_t part)
+inline Indexed_data::Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
+                                                    bool bitangent_sign, uint32_t part)
     : a(a), b(b), c(c), bts(bitangent_sign ? 1u : 0u), part(part) {}
 
 }  // namespace scene::shape::triangle::bvh

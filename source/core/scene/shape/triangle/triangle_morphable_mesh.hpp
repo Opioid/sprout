@@ -2,9 +2,9 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_MORPHABLE_MESH_HPP
 
 #include "base/math/distribution/distribution_1d.hpp"
+#include "bvh/triangle_bvh_tree.hpp"
 #include "scene/shape/morphable.hpp"
 #include "scene/shape/shape.hpp"
-#include "triangle_mesh_bvh.hpp"
 
 namespace scene::shape::triangle {
 
@@ -86,7 +86,7 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
     void morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads) final;
 
   private:
-    Tree tree_;
+    bvh::Tree tree_;
 
     Morph_target_collection* collection_;
 

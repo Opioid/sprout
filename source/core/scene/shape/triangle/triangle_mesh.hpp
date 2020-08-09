@@ -2,8 +2,8 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_MESH_HPP
 
 #include "base/math/distribution/distribution_1d.hpp"
+#include "bvh/triangle_bvh_tree.hpp"
 #include "scene/shape/shape.hpp"
-#include "triangle_mesh_bvh.hpp"
 
 namespace scene::shape::triangle {
 
@@ -13,7 +13,7 @@ class alignas(64) Mesh final : public Shape {
 
     ~Mesh() final;
 
-    Tree& tree();
+    bvh::Tree& tree();
 
     void allocate_parts(uint32_t num_parts);
 
@@ -90,14 +90,14 @@ class alignas(64) Mesh final : public Shape {
     float3 center(uint32_t part) const final;
 
   private:
-    Tree tree_;
+    bvh::Tree tree_;
 
     struct Distribution {
         using Distribution_1D = math::Distribution_implicit_pdf_lut_lin_1D;
 
         ~Distribution();
 
-        void init(uint32_t part, Tree const& tree);
+        void init(uint32_t part, bvh::Tree const& tree);
 
         bool empty() const;
 

@@ -4,6 +4,7 @@
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
 #include "scene/material/sampler_settings.hpp"
+#include "triangle_bvh_indexed_data.hpp"
 
 namespace math {
 struct Ray;
@@ -38,7 +39,6 @@ struct Data_triangle;
 
 namespace bvh {
 
-template <typename Data>
 class Tree {
   public:
     Tree();
@@ -121,7 +121,7 @@ class Tree {
 
     uint32_t* num_part_triangles_;
 
-    Data data_;
+    Indexed_data data_;
 };
 
 }  // namespace bvh

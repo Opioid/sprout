@@ -4,6 +4,7 @@
 #include "base/math/ray.hpp"
 #include "base/math/vector3.hpp"
 #include "base/simd/simd.hpp"
+#include "scene/shape/triangle/triangle_primitive_mt.hpp"
 
 namespace scene::shape {
 
@@ -11,7 +12,6 @@ class Vertex_stream;
 
 namespace triangle::bvh {
 
-template <typename SV>
 class Indexed_data {
   public:
     Indexed_data();
@@ -87,6 +87,8 @@ class Indexed_data {
     Index_triangle* triangles_;
 
     float3* positions_;
+
+    using SV = shape::triangle::Shading_vertex_MTC;
 
     SV* shading_vertices_;
 };

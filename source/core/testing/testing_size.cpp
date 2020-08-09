@@ -40,7 +40,6 @@
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_indexed_data.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
-#include "scene/shape/triangle/triangle_mesh_bvh.hpp"
 #include "scene/shape/triangle/triangle_morphable_mesh.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
 
@@ -127,8 +126,7 @@ void size() {
     print_size<scene::shape::triangle::Mesh>("Mesh", 128);
     print_size<scene::shape::triangle::Morphable_mesh>("Morphable_mesh", 128);
 
-    print_size<scene::shape::triangle::bvh::Indexed_data<
-        scene::shape::triangle::Shading_vertex_type>::Index_triangle>("Index_triangle", 16);
+    print_size<scene::shape::triangle::bvh::Indexed_data::Index_triangle>("Index_triangle", 16);
 
     //	print_size<scene::shape::triangle::Shading_vertex_MT>("Shading_vertex_MT", 48);
 

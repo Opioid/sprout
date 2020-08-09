@@ -3,7 +3,7 @@
 
 #include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
-#include "scene/shape/triangle/triangle_mesh_bvh.hpp"
+#include "triangle_bvh_tree.hpp"
 
 #include <vector>
 
@@ -37,7 +37,7 @@ class Builder_SAH final : private scene::bvh::Builder_base {
     using Triangles = Index_triangle const* const;
     using Vertices  = Vertex_stream const&;
 
-    void build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
+    void build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
                thread::Pool& threads);
 
   private:
@@ -46,7 +46,7 @@ class Builder_SAH final : private scene::bvh::Builder_base {
     using References = scene::bvh::References;
 
     void serialize(uint32_t source_node, uint32_t dest_node, Triangles triangles, Vertices vertices,
-                   triangle::Tree& tree, uint32_t& current_triangle);
+                   Tree& tree, uint32_t& current_triangle);
 };
 
 }  // namespace bvh
