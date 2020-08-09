@@ -57,7 +57,7 @@ class Pool;
 }  // namespace volume
 }  // namespace integrator
 
-class Worker : public scene::Worker {
+class alignas(64) Worker : public scene::Worker {
   public:
     using Ray                 = scene::Ray;
     using Scene               = scene::Scene;

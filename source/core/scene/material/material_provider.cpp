@@ -1394,7 +1394,9 @@ uint32_t Provider::max_sample_size() {
     num_bytes = std::max(substitute::Material_translucent::sample_size(), num_bytes);
     num_bytes = std::max(volumetric::Material::sample_size(), num_bytes);
 
-    num_bytes += num_bytes % 64;
+    size_t const r = num_bytes % 64;
+
+    num_bytes += 0 == r ? 0 : 64 - r;
 
     return uint32_t(num_bytes);
 }

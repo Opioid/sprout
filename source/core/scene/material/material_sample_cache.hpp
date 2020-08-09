@@ -5,7 +5,7 @@
 
 namespace scene::material {
 
-class alignas(4) Sample_cache {
+class alignas(64) Sample_cache {
   public:
     Sample_cache();
 
