@@ -14,22 +14,22 @@ T const& Float1_t<T>::image() const {
 
 template <typename T>
 float Float1_t<T>::at_1(int32_t x, int32_t y) const {
-    return image_.load(x, y);
+    return image_.at(x, y);
 }
 
 template <typename T>
 float2 Float1_t<T>::at_2(int32_t x, int32_t y) const {
-    return float2(image_.load(x, y), 0.f);
+    return float2(image_.at(x, y), 0.f);
 }
 
 template <typename T>
 float3 Float1_t<T>::at_3(int32_t x, int32_t y) const {
-    return float3(image_.load(x, y), 0.f, 0.f);
+    return float3(image_.at(x, y), 0.f, 0.f);
 }
 
 template <typename T>
 float4 Float1_t<T>::at_4(int32_t x, int32_t y) const {
-    return float4(image_.load(x, y), 0.f, 0.f, 1.f);
+    return float4(image_.at(x, y), 0.f, 0.f, 1.f);
 }
 
 template <typename T>
@@ -76,22 +76,22 @@ float3 Float1_t<T>::at_element_3(int32_t x, int32_t y, int32_t element) const {
 
 template <typename T>
 float Float1_t<T>::at_1(int32_t x, int32_t y, int32_t z) const {
-    return image_.load(x, y, z);
+    return image_.at(x, y, z);
 }
 
 template <typename T>
 float2 Float1_t<T>::at_2(int32_t x, int32_t y, int32_t z) const {
-    return float2(image_.load(x, y, z), 0.f);
+    return float2(image_.at(x, y, z), 0.f);
 }
 
 template <typename T>
 float3 Float1_t<T>::at_3(int32_t x, int32_t y, int32_t z) const {
-    return float3(image_.load(x, y, z), 0.f, 0.f);
+    return float3(image_.at(x, y, z), 0.f, 0.f);
 }
 
 template <typename T>
 float4 Float1_t<T>::at_4(int32_t x, int32_t y, int32_t z) const {
-    return float4(image_.load(x, y, z), 0.f, 0.f, 1.f);
+    return float4(image_.at(x, y, z), 0.f, 0.f, 1.f);
 }
 
 template class Float1_t<image::Float1>;

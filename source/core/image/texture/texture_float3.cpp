@@ -11,21 +11,21 @@ image::Float3 const& Float3::image() const {
 }
 
 float Float3::at_1(int32_t x, int32_t y) const {
-    return image_.load(x, y)[0];
+    return image_.at(x, y)[0];
 }
 
 float2 Float3::at_2(int32_t x, int32_t y) const {
-    return image_.load(x, y).xy();
+    return image_.at(x, y).xy();
 }
 
 float3 Float3::at_3(int32_t x, int32_t y) const {
-    return float3(image_.load(x, y));
+    return float3(image_.at(x, y));
 
     //	return float3(image_.at(x, y));
 }
 
 float4 Float3::at_4(int32_t x, int32_t y) const {
-    return float4(image_.load(x, y), 1.f);
+    return float4(image_.at(x, y), 1.f);
 }
 
 void Float3::gather_1(int4 const& xy_xy1, float c[4]) const {
@@ -73,21 +73,21 @@ float3 Float3::at_element_3(int32_t x, int32_t y, int32_t element) const {
 }
 
 float Float3::at_1(int32_t x, int32_t y, int32_t z) const {
-    return image_.load(x, y, z)[0];
+    return image_.at(x, y, z)[0];
 }
 
 float2 Float3::at_2(int32_t x, int32_t y, int32_t z) const {
-    return image_.load(x, y, z).xy();
+    return image_.at(x, y, z).xy();
 }
 
 float3 Float3::at_3(int32_t x, int32_t y, int32_t z) const {
-    return float3(image_.load(x, y, z));
+    return float3(image_.at(x, y, z));
 
     //	return float3(image_.at(x, y, z));
 }
 
 float4 Float3::at_4(int32_t x, int32_t y, int32_t z) const {
-    return float4(image_.load(x, y, z), 1.f);
+    return float4(image_.at(x, y, z), 1.f);
 
     //	return float4(image_.at(x, y, z), 1.f);
 }

@@ -84,7 +84,7 @@ void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& targe
 
         float3 const color = value.xyz() / value[3];
 
-        float3 const old = target.load(i).xyz();
+        float3 const old = target.at(i).xyz();
 
         target.store(i, float4(old + color, 1.f));
     }

@@ -57,7 +57,7 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
                 int32_t const kx = c[0] + k.o;
 
                 if (kx >= 0 && kx < d[0]) {
-                    float3 const color = source.load(kx, c[1]).xyz();
+                    float3 const color = source.at(kx, c[1]).xyz();
 
                     float const l = spectrum::luminance(color);
 
@@ -86,13 +86,13 @@ void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
                 int32_t const ky = c[1] + k.o;
 
                 if (ky >= 0 && ky < d[1]) {
-                    float3 const bloom = scratch_.load(c[0], ky).xyz();
+                    float3 const bloom = scratch_.at(c[0], ky).xyz();
                     accum += k.w * bloom;
                     weight_sum += k.w;
                 }
             }
 
-            float4 const s = source.load(i);
+            float4 const s = source.at(i);
 
             if (weight_sum > 0.f) {
                 float3 const bloom = accum / weight_sum;

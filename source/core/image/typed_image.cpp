@@ -91,11 +91,6 @@ void Typed_image<T>::clear(T v) {
 }
 
 template <typename T>
-T Typed_image<T>::load(int32_t index) const {
-    return data_[index];
-}
-
-template <typename T>
 T* Typed_image<T>::address(int32_t index) const {
     return data_ + index;
 }
@@ -106,14 +101,8 @@ void Typed_image<T>::store(int32_t index, T v) {
 }
 
 template <typename T>
-T const& Typed_image<T>::at(int32_t index) const {
+T Typed_image<T>::at(int32_t index) const {
     return data_[index];
-}
-
-template <typename T>
-T Typed_image<T>::load(int32_t x, int32_t y) const {
-    int32_t const i = y * description_.dimensions_[0] + x;
-    return data_[i];
 }
 
 template <typename T>
@@ -123,25 +112,19 @@ void Typed_image<T>::store(int32_t x, int32_t y, T v) {
 }
 
 template <typename T>
-T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const {
-    int32_t const i = (element * description_.dimensions_[1] + y) * description_.dimensions_[0] + x;
-    return data_[i];
-}
-
-template <typename T>
-T const& Typed_image<T>::at(int32_t x, int32_t y) const {
+T Typed_image<T>::at(int32_t x, int32_t y) const {
     int32_t const i = y * description_.dimensions_[0] + x;
     return data_[i];
 }
 
 template <typename T>
-T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
+T Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
     int32_t const i = (element * description_.dimensions_[1] + y) * description_.dimensions_[0] + x;
     return data_[i];
 }
 
 template <typename T>
-T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const {
+T Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
     int64_t const i = (int64_t(z) * int64_t(description_.dimensions_[1]) + int64_t(y)) *
                           int64_t(description_.dimensions_[0]) +
                       int64_t(x);
@@ -149,15 +132,7 @@ T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const {
 }
 
 template <typename T>
-T const& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
-    int64_t const i = (int64_t(z) * int64_t(description_.dimensions_[1]) + int64_t(y)) *
-                          int64_t(description_.dimensions_[0]) +
-                      int64_t(x);
-    return data_[i];
-}
-
-template <typename T>
-T const& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const {
+T Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const {
     int3 const    d = description_.dimensions_;
     int32_t const i = ((element * d[2] + z) * d[1] + y) * d[0] + x;
     return data_[i];

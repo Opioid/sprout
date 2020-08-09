@@ -19,7 +19,7 @@ void Backplate::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t
     int2 const d = backplate_->dimensions().xy();
 
     for (int32_t i = begin; i < end; ++i) {
-        float4 const foreground = source.load(i);
+        float4 const foreground = source.at(i);
 
         int2 const c = source.coordinates_2(i);
 

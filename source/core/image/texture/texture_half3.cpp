@@ -12,19 +12,19 @@ image::Short3 const& Half3::image() const {
 }
 
 float Half3::at_1(int32_t x, int32_t y) const {
-    return half_to_float(image_.load(x, y)[0]);
+    return half_to_float(image_.at(x, y)[0]);
 }
 
 float2 Half3::at_2(int32_t x, int32_t y) const {
-    return half_to_float(image_.load(x, y).xy());
+    return half_to_float(image_.at(x, y).xy());
 }
 
 float3 Half3::at_3(int32_t x, int32_t y) const {
-    return half_to_float(image_.load(x, y));
+    return half_to_float(image_.at(x, y));
 }
 
 float4 Half3::at_4(int32_t x, int32_t y) const {
-    return float4(half_to_float(image_.load(x, y)), 1.f);
+    return float4(half_to_float(image_.at(x, y)), 1.f);
 }
 
 void Half3::gather_1(int4 const& xy_xy1, float c[4]) const {
@@ -70,19 +70,19 @@ float3 Half3::at_element_3(int32_t x, int32_t y, int32_t element) const {
 }
 
 float Half3::at_1(int32_t x, int32_t y, int32_t z) const {
-    return half_to_float(image_.load(x, y, z)[0]);
+    return half_to_float(image_.at(x, y, z)[0]);
 }
 
 float2 Half3::at_2(int32_t x, int32_t y, int32_t z) const {
-    return half_to_float(image_.load(x, y, z).xy());
+    return half_to_float(image_.at(x, y, z).xy());
 }
 
 float3 Half3::at_3(int32_t x, int32_t y, int32_t z) const {
-    return half_to_float(image_.load(x, y, z));
+    return half_to_float(image_.at(x, y, z));
 }
 
 float4 Half3::at_4(int32_t x, int32_t y, int32_t z) const {
-    return float4(half_to_float(image_.load(x, y, z)), 1.f);
+    return float4(half_to_float(image_.at(x, y, z)), 1.f);
 
     //	return float4(image_.at(x, y, z), 1.f);
 }

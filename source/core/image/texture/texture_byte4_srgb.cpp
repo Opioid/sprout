@@ -13,22 +13,22 @@ Byte4 const& Byte4_sRGB::image() const {
 }
 
 float Byte4_sRGB::at_1(int32_t x, int32_t y) const {
-    auto const value = image_.load(x, y);
+    auto const value = image_.at(x, y);
     return encoding::cached_srgb_to_float(value[0]);
 }
 
 float2 Byte4_sRGB::at_2(int32_t x, int32_t y) const {
-    auto const value = image_.load(x, y);
+    auto const value = image_.at(x, y);
     return encoding::cached_srgb_to_float(value.xy());
 }
 
 float3 Byte4_sRGB::at_3(int32_t x, int32_t y) const {
-    auto const value = image_.load(x, y);
+    auto const value = image_.at(x, y);
     return encoding::cached_srgb_to_float(value.xyz());
 }
 
 float4 Byte4_sRGB::at_4(int32_t x, int32_t y) const {
-    auto const value = image_.load(x, y);
+    auto const value = image_.at(x, y);
     return encoding::cached_srgb_to_float(value);
 }
 
@@ -70,39 +70,39 @@ void Byte4_sRGB::gather_3(int4 const& xy_xy1, float3 c[4]) const {
 }
 
 float Byte4_sRGB::at_element_1(int32_t x, int32_t y, int32_t element) const {
-    auto const value = image_.load_element(x, y, element);
+    auto const value = image_.at_element(x, y, element);
     return encoding::cached_srgb_to_float(value[0]);
 }
 
 float2 Byte4_sRGB::at_element_2(int32_t x, int32_t y, int32_t element) const {
-    auto const value = image_.load_element(x, y, element);
+    auto const value = image_.at_element(x, y, element);
     return float2(encoding::cached_srgb_to_float(value[0]),
                   encoding::cached_srgb_to_float(value[1]));
 }
 
 float3 Byte4_sRGB::at_element_3(int32_t x, int32_t y, int32_t element) const {
-    auto const value = image_.load_element(x, y, element);
+    auto const value = image_.at_element(x, y, element);
     return encoding::cached_srgb_to_float(value.xyz());
 }
 
 float Byte4_sRGB::at_1(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.load(x, y, z);
+    auto const value = image_.at(x, y, z);
     return encoding::cached_srgb_to_float(value[0]);
 }
 
 float2 Byte4_sRGB::at_2(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.load(x, y, z);
+    auto const value = image_.at(x, y, z);
     return float2(encoding::cached_srgb_to_float(value[0]),
                   encoding::cached_srgb_to_float(value[1]));
 }
 
 float3 Byte4_sRGB::at_3(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.load(x, y, z);
+    auto const value = image_.at(x, y, z);
     return encoding::cached_srgb_to_float(value.xyz());
 }
 
 float4 Byte4_sRGB::at_4(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.load(x, y, z);
+    auto const value = image_.at(x, y, z);
     return encoding::cached_srgb_to_float(value);
 }
 

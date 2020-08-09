@@ -11,19 +11,19 @@ image::Float2 const& Float2::image() const {
 }
 
 float Float2::at_1(int32_t x, int32_t y) const {
-    return image_.load(x, y)[0];
+    return image_.at(x, y)[0];
 }
 
 float2 Float2::at_2(int32_t x, int32_t y) const {
-    return image_.load(x, y);
+    return image_.at(x, y);
 }
 
 float3 Float2::at_3(int32_t x, int32_t y) const {
-    return float3(image_.load(x, y), 0.f);
+    return float3(image_.at(x, y), 0.f);
 }
 
 float4 Float2::at_4(int32_t x, int32_t y) const {
-    return float4(image_.load(x, y), 0.f, 1.f);
+    return float4(image_.at(x, y), 0.f, 1.f);
 }
 
 void Float2::gather_1(int4 const& xy_xy1, float c[4]) const {
@@ -63,19 +63,19 @@ float3 Float2::at_element_3(int32_t x, int32_t y, int32_t element) const {
 }
 
 float Float2::at_1(int32_t x, int32_t y, int32_t z) const {
-    return image_.load(x, y, z)[0];
+    return image_.at(x, y, z)[0];
 }
 
 float2 Float2::at_2(int32_t x, int32_t y, int32_t z) const {
-    return image_.load(x, y, z);
+    return image_.at(x, y, z);
 }
 
 float3 Float2::at_3(int32_t x, int32_t y, int32_t z) const {
-    return float3(image_.load(x, y, z), 0.f);
+    return float3(image_.at(x, y, z), 0.f);
 }
 
 float4 Float2::at_4(int32_t x, int32_t y, int32_t z) const {
-    return float4(image_.load(x, y, z), 0.f, 1.f);
+    return float4(image_.at(x, y, z), 0.f, 1.f);
 }
 
 }  // namespace image::texture
