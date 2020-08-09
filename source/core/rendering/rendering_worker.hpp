@@ -73,10 +73,10 @@ class alignas(64) Worker : public scene::Worker {
     ~Worker();
 
     void init(uint32_t id, Scene const& scene, Camera const& camera, uint32_t num_samples_per_pixel,
-              Surface_pool* surfaces, Volume_pool& volumes, sampler::Pool& samplers,
-              Photon_map* photon_map, take::Photon_settings const& photon_settings_,
-              Lighttracer_pool* lighttracers, uint32_t num_particles_per_chunk,
-              Particle_importance* particle_importance);
+              Surface_pool const* surfaces, Volume_pool const& volumes,
+              sampler::Pool const& samplers, Photon_map* photon_map,
+              take::Photon_settings const& photon_settings_, Lighttracer_pool const* lighttracers,
+              uint32_t num_particles_per_chunk, Particle_importance* particle_importance);
 
     void render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                 uint32_t num_samples);
