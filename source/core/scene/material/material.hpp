@@ -8,8 +8,6 @@
 #include "image/texture/texture_adapter.hpp"
 #include "sampler_settings.hpp"
 
-#include <string_view>
-
 namespace math {
 struct ray;
 }  // namespace math

@@ -42,7 +42,8 @@ void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
 }
 
 float3 Mesh::object_to_texture_point(float3 const& p) const {
-    return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
+    AABB const aabb = tree_.aabb();
+    return (p - aabb.bounds[0]) / aabb.extent();
 }
 
 float3 Mesh::object_to_texture_vector(float3 const& v) const {
@@ -396,6 +397,7 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
 void Mesh::prepare_sampling(uint32_t part) {
     auto& p = parts_[part];
 
+    // This counts the triangles for _every_ part as an optimization
     if (0xFFFFFFFF == p.num_triangles) {
         for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
             parts_[i].num_triangles = 0;
