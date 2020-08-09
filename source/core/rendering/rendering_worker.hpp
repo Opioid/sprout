@@ -78,6 +78,11 @@ class Worker : public scene::Worker {
               Lighttracer_pool* lighttracers, uint32_t num_particles_per_chunk,
               Particle_importance* particle_importance);
 
+    void render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
+                uint32_t num_samples);
+
+    void particles(uint32_t frame, uint64_t offset, ulong2 const& range);
+
     float4 li(Ray& ray, Interface_stack const& interface_stack);
 
     void particle_li(uint32_t frame, Interface_stack const& interface_stack);

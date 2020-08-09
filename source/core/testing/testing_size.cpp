@@ -7,7 +7,7 @@
 #include "rendering/integrator/particle/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
-#include "rendering/rendering_camera_worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/bvh/scene_bvh_builder_base.hpp"
@@ -150,7 +150,6 @@ void size() {
 
     print_size<scene::Worker>("scene::Worker", 1088);
     print_size<rendering::Worker>("rendering::Worker", 1152);
-    print_size<rendering::Camera_worker>("rendering::Camera_worker", 1152);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 64);
     print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 128);

@@ -35,7 +35,7 @@ class Sink;
 
 namespace rendering {
 
-class Camera_worker;
+class Worker;
 
 class Driver {
   public:
@@ -48,11 +48,6 @@ class Driver {
     ~Driver();
 
     void init(take::View& view, Scene& scene, bool progressive);
-
-    Camera& camera();
-
-    Scene const& scene() const;
-    Scene&       scene();
 
     image::Float4 const& target() const;
 
@@ -85,7 +80,7 @@ class Driver {
 
     take::View* view_;
 
-    Camera_worker* workers_;
+    Worker* workers_;
 
     uint32_t frame_;
     uint32_t frame_view_;

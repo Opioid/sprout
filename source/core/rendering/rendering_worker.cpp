@@ -2,6 +2,7 @@
 #include "base/math/sample_distribution.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
+#include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/particle/lighttracer.hpp"
@@ -9,6 +10,8 @@
 #include "rendering/integrator/particle/photon/photon_mapper.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
+#include "rendering/sensor/sensor.hpp"
+#include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_helper.hpp"
@@ -67,6 +70,71 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     }
 
     particle_importance_ = particle_importance;
+}
+
+void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
+                    uint32_t num_samples) {
+    Camera const& camera = *camera_;
+
+    int2 const offset = camera.view_offset(view);
+
+    int4 crop = camera.crop();
+    crop[2] -= crop[0] + 1;
+    crop[3] -= crop[1] + 1;
+    crop[0] += offset[0];
+    crop[1] += offset[1];
+
+    int4 const view_tile(offset + tile.xy(), offset + tile.zw());
+
+    auto& sensor = camera.sensor();
+
+    int4 isolated_bounds = sensor.isolated_tile(view_tile);
+    isolated_bounds[2] -= isolated_bounds[0];
+    isolated_bounds[3] -= isolated_bounds[1];
+
+    int32_t const fr = sensor.filter_radius_int();
+
+    int2 const r = camera.resolution() + 2 * fr;
+
+    uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
+
+    for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
+        uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;
+        for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
+            rng_.start(0, o1 + uint64_t(x + fr));
+
+            sampler_->start_pixel(rng());
+            surface_integrator_->start_pixel(rng());
+            volume_integrator_->start_pixel(rng());
+
+            int2 const pixel(x, y);
+
+            for (uint32_t i = num_samples; i > 0; --i) {
+                auto const sample = sampler_->generate_camera_sample(rng(), pixel);
+
+                if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
+                    float4 const color = li(ray, camera.interface_stack());
+                    sensor.add_sample(sample, color, isolated_bounds, offset, crop);
+                } else {
+                    sensor.add_sample(sample, float4(0.f), isolated_bounds, offset, crop);
+                }
+            }
+        }
+    }
+}
+
+void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
+    Camera const& camera = *camera_;
+
+    lighttracer_->start_pixel(rng());
+
+    auto const& interface_stack = camera.interface_stack();
+
+    for (uint64_t i = range[0]; i < range[1]; ++i) {
+        rng_.start(0, i + offset);
+
+        lighttracer_->li(frame, *this, interface_stack);
+    }
 }
 
 float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {

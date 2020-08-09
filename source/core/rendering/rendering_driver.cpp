@@ -7,7 +7,7 @@
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
 #include "progress/progress_sink.hpp"
-#include "rendering/rendering_camera_worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/scene.inl"
@@ -21,7 +21,7 @@ Driver::Driver(thread::Pool& threads, progress::Sink& progressor)
     : threads_(threads),
       scene_(nullptr),
       view_(nullptr),
-      workers_(new Camera_worker[threads.num_threads()]),
+      workers_(new Worker[threads.num_threads()]),
       frame_(0),
       frame_view_(0),
       frame_iteration_(0),
@@ -89,18 +89,6 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
                          *view.volume_integrators, *view.samplers, photon_map, view.photon_settings,
                          view.lighttracers, Num_particles_per_chunk, &particle_importance_);
     }
-}
-
-scene::camera::Camera& Driver::camera() {
-    return *view_->camera;
-}
-
-scene::Scene const& Driver::scene() const {
-    return *scene_;
-}
-
-scene::Scene& Driver::scene() {
-    return *scene_;
 }
 
 image::Float4 const& Driver::target() const {
