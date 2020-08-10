@@ -16,7 +16,7 @@
 
 namespace image::texture {
 
-class alignas(64) Texture {
+class alignas(16) Texture {
   public:
     static char const* identifier();
 
@@ -40,10 +40,6 @@ class alignas(64) Texture {
     int32_t volume() const;
 
     int3 const& dimensions() const;
-
-    int3 const& back() const;
-
-    float3 const& dimensions_float() const;
 
     int3 const& offset() const;
 
@@ -88,10 +84,6 @@ class alignas(64) Texture {
     };
 
     Type const type_;
-
-    int3 const back_;
-
-    float3 const dimensions_float_;
 
     union {
         Byte1_unorm const   byte1_unorm_;

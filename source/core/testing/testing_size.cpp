@@ -1,5 +1,6 @@
 #include "testing_size.hpp"
 #include "base/math/vector3.inl"
+#include "image/image.hpp"
 #include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_byte3_srgb.hpp"
@@ -134,9 +135,11 @@ void size() {
 
     print_size<scene::shape::Vertex>("Vertex", 48);
 
+    print_size<image::Image>("image::Image", 64);
+
     print_size<image::Byte3>("image::Byte3", 48);
 
-    print_size<image::texture::Texture>("texture::Texture", 64);
+    print_size<image::texture::Texture>("texture::Texture", 16);
 
     print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 8);
 
