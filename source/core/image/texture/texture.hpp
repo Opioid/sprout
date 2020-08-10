@@ -16,22 +16,31 @@
 
 namespace image::texture {
 
+class Sampler_2D;
+class Sampler_3D;
+
+
 class alignas(16) Texture {
   public:
     static char const* identifier();
 
-    Texture(Byte1_unorm const& texture);
-    Texture(Byte2_snorm const& texture);
-    Texture(Byte2_unorm const& texture);
-    Texture(Byte3_snorm const& texture);
-    Texture(Byte3_unorm const& texture);
-    Texture(Byte3_sRGB const& texture);
-    Texture(Byte4_sRGB const& texture);
-    Texture(Half3 const& texture);
-    Texture(Float1 const& texture);
-    Texture(Float1_sparse const& texture);
-    Texture(Float2 const& texture);
-    Texture(Float3 const& texture);
+    Texture();
+    Texture(float scale, Byte1_unorm const& texture);
+    Texture(float scale, Byte2_snorm const& texture);
+    Texture(float scale, Byte2_unorm const& texture);
+    Texture(float scale, Byte3_snorm const& texture);
+    Texture(float scale, Byte3_unorm const& texture);
+    Texture(float scale, Byte3_sRGB const& texture);
+    Texture(float scale, Byte4_sRGB const& texture);
+    Texture(float scale, Half3 const& texture);
+    Texture(float scale, Float1 const& texture);
+    Texture(float scale, Float1_sparse const& texture);
+    Texture(float scale, Float2 const& texture);
+    Texture(float scale, Float3 const& texture);
+
+    bool is_valid() const;
+
+    bool operator==(Texture const& other) const;
 
     int32_t num_channels() const;
 
@@ -67,6 +76,32 @@ class alignas(16) Texture {
 
     float3 average_3(int32_t element) const;
 
+    float  sample_1(Sampler_2D const& sampler, float2 uv) const;
+        float2 sample_2(Sampler_2D const& sampler, float2 uv) const;
+        float3 sample_3(Sampler_2D const& sampler, float2 uv) const;
+
+        float sample_1(Sampler_2D const& sampler, float2 uv,
+                       int32_t element) const;
+
+        float2 sample_2(Sampler_2D const& sampler, float2 uv,
+                        int32_t element) const;
+
+        float3 sample_3(Sampler_2D const& sampler, float2 uv,
+                        int32_t element) const;
+
+        float2 address(Sampler_2D const& sampler, float2 uv) const;
+
+        float sample_1(Sampler_3D const& sampler, float3 const& uvw) const;
+
+        float2 sample_2(Sampler_3D const& sampler, float3 const& uvw) const;
+
+        float3 sample_3(Sampler_3D const& sampler, float3 const& uvw) const;
+
+        float4 sample_4(Sampler_3D const& sampler, float3 const& uvw) const;
+
+        float3 address(Sampler_3D const& sampler, float3 const& uvw) const;
+
+
   private:
     enum class Type {
         Byte1_unorm,
@@ -81,23 +116,26 @@ class alignas(16) Texture {
         Float1_sparse,
         Float2,
         Float3,
+        Invalid
     };
 
-    Type const type_;
+    Type type_;
+
+    float scale_;
 
     union {
-        Byte1_unorm const   byte1_unorm_;
-        Byte2_snorm const   byte2_snorm_;
-        Byte2_unorm const   byte2_unorm_;
-        Byte3_snorm const   byte3_snorm_;
-        Byte3_unorm const   byte3_unorm_;
-        Byte3_sRGB const    byte3_srgb_;
-        Byte4_sRGB const    byte4_srgb_;
-        Half3 const         half3_;
-        Float1 const        float1_;
-        Float1_sparse const float1_sparse_;
-        Float2 const        float2_;
-        Float3 const        float3_;
+        Byte1_unorm    byte1_unorm_;
+        Byte2_snorm    byte2_snorm_;
+        Byte2_unorm    byte2_unorm_;
+        Byte3_snorm    byte3_snorm_;
+        Byte3_unorm    byte3_unorm_;
+        Byte3_sRGB     byte3_srgb_;
+        Byte4_sRGB     byte4_srgb_;
+        Half3          half3_;
+        Float1         float1_;
+        Float1_sparse  float1_sparse_;
+        Float2         float2_;
+        Float3         float3_;
     };
 };
 

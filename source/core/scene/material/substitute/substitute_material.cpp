@@ -82,7 +82,7 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
 
     float2 surface;
     if (surface_map_.is_valid()) {
-        surface = surface_map_.sample_2(worker, sampler, rs.uv);
+        surface = surface_map_.sample_2( sampler, rs.uv);
 
         float const r = ggx::map_roughness(surface[0]);
 
@@ -94,7 +94,7 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
 
     float3 radiance;
     if (emission_map_.is_valid()) {
-        radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
+        radiance = emission_factor_ * emission_map_.sample_3( sampler, rs.uv);
     } else {
         radiance = float3(0.f);
     }
@@ -159,7 +159,7 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
         if (snow_mask_.is_valid()) {
             auto const& repeating_sampler = worker.sampler_2D(3, filter);
 
-            float const snow_weight = snow_mask_.sample_1(worker, repeating_sampler, uv);
+            float const snow_weight = snow_mask_.sample_1( repeating_sampler, uv);
 
             roughness = lerp(roughness, 0.1f, snow_weight);
         }
@@ -179,11 +179,11 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
     return sample;
 }
 
-void Frozen::set_snow_normal_map(Texture_adapter const& normal_map) {
+void Frozen::set_snow_normal_map(Texture const& normal_map) {
     snow_normal_map_ = normal_map;
 }
 
-void Frozen::set_snow_mask(Texture_adapter const& mask) {
+void Frozen::set_snow_mask(Texture const& mask) {
     snow_mask_ = mask;
 }
 

@@ -4,12 +4,15 @@
 #include "base/math/vector3.inl"
 #include "base/math/vector4.inl"
 #include "image/typed_image.hpp"
+#include "texture_sampler.hpp"
 #include "texture.hpp"
 
 namespace image::texture {
 
+inline Texture::Texture() : type_(Type::Invalid), scale_(0.f) {}
+
 #define TEXTURE_CONSTRUCTOR(TYPE, MEMBER) \
-    inline Texture::Texture(TYPE const& texture) : type_(Type::TYPE), MEMBER(texture) {}
+    inline Texture::Texture(float scale, TYPE const& texture) : type_(Type::TYPE), scale_(scale), MEMBER(texture) {}
 
 TEXTURE_CONSTRUCTOR(Byte1_unorm, byte1_unorm_)
 TEXTURE_CONSTRUCTOR(Byte2_snorm, byte2_snorm_)
@@ -52,6 +55,14 @@ TEXTURE_CONSTRUCTOR(Float3, float3_)
             return float3_.NAME(__VA_ARGS__);        \
     }
 
+inline bool Texture::is_valid() const {
+    return type_ != Type::Invalid;
+}
+
+inline bool Texture::operator==(Texture const& other) const {
+    return false;
+}
+
 inline int32_t Texture::num_channels() const {
     switch (type_) {
         case Type::Byte1_unorm:
@@ -70,6 +81,8 @@ inline int32_t Texture::num_channels() const {
             return 3;
         case Type::Byte4_sRGB:
             return 4;
+        case Type::Invalid:
+        return 0;
     }
 
     return 0;
@@ -175,6 +188,62 @@ inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_4, x, y, z)
 
     return float4(0.f);
+}
+
+
+inline float Texture::sample_1(Sampler_2D const& sampler, float2 uv) const {
+    return sampler.sample_1(*this, scale_ * uv);
+}
+
+inline float2 Texture::sample_2(Sampler_2D const& sampler, float2 uv) const {
+    return sampler.sample_2(*this, scale_ * uv);
+}
+
+inline float3 Texture::sample_3(Sampler_2D const& sampler, float2 uv) const {
+    return sampler.sample_3(*this, scale_ * uv);
+}
+
+inline float Texture::sample_1(Sampler_2D const& sampler, float2 uv,
+                               int32_t element) const {
+    return sampler.sample_1(*this, scale_ * uv, element);
+}
+
+inline float2 Texture::sample_2(Sampler_2D const& sampler, float2 uv,
+                                int32_t element) const {
+    return sampler.sample_2(*this, scale_ * uv, element);
+}
+
+inline float3 Texture::sample_3(Sampler_2D const& sampler, float2 uv,
+                                int32_t element) const {
+    return sampler.sample_3(*this, scale_ * uv, element);
+}
+
+inline float2 Texture::address(Sampler_2D const& sampler, float2 uv) const {
+    return sampler.address(scale_ * uv);
+}
+
+inline float Texture::sample_1(Sampler_3D const& sampler,
+                               float3 const& uvw) const {
+    return sampler.sample_1(*this, uvw);
+}
+
+inline float2 Texture::sample_2( Sampler_3D const& sampler,
+                                float3 const& uvw) const {
+    return sampler.sample_2(*this, uvw);
+}
+
+inline float3 Texture::sample_3(Sampler_3D const& sampler,
+                                float3 const& uvw) const {
+    return sampler.sample_3(*this, uvw);
+}
+
+inline float4 Texture::sample_4(Sampler_3D const& sampler,
+                                float3 const& uvw) const {
+    return sampler.sample_4(*this, uvw);
+}
+
+inline float3 Texture::address(Sampler_3D const& sampler, float3 const& uvw) const {
+    return sampler.address(uvw);
 }
 
 }  // namespace image::texture

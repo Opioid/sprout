@@ -1,6 +1,6 @@
 #include "display_emissionmap_animated.hpp"
 #include "display_sample.hpp"
-#include "image/texture/texture_adapter.inl"
+#include "image/texture/texture.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
@@ -24,7 +24,7 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    float3 const radiance = emission_map_.sample_3(worker, sampler, rs.uv, element_);
+    float3 const radiance = emission_map_.sample_3( sampler, rs.uv, element_);
 
     sample.set(emission_factor_ * radiance, fresnel::schlick_f0(ior_, rs.ior), alpha_);
 

@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_HELPER_HPP
 
 #include "base/math/vector3.inl"
-#include "image/texture/texture_adapter.hpp"
+#include "image/texture/texture.inl"
 #include "image/texture/texture_types.hpp"
 #include "material_sample_helper.hpp"
 #include "scene/scene_renderstate.hpp"
@@ -14,13 +14,13 @@
 
 namespace scene::material {
 
-using Texture_adapter    = image::texture::Adapter;
+using Texture    = image::texture::Texture;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 
 static inline float3 sample_normal(float3 const& wo, Renderstate const& rs, float2 const uv,
-                                   Texture_adapter const& map, Texture_sampler_2D const& sampler,
+                                   Texture const& map, Texture_sampler_2D const& sampler,
                                    scene::Worker const& worker) {
-    float3 const nm = map.sample_3(worker, sampler, uv);
+    float3 const nm = map.sample_3(sampler, uv);
     float3 const n  = normalize(rs.tangent_to_world(nm));
 
     SOFT_ASSERT(testing::check_normal_map(n, nm, uv));
@@ -37,7 +37,7 @@ static inline float3 sample_normal(float3 const& wo, Renderstate const& rs, floa
 }
 
 static inline float3 sample_normal(float3 const& wo, Renderstate const& rs,
-                                   Texture_adapter const& map, Texture_sampler_2D const& sampler,
+                                   Texture const& map, Texture_sampler_2D const& sampler,
                                    scene::Worker const& worker) {
     return sample_normal(wo, rs, rs.uv, map, sampler, worker);
 }

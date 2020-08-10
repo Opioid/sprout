@@ -37,14 +37,14 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
 
     float3 color;
     if (color_map_.is_valid()) {
-        color = color_map_.sample_3(worker, sampler, rs.uv);
+        color = color_map_.sample_3( sampler, rs.uv);
     } else {
         color = color_;
     }
 
     float2 surface;
     if (surface_map_.is_valid()) {
-        surface = surface_map_.sample_2(worker, sampler, rs.uv);
+        surface = surface_map_.sample_2( sampler, rs.uv);
 
         float const r = ggx::map_roughness(surface[0]);
 
@@ -56,7 +56,7 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
 
     float3 radiance;
     if (emission_map_.is_valid()) {
-        radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
+        radiance = emission_factor_ * emission_map_.sample_3( sampler, rs.uv);
     } else {
         radiance = float3(0.f);
     }

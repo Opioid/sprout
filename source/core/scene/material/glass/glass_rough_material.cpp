@@ -34,7 +34,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
 
     float alpha;
     if (roughness_map_.is_valid()) {
-        float const r = ggx::map_roughness(roughness_map_.sample_1(worker, sampler, rs.uv));
+        float const r = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
 
         alpha = r * r;
     } else {
@@ -46,11 +46,11 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
     return sample;
 }
 
-void Glass_rough::set_normal_map(Texture_adapter const& normal_map) {
+void Glass_rough::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Glass_rough::set_roughness_map(Texture_adapter const& roughness_map) {
+void Glass_rough::set_roughness_map(Texture const& roughness_map) {
     roughness_map_ = roughness_map;
 }
 

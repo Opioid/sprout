@@ -26,10 +26,9 @@ namespace image::texture {
 
 Provider::Provider(bool no_textures) : no_textures_(no_textures) {}
 
-Texture* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
-                        std::string& resolved_name) {
+Texture Provider::load(std::string const& filename, float scale, Variants const& options, Resources& resources) const {
     if (no_textures_) {
-        return nullptr;
+        return Texture();
     }
 
     Channels channels = Channels::XYZ;
@@ -71,70 +70,66 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
 
     auto const image_res = resource::Null != image_id
                                ? resources.get<Image>(image_id)
-                               : resources.load<Image>(filename, image_options, resolved_name);
+                               : resources.load<Image>(filename, image_options);
 
     if (!image_res.ptr) {
         logging::error("Loading texture %S: ", filename);
-        return nullptr;
+        return Texture();
     }
 
     auto const image = image_res.ptr;
 
     if (Image::Type::Byte1 == image->type()) {
-        return new Texture(Byte1_unorm(image->byte1()));
+        return Texture(scale, Byte1_unorm(image->byte1()));
     }
 
     if (Image::Type::Byte2 == image->type()) {
         if (Usage::Anisotropy == usage) {
-            return new Texture(Byte2_snorm(image->byte2()));
+            return Texture(scale, Byte2_snorm(image->byte2()));
         }
 
-        return new Texture(Byte2_unorm(image->byte2()));
+        return Texture(scale, Byte2_unorm(image->byte2()));
     }
 
     if (Image::Type::Byte3 == image->type()) {
         if (Usage::Normal == usage) {
             SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
 
-            return new Texture(Byte3_snorm(image->byte3()));
+            return Texture(scale, Byte3_snorm(image->byte3()));
         }
 
-        return new Texture(Byte3_sRGB(image->byte3()));
+        return Texture(scale, Byte3_sRGB(image->byte3()));
     }
 
     if (Image::Type::Byte4 == image->type()) {
-        return new Texture(Byte4_sRGB(image->byte4()));
+        return Texture(scale, Byte4_sRGB(image->byte4()));
     }
 
     if (Image::Type::Short3 == image->type()) {
-        return new Texture(Half3(image->short3()));
+        return Texture(scale, Half3(image->short3()));
     }
 
     if (Image::Type::Float1 == image->type()) {
-        return new Texture(Float1(image->float1()));
+        return Texture(scale, Float1(image->float1()));
     }
 
     if (Image::Type::Float1_sparse == image->type()) {
-        return new Texture(Float1_sparse(image->float1_sparse()));
+        return Texture(scale, Float1_sparse(image->float1_sparse()));
     }
 
     if (Image::Type::Float2 == image->type()) {
-        return new Texture(Float2(image->float2()));
+        return Texture(scale, Float2(image->float2()));
     }
 
     if (Image::Type::Float3 == image->type()) {
-        return new Texture(Float3(image->float3()));
+        return Texture(scale, Float3(image->float3()));
     }
 
     // We should never come here...
 
-    return nullptr;
+    return Texture();
 }
 
-Texture* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
-                        Variants const& /*options*/, resource::Manager& /*resources*/) {
-    return nullptr;
-}
 
 std::string Provider::encode_name(uint32_t image_id) {
     return "tex:" + std::to_string(image_id);

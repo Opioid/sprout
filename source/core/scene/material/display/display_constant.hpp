@@ -23,7 +23,7 @@ class Constant : public Material {
     static size_t sample_size();
 
   private:
-    Texture_adapter emission_map_;
+    Texture emission_map_;
 
     float3 emission_;
 

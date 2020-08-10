@@ -31,7 +31,7 @@ material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*
 
     sample.set_basis(rs.geo_n, rs.n, wo);
 
-    float3 const radiance = emission_map_.sample_3(worker, sampler, rs.uv);
+    float3 const radiance = emission_map_.sample_3( sampler, rs.uv);
 
     sample.set(emission_factor_ * radiance);
 
@@ -42,7 +42,7 @@ float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, f
                                       Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy());
+    return emission_factor_ * emission_map_.sample_3( sampler, uvw.xy());
 }
 
 float3 Emissionmap::average_radiance(float /*area*/) const {
@@ -74,7 +74,7 @@ void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64
     prepare_sampling_internal(shape, 0, importance_sampling, threads, scene);
 }
 
-void Emissionmap::set_emission_map(Texture_adapter const& emission_map) {
+void Emissionmap::set_emission_map(Texture const& emission_map) {
     emission_map_ = emission_map;
 
     properties_.set(Property::Emission_map, emission_map.is_valid());
@@ -87,7 +87,7 @@ void Emissionmap::set_emission_factor(float emission_factor) {
 void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                                             bool importance_sampling, thread::Pool& threads,
                                             Scene const& scene) {
-    auto const& texture = emission_map_.texture(scene);
+    auto const& texture = emission_map_;
 
     if (importance_sampling) {
         auto const d = texture.dimensions().xy();

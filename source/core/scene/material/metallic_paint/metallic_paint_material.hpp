@@ -15,8 +15,8 @@ class Material : public material::Material {
     void set_color(float3 const& a, float3 const& b);
     void set_roughness(float roughness);
 
-    void set_flakes_mask(Texture_adapter const& mask);
-    void set_flakes_normal_map(Texture_adapter const& normal_map);
+    void set_flakes_mask(Texture const& mask);
+    void set_flakes_normal_map(Texture const& normal_map);
     void set_flakes_ior(float3 const& ior);
     void set_flakes_absorption(float3 const& absorption);
     void set_flakes_roughness(float roughness);
@@ -29,8 +29,8 @@ class Material : public material::Material {
     static size_t sample_size();
 
   protected:
-    Texture_adapter flakes_mask_;
-    Texture_adapter flakes_normal_map_;
+    Texture flakes_mask_;
+    Texture flakes_normal_map_;
 
     float3 color_a_;
     float3 color_b_;

@@ -2,6 +2,7 @@
 #define SU_IT_ITEM_HPP
 
 #include "base/math/vector2.hpp"
+#include "core/image/texture/texture.hpp"
 
 #include <string>
 #include <vector>
@@ -18,7 +19,7 @@ struct Item {
     std::string name;
     std::string name_out;
 
-    Texture const* image;
+    Texture image;
 };
 
 bool any_has_alpha_channel(std::vector<Item> const& items);

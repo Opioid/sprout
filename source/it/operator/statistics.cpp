@@ -105,20 +105,20 @@ uint32_t statistics(std::vector<Item> const& items, it::options::Options const& 
     return 1;
 }
 
-Luminance average_and_max_luminance(Texture const* image) {
-    int32_t const len = image->volume();
+Luminance average_and_max_luminance(Texture const& image) {
+    int32_t const len = image.volume();
 
     float const ilen = 1.f / float(len);
 
     float average = 0.f;
     float max     = 0.f;
 
-    auto const d = image->dimensions();
+    auto const d = image.dimensions();
 
     for (int32_t z = 0; z < d[2]; ++z) {
         for (int32_t y = 0; y < d[1]; ++y) {
             for (int32_t x = 0; x < d[0]; ++x) {
-                float const luminance = luminance_gamma_sRGB(image->at_3(x, y, z));
+                float const luminance = luminance_gamma_sRGB(image.at_3(x, y, z));
 
                 average += ilen * luminance;
 
@@ -131,18 +131,18 @@ Luminance average_and_max_luminance(Texture const* image) {
 }
 
 void write_histogram(Item const& item, std::ostream& stream) {
-    Texture const* image = item.image;
+    Texture const& image = item.image;
 
     auto const [avg_l, max_l] = average_and_max_luminance(image);
 
     Histogram hist(max_l);
 
-    auto const d = image->dimensions();
+    auto const d = image.dimensions();
 
     for (int32_t z = 0; z < d[2]; ++z) {
         for (int32_t y = 0; y < d[1]; ++y) {
             for (int32_t x = 0; x < d[0]; ++x) {
-                float const luminance = luminance_gamma_sRGB(image->at_3(x, y, z));
+                float const luminance = luminance_gamma_sRGB(image.at_3(x, y, z));
 
                 hist.insert(luminance);
             }
@@ -160,7 +160,7 @@ void write_histogram(Item const& item, std::ostream& stream) {
 
     static uint32_t Num_rows = 16;
 
-    float const nl = hist_max / float(image->volume());
+    float const nl = hist_max / float(image.volume());
 
     stream << std::setprecision(1);
 

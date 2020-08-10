@@ -18,7 +18,7 @@ Emissionmap_animated::~Emissionmap_animated() = default;
 
 void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /*frame_length*/,
                                     thread::Pool& /*threads*/, Scene const& scene) {
-    uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
+    uint64_t const num_elements = uint64_t(emission_map_.num_elements());
 
     int32_t const element = int32_t((start / (animation_duration_ / num_elements)) % num_elements);
 
@@ -37,7 +37,7 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
 
     sample.set_basis(rs.geo_n, rs.n, wo);
 
-    float3 const radiance = emission_map_.sample_3(worker, sampler, rs.uv, element_);
+    float3 const radiance = emission_map_.sample_3(sampler, rs.uv, element_);
 
     sample.set(emission_factor_ * radiance);
 
@@ -48,14 +48,14 @@ float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float3 cons
                                                float /*extent*/, Filter            filter,
                                                Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
-    return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy(), element_);
+    return emission_factor_ * emission_map_.sample_3(sampler, uvw.xy(), element_);
 }
 
 float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
                                     Worker const& worker) const {
     if (mask_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);
-        return mask_.sample_1(worker, sampler, uv, element_);
+        return mask_.sample_1(sampler, uv, element_);
     }
 
     return 1.f;
@@ -65,7 +65,7 @@ void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*
                                             Transformation const& /*transformation*/,
                                             float /*area*/, bool importance_sampling,
                                             thread::Pool& threads, Scene const& scene) {
-    uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
+    uint64_t const num_elements = uint64_t(emission_map_.num_elements());
 
     int32_t const element = int32_t((time / (animation_duration_ / num_elements)) % num_elements);
 
@@ -78,7 +78,7 @@ void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*
     prepare_sampling_internal(shape, element, importance_sampling, threads, scene);
 }
 
-void Emissionmap_animated::set_emission_map(Texture_adapter const& emission_map,
+void Emissionmap_animated::set_emission_map(Texture const& emission_map,
                                             uint64_t               animation_duration) {
     emission_map_ = emission_map;
 

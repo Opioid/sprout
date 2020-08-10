@@ -42,9 +42,9 @@ uint32_t concatenate(std::vector<Item> const& items, it::options::Options const&
     int32_t  row_height = 0;
 
     for (auto const& i : items) {
-        copy(*i.image, target, offset, clip);
+        copy(i.image, target, offset, clip);
 
-        int2 const d = i.image->dimensions().xy();
+        int2 const d = i.image.dimensions().xy();
 
         offset[0] += d[0];
 
@@ -90,7 +90,7 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
     uint32_t column     = 0;
 
     for (auto const& i : items) {
-        int2 const d = i.image->dimensions().xy();
+        int2 const d = i.image.dimensions().xy();
 
         row_width += d[0];
         row_height = std::max(row_height, d[1]);

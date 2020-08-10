@@ -1,5 +1,5 @@
 #include "mix_material.hpp"
-#include "image/texture/texture_adapter.inl"
+#include "image/texture/texture.inl"
 #include "sampler/sampler.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
@@ -13,7 +13,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
                                          Filter filter, Sampler& sampler, Worker& worker) const {
     auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);
 
-    float const mask = mask_.sample_1(worker, texture_sampler, rs.uv);
+    float const mask = mask_.sample_1( texture_sampler, rs.uv);
 
     if (mask > sampler.generate_sample_1D(worker.rng(), 1)) {
         return material_a_->sample(wo, ray, rs, filter, sampler, worker);

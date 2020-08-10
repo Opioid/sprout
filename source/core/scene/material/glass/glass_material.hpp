@@ -14,7 +14,7 @@ class alignas(16) Glass : public Material {
 
     float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
+    void set_normal_map(Texture const& normal_map);
 
     void set_refraction_color(float3 const& color);
 
@@ -23,7 +23,7 @@ class alignas(16) Glass : public Material {
     static size_t sample_size();
 
   protected:
-    Texture_adapter normal_map_;
+    Texture normal_map_;
 
     float3 refraction_color_;
     float3 absorption_coefficient_;

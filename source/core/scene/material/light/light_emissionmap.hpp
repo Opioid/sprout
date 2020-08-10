@@ -29,7 +29,7 @@ class alignas(64) Emissionmap : public Material {
                           bool importance_sampling, thread::Pool& threads,
                           Scene const& scene) override;
 
-    void set_emission_map(Texture_adapter const& emission_map);
+    void set_emission_map(Texture const& emission_map);
 
     void set_emission_factor(float emission_factor);
 
@@ -37,7 +37,7 @@ class alignas(64) Emissionmap : public Material {
     void prepare_sampling_internal(Shape const& shape, int32_t element, bool importance_sampling,
                                    thread::Pool& threads, Scene const& scene);
 
-    Texture_adapter emission_map_;
+    Texture emission_map_;
 
     Distribution_2D distribution_;
 

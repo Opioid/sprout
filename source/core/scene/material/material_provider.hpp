@@ -8,6 +8,7 @@
 #include "image/channels.hpp"
 #include "image/texture/texture_types.hpp"
 #include "resource/resource_provider.hpp"
+#include "image/texture/texture_provider.hpp"
 
 namespace scene::material {
 
@@ -17,7 +18,7 @@ struct Sampler_settings;
 
 class Provider final : public resource::Provider<Material> {
   public:
-    Provider(bool force_debug_material);
+    Provider(image::texture::Provider const& textures, bool force_debug_material);
 
     ~Provider() final;
 
@@ -33,6 +34,8 @@ class Provider final : public resource::Provider<Material> {
     Material* load(json::Value const& value, std::string_view mount_folder, Resources& resources);
 
     Material* load_mix(json::Value const& mix_value, Resources& resources);
+
+    image::texture::Provider const& textures_;
 
     bool force_debug_material_;
 

@@ -15,7 +15,7 @@ class Glass_thin : public Material {
     float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                            Filter filter, Worker const& worker) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
+    void set_normal_map(Texture const& normal_map);
 
     void set_refraction_color(float3 const& color);
     void set_attenuation(float3 const& absorption_color, float distance);
@@ -24,7 +24,7 @@ class Glass_thin : public Material {
     static size_t sample_size();
 
   private:
-    Texture_adapter normal_map_;
+    Texture normal_map_;
 
     float3 refraction_color_;
     float3 absorption_coefficient_;

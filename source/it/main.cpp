@@ -5,7 +5,7 @@
 #include "core/file/file_system.hpp"
 #include "core/image/image.hpp"
 #include "core/image/image_provider.hpp"
-#include "core/image/texture/texture.hpp"
+#include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/log_std_out.hpp"
 #include "core/logging/logging.hpp"
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     resources.register_provider(image_provider);
 
     texture::Provider texture_provider(false);
-    resources.register_provider(texture_provider);
+ //   resources.register_provider(texture_provider);
 
     Pipeline pipeline;
 
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
     uint32_t slot = Options::Operator::Diff == args.op ? 0xFFFFFFFF : 0;
     for (auto& i : args.images) {
-        if (Texture const* image = resources.load<Texture>(i, options).ptr; image) {
+        if (Texture const image = texture_provider.load(i, 1.f, options, resources); image.is_valid()) {
             std::string const name_out = slot < args.outputs.size() ? args.outputs[slot] : "";
 
             items.emplace_back(Item{i, name_out, image});

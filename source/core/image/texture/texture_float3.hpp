@@ -30,7 +30,7 @@ class Float3 {
     float4 at_4(int32_t x, int32_t y, int32_t z) const;
 
   private:
-    image::Float3 const& image_;
+    image::Float3 const* image_;
 };
 
 }  // namespace image::texture

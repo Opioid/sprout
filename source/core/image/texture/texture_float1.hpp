@@ -31,7 +31,7 @@ class Float1_t {
     float4 at_4(int32_t x, int32_t y, int32_t z) const;
 
   private:
-    T const& image_;
+    T const* image_;
 };
 
 extern template class Float1_t<image::Float1>;

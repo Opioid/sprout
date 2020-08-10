@@ -43,7 +43,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     if (flakes_mask_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-        flakes_weight = flakes_mask_.sample_1(worker, sampler, rs.uv);
+        flakes_weight = flakes_mask_.sample_1( sampler, rs.uv);
     } else {
         flakes_weight = 1.f;
     }
@@ -71,11 +71,11 @@ void Material::set_roughness(float roughness) {
     alpha_ = r * r;
 }
 
-void Material::set_flakes_mask(Texture_adapter const& mask) {
+void Material::set_flakes_mask(Texture const& mask) {
     flakes_mask_ = mask;
 }
 
-void Material::set_flakes_normal_map(Texture_adapter const& normal_map) {
+void Material::set_flakes_normal_map(Texture const& normal_map) {
     flakes_normal_map_ = normal_map;
 }
 

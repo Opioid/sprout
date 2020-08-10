@@ -2,12 +2,9 @@
 #define SU_IT_OPERATOR_DIFFERENCE_ITEM_HPP
 
 #include "base/math/vector.hpp"
+#include "core/image/texture/texture.hpp"
 
 #include <string>
-
-namespace image::texture {
-class Texture;
-}
 
 namespace thread {
 class Pool;
@@ -41,13 +38,13 @@ class Difference_item {
 
     float psnr() const;
 
-    void calculate_difference(Texture const* other, Scratch* scratch, float clamp, float2 clip,
+    void calculate_difference(Texture const& other, Scratch* scratch, float clamp, float2 clip,
                               thread::Pool& threads);
 
   private:
     std::string name_;
 
-    Texture const* image_;
+    Texture image_;
 
     float* difference_;
 

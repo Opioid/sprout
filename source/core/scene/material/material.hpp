@@ -5,7 +5,7 @@
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
 #include "collision_coefficients.hpp"
-#include "image/texture/texture_adapter.hpp"
+#include "image/texture/texture.hpp"
 #include "sampler_settings.hpp"
 
 namespace math {
@@ -53,7 +53,7 @@ class alignas(16) Material {
     using Shape           = shape::Shape;
     using Transformation  = entity::Composed_transformation;
     using Sampler         = sampler::Sampler;
-    using Texture_adapter = image::texture::Adapter;
+    using Texture = image::texture::Texture;
 
     static char const* identifier();
 
@@ -61,7 +61,7 @@ class alignas(16) Material {
 
     virtual ~Material();
 
-    void set_mask(Texture_adapter const& mask);
+    void set_mask(Texture const& mask);
 
     void set_emission(float3 const& emission);
 
@@ -173,7 +173,7 @@ class alignas(16) Material {
 
     flags::Flags<Property> properties_;
 
-    Texture_adapter mask_;
+    Texture mask_;
 
     CC cc_;
 

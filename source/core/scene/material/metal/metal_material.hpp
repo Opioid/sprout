@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_METAL_MATERIAL_HPP
 
 #include "scene/material/material.hpp"
+#include "base/math/vector2.hpp"
 
 namespace scene::material::metal {
 
@@ -14,7 +15,7 @@ class alignas(64) Material_isotropic : public Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
+    void set_normal_map(Texture const& normal_map);
 
     void set_ior(float3 const& ior);
     void set_absorption(float3 const& absorption);
@@ -23,7 +24,7 @@ class alignas(64) Material_isotropic : public Material {
     static size_t sample_size();
 
   protected:
-    Texture_adapter normal_map_;
+    Texture normal_map_;
 
     float3 ior3_;
     float3 absorption_;
@@ -40,8 +41,8 @@ class alignas(64) Material_anisotropic : public Material {
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
-    void set_direction_map(Texture_adapter const& direction_map);
+    void set_normal_map(Texture const& normal_map);
+    void set_direction_map(Texture const& direction_map);
 
     void set_ior(float3 const& ior);
     void set_absorption(float3 const& absorption);
@@ -50,8 +51,8 @@ class alignas(64) Material_anisotropic : public Material {
     static size_t sample_size();
 
   protected:
-    Texture_adapter normal_map_;
-    Texture_adapter direction_map_;
+    Texture normal_map_;
+    Texture direction_map_;
 
     float3 ior3_;
     float3 absorption_;

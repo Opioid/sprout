@@ -30,7 +30,7 @@ class Byte2_snorm {
     float4 at_4(int32_t x, int32_t y, int32_t z) const;
 
   private:
-    Byte2 const& image_;
+    Byte2 const* image_;
 };
 
 }  // namespace image::texture

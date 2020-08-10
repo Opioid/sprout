@@ -98,12 +98,12 @@ int main(int argc, char* argv[]) {
     resources.register_provider(image_provider);
 
     image::texture::Provider texture_provider(args.no_textures);
-    auto const&              texture_resources = resources.register_provider(texture_provider);
+//    auto const&              texture_resources = resources.register_provider(texture_provider);
 
     shape::triangle::Provider mesh_provider;
     auto const&               shape_resources = resources.register_provider(mesh_provider);
 
-    material::Provider material_provider(args.debug_material);
+    material::Provider material_provider(texture_provider, args.debug_material);
     auto const&        material_resources = resources.register_provider(material_provider);
 
     scene::Loader scene_loader(resources, material_provider.create_fallback_material());
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    Scene scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources);
+    Scene scene(scene_loader.null_shape(), shape_resources, material_resources);
 
     std::string take_name;
 

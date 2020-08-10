@@ -29,7 +29,7 @@ class Emissionmap_animated : public Emissionmap {
                           bool importance_sampling, thread::Pool& threads,
                           Scene const& scene) final;
 
-    void set_emission_map(Texture_adapter const& emission_map, uint64_t animation_duration);
+    void set_emission_map(Texture const& emission_map, uint64_t animation_duration);
 
   protected:
     uint64_t animation_duration_;

@@ -61,7 +61,7 @@ static int2 constexpr Bake_dimensions(256);
 Sky_baked_material::Sky_baked_material(Sky& sky)
     : Material(sky),
       cache_(image::Description(Bake_dimensions)),
-      cache_texture_(image::texture::Float3(cache_)) {
+      cache_texture_(1.f, image::texture::Float3(cache_)) {
     properties_.set(Property::Emission_map);
 }
 
@@ -90,7 +90,7 @@ float3 Sky_baked_material::evaluate_radiance(float3 const& /*wi*/, float3 const&
 
     return sampler.sample_3(cache_texture_, uvw.xy());
 
-    //    return emission_map_.sample_3(worker, sampler, uvw.xy());
+    //    return emission_map_.sample_3( sampler, uvw.xy());
 }
 
 float3 Sky_baked_material::average_radiance(float /*area*/) const {

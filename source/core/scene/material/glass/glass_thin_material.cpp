@@ -1,7 +1,7 @@
 #include "glass_thin_material.hpp"
 #include "base/math/vector3.inl"
 #include "glass_thin_sample.hpp"
-#include "image/texture/texture_adapter.inl"
+#include "image/texture/texture.inl"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"
@@ -70,7 +70,7 @@ float3 Glass_thin::thin_absorption(float3 const& wi, float3 const& n, float2 uv,
     return (1.f - f) * ta;
 }
 
-void Glass_thin::set_normal_map(Texture_adapter const& normal_map) {
+void Glass_thin::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 

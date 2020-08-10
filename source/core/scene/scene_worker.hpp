@@ -85,8 +85,6 @@ class Worker {
 
     Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const;
 
-    Texture const* texture(uint32_t id) const;
-
     Interface_stack& interface_stack();
 
     rnd::Generator& rng();

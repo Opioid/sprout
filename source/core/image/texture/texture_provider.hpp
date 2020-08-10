@@ -1,7 +1,8 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_PROVIDER_HPP
 #define SU_CORE_IMAGE_TEXTURE_PROVIDER_HPP
 
-#include "resource/resource_provider.hpp"
+#include "resource/resource_manager.hpp"
+#include "memory/variant_map.hpp"
 
 namespace image {
 
@@ -11,7 +12,7 @@ namespace texture {
 
 class Texture;
 
-class Provider final : public resource::Provider<Texture> {
+class Provider {
   public:
     Provider(bool no_textures);
 
@@ -28,11 +29,10 @@ class Provider final : public resource::Provider<Texture> {
         Mask
     };
 
-    Texture* load(std::string const& filename, Variants const& options, Resources& resources,
-                  std::string& resolved_name) final;
+    using Resources = resource::Manager;
+    using Variants = memory::Variant_map;
 
-    Texture* load(void const* data, std::string const& source_name, Variants const& options,
-                  Resources& resources) final;
+    Texture load(std::string const& filename, float scale, Variants const& options, Resources& resources) const;
 
     static std::string encode_name(uint32_t image_id);
 

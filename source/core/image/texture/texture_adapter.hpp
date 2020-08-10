@@ -30,32 +30,6 @@ class Adapter {
 
     bool is_valid() const;
 
-    Texture const& texture(Scene const& scene) const;
-
-    float  sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
-    float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
-    float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
-
-    float sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                   int32_t element) const;
-
-    float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                    int32_t element) const;
-
-    float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv,
-                    int32_t element) const;
-
-    float2 address(Sampler_2D const& sampler, float2 uv) const;
-
-    float sample_1(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
-
-    float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
-
-    float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
-
-    float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
-
-    float3 address(Sampler_3D const& sampler, float3 const& uvw) const;
 
   private:
     uint32_t texture_;
