@@ -16,7 +16,7 @@
 
 namespace image::texture {
 
-class alignas(16) Texture {
+class Texture {
   public:
     static char const* identifier();
 
@@ -82,6 +82,8 @@ class alignas(16) Texture {
         Float2,
         Float3,
     };
+
+    int3 const dimensions_;
 
     Type const type_;
 
