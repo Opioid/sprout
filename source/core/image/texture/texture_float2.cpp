@@ -80,7 +80,6 @@ float4 Float2::at_4(int32_t x, int32_t y, int32_t z) const {
 
 void Float2::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
     float2 v[8];
-
     image_.gather(xyz, xyz1, v);
 
     c[0] = v[0][0];

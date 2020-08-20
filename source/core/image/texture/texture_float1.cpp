@@ -100,7 +100,19 @@ void Float1_t<T>::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const 
 }
 
 template <typename T>
-void Float1_t<T>::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {}
+void Float1_t<T>::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+    float v[8];
+    image_.gather(xyz, xyz1, v);
+
+    c[0] = float2(v[0], 0.f);
+    c[1] = float2(v[1], 0.f);
+    c[2] = float2(v[2], 0.f);
+    c[3] = float2(v[3], 0.f);
+    c[4] = float2(v[4], 0.f);
+    c[5] = float2(v[5], 0.f);
+    c[6] = float2(v[6], 0.f);
+    c[7] = float2(v[7], 0.f);
+}
 
 template class Float1_t<image::Float1>;
 template class Float1_t<image::Float1_sparse>;

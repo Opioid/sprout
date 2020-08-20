@@ -118,8 +118,40 @@ float4 Byte2_snorm::at_4(int32_t x, int32_t y, int32_t z) const {
                   encoding::cached_snorm_to_float(value[1]), 0.f, 1.f);
 }
 
-void Byte2_snorm::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {}
+void Byte2_snorm::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+    byte2 v[8];
+    image_.gather(xyz, xyz1, v);
 
-void Byte2_snorm::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {}
+    c[0] = encoding::cached_snorm_to_float(v[0][0]);
+    c[1] = encoding::cached_snorm_to_float(v[1][0]);
+    c[2] = encoding::cached_snorm_to_float(v[2][0]);
+    c[3] = encoding::cached_snorm_to_float(v[3][0]);
+    c[4] = encoding::cached_snorm_to_float(v[4][0]);
+    c[5] = encoding::cached_snorm_to_float(v[5][0]);
+    c[6] = encoding::cached_snorm_to_float(v[6][0]);
+    c[7] = encoding::cached_snorm_to_float(v[7][0]);
+}
+
+void Byte2_snorm::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+    byte2 v[8];
+    image_.gather(xyz, xyz1, v);
+
+    c[0] = float2(encoding::cached_snorm_to_float(v[0][0]),
+                  encoding::cached_snorm_to_float(v[0][1]));
+    c[1] = float2(encoding::cached_snorm_to_float(v[1][0]),
+                  encoding::cached_snorm_to_float(v[1][1]));
+    c[2] = float2(encoding::cached_snorm_to_float(v[2][0]),
+                  encoding::cached_snorm_to_float(v[2][1]));
+    c[3] = float2(encoding::cached_snorm_to_float(v[3][0]),
+                  encoding::cached_snorm_to_float(v[3][1]));
+    c[4] = float2(encoding::cached_snorm_to_float(v[4][0]),
+                  encoding::cached_snorm_to_float(v[4][1]));
+    c[5] = float2(encoding::cached_snorm_to_float(v[5][0]),
+                  encoding::cached_snorm_to_float(v[5][1]));
+    c[6] = float2(encoding::cached_snorm_to_float(v[6][0]),
+                  encoding::cached_snorm_to_float(v[6][1]));
+    c[7] = float2(encoding::cached_snorm_to_float(v[7][0]),
+                  encoding::cached_snorm_to_float(v[7][1]));
+}
 
 }  // namespace image::texture
