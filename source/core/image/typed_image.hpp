@@ -94,23 +94,19 @@ class Typed_sparse_image {
 
     void store_sequentially(int64_t index, T v);
 
-    T const& at(int64_t index) const;
-
-    T load(int32_t x, int32_t y) const;
+    T at(int64_t index) const;
 
     void store(int32_t x, int32_t y, T v);
 
     T load_element(int32_t x, int32_t y, int32_t element) const;
 
-    T const& at(int32_t x, int32_t y) const;
+    T at(int32_t x, int32_t y) const;
 
-    T const& at_element(int32_t x, int32_t y, int32_t element) const;
+    T at_element(int32_t x, int32_t y, int32_t element) const;
 
-    T load(int32_t x, int32_t y, int32_t z) const;
+    T at(int32_t x, int32_t y, int32_t z) const;
 
-    T const& at(int32_t x, int32_t y, int32_t z) const;
-
-    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
+    T at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
     void gather(int4 const& xy_xy1, T c[4]) const;
 

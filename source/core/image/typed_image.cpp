@@ -221,28 +221,6 @@ Description const& Typed_sparse_image<T>::description() const {
 }
 
 template <typename T>
-T Typed_sparse_image<T>::load(int64_t index) const {
-    int3 const c  = coordinates_3(index);
-    int3 const cc = c >> Log2_cell_dim;
-
-    int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
-
-    Cell const& cell = cells_[cell_index];
-
-    if (!cell.data) {
-        return cell.value;
-    }
-
-    int3 const cs = cc << Log2_cell_dim;
-
-    int3 const cxyz = c - cs;
-
-    int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
-
-    return cell.data[ci];
-}
-
-template <typename T>
 void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) {
     int3 const c  = coordinates_3(index);
     int3 const cc = c >> Log2_cell_dim;
@@ -288,7 +266,7 @@ void Typed_sparse_image<T>::store_sequentially(int64_t index, T v) {
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at(int64_t index) const {
+T Typed_sparse_image<T>::at(int64_t index) const {
     int3 const c  = coordinates_3(index);
     int3 const cc = c >> Log2_cell_dim;
 
@@ -310,13 +288,6 @@ T const& Typed_sparse_image<T>::at(int64_t index) const {
 }
 
 template <typename T>
-T Typed_sparse_image<T>::load(int32_t /*x*/, int32_t /*y*/) const {
-    //    int32_t const i = y * description_.dimensions[0] + x;
-    //    return data_[i];
-    return T(0);
-}
-
-template <typename T>
 void Typed_sparse_image<T>::store(int32_t /*x*/, int32_t /*y*/, T /*v*/) {
     //    int32_t const i = y * description_.dimensions[0] + x;
     //    data_[i]        = v;
@@ -331,7 +302,7 @@ T Typed_sparse_image<T>::load_element(int32_t /*x*/, int32_t /*y*/, int32_t /*el
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const {
+T Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const {
     //    int32_t const i = y * description_.dimensions[0] + x;
     //    return data_[i];
 
@@ -339,7 +310,7 @@ T const& Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const {
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/,
+T Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/,
                                            int32_t /*element*/) const {
     //    int32_t const i = (element * description_.dimensions[1] + y) * description_.dimensions[0]
     //    + x; return data_[i];
@@ -347,8 +318,9 @@ T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/,
     return empty_;
 }
 
+
 template <typename T>
-T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const {
+T Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const {
     int3 const c(x, y, z);
     int3 const cc = c >> Log2_cell_dim;
 
@@ -370,29 +342,7 @@ T Typed_sparse_image<T>::load(int32_t x, int32_t y, int32_t z) const {
 }
 
 template <typename T>
-T const& Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const {
-    int3 const c(x, y, z);
-    int3 const cc = c >> Log2_cell_dim;
-
-    int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];
-
-    Cell const& cell = cells_[cell_index];
-
-    if (!cell.data) {
-        return cell.value;
-    }
-
-    int3 const cs = cc << Log2_cell_dim;
-
-    int3 const cxyz = c - cs;
-
-    int32_t const ci = (((cxyz[2] << Log2_cell_dim) + cxyz[1]) << Log2_cell_dim) + cxyz[0];
-
-    return cell.data[ci];
-}
-
-template <typename T>
-T const& Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t /*z*/,
+T Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t /*z*/,
                                            int32_t /*element*/) const {
     //    int3 const    d = description_.dimensions;
     //    int32_t const i = ((element * d[2] + z) * d[1] + y) * d[0] + x;
