@@ -94,6 +94,14 @@ float4 Float1_t<T>::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(image_.at(x, y, z), 0.f, 0.f, 1.f);
 }
 
+template <typename T>
+void Float1_t<T>::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+    image_.gather(xyz, xyz1, c);
+}
+
+template <typename T>
+void Float1_t<T>::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {}
+
 template class Float1_t<image::Float1>;
 template class Float1_t<image::Float1_sparse>;
 

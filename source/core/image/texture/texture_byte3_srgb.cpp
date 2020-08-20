@@ -126,4 +126,8 @@ float4 Byte3_sRGB::at_4(int32_t x, int32_t y, int32_t z) const {
 #endif
 }
 
+void Byte3_sRGB::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {}
+
+void Byte3_sRGB::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {}
+
 }  // namespace image::texture

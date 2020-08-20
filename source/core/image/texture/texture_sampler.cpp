@@ -251,17 +251,11 @@ float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uv
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
-    float const c000 = texture.at_1(xyz[0], xyz[1], xyz[2]);
-    float const c100 = texture.at_1(xyz1[0], xyz[1], xyz[2]);
-    float const c010 = texture.at_1(xyz[0], xyz1[1], xyz[2]);
-    float const c110 = texture.at_1(xyz1[0], xyz1[1], xyz[2]);
-    float const c001 = texture.at_1(xyz[0], xyz[1], xyz1[2]);
-    float const c101 = texture.at_1(xyz1[0], xyz[1], xyz1[2]);
-    float const c011 = texture.at_1(xyz[0], xyz1[1], xyz1[2]);
-    float const c111 = texture.at_1(xyz1[0], xyz1[1], xyz1[2]);
+    float c[8];
+    texture.gather_1(xyz, xyz1, c);
 
-    float const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
-    float const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
+    float const c0 = bilinear(c[0], c[1], c[2], c[3], stu[0], stu[1]);
+    float const c1 = bilinear(c[4], c[5], c[6], c[7], stu[0], stu[1]);
 
     return lerp(c0, c1, stu[2]);
 }
@@ -272,17 +266,11 @@ float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3 const& u
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
-    float2 const c000 = texture.at_2(xyz[0], xyz[1], xyz[2]);
-    float2 const c100 = texture.at_2(xyz1[0], xyz[1], xyz[2]);
-    float2 const c010 = texture.at_2(xyz[0], xyz1[1], xyz[2]);
-    float2 const c110 = texture.at_2(xyz1[0], xyz1[1], xyz[2]);
-    float2 const c001 = texture.at_2(xyz[0], xyz[1], xyz1[2]);
-    float2 const c101 = texture.at_2(xyz1[0], xyz[1], xyz1[2]);
-    float2 const c011 = texture.at_2(xyz[0], xyz1[1], xyz1[2]);
-    float2 const c111 = texture.at_2(xyz1[0], xyz1[1], xyz1[2]);
+    float2 c[8];
+    texture.gather_2(xyz, xyz1, c);
 
-    float2 const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
-    float2 const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
+    float2 const c0 = bilinear(c[0], c[1], c[2], c[3], stu[0], stu[1]);
+    float2 const c1 = bilinear(c[4], c[5], c[6], c[7], stu[0], stu[1]);
 
     return lerp(c0, c1, stu[2]);
 }

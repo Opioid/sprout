@@ -92,4 +92,8 @@ float4 Float3::at_4(int32_t x, int32_t y, int32_t z) const {
     //	return float4(image_.at(x, y, z), 1.f);
 }
 
+void Float3::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {}
+
+void Float3::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {}
+
 }  // namespace image::texture

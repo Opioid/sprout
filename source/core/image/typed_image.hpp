@@ -67,6 +67,8 @@ class alignas(16) Typed_image {
 
     void gather(int4 const& xy_xy1, T c[4]) const;
 
+    void gather(int3 const& xyz, int3 const& xyz1, T c[8]) const;
+
     void square_transpose();
 
     T* data() const;
@@ -110,13 +112,13 @@ class Typed_sparse_image {
 
     void gather(int4 const& xy_xy1, T c[4]) const;
 
+    void gather(int3 const& xyz, int3 const& xyz1, T c[8]) const;
+
   private:
     int3 coordinates_3(int64_t index) const;
 
     static int32_t constexpr Log2_cell_dim = 4;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;
-
-    static T constexpr empty_ = T(0);
 
     Description description_;
 

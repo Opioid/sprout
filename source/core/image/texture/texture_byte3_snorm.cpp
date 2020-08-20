@@ -116,4 +116,8 @@ float4 Byte3_snorm::at_4(int32_t x, int32_t y, int32_t z) const {
                   encoding::cached_snorm_to_float(value[2]), 1.f);
 }
 
+void Byte3_snorm::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {}
+
+void Byte3_snorm::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {}
+
 }  // namespace image::texture

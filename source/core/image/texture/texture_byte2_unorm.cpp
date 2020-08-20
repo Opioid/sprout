@@ -111,4 +111,8 @@ float4 Byte2_unorm::at_4(int32_t x, int32_t y, int32_t z) const {
                   encoding::cached_unorm_to_float(value[1]), 0.f, 1.f);
 }
 
+void Byte2_unorm::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {}
+
+void Byte2_unorm::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {}
+
 }  // namespace image::texture
