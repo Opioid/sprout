@@ -61,7 +61,6 @@ class Prop;
 struct Prop_part;
 struct Prop_frames;
 struct Prop_topology;
-struct Prop_ptr;
 
 }  // namespace prop
 
@@ -82,7 +81,6 @@ class Scene {
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;
-    using Prop_ptr       = prop::Prop_ptr;
     using Material       = material::Material;
     using Shape          = shape::Shape;
     using Shape_ptr      = resource::Resource_ptr<Shape>;
@@ -235,6 +233,11 @@ class Scene {
     Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
                                                           Transformation& transformation) const;
 
+    struct Prop_ptr {
+        Prop* ptr;
+
+        uint32_t id;
+    };
     Prop_ptr allocate_prop();
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part);
@@ -288,7 +291,7 @@ class Scene {
 
     memory::Array<float> light_powers_;
 
-    Distribution_implicit_pdf_lut_lin_1D light_distribution_;
+    Distribution_1D light_distribution_;
 
     light::Tree light_tree_;
 

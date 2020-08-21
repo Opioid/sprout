@@ -59,7 +59,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
 
     threads.run_range(
         [this, buffer, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            Distribution_2D::Distribution_impl* conditional = distribution_.conditional();
+            Distribution_1D* conditional = distribution_.conditional();
 
             auto weights = memory::Buffer<float>(Dimensions);
 

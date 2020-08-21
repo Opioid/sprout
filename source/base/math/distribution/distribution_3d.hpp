@@ -8,8 +8,6 @@ namespace math {
 
 class Distribution_3D {
   public:
-    using Distribution_impl = Distribution_2D::Distribution_impl;
-
     Distribution_3D();
 
     ~Distribution_3D();
@@ -29,7 +27,7 @@ class Distribution_3D {
     float pdf(float3 const& uvw) const;
 
   private:
-    Distribution_impl marginal_;
+    Distribution_1D marginal_;
 
     uint32_t conditional_size_;
 

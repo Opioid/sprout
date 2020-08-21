@@ -68,10 +68,10 @@ void test_1D() {
     //	math::Distribution_implicit_pdf_lut_1D d;
     //	d.init(values.data(), uint32_t(values.size()), 8);
 
-    math::Distribution_implicit_pdf_lut_lin_1D e;
+    math::Distribution_1D e;
     e.init(values.data(), uint32_t(values.size()));
 
-    //	math::Distribution_implicit_pdf_lut_lin_1D f;
+    //	math::Distribution_1D f;
     //	f.init(values.data(), uint32_t(values.size()), 8);
 
     //	std::cout << "Distribution_1D" << std::endl;
@@ -86,10 +86,10 @@ void test_1D() {
     //	std::cout << "Distribution_implicit_pdf_lut_1D(" << d.lut_size() << ")" << std::endl;
     //	test_distribution(d, samples);
 
-    //	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << e.lut_size() << ")" << std::endl;
+    //	std::cout << "Distribution_1D(" << e.lut_size() << ")" << std::endl;
     //	test_distribution(e, samples);
 
-    //	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << f.lut_size() << ")" << std::endl;
+    //	std::cout << "Distribution_1D(" << f.lut_size() << ")" << std::endl;
     //	test_distribution(f, samples);
 
     compare_distributions(a, e, 0.3f);
@@ -143,7 +143,7 @@ void test_2D() {
     math::Distribution_t_2D<math::Distribution_implicit_pdf_lut_1D> c;
     init(c, texture);
 
-    math::Distribution_t_2D<math::Distribution_implicit_pdf_lut_lin_1D> d;
+    math::Distribution_t_2D<math::Distribution_1D> d;
     init(d, texture);
 
     std::cout << "Distribution_2D" << std::endl;

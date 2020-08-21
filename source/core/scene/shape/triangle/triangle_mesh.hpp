@@ -93,7 +93,7 @@ class alignas(64) Mesh final : public Shape {
     bvh::Tree tree_;
 
     struct Part {
-        using Distribution_1D = math::Distribution_implicit_pdf_lut_lin_1D;
+        using Distribution_1D = math::Distribution_1D;
 
         ~Part();
 

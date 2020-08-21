@@ -107,16 +107,6 @@ class Prop {
     uint32_t shape_ = resource::Null;
 };
 
-struct Prop_ptr {
-    Prop* ptr;
-
-    uint32_t id;
-
-    static Prop_ptr constexpr Null() {
-        return {nullptr, prop::Null};
-    }
-};
-
 struct alignas(8) Prop_topology {
     uint32_t next  = Null;
     uint32_t child = Null;

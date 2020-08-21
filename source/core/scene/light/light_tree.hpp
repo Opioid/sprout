@@ -72,7 +72,7 @@ class Tree {
 
     float* infinite_light_powers_;
 
-    Distribution_implicit_pdf_lut_lin_1D infinite_light_distribution_;
+    Distribution_1D infinite_light_distribution_;
 };
 
 class Tree_builder {

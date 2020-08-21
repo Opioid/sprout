@@ -127,8 +127,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     //	}
 
     if (importance_sampling) {
-        Distribution_2D::Distribution_impl* conditional = distribution_.allocate(
-            Bake_dimensions[1]);
+        Distribution_1D* conditional = distribution_.allocate(Bake_dimensions[1]);
 
         memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 

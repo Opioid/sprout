@@ -6,18 +6,15 @@
 
 namespace math {
 
-template <typename T>
-class Distribution_t_2D {
+class Distribution_2D {
   public:
-    using Distribution_impl = T;
+    Distribution_2D();
 
-    Distribution_t_2D();
+    ~Distribution_2D();
 
-    ~Distribution_t_2D();
+    Distribution_1D* allocate(uint32_t num);
 
-    Distribution_impl* allocate(uint32_t num);
-
-    Distribution_impl* conditional();
+    Distribution_1D* conditional();
 
     bool empty() const;
 
@@ -34,20 +31,16 @@ class Distribution_t_2D {
     float pdf(float2 uv) const;
 
   private:
-    Distribution_impl marginal_;
+    Distribution_1D marginal_;
 
     uint32_t conditional_size_;
 
-    Distribution_impl* conditional_;
+    Distribution_1D* conditional_;
 
     float conditional_sizef_;
 
     uint32_t conditional_max_;
 };
-
-extern template class Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
-
-using Distribution_2D = Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
 
 }  // namespace math
 
