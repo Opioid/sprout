@@ -16,9 +16,9 @@ class Buffer {
         other.data_ = nullptr;
     }
 
-    // Not really happy with this, but in practice it makes life easiser with std::function
-    Buffer(Buffer& other) : data_(other.data_) {
-        other.data_ = nullptr;
+    // Not happy with this, but in practice it makes life easiser with std::function
+    Buffer(Buffer const& other) : data_(other.data_) {
+        const_cast<Buffer&>(other).data_ = nullptr;
     }
 
     ~Buffer() {
