@@ -44,20 +44,34 @@ void Byte3_sRGB::gather_1(int4 const& xy_xy1, float c[4]) const {
     byte3 v[4];
     image_->gather(xy_xy1, v);
 
+#ifdef SU_ACESCG
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0]))[0];
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]))[0];
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]))[0];
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]))[0];
+#else
     c[0] = encoding::cached_srgb_to_float(v[0][0]);
     c[1] = encoding::cached_srgb_to_float(v[1][0]);
     c[2] = encoding::cached_srgb_to_float(v[2][0]);
     c[3] = encoding::cached_srgb_to_float(v[3][0]);
+#endif
 }
 
 void Byte3_sRGB::gather_2(int4 const& xy_xy1, float2 c[4]) const {
     byte3 v[4];
     image_->gather(xy_xy1, v);
 
+#ifdef SU_ACESCG
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0])).xy();
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1])).xy();
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2])).xy();
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3])).xy();
+#else
     c[0] = encoding::cached_srgb_to_float(v[0].xy());
     c[1] = encoding::cached_srgb_to_float(v[1].xy());
     c[2] = encoding::cached_srgb_to_float(v[2].xy());
     c[3] = encoding::cached_srgb_to_float(v[3].xy());
+#endif
 }
 
 void Byte3_sRGB::gather_3(int4 const& xy_xy1, float3 c[4]) const {
@@ -123,6 +137,56 @@ float4 Byte3_sRGB::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value)));
 #else
     return float4(encoding::cached_srgb_to_float(value));
+#endif
+}
+
+void Byte3_sRGB::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+    byte3 v[8];
+    image_->gather(xyz, xyz1, v);
+
+#ifdef SU_ACESCG
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0]))[0];
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]))[0];
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]))[0];
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]))[0];
+    c[4] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[4]))[0];
+    c[5] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[5]))[0];
+    c[6] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[6]))[0];
+    c[7] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[7]))[0];
+#else
+    c[0] = encoding::cached_srgb_to_float(v[0][0]);
+    c[1] = encoding::cached_srgb_to_float(v[1][0]);
+    c[2] = encoding::cached_srgb_to_float(v[2][0]);
+    c[3] = encoding::cached_srgb_to_float(v[3][0]);
+    c[4] = encoding::cached_srgb_to_float(v[4][0]);
+    c[5] = encoding::cached_srgb_to_float(v[5][0]);
+    c[6] = encoding::cached_srgb_to_float(v[6][0]);
+    c[7] = encoding::cached_srgb_to_float(v[7][0]);
+#endif
+}
+
+void Byte3_sRGB::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+    byte3 v[8];
+    image_->gather(xyz, xyz1, v);
+
+#ifdef SU_ACESCG
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0])).xy();
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1])).xy();
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2])).xy();
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3])).xy();
+    c[4] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[4])).xy();
+    c[5] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[5])).xy();
+    c[6] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[6])).xy();
+    c[7] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[7])).xy();
+#else
+    c[0] = encoding::cached_srgb_to_float(v[0].xy());
+    c[1] = encoding::cached_srgb_to_float(v[1].xy());
+    c[2] = encoding::cached_srgb_to_float(v[2].xy());
+    c[3] = encoding::cached_srgb_to_float(v[3].xy());
+    c[4] = encoding::cached_srgb_to_float(v[4].xy());
+    c[5] = encoding::cached_srgb_to_float(v[5].xy());
+    c[6] = encoding::cached_srgb_to_float(v[6].xy());
+    c[7] = encoding::cached_srgb_to_float(v[7].xy());
 #endif
 }
 

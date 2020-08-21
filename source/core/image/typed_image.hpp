@@ -67,6 +67,8 @@ class alignas(16) Typed_image {
 
     void gather(int4 const& xy_xy1, T c[4]) const;
 
+    void gather(int3 const& xyz, int3 const& xyz1, T c[8]) const;
+
     void square_transpose();
 
     T* data() const;
@@ -94,33 +96,29 @@ class Typed_sparse_image {
 
     void store_sequentially(int64_t index, T v);
 
-    T const& at(int64_t index) const;
-
-    T load(int32_t x, int32_t y) const;
+    T at(int64_t index) const;
 
     void store(int32_t x, int32_t y, T v);
 
     T load_element(int32_t x, int32_t y, int32_t element) const;
 
-    T const& at(int32_t x, int32_t y) const;
+    T at(int32_t x, int32_t y) const;
 
-    T const& at_element(int32_t x, int32_t y, int32_t element) const;
+    T at_element(int32_t x, int32_t y, int32_t element) const;
 
-    T load(int32_t x, int32_t y, int32_t z) const;
+    T at(int32_t x, int32_t y, int32_t z) const;
 
-    T const& at(int32_t x, int32_t y, int32_t z) const;
-
-    T const& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
+    T at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
     void gather(int4 const& xy_xy1, T c[4]) const;
+
+    void gather(int3 const& xyz, int3 const& xyz1, T c[8]) const;
 
   private:
     int3 coordinates_3(int64_t index) const;
 
     static int32_t constexpr Log2_cell_dim = 4;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;
-
-    static T constexpr empty_ = T(0);
 
     Description description_;
 

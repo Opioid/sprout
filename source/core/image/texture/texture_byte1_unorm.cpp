@@ -96,4 +96,32 @@ float4 Byte1_unorm::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(encoding::cached_unorm_to_float(value), 0.f, 0.f, 1.f);
 }
 
+void Byte1_unorm::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+    uint8_t v[8];
+    image_->gather(xyz, xyz1, v);
+
+    c[0] = encoding::cached_unorm_to_float(v[0]);
+    c[1] = encoding::cached_unorm_to_float(v[1]);
+    c[2] = encoding::cached_unorm_to_float(v[2]);
+    c[3] = encoding::cached_unorm_to_float(v[3]);
+    c[4] = encoding::cached_unorm_to_float(v[4]);
+    c[5] = encoding::cached_unorm_to_float(v[5]);
+    c[6] = encoding::cached_unorm_to_float(v[6]);
+    c[7] = encoding::cached_unorm_to_float(v[7]);
+}
+
+void Byte1_unorm::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+    uint8_t v[8];
+    image_->gather(xyz, xyz1, v);
+
+    c[0] = float2(encoding::cached_unorm_to_float(v[0]), 0.f);
+    c[1] = float2(encoding::cached_unorm_to_float(v[1]), 0.f);
+    c[2] = float2(encoding::cached_unorm_to_float(v[2]), 0.f);
+    c[3] = float2(encoding::cached_unorm_to_float(v[3]), 0.f);
+    c[4] = float2(encoding::cached_unorm_to_float(v[4]), 0.f);
+    c[5] = float2(encoding::cached_unorm_to_float(v[5]), 0.f);
+    c[6] = float2(encoding::cached_unorm_to_float(v[6]), 0.f);
+    c[7] = float2(encoding::cached_unorm_to_float(v[7]), 0.f);
+}
+
 }  // namespace image::texture
