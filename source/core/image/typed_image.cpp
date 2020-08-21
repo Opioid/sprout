@@ -413,6 +413,85 @@ void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const {
 
 template <typename T>
 void Typed_sparse_image<T>::gather(int3 const& xyz, int3 const& xyz1, T c[8]) const {
+    int3 const cc0 = xyz >> Log2_cell_dim;
+    int3 const cc1 = xyz1 >> Log2_cell_dim;
+
+    if (cc0 == cc1) {
+        int32_t const cell_index = (cc0[2] * num_cells_[1] + cc0[1]) * num_cells_[0] + cc0[0];
+
+        Cell const& cell = cells_[cell_index];
+
+        if (!cell.data) {
+            c[0] = cell.value;
+            c[1] = cell.value;
+            c[2] = cell.value;
+            c[3] = cell.value;
+            c[4] = cell.value;
+            c[5] = cell.value;
+            c[6] = cell.value;
+            c[7] = cell.value;
+
+            return;
+        }
+
+        int3 const cs = cc0 << Log2_cell_dim;
+
+        int32_t const d0 = (xyz[2] - cs[2]) << Log2_cell_dim;
+        int32_t const d1 = (xyz1[2] - cs[2]) << Log2_cell_dim;
+
+        int2 const csxy = cs.xy();
+
+        {
+            int2 const    cxy = xyz.xy() - csxy;
+            int32_t const ci  = ((d0 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[0]              = cell.data[ci];
+        }
+
+        {
+            int2 const    cxy = int2(xyz1[0], xyz[1]) - csxy;
+            int32_t const ci  = ((d0 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[1]              = cell.data[ci];
+        }
+
+        {
+            int2 const    cxy = int2(xyz[0], xyz1[1]) - csxy;
+            int32_t const ci  = ((d0 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[2]              = cell.data[ci];
+        }
+
+        {
+            int2 const    cxy = int2(xyz1[0], xyz1[1]) - csxy;
+            int32_t const ci  = ((d0 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[3]              = cell.data[ci];
+        }
+
+        {
+            int2 const    cxy = int2(xyz[0], xyz[1]) - csxy;
+            int32_t const ci  = ((d1 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[4]              = cell.data[ci];
+        }
+
+        {
+            int2 const    cxy = int2(xyz1[0], xyz[1]) - csxy;
+            int32_t const ci  = ((d1 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[5]              = cell.data[ci];
+        }
+
+        {
+            int2 const    cxy = int2(xyz[0], xyz1[1]) - csxy;
+            int32_t const ci  = ((d1 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[6]              = cell.data[ci];
+        }
+
+        {
+            int2 const    cxy = int2(xyz1[0], xyz1[1]) - csxy;
+            int32_t const ci  = ((d1 + cxy[1]) << Log2_cell_dim) + cxy[0];
+            c[7]              = cell.data[ci];
+        }
+
+        return;
+    }
+
     c[0] = at(xyz[0], xyz[1], xyz[2]);
     c[1] = at(xyz1[0], xyz[1], xyz[2]);
     c[2] = at(xyz[0], xyz1[1], xyz[2]);
@@ -425,16 +504,15 @@ void Typed_sparse_image<T>::gather(int3 const& xyz, int3 const& xyz1, T c[8]) co
 
 template <typename T>
 int3 Typed_sparse_image<T>::coordinates_3(int64_t index) const {
-    int64_t const area = int64_t(description_.dimensions_[0]) *
-                         int64_t(description_.dimensions_[1]);
+    int64_t const w = int64_t(description_.dimensions_[0]);
+    int64_t const h = int64_t(description_.dimensions_[1]);
 
-    int64_t const c2 = index / area;
+    int64_t const area = w * h;
+    int64_t const c2   = index / area;
+    int64_t const t    = c2 * area;
+    int64_t const c1   = (index - t) / w;
 
-    int64_t const t = c2 * area;
-
-    int64_t const c1 = (index - t) / int64_t(description_.dimensions_[0]);
-
-    return int3(index - (t + c1 * int64_t(description_.dimensions_[0])), c1, c2);
+    return int3(index - (t + c1 * w), c1, c2);
 }
 
 template class Typed_image<uint8_t>;
