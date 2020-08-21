@@ -105,7 +105,7 @@ float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
 Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3 const& r3) const {
     auto const result = distribution_.sample_continuous(r3);
 
-    return {result.uvw, result.pdf * pdf_factor_};
+    return {result.xyz(), result[3] * pdf_factor_};
 }
 
 float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {

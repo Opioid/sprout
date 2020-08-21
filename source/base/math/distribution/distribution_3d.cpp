@@ -1,6 +1,6 @@
 #include "distribution_3d.hpp"
 #include "distribution_1d.inl"
-#include "math/vector3.inl"
+#include "math/vector4.inl"
 
 namespace math {
 
@@ -42,7 +42,7 @@ float Distribution_3D::integral() const {
     return marginal_.integral();
 }
 
-Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3) const {
+float4 Distribution_3D::sample_continuous(float3 const& r3) const {
     auto const w = marginal_.sample_continuous(r3[2]);
 
     uint32_t const i = uint32_t(w.offset * conditional_sizef_);
@@ -50,7 +50,7 @@ Distribution_3D::Continuous Distribution_3D::sample_continuous(float3 const& r3)
 
     auto const uv = conditional_[c].sample_continuous(r3.xy());
 
-    return {float3(uv.uv, w.offset), uv.pdf * w.pdf};
+    return float4(uv.uv, w.offset, uv.pdf * w.pdf);
 }
 
 float Distribution_3D::pdf(float3 const& uvw) const {
