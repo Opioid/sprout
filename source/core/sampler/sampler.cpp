@@ -12,7 +12,7 @@ Sampler::~Sampler() {
 }
 
 void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                     uint16_t num_dimensions_2D, uint16_t num_dimensions_1D) {
+                     uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) {
     uint32_t const num_samples = num_iterations * num_samples_per_iteration;
 
     if (num_samples != num_samples_ || num_dimensions_2D != num_dimensions_2D_ ||

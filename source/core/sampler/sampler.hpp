@@ -18,7 +18,7 @@ class Sampler {
     virtual ~Sampler();
 
     void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                uint16_t num_dimensions_2D, uint16_t num_dimensions_1D);
+                uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
 
     void start_pixel(rnd::Generator& rng);
 
@@ -37,8 +37,8 @@ class Sampler {
 
     uint32_t num_samples_;
 
-    uint16_t num_dimensions_2D_;
-    uint16_t num_dimensions_1D_;
+    uint32_t num_dimensions_2D_;
+    uint32_t num_dimensions_1D_;
 
     uint32_t* current_sample_;
 };

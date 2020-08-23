@@ -61,8 +61,8 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 
     bool const single = Light_sampling::Strategy::Single == settings_.light_sampling.strategy;
 
-    uint16_t const nd2 = single ? 1 : num_lights;
-    uint16_t const nd1 = single ? 2 : num_lights;
+    uint32_t const nd2 = single ? 1 : num_lights;
+    uint32_t const nd1 = single ? 2 : num_lights;
 
     for (auto s : light_samplers_) {
         s->resize(num_samples_per_pixel, num_light_samples, nd2, nd1);

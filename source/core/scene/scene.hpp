@@ -14,6 +14,7 @@
 
 #include <map>
 #include <vector>
+#include <string_view>
 
 namespace resource {
 
