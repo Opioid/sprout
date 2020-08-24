@@ -92,18 +92,14 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
     if (importance_sampling) {
         auto const d = texture.dimensions().xy();
 
-        Distribution_1D* conditional = distribution_.allocate(uint32_t(d[1]));
-
         memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 
         threads.run_range(
-            [conditional, &artws, &shape, &texture, element](uint32_t id, int32_t begin,
+            [&artws, &shape, &texture, element](uint32_t id, int32_t begin,
                                                              int32_t end) noexcept {
                 auto const d = texture.dimensions().xy();
 
                 float2 const idf = 1.f / float2(d);
-
-                auto luminance = memory::Buffer<float>(uint32_t(d[0]));
 
                 float4 artw(0.f);
 
@@ -120,11 +116,8 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                         float3 const wr = uv_weight * radiance;
 
                         artw += float4(wr, uv_weight);
-
-                        luminance[x] = spectrum::luminance(wr);
                     }
 
-                    conditional[y].init(luminance.data(), uint32_t(d[0]));
                 }
 
                 artws[id] += artw;
@@ -136,7 +129,46 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
             artw += a;
         }
 
-        average_emission_ = (emission_factor_ / artw[3]) * artw.xyz();
+              average_emission_ = (emission_factor_ / artw[3]) * artw.xyz();
+
+              float ear = spectrum::luminance(artw.xyz() / artw[3]);
+
+        Distribution_1D* conditional = distribution_.allocate(uint32_t(d[1]));
+
+
+        threads.run_range(
+                    [conditional, ear, &shape, &texture, element](uint32_t /*id*/, int32_t begin,
+                                                                     int32_t end) noexcept {
+                        auto const d = texture.dimensions().xy();
+
+                        float2 const idf = 1.f / float2(d);
+
+                        auto luminance = memory::Buffer<float>(uint32_t(d[0]));
+
+
+                        for (int32_t y = begin; y < end; ++y) {
+                            float const v = idf[1] * (float(y) + 0.5f);
+
+                            for (int32_t x = 0; x < d[0]; ++x) {
+                                float const u = idf[0] * (float(x) + 0.5f);
+
+                                float const uv_weight = shape.uv_weight(float2(u, v));
+
+                                float3 const radiance = texture.at_element_3(x, y, element);
+
+                                float3 const wr = uv_weight * radiance;
+
+                                float const p = std::max(spectrum::luminance(wr) - ear, 0.0001f);
+
+                                luminance[x] = p;
+                            }
+
+                            conditional[y].init(luminance.data(), uint32_t(d[0]));
+                        }
+                    },
+                    0, d[1]);
+
+
 
         total_weight_ = artw[3];
 
