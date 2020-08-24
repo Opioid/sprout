@@ -84,6 +84,7 @@ void Emissionmap::set_emission_factor(float emission_factor) {
     emission_factor_ = emission_factor;
 }
 
+/*
 void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                                             bool importance_sampling, thread::Pool& threads,
                                             Scene const& scene) {
@@ -149,5 +150,6 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
         average_emission_ *= 2.f;
     }
 }
+*/
 
 }  // namespace scene::material::light
