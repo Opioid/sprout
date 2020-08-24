@@ -13,8 +13,8 @@
 #include "shape/null.hpp"
 
 #include <map>
-#include <vector>
 #include <string_view>
+#include <vector>
 
 namespace resource {
 
