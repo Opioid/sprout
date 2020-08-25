@@ -100,13 +100,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         memory::Buffer<float> luminance(d[0] * d[1]);
 
-        struct Average {
-            float3 radiance     = float3(0.f);
-            float  total_weight = 0.f;
-            float  min          = std::numeric_limits<float>::max();
-        };
-
-        memory::Array<Average> avgs(threads.num_threads());
+        memory::Array<float4> avgs(threads.num_threads(), float4(0.f));
 
         threads.run_range(
             [&luminance, &avgs, &shape, &texture, element](uint32_t id, int32_t begin,
@@ -115,7 +109,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
                 float2 const idf = 1.f / float2(d);
 
-                Average avg;
+                float4 avg(0.f);
 
                 for (int32_t y = begin; y < end; ++y) {
                     float const v = idf[1] * (float(y) + 0.5f);
@@ -131,34 +125,26 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
                         float3 const wr = uv_weight * radiance;
 
-                        float const l = spectrum::luminance(wr);
-
-                        avg.radiance += wr;
-                        avg.total_weight += uv_weight;
-                        avg.min = l > 0.f ? std::min(avg.min, l) : avg.min;
+                        avg += float4(wr, uv_weight);
 
                         luminance[row + x] = spectrum::luminance(wr);
                     }
                 }
 
-                avgs[id].radiance += avg.radiance;
-                avgs[id].total_weight += avg.total_weight;
-                avgs[id].min = avg.min > 0.f ? std::min(avgs[id].min, avg.min) : avgs[id].min;
+                avgs[id] += avg;
             },
             0, d[1]);
 
-        Average avg;
+        float4 avg(0.f);
         for (auto const& a : avgs) {
-            avg.radiance += a.radiance;
-            avg.total_weight += a.total_weight;
-            avg.min = a.min > 0.f ? std::min(avg.min, a.min) : avg.min;
+            avg += a;
         }
 
-        float3 const average_emission = avg.radiance / avg.total_weight;
+        float3 const average_emission = avg.xyz() / avg[3];
 
         average_emission_ = emission_factor_ * average_emission;
 
-        total_weight_ = avg.total_weight;
+        total_weight_ = avg[3];
 
         float const al = 0.6f * spectrum::luminance(average_emission);
 
