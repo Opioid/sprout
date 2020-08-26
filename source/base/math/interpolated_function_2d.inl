@@ -110,7 +110,7 @@ T Interpolated_function_2D_N<T, X, Y>::operator()(float x, float y) const {
     x = std::min(x, 1.f);
     y = std::min(y, 1.f);
 
-    float2 const o = float2(x, y);
+    float2 const o = float2(x, y) * float2(X - 1, Y - 1);
 
     uint2 const offset = uint2(o);
 

@@ -124,7 +124,7 @@ T Interpolated_function_3D_N<T, X, Y, Z>::operator()(float x, float y, float z) 
     y = std::min(y, 1.f);
     z = std::min(y, 1.f);
 
-    float3 const o = float3(x, y, z);
+    float3 const o = float3(x, y, z) * float3(X - 1, Y - 1, Z - 1);
 
     uint3 const offset = uint3(o);
 

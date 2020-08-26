@@ -16,8 +16,9 @@ class Buffer {
         other.data_ = nullptr;
     }
 
-    // Not happy with this, but in practice it makes life easiser with std::function
     Buffer(Buffer const& other) : data_(other.data_) {
+        // Not happy with this, but in practice it makes life easiser with std::function
+        // On one hand I don't like the cast, on the other hand the uggliness is explicit now...
         const_cast<Buffer&>(other).data_ = nullptr;
     }
 
