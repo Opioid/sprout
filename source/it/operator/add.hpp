@@ -14,12 +14,12 @@ struct Options;
 
 struct Item;
 
-namespace op {
-uint32_t add(std::vector<Item> const& items, it::options::Options const& options,
-             thread::Pool& threads);
+using Items = std::vector<Item>;
 
-uint32_t sub(std::vector<Item> const& items, it::options::Options const& options,
-             thread::Pool& threads);
+namespace op {
+uint32_t add(Items const& items, it::options::Options const& options, thread::Pool& threads);
+
+uint32_t sub(Items const& items, it::options::Options const& options, thread::Pool& threads);
 }  // namespace op
 
 #endif
