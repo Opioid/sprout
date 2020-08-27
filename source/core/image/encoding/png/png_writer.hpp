@@ -18,15 +18,6 @@ class Writer : public image::Writer, Srgb {
 
     static bool write(std::string_view name, Byte1 const& image);
 
-    static bool write(std::string_view name, float const* data, int2 dimensions, float scale = 1.f,
-                      bool srgb = false);
-
-    static bool write(std::string_view name, float2 const* data, int2 dimensions,
-                      float scale = 1.f);
-
-    static bool write(std::string_view name, packed_float3 const* data, int2 dimensions,
-                      float scale = 1.f);
-
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
                               thread::Pool& threads);
 
