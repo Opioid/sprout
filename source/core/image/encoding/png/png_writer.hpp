@@ -27,12 +27,8 @@ class Writer : public image::Writer, Srgb {
     static bool write(std::string_view name, packed_float3 const* data, int2 dimensions,
                       float scale = 1.f);
 
-    static bool write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions);
-
-    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions);
-
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                              float max_value);
+                              thread::Pool& threads);
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
                               float max_value, thread::Pool& threads);

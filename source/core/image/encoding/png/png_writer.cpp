@@ -193,48 +193,8 @@ bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimens
     return true;
 }
 
-bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
-
-    byte3* bytes = memory::allocate_aligned<byte3>(area);
-
-    uint32_t max_value = 0;
-    for (uint32_t i = 0; i < area; ++i) {
-        max_value = std::max(data[i], max_value);
-    }
-
-    float const im = max_value > 0 ? 1.f / float(max_value) : 1.f;
-    for (uint32_t i = 0; i < area; ++i) {
-        float const n = float(data[i]) * im;
-
-        float3 const hm = spectrum::heatmap(n);
-
-        bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
-    }
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
-                                                               3, &buffer_len);
-
-    memory::free_aligned(bytes);
-
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions) {
+bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                           thread::Pool& threads) {
     uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
     float max_value = 0.f;
@@ -242,47 +202,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         max_value = std::max(data[i], max_value);
     }
 
-    return write_heatmap(name, data, dimensions, max_value);
-}
-
-bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const num_pixels = uint32_t(dimensions[0] * dimensions[1]);
-
-    byte3* bytes = memory::allocate_aligned<byte3>(num_pixels);
-
-    float const im = max_value > 0.f ? 1.f / max_value : 1.f;
-
-    for (uint32_t i = 0; i < num_pixels; ++i) {
-        float const n = data[i] * im;
-
-        //    float3 const hm = spectrum::heatmap(n);
-
-        //    bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
-
-        bytes[i] = spectrum::turbo(n);
-    }
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
-                                                               3, &buffer_len);
-
-    memory::free_aligned(bytes);
-
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
+    return write_heatmap(name, data, dimensions, max_value, threads);
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
@@ -302,10 +222,6 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         [bytes, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 float const n = data[i] * im;
-
-                //   float3 const hm = spectrum::heatmap(n);
-
-                //  bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
 
                 bytes[i] = spectrum::turbo(n);
             }

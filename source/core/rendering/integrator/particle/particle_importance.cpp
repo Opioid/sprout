@@ -48,7 +48,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
 
     std::string const name = "particle_importance_" + std::to_string(id) + ".png";
 
-    image::encoding::png::Writer::write_heatmap(name, buffer, int2(Dimensions));
+    image::encoding::png::Writer::write_heatmap(name, buffer, int2(Dimensions), threads);
 
     distribution_.allocate(Dimensions);
 
