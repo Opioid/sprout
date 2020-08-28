@@ -1,6 +1,8 @@
 #include "exr_reader.hpp"
+#include "base/math/half.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/buffer.hpp"
+#include "base/spectrum/aces.hpp"
 #include "exr.hpp"
 #include "image/image.hpp"
 #include "logging/logging.hpp"
@@ -349,7 +351,14 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
                     uint16_t const g = shorts[o + 1 * dimensions[0] + x];
                     uint16_t const b = shorts[o + 0 * dimensions[0] + x];
 
-                    image_s3.store(p, ushort3(r, g, b));
+#ifdef SU_ACESCG
+                    float3 const  rgbf(half_to_float(ushort3(r, g, b)));
+                    ushort3 const rgb(float_to_half(spectrum::sRGB_to_AP1(rgbf)));
+#else
+                    ushort3 const rgb(r, g, b);
+#endif
+
+                    image_s3.store(p, rgb);
                 }
             }
         } else {
@@ -364,7 +373,13 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
                     float const g = floats[o + 1 * dimensions[0] + x];
                     float const b = floats[o + 0 * dimensions[0] + x];
 
-                    image_f3.store(p, packed_float3(r, g, b));
+#ifdef SU_ACESCG
+                    packed_float3 const rgb(spectrum::sRGB_to_AP1(float3(r, g, b)));
+#else
+                    packed_float3 const rgb(r, g, b);
+#endif
+
+                    image_f3.store(p, rgb);
                 }
             }
         }
