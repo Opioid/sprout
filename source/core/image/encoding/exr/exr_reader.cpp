@@ -355,7 +355,7 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
                     float3 const  rgbf(half_to_float(ushort3(r, g, b)));
                     ushort3 const rgb(float_to_half(spectrum::sRGB_to_AP1(rgbf)));
 #else
-                    ushort3 const rgb(r, g, b);
+                    ushort3 const       rgb(r, g, b);
 #endif
 
                     image_s3.store(p, rgb);

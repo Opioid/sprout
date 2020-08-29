@@ -258,7 +258,6 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     sample.uv  = uv;
     sample.xy  = importance_uv;
     // sin_theta because of the uv weight
-    //  sample.pdf     = 1.f / ((4.f * Pi) * (1.f * Pi) * (sin_theta * radius_2));
     sample.pdf = 1.f / ((4.f * Pi) * (sin_theta * pe[0] * pe[1]));
 
     return true;
@@ -267,15 +266,14 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 float Infinite_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& intersection,
                               Transformation const& /*transformation*/, float /*area*/,
                               bool /*two_sided*/) const {
-    //	float3 xyz = transform_vector_transposed(wi, transformation.rotation);
-    //	xyz = normalize(xyz);
-    //	uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
-    //	uv[1] = std::acos(xyz[1]) * Pi_inv;
+    float const v = intersection.uv[1];
 
-    //	// sin_theta because of the uv weight
-    //	float const sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
+    if (0.f == v) {
+        return 0.f;
+    }
 
-    float const sin_theta = std::sin(intersection.uv[1] * Pi);
+    // sin_theta because of the uv weight
+    float const sin_theta = std::sin(v * Pi);
 
     return 1.f / ((4.f * Pi) * sin_theta);
 }
