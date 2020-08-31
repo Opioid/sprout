@@ -407,11 +407,6 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
         float const ls_pdf = light.ref.pdf(ray, intersection.geo, translucent, Filter::Nearest,
                                            worker);
 
-        if (0.f == ls_pdf) {
-            pure_emissive = true;
-            return float3(0.f);
-        }
-
         light_pdf = ls_pdf * light.pdf;
     }
 
@@ -454,10 +449,6 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, Intersection const& i
 
         float const ls_pdf = light.ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),
                                            Filter::Nearest, worker);
-
-        if (0.f == ls_pdf) {
-            return 0.f;
-        }
 
         light_pdf = ls_pdf * light.pdf;
     }

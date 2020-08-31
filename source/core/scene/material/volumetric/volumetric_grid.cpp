@@ -311,8 +311,6 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
         threads.run_range(
             [&luminance, &conditional_2d, al, d](uint32_t /*id*/, int32_t begin,
                                                  int32_t end) noexcept {
-                float const ml = 0.001f * al;
-
                 for (int32_t z = begin; z < end; ++z) {
                     auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
 
@@ -325,7 +323,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
                             float const l = luminance_row[x];
 
 #ifdef SU_IBL_MIS_COMPENSATION
-                            float const p = l <= 0.f ? 0.f : std::min(std::max(l - al, ml), l);
+                            float const p = std::max(l - al, 0.f);
 #else
                             float const p = l;
 #endif

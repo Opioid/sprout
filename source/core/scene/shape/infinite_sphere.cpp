@@ -266,14 +266,12 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 float Infinite_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& intersection,
                               Transformation const& /*transformation*/, float /*area*/,
                               bool /*two_sided*/) const {
-    float const v = intersection.uv[1];
+    // sin_theta because of the uv weight
+    float const sin_theta = std::sin(intersection.uv[1] * Pi);
 
-    if (0.f == v) {
+    if (0.f == sin_theta) {
         return 0.f;
     }
-
-    // sin_theta because of the uv weight
-    float const sin_theta = std::sin(v * Pi);
 
     return 1.f / ((4.f * Pi) * sin_theta);
 }

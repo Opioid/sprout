@@ -150,8 +150,6 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         threads.run_range(
             [conditional, al, &luminance, d](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-                float const ml = 0.001f * al;
-
                 for (int32_t y = begin; y < end; ++y) {
                     float* luminance_row = luminance.data() + (y * d[0]);
 
@@ -159,7 +157,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
                         float const l = luminance_row[x];
 
 #ifdef SU_IBL_MIS_COMPENSATION
-                        float const p = l <= 0.f ? 0.f : std::min(std::max(l - al, ml), l);
+                        float const p = std::max(l - al, 0.f);
 #else
                         float const p = l;
 #endif
