@@ -135,6 +135,8 @@ class Scene {
 
     Light random_light(float random) const;
 
+    float weight(uint32_t id, float3 const& p, float3 const& n, bool total_sphere) const;
+
     Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
 
     void simulate(uint64_t start, uint64_t end, thread::Pool& threads);
@@ -226,6 +228,8 @@ class Scene {
 
     float3 light_center(uint32_t light) const;
 
+    float4 light_cone(uint32_t light) const;
+
     animation::Animation* create_animation(uint32_t count);
 
     void create_animation_stage(uint32_t entity, animation::Animation* animation);
@@ -279,6 +283,7 @@ class Scene {
 
     std::vector<light::Light> lights_;
     std::vector<float3>       light_centers_;
+    std::vector<float4>       light_cones_;
 
     std::vector<uint32_t> materials_;
     std::vector<uint32_t> light_ids_;

@@ -2,7 +2,8 @@
 #define SU_CORE_SCENE_LIGHT_TREE_HPP
 
 #include "base/math/distribution/distribution_1d.hpp"
-#include "base/math/vector3.hpp"
+#include "base/math/vector4.hpp"
+#include "base/math/aabb.hpp"
 
 #include <vector>
 
@@ -21,10 +22,14 @@ struct alignas(32) Build_node {
 
     float power;
 
+    float4 cone;
+
     uint32_t middle;
     uint32_t end;
 
     uint32_t children_or_light;
+
+    AABB box;
 };
 
 class Tree {
@@ -43,9 +48,11 @@ class Tree {
 
         float3 center;
 
-        float power;
+        float4 cone;
 
-        bool children;
+        float radius;
+
+        float power;
 
         uint32_t middle;
 
@@ -98,6 +105,18 @@ class Tree_builder {
     uint32_t current_node_;
 
     uint32_t light_order_;
+
+    struct Split_candidate {
+        Split_candidate();
+
+        void init(uint32_t begin, uint32_t end, uint32_t split, Lights const& lights, Scene const& scene);
+
+        uint32_t split_node;
+
+        float weight;
+    };
+
+    Split_candidate* candidates_;
 };
 
 }  // namespace light

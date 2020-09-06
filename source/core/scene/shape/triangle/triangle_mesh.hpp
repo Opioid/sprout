@@ -89,6 +89,8 @@ class alignas(64) Mesh final : public Shape {
 
     float3 center(uint32_t part) const final;
 
+    float4 cone(uint32_t part) const final;
+
   private:
     bvh::Tree tree_;
 
@@ -112,6 +114,8 @@ class alignas(64) Mesh final : public Shape {
         Distribution_1D distribution;
 
         float3 center;
+
+        float4 cone;
     };
 
     Part* parts_;

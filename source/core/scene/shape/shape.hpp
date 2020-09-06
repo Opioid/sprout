@@ -157,6 +157,8 @@ class Shape {
 
     virtual float3 center(uint32_t part) const;
 
+    virtual float4 cone(uint32_t part) const;
+
     virtual Morphable* morphable_shape();
 
   protected:

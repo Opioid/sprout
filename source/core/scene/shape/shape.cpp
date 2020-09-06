@@ -46,6 +46,10 @@ float3 Shape::center(uint32_t /*part*/) const {
     return float3(0.f);
 }
 
+float4 Shape::cone(uint32_t /*part*/) const {
+    return float4(0.f, 0.f, 1.f, Pi);
+}
+
 Morphable* Shape::morphable_shape() {
     return nullptr;
 }

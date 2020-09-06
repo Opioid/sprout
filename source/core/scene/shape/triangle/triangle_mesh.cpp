@@ -13,11 +13,13 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "triangle_intersection.hpp"
-
 #ifdef SU_DEBUG
 #include "scene/shape/shape_test.hpp"
 #endif
 #include "base/debug/assert.hpp"
+
+#include <iostream>
+#include "base/math/print.hpp"
 
 namespace scene::shape::triangle {
 
@@ -413,20 +415,46 @@ void Mesh::prepare_sampling(uint32_t part) {
 
         float3 center(0.f);
 
+        float3 dominant_axis(0.f);
+
         float const n = 1.f / float(p.num_triangles);
+
+        float const a = 1.f / parts_[part].distribution.integral();
 
         for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
             uint32_t const t = p.triangle_mapping[i];
 
             center += n * tree_.triangle_center(t);
+
+            dominant_axis += a * tree_.triangle_area(t) * tree_.triangle_normal(t);
+        }
+
+        dominant_axis = normalize(dominant_axis);
+
+        float angle = 0.f;
+
+        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
+            uint32_t const t = p.triangle_mapping[i];
+
+            float3 const n = tree_.triangle_normal(t);
+
+            float const c = dot(dominant_axis, n);
+
+            angle = std::max(angle, std::acos(c));
         }
 
         p.center = center;
+
+        p.cone = float4(dominant_axis, angle);
     }
 }
 
 float3 Mesh::center(uint32_t part) const {
     return parts_[part].center;
+}
+
+float4 Mesh::cone(uint32_t part) const {
+    return parts_[part].cone;
 }
 
 Mesh::Part::~Part() {

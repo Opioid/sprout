@@ -264,4 +264,8 @@ Shape::Differential_surface Distant_sphere::differential_surface(uint32_t /*prim
     return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
 }
 
+float4 Distant_sphere::cone(uint32_t /*part*/) const {
+    return float4(0.f, 0.f, 1.f, 0.f);
+}
+
 }  // namespace scene::shape

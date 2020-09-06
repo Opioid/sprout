@@ -147,6 +147,10 @@ inline float3 Scene::light_center(uint32_t light) const {
     return light_centers_[light];
 }
 
+inline float4 Scene::light_cone(uint32_t light) const {
+    return light_cones_[light];
+}
+
 inline uint32_t Scene::num_props() const {
     return uint32_t(props_.size());
 }
