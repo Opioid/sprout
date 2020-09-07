@@ -268,6 +268,8 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
 
     sample = Sample_to(dir, float3(tc), sl / (c * area), offset_b(d));
 
+    SOFT_ASSERT(sample.pdf() > 0.f);
+
     return true;
 }
 

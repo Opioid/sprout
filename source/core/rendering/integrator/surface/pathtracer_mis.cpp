@@ -19,6 +19,9 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace rendering::integrator::surface {
 
 using namespace scene;
@@ -378,9 +381,20 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 
     float const light_pdf = light_sample.pdf() * light_weight;
 
+    if (!std::isfinite(light_pdf)) {
+        std::cout << "alarm" << std::endl;
+    }
+
     float const weight = predivided_power_heuristic(light_pdf, bxdf.pdf());
 
-    return weight * (tr * radiance * bxdf.reflection);
+ //   return weight * (tr * radiance * bxdf.reflection);
+    float3 const resu = weight * (tr * radiance * bxdf.reflection);
+
+    if (!all_finite_and_positive(resu)) {
+        std::cout << weight << " " << light_sample.pdf() << " " << light_weight <<  std::endl;
+    }
+
+    return resu;
 }
 
 float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,

@@ -94,7 +94,11 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
     if (random < infinite_guard_) {
         auto const l = infinite_light_distribution_.sample_discrete(random);
 
-        return {l.offset, l.pdf * ip};
+        float const pdf = l.pdf * ip;
+
+        SOFT_ASSERT(pdf > 0.f);
+
+        return {l.offset, pdf};
     }
 
     float pdf = 1.f - ip;
@@ -129,6 +133,8 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
             }
         } else {
             SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
+
+
 
             return {node.children_or_light, pdf};
         }

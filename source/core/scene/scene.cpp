@@ -233,6 +233,14 @@ Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sp
 
     auto const l = light_tree_.random_light(p, n, total_sphere, random);
 
+#ifdef SU_DEBUG
+            float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, l.id);
+
+            float const diff = std::abs(guessed_pdf - l.pdf);
+
+            SOFT_ASSERT(diff < 1e-8f);
+#endif
+
     return {lights_[l.id], l.id, l.pdf};
 }
 

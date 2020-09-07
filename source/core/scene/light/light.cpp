@@ -113,7 +113,9 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 
         }
     }
 
-    return true;
+   SOFT_ASSERT(result.pdf() > 0.f);
+
+   return true;
 }
 
 static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
@@ -320,6 +322,8 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
     }
 
     result.pdf *= importance_uv.pdf;
+
+    SOFT_ASSERT(result.pdf > 0.f);
 
     return true;
 }
