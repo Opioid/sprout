@@ -20,7 +20,8 @@ void Build_node::gather(uint32_t const* orders, Build_node* nodes) {
 
         float const total_power = c0.power + c1.power;
 
-        center = (c0.power * c0.center + c1.power * c1.center) / total_power;
+        center = (c0.center + c1.center) / 2.f;
+    //    center = (c0.power * c0.center + c1.power * c1.center) / total_power;
     //    center = (c0.power * c0.power * c0.center + c1.power * c1.power * c1.center) / (c0.power * c0.power + c1.power * c1.power);
 
         power = total_power;
@@ -53,7 +54,15 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 
     bool const inside = length(axis) < radius;
 
-    float const base = power / std::max(squared_length(axis), 0.01f);
+    float sql = squared_length(axis);
+
+    float const l = std::sqrt(sql);
+
+    if (middle > 0) {
+        sql = std::max(0.5f * radius, sql);
+    }
+
+    float const base = power / std::max(/*squared_length(axis)*/sql, 0.01f);
 
     if (total_sphere) {
         return 0.5f * base;
@@ -63,6 +72,8 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 //    if (((middle > 0) & inside)     | total_sphere) {
 //        return 0.5f * base;
 //    }
+
+    float const cu = radius > 0.f ? std::asin(std::min(l / radius, 1.f)) : 0.f;
 
     float d = 1.f;
 
@@ -75,14 +86,22 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 
         float const a = std::acos(cos);
 
-        if (a > cone[3]) {
-            d -= 1.f - std::max(std::cos(a - cone[3]), 0.f);
+        float const cs = std::max(a - cone[3] - cu, 0.f);
+
+        if (cs < Pi / 2) {
+            d = std::cos(cs);
+        } else {
+            d = 0.f;
         }
+
+//        if (a > cone[3]) {
+//            d -= 1.f - std::max(std::cos(a - cone[3]), 0.f);
+//        }
     }
 
 
 
-    float const angle = std::max(dot(n, na), 0.01f);
+    float const angle = std::max(std::cos(std::acos(dot(n, na)) - cu), 0.01f);
 
     return d * angle * base;
 }
@@ -337,9 +356,17 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         AABB bb = AABB::empty();
 
+        float total_power = 0.f;
+
         for (uint32_t i = begin; i < end; ++i) {
-            bb.insert(scene.light_center(lights[i]));
+            uint32_t const l = lights[i];
+
+            total_power +=  average(scene.light(l).power(AABB(float3(-1.f), float3(1.f)), scene));
+
+            bb.insert(scene.light_center(l));
         }
+
+        float const aabb_surface_area = bb.surface_area();
 
         uint32_t const axis = index_max_component(bb.extent());
 
@@ -353,7 +380,7 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
 
         for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-            candidates_[j].init(begin, end, i, lights, scene);
+            candidates_[j].init(begin, end, i, total_power, aabb_surface_area, lights, scene);
         }
 
         std::sort(candidates_, candidates_ + len - 1, [](Split_candidate const& a, Split_candidate const& b) noexcept {
@@ -381,7 +408,7 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
 Tree_builder::Split_candidate::Split_candidate() = default;
 
-void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, Lights const& lights, Scene const& scene) {
+void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, float total_power, float aabb_surface_area, Lights const& lights, Scene const& scene) {
 
     float power_a = 0.f;
     float power_b = 0.f;
@@ -418,6 +445,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() + b.surface_area());
 
+  //  weight = (/*power_a **/ a.surface_area() + /*power_b **/ b.surface_area()) / (aabb_surface_area);
 }
 
 void Tree_builder::serialize(uint32_t num_nodes) {
@@ -426,9 +454,9 @@ void Tree_builder::serialize(uint32_t num_nodes) {
 
         Tree::Node& dest = nodes_[i];
 
-        dest.center            = source.center;
+        dest.center            = /*source.center;//*/source.box.position();
         dest.cone              = source.cone;
-        dest.radius            = std::max(length(source.center - source.box.min()), length(source.center - source.box.max()));
+        dest.radius            = 0.5f * std::max(length(source.center - source.box.min()), length(source.center - source.box.max()));
         dest.power             = source.power;
         dest.middle            = source.middle;
         dest.children_or_light = source.children_or_light;

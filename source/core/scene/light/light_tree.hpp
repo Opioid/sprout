@@ -109,7 +109,7 @@ class Tree_builder {
     struct Split_candidate {
         Split_candidate();
 
-        void init(uint32_t begin, uint32_t end, uint32_t split, Lights const& lights, Scene const& scene);
+        void init(uint32_t begin, uint32_t end, uint32_t split, float total_power, float aabb_surface_area, Lights const& lights, Scene const& scene);
 
         uint32_t split_node;
 
