@@ -73,7 +73,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 //        return 0.5f * base;
 //    }
 
-    float const cu = radius > 0.f ? std::asin(std::min(l / radius, 1.f)) : 0.f;
+    float const cu = radius > 0.f ? std::asin(std::min(radius / l, 1.f)) : 0.f;
 
     float d = 1.f;
 
@@ -99,6 +99,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 //        }
     }
 
+ //   float const angela = dot(n, na) - std::min(l / radius, 1.f)
 
 
     float const angle = std::max(std::cos(std::acos(dot(n, na)) - cu), 0.01f);
