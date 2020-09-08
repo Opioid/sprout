@@ -590,6 +590,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     light_centers_[light] = transformation.object_to_world_point(shape->center(part));
 
+    light_aabbs_[light] = shape->part_aabb(part).transform(transformation.object_to_world());
+
     float4 const cone = shape->cone(part);
 
     light_cones_[light] = float4(transformation.object_to_world_vector(cone.xyz()), cone[3]);
@@ -655,6 +657,7 @@ void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t pa
     lights_.emplace_back(type, entity, part);
 
     light_centers_.emplace_back(0.f);
+    light_aabbs_.emplace_back(AABB(float3(0.f), float3(0.f)));
     light_cones_.emplace_back(float4(0.f, 0.f, 0.f, Pi));
 }
 

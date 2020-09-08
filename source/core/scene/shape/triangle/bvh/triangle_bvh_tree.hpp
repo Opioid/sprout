@@ -97,6 +97,8 @@ class Tree {
 
     float3 triangle_center(uint32_t index) const;
 
+    void triangle(uint32_t index, float3& pa, float3& pb, float3& pc) const;
+
     void triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva, float2& uvb,
                   float2& uvc) const;
 

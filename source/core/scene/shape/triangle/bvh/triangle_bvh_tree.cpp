@@ -375,6 +375,10 @@ float3 Tree::triangle_center(uint32_t index) const {
     return data_.center(index);
 }
 
+void Tree::triangle(uint32_t index, float3& pa, float3& pb, float3& pc) const {
+    return data_.triangle(index, pa, pb, pc);
+}
+
 void Tree::triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva, float2& uvb,
                     float2& uvc) const {
     return data_.triangle(index, pa, pb, pc, uva, uvb, uvc);

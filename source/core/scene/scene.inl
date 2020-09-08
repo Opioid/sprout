@@ -147,6 +147,10 @@ inline float3 Scene::light_center(uint32_t light) const {
     return light_centers_[light];
 }
 
+inline AABB Scene::light_aabb(uint32_t light) const {
+    return light_aabbs_[light];
+}
+
 inline float4 Scene::light_cone(uint32_t light) const {
     return light_cones_[light];
 }

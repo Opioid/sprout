@@ -419,6 +419,8 @@ void Mesh::prepare_sampling(uint32_t part) {
 
         float3 center(0.f);
 
+        AABB bb = AABB::empty();
+
         float3 dominant_axis(0.f);
 
         float const n = 1.f / float(p.num_triangles);
@@ -429,6 +431,17 @@ void Mesh::prepare_sampling(uint32_t part) {
             uint32_t const t = p.triangle_mapping[i];
 
             center += n * tree_.triangle_center(t);
+
+       //     bb.insert(tree_.triangle_center(t));
+
+            float3 va;
+            float3 vb;
+            float3 vc;
+            tree_.triangle(t, va, vb, vc);
+
+            bb.insert(va);
+            bb.insert(vb);
+            bb.insert(vc);
 
             dominant_axis += a * tree_.triangle_area(t) * tree_.triangle_normal(t);
         }
@@ -449,12 +462,18 @@ void Mesh::prepare_sampling(uint32_t part) {
 
         p.center = center;
 
+        p.aabb = bb;
+
         p.cone = float4(dominant_axis, angle);
     }
 }
 
 float3 Mesh::center(uint32_t part) const {
     return parts_[part].center;
+}
+
+AABB Mesh::part_aabb(uint32_t part) const {
+    return parts_[part].aabb;
 }
 
 float4 Mesh::cone(uint32_t part) const {

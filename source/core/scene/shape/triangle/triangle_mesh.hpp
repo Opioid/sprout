@@ -89,6 +89,8 @@ class alignas(64) Mesh final : public Shape {
 
     float3 center(uint32_t part) const final;
 
+    AABB part_aabb(uint32_t part) const final;
+
     float4 cone(uint32_t part) const final;
 
   private:
@@ -114,6 +116,8 @@ class alignas(64) Mesh final : public Shape {
         Distribution_1D distribution;
 
         float3 center;
+
+        AABB aabb;
 
         float4 cone;
     };

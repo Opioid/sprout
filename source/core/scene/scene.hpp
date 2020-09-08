@@ -228,6 +228,8 @@ class Scene {
 
     float3 light_center(uint32_t light) const;
 
+    AABB light_aabb(uint32_t light) const;
+
     float4 light_cone(uint32_t light) const;
 
     animation::Animation* create_animation(uint32_t count);
@@ -283,6 +285,7 @@ class Scene {
 
     std::vector<light::Light> lights_;
     std::vector<float3>       light_centers_;
+    std::vector<AABB>       light_aabbs_;
     std::vector<float4>       light_cones_;
 
     std::vector<uint32_t> materials_;

@@ -212,6 +212,14 @@ inline float3 Indexed_data::center(uint32_t index) const {
     return (a + b + c) / 3.f;
 }
 
+inline void Indexed_data::triangle(uint32_t index, float3& pa, float3& pb, float3& pc) const {
+    auto const tri = triangles_[index];
+
+    pa = positions_[tri.a];
+    pb = positions_[tri.b];
+    pc = positions_[tri.c];
+}
+
 inline void Indexed_data::triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva,
                                    float2& uvb, float2& uvc) const {
     auto const tri = triangles_[index];

@@ -329,12 +329,12 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         auto const& light = scene.light(l);
 
-        node.center = scene.light_center(l);
+        node.center = scene.light_aabb(l).position();//scene.light_center(l);
         node.cone   = scene.light_cone(l);
         node.power  = /*spectrum::luminance*/average(light.power(AABB(float3(-1.f), float3(1.f)), scene));
         node.middle = 0;
         node.children_or_light = l;
-        node.box = AABB(node.center, node.center);
+        node.box = scene.light_aabb(l);//AABB(node.center, node.center);
 
         tree.light_orders_[l] = light_order_++;
     } else if (2 == len) {
@@ -364,7 +364,8 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
             total_power +=  average(scene.light(l).power(AABB(float3(-1.f), float3(1.f)), scene));
 
-            bb.insert(scene.light_center(l));
+          //  bb.insert(scene.light_center(l));
+            bb.merge_assign(scene.light_aabb(l));
         }
 
         float const aabb_surface_area = bb.surface_area();
@@ -373,8 +374,11 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         std::sort(lights.begin() + begin, lights.begin() + end,
                   [&scene, axis](uint32_t a, uint32_t b) noexcept {
-                      float3 const ac = scene.light_center(a);
-                      float3 const bc = scene.light_center(b);
+               //       float3 const ac = scene.light_center(a);
+               //       float3 const bc = scene.light_center(b);
+
+                      float3 const ac = scene.light_aabb(a).position();
+                      float3 const bc = scene.light_aabb(b).position();
 
                       return ac[axis] < bc[axis];
                   });
@@ -434,19 +438,21 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     for (uint32_t i = begin; i < split; ++i) {
         uint32_t const l = lights[i];
-        a.insert(scene.light_center(l));
+     //   a.insert(scene.light_center(l));
+        a.merge_assign(scene.light_aabb(l));
     }
 
     for (uint32_t i = split; i < end; ++i) {
         uint32_t const l = lights[i];
-        b.insert(scene.light_center(l));
+     //   b.insert(scene.light_center(l));
+        b.merge_assign(scene.light_aabb(l));
     }
 
     split_node = split;
 
-    weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() + b.surface_area());
+  //  weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() + b.surface_area());
 
-  //  weight = (/*power_a **/ a.surface_area() + /*power_b **/ b.surface_area()) / (aabb_surface_area);
+    weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() +  b.surface_area()) / (aabb_surface_area);
 }
 
 void Tree_builder::serialize(uint32_t num_nodes) {
@@ -455,7 +461,7 @@ void Tree_builder::serialize(uint32_t num_nodes) {
 
         Tree::Node& dest = nodes_[i];
 
-        dest.center            = /*source.center;//*/source.box.position();
+        dest.center            = source.box.position();
         dest.cone              = source.cone;
         dest.radius            = 0.5f * std::max(length(source.center - source.box.min()), length(source.center - source.box.max()));
         dest.power             = source.power;
