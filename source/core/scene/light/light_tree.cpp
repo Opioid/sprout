@@ -77,7 +77,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 
     float d = 1.f;
 
-        float3 const na = normalize(axis);
+        float3 const na = axis / l;
 
     if (0 == middle) {
         float3 const da = cone.xyz();
@@ -452,7 +452,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
   //  weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() + b.surface_area());
 
-    weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() +  b.surface_area()) / (aabb_surface_area);
+    weight = (a.surface_area() +  b.surface_area()) / (aabb_surface_area);
 }
 
 void Tree_builder::serialize(uint32_t num_nodes) {
