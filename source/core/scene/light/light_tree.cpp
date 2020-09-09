@@ -6,6 +6,10 @@
 
 #include "base/debug/assert.hpp"
 
+// Inspired by parts of
+// Importance Sampling of Many Lights with Adaptive Tree Splitting
+// http://aconty.com/pdf/many-lights-hpg2018.pdf
+
 namespace scene::light {
 
 void Build_node::gather(uint32_t const* orders, Build_node* nodes) {
@@ -52,34 +56,30 @@ Tree::~Tree() {
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
     float3 const axis = center - p;
 
-    bool const inside = length(axis) < radius;
-
-    float sql = squared_length(axis);
+    float sql = std::max(squared_length(axis), 0.0001f);
 
     float const l = std::sqrt(sql);
 
-    if (middle > 0) {
-        sql = std::max(0.5f * radius, sql);
+    bool const children = middle > 0;
+
+    if (children) {
+        float const hr = 0.5f * radius;
+        sql = std::max(hr * hr, sql);
     }
 
-    float const base = power / std::max(/*squared_length(axis)*/sql, 0.01f);
+    float const base = power / sql;
 
     if (total_sphere) {
         return 0.5f * base;
     }
 
-
-//    if (((middle > 0) & inside)     | total_sphere) {
-//        return 0.5f * base;
-//    }
-
-    float const cu = radius > 0.f ? std::asin(std::min(radius / l, 1.f)) : 0.f;
+    float const cu = std::asin(std::min(radius / l, 1.f));
 
     float d = 1.f;
 
         float3 const na = axis / l;
 
-    if (0 == middle) {
+    if (!children) {
         float3 const da = cone.xyz();
 
         float const cos = -dot(da, na);
@@ -93,18 +93,22 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
         } else {
             d = 0.f;
         }
-
-//        if (a > cone[3]) {
-//            d -= 1.f - std::max(std::cos(a - cone[3]), 0.f);
-//        }
     }
 
- //   float const angela = dot(n, na) - std::min(l / radius, 1.f)
+        //          float const angela = dot(n, na) - std::min(radius / l, 1.f);
 
 
-    float const angle = std::max(std::cos(std::acos(dot(n, na)) - cu), 0.01f);
+    float const angle = std::cos(std::acos(saturate(dot(n, na))) - cu);
 
-    return d * angle * base;
+
+    if (!std::isfinite(std::max(d * angle * base, 0.0001f))) {
+        std::cout << std::min(std::abs(dot(n, na)), 1.f) << std::endl;
+        std::cout << std::acos(std::min(std::abs(dot(n, na)), 1.f)) << std::endl;
+        std::cout << cu << std::endl;
+        std::cout << std::cos(std::acos(std::min(std::abs(dot(n, na)), 1.f)) - cu) << std::endl;
+    }
+
+    return std::max(d * angle * base, 0.0001f);
 }
 
 Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -152,9 +156,8 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
                 random = (random - p0) / p1;
             }
         } else {
-            SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
-
-
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
 
             return {node.children_or_light, pdf};
         }
@@ -194,7 +197,8 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
                 pdf *= p1 / pt;
             }
         } else {
-            SOFT_ASSERT(std::isfinite(pdf) && pdf > 0.f);
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
 
             return pdf;
         }
@@ -450,8 +454,13 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     split_node = split;
 
-  //  weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() + b.surface_area());
+    // a
+    // weight = 0.5f * std::abs(power_a - power_b) + (a.surface_area() + b.surface_area());
 
+    // b
+    // weight = (1.f - std::abs(power_a - power_b) / total_power) + (a.surface_area() +  b.surface_area()) / (aabb_surface_area);
+
+    // c
     weight = (a.surface_area() +  b.surface_area()) / (aabb_surface_area);
 }
 
