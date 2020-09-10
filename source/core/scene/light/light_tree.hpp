@@ -16,7 +16,7 @@ namespace light {
 class Light;
 
 struct alignas(32) Build_node {
-    void gather(uint32_t const* orders, Build_node* nodes);
+    void gather(uint32_t const* orders, Build_node* nodes, std::vector<uint32_t> const& finite_lights);
 
     float3 center;
 
@@ -28,6 +28,8 @@ struct alignas(32) Build_node {
     uint32_t end;
 
     uint32_t children_or_light;
+
+    uint32_t num_lights;
 
     AABB box;
 };
@@ -46,6 +48,12 @@ class Tree {
     struct alignas(32) Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
 
+        static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light, Scene const& scene);
+
+        Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random, std::vector<uint32_t> const& finite_lights, Scene const& scene) const;
+
+        float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, std::vector<uint32_t> const& finite_lights, Scene const& scene) const;
+
         float3 center;
 
         float4 cone;
@@ -57,11 +65,13 @@ class Tree {
         uint32_t middle;
 
         uint32_t children_or_light;
+
+        uint32_t num_lights;
     };
 
-    Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
+    Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random, Scene const& scene) const;
 
-    float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id) const;
+    float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, Scene const& scene) const;
 
     void allocate(uint32_t num_finite_lights, uint32_t num_infinite_lights);
 
@@ -80,6 +90,8 @@ class Tree {
     float* infinite_light_powers_;
 
     Distribution_1D infinite_light_distribution_;
+
+    std::vector<uint32_t> finite_lights_;
 };
 
 class Tree_builder {
