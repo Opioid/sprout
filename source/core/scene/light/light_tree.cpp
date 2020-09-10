@@ -38,7 +38,14 @@ void Build_node::gather(uint32_t const* orders, Build_node* nodes, std::vector<u
 
         box = c0.box.merge(c1.box);
     } else {
-        end = orders[finite_lights[children_or_light + num_lights]] + 1;
+        std::cout << "order" << std::endl;
+
+        for (uint32_t i = 0; i < num_lights; ++i) {
+            std::cout << "light-id: " << finite_lights[children_or_light + i] << " ";
+            std::cout << "light-od: " << orders[finite_lights[children_or_light + i]] << std::endl;
+        }
+
+        end = orders[finite_lights[children_or_light + num_lights - 1]] + 1;
     }
 }
 
@@ -81,7 +88,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 
         float3 const na = axis / l;
 
-    if (!children) {
+    if (!children && 1 == num_lights) {
         float3 const da = cone.xyz();
 
         float const cos = -dot(da, na);
@@ -200,7 +207,7 @@ Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool tot
     return {children_or_light + l.offset, l.pdf};
 }
 
-float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, std::vector<uint32_t> const& finite_lights, Scene const& scene) const {
+float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, uint32_t const* orders, std::vector<uint32_t> const& finite_lights, Scene const& scene) const {
     if (1 == num_lights) {
         return 1.f;
     }
@@ -215,7 +222,13 @@ float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint3
 
     light_distribution.init(weights, 4);
 
-    return light_distribution.pdf(id - children_or_light);
+    uint32_t const first = orders[finite_lights[children_or_light]];
+
+    if (id >= first + num_lights) {
+        std::cout << "alarm" << std::endl;
+    }
+
+    return light_distribution.pdf(id - first);
 }
 
 Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -310,7 +323,7 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            return pdf * node.pdf(p, n, total_sphere, lo, finite_lights_, scene);
+            return pdf * node.pdf(p, n, total_sphere, lo, light_orders_, finite_lights_, scene);
         }
     }
 }
@@ -440,6 +453,7 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
     uint32_t const len = end - begin;
 
     if (len <= 4) {
+ //   if (1 == len) {
         /*
         uint32_t const l = lights[begin];
 
@@ -482,6 +496,17 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
         node.power = total_power;
         node.box = aabb;
         node.center = aabb.position();
+
+//    } else if (2 == len) {
+//        uint32_t const child0 = current_node_;
+
+//        current_node_ += 2;
+
+//        node.middle            = 0xFFFFFFFF;
+//        node.children_or_light = child0;
+
+//        split(tree, child0, begin, begin + 1, lights, scene);
+//        split(tree, child0 + 1, end - 1, end, lights, scene);
     } else {
         uint32_t const child0 = current_node_;
 
@@ -519,30 +544,34 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
                   });
 
 
-        for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-            candidates_[j].init(begin, end, i, total_power, aabb_surface_area, lights, scene);
-        }
 
-        std::sort(candidates_, candidates_ + len - 1, [](Split_candidate const& a, Split_candidate const& b) noexcept {
-           return a.weight < b.weight;
-        });
-
-
-        /*
-        float const threshold = bb.position()[axis];
-
-        uint32_t s = begin + 1;
-        for (; s < end - 1; ++s) {
-            if (scene.light_center(lights[s])[axis] > threshold) {
-                break;
+            for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
+                candidates_[j].init(begin, end, i, total_power, aabb_surface_area, lights, scene);
             }
-        }
-        */
 
-        uint32_t const middle = candidates_[0].split_node;//*/ begin + (len / 2);
+            std::sort(candidates_, candidates_ + len - 1, [](Split_candidate const& a, Split_candidate const& b) noexcept {
+               return a.weight < b.weight;
+            });
 
-        split(tree, child0, begin, middle, lights, scene);
-        split(tree, child0 + 1, middle, end, lights, scene);
+
+            /*
+            float const threshold = bb.position()[axis];
+
+            uint32_t s = begin + 1;
+            for (; s < end - 1; ++s) {
+                if (scene.light_center(lights[s])[axis] > threshold) {
+                    break;
+                }
+            }
+            */
+
+             const uint32_t split_node = candidates_[0].split_node;
+
+
+
+
+        split(tree, child0, begin, split_node, lights, scene);
+        split(tree, child0 + 1, split_node, end, lights, scene);
     }
 }
 

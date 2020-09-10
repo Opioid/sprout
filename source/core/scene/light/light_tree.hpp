@@ -52,7 +52,7 @@ class Tree {
 
         Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random, std::vector<uint32_t> const& finite_lights, Scene const& scene) const;
 
-        float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, std::vector<uint32_t> const& finite_lights, Scene const& scene) const;
+        float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, uint32_t const* orders, std::vector<uint32_t> const& finite_lights, Scene const& scene) const;
 
         float3 center;
 
