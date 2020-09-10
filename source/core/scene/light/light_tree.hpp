@@ -16,7 +16,7 @@ namespace light {
 class Light;
 
 struct alignas(32) Build_node {
-    void gather(uint32_t const* orders, Build_node* nodes, std::vector<uint32_t> const& finite_lights);
+    void gather(Build_node* nodes);
 
     float3 center;
 
@@ -50,9 +50,9 @@ class Tree {
 
         static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light, Scene const& scene);
 
-        Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random, std::vector<uint32_t> const& finite_lights, Scene const& scene) const;
+        Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random, uint32_t const* const light_mapping, Scene const& scene) const;
 
-        float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, uint32_t const* orders, std::vector<uint32_t> const& finite_lights, Scene const& scene) const;
+        float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, uint32_t const* const light_mapping, Scene const& scene) const;
 
         float3 center;
 
@@ -91,7 +91,7 @@ class Tree {
 
     Distribution_1D infinite_light_distribution_;
 
-    std::vector<uint32_t> finite_lights_;
+    std::vector<uint32_t> light_mapping_;
 };
 
 class Tree_builder {

@@ -14,15 +14,15 @@
 
 namespace scene::light {
 
-void Build_node::gather(uint32_t const* orders, Build_node* nodes, std::vector<uint32_t> const& finite_lights) {
+void Build_node::gather(Build_node* nodes) {
     if (middle > 0) {
         uint32_t const children = children_or_light;
 
         Build_node& c0 = nodes[children];
         Build_node& c1 = nodes[children + 1];
 
-        c0.gather(orders, nodes, finite_lights);
-        c1.gather(orders, nodes, finite_lights);
+        c0.gather(nodes);
+        c1.gather(nodes);
 
         float const total_power = c0.power + c1.power;
 
@@ -38,14 +38,7 @@ void Build_node::gather(uint32_t const* orders, Build_node* nodes, std::vector<u
 
         box = c0.box.merge(c1.box);
     } else {
-        std::cout << "order" << std::endl;
-
-        for (uint32_t i = 0; i < num_lights; ++i) {
-            std::cout << "light-id: " << finite_lights[children_or_light + i] << " ";
-            std::cout << "light-od: " << orders[finite_lights[children_or_light + i]] << std::endl;
-        }
-
-        end = orders[finite_lights[children_or_light + num_lights - 1]] + 1;
+        end = children_or_light + num_lights;
     }
 }
 
@@ -181,7 +174,7 @@ float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphe
         return std::max(d * angle * base, 0.0001f);
 }
 
-Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere, float random, std::vector<uint32_t> const& finite_lights, Scene const& scene) const {
+Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere, float random, uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return {children_or_light, 1.f};
     }
@@ -189,25 +182,15 @@ Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool tot
     float weights[4] = {0.f, 0.f, 0.f, 0.f};
 
     for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p, n, total_sphere, finite_lights[children_or_light + i], scene);
+        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], scene);
     }
 
-    Distribution_1D light_distribution;
-
-    light_distribution.init(weights, 4);
-
-    auto const l = light_distribution.sample_discrete(random);
-
-    uint32_t const end_light = children_or_light + l.offset;
-
-    if (end_light >= scene.num_lights()) {
-        std::cout << "alarm" << std::endl;
-    }
+    auto const l = distribution_sample_discrete<4>(weights, random);
 
     return {children_or_light + l.offset, l.pdf};
 }
 
-float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, uint32_t const* orders, std::vector<uint32_t> const& finite_lights, Scene const& scene) const {
+float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return 1.f;
     }
@@ -215,20 +198,10 @@ float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint3
     float weights[4] = {0.f, 0.f, 0.f, 0.f};
 
     for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p, n, total_sphere, finite_lights[children_or_light + i], scene);
+        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], scene);
     }
 
-    Distribution_1D light_distribution;
-
-    light_distribution.init(weights, 4);
-
-    uint32_t const first = orders[finite_lights[children_or_light]];
-
-    if (id >= first + num_lights) {
-        std::cout << "alarm" << std::endl;
-    }
-
-    return light_distribution.pdf(id - first);
+    return distribution_pdf<4>(weights, id - children_or_light);
 }
 
 Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -280,9 +253,9 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
             SOFT_ASSERT(pdf > 0.f);
 
 
-            Result const result = node.random_light(p, n, total_sphere, random, finite_lights_, scene);
+            Result const result = node.random_light(p, n, total_sphere, random, light_mapping_.data(), scene);
 
-            return {finite_lights_[result.id], result.pdf * pdf};
+            return {light_mapping_[result.id], result.pdf * pdf};
         }
     }
 }
@@ -323,7 +296,7 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            return pdf * node.pdf(p, n, total_sphere, lo, light_orders_, finite_lights_, scene);
+            return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_.data(), scene);
         }
     }
 }
@@ -365,32 +338,48 @@ Tree_builder::~Tree_builder() {
 }
 
 void Tree_builder::build(Tree& tree, Scene const& scene) {
-    tree.finite_lights_.clear();
+    tree.light_mapping_.clear();
 
     Lights infinite_lights;
 
     light_order_ = 0;
 
+    uint32_t num_finite_lights = 0;
+
+    uint32_t num_infinite_lights = 0;
+
     for (uint32_t l = 0, len = scene.num_lights(); l < len; ++l) {
         auto const& light = scene.light(l);
 
         if (light.is_finite(scene)) {
-            tree.finite_lights_.push_back(l);
+            //tree.finite_lights_.push_back(l);
+            ++num_finite_lights;
         } else {
-            infinite_lights.push_back(l);
+            //infinite_lights.push_back(l);
+            ++num_infinite_lights;
+            tree.light_mapping_.push_back(l);
         }
     }
 
-    uint32_t const num_finite_lights = uint32_t(tree.finite_lights_.size());
+    for (uint32_t l = 0, len = scene.num_lights(); l < len; ++l) {
+        auto const& light = scene.light(l);
 
-    uint32_t const num_infinite_lights = uint32_t(infinite_lights.size());
+        if (light.is_finite(scene)) {
+            tree.light_mapping_.push_back(l);
+
+        }
+    }
+
+  //  uint32_t const num_finite_lights = uint32_t(tree.finite_lights_.size());
+
+  //  uint32_t const num_infinite_lights = uint32_t(infinite_lights.size());
 
     tree.allocate(num_finite_lights, num_infinite_lights);
 
     float infinite_total_power = 0.f;
 
     for (uint32_t i = 0; i < num_infinite_lights; ++i) {
-        uint32_t const l = infinite_lights[i];
+        uint32_t const l = tree.light_mapping_[i];
 
         auto const& light = scene.light(l);
 
@@ -407,7 +396,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
 
     tree.infinite_light_distribution_.init(tree.infinite_light_powers_, num_infinite_lights);
 
-    if (!tree.finite_lights_.empty()) {
+    if (num_finite_lights > 0) {
         delete[] build_nodes_;
 
         uint32_t const num_nodes = 2 * num_finite_lights - 1;
@@ -424,9 +413,11 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
 
         current_node_ = 1;
 
-        split(tree, 0, 0, num_finite_lights, tree.finite_lights_, scene);
+        uint32_t const num_total_lights = num_infinite_lights + num_finite_lights;
 
-        build_nodes_[0].gather(tree.light_orders_, build_nodes_, tree.finite_lights_);
+        split(tree, 0, num_infinite_lights, num_total_lights, tree.light_mapping_, scene);
+
+        build_nodes_[0].gather(build_nodes_);
 
         nodes_ = tree.nodes_;
 
@@ -434,7 +425,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
     }
 
     float const p0 = infinite_total_power;
-    float const p1 = tree.finite_lights_.empty() ? 0.f : build_nodes_[0].power;
+    float const p1 = 0 == num_finite_lights ? 0.f : build_nodes_[0].power;
 
     float const pt = p0 + p1;
 
@@ -443,7 +434,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
     tree.infinite_weight_ = infinite_weight;
 
     // This is because I'm afraid of the 1.f == random case
-    tree.infinite_guard_ = tree.finite_lights_.empty() ? 1.1f : infinite_weight;
+    tree.infinite_guard_ = 0 == num_finite_lights ? 1.1f : infinite_weight;
 }
 
 void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Lights& lights,
@@ -579,6 +570,9 @@ Tree_builder::Split_candidate::Split_candidate() = default;
 
 void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, float total_power, float aabb_surface_area, Lights const& lights, Scene const& scene) {
 
+    uint32_t const len_a = split - begin;
+    uint32_t const len_b = end - split;
+
     float power_a = 0.f;
     float power_b = 0.f;
 
@@ -622,6 +616,11 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     // c
     weight = (a.surface_area() +  b.surface_area()) / (aabb_surface_area);
+
+    // d
+    // weight = 0.125 * float(len_a % 2 + len_b % 2) + ((a.surface_area() +  b.surface_area()) / (aabb_surface_area));
+
+    // weight = (std::abs(power_a - power_b) / total_power) + (a.surface_area() +  b.surface_area()) / (aabb_surface_area);
 }
 
 void Tree_builder::serialize(uint32_t num_nodes) {
