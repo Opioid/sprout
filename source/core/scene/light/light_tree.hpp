@@ -15,14 +15,15 @@ namespace light {
 
 class Light;
 
-struct alignas(32) Build_node {
+struct Build_node {
     void gather(Build_node* nodes);
 
-    float3 center;
+    AABB box;
+
+    float4 cone;
 
     float power;
 
-    float4 cone;
 
     uint32_t middle;
     uint32_t end;
@@ -31,7 +32,6 @@ struct alignas(32) Build_node {
 
     uint32_t num_lights;
 
-    AABB box;
 };
 
 class Tree {
@@ -45,7 +45,7 @@ class Tree {
         float    pdf;
     };
 
-    struct alignas(32) Node {
+    struct Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
 
         static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light, Scene const& scene);
@@ -54,11 +54,9 @@ class Tree {
 
         float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id, uint32_t const* const light_mapping, Scene const& scene) const;
 
-        float3 center;
+        float4 center;
 
         float4 cone;
-
-        float radius;
 
         float power;
 

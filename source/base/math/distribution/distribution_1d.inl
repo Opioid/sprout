@@ -187,28 +187,37 @@ inline void Distribution_1D::init_lut(uint32_t lut_size) {
     }
 }
 
+static inline uint32_t mini_search(float const* buffer, uint32_t end, float key) {
+    uint32_t i = 0;
+    for (; i < end; ++i) {
+        if (buffer[i] >= key) {
+            return i;
+        }
+    }
+
+    return i;
+}
+
 template<uint32_t N>
-Distribution_1D::Discrete distribution_sample_discrete(float data[N], float random) {
+Distribution_1D::Discrete distribution_sample_discrete(float data[N], uint32_t n, float r) {
     float integral = 0.f;
     for (uint32_t i = 0; i < N; ++i) {
         integral += data[i];
     }
 
-    float cdf[N + 2];
+    float cdf[N + 1];
 
     cdf[0] = 0.f;
     for (uint32_t i = 1; i < N; ++i) {
         cdf[i] = cdf[i - 1] + data[i - 1] / integral;
     }
     cdf[N] = 1.f;
-    // This takes care of corner case: pdf(1)
-    cdf[N + 1] = 1.f;
 
-    uint32_t const it = search(cdf, 0, random);
+    uint32_t const it = mini_search(cdf, n, r);
 
-    uint32_t const offset = 0 != it ? it - 1 : 0;
+    uint32_t const offset = (0 != it) ? it - 1 : 0;
 
-    SOFT_ASSERT(offset + 1 < N + 2);
+    SOFT_ASSERT(offset < N);
 
     return {offset, cdf[offset + 1] - cdf[offset]};
 }
