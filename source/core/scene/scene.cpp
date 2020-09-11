@@ -96,7 +96,7 @@ void Scene::finish() {
         allocate_light(light::Light::Type::Null, dummy, 0);
     }
 
-    light_powers_.resize(uint32_t(lights_.size()));
+    light_temp_powers_.resize(uint32_t(lights_.size()));
 }
 
 AABB Scene::aabb() const {
@@ -170,12 +170,12 @@ Scene::Light Scene::random_light(float random) const {
 
 float Scene::weight(uint32_t id, float3 const& p, float3 const& n, bool total_sphere) const {
     if (!light(id).is_finite(*this)) {
-        return 0.001f * average(light(id).power(aabb(), *this));
+        return 0.001f * light_power(id);
     }
 
-    float3 const axis = light_center(id) - p;
+    float3 const axis = light_aabb(id).position() - p;
 
-    float const base = average(light(id).power(aabb(), *this)) / std::max(squared_length(axis), 0.01f);
+    float const base = (light_power(id)) / std::max(squared_length(axis), 0.01f);
 
     if (total_sphere) {
         return 0.5f * base;
@@ -299,10 +299,10 @@ void Scene::compile(uint64_t time, thread::Pool& threads) {
     for (uint32_t i = 0, len = uint32_t(lights_.size()); i < len; ++i) {
         auto& l = lights_[i];
         l.prepare_sampling(i, time, *this, threads);
-        light_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
+        light_temp_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
     }
 
-    light_distribution_.init(light_powers_.data(), uint32_t(light_powers_.size()));
+    light_distribution_.init(light_temp_powers_.data(), uint32_t(light_temp_powers_.size()));
 
     light::Tree_builder light_tree_builder;
     light_tree_builder.build(light_tree_, *this);
@@ -588,7 +588,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     lights_[light].set_extent(extent);
 
-    light_centers_[light] = transformation.object_to_world_point(shape->center(part));
+    light_powers_[light] = average(lights_[light].power(aabb(), *this));
 
     light_aabbs_[light] = shape->part_aabb(part).transform(transformation.object_to_world());
 
@@ -656,7 +656,7 @@ Scene::Prop_ptr Scene::allocate_prop() {
 void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) {
     lights_.emplace_back(type, entity, part);
 
-    light_centers_.emplace_back(0.f);
+    light_powers_.emplace_back(0.f);
     light_aabbs_.emplace_back(AABB(float3(0.f), float3(0.f)));
     light_cones_.emplace_back(float4(0.f, 0.f, 0.f, Pi));
 }

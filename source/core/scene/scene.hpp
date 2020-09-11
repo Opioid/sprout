@@ -226,7 +226,7 @@ class Scene {
 
     float light_area(uint32_t entity, uint32_t part) const;
 
-    float3 light_center(uint32_t light) const;
+    float light_power(uint32_t light) const;
 
     AABB light_aabb(uint32_t light) const;
 
@@ -284,7 +284,7 @@ class Scene {
     std::vector<AABB> prop_aabbs_;
 
     std::vector<light::Light> lights_;
-    std::vector<float3>       light_centers_;
+    std::vector<float>       light_powers_;
     std::vector<AABB>       light_aabbs_;
     std::vector<float4>       light_cones_;
 
@@ -298,7 +298,7 @@ class Scene {
 
     std::map<std::string, uint32_t, std::less<>> named_props_;
 
-    memory::Array<float> light_powers_;
+    memory::Array<float> light_temp_powers_;
 
     Distribution_1D light_distribution_;
 

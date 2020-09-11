@@ -114,7 +114,7 @@ float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphe
         float const l = std::sqrt(sql);
 
 
-        float const power = average(scene.light(light).power(AABB(float3(-1.f), float3(1.f)), scene));
+        float const power = scene.light_power(light);
 
         float const base = power / sql;
 
@@ -351,9 +351,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
     for (uint32_t i = 0; i < num_infinite_lights; ++i) {
         uint32_t const l = tree.light_mapping_[i];
 
-        auto const& light = scene.light(l);
-
-        float const power = average(light.power(scene.aabb(), scene));
+        float const power = scene.light_power(l);
 
         tree.infinite_light_powers_[i] = power;
 
@@ -433,9 +431,7 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
             node.cone = scene.light_cone(l);
 
-            auto const& light = scene.light(l);
-
-            total_power += average(light.power(AABB(float3(-1.f), float3(1.f)), scene));
+            total_power += scene.light_power(l);
 
             tree.light_orders_[l] = light_order_++;
 
@@ -460,9 +456,8 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
         for (uint32_t i = begin; i < end; ++i) {
             uint32_t const l = lights[i];
 
-            total_power +=  average(scene.light(l).power(AABB(float3(-1.f), float3(1.f)), scene));
+            total_power += scene.light_power(l);
 
-          //  bb.insert(scene.light_center(l));
             bb.merge_assign(scene.light_aabb(l));
         }
 
@@ -472,9 +467,6 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         std::sort(lights + begin, lights + end,
                   [&scene, axis](uint32_t a, uint32_t b) noexcept {
-               //       float3 const ac = scene.light_center(a);
-               //       float3 const bc = scene.light_center(b);
-
                       float3 const ac = scene.light_aabb(a).position();
                       float3 const bc = scene.light_aabb(b).position();
 
@@ -525,12 +517,12 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     for (uint32_t i = begin; i < split; ++i) {
         uint32_t const l = lights[i];
-        power_a += average(scene.light(l).power(AABB(float3(-1.f), float3(1.f)), scene));
+        power_a += scene.light_power(l);
     }
 
     for (uint32_t i = split; i < end; ++i) {
         uint32_t const l = lights[i];
-        power_b += average(scene.light(l).power(AABB(float3(-1.f), float3(1.f)), scene));
+        power_b += scene.light_power(l);
     }
 
     split_node = split;
@@ -543,13 +535,11 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     for (uint32_t i = begin; i < split; ++i) {
         uint32_t const l = lights[i];
-     //   a.insert(scene.light_center(l));
         a.merge_assign(scene.light_aabb(l));
     }
 
     for (uint32_t i = split; i < end; ++i) {
         uint32_t const l = lights[i];
-     //   b.insert(scene.light_center(l));
         b.merge_assign(scene.light_aabb(l));
     }
 

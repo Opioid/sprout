@@ -143,8 +143,8 @@ inline float Scene::light_area(uint32_t entity, uint32_t part) const {
     return lights_[light_id].area();
 }
 
-inline float3 Scene::light_center(uint32_t light) const {
-    return light_centers_[light];
+inline float Scene::light_power(uint32_t light) const {
+    return light_powers_[light];
 }
 
 inline AABB Scene::light_aabb(uint32_t light) const {

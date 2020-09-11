@@ -41,7 +41,7 @@ static inline float3 prop_power(uint32_t prop, uint32_t part, float area, AABB c
         return area * radiance;
     }
 
-    return squared_length(2.f * scene_bb.halfsize()) * area * radiance;
+    return squared_length(scene_bb.extent()) * area * radiance;
 }
 
 static inline float3 volume_power(uint32_t prop, uint32_t part, float volume, Scene const& scene) {

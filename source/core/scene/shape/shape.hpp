@@ -155,8 +155,6 @@ class Shape {
 
     virtual void prepare_sampling(uint32_t part);
 
-    virtual float3 center(uint32_t part) const;
-
     virtual AABB part_aabb(uint32_t part) const;
 
     virtual float4 cone(uint32_t part) const;

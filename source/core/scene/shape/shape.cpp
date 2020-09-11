@@ -42,10 +42,6 @@ bool Shape::sample_volume(uint32_t /*part*/, float3 const& /*p*/,
 
 void Shape::prepare_sampling(uint32_t /*part*/) {}
 
-float3 Shape::center(uint32_t /*part*/) const {
-    return float3(0.f);
-}
-
 AABB Shape::part_aabb(uint32_t /*part*/) const {
     return AABB(float3(0.f), float3(0.f));
 }

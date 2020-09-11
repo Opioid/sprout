@@ -417,22 +417,14 @@ void Mesh::prepare_sampling(uint32_t part) {
     if (p.empty()) {
         p.init(part, tree_);
 
-        float3 center(0.f);
-
         AABB bb = AABB::empty();
 
         float3 dominant_axis(0.f);
-
-        float const n = 1.f / float(p.num_triangles);
 
         float const a = 1.f / parts_[part].distribution.integral();
 
         for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
             uint32_t const t = p.triangle_mapping[i];
-
-            center += n * tree_.triangle_center(t);
-
-       //     bb.insert(tree_.triangle_center(t));
 
             float3 va;
             float3 vb;
@@ -460,16 +452,10 @@ void Mesh::prepare_sampling(uint32_t part) {
             angle = std::max(angle, std::acos(c));
         }
 
-        p.center = center;
-
         p.aabb = bb;
 
         p.cone = float4(dominant_axis, angle);
     }
-}
-
-float3 Mesh::center(uint32_t part) const {
-    return parts_[part].center;
 }
 
 AABB Mesh::part_aabb(uint32_t part) const {

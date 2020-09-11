@@ -87,8 +87,6 @@ class alignas(64) Mesh final : public Shape {
 
     void prepare_sampling(uint32_t part) final;
 
-    float3 center(uint32_t part) const final;
-
     AABB part_aabb(uint32_t part) const final;
 
     float4 cone(uint32_t part) const final;
@@ -114,8 +112,6 @@ class alignas(64) Mesh final : public Shape {
         uint32_t* triangle_mapping = nullptr;
 
         Distribution_1D distribution;
-
-        float3 center;
 
         AABB aabb;
 
