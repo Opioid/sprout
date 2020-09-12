@@ -136,21 +136,21 @@ Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool to
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
-/*
-    memory::Array<float> powers(lights_.size());
+    /*
+        memory::Array<float> powers(lights_.size());
 
-    for (size_t i = 0, len = lights_.size(); i < len; ++i) {
-        powers[i] = weight(i, p, n, total_sphere);
-    }
+        for (size_t i = 0, len = lights_.size(); i < len; ++i) {
+            powers[i] = weight(i, p, n, total_sphere);
+        }
 
-    Distribution_1D light_distribution;
+        Distribution_1D light_distribution;
 
-    light_distribution.init(powers.data(), powers.size());
+        light_distribution.init(powers.data(), powers.size());
 
-    float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
+        float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
 
-    return {lights_[id], id, pdf};
-*/
+        return {lights_[id], id, pdf};
+    */
 
     float const pdf = calculate_pdf ? light_tree_.pdf(p, n, total_sphere, id, *this) : 1.f;
 
@@ -166,7 +166,6 @@ Scene::Light Scene::random_light(float random) const {
 
     return {lights_[l.offset], l.offset, l.pdf};
 }
-
 
 float Scene::weight(uint32_t id, float3 const& p, float3 const& n, bool total_sphere) const {
     if (!light(id).is_finite(*this)) {
@@ -189,21 +188,19 @@ float Scene::weight(uint32_t id, float3 const& p, float3 const& n, bool total_sp
 
     float d = 1.f;
 
-   // if (cone[3] < 1.5f) {
-        float const cos = -dot(da, na);
+    // if (cone[3] < 1.5f) {
+    float const cos = -dot(da, na);
 
-        float const a = std::acos(cos);
+    float const a = std::acos(cos);
 
-        if (a > cone[3]) {
-            d -= 1.f - std::max(std::cos(a - cone[3]), 0.f);
-        }
+    if (a > cone[3]) {
+        d -= 1.f - std::max(std::cos(a - cone[3]), 0.f);
+    }
 
-       // if (cos < 0.f) {
-       //     d += cos;
-       // }
-  //  }
-
-
+    // if (cos < 0.f) {
+    //     d += cos;
+    // }
+    //  }
 
     float const angle = std::max(dot(n, na), 0.01f);
 
@@ -212,33 +209,32 @@ float Scene::weight(uint32_t id, float3 const& p, float3 const& n, bool total_sp
 
 Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sphere,
                                  float random) const {
-/*
-    memory::Array<float> powers(lights_.size());
+    /*
+        memory::Array<float> powers(lights_.size());
 
-    for (size_t i = 0, len = lights_.size(); i < len; ++i) {
-        powers[i] = weight(i, p, n, total_sphere);
-    }
+        for (size_t i = 0, len = lights_.size(); i < len; ++i) {
+            powers[i] = weight(i, p, n, total_sphere);
+        }
 
-    Distribution_1D light_distribution;
+        Distribution_1D light_distribution;
 
-    light_distribution.init(powers.data(), powers.size());
+        light_distribution.init(powers.data(), powers.size());
 
-    auto const l = light_distribution.sample_discrete(random);
+        auto const l = light_distribution.sample_discrete(random);
 
-    SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
+        SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
 
-    return {lights_[l.offset], l.offset, l.pdf};
-*/
-
+        return {lights_[l.offset], l.offset, l.pdf};
+    */
 
     auto const l = light_tree_.random_light(p, n, total_sphere, random, *this);
 
 #ifdef SU_DEBUG
-            float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, l.id, *this);
+    float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, l.id, *this);
 
-            float const diff = std::abs(guessed_pdf - l.pdf);
+    float const diff = std::abs(guessed_pdf - l.pdf);
 
-            SOFT_ASSERT(diff < 1e-8f);
+    SOFT_ASSERT(diff < 1e-8f);
 #endif
 
     return {lights_[l.id], l.id, l.pdf};
@@ -586,6 +582,13 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     float const extent = volume ? shape->volume(part, scale) : shape->area(part, scale);
 
+    uint32_t const p = prop_parts_[entity] + part;
+
+    light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
+
+    material_resources_[materials_[p]]->prepare_sampling(
+        *shape, part, time, transformation, extent, material_importance_sampling, threads, *this);
+
     lights_[light].set_extent(extent);
 
     light_powers_[light] = average(lights_[light].power(aabb(), *this));
@@ -595,13 +598,6 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     float4 const cone = shape->cone(part);
 
     light_cones_[light] = float4(transformation.object_to_world_vector(cone.xyz()), cone[3]);
-
-    uint32_t const p = prop_parts_[entity] + part;
-
-    light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
-
-    material_resources_[materials_[p]]->prepare_sampling(
-        *shape, part, time, transformation, extent, material_importance_sampling, threads, *this);
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) {

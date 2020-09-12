@@ -198,7 +198,7 @@ static inline uint32_t mini_search(float const* buffer, uint32_t end, float key)
     return i;
 }
 
-template<uint32_t N>
+template <uint32_t N>
 Distribution_1D::Discrete distribution_sample_discrete(float data[N], uint32_t n, float r) {
     float integral = 0.f;
     for (uint32_t i = 0; i < N; ++i) {
@@ -222,7 +222,7 @@ Distribution_1D::Discrete distribution_sample_discrete(float data[N], uint32_t n
     return {offset, cdf[offset + 1] - cdf[offset]};
 }
 
-template<uint32_t N>
+template <uint32_t N>
 float distribution_pdf(float data[N], uint32_t index) {
     float integral = 0.f;
     for (uint32_t i = 0; i < N; ++i) {

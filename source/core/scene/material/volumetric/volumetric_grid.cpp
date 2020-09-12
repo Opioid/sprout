@@ -341,7 +341,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, 
 
         distribution_.init();
 
-        average_emission_ = cc_.a * average_emission;
+        average_emission_ = average_emission;
 
         float const majorant_a = max_component(cc_.a);
 

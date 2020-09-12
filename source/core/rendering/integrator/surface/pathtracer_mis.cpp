@@ -227,6 +227,13 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
 
         state.or_set(State::From_subsurface, intersection.subsurface);
 
+        if (sample_result.type.is(Bxdf_type::Straight) & state.no(State::Treat_as_singular)) {
+            sample_result.pdf = effective_bxdf_pdf;
+        } else {
+            state.set(State::Is_translucent, material_sample.is_translucent());
+            geo_n = material_sample.geometric_normal();
+        }
+
         if (!worker.interface_stack().empty()) {
             float3     vli;
             float3     vtr;
@@ -237,8 +244,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
                     // This is the direct eye-light connection for the volume case.
                     result_li += vli;
                 } else {
-                    float const w = connect_light_volume(ray, intersection, effective_bxdf_pdf,
-                                                         state, worker);
+                    float const w = connect_light_volume(ray, geo_n, intersection,
+                                                         effective_bxdf_pdf, state, worker);
 
                     result_li += w * throughput * vli;
                 }
@@ -265,13 +272,6 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& interse
         }
 
         SOFT_ASSERT(all_finite(result_li));
-
-        if (sample_result.type.is(Bxdf_type::Straight) & state.no(State::Treat_as_singular)) {
-            sample_result.pdf = effective_bxdf_pdf;
-        } else {
-            state.set(State::Is_translucent, material_sample.is_translucent());
-            geo_n = material_sample.geometric_normal();
-        }
 
         bool         pure_emissive;
         float3 const radiance = connect_light(ray, geo_n, intersection, sample_result, state,
@@ -432,8 +432,9 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
     return radiance;
 }
 
-float Pathtracer_MIS::connect_light_volume(Ray const& ray, Intersection const& intersection,
-                                           float bxdf_pdf, Path_state state, Worker& worker) const {
+float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3 const& geo_n,
+                                           Intersection const& intersection, float bxdf_pdf,
+                                           Path_state state, Worker& worker) const {
     uint32_t const light_id = intersection.light_id(worker);
     if (!Light::is_light(light_id)) {
         return 0.f;
@@ -445,7 +446,10 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, Intersection const& i
         bool const calculate_pdf = Light_sampling::Strategy::Single ==
                                    settings_.light_sampling.strategy;
 
-        auto const light = worker.scene().light(light_id, calculate_pdf);
+        bool const translucent = state.is(State::Is_translucent);
+
+        auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
+                                                calculate_pdf);
 
         float const ls_pdf = light.ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),
                                            Filter::Nearest, worker);
