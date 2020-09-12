@@ -98,8 +98,9 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
         }
     */
 
-    float const angle = std::max(dot(n, na),
-                                 0.1f);  // std::cos(std::acos(saturate(dot(n, na))) - 0.5f * cu);
+    float const angle = std::max(dot(n, na), 0.1f);
+
+    // float const angle = std::cos(std::acos(saturate(dot(n, na))) - cu);
 
     return std::max(d * angle * base, 0.0001f);
 }
@@ -551,6 +552,9 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     // weight = (std::abs(power_a - power_b) / total_power) + (a.surface_area() +  b.surface_area())
     // / (aabb_surface_area);
+
+    // why?
+    // weight = ((power_a * 4.f * Pi * a.surface_area()) + (power_b * 4.f * Pi * b.surface_area())) / (aabb_surface_area * 4.f * Pi);
 }
 
 void Tree_builder::serialize(Tree::Node* nodes) {
