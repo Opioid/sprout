@@ -591,7 +591,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     lights_[light].set_extent(extent);
 
-    light_powers_[light] = average(lights_[light].power(aabb(), *this));
+    light_powers_[light] = max_component(lights_[light].power(aabb(), *this));
 
     light_aabbs_[light] = shape->part_aabb(part).transform(transformation.object_to_world());
 

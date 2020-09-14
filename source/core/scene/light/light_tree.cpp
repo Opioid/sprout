@@ -593,7 +593,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
     // / (aabb_surface_area);
 
     // why?
-    // weight = reg * ( ((power_a * 4.f * Pi * a.surface_area()) + (power_b * 4.f * Pi * b.surface_area())) / (aabb_surface_area * 4.f * Pi) );
+    // weight =  ( ((power_a * 4.f * Pi * a.surface_area()) + (power_b * 4.f * Pi * b.surface_area())) / (aabb_surface_area * 4.f * Pi) );
 }
 
 void Tree_builder::serialize(Tree::Node* nodes) {
