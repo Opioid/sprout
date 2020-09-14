@@ -408,6 +408,32 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
     tree.infinite_guard_ = 0 == num_finite_lights ? 1.1f : infinite_weight;
 }
 
+static void sort_lights(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t axis, Scene const& scene) {
+    std::sort(lights + begin, lights + end, [&scene, axis](uint32_t a, uint32_t b) noexcept {
+        float3 const ac = scene.light_aabb(a).position();
+        float3 const bc = scene.light_aabb(b).position();
+
+        return ac[axis] < bc[axis];
+    });
+}
+
+static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t axis,
+                            float total_power, float aabb_surface_area,
+                            Tree_builder::Split_candidate* candidates, Scene const& scene) {
+    sort_lights(lights, begin, end, axis, scene);
+
+    for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
+        candidates[j].init(begin, end, i, total_power, aabb_surface_area, lights, scene);
+    }
+
+    uint32_t const len = end - begin;
+
+    std::sort(candidates, candidates + len - 1,
+              [](Tree_builder::Split_candidate const& a, Tree_builder::Split_candidate const& b) noexcept {
+                  return a.weight < b.weight;
+              });
+}
+
 void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
                          Scene const& scene) {
     uint32_t* const lights = tree.light_mapping_;
@@ -439,7 +465,10 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         node.box   = aabb;
         node.power = total_power;
-    } else {
+
+        return;
+    }
+
         uint32_t const child0 = current_node_;
 
         current_node_ += 2;
@@ -466,121 +495,52 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         float const max_axis = max_component(extent);
 
-     //   uint32_t const axis = index_max_component(bb.extent());
-
         float3 weights;
         uint3 split_nodes;
 
         {
-            std::sort(lights + begin, lights + end, [&scene](uint32_t a, uint32_t b) noexcept {
-                float3 const ac = scene.light_aabb(a).position();
-                float3 const bc = scene.light_aabb(b).position();
-
-                return ac[0] < bc[0];
-            });
+            evaluate_splits(lights, begin, end, 0, total_power, aabb_surface_area, candidates_, scene);
 
             float const reg = max_axis / extent[0];
 
-            for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-                candidates_[j].init(begin, end, i, 0, total_power, aabb_surface_area, reg, lights, scene);
-            }
-
-            std::sort(candidates_, candidates_ + len - 1,
-                      [](Split_candidate const& a, Split_candidate const& b) noexcept {
-                          return a.weight < b.weight;
-                      });
-
-            weights[0] = candidates_[0].weight;
+            weights[0] = reg * candidates_[0].weight;
             split_nodes[0] = candidates_[0].split_node;
         }
 
         {
-            std::sort(lights + begin, lights + end, [&scene](uint32_t a, uint32_t b) noexcept {
-                float3 const ac = scene.light_aabb(a).position();
-                float3 const bc = scene.light_aabb(b).position();
-
-                return ac[1] < bc[1];
-            });
+            evaluate_splits(lights, begin, end, 1, total_power, aabb_surface_area, candidates_, scene);
 
             float const reg = max_axis / extent[1];
 
-            for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-                candidates_[j].init(begin, end, i, 1, total_power, aabb_surface_area, reg, lights, scene);
-            }
-
-            std::sort(candidates_, candidates_ + len - 1,
-                      [](Split_candidate const& a, Split_candidate const& b) noexcept {
-                          return a.weight < b.weight;
-                      });
-
-            weights[1] = candidates_[0].weight;
+            weights[1] = reg * candidates_[0].weight;
             split_nodes[1] = candidates_[0].split_node;
         }
 
         {
-            std::sort(lights + begin, lights + end, [&scene](uint32_t a, uint32_t b) noexcept {
-                float3 const ac = scene.light_aabb(a).position();
-                float3 const bc = scene.light_aabb(b).position();
-
-                return ac[2] < bc[2];
-            });
+            evaluate_splits(lights, begin, end, 2, total_power, aabb_surface_area, candidates_, scene);
 
             float const reg = max_axis / extent[2];
 
-            for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-                candidates_[j].init(begin, end, i, 2, total_power, aabb_surface_area, reg, lights, scene);
-            }
-
-            std::sort(candidates_, candidates_ + len - 1,
-                      [](Split_candidate const& a, Split_candidate const& b) noexcept {
-                          return a.weight < b.weight;
-                      });
-
-            weights[2] = candidates_[0].weight;
+            weights[2] = reg * candidates_[0].weight;
             split_nodes[2] = candidates_[0].split_node;
         }
 
-//        std::sort(candidates_, candidates_ + j,
-//                  [](Split_candidate const& a, Split_candidate const& b) noexcept {
-//                      return a.weight < b.weight;
-//                  });
+        uint32_t const axis = index_min_component(weights);
 
-        /*
-        float const threshold = bb.position()[axis];
+        sort_lights(lights, begin, end, axis, scene);
 
-        uint32_t s = begin + 1;
-        for (; s < end - 1; ++s) {
-            if (scene.light_center(lights[s])[axis] > threshold) {
-                break;
-            }
-        }
-        */
-
-
-
-        uint32_t const axis = index_min_component(weights);// candidates_[0].split_axis;
-
-        std::sort(lights + begin, lights + end, [&scene, axis](uint32_t a, uint32_t b) noexcept {
-            float3 const ac = scene.light_aabb(a).position();
-            float3 const bc = scene.light_aabb(b).position();
-
-            return ac[axis] < bc[axis];
-        });
-
-        uint32_t const split_node = split_nodes[axis];// candidates_[0].split_node;
+        uint32_t const split_node = split_nodes[axis];
 
         split(tree, child0, begin, split_node, scene);
         split(tree, child0 + 1, split_node, end, scene);
-    }
+
 }
 
 Tree_builder::Split_candidate::Split_candidate() = default;
 
-void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, uint32_t axis,
-                                         float total_power, float aabb_surface_area, float reg,
+void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split,
+                                         float total_power, float aabb_surface_area,
                                          uint32_t const* const lights, Scene const& scene) {
-    split_axis = axis;
-
     uint32_t const len_a = split - begin;
     uint32_t const len_b = end - split;
 
@@ -623,7 +583,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
     // b.surface_area()) / (aabb_surface_area);
 
     // c
-    weight = reg * ((a.surface_area() + b.surface_area()) / (aabb_surface_area));
+    weight = ((a.surface_area() + b.surface_area()) / (aabb_surface_area));
 
     // d
     // weight = 0.125f * float(len_a % 2 + len_b % 2) + ((a.surface_area() +  b.surface_area()) /

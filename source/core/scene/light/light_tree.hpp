@@ -107,6 +107,17 @@ class Tree_builder {
 
     void build(Tree& tree, Scene const& scene);
 
+    struct Split_candidate {
+        Split_candidate();
+
+        void init(uint32_t begin, uint32_t end, uint32_t split, float total_power,
+                  float aabb_surface_area, uint32_t const* const lights, Scene const& scene);
+
+        uint32_t split_node;
+
+        float weight;
+    };
+
   private:
     void split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
 
@@ -118,18 +129,7 @@ class Tree_builder {
 
     uint32_t light_order_;
 
-    struct Split_candidate {
-        Split_candidate();
 
-        void init(uint32_t begin, uint32_t end, uint32_t split, uint32_t axis, float total_power,
-                  float aabb_surface_area, float reg, uint32_t const* const lights, Scene const& scene);
-
-        uint32_t split_axis;
-
-        uint32_t split_node;
-
-        float weight;
-    };
 
     Split_candidate* candidates_;
 };
