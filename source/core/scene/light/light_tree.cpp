@@ -75,12 +75,12 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
         return 0.5f * base;
     }
 
-    float const cu = std::asin(std::min(radius / l, 1.f));
+    float const cu = std::asin(std::min(radius / sql, 1.f));
 
     float d = 1.f;
 
     float3 const na = axis / l;
-    /*
+
         if (leaf) {
             float3 const da = cone.xyz();
 
@@ -96,13 +96,12 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
                 d = 0.f;
             }
         }
-    */
 
-    float const angle = std::max(dot(n, na), 0.1f);
+        float const n_dot_a = clamp(dot(n, na), -1.f, 1.f);
 
-    // float const angle = std::cos(std::acos(saturate(dot(n, na))) - cu);
+        float const angle = std::abs(std::cos(std::max(std::acos(n_dot_a) - cu, 0.f)));
 
-    return std::max(d * angle * base, 0.0001f);
+    return std::max(d * angle * base, 0.001f);
 }
 
 float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
@@ -147,9 +146,11 @@ float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphe
         d = 0.f;
     }
 
-    float const angle = std::cos(std::acos(saturate(dot(n, na))) - cu);
+    float const n_dot_a = clamp(dot(n, na), -1.f, 1.f);
 
-    return std::max(d * angle * base, 0.0001f);
+    float const angle = std::abs(std::cos(std::max(std::acos(n_dot_a) - cu, 0.f)));
+
+    return std::max(d * angle * base, 0.001f);
 }
 
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -377,7 +378,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
         delete[] candidates_;
 
         if (num_finite_lights > 2) {
-            candidates_ = new Split_candidate[num_finite_lights - 2];
+            candidates_ = new Split_candidate[num_finite_lights - 1];
         } else {
             candidates_ = nullptr;
         }
@@ -461,23 +462,88 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         float const aabb_surface_area = bb.surface_area();
 
-        uint32_t const axis = index_max_component(bb.extent());
+        float3 const extent = bb.extent();
 
-        std::sort(lights + begin, lights + end, [&scene, axis](uint32_t a, uint32_t b) noexcept {
-            float3 const ac = scene.light_aabb(a).position();
-            float3 const bc = scene.light_aabb(b).position();
+        float const max_axis = max_component(extent);
 
-            return ac[axis] < bc[axis];
-        });
+     //   uint32_t const axis = index_max_component(bb.extent());
 
-        for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-            candidates_[j].init(begin, end, i, total_power, aabb_surface_area, lights, scene);
+        float3 weights;
+        uint3 split_nodes;
+
+        {
+            std::sort(lights + begin, lights + end, [&scene](uint32_t a, uint32_t b) noexcept {
+                float3 const ac = scene.light_aabb(a).position();
+                float3 const bc = scene.light_aabb(b).position();
+
+                return ac[0] < bc[0];
+            });
+
+            float const reg = max_axis / extent[0];
+
+            for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
+                candidates_[j].init(begin, end, i, 0, total_power, aabb_surface_area, reg, lights, scene);
+            }
+
+            std::sort(candidates_, candidates_ + len - 1,
+                      [](Split_candidate const& a, Split_candidate const& b) noexcept {
+                          return a.weight < b.weight;
+                      });
+
+            weights[0] = candidates_[0].weight;
+            split_nodes[0] = candidates_[0].split_node;
         }
 
-        std::sort(candidates_, candidates_ + len - 1,
-                  [](Split_candidate const& a, Split_candidate const& b) noexcept {
-                      return a.weight < b.weight;
-                  });
+        {
+            std::sort(lights + begin, lights + end, [&scene](uint32_t a, uint32_t b) noexcept {
+                float3 const ac = scene.light_aabb(a).position();
+                float3 const bc = scene.light_aabb(b).position();
+
+                return ac[1] < bc[1];
+            });
+
+            float const reg = max_axis / extent[1];
+
+            for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
+                candidates_[j].init(begin, end, i, 1, total_power, aabb_surface_area, reg, lights, scene);
+            }
+
+            std::sort(candidates_, candidates_ + len - 1,
+                      [](Split_candidate const& a, Split_candidate const& b) noexcept {
+                          return a.weight < b.weight;
+                      });
+
+            weights[1] = candidates_[0].weight;
+            split_nodes[1] = candidates_[0].split_node;
+        }
+
+        {
+            std::sort(lights + begin, lights + end, [&scene](uint32_t a, uint32_t b) noexcept {
+                float3 const ac = scene.light_aabb(a).position();
+                float3 const bc = scene.light_aabb(b).position();
+
+                return ac[2] < bc[2];
+            });
+
+            float const reg = max_axis / extent[2];
+
+            for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
+                candidates_[j].init(begin, end, i, 2, total_power, aabb_surface_area, reg, lights, scene);
+            }
+
+            std::sort(candidates_, candidates_ + len - 1,
+                      [](Split_candidate const& a, Split_candidate const& b) noexcept {
+                          return a.weight < b.weight;
+                      });
+
+            weights[2] = candidates_[0].weight;
+            split_nodes[2] = candidates_[0].split_node;
+        }
+
+//        std::sort(candidates_, candidates_ + j,
+//                  [](Split_candidate const& a, Split_candidate const& b) noexcept {
+//                      return a.weight < b.weight;
+//                  });
 
         /*
         float const threshold = bb.position()[axis];
@@ -490,7 +556,18 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
         }
         */
 
-        const uint32_t split_node = candidates_[0].split_node;
+
+
+        uint32_t const axis = index_min_component(weights);// candidates_[0].split_axis;
+
+        std::sort(lights + begin, lights + end, [&scene, axis](uint32_t a, uint32_t b) noexcept {
+            float3 const ac = scene.light_aabb(a).position();
+            float3 const bc = scene.light_aabb(b).position();
+
+            return ac[axis] < bc[axis];
+        });
+
+        uint32_t const split_node = split_nodes[axis];// candidates_[0].split_node;
 
         split(tree, child0, begin, split_node, scene);
         split(tree, child0 + 1, split_node, end, scene);
@@ -499,9 +576,11 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
 Tree_builder::Split_candidate::Split_candidate() = default;
 
-void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split,
-                                         float total_power, float aabb_surface_area,
+void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, uint32_t axis,
+                                         float total_power, float aabb_surface_area, float reg,
                                          uint32_t const* const lights, Scene const& scene) {
+    split_axis = axis;
+
     uint32_t const len_a = split - begin;
     uint32_t const len_b = end - split;
 
@@ -544,7 +623,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
     // b.surface_area()) / (aabb_surface_area);
 
     // c
-    weight = (a.surface_area() + b.surface_area()) / (aabb_surface_area);
+    weight = reg * ((a.surface_area() + b.surface_area()) / (aabb_surface_area));
 
     // d
     // weight = 0.125f * float(len_a % 2 + len_b % 2) + ((a.surface_area() +  b.surface_area()) /
@@ -554,7 +633,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
     // / (aabb_surface_area);
 
     // why?
-    // weight = ((power_a * 4.f * Pi * a.surface_area()) + (power_b * 4.f * Pi * b.surface_area())) / (aabb_surface_area * 4.f * Pi);
+    // weight = reg * ( ((power_a * 4.f * Pi * a.surface_area()) + (power_b * 4.f * Pi * b.surface_area())) / (aabb_surface_area * 4.f * Pi) );
 }
 
 void Tree_builder::serialize(Tree::Node* nodes) {
