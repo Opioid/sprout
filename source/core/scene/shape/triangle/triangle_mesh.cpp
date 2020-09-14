@@ -56,6 +56,10 @@ AABB Mesh::transformed_aabb(float4x4 const& m) const {
     return tree_.aabb().transform(m);
 }
 
+AABB Mesh::transformed_part_aabb(uint32_t part, float4x4 const& m) const {
+    return parts_[part].aabb.transform(m);
+}
+
 uint32_t Mesh::num_parts() const {
     return tree_.num_parts();
 }
@@ -458,10 +462,6 @@ void Mesh::prepare_sampling(uint32_t part) {
 
         p.cone = float4(dominant_axis, angle);
     }
-}
-
-AABB Mesh::part_aabb(uint32_t part) const {
-    return parts_[part].aabb;
 }
 
 float4 Mesh::cone(uint32_t part) const {

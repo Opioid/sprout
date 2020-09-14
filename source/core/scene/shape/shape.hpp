@@ -64,6 +64,8 @@ class Shape {
 
     virtual AABB transformed_aabb(float4x4 const& m) const = 0;
 
+    virtual AABB transformed_part_aabb(uint32_t part, float4x4 const& m) const;// = 0;
+
     virtual uint32_t num_parts() const;
 
     virtual uint32_t num_materials() const;
@@ -154,8 +156,6 @@ class Shape {
     bool is_analytical() const;
 
     virtual void prepare_sampling(uint32_t part);
-
-    virtual AABB part_aabb(uint32_t part) const;
 
     virtual float4 cone(uint32_t part) const;
 

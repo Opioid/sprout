@@ -13,6 +13,10 @@ Shape::Shape(Properties properties) : properties_(properties) {}
 
 Shape::~Shape() = default;
 
+AABB Shape::transformed_part_aabb(uint32_t /*part*/, float4x4 const& m) const {
+    return transformed_aabb(m);
+}
+
 uint32_t Shape::num_parts() const {
     return 1;
 }
@@ -41,10 +45,6 @@ bool Shape::sample_volume(uint32_t /*part*/, float3 const& /*p*/,
 }
 
 void Shape::prepare_sampling(uint32_t /*part*/) {}
-
-AABB Shape::part_aabb(uint32_t /*part*/) const {
-    return AABB(float3(0.f), float3(0.f));
-}
 
 float4 Shape::cone(uint32_t /*part*/) const {
     return float4(0.f, 0.f, 1.f, Pi);

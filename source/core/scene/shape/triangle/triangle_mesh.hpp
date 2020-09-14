@@ -25,6 +25,8 @@ class alignas(64) Mesh final : public Shape {
 
     AABB transformed_aabb(float4x4 const& m) const final;
 
+    AABB transformed_part_aabb(uint32_t part, float4x4 const& m) const final;
+
     uint32_t num_parts() const final;
 
     uint32_t num_materials() const final;
@@ -86,8 +88,6 @@ class alignas(64) Mesh final : public Shape {
     Differential_surface differential_surface(uint32_t primitive) const final;
 
     void prepare_sampling(uint32_t part) final;
-
-    AABB part_aabb(uint32_t part) const final;
 
     float4 cone(uint32_t part) const final;
 

@@ -68,6 +68,8 @@ class Disk final : public Shape {
     float volume(uint32_t part, float3 const& scale) const final;
 
     Differential_surface differential_surface(uint32_t primitive) const final;
+
+    float4 cone(uint32_t part) const final;
 };
 
 }  // namespace scene::shape
