@@ -129,8 +129,6 @@ class Tree_builder {
 
     uint32_t light_order_;
 
-
-
     Split_candidate* candidates_;
 };
 

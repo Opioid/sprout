@@ -449,6 +449,8 @@ void Mesh::prepare_sampling(uint32_t part) {
 
             float const c = dot(dominant_axis, n);
 
+            SOFT_ASSERT(std::isfinite(c));
+
             angle = std::max(angle, std::acos(c));
         }
 
