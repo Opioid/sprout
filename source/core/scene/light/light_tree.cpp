@@ -75,7 +75,10 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
         return 0.5f * base;
     }
 
-    float const cu = std::asin(std::min(radius / sql, 1.f));
+    float const sin_cu = std::min(radius / l, 1.f);
+    float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
+
+    float const cu = std::asin(sin_cu);
 
     float d = 1.f;
 
@@ -97,11 +100,12 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
         }
     }
 
-    float const n_dot_a = clamp(dot(n, na), -1.f, 1.f);
+    float const cos_n = dot(n, na);
+    float const sin_n = std::sqrt(1.f - std::min(cos_n * cos_n, 1.f));
+    float const angle = std::abs(sin_n * sin_cu + cos_cu * cos_n);
+    float const ca = (cos_n > cos_cu) ? 1.f : angle;
 
-    float const angle = std::abs(std::cos(std::max(std::acos(n_dot_a) - cu, 0.f)));
-
-    return std::max(d * angle * base, 0.001f);
+    return std::max(d * ca * base, 0.001f);
 }
 
 float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
@@ -124,7 +128,10 @@ float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphe
 
     float const radius = 0.5f * length(scene.light_aabb(light).extent());
 
-    float const cu = std::asin(std::min(radius / l, 1.f));
+    float const sin_cu = std::min(radius / l, 1.f);
+    float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
+
+    float const cu = std::asin(sin_cu);
 
     float d = 1.f;
 
@@ -146,11 +153,15 @@ float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphe
         d = 0.f;
     }
 
-    float const n_dot_a = clamp(dot(n, na), -1.f, 1.f);
 
-    float const angle = std::abs(std::cos(std::max(std::acos(n_dot_a) - cu, 0.f)));
 
-    return std::max(d * angle * base, 0.001f);
+
+    float const cos_n = dot(n, na);
+    float const sin_n = std::sqrt(1.f - std::min(cos_n * cos_n, 1.f));
+    float const angle = std::abs(sin_n * sin_cu + cos_cu * cos_n);
+    float const ca = (cos_n > cos_cu) ? 1.f : angle;
+
+    return std::max(d * ca * base, 0.001f);
 }
 
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
