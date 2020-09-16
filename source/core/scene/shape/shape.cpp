@@ -47,7 +47,7 @@ bool Shape::sample_volume(uint32_t /*part*/, float3 const& /*p*/,
 void Shape::prepare_sampling(uint32_t /*part*/) {}
 
 float4 Shape::cone(uint32_t /*part*/) const {
-    return float4(0.f, 0.f, 1.f, Pi);
+    return float4(0.f, 0.f, 1.f, -1.f);
 }
 
 Morphable* Shape::morphable_shape() {

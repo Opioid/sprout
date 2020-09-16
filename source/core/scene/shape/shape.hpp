@@ -64,7 +64,7 @@ class Shape {
 
     virtual AABB transformed_aabb(float4x4 const& m) const = 0;
 
-    virtual AABB transformed_part_aabb(uint32_t part, float4x4 const& m) const;// = 0;
+    virtual AABB transformed_part_aabb(uint32_t part, float4x4 const& m) const;
 
     virtual uint32_t num_parts() const;
 

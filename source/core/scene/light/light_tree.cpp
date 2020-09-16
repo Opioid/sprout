@@ -53,6 +53,16 @@ Tree::~Tree() {
     delete[] nodes_;
 }
 
+static inline float clamped_cos_sub(float cos_a, float cos_b, float sin_a, float sin_b) {
+    float const angle = cos_a * cos_b + sin_a * sin_b;
+    return (cos_a > cos_b) ? 1.f : angle;
+}
+
+static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float sin_b) {
+    float const angle = sin_a * cos_b - sin_b * cos_a;
+    return (cos_a > cos_b) ? 0.f : angle;
+}
+
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
     float3 const axis = center.xyz() - p;
 
@@ -78,8 +88,6 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
     float const sin_cu = std::min(radius / l, 1.f);
     float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
 
-    float const cu = std::asin(sin_cu);
-
     float d = 1.f;
 
     float3 const na = axis / l;
@@ -87,25 +95,24 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
     if (leaf) {
         float3 const da = cone.xyz();
 
-        float const cos = -dot(da, na);
+        float const cos_cone = cone[3];
+        float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
 
-        float const a = std::acos(cos);
+        float const cos_a = -dot(da, na);
+        float const sin_a = std::sqrt(1.f - cos_a * cos_a);
 
-        float const cs = std::max(a - cone[3] - cu, 0.f);
+        float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
+        float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
+        float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
 
-        if (cs < Pi / 2) {
-            d = std::cos(cs);
-        } else {
-            d = 0.f;
-        }
+        d = d2;
     }
 
-    float const cos_n = dot(n, na);
-    float const sin_n = std::sqrt(1.f - std::min(cos_n * cos_n, 1.f));
-    float const angle = std::abs(sin_n * sin_cu + cos_cu * cos_n);
-    float const ca = (cos_n > cos_cu) ? 1.f : angle;
+    float const cos_n = std::min(std::abs(dot(n, na)), 1.f);
+    float const sin_n = std::sqrt(1.f - cos_n * cos_n);
+    float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
-    return std::max(d * ca * base, 0.001f);
+    return std::max(d * angle * base, 0.001f);
 }
 
 float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
@@ -131,37 +138,25 @@ float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphe
     float const sin_cu = std::min(radius / l, 1.f);
     float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
 
-    float const cu = std::asin(sin_cu);
-
-    float d = 1.f;
-
-    float3 const na = axis / l;
-
+    float3 const na   = axis / l;
     float4 const cone = scene.light_cone(light);
+    float3 const da   = cone.xyz();
 
-    float3 const da = cone.xyz();
+    float const cos_cone = cone[3];
+    float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
 
-    float const cos = -dot(da, na);
+    float const cos_a = -dot(da, na);
+    float const sin_a = std::sqrt(1.f - cos_a * cos_a);
 
-    float const a = std::acos(cos);
+    float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
 
-    float const cs = std::max(a - cone[3] - cu, 0.f);
+    float const cos_n = std::min(std::abs(dot(n, na)), 1.f);
+    float const sin_n = std::sqrt(1.f - cos_n * cos_n);
+    float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
-    if (cs < Pi / 2) {
-        d = std::cos(cs);
-    } else {
-        d = 0.f;
-    }
-
-
-
-
-    float const cos_n = dot(n, na);
-    float const sin_n = std::sqrt(1.f - std::min(cos_n * cos_n, 1.f));
-    float const angle = std::abs(sin_n * sin_cu + cos_cu * cos_n);
-    float const ca = (cos_n > cos_cu) ? 1.f : angle;
-
-    return std::max(d * ca * base, 0.001f);
+    return std::max(d2 * angle * base, 0.001f);
 }
 
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,

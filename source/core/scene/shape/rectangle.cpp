@@ -365,7 +365,7 @@ Shape::Differential_surface Rectangle::differential_surface(uint32_t /*primitive
 }
 
 float4 Rectangle::cone(uint32_t /*part*/) const {
-    return float4(0.f, 0.f, 1.f, 0.f);
+    return float4(0.f, 0.f, 1.f, 1.f);
 }
 
 }  // namespace scene::shape

@@ -460,7 +460,7 @@ void Mesh::prepare_sampling(uint32_t part) {
 
         p.aabb = bb;
 
-        p.cone = float4(dominant_axis, angle);
+        p.cone = float4(dominant_axis, std::cos(angle));
     }
 }
 
