@@ -23,7 +23,6 @@ struct Build_node {
     float power;
 
     uint32_t middle;
-
     uint32_t children_or_light;
     uint32_t num_lights;
 };
@@ -49,15 +48,12 @@ class Tree {
                   uint32_t const* const light_mapping, Scene const& scene) const;
 
         float4 center;
-
         float4 cone;
 
         float power;
 
         uint32_t middle;
-
         uint32_t children_or_light;
-
         uint32_t num_lights;
     };
 
@@ -77,7 +73,6 @@ class Tree {
     float infinite_guard_;
 
     uint32_t infinite_end_;
-
     uint32_t num_lights_;
     uint32_t num_infinite_lights_;
     uint32_t num_nodes_;
