@@ -12,6 +12,37 @@
 
 namespace scene::light {
 
+static float4 cone_union(float4 a, float4 b) {
+    float a_angle = std::acos(a[3]);
+    float b_angle = std::acos(b[3]);
+
+    if (b_angle > a_angle) {
+        std::swap(a, b);
+        std::swap(a_angle, b_angle);
+    }
+
+    float const d_angle = std::acos(dot(a.xyz(), b.xyz()));
+
+    if (std::min(d_angle + b_angle, Pi) <= a_angle) {
+        return a;
+    }
+
+    float const o_angle = (a_angle + d_angle + b_angle) / 2.f;
+
+    if (Pi <= o_angle) {
+        float4(a.xyz(), -1.f);
+    }
+
+    float const r_angle = o_angle - a_angle;
+
+    float3x3 rot;
+    set_rotation(rot, cross(a.xyz(), b.xyz()), r_angle);
+
+    float3 const axis = transform_vector(rot, a.xyz());
+
+    return float4(axis, std::cos(o_angle));
+}
+
 void Build_node::gather(Build_node* nodes) {
     if (middle > 0) {
         uint32_t const children = children_or_light;
@@ -22,16 +53,11 @@ void Build_node::gather(Build_node* nodes) {
         c0.gather(nodes);
         c1.gather(nodes);
 
-        box = c0.box.merge(c1.box);
-
-        float const total_power = c0.power + c1.power;
-
-        power = total_power;
-
+        bounds = c0.bounds.merge(c1.bounds);
+        cone   = cone_union(c0.cone, c1.cone);
+        power  = c0.power + c1.power;
         middle = c0.end;
-
-        end = c1.end;
-
+        end    = c1.end;
     } else {
         end = children_or_light + num_lights;
     }
@@ -63,6 +89,54 @@ static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float
     return (cos_a > cos_b) ? 0.f : angle;
 }
 
+static inline float importance(float l, float radius, float3 const& n, float3 const& axis,
+                               float4 const& cone, float base) {
+    float const sin_cu = std::min(radius / l, 1.f);
+    float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
+
+    float3 const na = axis / l;
+    float3 const da = cone.xyz();
+
+    float const cos_cone = cone[3];
+    float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
+
+    float const cos_a = -dot(da, na);
+    float const sin_a = std::sqrt(1.f - cos_a * cos_a);
+
+    float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
+
+    float const cos_n = std::min(std::abs(dot(n, na)), 1.f);
+    float const sin_n = std::sqrt(1.f - cos_n * cos_n);
+    float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
+
+    return std::max(d2 * angle * base, 0.001f);
+}
+
+static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
+                          Scene const& scene) {
+    float3 const center = scene.light_aabb(light).position();
+
+    float3 const axis = center - p;
+
+    float sql = std::max(squared_length(axis), 0.0001f);
+
+    float const power = scene.light_power(light);
+
+    float const base = power / sql;
+
+    if (total_sphere) {
+        return 0.5f * base;
+    }
+
+    float const l = std::sqrt(sql);
+
+    float const radius = 0.5f * length(scene.light_aabb(light).extent());
+
+    return importance(l, radius, n, axis, scene.light_cone(light), base);
+}
+
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
     float3 const axis = center.xyz() - p;
 
@@ -85,78 +159,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
         return 0.5f * base;
     }
 
-    float const sin_cu = std::min(radius / l, 1.f);
-    float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
-
-    float d = 1.f;
-
-    float3 const na = axis / l;
-
-    if (leaf) {
-        float3 const da = cone.xyz();
-
-        float const cos_cone = cone[3];
-        float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
-
-        float const cos_a = -dot(da, na);
-        float const sin_a = std::sqrt(1.f - cos_a * cos_a);
-
-        float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
-        float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
-        float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
-
-        d = d2;
-    }
-
-    float const cos_n = std::min(std::abs(dot(n, na)), 1.f);
-    float const sin_n = std::sqrt(1.f - cos_n * cos_n);
-    float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
-
-    return std::max(d * angle * base, 0.001f);
-}
-
-float Tree::Node::light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
-                               Scene const& scene) {
-    float3 const center = scene.light_aabb(light).position();
-
-    float3 const axis = center - p;
-
-    float sql = std::max(squared_length(axis), 0.0001f);
-
-    float const l = std::sqrt(sql);
-
-    float const power = scene.light_power(light);
-
-    float const base = power / sql;
-
-    if (total_sphere) {
-        return 0.5f * base;
-    }
-
-    float const radius = 0.5f * length(scene.light_aabb(light).extent());
-
-    float const sin_cu = std::min(radius / l, 1.f);
-    float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
-
-    float3 const na   = axis / l;
-    float4 const cone = scene.light_cone(light);
-    float3 const da   = cone.xyz();
-
-    float const cos_cone = cone[3];
-    float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
-
-    float const cos_a = -dot(da, na);
-    float const sin_a = std::sqrt(1.f - cos_a * cos_a);
-
-    float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
-    float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
-    float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
-
-    float const cos_n = std::min(std::abs(dot(n, na)), 1.f);
-    float const sin_n = std::sqrt(1.f - cos_n * cos_n);
-    float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
-
-    return std::max(d2 * angle * base, 0.001f);
+    return importance(l, radius, n, axis, cone, base);
 }
 
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -455,22 +458,29 @@ void Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t 
 
         float total_power = 0.f;
 
-        AABB aabb(AABB::empty());
+        AABB bounds(AABB::empty());
+
+        float4 cone;
 
         for (uint32_t i = begin; i < end; ++i) {
             uint32_t const l = lights[i];
 
-            node.cone = scene.light_cone(l);
+            if (i == begin) {
+                cone = scene.light_cone(l);
+            } else {
+                cone = cone_union(cone, scene.light_cone(l));
+            }
 
             total_power += scene.light_power(l);
 
             tree.light_orders_[l] = light_order_++;
 
-            aabb.merge_assign(scene.light_aabb(l));
+            bounds.merge_assign(scene.light_aabb(l));
         }
 
-        node.box   = aabb;
-        node.power = total_power;
+        node.bounds = bounds;
+        node.cone   = cone;
+        node.power  = total_power;
 
         return;
     }
@@ -610,10 +620,10 @@ void Tree_builder::serialize(Tree::Node* nodes) {
 
         Tree::Node& dest = nodes[i];
 
-        dest.center            = float4(source.box.position(), 0.5f * length(source.box.extent()));
-        dest.cone              = source.cone;
-        dest.power             = source.power;
-        dest.middle            = source.middle;
+        dest.center = float4(source.bounds.position(), 0.5f * length(source.bounds.extent()));
+        dest.cone   = source.cone;
+        dest.power  = source.power;
+        dest.middle = source.middle;
         dest.children_or_light = source.children_or_light;
         dest.num_lights        = source.num_lights;
     }

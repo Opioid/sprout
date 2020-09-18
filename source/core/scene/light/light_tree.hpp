@@ -18,7 +18,7 @@ class Light;
 struct Build_node {
     void gather(Build_node* nodes);
 
-    AABB box;
+    AABB bounds;
 
     float4 cone;
 
@@ -45,9 +45,6 @@ class Tree {
 
     struct Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
-
-        static float light_weight(float3 const& p, float3 const& n, bool total_sphere,
-                                  uint32_t light, Scene const& scene);
 
         Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                             uint32_t const* const light_mapping, Scene const& scene) const;
