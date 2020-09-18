@@ -16,8 +16,6 @@ namespace light {
 class Light;
 
 struct Build_node {
-    void gather(Build_node* nodes);
-
     AABB bounds;
 
     float4 cone;
@@ -25,10 +23,8 @@ struct Build_node {
     float power;
 
     uint32_t middle;
-    uint32_t end;
 
     uint32_t children_or_light;
-
     uint32_t num_lights;
 };
 
@@ -107,8 +103,8 @@ class Tree_builder {
     struct Split_candidate {
         Split_candidate();
 
-        void init(uint32_t begin, uint32_t end, uint32_t split, float total_power,
-                  float aabb_surface_area, uint32_t const* const lights, Scene const& scene);
+        void init(uint32_t begin, uint32_t end, uint32_t split, float surface_area,
+                  float cone_weight, uint32_t const* const lights, Scene const& scene);
 
         uint32_t split_node;
 
@@ -116,7 +112,7 @@ class Tree_builder {
     };
 
   private:
-    void split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
+    uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
 
     void serialize(Tree::Node* nodes);
 
