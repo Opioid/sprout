@@ -13,16 +13,16 @@
 namespace scene::light {
 
 static float4 cone_union(float4 a, float4 b) {
+    if (float4(1.f) == a) {
+        return b;
+    }
+
     float a_angle = std::acos(a[3]);
     float b_angle = std::acos(b[3]);
 
     if (b_angle > a_angle) {
         std::swap(a, b);
         std::swap(a_angle, b_angle);
-    }
-
-    if (float4(1.f) == b) {
-        return a;
     }
 
     float const d_angle = std::acos(dot(a.xyz(), b.xyz()));
@@ -367,7 +367,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
 
         delete[] candidates_;
 
-        if (num_finite_lights > 2) {
+        if (num_finite_lights >= 2) {
             candidates_ = new Split_candidate[num_finite_lights - 1];
         } else {
             candidates_ = nullptr;
