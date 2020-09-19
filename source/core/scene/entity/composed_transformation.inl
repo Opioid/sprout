@@ -81,6 +81,10 @@ inline float3 Composed_transformation::object_to_world_vector(float3 const& v) c
                       (v[0] * a[2] + v[1] * b[2] + v[2] * c[2]));
 }
 
+inline float3 Composed_transformation::object_to_world_normal(float3 const& v) const {
+    return transform_vector(rotation, v);
+}
+
 }  // namespace scene::entity
 
 #endif

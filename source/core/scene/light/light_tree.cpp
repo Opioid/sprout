@@ -42,7 +42,7 @@ static float4 cone_union(float4 a, float4 b) {
     float3x3 rot;
     set_rotation(rot, cross(a.xyz(), b.xyz()), r_angle);
 
-    float3 const axis = transform_vector(rot, a.xyz());
+    float3 const axis = normalize(transform_vector(rot, a.xyz()));
 
     return float4(axis, std::cos(o_angle));
 }
