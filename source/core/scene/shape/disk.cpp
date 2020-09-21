@@ -29,7 +29,7 @@ float3 Disk::object_to_texture_vector(float3 const& v) const {
 }
 
 AABB Disk::transformed_aabb(float4x4 const& m) const {
-    return AABB(float3(-1.f, -1.f, -0.1f), float3(1.f, 1.f, 0.1f)).transform(m);
+    return AABB(float3(-1.f, -1.f, -0.01f), float3(1.f, 1.f, 0.01f)).transform(m);
 }
 
 bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
@@ -42,25 +42,27 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 k = p - transformation.position;
-        float  l = dot(k, k);
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - transformation.position;
+        float const  l = dot(k, k);
 
-        float radius = transformation.scale_x();
+        float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             intersection.p     = p;
             intersection.geo_n = normal;
-            float3 t           = -transformation.rotation.r[0];
-            float3 b           = -transformation.rotation.r[1];
-            intersection.t     = t;
-            intersection.b     = b;
-            intersection.n     = normal;
 
-            float3 sk          = k / radius;
-            float  uv_scale    = 0.5f * transformation.scale_z();
-            intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
-            intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
+            float3 const t = -transformation.rotation.r[0];
+            float3 const b = -transformation.rotation.r[1];
+
+            intersection.t = t;
+            intersection.b = b;
+            intersection.n = normal;
+
+            float3 const sk       = k / radius;
+            float const  uv_scale = 0.5f * transformation.scale_z();
+            intersection.uv[0]    = (dot(t, sk) + 1.f) * uv_scale;
+            intersection.uv[1]    = (dot(b, sk) + 1.f) * uv_scale;
 
             intersection.part = 0;
 
@@ -78,29 +80,29 @@ bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
                          Intersection& intersection) const {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(normal, transformation.position);
+    float const denom = -dot(normal, ray.direction);
+    float const numer = dot(normal, ray.origin) - d;
+    float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 k = p - transformation.position;
-        float  l = dot(k, k);
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - transformation.position;
+        float const  l = dot(k, k);
 
-        float radius = transformation.scale_x();
+        float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             intersection.p     = p;
             intersection.geo_n = normal;
 
-            float3 t = -transformation.rotation.r[0];
-            float3 b = -transformation.rotation.r[1];
+            float3 const t = -transformation.rotation.r[0];
+            float3 const b = -transformation.rotation.r[1];
 
-            float3 sk          = k / radius;
-            float  uv_scale    = 0.5f * transformation.scale_z();
-            intersection.uv[0] = (dot(t, sk) + 1.f) * uv_scale;
-            intersection.uv[1] = (dot(b, sk) + 1.f) * uv_scale;
+            float3 const sk       = k / radius;
+            float const  uv_scale = 0.5f * transformation.scale_z();
+            intersection.uv[0]    = (dot(t, sk) + 1.f) * uv_scale;
+            intersection.uv[1]    = (dot(b, sk) + 1.f) * uv_scale;
 
             intersection.part = 0;
 
@@ -118,17 +120,17 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
                      Normals& normals) const {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(normal, transformation.position);
+    float const denom = -dot(normal, ray.direction);
+    float const numer = dot(normal, ray.origin) - d;
+    float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 k = p - transformation.position;
-        float  l = dot(k, k);
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - transformation.position;
+        float const  l = dot(k, k);
 
-        float radius = transformation.scale_x();
+        float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             ray.max_t() = hit_t;
@@ -147,17 +149,17 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
                        Node_stack& /*node_stack*/) const {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(normal, transformation.position);
+    float const denom = -dot(normal, ray.direction);
+    float const numer = dot(normal, ray.origin) - d;
+    float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 k = p - transformation.position;
-        float  l = dot(k, k);
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - transformation.position;
+        float const  l = dot(k, k);
 
-        float radius = transformation.scale_x();
+        float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
             return true;
@@ -171,23 +173,24 @@ float Disk::visibility(Ray const& ray, Transformation const& transformation, uin
                        Filter filter, Worker& worker) const {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(normal, transformation.position);
+    float const denom = -dot(normal, ray.direction);
+    float const numer = dot(normal, ray.origin) - d;
+    float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 k = p - transformation.position;
-        float  l = dot(k, k);
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - transformation.position;
+        float const  l = dot(k, k);
 
-        float radius = transformation.scale_x();
+        float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
-            float3 sk       = k / radius;
-            float  uv_scale = 0.5f * transformation.scale_z();
-            float2 uv((-dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
-                      (-dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
+            float3 const sk       = k / radius;
+            float const  uv_scale = 0.5f * transformation.scale_z();
+
+            float2 const uv((-dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
+                            (-dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
             return 1.f -
                    worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
@@ -201,23 +204,24 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& transformation,
                            Filter filter, Worker& worker, float3& ta) const {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(normal, transformation.position);
+    float const denom = -dot(normal, ray.direction);
+    float const numer = dot(normal, ray.origin) - d;
+    float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 k = p - transformation.position;
-        float  l = dot(k, k);
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - transformation.position;
+        float const  l = dot(k, k);
 
-        float radius = transformation.scale_x();
+        float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
-            float3 sk       = k / radius;
-            float  uv_scale = 0.5f * transformation.scale_z();
-            float2 uv((dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
-                      (dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
+            float3 const sk       = k / radius;
+            float const  uv_scale = 0.5f * transformation.scale_z();
+
+            float2 const uv((dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
+                            (dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
             ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
                                                                           ray.time, filter, worker);
@@ -296,7 +300,7 @@ float Disk::pdf(Ray const&            ray, Intersection const& /*intersection*/,
         c = std::abs(c);
     }
 
-    float sl = ray.max_t() * ray.max_t();
+    float const sl = ray.max_t() * ray.max_t();
     return sl / (c * area);
 }
 
