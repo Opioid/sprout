@@ -592,11 +592,13 @@ bool Scene::prop_is_instance(Shape_ptr shape, Material_ptr const* materials,
 
     uint32_t const p = prop_parts_[props_.size() - 2];
     for (uint32_t i = 0; i < num_parts; ++i) {
-        if (materials[shape.ptr->part_id_to_material_id(i)].id != materials_[p + i]) {
+        auto const m = materials[shape.ptr->part_id_to_material_id(i)];
+
+        if (m.id != materials_[p + i]) {
             return false;
         }
 
-        if (light_ids_[p + i] != light::Null) {
+        if (m.ptr->is_emissive()) {
             return false;
         }
     }

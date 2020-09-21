@@ -95,7 +95,7 @@ static inline float importance(float l, float radius, float3 const& n, float3 co
     float const sin_n = std::sqrt(1.f - cos_n * cos_n);
     float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
-    return std::max(d2 * angle * base, 0.001f);
+    return std::max(d2 * angle * base, 0.01f);
 }
 
 static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
@@ -600,9 +600,8 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
     weight = ((cone_weight_a * a.surface_area()) + (cone_weight_b * b.surface_area())) /
              (surface_area * cone_weight);
 
-    //   weight =  ( ((power_a * cone_importance(cone_a[3]) * a.surface_area()) + (power_b *
-    //   cone_importance(cone_b[3]) *
-    //               b.surface_area())) / (aabb_surface_area * cone_weight) );
+    //       weight =  (((power_a * cone_weight_a * a.surface_area()) + (power_b * cone_weight_b *
+    //       b.surface_area())) / (surface_area * cone_weight));
 }
 
 void Tree_builder::serialize(Tree::Node* nodes) {
