@@ -4,6 +4,7 @@
 #include "distribution_1d.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 #include "debug/assert.hpp"
 
@@ -141,9 +142,11 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, uint32_t l
         cdf_      = new float[cdf_size];
     }
 
+    float const ii = 1.f / integral;
+
     cdf_[0] = 0.f;
     for (uint32_t i = 1; i < len; ++i) {
-        cdf_[i] = cdf_[i - 1] + data[i - 1] / integral;
+        cdf_[i] = std::fma(data[i - 1], ii, cdf_[i - 1]);
     }
     cdf_[len] = 1.f;
     // This takes care of corner case: pdf(1)
@@ -205,11 +208,13 @@ Distribution_1D::Discrete distribution_sample_discrete(float data[N], uint32_t n
         integral += data[i];
     }
 
+    float const ii = 1.f / integral;
+
     float cdf[N + 1];
 
     cdf[0] = 0.f;
     for (uint32_t i = 1; i < N; ++i) {
-        cdf[i] = cdf[i - 1] + data[i - 1] / integral;
+        cdf[i] = std::fma(data[i - 1], ii, cdf[i - 1]);
     }
     cdf[N] = 1.f;
 
@@ -229,11 +234,13 @@ float distribution_pdf(float data[N], uint32_t index) {
         integral += data[i];
     }
 
+    float const ii = 1.f / integral;
+
     float cdf[N + 1];
 
     cdf[0] = 0.f;
     for (uint32_t i = 1; i < N; ++i) {
-        cdf[i] = cdf[i - 1] + data[i - 1] / integral;
+        cdf[i] = std::fma(data[i - 1], ii, cdf[i - 1]);
     }
     cdf[N] = 1.f;
 

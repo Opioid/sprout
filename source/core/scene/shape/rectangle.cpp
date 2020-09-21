@@ -33,25 +33,25 @@ bool Rectangle::intersect(Ray& ray, Transformation const&           transformati
                           Node_stack& /*node_stack*/, Intersection& intersection) const {
     float3 const& normal = transformation.rotation.r[2];
 
-    float d     = dot(normal, transformation.position);
-    float denom = -dot(normal, ray.direction);
-    float numer = dot(normal, ray.origin) - d;
-    float hit_t = numer / denom;
+    float const d     = dot(normal, transformation.position);
+    float const denom = -dot(normal, ray.direction);
+    float const numer = dot(normal, ray.origin) - d;
+    float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 k = p - transformation.position;
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - transformation.position;
 
-        float3 t = -transformation.rotation.r[0];
+        float3 const t = -transformation.rotation.r[0];
 
-        float u = dot(t, k / transformation.scale_x());
+        float const u = dot(t, k / transformation.scale_x());
         if (u > 1.f || u < -1.f) {
             return false;
         }
 
-        float3 b = -transformation.rotation.r[1];
+        float3 const b = -transformation.rotation.r[1];
 
-        float v = dot(b, k / transformation.scale_y());
+        float const v = dot(b, k / transformation.scale_y());
         if (v > 1.f || v < -1.f) {
             return false;
         }

@@ -46,9 +46,9 @@ static inline float3 offset_ray(float3 const& p, float3 const& n) {
                      int_as_float(float_as_int(p[1]) + ((p[1] < 0.f) ? -of_i[1] : of_i[1])),
                      int_as_float(float_as_int(p[2]) + ((p[2] < 0.f) ? -of_i[2] : of_i[2])));
 
-    return float3(std::abs(p[0]) < Origin ? p[0] + Float_scale * n[0] : p_i[0],
-                  std::abs(p[1]) < Origin ? p[1] + Float_scale * n[1] : p_i[1],
-                  std::abs(p[2]) < Origin ? p[2] + Float_scale * n[2] : p_i[2]);
+    return float3(std::abs(p[0]) < Origin ? std::fma(Float_scale, n[0], p[0]) : p_i[0],
+                  std::abs(p[1]) < Origin ? std::fma(Float_scale, n[1], p[1]) : p_i[1],
+                  std::abs(p[2]) < Origin ? std::fma(Float_scale, n[2], p[2]) : p_i[2]);
 }
 
 static inline float offset_f(float t) {
