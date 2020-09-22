@@ -349,8 +349,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     float const radius        = transformation.scale_x();
     float const sin_theta_max = radius / axis_length;
-    float const cos_theta_max = std::sqrt(
-        std::max(0.f, (1.f - sin_theta_max) * (1.f + sin_theta_max)));
+    float const cos_theta_max = std::sqrt(std::max(0.f, 1.f - sin_theta_max * sin_theta_max));
 
     float3 const z = v / axis_length;
 
@@ -405,9 +404,9 @@ float Sphere::pdf(Ray const&            ray, Intersection const& /*intersection*
 
     float const axis_length = length(axis);
 
-    float const radius         = transformation.scale_x();
-    float const sin_theta_max2 = pow2(radius / axis_length);
-    float const cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+    float const radius        = transformation.scale_x();
+    float const sin_theta_max = radius / axis_length;
+    float const cos_theta_max = std::sqrt(std::max(0.f, 1.f - sin_theta_max * sin_theta_max));
 
     return cone_pdf_uniform(cos_theta_max);
 }
