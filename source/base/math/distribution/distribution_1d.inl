@@ -198,7 +198,7 @@ static inline uint32_t mini_search(float const* buffer, uint32_t end, float key)
         }
     }
 
-    return i;
+    return end;
 }
 
 template <uint32_t N>

@@ -130,8 +130,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
     float const radius = center[3];
 
     if (bool const leaf = 1 == num_lights; !leaf) {
-        float const hr = 0.5f * radius;
-        sql            = std::max(hr * hr, sql);
+        sql = std::max(0.5f * radius, sql);
     }
 
     float const base = power / sql;
