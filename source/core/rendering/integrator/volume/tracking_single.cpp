@@ -229,7 +229,14 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             if (Tracking::CM data; tree.intersect(local_ray, data)) {
                 if (float t;
                     Tracking::tracking(local_ray, data, material, 1.f, filter, worker, t, w)) {
-                    li = w * direct_light(ray, ray.point(t), intersection, worker);
+
+                    float3 const p = ray.point(t);
+
+                    float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+
+                    auto const light = worker.scene().random_light(p, float3(0.f), true, select);
+
+                    li = w * direct_light(light.ref, light.pdf, ray, p, intersection, worker);
                     tr = float3(0.f);
                     return Event::Pass;
                 }
@@ -258,7 +265,11 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const p = ray.point(ray.min_t() + t);
 
-        float3 const l = direct_light(ray, p, intersection, worker);
+        float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+
+        auto const light = worker.scene().random_light(p, float3(0.f), true, select);
+
+        float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
 
         li = l * (1.f - tr) * scattering_albedo;
     } else if (false) {
@@ -390,13 +401,6 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
     }
 
     return Event::Pass;
-}
-
-float3 Tracking_single::direct_light(Ray const& ray, float3 const& position,
-                                     Intersection const& intersection, Worker& worker) {
-    auto const light = worker.scene().random_light(worker.rng().random_float());
-
-    return direct_light(light.ref, light.pdf, ray, position, intersection, worker);
 }
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
