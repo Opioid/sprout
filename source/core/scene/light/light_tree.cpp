@@ -74,7 +74,7 @@ static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float
 }
 
 static inline float importance(float l, float radius, float3 const& n, float3 const& axis,
-                               float4 const& cone, float base) {
+                               float4 const& cone, float base, bool total_sphere) {
     float const sin_cu = std::min(radius / l, 1.f);
     float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
 
@@ -91,11 +91,15 @@ static inline float importance(float l, float radius, float3 const& n, float3 co
     float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
 
+    if (total_sphere) {
+        return std::max(d2 * base, 0.001f);
+    }
+
     float const cos_n = std::min(std::abs(dot(n, na)), 1.f);
     float const sin_n = std::sqrt(1.f - cos_n * cos_n);
     float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
-    return std::max(d2 * angle * base, 0.01f);
+    return std::max(d2 * angle * base, 0.001f);
 }
 
 static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
@@ -110,15 +114,11 @@ static float light_weight(float3 const& p, float3 const& n, bool total_sphere, u
 
     float const base = power / sql;
 
-    if (total_sphere) {
-        return 0.5f * base;
-    }
-
     float const l = std::sqrt(sql);
 
     float const radius = 0.5f * length(scene.light_aabb(light).extent());
 
-    return importance(l, radius, n, axis, scene.light_cone(light), base);
+    return importance(l, radius, n, axis, scene.light_cone(light), base, total_sphere);
 }
 
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
@@ -135,11 +135,7 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
 
     float const base = power / sql;
 
-    if (total_sphere) {
-        return 0.5f * base;
-    }
-
-    return importance(l, radius, n, axis, cone, base);
+    return importance(l, radius, n, axis, cone, base, total_sphere);
 }
 
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
