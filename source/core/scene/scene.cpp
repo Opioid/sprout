@@ -167,6 +167,12 @@ Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sp
     return {lights_[l.id], l.id, l.pdf};
 }
 
+Scene::Light Scene::random_light(float3 const& p0, float3 const& p1, float random) const {
+    auto const l = light_tree_.random_light(p0, p1, random, *this);
+
+    return {lights_[l.id], l.id, l.pdf};
+}
+
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;

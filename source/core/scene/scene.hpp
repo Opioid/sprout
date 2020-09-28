@@ -137,6 +137,8 @@ class Scene {
 
     Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
 
+    Light random_light(float3 const& p0, float3 const& p1, float random) const;
+
     void simulate(uint64_t start, uint64_t end, thread::Pool& threads);
 
     void compile(uint64_t time, thread::Pool& threads);

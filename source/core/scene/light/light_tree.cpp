@@ -121,6 +121,23 @@ static float light_weight(float3 const& p, float3 const& n, bool total_sphere, u
     return importance(l, radius, n, axis, scene.light_cone(light), base, total_sphere);
 }
 
+static float light_weight(float3 const& p0, float3 const& p1, uint32_t light, Scene const& scene) {
+    float3 const direction = normalize(p0 - p1);
+
+    float3 const position = scene.light_aabb(light).position();
+
+    float const delta = dot(position - p0, direction);
+
+    float3 const closest_point = p0 + delta * direction;
+
+    float const d_min = distance(closest_point, position);
+
+    float const power = scene.light_power(light);
+
+    return power / d_min;
+}
+
+
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
     float3 const axis = center.xyz() - p;
 
@@ -138,6 +155,20 @@ float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) co
     return importance(l, radius, n, axis, cone, base, total_sphere);
 }
 
+float Tree::Node::weight(float3 const& p0, float3 const& p1) const {
+    float3 const direction = normalize(p0 - p1);
+
+    float3 const position = center.xyz();
+
+    float const delta = dot(position - p0, direction);
+
+    float3 const closest_point = p0 + delta * direction;
+
+    float const d_min = distance(closest_point, position);
+
+    return power / d_min;
+}
+
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
                                       float random, uint32_t const* const light_mapping,
                                       Scene const& scene) const {
@@ -149,6 +180,24 @@ Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool tot
 
     for (uint32_t i = 0, len = num_lights; i < len; ++i) {
         weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], scene);
+    }
+
+    auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
+
+    return {children_or_light + l.offset, l.pdf};
+}
+
+Tree::Result Tree::Node::random_light(float3 const& p0, float3 const& p1,
+                                      float random, uint32_t const* const light_mapping,
+                                      Scene const& scene) const {
+    if (1 == num_lights) {
+        return {children_or_light, 1.f};
+    }
+
+    float weights[4] = {0.f, 0.f, 0.f, 0.f};
+
+    for (uint32_t i = 0, len = num_lights; i < len; ++i) {
+        weights[i] = light_weight(p0, p1, light_mapping[children_or_light + i], scene);
     }
 
     auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
@@ -221,6 +270,60 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
 
             Result const result = node.random_light(p, n, total_sphere, random, light_mapping_,
                                                     scene);
+
+            return {light_mapping_[result.id], result.pdf * pdf};
+        }
+    }
+}
+
+Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene) const {
+    float const ip = infinite_weight_;
+
+    if (random < infinite_guard_) {
+        auto const l = infinite_light_distribution_.sample_discrete(random);
+
+        float const pdf = l.pdf * ip;
+
+        SOFT_ASSERT(pdf > 0.f);
+
+        return {l.offset, pdf};
+    }
+
+    float pdf = 1.f - ip;
+
+    random = (random - ip) / pdf;
+
+    for (uint32_t nid = 0;;) {
+        Node const& node = nodes_[nid];
+
+        if (node.middle > 0) {
+            uint32_t const c0 = node.children_or_light;
+            uint32_t const c1 = c0 + 1;
+
+            float pr0 = nodes_[c0].weight(p0, p1);
+            float pr1 = nodes_[c1].weight(p0, p1);
+
+            float const prt = pr0 + pr1;
+
+            SOFT_ASSERT(prt > 0.f);
+
+            pr0 /= prt;
+            pr1 /= prt;
+
+            if (random < pr0) {
+                nid = c0;
+                pdf *= pr0;
+                random /= pr0;
+            } else {
+                nid = c1;
+                pdf *= pr1;
+                random = (random - pr0) / pr1;
+            }
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
+
+            Result const result = node.random_light(p0, p1, random, light_mapping_, scene);
 
             return {light_mapping_[result.id], result.pdf * pdf};
         }
