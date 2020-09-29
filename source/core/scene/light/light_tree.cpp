@@ -73,8 +73,10 @@ static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float
     return (cos_a > cos_b) ? 0.f : angle;
 }
 
-static inline float importance(float l, float radius, float3 const& n, float3 const& axis,
-                               float4 const& cone, float base, bool total_sphere) {
+static inline float importance(float3 const& n, float3 const& axis, float4 const& cone,
+                               float radius, float power, bool total_sphere) {
+    float const l = std::max(length(axis), 0.0001f);
+
     float const sin_cu = std::min(radius / l, 1.f);
     float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
 
@@ -91,6 +93,9 @@ static inline float importance(float l, float radius, float3 const& n, float3 co
     float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
 
+    float const d_min = std::max(0.5f * radius, l);
+    float const base  = power / (d_min * d_min);
+
     if (total_sphere) {
         return std::max(d2 * base, 0.001f);
     }
@@ -105,20 +110,12 @@ static inline float importance(float l, float radius, float3 const& n, float3 co
 static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
                           Scene const& scene) {
     float3 const center = scene.light_aabb(light).position();
+    float3 const axis   = center - p;
 
-    float3 const axis = center - p;
-
-    float sql = std::max(squared_length(axis), 0.0001f);
-
+    float const r     = 0.5f * length(scene.light_aabb(light).extent());
     float const power = scene.light_power(light);
 
-    float const base = power / sql;
-
-    float const l = std::sqrt(sql);
-
-    float const radius = 0.5f * length(scene.light_aabb(light).extent());
-
-    return importance(l, radius, n, axis, scene.light_cone(light), base, total_sphere);
+    return importance(n, axis, scene.light_cone(light), r, power, total_sphere);
 }
 
 static float light_weight(float3 const& p0, float3 const& p1, uint32_t light, Scene const& scene) {
@@ -137,22 +134,12 @@ static float light_weight(float3 const& p0, float3 const& p1, uint32_t light, Sc
     return power / d_min;
 }
 
-
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
     float3 const axis = center.xyz() - p;
 
-    float sql = std::max(squared_length(axis), 0.0001f);
+    float const r = center[3];
 
-    float const l      = std::sqrt(sql);
-    float const radius = center[3];
-
-    if (bool const leaf = 1 == num_lights; !leaf) {
-        sql = std::max(0.5f * radius, sql);
-    }
-
-    float const base = power / sql;
-
-    return importance(l, radius, n, axis, cone, base, total_sphere);
+    return importance(n, axis, cone, r, power, total_sphere);
 }
 
 float Tree::Node::weight(float3 const& p0, float3 const& p1) const {
@@ -187,9 +174,9 @@ Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool tot
     return {children_or_light + l.offset, l.pdf};
 }
 
-Tree::Result Tree::Node::random_light(float3 const& p0, float3 const& p1,
-                                      float random, uint32_t const* const light_mapping,
-                                      Scene const& scene) const {
+Tree::Result Tree::Node::random_light(float3 const& p0, float3 const& p1, float random,
+                                      uint32_t const* const light_mapping,
+                                      Scene const&          scene) const {
     if (1 == num_lights) {
         return {children_or_light, 1.f};
     }
@@ -276,7 +263,8 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
     }
 }
 
-Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene) const {
+Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random,
+                                Scene const& scene) const {
     float const ip = infinite_weight_;
 
     if (random < infinite_guard_) {
