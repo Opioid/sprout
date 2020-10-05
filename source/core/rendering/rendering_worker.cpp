@@ -214,7 +214,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
 
     // This is the typical SSS case:
     // A medium is on the stack but we already considered it during shadow calculation,
-    // igonoring the IoR. Therefore remove the medium from the stack.
+    // ignoring the IoR. Therefore remove the medium from the stack.
     if (!interface_stack_.straight(*this)) {
         interface_stack_.pop();
     }

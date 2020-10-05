@@ -1,10 +1,14 @@
 #include "light_tree.hpp"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/spectrum/rgb.hpp"
+#include "scene/material/material_sample_helper.hpp"
 #include "scene/scene.inl"
 #include "scene/shape/shape.inl"
 
 #include "base/debug/assert.hpp"
+
+#include <iostream>
+#include "base/math/print.hpp"
 
 // Inspired by parts of
 // Importance Sampling of Many Lights with Adaptive Tree Splitting
@@ -73,8 +77,10 @@ static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float
     return (cos_a > cos_b) ? 0.f : angle;
 }
 
-static inline float importance(float3 const& n, float3 const& axis, float4 const& cone,
-                               float radius, float power, bool total_sphere) {
+static inline float importance(float3 const& center, float3 const& p, float3 const& n,
+                               float4 const& cone, float radius, float power, bool total_sphere) {
+    float3 const axis = center - p;
+
     float const l = std::max(length(axis), 0.0001f);
 
     float const sin_cu = std::min(radius / l, 1.f);
@@ -107,53 +113,146 @@ static inline float importance(float3 const& n, float3 const& axis, float4 const
     return std::max(d2 * angle * base, 0.001f);
 }
 
+static inline float importance(float3 const& center, float3 const& p0, float3 const& p1,
+                               float3 const& dir, float4 const& cone, float radius, float power) {
+    float3 const axis = p0 - center;
+
+    float3 const v0 = normalize (axis);
+    float3 const v1 = normalize (p1 - center);
+
+    float3 const o0  = normalize(v0);
+    float3 const uv2 = cross(v0, v1);
+
+    float const uv2l = length(uv2);
+
+    if (uv2l < 0.00001f) {
+        return power;
+    }
+
+    float3 const v2 = uv2 / uv2l;
+    float3 const o1 = cross(o0, v2);
+
+    float3 const da = cone.xyz();
+
+    float const cos_a0 = scene::material::clamp_dot(o0, da);
+    float const cos_a1 = scene::material::clamp_dot(o1, da);
+
+    float const cos_phi = cos_a0 / std::sqrt(cos_a0 * cos_a0 + cos_a1 * cos_a1);
+    float const sin_phi = std::sqrt(1.f - cos_phi * cos_phi);
+
+    if (cos_phi > 1.f) {
+        std::cout << cos_phi << std::endl;
+    }
+
+    float const delta = -dot(axis, dir);
+
+    float3 const closest_point = p0 + delta * dir;
+
+    float const l = std::max(distance(closest_point, center), 0.0001f);
+
+    float const sin_cu = std::min(radius / l, 1.f);
+    float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
+
+    float cos_theta_min;
+
+    if (cos_a1 < 0.f || dot(v0, v1) > cos_phi) {
+        float const b_max = std::max(dot(v0, da), dot(v1, da));
+
+        if (b_max > 1.f) {
+            std::cout << b_max << std::endl;
+        }
+
+        cos_theta_min = b_max;
+
+        if (!std::isfinite(cos_theta_min)) {
+            std::cout << "a:" << std::endl;
+        }
+    } else {
+        float3 const v = cos_phi * o0 + sin_phi * o1;
+
+        cos_theta_min = clamp(dot(v, da), -1.f, 1.f);
+
+        if (!std::isfinite(cos_theta_min)) {
+            std::cout << "b:" << std::endl;
+            std::cout << cos_a0 << std::endl;
+            std::cout << cos_a1 << std::endl;
+            std::cout << cos_phi << std::endl;
+            std::cout << sin_phi << std::endl;
+            std::cout << o0 << std::endl;
+            std::cout << o1 << std::endl;
+            std::cout << v << std::endl;
+            std::cout << da << std::endl;
+        }
+    }
+
+    float const theta_min = std::acos(cos_theta_min);
+    float const cu        = std::acos(cos_cu);
+    float const a_cone    = std::acos(cone[3]);
+
+    float const thingaling = theta_min - a_cone - cu;
+
+    float const cos_cone = cone[3];
+    float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
+
+    float const cos_a = cos_theta_min;
+    float const sin_a = std::sqrt(1.f - cos_a * cos_a);
+
+    float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
+
+    float const resul = std::max((d2 * power) / l, 0.001f);
+
+    if (!std::isfinite(resul)) {
+        std::cout << "we catched it" << std::endl;
+        std::cout << d0 << std::endl;
+        std::cout << cos_theta_min << std::endl;
+        std::cout << cos_theta_min << std::endl;
+    }
+
+    return std::max((d2 * power) / l, 0.001f);
+
+    //    float const cot = std::cos(std::max(thingaling, 0.f));
+
+    //    if (thingaling > Pi / 2.f) {
+    //        return 0.f;
+    //    }
+
+    //    return (std::cos(std::max(thingaling, 0.f)) * power) / l;
+}
+
 static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
                           Scene const& scene) {
     float3 const center = scene.light_aabb(light).position();
-    float3 const axis   = center - p;
+    float4 const cone   = scene.light_cone(light);
 
-    float const r     = 0.5f * length(scene.light_aabb(light).extent());
-    float const power = scene.light_power(light);
+    float const radius = 0.5f * length(scene.light_aabb(light).extent());
+    float const power  = scene.light_power(light);
 
-    return importance(n, axis, scene.light_cone(light), r, power, total_sphere);
+    return importance(center, p, n, cone, radius, power, total_sphere);
 }
 
-static float light_weight(float3 const& p0, float3 const& p1, uint32_t light, Scene const& scene) {
-    float3 const direction = normalize(p0 - p1);
+static float light_weight(float3 const& p0, float3 const& p1, float3 const& dir, uint32_t light,
+                          Scene const& scene) {
+    float3 const center = scene.light_aabb(light).position();
+    float4 const cone   = scene.light_cone(light);
 
-    float3 const position = scene.light_aabb(light).position();
+    float const radius = 0.5f * length(scene.light_aabb(light).extent());
+    float const power  = scene.light_power(light);
 
-    float const delta = dot(position - p0, direction);
-
-    float3 const closest_point = p0 + delta * direction;
-
-    float const d_min = distance(closest_point, position);
-
-    float const power = scene.light_power(light);
-
-    return power / d_min;
+    return importance(center, p0, p1, dir, cone, radius, power);
 }
 
 float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
-    float3 const axis = center.xyz() - p;
-
     float const r = center[3];
 
-    return importance(n, axis, cone, r, power, total_sphere);
+    return importance(center.xyz(), p, n, cone, r, power, total_sphere);
 }
 
-float Tree::Node::weight(float3 const& p0, float3 const& p1) const {
-    float3 const direction = normalize(p0 - p1);
+float Tree::Node::weight(float3 const& p0, float3 const& p1, float3 const& dir) const {
+    float const r = center[3];
 
-    float3 const position = center.xyz();
-
-    float const delta = dot(position - p0, direction);
-
-    float3 const closest_point = p0 + delta * direction;
-
-    float const d_min = distance(closest_point, position);
-
-    return power / d_min;
+    return importance(center.xyz(), p0, p1, dir, cone, r, power);
 }
 
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -174,9 +273,9 @@ Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool tot
     return {children_or_light + l.offset, l.pdf};
 }
 
-Tree::Result Tree::Node::random_light(float3 const& p0, float3 const& p1, float random,
-                                      uint32_t const* const light_mapping,
-                                      Scene const&          scene) const {
+Tree::Result Tree::Node::random_light(float3 const& p0, float3 const& p1, float3 const& dir,
+                                      float random, uint32_t const* const light_mapping,
+                                      Scene const& scene) const {
     if (1 == num_lights) {
         return {children_or_light, 1.f};
     }
@@ -184,7 +283,7 @@ Tree::Result Tree::Node::random_light(float3 const& p0, float3 const& p1, float 
     float weights[4] = {0.f, 0.f, 0.f, 0.f};
 
     for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p0, p1, light_mapping[children_or_light + i], scene);
+        weights[i] = light_weight(p0, p1, dir, light_mapping[children_or_light + i], scene);
     }
 
     auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
@@ -277,6 +376,8 @@ Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random
         return {l.offset, pdf};
     }
 
+    float3 const dir = normalize(p0 - p1);
+
     float pdf = 1.f - ip;
 
     random = (random - ip) / pdf;
@@ -288,12 +389,18 @@ Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            float pr0 = nodes_[c0].weight(p0, p1);
-            float pr1 = nodes_[c1].weight(p0, p1);
+            float pr0 = nodes_[c0].weight(p0, p1, dir);
+            float pr1 = nodes_[c1].weight(p0, p1, dir);
 
             float const prt = pr0 + pr1;
 
             SOFT_ASSERT(prt > 0.f);
+
+            if (!(prt > 0.f)) {
+                std::cout << prt << std::endl;
+                std::cout << pr0 << std::endl;
+                std::cout << pr0 << std::endl;
+            }
 
             pr0 /= prt;
             pr1 /= prt;
@@ -311,7 +418,7 @@ Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            Result const result = node.random_light(p0, p1, random, light_mapping_, scene);
+            Result const result = node.random_light(p0, p1, dir, random, light_mapping_, scene);
 
             return {light_mapping_[result.id], result.pdf * pdf};
         }

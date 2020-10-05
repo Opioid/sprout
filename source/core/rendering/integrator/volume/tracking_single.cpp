@@ -20,6 +20,8 @@
 #include "scene/shape/shape.inl"
 #include "scene/shape/shape_sample.hpp"
 #include "tracking.inl"
+#include "base/math/sampling.inl"
+#include "scene/material/material_sample.inl"
 
 #include "base/debug/assert.hpp"
 
@@ -229,7 +231,6 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             if (Tracking::CM data; tree.intersect(local_ray, data)) {
                 if (float t;
                     Tracking::tracking(local_ray, data, material, 1.f, filter, worker, t, w)) {
-
                     float3 const p = ray.point(t);
 
                     float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
@@ -283,8 +284,11 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
-        auto const light = worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select);
+        auto const light = worker.scene().random_light(ray.point(ray.min_t()), ray.point(d),
+                                                       select);
 
+        li = one_bounce(ray, intersection, material, worker);
+/*
         if (light.ref.is_finite(worker.scene())) {
             // Equi-angular sampling
             float3 const position = worker.scene().light_aabb(light.id).position();
@@ -325,16 +329,15 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
             li = l * (1.f - tr) * scattering_albedo;
 
             // Instructive version
-//            {
-//                float3 const ltr = exp(-t * attenuation);
+            //            {
+            //                float3 const ltr = exp(-t * attenuation);
 
-//                float3 const weight = (1.f - tr) / (ltr * attenuation);
+            //                float3 const weight = (1.f - tr) / (ltr * attenuation);
 
-//                li = l * attenuation * scattering_albedo * ltr * weight;
-//            }
-
-
+            //                li = l * attenuation * scattering_albedo * ltr * weight;
+            //            }
         }
+*/
     } else {
         auto const mu = material.collision_coefficients();
 
@@ -426,6 +429,96 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
     return (phase * tr * radiance) / (light_sample.pdf() * light_pdf);
+}
+
+float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& intersection, Material const& material, Worker& worker) {
+    auto const mu = material.collision_coefficients();
+
+    float3 const attenuation = mu.a + mu.s;
+
+    float3 const scattering_albedo = mu.s / attenuation;
+
+    float const d = ray.max_t();
+
+    float3 const tr = exp(-(d - ray.min_t()) * attenuation);
+
+    auto& rng = worker.rng();
+
+    float const r = material_sampler(ray.depth).generate_sample_1D(rng, 0);
+    float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
+
+    float3 const p = ray.point(ray.min_t() + t);
+
+    float2 const uv(rng.random_float(), rng.random_float());
+
+    float3 const wi = sample_sphere_uniform(uv);
+
+    Ray bounce_ray(p, wi, 0.f, scene::Ray_max_t, ray.depth, ray.wavelength,
+                   ray.time);
+
+    Intersection tmp_intersection = intersection;
+
+    if (!worker.intersect_and_resolve_mask(bounce_ray, tmp_intersection, Filter::Undefined)) {
+        return float3(0.f);
+    }
+
+
+
+
+    uint32_t const light_id = tmp_intersection.light_id(worker);
+    if (!Light::is_area_light(light_id)) {
+        return float3(0.f);
+    }
+
+    float light_pdf = 0.f;
+/*
+    if (state.no(State::Treat_as_singular)) {
+        bool const calculate_pdf = Light_sampling::Strategy::Single ==
+                                   settings_.light_sampling.strategy;
+
+        bool const translucent = state.is(State::Is_translucent);
+
+        auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
+                                                calculate_pdf);
+
+        float const ls_pdf = light.ref.pdf(ray, intersection.geo, translucent, Filter::Nearest,
+                                           worker);
+
+        light_pdf = ls_pdf * light.pdf;
+    }
+*/
+    float3 const wo = -wi;//sample_result.wi;
+
+    // This will invalidate the contents of previous material sample.
+    auto const& material_sample = tmp_intersection.sample(wo, bounce_ray, Filter::Undefined, false, sampler_, worker);
+
+    if (!material_sample.same_hemisphere(wo)) {
+        return float3(0.f);
+    }
+
+    float3 const ls_energy = material_sample.radiance();
+
+
+    bounce_ray.max_t() = std::max(scene::offset_b(bounce_ray.max_t()), 0.f);
+
+    float3 trans;
+    if (!worker.transmitted(bounce_ray, float3(0.f), tmp_intersection, Filter::Nearest, trans)) {
+        return float3(0.f);
+    }
+
+
+
+    float3 const ltr = exp(-t * attenuation);
+
+                 float3 const weight = (1.f - tr) / (ltr * attenuation);
+
+
+    return (trans * ls_energy) * attenuation * scattering_albedo * ltr * weight;
+
+
+
+
+ //   return  ((1.f - tr) * scattering_albedo) * (trans * ls_energy);
 }
 
 sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) {

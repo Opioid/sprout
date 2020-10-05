@@ -41,12 +41,12 @@ class Tree {
     struct Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
 
-        float weight(float3 const& v0, float3 const& v1) const;
+        float weight(float3 const& v0, float3 const& v1, float3 const& dir) const;
 
         Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                             uint32_t const* const light_mapping, Scene const& scene) const;
 
-        Result random_light(float3 const& p0, float3 const& p1, float random,
+        Result random_light(float3 const& p0, float3 const& p1, float3 const& dir, float random,
                             uint32_t const* const light_mapping, Scene const& scene) const;
 
         float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
@@ -65,7 +65,7 @@ class Tree {
     Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                         Scene const& scene) const;
 
-    Result random_light(float3 const& v0, float3 const& v1, float random, Scene const& scene) const;
+    Result random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene) const;
 
     float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
               Scene const& scene) const;

@@ -25,6 +25,8 @@ class alignas(64) Tracking_single final : public Integrator {
     float3 direct_light(Light const& light, float light_pdf, Ray const& ray, float3 const& position,
                         Intersection const& intersection, Worker& worker);
 
+    float3 one_bounce(Ray const& ray, Intersection const& intersection, Material const& material, Worker& worker);
+
     sampler::Sampler& material_sampler(uint32_t bounce);
 
     sampler::Sampler& light_sampler(uint32_t bounce);
