@@ -202,11 +202,11 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     Importance const& importance = worker.particle_importance().importance(light.id);
 
     if (importance.distribution().empty()) {
-        if (!light.ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
+        if (!light.ptr->sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
             return false;
         }
     } else {
-        if (!light.ref.sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
+        if (!light.ptr->sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
                               light_sample)) {
             return false;
         }
@@ -222,7 +222,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_out = &light.ref;
+    light_out = light.ptr;
     light_id  = light.id;
 
     light_sample.pdf *= light.pdf;

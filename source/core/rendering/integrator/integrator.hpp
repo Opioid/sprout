@@ -2,6 +2,7 @@
 #define SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 
 #include "scene/material/sampler_settings.hpp"
+#include "base/memory/array.hpp"
 
 #include <cstdint>
 
@@ -29,7 +30,7 @@ class Sample;
 
 namespace light {
 class Light;
-struct Light_ref;
+struct Light_ptr;
 }  // namespace light
 
 namespace prop {
@@ -65,7 +66,7 @@ class Integrator {
     using Scene           = scene::Scene;
     using Transformation  = scene::entity::Composed_transformation;
     using Light           = scene::light::Light;
-    using Light_ref       = scene::light::Light_ref;
+    using Lights = memory::Array<scene::light::Light_ptr>;
     using Material        = scene::material::Material;
     using Material_sample = scene::material::Sample;
     using Filter          = scene::material::Sampler_settings::Filter;

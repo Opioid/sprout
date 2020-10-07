@@ -128,7 +128,7 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
 
     float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
 
-    return {lights_[id], id, pdf};
+    return {&lights_[id], id, pdf};
 }
 
 Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
@@ -139,7 +139,7 @@ Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool to
 
     float const pdf = calculate_pdf ? light_tree_.pdf(p, n, total_sphere, id, *this) : 1.f;
 
-    return {lights_[id], id, pdf};
+    return {&lights_[id], id, pdf};
 }
 
 Scene::Light Scene::random_light(float random) const {
@@ -149,7 +149,7 @@ Scene::Light Scene::random_light(float random) const {
 
     SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
 
-    return {lights_[l.offset], l.offset, l.pdf};
+    return {&lights_[l.offset], l.offset, l.pdf};
 }
 
 Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -164,13 +164,17 @@ Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sp
     SOFT_ASSERT(diff < 1e-8f);
 #endif
 
-    return {lights_[l.id], l.id, l.pdf};
+    return {&lights_[l.id], l.id, l.pdf};
+}
+
+void Scene::random_light(float3 const& p, float3 const& n, bool total_sphere, float random, Lights& lights) const {
+    light_tree_.random_light(p, n, total_sphere, random, *this, lights);
 }
 
 Scene::Light Scene::random_light(float3 const& p0, float3 const& p1, float random) const {
     auto const l = light_tree_.random_light(p0, p1, random, *this);
 
-    return {lights_[l.id], l.id, l.pdf};
+    return {&lights_[l.id], l.id, l.pdf};
 }
 
 void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) {

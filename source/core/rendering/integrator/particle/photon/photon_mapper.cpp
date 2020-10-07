@@ -276,11 +276,11 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
     Importance const& importance = worker.particle_importance().importance(light.id);
 
     if (importance.distribution().empty()) {
-        if (!light.ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
+        if (!light.ptr->sample(time, sampler_, 0, bounds, worker, light_sample)) {
             return false;
         }
     } else {
-        if (!light.ref.sample(time, sampler_, 0, importance.distribution(), bounds, worker,
+        if (!light.ptr->sample(time, sampler_, 0, importance.distribution(), bounds, worker,
                               light_sample)) {
             return false;
         }
@@ -296,7 +296,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_out = light.ref;
+    light_out = *light.ptr;
     light_id  = light.id;
 
     light_sample.pdf *= light.pdf;

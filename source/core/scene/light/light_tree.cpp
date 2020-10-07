@@ -3,6 +3,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "scene/material/material_sample_helper.hpp"
 #include "scene/scene.inl"
+#include "base/memory/array.inl"
 #include "scene/shape/shape.inl"
 
 #include "base/debug/assert.hpp"
@@ -324,15 +325,15 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
 
     random = (random - ip) / pdf;
 
-    for (uint32_t nid = 0;;) {
+    for (uint32_t nid = 0, depth = 0;;++depth) {
         Node const& node = nodes_[nid];
 
         if (node.middle > 0) {
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            float p0 = nodes_[c0].weight(p, n, total_sphere);
-            float p1 = nodes_[c1].weight(p, n, total_sphere);
+            float p0 = depth < 1 ? 0.5f : nodes_[c0].weight(p, n, total_sphere);
+            float p1 = depth < 1 ? 0.5f : nodes_[c1].weight(p, n, total_sphere);
 
             float const pt = p0 + p1;
 
@@ -358,6 +359,122 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
                                                     scene);
 
             return {light_mapping_[result.id], result.pdf * pdf};
+        }
+    }
+}
+
+void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                  Scene const& scene, Lights& lights) const {
+    lights.clear();
+
+    float const ip = infinite_weight_;
+
+    if (random < infinite_guard_) {
+        auto const l = infinite_light_distribution_.sample_discrete(random);
+
+        float const pdf = l.pdf * ip;
+
+        SOFT_ASSERT(pdf > 0.f);
+
+        lights.push_back(scene.light_ptr(l.offset, pdf));
+
+        return;
+    }
+
+    float const initial_pdf = 1.f - ip;
+    float const initial_random = (random - ip) / initial_pdf;
+
+    float pdf = initial_pdf;
+
+    random = initial_random;
+
+    for (uint32_t nid = 0;;) {
+        Node const& node = nodes_[nid];
+
+        if (node.middle > 0) {
+            uint32_t const c0 = node.children_or_light;
+            uint32_t const c1 = c0 + 1;
+
+            if (0 == nid) {
+                nid = c0;
+            } else {
+                float p0 = nodes_[c0].weight(p, n, total_sphere);
+                float p1 = nodes_[c1].weight(p, n, total_sphere);
+
+                float const pt = p0 + p1;
+
+                SOFT_ASSERT(pt > 0.f);
+
+                p0 /= pt;
+                p1 /= pt;
+
+                if (random < p0) {
+                    nid = c0;
+                    pdf *= p0;
+                    random /= p0;
+                } else {
+                    nid = c1;
+                    pdf *= p1;
+                    random = (random - p0) / p1;
+                }
+            }
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
+
+            Result const result = node.random_light(p, n, total_sphere, random, light_mapping_,
+                                                    scene);
+
+            lights.push_back(scene.light_ptr(light_mapping_[result.id], result.pdf * pdf));
+
+            break;
+        }
+    }
+
+    pdf = initial_pdf;
+
+    random = initial_random;
+
+    for (uint32_t nid = 0;;) {
+        Node const& node = nodes_[nid];
+
+        if (node.middle > 0) {
+            uint32_t const c0 = node.children_or_light;
+            uint32_t const c1 = c0 + 1;
+
+            if (0 == nid) {
+                nid = c1;
+            } else {
+                float p0 = nodes_[c0].weight(p, n, total_sphere);
+                float p1 = nodes_[c1].weight(p, n, total_sphere);
+
+                float const pt = p0 + p1;
+
+                SOFT_ASSERT(pt > 0.f);
+
+                p0 /= pt;
+                p1 /= pt;
+
+                if (random < p0) {
+                    nid = c0;
+                    pdf *= p0;
+                    random /= p0;
+                } else {
+                    nid = c1;
+                    pdf *= p1;
+                    random = (random - p0) / p1;
+                }
+            }
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
+
+            Result const result = node.random_light(p, n, total_sphere, random, light_mapping_,
+                                                    scene);
+
+            lights.push_back(scene.light_ptr(light_mapping_[result.id], result.pdf * pdf));
+
+            break;
         }
     }
 }

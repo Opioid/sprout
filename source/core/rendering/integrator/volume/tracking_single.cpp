@@ -237,7 +237,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
                     auto const light = worker.scene().random_light(p, float3(0.f), true, select);
 
-                    li = w * direct_light(light.ref, light.pdf, ray, p, intersection, worker);
+                    li = w * direct_light(*light.ptr, light.pdf, ray, p, intersection, worker);
                     tr = float3(0.f);
                     return Event::Pass;
                 }
@@ -270,7 +270,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         auto const light = worker.scene().random_light(p, float3(0.f), true, select);
 
-        float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
+        float3 const l = direct_light(*light.ptr, light.pdf, ray, p, intersection, worker);
 
         li = l * (1.f - tr) * scattering_albedo;
     } else if (true) {
@@ -289,7 +289,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         li = one_bounce(ray, intersection, material, worker);
 /*
-        if (light.ref.is_finite(worker.scene())) {
+        if (light.ptr->is_finite(worker.scene())) {
             // Equi-angular sampling
             float3 const position = worker.scene().light_aabb(light.id).position();
 
@@ -376,13 +376,13 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const p = ray.point(sample_t);
 
-        float3 const eq_l = direct_light(light.ref, light.pdf, ray, p, intersection, worker);
+        float3 const eq_l = direct_light(*light.ptr, light.pdf, ray, p, intersection, worker);
 
         float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
         float3 const w = exp(-(sample_t - ray.min_t()) * attenuation);
 
-        float3 const ds_l = direct_light(light.ref, light.pdf, ray, ps, intersection, worker);
+        float3 const ds_l = direct_light(*light.ptr, light.pdf, ray, ps, intersection, worker);
 
         float3 const ltr = exp(-ts * attenuation);
 
@@ -481,7 +481,7 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& intersect
         auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
                                                 calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, translucent, Filter::Nearest,
+        float const ls_pdf = light.ptr->pdf(ray, intersection.geo, translucent, Filter::Nearest,
                                            worker);
 
         light_pdf = ls_pdf * light.pdf;

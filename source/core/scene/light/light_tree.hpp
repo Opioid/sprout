@@ -4,6 +4,8 @@
 #include "base/math/aabb.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 #include "base/math/vector4.hpp"
+#include "base/memory/array.hpp"
+#include "light.hpp"
 
 #include <vector>
 
@@ -29,6 +31,8 @@ struct Build_node {
 
 class Tree {
   public:
+    using Lights = memory::Array<Light_ptr>;
+
     Tree();
 
     ~Tree();
@@ -64,6 +68,9 @@ class Tree {
 
     Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                         Scene const& scene) const;
+
+    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                      Scene const& scene, Lights& lights) const;
 
     Result random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene) const;
 

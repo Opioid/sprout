@@ -188,6 +188,10 @@ inline light::Light const& Scene::light(uint32_t id) const {
     return lights_[id];
 }
 
+inline Scene::Light Scene::light_ptr(uint32_t id, float pdf) const {
+    return {&lights_[id], id, pdf};
+}
+
 }  // namespace scene
 
 #endif

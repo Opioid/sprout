@@ -328,7 +328,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
             auto const light = worker.scene().random_light(p, n, translucent, select);
 
-            float3 const el = evaluate_light(light.ref, light.pdf, ray, p, 0, intersection,
+            float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, 0, intersection,
                                              material_sample, filter, worker);
 
             result += num_samples_reciprocal * el;
@@ -403,7 +403,7 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
         auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
                                                 calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, translucent, Filter::Nearest,
+        float const ls_pdf = light.ptr->pdf(ray, intersection.geo, translucent, Filter::Nearest,
                                            worker);
 
         light_pdf = ls_pdf * light.pdf;
@@ -450,7 +450,7 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3 const& geo_n,
         auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
                                                 calculate_pdf);
 
-        float const ls_pdf = light.ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),
+        float const ls_pdf = light.ptr->pdf(ray, intersection.geo, state.is(State::Is_translucent),
                                            Filter::Nearest, worker);
 
         light_pdf = ls_pdf * light.pdf;

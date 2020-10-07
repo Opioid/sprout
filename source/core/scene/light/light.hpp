@@ -126,8 +126,8 @@ class alignas(16) Light {
     float extent_;
 };
 
-struct Light_ref {
-    light::Light const& ref;
+struct Light_ptr {
+    light::Light const* ptr;
 
     uint32_t id;
 
