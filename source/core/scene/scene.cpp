@@ -167,8 +167,19 @@ Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sp
     return {&lights_[l.id], l.id, l.pdf};
 }
 
-void Scene::random_light(float3 const& p, float3 const& n, bool total_sphere, float random, Lights& lights) const {
+void Scene::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                         Lights& lights) const {
     light_tree_.random_light(p, n, total_sphere, random, *this, lights);
+
+#ifdef SU_DEBUG
+    for (auto const l : lights) {
+        float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, l.id, *this);
+
+        float const diff = std::abs(guessed_pdf - l.pdf);
+
+        SOFT_ASSERT(diff < 1e-8f);
+    }
+#endif
 }
 
 Scene::Light Scene::random_light(float3 const& p0, float3 const& p1, float random) const {

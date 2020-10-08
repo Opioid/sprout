@@ -281,7 +281,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
         }
     } else {
         if (!light.ptr->sample(time, sampler_, 0, importance.distribution(), bounds, worker,
-                              light_sample)) {
+                               light_sample)) {
             return false;
         }
 

@@ -207,7 +207,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
         }
     } else {
         if (!light.ptr->sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
-                              light_sample)) {
+                               light_sample)) {
             return false;
         }
 

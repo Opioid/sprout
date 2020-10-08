@@ -79,7 +79,7 @@ class Scene {
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
     using Light          = light::Light_ptr;
-    using Lights = memory::Array<Light>;
+    using Lights         = memory::Array<Light>;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;
@@ -140,7 +140,8 @@ class Scene {
 
     Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
 
-    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random, Lights& lights) const;
+    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                      Lights& lights) const;
 
     Light random_light(float3 const& p0, float3 const& p1, float random) const;
 
