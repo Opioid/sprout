@@ -42,11 +42,9 @@ class Traversal_stack {
     }
 
   private:
-    static uint32_t constexpr Num_elements = 4;
-
     uint32_t end_ = 0;
 
-    Node stack_[Num_elements];
+    Node stack_[Tree::Max_lights];
 };
 
 static float4 cone_union(float4 a, float4 b) {
@@ -126,7 +124,7 @@ static inline float importance(float3 const& center, float3 const& p, float3 con
     float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
 
     float const cos_a = -dot(da, na);
-    float const sin_a = std::sqrt(1.f - cos_a * cos_a);
+    float const sin_a = std::sqrt(std::max(1.f - cos_a * cos_a, 0.f));
 
     float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
@@ -430,7 +428,7 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            if (t.depth <= 2) {
+            if (t.depth <= Split_depth) {
                 t.node = c0;
                 stack.push({t.pdf, t.random, c1, t.depth});
             } else {
@@ -554,7 +552,7 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            if (depth <= 2) {
+            if (depth < Split_depth) {
                 if (lo < node.middle) {
                     nid = c0;
                 } else {

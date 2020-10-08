@@ -25,6 +25,8 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
+static uint32_t constexpr Max_lights =  scene::light::Tree::Max_lights;
+
 Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
     : settings_(settings),
       sampler_pool_(progressive ? nullptr
@@ -44,7 +46,7 @@ Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
         }
     }
 
-    lights_.reserve(4);
+    lights_.reserve(light::Tree::Max_lights);
 }
 
 Pathtracer_MIS::~Pathtracer_MIS() {
@@ -64,8 +66,8 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 
     bool const single = Light_sampling::Strategy::Single == settings_.light_sampling.strategy;
 
-    uint32_t const nd2 = single ? 1 : num_lights;
-    uint32_t const nd1 = single ? 2 : num_lights;
+    uint32_t const nd2 = single ? Max_lights : num_lights;
+    uint32_t const nd1 = single ? Max_lights + 1 : num_lights;
 
     for (auto s : light_samplers_) {
         s->resize(num_samples_per_pixel, num_light_samples, nd2, nd1);
@@ -325,30 +327,32 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         float3 const n = material_sample.geometric_normal();
-
-        for (uint32_t i = num_samples; i > 0; --i) {
-            float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
-
-            auto const light = worker.scene().random_light(p, n, translucent, select);
-
-            float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, 0, intersection,
-                                             material_sample, filter, worker);
-
-            result += num_samples_reciprocal * el;
-        }
-
         /*
-        float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+                for (uint32_t i = num_samples; i > 0; --i) {
+                    float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+
+                    auto const light = worker.scene().random_light(p, n, translucent, select);
+
+                    float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, 0, intersection,
+                                                     material_sample, filter, worker);
+
+                    result += num_samples_reciprocal * el;
+                }
+        */
+
+        float const select = light_sampler(ray.depth).generate_sample_1D(rng, Max_lights);
 
         worker.scene().random_light(p, n, translucent, select, lights_);
 
-        for (auto const light : lights_) {
-            float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, 0, intersection,
+        for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
+            auto const light = lights_[l];
+
+            float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, l, intersection,
                                              material_sample, filter, worker);
 
             result += el;
         }
-        */
+
     } else {
         for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
             auto const& light = worker.scene().light(l);

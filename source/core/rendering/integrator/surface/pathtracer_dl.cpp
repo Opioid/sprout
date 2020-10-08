@@ -45,7 +45,7 @@ Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive)
         }
     }
 
-    lights_.reserve(4);
+    lights_.reserve(scene::light::Tree::Max_lights);
 }
 
 Pathtracer_DL::~Pathtracer_DL() {
@@ -64,8 +64,12 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
     uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
 
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
+        static uint32_t constexpr Max_lights = light::Tree::Max_lights;
+
         for (auto s : light_samplers_) {
-            s->resize(num_samples_per_pixel, num_light_samples, 1, 2);
+            //    s->resize(num_samples_per_pixel, num_light_samples, 1, 2);
+
+            s->resize(num_samples_per_pixel, num_light_samples, Max_lights, Max_lights + 1);
         }
     } else {
         for (auto s : light_samplers_) {
@@ -270,13 +274,15 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
                 return result / float(num_samples);
                 */
 
-        float const select = sampler.generate_sample_1D(rng, 1);
+        float const select = sampler.generate_sample_1D(rng, light::Tree::Max_lights);
 
         worker.scene().random_light(p, n, translucent, select, lights_);
 
-        for (auto const light : lights_) {
+        for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
+            auto const light = lights_[l];
+
             Sample_to light_sample;
-            if (!light.ptr->sample(p, n, ray.time, translucent, sampler, 0, worker, light_sample)) {
+            if (!light.ptr->sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
                 continue;
             }
 

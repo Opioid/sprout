@@ -31,6 +31,9 @@ struct Build_node {
 
 class Tree {
   public:
+    static uint32_t constexpr Split_depth = 2;
+    static uint32_t constexpr Max_lights  = 1 << Split_depth;
+
     using Lights = memory::Array<Light_ptr>;
 
     Tree();
