@@ -326,17 +326,16 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         float3 const n = material_sample.geometric_normal();
 
-                for (uint32_t i = num_samples; i > 0; --i) {
-                    float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+        for (uint32_t i = num_samples; i > 0; --i) {
+            float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
-                    auto const light = worker.scene().random_light(p, n, translucent, select);
+            auto const light = worker.scene().random_light(p, n, translucent, select);
 
-                    float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, 0, intersection,
-                                                     material_sample, filter, worker);
+            float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, 0, intersection,
+                                             material_sample, filter, worker);
 
-                    result += num_samples_reciprocal * el;
-                }
-
+            result += num_samples_reciprocal * el;
+        }
 
         /*
         float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);

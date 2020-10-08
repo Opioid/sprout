@@ -61,7 +61,7 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
 
     uint32_t const num_lights = scene.num_lights();
 
-    uint32_t const num_light_samples = settings_.num_samples * 4;//settings_.light_sampling.num_samples;
+    uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
 
     if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
         for (auto s : light_samplers_) {

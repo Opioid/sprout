@@ -357,15 +357,15 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
 
     random = (random - ip) / pdf;
 
-    for (uint32_t nid = 0, depth = 0;; ++depth) {
+    for (uint32_t nid = 0;;) {
         Node const& node = nodes_[nid];
 
         if (node.middle > 0) {
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            float p0 = depth < 1 ? 0.5f : nodes_[c0].weight(p, n, total_sphere);
-            float p1 = depth < 1 ? 0.5f : nodes_[c1].weight(p, n, total_sphere);
+            float p0 = nodes_[c0].weight(p, n, total_sphere);
+            float p1 = nodes_[c1].weight(p, n, total_sphere);
 
             float const pt = p0 + p1;
 
