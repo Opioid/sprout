@@ -23,6 +23,7 @@ struct Build_node {
     float4 cone;
 
     float power;
+    float variance;
 
     uint32_t middle;
     uint32_t children_or_light;
@@ -31,8 +32,12 @@ struct Build_node {
 
 class Tree {
   public:
-    static uint32_t constexpr Split_depth = 2;
-    static uint32_t constexpr Max_lights  = 1 << Split_depth;
+    static uint32_t constexpr Split_depth = 4;
+
+    // static uint32_t constexpr Max_lights  = 1 << Split_depth;
+
+    // This is risky, and probably not a good idea. Saves some memory, though.
+    static uint32_t constexpr Max_lights  = (1 << (Split_depth - 1)) + Split_depth;
 
     using Lights = memory::Array<Light_ptr>;
 
@@ -50,6 +55,8 @@ class Tree {
 
         float weight(float3 const& v0, float3 const& v1, float3 const& dir) const;
 
+        bool split(float3 const& p) const;
+
         Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                             uint32_t const* const light_mapping, Scene const& scene) const;
 
@@ -63,6 +70,7 @@ class Tree {
         float4 cone;
 
         float power;
+        float variance;
 
         uint32_t middle;
         uint32_t children_or_light;
