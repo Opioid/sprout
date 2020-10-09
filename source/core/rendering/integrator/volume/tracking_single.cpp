@@ -3,6 +3,7 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
+#include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/volume/volume_integrator.inl"
@@ -46,6 +47,8 @@ Tracking_single::Tracking_single(bool progressive)
             s = &sampler_;
         }
     }
+
+    lights_.reserve(scene::light::Tree::Max_lights);
 }
 
 Tracking_single::~Tracking_single() {
@@ -55,12 +58,20 @@ Tracking_single::~Tracking_single() {
 void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
+        static uint32_t constexpr Max_lights = light::Tree::Max_lights;
+
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 1, 0, 2);
+    //    s->resize(num_samples_per_pixel, 1, 0, 2);
+
+        s->resize(num_samples_per_pixel, 1, 0, Max_lights);
     }
 
+
+
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, 2, 1, 2);
+     //   s->resize(num_samples_per_pixel, 2, 1, 2);
+
+        s->resize(num_samples_per_pixel, 1, Max_lights, Max_lights + 1);
     }
 }
 
@@ -237,7 +248,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
                     auto const light = worker.scene().random_light(p, float3(0.f), true, select);
 
-                    li = w * direct_light(*light.ptr, light.pdf, ray, p, intersection, worker);
+                    li = w * direct_light(*light.ptr, light.pdf, ray, p, 0, intersection, worker);
                     tr = float3(0.f);
                     return Event::Pass;
                 }
@@ -270,7 +281,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         auto const light = worker.scene().random_light(p, float3(0.f), true, select);
 
-        float3 const l = direct_light(*light.ptr, light.pdf, ray, p, intersection, worker);
+        float3 const l = direct_light(*light.ptr, light.pdf, ray, p, 0, intersection, worker);
 
         li = l * (1.f - tr) * scattering_albedo;
     } else if (true) {
@@ -282,13 +293,18 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         tr = exp(-(d - ray.min_t()) * attenuation);
 
-        float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+        float const select = light_sampler(ray.depth).generate_sample_1D(rng, light::Tree::Max_lights);
 
-        auto const light = worker.scene().random_light(ray.point(ray.min_t()), ray.point(d),
-                                                       select);
+        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d),
+                                                       select, lights_);
 
-        li = one_bounce(ray, intersection, material, worker);
-        /*
+       // li = one_bounce(ray, intersection, material, worker);
+
+        float3 lli(0.f);
+
+        for (uint32_t il = 0, len = lights_.size(); il < len; ++il) {
+            auto const light = lights_[il];
+
                 if (light.ptr->is_finite(worker.scene())) {
                     // Equi-angular sampling
                     float3 const position = worker.scene().light_aabb(light.id).position();
@@ -302,21 +318,21 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
                     float const theta_a = std::atan2(ray.min_t() - delta, D);
                     float const theta_b = std::atan2(d - delta, D);
 
-                    float const r = material_sampler(ray.depth).generate_sample_1D(rng, 0);
+                    float const r = material_sampler(ray.depth).generate_sample_1D(rng, il);
                     float const t = D * std::tan(lerp(theta_a, theta_b, r));
 
                     float const sample_t = delta + t;
 
                     float3 const p = ray.point(sample_t);
 
-                    float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection,
+                    float3 const l = direct_light(*light.ptr, light.pdf, ray, p, il, intersection,
            worker);
 
                     float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
                     float3 const w = exp(-(sample_t - ray.min_t()) * attenuation);
 
-                    li = (l * attenuation) * (scattering_albedo * w) / pdf;
+                    lli += (l * attenuation) * (scattering_albedo * w) / pdf;
                 } else {
                     // Distance sampling
                     float const r = material_sampler(ray.depth).generate_sample_1D(rng, 0);
@@ -324,11 +340,11 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
                     float3 const p = ray.point(ray.min_t() + t);
 
-                    float3 const l = direct_light(light.ref, light.pdf, ray, p, intersection,
+                    float3 const l = direct_light(*light.ptr, light.pdf, ray, p, il, intersection,
            worker);
 
                     // Short version
-                    li = l * (1.f - tr) * scattering_albedo;
+                    lli += l * (1.f - tr) * scattering_albedo;
 
                     // Instructive version
                     //            {
@@ -339,7 +355,10 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
                     //                li = l * attenuation * scattering_albedo * ltr * weight;
                     //            }
                 }
-        */
+        }
+
+        li = lli;
+
     } else {
         auto const mu = material.collision_coefficients();
 
@@ -378,13 +397,13 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float3 const p = ray.point(sample_t);
 
-        float3 const eq_l = direct_light(*light.ptr, light.pdf, ray, p, intersection, worker);
+        float3 const eq_l = direct_light(*light.ptr, light.pdf, ray, p, 0, intersection, worker);
 
         float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
         float3 const w = exp(-(sample_t - ray.min_t()) * attenuation);
 
-        float3 const ds_l = direct_light(*light.ptr, light.pdf, ray, ps, intersection, worker);
+        float3 const ds_l = direct_light(*light.ptr, light.pdf, ray, ps, 0, intersection, worker);
 
         float3 const ltr = exp(-ts * attenuation);
 
@@ -407,10 +426,10 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 }
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
-                                     float3 const& position, Intersection const& intersection,
+                                     float3 const& position, uint32_t sampler_dimension, Intersection const& intersection,
                                      Worker& worker) {
     shape::Sample_to light_sample;
-    if (!light.sample(position, ray.time, light_sampler(ray.depth), 0, worker, light_sample)) {
+    if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_dimension, worker, light_sample)) {
         return float3(0.f);
     }
 

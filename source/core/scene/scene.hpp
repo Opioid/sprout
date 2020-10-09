@@ -145,6 +145,8 @@ class Scene {
 
     Light random_light(float3 const& p0, float3 const& p1, float random) const;
 
+    void random_light(float3 const& p0, float3 const& p1, float random, Lights& lights) const;
+
     void simulate(uint64_t start, uint64_t end, thread::Pool& threads);
 
     void compile(uint64_t time, thread::Pool& threads);

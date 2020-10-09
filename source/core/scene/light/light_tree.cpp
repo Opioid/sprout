@@ -171,11 +171,7 @@ static inline float importance(float3 const& center, float3 const& p0, float3 co
     float const cos_a1 = scene::material::clamp_dot(o1, da);
 
     float const cos_phi = cos_a0 / std::sqrt(cos_a0 * cos_a0 + cos_a1 * cos_a1);
-    float const sin_phi = std::sqrt(1.f - cos_phi * cos_phi);
-
-    if (cos_phi > 1.f) {
-        std::cout << cos_phi << std::endl;
-    }
+    float const sin_phi = std::sqrt(std::max(1.f - cos_phi * cos_phi, 0.f));
 
     float const delta = -dot(axis, dir);
 
@@ -218,12 +214,6 @@ static inline float importance(float3 const& center, float3 const& p0, float3 co
         }
     }
 
-    float const theta_min = std::acos(cos_theta_min);
-    float const cu        = std::acos(cos_cu);
-    float const a_cone    = std::acos(cone[3]);
-
-    float const thingaling = theta_min - a_cone - cu;
-
     float const cos_cone = cone[3];
     float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
 
@@ -244,14 +234,6 @@ static inline float importance(float3 const& center, float3 const& p0, float3 co
     }
 
     return std::max((d2 * power) / l, 0.001f);
-
-    //    float const cot = std::cos(std::max(thingaling, 0.f));
-
-    //    if (thingaling > Pi / 2.f) {
-    //        return 0.f;
-    //    }
-
-    //    return (std::cos(std::max(thingaling, 0.f)) * power) / l;
 }
 
 static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
@@ -314,6 +296,16 @@ bool Tree::Node::split(float3 const& p) const {
     float const ns = std::pow(1.f / (1.f + s), 1.f / 4.f);
 
     return ns <= 0.1f;
+}
+
+bool Tree::Node::split(float3 const& p0, float3 const& dir) const {
+    float3 const axis = p0 - center.xyz();
+
+    float const delta = -dot(axis, dir);
+
+    float3 const closest_point = p0 + delta * dir;
+
+    return split(closest_point);
 }
 
 Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
@@ -564,6 +556,88 @@ Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random
 
             return {light_mapping_[result.id], result.pdf * pdf};
         }
+    }
+}
+
+void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene, Lights& lights) const {
+    lights.clear();
+
+    float const ip = infinite_weight_;
+
+    if (random < infinite_guard_) {
+        auto const l = infinite_light_distribution_.sample_discrete(random);
+
+        float const pdf = l.pdf * ip;
+
+        SOFT_ASSERT(pdf > 0.f);
+
+        lights.push_back(scene.light_ptr(l.offset, pdf));
+
+        return;
+    }
+
+    float3 const dir = normalize(p0 - p1);
+
+    float const pdf = 1.f - ip;
+
+    Traversal_stack stack;
+
+    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, 0};
+
+    stack.push(t);
+
+    bool split = true;
+
+    while (!stack.empty()) {
+        Node const& node = nodes_[t.node];
+
+        if (node.middle > 0) {
+            ++t.depth;
+
+            uint32_t const c0 = node.children_or_light;
+            uint32_t const c1 = c0 + 1;
+
+            if (split && t.depth <= Split_depth && node.split(p0, dir)) {
+                t.node = c0;
+                stack.push({t.pdf, t.random, c1, t.depth});
+            } else {
+                float pr0 = nodes_[c0].weight(p0, p1, dir);
+                float pr1 = nodes_[c1].weight(p0, p1, dir);
+
+                float const prt = pr0 + pr1;
+
+                SOFT_ASSERT(prt > 0.f);
+
+                pr0 /= prt;
+                pr1 /= prt;
+
+                if (t.random < pr0) {
+                    t.node = c0;
+                    t.pdf *= pr0;
+                    t.random /= pr0;
+                } else {
+                    t.node = c1;
+                    t.pdf *= pr1;
+                    t.random = (t.random - pr0) / pr1;
+                }
+
+                split = false;
+            }
+
+            continue;
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
+
+            Result const result = node.random_light(p0, p1, dir, t.random, light_mapping_,
+                                                    scene);
+
+            lights.push_back(scene.light_ptr(light_mapping_[result.id], result.pdf * t.pdf));
+        }
+
+        t = stack.pop();
+
+        split = true;
     }
 }
 

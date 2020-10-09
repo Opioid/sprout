@@ -34,10 +34,10 @@ class Tree {
   public:
     static uint32_t constexpr Split_depth = 4;
 
-    // static uint32_t constexpr Max_lights  = 1 << Split_depth;
+     static uint32_t constexpr Max_lights  = 1 << Split_depth;
 
     // This is risky, and probably not a good idea. Saves some memory, though.
-    static uint32_t constexpr Max_lights  = (1 << (Split_depth - 1)) + Split_depth;
+    //static uint32_t constexpr Max_lights  = (1 << (Split_depth - 1)) + Split_depth;
 
     using Lights = memory::Array<Light_ptr>;
 
@@ -53,9 +53,11 @@ class Tree {
     struct Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
 
-        float weight(float3 const& v0, float3 const& v1, float3 const& dir) const;
+        float weight(float3 const& p0, float3 const& p1, float3 const& dir) const;
 
         bool split(float3 const& p) const;
+
+        bool split(float3 const& p0, float3 const& dir) const;
 
         Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                             uint32_t const* const light_mapping, Scene const& scene) const;
@@ -84,6 +86,8 @@ class Tree {
                       Scene const& scene, Lights& lights) const;
 
     Result random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene) const;
+
+    void random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene, Lights& lights) const;
 
     float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
               Scene const& scene) const;
