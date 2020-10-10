@@ -33,8 +33,12 @@ class Traversal_stack {
         return 0 == end_;
     }
 
+    uint32_t depth() const {
+        return end_;
+    }
+
     void push(Node const& value) {
-        SOFT_ASSERT(end_ < Tree::Max_lights);
+        SOFT_ASSERT(end_ < Stack_size);
 
         stack_[end_++] = value;
     }
@@ -44,9 +48,11 @@ class Traversal_stack {
     }
 
   private:
+    static uint32_t constexpr Stack_size  = (1 << (Tree::Split_depth - 1)) + 1;
+
     uint32_t end_ = 0;
 
-    Node stack_[Tree::Max_lights];
+    Node stack_[Stack_size];
 };
 
 static float4 cone_union(float4 a, float4 b) {
@@ -447,14 +453,12 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
         Node const& node = nodes_[t.node];
 
         if (node.middle > 0) {
-            ++t.depth;
-
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            if (split && t.depth <= Split_depth && node.split(p)) {
+            if (split && t.depth < Split_depth && node.split(p)) {
                 t.node = c0;
-                stack.push({t.pdf, t.random, c1, t.depth});
+                stack.push({t.pdf, t.random, c1, ++t.depth});
             } else {
                 float p0 = nodes_[c0].weight(p, n, total_sphere);
                 float p1 = nodes_[c1].weight(p, n, total_sphere);
@@ -478,8 +482,6 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
 
                 split = false;
             }
-
-            continue;
         } else {
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
@@ -488,11 +490,11 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
                                                     scene);
 
             lights.push_back(scene.light_ptr(light_mapping_[result.id], result.pdf * t.pdf));
+
+            t = stack.pop();
+
+            split = true;
         }
-
-        t = stack.pop();
-
-        split = true;
     }
 }
 
@@ -592,14 +594,12 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene 
         Node const& node = nodes_[t.node];
 
         if (node.middle > 0) {
-            ++t.depth;
-
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            if (split && t.depth <= Split_depth && node.split(p0, dir)) {
+            if (split && t.depth < Split_depth && node.split(p0, dir)) {
                 t.node = c0;
-                stack.push({t.pdf, t.random, c1, t.depth});
+                stack.push({t.pdf, t.random, c1, ++t.depth});
             } else {
                 float pr0 = nodes_[c0].weight(p0, p1, dir);
                 float pr1 = nodes_[c1].weight(p0, p1, dir);
@@ -623,8 +623,6 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene 
 
                 split = false;
             }
-
-            continue;
         } else {
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
@@ -633,11 +631,11 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene 
                                                     scene);
 
             lights.push_back(scene.light_ptr(light_mapping_[result.id], result.pdf * t.pdf));
+
+            t = stack.pop();
+
+            split = true;
         }
-
-        t = stack.pop();
-
-        split = true;
     }
 }
 

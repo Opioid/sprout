@@ -33,11 +33,7 @@ struct Build_node {
 class Tree {
   public:
     static uint32_t constexpr Split_depth = 4;
-
-     static uint32_t constexpr Max_lights  = 1 << Split_depth;
-
-    // This is risky, and probably not a good idea. Saves some memory, though.
-    //static uint32_t constexpr Max_lights  = (1 << (Split_depth - 1)) + Split_depth;
+    static uint32_t constexpr Max_lights  = 1 << Split_depth;
 
     using Lights = memory::Array<Light_ptr>;
 
