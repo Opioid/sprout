@@ -78,7 +78,7 @@ class Scene {
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
-    using Light          = light::Light_ptr;
+    using Light          = light::Light_select;
     using Lights         = memory::Array<Light>;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
@@ -128,8 +128,6 @@ class Scene {
     uint32_t num_lights() const;
 
     light::Light const& light(uint32_t id) const;
-
-    Light light_ptr(uint32_t id, float pdf) const;
 
     Light light(uint32_t id, bool calculate_pdf) const;
 

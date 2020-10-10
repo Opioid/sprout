@@ -126,9 +126,7 @@ class alignas(16) Light {
     float extent_;
 };
 
-struct Light_ptr {
-    light::Light const* ptr;
-
+struct Light_select {
     uint32_t id;
 
     float pdf;

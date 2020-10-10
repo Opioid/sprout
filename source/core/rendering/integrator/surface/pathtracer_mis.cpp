@@ -25,7 +25,7 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
-static uint32_t constexpr Max_lights =  scene::light::Tree::Max_lights;
+static uint32_t constexpr Max_lights = scene::light::Tree::Max_lights;
 
 Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
     : settings_(settings),
@@ -345,9 +345,10 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
         worker.scene().random_light(p, n, translucent, select, lights_);
 
         for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
-            auto const light = lights_[l];
+            auto const  light     = lights_[l];
+            auto const& light_ref = worker.scene().light(light.id);
 
-            float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, l, intersection,
+            float3 const el = evaluate_light(light_ref, light.pdf, ray, p, l, intersection,
                                              material_sample, filter, worker);
 
             result += el;
@@ -415,16 +416,16 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
     float light_pdf = 0.f;
 
     if (state.no(State::Treat_as_singular)) {
-        bool const calculate_pdf = Light_sampling::Strategy::Single ==
-                                   settings_.light_sampling.strategy;
+        bool const use_pdf = Light_sampling::Strategy::Single == settings_.light_sampling.strategy;
 
         bool const translucent = state.is(State::Is_translucent);
 
-        auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
-                                                calculate_pdf);
+        auto const& scene     = worker.scene();
+        auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, use_pdf);
+        auto const& light_ref = scene.light(light.id);
 
-        float const ls_pdf = light.ptr->pdf(ray, intersection.geo, translucent, Filter::Nearest,
-                                            worker);
+        float const ls_pdf = light_ref.pdf(ray, intersection.geo, translucent, Filter::Nearest,
+                                           worker);
 
         light_pdf = ls_pdf * light.pdf;
     }
@@ -440,11 +441,10 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
         return float3(0.f);
     }
 
-    float3 const ls_energy = material_sample.radiance();
-
     float const weight = power_heuristic(sample_result.pdf, light_pdf);
 
-    float3 const radiance = weight * ls_energy;
+    float3 const ls_energy = material_sample.radiance();
+    float3 const radiance  = weight * ls_energy;
 
     SOFT_ASSERT(all_finite_and_positive(radiance));
 
@@ -467,11 +467,12 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3 const& geo_n,
 
         bool const translucent = state.is(State::Is_translucent);
 
-        auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
-                                                calculate_pdf);
+        auto const& scene = worker.scene();
+        auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, calculate_pdf);
+        auto const& light_ref = scene.light(light.id);
 
-        float const ls_pdf = light.ptr->pdf(ray, intersection.geo, state.is(State::Is_translucent),
-                                            Filter::Nearest, worker);
+        float const ls_pdf = light_ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),
+                                           Filter::Nearest, worker);
 
         light_pdf = ls_pdf * light.pdf;
     }

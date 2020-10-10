@@ -279,10 +279,11 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         worker.scene().random_light(p, n, translucent, select, lights_);
 
         for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
-            auto const light = lights_[l];
+            auto const  light     = lights_[l];
+            auto const& light_ref = worker.scene().light(light.id);
 
             Sample_to light_sample;
-            if (!light.ptr->sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
+            if (!light_ref.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
                 continue;
             }
 
@@ -296,7 +297,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
             auto const bxdf = material_sample.evaluate_f(light_sample.wi);
 
-            float3 const radiance = light.ptr->evaluate(light_sample, Filter::Nearest, worker);
+            float3 const radiance = light_ref.evaluate(light_sample, Filter::Nearest, worker);
 
             float const weight = 1.f / (light.pdf * light_sample.pdf());
 

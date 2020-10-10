@@ -48,7 +48,7 @@ class Traversal_stack {
     }
 
   private:
-    static uint32_t constexpr Stack_size  = (1 << (Tree::Split_depth - 1)) + 1;
+    static uint32_t constexpr Stack_size = (1 << (Tree::Split_depth - 1)) + 1;
 
     uint32_t end_ = 0;
 
@@ -283,7 +283,7 @@ bool Tree::Node::split(float3 const& p) const {
     float const a = std::max(d - r, 0.001f);
     float const b = d + r;
 
-    float const eg = 1.f / (a * b);
+    float const eg  = 1.f / (a * b);
     float const eg2 = eg * eg;
 
     float const a3 = a * a * a;
@@ -297,7 +297,7 @@ bool Tree::Node::split(float3 const& p) const {
     float const ee = power / float(num_lights);
 
     float const s2 = (ve * vg + ve * eg2 + ee * ee * vg) * (num_lights * num_lights);
-    float const s = std::sqrt(s2);
+    float const s  = std::sqrt(s2);
 
     float const ns = std::pow(1.f / (1.f + s), 1.f / 4.f);
 
@@ -314,7 +314,7 @@ bool Tree::Node::split(float3 const& p0, float3 const& dir) const {
     return split(closest_point);
 }
 
-Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
+Light_select Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
                                       float random, uint32_t const* const light_mapping,
                                       Scene const& scene) const {
     if (1 == num_lights) {
@@ -332,7 +332,7 @@ Tree::Result Tree::Node::random_light(float3 const& p, float3 const& n, bool tot
     return {children_or_light + l.offset, l.pdf};
 }
 
-Tree::Result Tree::Node::random_light(float3 const& p0, float3 const& p1, float3 const& dir,
+Light_select Tree::Node::random_light(float3 const& p0, float3 const& p1, float3 const& dir,
                                       float random, uint32_t const* const light_mapping,
                                       Scene const& scene) const {
     if (1 == num_lights) {
@@ -365,7 +365,7 @@ float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint3
     return distribution_pdf<4>(weights, id - children_or_light);
 }
 
-Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+Light_select Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                                 Scene const& scene) const {
     float const ip = infinite_weight_;
 
@@ -413,8 +413,8 @@ Tree::Result Tree::random_light(float3 const& p, float3 const& n, bool total_sph
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            Result const result = node.random_light(p, n, total_sphere, random, light_mapping_,
-                                                    scene);
+            Light_select const result = node.random_light(p, n, total_sphere, random,
+                                                          light_mapping_, scene);
 
             return {light_mapping_[result.id], result.pdf * pdf};
         }
@@ -434,7 +434,7 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
 
         SOFT_ASSERT(pdf > 0.f);
 
-        lights.push_back(scene.light_ptr(l.offset, pdf));
+        lights.push_back({l.offset, pdf});
 
         return;
     }
@@ -486,10 +486,10 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            Result const result = node.random_light(p, n, total_sphere, t.random, light_mapping_,
-                                                    scene);
+            Light_select const result = node.random_light(p, n, total_sphere, t.random,
+                                                          light_mapping_, scene);
 
-            lights.push_back(scene.light_ptr(light_mapping_[result.id], result.pdf * t.pdf));
+            lights.push_back({light_mapping_[result.id], result.pdf * t.pdf});
 
             t = stack.pop();
 
@@ -498,7 +498,7 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
     }
 }
 
-Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random,
+Light_select Tree::random_light(float3 const& p0, float3 const& p1, float random,
                                 Scene const& scene) const {
     float const ip = infinite_weight_;
 
@@ -554,14 +554,16 @@ Tree::Result Tree::random_light(float3 const& p0, float3 const& p1, float random
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            Result const result = node.random_light(p0, p1, dir, random, light_mapping_, scene);
+            Light_select const result = node.random_light(p0, p1, dir, random, light_mapping_,
+                                                          scene);
 
             return {light_mapping_[result.id], result.pdf * pdf};
         }
     }
 }
 
-void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene, Lights& lights) const {
+void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene,
+                        Lights& lights) const {
     lights.clear();
 
     float const ip = infinite_weight_;
@@ -573,7 +575,7 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene 
 
         SOFT_ASSERT(pdf > 0.f);
 
-        lights.push_back(scene.light_ptr(l.offset, pdf));
+        lights.push_back({l.offset, pdf});
 
         return;
     }
@@ -627,10 +629,10 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene 
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            Result const result = node.random_light(p0, p1, dir, t.random, light_mapping_,
-                                                    scene);
+            Light_select const result = node.random_light(p0, p1, dir, t.random, light_mapping_,
+                                                          scene);
 
-            lights.push_back(scene.light_ptr(light_mapping_[result.id], result.pdf * t.pdf));
+            lights.push_back({light_mapping_[result.id], result.pdf * t.pdf});
 
             t = stack.pop();
 
@@ -853,7 +855,7 @@ static float cone_importance(float cos) {
 }
 
 static float variance(uint32_t* const lights, uint32_t begin, uint32_t end, Scene const& scene) {
-    float ap = 0.f;
+    float ap  = 0.f;
     float aps = 0.f;
 
     for (uint32_t i = begin, n = 0; i < end; ++i, ++n) {
@@ -978,7 +980,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     node.bounds            = bounds;
     node.cone              = cone;
     node.power             = total_power;
-    node.variance = variance(lights, begin, end, scene);
+    node.variance          = variance(lights, begin, end, scene);
     node.middle            = c0_end;
     node.children_or_light = child0;
     node.num_lights        = len;
@@ -991,7 +993,6 @@ Tree_builder::Split_candidate::Split_candidate() = default;
 void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split,
                                          float surface_area, float cone_weight,
                                          uint32_t const* const lights, Scene const& scene) {
-
     float power_a = 0.f;
     float power_b = 0.f;
 
@@ -1004,7 +1005,6 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
         uint32_t const l = lights[i];
         power_b += scene.light_power(l);
     }
-
 
     AABB a(AABB::empty());
 
@@ -1037,8 +1037,9 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
     weight = ((cone_weight_a * a.surface_area()) + (cone_weight_b * b.surface_area())) /
              (surface_area * cone_weight);
 
-           weight =  (((power_a * cone_weight_a * a.surface_area()) + (power_b * cone_weight_b *
-           b.surface_area())) / (surface_area * cone_weight));
+    weight = (((power_a * cone_weight_a * a.surface_area()) +
+               (power_b * cone_weight_b * b.surface_area())) /
+              (surface_area * cone_weight));
 }
 
 void Tree_builder::serialize(Tree::Node* nodes) {
@@ -1049,11 +1050,11 @@ void Tree_builder::serialize(Tree::Node* nodes) {
 
         AABB const& bounds = source.bounds;
 
-        dest.center = float4(bounds.position(), 0.5f * length(bounds.extent()));
-        dest.cone   = source.cone;
-        dest.power  = source.power;
-        dest.variance  = source.variance;
-        dest.middle = source.middle;
+        dest.center            = float4(bounds.position(), 0.5f * length(bounds.extent()));
+        dest.cone              = source.cone;
+        dest.power             = source.power;
+        dest.variance          = source.variance;
+        dest.middle            = source.middle;
         dest.children_or_light = source.children_or_light;
         dest.num_lights        = source.num_lights;
     }

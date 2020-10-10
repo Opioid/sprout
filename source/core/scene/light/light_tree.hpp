@@ -35,16 +35,11 @@ class Tree {
     static uint32_t constexpr Split_depth = 4;
     static uint32_t constexpr Max_lights  = 1 << Split_depth;
 
-    using Lights = memory::Array<Light_ptr>;
+    using Lights = memory::Array<Light_select>;
 
     Tree();
 
     ~Tree();
-
-    struct Result {
-        uint32_t id;
-        float    pdf;
-    };
 
     struct Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
@@ -55,11 +50,12 @@ class Tree {
 
         bool split(float3 const& p0, float3 const& dir) const;
 
-        Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
-                            uint32_t const* const light_mapping, Scene const& scene) const;
+        Light_select random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                                  uint32_t const* const light_mapping, Scene const& scene) const;
 
-        Result random_light(float3 const& p0, float3 const& p1, float3 const& dir, float random,
-                            uint32_t const* const light_mapping, Scene const& scene) const;
+        Light_select random_light(float3 const& p0, float3 const& p1, float3 const& dir,
+                                  float random, uint32_t const* const light_mapping,
+                                  Scene const& scene) const;
 
         float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
                   uint32_t const* const light_mapping, Scene const& scene) const;
@@ -75,15 +71,17 @@ class Tree {
         uint32_t num_lights;
     };
 
-    Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
-                        Scene const& scene) const;
+    Light_select random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                              Scene const& scene) const;
 
     void random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
                       Scene const& scene, Lights& lights) const;
 
-    Result random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene) const;
+    Light_select random_light(float3 const& p0, float3 const& p1, float random,
+                              Scene const& scene) const;
 
-    void random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene, Lights& lights) const;
+    void random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene,
+                      Lights& lights) const;
 
     float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
               Scene const& scene) const;

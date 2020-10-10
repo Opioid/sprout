@@ -195,19 +195,20 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
     float const select = light_sampler_.generate_sample_1D(rng, 1);
 
-    auto const light = worker.scene().random_light(select);
+    auto const  light     = worker.scene().random_light(select);
+    auto const& light_ref = worker.scene().light(light.id);
 
     uint64_t const time = worker.absolute_time(frame, light_sampler_.generate_sample_1D(rng, 2));
 
     Importance const& importance = worker.particle_importance().importance(light.id);
 
     if (importance.distribution().empty()) {
-        if (!light.ptr->sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
+        if (!light_ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
             return false;
         }
     } else {
-        if (!light.ptr->sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
-                               light_sample)) {
+        if (!light_ref.sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
+                              light_sample)) {
             return false;
         }
 
@@ -222,7 +223,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_out = light.ptr;
+    light_out = &light_ref;
     light_id  = light.id;
 
     light_sample.pdf *= light.pdf;
