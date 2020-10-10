@@ -153,7 +153,7 @@ void size() {
     print_size<rendering::Worker>("rendering::Worker", 1152);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 64);
-    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 128);
+    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 192);
 }
 
 }  // namespace testing
