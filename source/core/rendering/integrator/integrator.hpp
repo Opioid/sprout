@@ -30,7 +30,7 @@ class Sample;
 
 namespace light {
 class Light;
-struct Light_select;
+struct Light_pick;
 }  // namespace light
 
 namespace prop {
@@ -66,7 +66,7 @@ class Integrator {
     using Scene           = scene::Scene;
     using Transformation  = scene::entity::Composed_transformation;
     using Light           = scene::light::Light;
-    using Lights          = memory::Array<scene::light::Light_select>;
+    using Lights          = memory::Array<scene::light::Light_pick>;
     using Material        = scene::material::Material;
     using Material_sample = scene::material::Sample;
     using Filter          = scene::material::Sampler_settings::Filter;

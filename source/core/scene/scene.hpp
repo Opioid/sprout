@@ -78,7 +78,7 @@ class Scene {
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
-    using Light          = light::Light_select;
+    using Light          = light::Light_pick;
     using Lights         = memory::Array<Light>;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;

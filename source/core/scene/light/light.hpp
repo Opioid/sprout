@@ -126,7 +126,7 @@ class alignas(16) Light {
     float extent_;
 };
 
-struct Light_select {
+struct Light_pick {
     uint32_t id;
 
     float pdf;
