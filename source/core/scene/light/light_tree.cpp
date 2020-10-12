@@ -292,7 +292,7 @@ bool Tree::Node::split(float3 const& p) const {
     float const ve = variance;
     float const ee = power / float(num_lights);
 
-    float const s2 = (ve * vg + ve * eg2 + ee * ee * vg) * (num_lights * num_lights);
+    float const s2 = (ve * vg + ve * eg2 + ee * ee * vg);
     float const s  = std::sqrt(s2);
 
     float const ns = std::pow(1.f / (1.f + s), 1.f / 4.f);
