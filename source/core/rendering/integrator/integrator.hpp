@@ -53,12 +53,7 @@ class Worker;
 
 namespace integrator {
 
-struct Light_sampling {
-    enum class Strategy { Single, All };
-
-    Strategy strategy;
-    uint32_t num_samples;
-};
+enum class Light_sampling { Single, Adaptive, All };
 
 class Integrator {
   public:

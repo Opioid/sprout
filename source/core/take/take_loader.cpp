@@ -588,7 +588,7 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
     uint32_t constexpr Default_min_bounces = 4;
     uint32_t constexpr Default_max_bounces = 8;
 
-    Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
+    Light_sampling light_sampling{Light_sampling::Adaptive};
 
     bool constexpr Default_caustics = true;
 
@@ -602,10 +602,7 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
         }
 
         if ("Whitted" == n.name) {
-            uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
-                                                               light_sampling.num_samples);
-
-            return new Whitted_pool(num_workers, num_light_samples);
+            return new Whitted_pool(num_workers);
         }
 
         if ("PM" == n.name) {
@@ -747,7 +744,7 @@ void Loader::set_default_integrators(uint32_t num_workers, bool progressive, Vie
     using namespace rendering::integrator;
 
     if (!view.surface_integrators && !view.lighttracers) {
-        Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
+        Light_sampling const light_sampling{Light_sampling::Single};
 
         uint32_t const num_samples = 1;
         uint32_t const min_bounces = 4;
@@ -973,12 +970,12 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
             std::string const strategy = json::read_string(n.value);
 
             if ("Single" == strategy) {
-                sampling.strategy = Light_sampling::Strategy::Single;
+                sampling = Light_sampling::Single;
+            } else if ("Adaptive" == strategy) {
+                sampling = Light_sampling::Adaptive;
             } else if ("All" == strategy) {
-                sampling.strategy = Light_sampling::Strategy::All;
+                sampling = Light_sampling::All;
             }
-        } else if ("num_samples" == n.name) {
-            sampling.num_samples = json::read_uint(n.value);
         }
     }
 }

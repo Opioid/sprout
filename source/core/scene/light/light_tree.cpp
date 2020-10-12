@@ -361,64 +361,8 @@ float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint3
     return distribution_pdf<4>(weights, id - children_or_light);
 }
 
-Light_pick Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
-                              Scene const& scene) const {
-    float const ip = infinite_weight_;
-
-    if (random < infinite_guard_) {
-        auto const l = infinite_light_distribution_.sample_discrete(random);
-
-        float const pdf = l.pdf * ip;
-
-        SOFT_ASSERT(pdf > 0.f);
-
-        return {l.offset, pdf};
-    }
-
-    float pdf = 1.f - ip;
-
-    random = (random - ip) / pdf;
-
-    for (uint32_t nid = 0;;) {
-        Node const& node = nodes_[nid];
-
-        if (node.middle > 0) {
-            uint32_t const c0 = node.children_or_light;
-            uint32_t const c1 = c0 + 1;
-
-            float p0 = nodes_[c0].weight(p, n, total_sphere);
-            float p1 = nodes_[c1].weight(p, n, total_sphere);
-
-            float const pt = p0 + p1;
-
-            SOFT_ASSERT(pt > 0.f);
-
-            p0 /= pt;
-            p1 /= pt;
-
-            if (random < p0) {
-                nid = c0;
-                pdf *= p0;
-                random /= p0;
-            } else {
-                nid = c1;
-                pdf *= p1;
-                random = (random - p0) / p1;
-            }
-        } else {
-            SOFT_ASSERT(std::isfinite(pdf));
-            SOFT_ASSERT(pdf > 0.f);
-
-            Light_pick const pick = node.random_light(p, n, total_sphere, random, light_mapping_,
-                                                      scene);
-
-            return {light_mapping_[pick.id], pick.pdf * pdf};
-        }
-    }
-}
-
 void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
-                        Scene const& scene, Lights& lights) const {
+                        bool split, Scene const& scene, Lights& lights) const {
     lights.clear();
 
     float const ip = infinite_weight_;
@@ -442,8 +386,6 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
     Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, 0};
 
     stack.push(t);
-
-    bool split = true;
 
     while (!stack.empty()) {
         Node const& node = nodes_[t.node];
@@ -494,71 +436,8 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
     }
 }
 
-Light_pick Tree::random_light(float3 const& p0, float3 const& p1, float random,
-                              Scene const& scene) const {
-    float const ip = infinite_weight_;
-
-    if (random < infinite_guard_) {
-        auto const l = infinite_light_distribution_.sample_discrete(random);
-
-        float const pdf = l.pdf * ip;
-
-        SOFT_ASSERT(pdf > 0.f);
-
-        return {l.offset, pdf};
-    }
-
-    float3 const dir = normalize(p0 - p1);
-
-    float pdf = 1.f - ip;
-
-    random = (random - ip) / pdf;
-
-    for (uint32_t nid = 0;;) {
-        Node const& node = nodes_[nid];
-
-        if (node.middle > 0) {
-            uint32_t const c0 = node.children_or_light;
-            uint32_t const c1 = c0 + 1;
-
-            float pr0 = nodes_[c0].weight(p0, p1, dir);
-            float pr1 = nodes_[c1].weight(p0, p1, dir);
-
-            float const prt = pr0 + pr1;
-
-            SOFT_ASSERT(prt > 0.f);
-
-            if (!(prt > 0.f)) {
-                std::cout << prt << std::endl;
-                std::cout << pr0 << std::endl;
-                std::cout << pr0 << std::endl;
-            }
-
-            pr0 /= prt;
-            pr1 /= prt;
-
-            if (random < pr0) {
-                nid = c0;
-                pdf *= pr0;
-                random /= pr0;
-            } else {
-                nid = c1;
-                pdf *= pr1;
-                random = (random - pr0) / pr1;
-            }
-        } else {
-            SOFT_ASSERT(std::isfinite(pdf));
-            SOFT_ASSERT(pdf > 0.f);
-
-            Light_pick const pick = node.random_light(p0, p1, dir, random, light_mapping_, scene);
-
-            return {light_mapping_[pick.id], pick.pdf * pdf};
-        }
-    }
-}
-
-void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene const& scene,
-                        Lights& lights) const {
+void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool split,
+                        Scene const& scene, Lights& lights) const {
     lights.clear();
 
     float const ip = infinite_weight_;
@@ -584,8 +463,6 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene 
     Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, 0};
 
     stack.push(t);
-
-    bool split = true;
 
     while (!stack.empty()) {
         Node const& node = nodes_[t.node];
@@ -635,7 +512,7 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, Scene 
     }
 }
 
-float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
+float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, bool split, uint32_t id,
                 Scene const& scene) const {
     float const ip = infinite_weight_;
 
@@ -646,8 +523,6 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id
     }
 
     float pdf = 1.f - ip;
-
-    bool split = true;
 
     SOFT_ASSERT(pdf > 0.f);
 

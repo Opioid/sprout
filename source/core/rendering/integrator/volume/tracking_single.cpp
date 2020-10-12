@@ -246,7 +246,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
                     float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
-                    auto const  light     = scene.random_light(p, float3(0.f), true, select);
+                    auto const  light     = scene.random_light(select);
                     auto const& light_ref = scene.light(light.id);
 
                     li = w * direct_light(light_ref, light.pdf, ray, p, 0, intersection, worker);
@@ -280,7 +280,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
-        auto const light = worker.scene().random_light(p, float3(0.f), true, select);
+        auto const light = worker.scene().random_light(select);
 
         auto const& light_ref = worker.scene().light(light.id);
 
@@ -299,7 +299,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
         float const select = light_sampler(ray.depth).generate_sample_1D(rng,
                                                                          light::Tree::Max_lights);
 
-        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, lights_);
+        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, true, lights_);
 
         // li = one_bounce(ray, intersection, material, worker);
 
@@ -434,8 +434,8 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& intersect
     float light_pdf = 0.f;
     /*
         if (state.no(State::Treat_as_singular)) {
-            bool const calculate_pdf = Light_sampling::Strategy::Single ==
-                                       settings_.light_sampling.strategy;
+            bool const calculate_pdf = Light_sampling::Single ==
+                                       settings_.light_sampling;
 
             bool const translucent = state.is(State::Is_translucent);
 

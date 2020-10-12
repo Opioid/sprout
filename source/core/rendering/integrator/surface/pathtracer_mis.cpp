@@ -25,8 +25,6 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
-static uint32_t constexpr Max_lights = scene::light::Tree::Max_lights;
-
 Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
     : settings_(settings),
       sampler_pool_(progressive ? nullptr
@@ -45,8 +43,6 @@ Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
             s = &sampler_;
         }
     }
-
-    lights_.reserve(light::Tree::Max_lights);
 }
 
 Pathtracer_MIS::~Pathtracer_MIS() {
@@ -62,16 +58,19 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 
     uint32_t const num_lights = scene.num_lights();
 
-    uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
+    bool const all = Light_sampling::All == settings_.light_sampling;
 
-    bool const single = Light_sampling::Strategy::Single == settings_.light_sampling.strategy;
+    uint32_t const max_lights = light::Tree::max_lights(Light_sampling::Adaptive ==
+                                                        settings_.light_sampling);
 
-    uint32_t const nd2 = single ? Max_lights : num_lights;
-    uint32_t const nd1 = single ? Max_lights + 1 : num_lights;
+    uint32_t const nd2 = all ? num_lights : max_lights;
+    uint32_t const nd1 = all ? num_lights : max_lights + 1;
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, num_light_samples, nd2, nd1);
+        s->resize(num_samples_per_pixel, 1, nd2, nd1);
     }
+
+    lights_.reserve(max_lights);
 }
 
 void Pathtracer_MIS::start_pixel(rnd::Generator& rng) {
@@ -314,10 +313,6 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
         return result;
     }
 
-    uint32_t const num_samples = settings_.light_sampling.num_samples;
-
-    float const num_samples_reciprocal = 1.f / float(num_samples);
-
     bool const translucent = material_sample.is_translucent();
 
     float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface,
@@ -325,24 +320,22 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
 
     auto& rng = worker.rng();
 
-    if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
-        float3 const n = material_sample.geometric_normal();
-        /*
-                for (uint32_t i = num_samples; i > 0; --i) {
-                    float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+    if (Light_sampling::All == settings_.light_sampling) {
+        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
+            auto const& light = worker.scene().light(l);
 
-                    auto const light = worker.scene().random_light(p, n, translucent, select);
+            float3 const el = evaluate_light(light, 1.f, ray, p, l, intersection, material_sample,
+                                             filter, worker);
 
-                    float3 const el = evaluate_light(*light.ptr, light.pdf, ray, p, 0, intersection,
-                                                     material_sample, filter, worker);
+            result += el;
+        }
+    } else {
+        float3 const n      = material_sample.geometric_normal();
+        float const  select = light_sampler(ray.depth).generate_sample_1D(rng, lights_.capacity());
 
-                    result += num_samples_reciprocal * el;
-                }
-        */
+        bool const split = Light_sampling::Adaptive == settings_.light_sampling;
 
-        float const select = light_sampler(ray.depth).generate_sample_1D(rng, Max_lights);
-
-        worker.scene().random_light(p, n, translucent, select, lights_);
+        worker.scene().random_light(p, n, translucent, select, split, lights_);
 
         for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
             auto const  light     = lights_[l];
@@ -352,17 +345,6 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& intersection,
                                              material_sample, filter, worker);
 
             result += el;
-        }
-
-    } else {
-        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
-            auto const& light = worker.scene().light(l);
-            for (uint32_t i = num_samples; i > 0; --i) {
-                float3 const el = evaluate_light(light, 1.f, ray, p, l, intersection,
-                                                 material_sample, filter, worker);
-
-                result += num_samples_reciprocal * el;
-            }
         }
     }
 
@@ -416,12 +398,13 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n,
     float light_pdf = 0.f;
 
     if (state.no(State::Treat_as_singular)) {
-        bool const use_pdf = Light_sampling::Strategy::Single == settings_.light_sampling.strategy;
+        bool const use_pdf = Light_sampling::All != settings_.light_sampling;
+        bool const split   = Light_sampling::Adaptive == settings_.light_sampling;
 
         bool const translucent = state.is(State::Is_translucent);
 
-        auto const& scene     = worker.scene();
-        auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, use_pdf);
+        auto const& scene = worker.scene();
+        auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, split, use_pdf);
         auto const& light_ref = scene.light(light.id);
 
         float const ls_pdf = light_ref.pdf(ray, intersection.geo, translucent, Filter::Nearest,
@@ -462,13 +445,13 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3 const& geo_n,
     float light_pdf = 0.f;
 
     if (state.no(State::Treat_as_singular)) {
-        bool const calculate_pdf = Light_sampling::Strategy::Single ==
-                                   settings_.light_sampling.strategy;
+        bool const use_pdf = Light_sampling::All != settings_.light_sampling;
+        bool const split   = Light_sampling::Adaptive == settings_.light_sampling;
 
         bool const translucent = state.is(State::Is_translucent);
 
         auto const& scene = worker.scene();
-        auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, calculate_pdf);
+        auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, split, use_pdf);
         auto const& light_ref = scene.light(light.id);
 
         float const ls_pdf = light_ref.pdf(ray, intersection.geo, state.is(State::Is_translucent),

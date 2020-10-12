@@ -131,19 +131,16 @@ class Scene {
 
     Light light(uint32_t id, bool calculate_pdf) const;
 
-    Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
+    Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere, bool split,
                 bool calculate_pdf) const;
 
     Light random_light(float random) const;
 
-    Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
-
-    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random, bool split,
                       Lights& lights) const;
 
-    Light random_light(float3 const& p0, float3 const& p1, float random) const;
-
-    void random_light(float3 const& p0, float3 const& p1, float random, Lights& lights) const;
+    void random_light(float3 const& p0, float3 const& p1, float random, bool split,
+                      Lights& lights) const;
 
     void simulate(uint64_t start, uint64_t end, thread::Pool& threads);
 

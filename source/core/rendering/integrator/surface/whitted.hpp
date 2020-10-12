@@ -13,12 +13,7 @@ namespace rendering::integrator::surface {
 
 class alignas(64) Whitted final : public Integrator {
   public:
-    struct Settings {
-        uint32_t num_light_samples;
-        float    num_light_samples_reciprocal;
-    };
-
-    Whitted(Settings const& settings);
+    Whitted();
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
@@ -33,19 +28,14 @@ class alignas(64) Whitted final : public Integrator {
     float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
                                  Material_sample const& material_sample, Worker& worker);
 
-    Settings const settings_;
-
     sampler::Random sampler_;
 };
 
 class Whitted_pool final : public Typed_pool<Whitted> {
   public:
-    Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples);
+    Whitted_pool(uint32_t num_integrators);
 
     Integrator* get(uint32_t id) const final;
-
-  private:
-    Whitted::Settings settings_;
 };
 
 }  // namespace rendering::integrator::surface

@@ -44,8 +44,6 @@ Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive)
             s = &sampler_;
         }
     }
-
-    lights_.reserve(scene::light::Tree::Max_lights);
 }
 
 Pathtracer_DL::~Pathtracer_DL() {
@@ -61,21 +59,19 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
 
     uint32_t const num_lights = scene.num_lights();
 
-    uint32_t const num_light_samples = settings_.num_samples * settings_.light_sampling.num_samples;
+    bool const all = Light_sampling::All == settings_.light_sampling;
 
-    if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
-        static uint32_t constexpr Max_lights = light::Tree::Max_lights;
+    uint32_t const max_lights = light::Tree::max_lights(Light_sampling::Adaptive ==
+                                                        settings_.light_sampling);
 
-        for (auto s : light_samplers_) {
-            //    s->resize(num_samples_per_pixel, num_light_samples, 1, 2);
+    uint32_t const nd2 = all ? num_lights : max_lights;
+    uint32_t const nd1 = all ? num_lights : max_lights + 1;
 
-            s->resize(num_samples_per_pixel, num_light_samples, Max_lights, Max_lights + 1);
-        }
-    } else {
-        for (auto s : light_samplers_) {
-            s->resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
-        }
+    for (auto s : light_samplers_) {
+        s->resize(num_samples_per_pixel, 1, nd2, nd1);
     }
+
+    lights_.reserve(max_lights);
 }
 
 void Pathtracer_DL::start_pixel(rnd::Generator& rng) {
@@ -221,8 +217,6 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         return result;
     }
 
-    uint32_t const num_samples = settings_.light_sampling.num_samples;
-
     bool const translucent = material_sample.is_translucent();
 
     float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface,
@@ -240,50 +234,12 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
     auto& rng = worker.rng();
 
-    if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
-        /*
-                for (uint32_t i = num_samples; i > 0; --i) {
-                    float const select = sampler.generate_sample_1D(rng, 1);
-
-                    // auto const light = worker.scene().random_light(select);
-                    auto const light = worker.scene().random_light(p, n, translucent, select);
-
-                    Sample_to light_sample;
-                    if (!light.ptr->sample(p, n, ray.time, translucent, sampler, 0, worker,
-           light_sample)) { continue;
-                    }
-
-                    shadow_ray.set_direction(light_sample.wi);
-                    shadow_ray.max_t() = light_sample.t();
-
-                    float3 tr;
-                    if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter,
-           tr)) { continue;
-                    }
-
-                    auto const bxdf = material_sample.evaluate_f(light_sample.wi);
-
-                    float3 const radiance = light.ptr->evaluate(light_sample, Filter::Nearest,
-           worker);
-
-                    float const weight = 1.f / (light.pdf * light_sample.pdf());
-
-                    result += weight * (tr * radiance * bxdf.reflection);
-                }
-
-                return result / float(num_samples);
-                */
-
-        float const select = sampler.generate_sample_1D(rng, light::Tree::Max_lights);
-
-        worker.scene().random_light(p, n, translucent, select, lights_);
-
-        for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
-            auto const  light     = lights_[l];
-            auto const& light_ref = worker.scene().light(light.id);
+    if (Light_sampling::All == settings_.light_sampling) {
+        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
+            auto const& light = worker.scene().light(l);
 
             Sample_to light_sample;
-            if (!light_ref.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
+            if (!light.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
                 continue;
             }
 
@@ -297,9 +253,9 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
             auto const bxdf = material_sample.evaluate_f(light_sample.wi);
 
-            float3 const radiance = light_ref.evaluate(light_sample, Filter::Nearest, worker);
+            float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
-            float const weight = 1.f / (light.pdf * light_sample.pdf());
+            float const weight = 1.f / (light_sample.pdf());
 
             result += weight * (tr * radiance * bxdf.reflection);
         }
@@ -307,11 +263,18 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         return result;
     }
 
-    for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
-        auto const& light = worker.scene().light(l);
+    float const select = sampler.generate_sample_1D(rng, light::Tree::Max_lights);
+
+    bool const split = Light_sampling::Adaptive == settings_.light_sampling;
+
+    worker.scene().random_light(p, n, translucent, select, split, lights_);
+
+    for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
+        auto const  light     = lights_[l];
+        auto const& light_ref = worker.scene().light(light.id);
 
         Sample_to light_sample;
-        if (!light.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
+        if (!light_ref.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
             continue;
         }
 
@@ -325,14 +288,14 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
 
         auto const bxdf = material_sample.evaluate_f(light_sample.wi);
 
-        float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
+        float3 const radiance = light_ref.evaluate(light_sample, Filter::Nearest, worker);
 
-        float const weight = 1.f / (light_sample.pdf());
+        float const weight = 1.f / (light.pdf * light_sample.pdf());
 
         result += weight * (tr * radiance * bxdf.reflection);
     }
 
-    return result / float(num_samples);
+    return result;
 }
 
 sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) {

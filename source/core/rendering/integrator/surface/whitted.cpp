@@ -16,11 +16,11 @@
 
 namespace rendering::integrator::surface {
 
-Whitted::Whitted(Settings const& settings) : settings_(settings) {}
+Whitted::Whitted() {}
 
 void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
     uint32_t const num_lights = scene.num_lights();
-    sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
+    sampler_.resize(num_samples_per_pixel, 1, num_lights, num_lights);
 }
 
 void Whitted::start_pixel(rnd::Generator& rng) {
@@ -98,41 +98,36 @@ float3 Whitted::estimate_direct_light(Ray const& ray, Intersection const& inters
 
     for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
         auto const& light = worker.scene().light(l);
-        for (uint32_t i = 0, nls = settings_.num_light_samples; i < nls; ++i) {
-            if (scene::shape::Sample_to light_sample;
-                light.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-                             translucent, sampler_, l, worker, light_sample)) {
-                shadow_ray.set_direction(light_sample.wi);
-                shadow_ray.max_t() = light_sample.t();
 
-                float3 tr;
-                if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection,
-                                        Filter::Undefined, tr)) {
-                    continue;
-                }
+        if (scene::shape::Sample_to light_sample;
+            light.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+                         translucent, sampler_, l, worker, light_sample)) {
+            shadow_ray.set_direction(light_sample.wi);
+            shadow_ray.max_t() = light_sample.t();
 
-                auto const bxdf = material_sample.evaluate_f(light_sample.wi);
-
-                float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
-
-                result += (tr * radiance * bxdf.reflection) / light_sample.pdf();
+            float3 tr;
+            if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection,
+                                    Filter::Undefined, tr)) {
+                continue;
             }
+
+            auto const bxdf = material_sample.evaluate_f(light_sample.wi);
+
+            float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
+
+            result += (tr * radiance * bxdf.reflection) / light_sample.pdf();
         }
     }
 
-    return settings_.num_light_samples_reciprocal * result;
+    return result;
 }
 
-Whitted_pool::Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples)
-    : Typed_pool<Whitted>(num_integrators) {
-    settings_.num_light_samples            = num_light_samples;
-    settings_.num_light_samples_reciprocal = 1.f / float(num_light_samples);
-}
+Whitted_pool::Whitted_pool(uint32_t num_integrators) : Typed_pool<Whitted>(num_integrators) {}
 
 Integrator* Whitted_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Whitted(settings_);
+        return new (&integrators_[id]) Whitted();
     }
 
     return &integrators_[id];
