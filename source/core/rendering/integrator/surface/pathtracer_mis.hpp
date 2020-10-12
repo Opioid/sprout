@@ -72,6 +72,8 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     sampler::Sampler& light_sampler(uint32_t bounce);
 
+    bool splitting(uint32_t bounce) const;
+
     Settings const settings_;
 
     sampler::Random sampler_;

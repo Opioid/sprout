@@ -327,10 +327,11 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
             result += el;
         }
     } else {
-        float3 const n      = mat_sample.geometric_normal();
-        float const  select = light_sampler(ray.depth).generate_sample_1D(rng, lights_.capacity());
+        float3 const n = mat_sample.geometric_normal();
 
-        bool const split = Light_sampling::Adaptive == settings_.light_sampling;
+        float const select = light_sampler(ray.depth).generate_sample_1D(rng, lights_.capacity());
+
+        bool const split = splitting(ray.depth);
 
         worker.scene().random_light(p, n, translucent, select, split, lights_);
 
@@ -374,8 +375,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
     float const light_pdf = light_sample.pdf() * light_weight;
-
-    float const weight = predivided_power_heuristic(light_pdf, bxdf.pdf());
+    float const weight    = predivided_power_heuristic(light_pdf, bxdf.pdf());
 
     return weight * (tr * radiance * bxdf.reflection);
 }
@@ -392,10 +392,9 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n, Inters
     float light_pdf = 0.f;
 
     if (state.no(State::Treat_as_singular)) {
-        bool const use_pdf = Light_sampling::All != settings_.light_sampling;
-        bool const split   = Light_sampling::Adaptive == settings_.light_sampling;
-
         bool const translucent = state.is(State::Is_translucent);
+        bool const split       = splitting(ray.depth);
+        bool const use_pdf     = Light_sampling::All != settings_.light_sampling;
 
         auto const& scene = worker.scene();
         auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, split, use_pdf);
@@ -438,10 +437,9 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3 const& geo_n,
     float light_pdf = 0.f;
 
     if (state.no(State::Treat_as_singular)) {
-        bool const use_pdf = Light_sampling::All != settings_.light_sampling;
-        bool const split   = Light_sampling::Adaptive == settings_.light_sampling;
-
         bool const translucent = state.is(State::Is_translucent);
+        bool const split       = splitting(ray.depth);
+        bool const use_pdf     = Light_sampling::All != settings_.light_sampling;
 
         auto const& scene = worker.scene();
         auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, split, use_pdf);
@@ -472,6 +470,11 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
     }
 
     return sampler_;
+}
+
+bool Pathtracer_MIS::splitting(uint32_t bounce) const {
+    return (Light_sampling::Adaptive == settings_.light_sampling) &
+           (bounce < Num_dedicated_samplers);
 }
 
 Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progressive,
