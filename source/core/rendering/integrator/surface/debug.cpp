@@ -17,7 +17,9 @@ Debug::Debug(Settings const& settings) : settings_(settings) {
                                                                  : 0);
 }
 
-void Debug::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Debug::prepare(scene::Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+}
 
 void Debug::start_pixel(rnd::Generator& /*rng*/) {}
 
@@ -62,7 +64,7 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker,
 
             bool const translucent = mat_sample.is_translucent();
 
-            worker.scene().random_light(isec.geo.p, n, translucent, 1.f, true, lights_);
+            worker.scene().random_light(isec.geo.p, n, translucent, worker.rng().random_float(), true, lights_);
 
             float const r = float(lights_.size()) / float(scene::light::Tree::Max_lights);
 

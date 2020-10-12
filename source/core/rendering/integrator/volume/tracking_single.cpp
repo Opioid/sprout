@@ -192,9 +192,9 @@ bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& tr) 
     return Tracking::transmittance(ray, worker, tr);
 }
 
-Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter filter,
+Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter,
                                  Worker& worker, float3& li, float3& tr) {
-    if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+    if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
         li = float3(0.f);
         tr = float3(1.f);
         return Event::Abort;
@@ -204,7 +204,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
     // Not sure wether the first test still makes sense.
     // The second test avoids falsely reporting very long volume sections,
-    // when in fact a very short intersection was missed.
+    // when in fact a very close intersection was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
     if (scene::offset_f(ray.min_t()) >= d || scene::Almost_ray_max_t <= d) {
@@ -249,7 +249,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
                     auto const  light     = scene.random_light(select);
                     auto const& light_ref = scene.light(light.id);
 
-                    li = w * direct_light(light_ref, light.pdf, ray, p, 0, intersection, worker);
+                    li = w * direct_light(light_ref, light.pdf, ray, p, 0, isec, worker);
                     tr = float3(0.f);
                     return Event::Pass;
                 }
@@ -284,7 +284,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         auto const& light_ref = worker.scene().light(light.id);
 
-        float3 const l = direct_light(light_ref, light.pdf, ray, p, 0, intersection, worker);
+        float3 const l = direct_light(light_ref, light.pdf, ray, p, 0, isec, worker);
 
         li = l * (1.f - tr) * scattering_albedo;
     } else {
@@ -301,7 +301,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
         worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, true, lights_);
 
-        // li = one_bounce(ray, intersection, material, worker);
+        // li = one_bounce(ray, isec, material, worker);
 
         float3 lli(0.f);
 
@@ -329,7 +329,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
                 float3 const p = ray.point(sample_t);
 
-                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, intersection,
+                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec,
                                               worker);
 
                 float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
@@ -344,7 +344,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
                 float3 const p = ray.point(ray.min_t() + t);
 
-                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, intersection,
+                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec,
                                               worker);
 
                 // Short version
@@ -369,7 +369,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& intersection, Filter fi
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
                                      float3 const& position, uint32_t sampler_dimension,
-                                     Intersection const& intersection, Worker& worker) {
+                                     Intersection const& isec, Worker& worker) {
     shape::Sample_to light_sample;
     if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_dimension, worker,
                       light_sample)) {
@@ -380,13 +380,13 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
                    ray.time);
 
     float3 tr;
-    if (!worker.transmitted(shadow_ray, float3(0.f), intersection, Filter::Nearest, tr)) {
+    if (!worker.transmitted(shadow_ray, float3(0.f), isec, Filter::Nearest, tr)) {
         return float3(0.f);
     }
 
     SOFT_ASSERT(all_finite(tr));
 
-    //    auto const bxdf = material_sample.evaluate_f(light_sample.wi, evaluate_back);
+    //    auto const bxdf = mat_sample.evaluate_f(light_sample.wi, evaluate_back);
 
     float const phase = 1.f / (4.f * Pi);
 
@@ -395,7 +395,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
     return (phase * tr * radiance) / (light_sample.pdf() * light_pdf);
 }
 
-float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& intersection,
+float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
                                    Material const& material, Worker& worker) {
     auto const mu = material.collision_coefficients();
 
@@ -420,13 +420,13 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& intersect
 
     Ray bounce_ray(p, wi, 0.f, scene::Ray_max_t, ray.depth, ray.wavelength, ray.time);
 
-    Intersection tmp_intersection = intersection;
+    Intersection tisec = isec;
 
-    if (!worker.intersect_and_resolve_mask(bounce_ray, tmp_intersection, Filter::Undefined)) {
+    if (!worker.intersect_and_resolve_mask(bounce_ray, tisec, Filter::Undefined)) {
         return float3(0.f);
     }
 
-    uint32_t const light_id = tmp_intersection.light_id(worker);
+    uint32_t const light_id = tisec.light_id(worker);
     if (!Light::is_area_light(light_id)) {
         return float3(0.f);
     }
@@ -442,7 +442,7 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& intersect
             auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
                                                     calculate_pdf);
 
-            float const ls_pdf = light.ptr->pdf(ray, intersection.geo, translucent, Filter::Nearest,
+            float const ls_pdf = light.ptr->pdf(ray, isec.geo, translucent, Filter::Nearest,
                                                worker);
 
             light_pdf = ls_pdf * light.pdf;
@@ -451,19 +451,19 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& intersect
     float3 const wo = -wi;  // sample_result.wi;
 
     // This will invalidate the contents of previous material sample.
-    auto const& material_sample = tmp_intersection.sample(wo, bounce_ray, Filter::Undefined, false,
+    auto const& mat_sample = tisec.sample(wo, bounce_ray, Filter::Undefined, false,
                                                           sampler_, worker);
 
-    if (!material_sample.same_hemisphere(wo)) {
+    if (!mat_sample.same_hemisphere(wo)) {
         return float3(0.f);
     }
 
-    float3 const ls_energy = material_sample.radiance();
+    float3 const ls_energy = mat_sample.radiance();
 
     bounce_ray.max_t() = std::max(scene::offset_b(bounce_ray.max_t()), 0.f);
 
     float3 trans;
-    if (!worker.transmitted(bounce_ray, float3(0.f), tmp_intersection, Filter::Nearest, trans)) {
+    if (!worker.transmitted(bounce_ray, float3(0.f), tisec, Filter::Nearest, trans)) {
         return float3(0.f);
     }
 

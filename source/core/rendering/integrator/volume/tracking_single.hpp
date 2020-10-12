@@ -18,15 +18,15 @@ class alignas(64) Tracking_single final : public Integrator {
 
     bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
 
-    Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
+    Event integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker, float3& li,
                     float3& tr) final;
 
   private:
     float3 direct_light(Light const& light, float light_pdf, Ray const& ray, float3 const& position,
-                        uint32_t sampler_dimension, Intersection const& intersection,
+                        uint32_t sampler_dimension, Intersection const& isec,
                         Worker& worker);
 
-    float3 one_bounce(Ray const& ray, Intersection const& intersection, Material const& material,
+    float3 one_bounce(Ray const& ray, Intersection const& isec, Material const& material,
                       Worker& worker);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
