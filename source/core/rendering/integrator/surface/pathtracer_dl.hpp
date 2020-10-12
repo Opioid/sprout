@@ -1,5 +1,5 @@
-#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
-#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL
 
 #include "sampler/sampler_random.hpp"
 #include "scene/material/sampler_settings.hpp"
@@ -27,12 +27,12 @@ class alignas(64) Pathtracer_DL final : public Integrator {
 
     void start_pixel(rnd::Generator& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
+    float4 li(Ray& ray, Intersection& isec, Worker& worker,
               Interface_stack const& initial_stack) final;
 
   private:
-    float3 direct_light(Ray const& ray, Intersection const& intersection,
-                        Material_sample const& material_sample, Filter filter, Worker& worker);
+    float3 direct_light(Ray const& ray, Intersection const& isec, Material_sample const& mat_sample,
+                        Filter filter, Worker& worker);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

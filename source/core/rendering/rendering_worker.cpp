@@ -139,30 +139,30 @@ void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
 }
 
 float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
-    Intersection intersection;
+    Intersection isec;
 
     if (!interface_stack.empty()) {
         reset_interface_stack(interface_stack);
 
         float3 vli;
         float3 vtr;
-        if (auto const event = volume_integrator_->integrate(ray, intersection, Filter::Undefined,
-                                                             *this, vli, vtr);
+        if (auto const event = volume_integrator_->integrate(ray, isec, Filter::Undefined, *this,
+                                                             vli, vtr);
             Event::Absorb == event) {
             return float4(vli, 1.f);
         }
 
         Interface_stack const temp_stack = interface_stack_;
 
-        float4 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
+        float4 const li = surface_integrator_->li(ray, isec, *this, temp_stack);
 
         SOFT_ASSERT(all_finite_and_positive(li));
 
         return float4(vtr * li.xyz() + vli, li[3]);
     }
 
-    if (intersect_and_resolve_mask(ray, intersection, Filter::Undefined)) {
-        float4 const li = surface_integrator_->li(ray, intersection, *this, interface_stack);
+    if (intersect_and_resolve_mask(ray, isec, Filter::Undefined)) {
+        float4 const li = surface_integrator_->li(ray, isec, *this, interface_stack);
 
         SOFT_ASSERT(all_finite_and_positive(li));
 
@@ -172,9 +172,9 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
     return float4(0.f);
 }
 
-bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& intersection,
-                         Filter filter, float3& tr) {
-    if (float3 a; tinted_visibility(ray, wo, intersection, filter, a)) {
+bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+                         float3& tr) {
+    if (float3 a; tinted_visibility(ray, wo, isec, filter, a)) {
         if (float3 b; transmittance(ray, b)) {
             tr = a * b;
             return true;
@@ -192,9 +192,9 @@ uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32
     return 0;
 }
 
-float3 Worker::photon_li(Intersection const& intersection, Material_sample const& sample) const {
+float3 Worker::photon_li(Intersection const& isec, Material_sample const& sample) const {
     if (photon_map_) {
-        return photon_map_->li(intersection, sample, *this);
+        return photon_map_->li(isec, sample, *this);
     }
 
     return float3(0.f);
@@ -223,12 +223,12 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
 
     Ray tray = ray;
 
-    Intersection intersection;
+    Intersection isec;
 
     float3 w(1.f);
 
     for (;;) {
-        bool const hit = scene_->intersect_volume(tray, *this, intersection);
+        bool const hit = scene_->intersect_volume(tray, *this, isec);
 
         SOFT_ASSERT(tray.max_t() >= tray.min_t());
 
@@ -244,10 +244,10 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
             break;
         }
 
-        if (intersection.same_hemisphere(tray.direction)) {
-            interface_stack_.remove(intersection);
+        if (isec.same_hemisphere(tray.direction)) {
+            interface_stack_.remove(isec);
         } else {
-            interface_stack_.push(intersection);
+            interface_stack_.push(isec);
         }
 
         tray.min_t() = scene::offset_f(tray.max_t());
@@ -264,13 +264,13 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     return true;
 }
 
-bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                               Filter filter, float3& tv) {
+bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+                               float3& tv) {
     using namespace scene::material;
 
-    auto const& material = *intersection.material(*this);
+    auto const& material = *isec.material(*this);
 
-    if (intersection.subsurface & (material.ior() > 1.f)) {
+    if (isec.subsurface & (material.ior() > 1.f)) {
         float const ray_max_t = ray.max_t();
 
         if (scene::shape::Normals normals; intersect(ray, normals)) {

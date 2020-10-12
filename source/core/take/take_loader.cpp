@@ -672,23 +672,25 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
         }
 
         if ("Debug" == n.name) {
-            auto vector = Debug::Settings::Vector::Shading_normal;
+            auto value = Debug::Settings::Value::Shading_normal;
 
-            std::string const vector_type = json::read_string(n.value, "vector");
+            std::string const value_type = json::read_string(n.value, "value");
 
-            if ("Tangent" == vector_type) {
-                vector = Debug::Settings::Vector::Tangent;
-            } else if ("Bitangent" == vector_type) {
-                vector = Debug::Settings::Vector::Bitangent;
-            } else if ("Geometric_normal" == vector_type) {
-                vector = Debug::Settings::Vector::Geometric_normal;
-            } else if ("Shading_normal" == vector_type) {
-                vector = Debug::Settings::Vector::Shading_normal;
-            } else if ("UV" == vector_type) {
-                vector = Debug::Settings::Vector::UV;
+            if ("Tangent" == value_type) {
+                value = Debug::Settings::Value::Tangent;
+            } else if ("Bitangent" == value_type) {
+                value = Debug::Settings::Value::Bitangent;
+            } else if ("Geometric_normal" == value_type) {
+                value = Debug::Settings::Value::Geometric_normal;
+            } else if ("Shading_normal" == value_type) {
+                value = Debug::Settings::Value::Shading_normal;
+            } else if ("UV" == value_type) {
+                value = Debug::Settings::Value::UV;
+            } else if ("Splitting" == value_type) {
+                value = Debug::Settings::Value::Splitting;
             }
 
-            return new Debug_pool(num_workers, vector);
+            return new Debug_pool(num_workers, value);
         }
     }
 

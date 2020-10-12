@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_DEBUG
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_DEBUG
 
 #include "sampler/sampler_random.hpp"
 #include "surface_integrator.hpp"
@@ -8,9 +9,9 @@ namespace rendering::integrator::surface {
 class alignas(64) Debug final : public Integrator {
   public:
     struct Settings {
-        enum class Vector { Tangent, Bitangent, Geometric_normal, Shading_normal, UV };
+        enum class Value { Tangent, Bitangent, Geometric_normal, Shading_normal, UV, Splitting };
 
-        Vector vector;
+        Value value;
     };
 
     Debug(Settings const& settings);
@@ -19,18 +20,20 @@ class alignas(64) Debug final : public Integrator {
 
     void start_pixel(rnd::Generator& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
+    float4 li(Ray& ray, Intersection& isec, Worker& worker,
               Interface_stack const& initial_stack) final;
 
   private:
     Settings settings_;
 
     sampler::Random sampler_;
+
+    Lights lights_;
 };
 
 class Debug_pool final : public Typed_pool<Debug> {
   public:
-    Debug_pool(uint32_t num_integrators, Debug::Settings::Vector vector);
+    Debug_pool(uint32_t num_integrators, Debug::Settings::Value value);
 
     Integrator* get(uint32_t id) const final;
 
@@ -39,3 +42,5 @@ class Debug_pool final : public Typed_pool<Debug> {
 };
 
 }  // namespace rendering::integrator::surface
+
+#endif

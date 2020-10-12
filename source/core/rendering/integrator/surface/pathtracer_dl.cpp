@@ -86,7 +86,7 @@ void Pathtracer_DL::start_pixel(rnd::Generator& rng) {
     }
 }
 
-float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
+float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
                          Interface_stack const& initial_stack) {
     worker.reset_interface_stack(initial_stack);
 
@@ -108,27 +108,27 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
-        auto const& material_sample = worker.sample_material(
-            ray, wo, wo1, intersection, filter, avoid_caustics, from_subsurface, sampler_);
+        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, avoid_caustics,
+                                                        from_subsurface, sampler_);
 
         wo1 = wo;
 
-        bool const same_side = material_sample.same_hemisphere(wo);
+        bool const same_side = mat_sample.same_hemisphere(wo);
 
         if (treat_as_singular & same_side) {
-            result += throughput * material_sample.radiance();
+            result += throughput * mat_sample.radiance();
         }
 
-        if (material_sample.is_pure_emissive()) {
-            transparent &= (!intersection.visible_in_camera(worker)) & (ray.max_t() >= Ray_max_t);
+        if (mat_sample.is_pure_emissive()) {
+            transparent &= (!isec.visible_in_camera(worker)) & (ray.max_t() >= Ray_max_t);
             break;
         }
 
-        result += throughput * direct_light(ray, intersection, material_sample, filter, worker);
+        result += throughput * direct_light(ray, isec, mat_sample, filter, worker);
 
         SOFT_ASSERT(all_finite_and_positive(result));
 
-        material_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
+        mat_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -158,8 +158,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
                 ++ray.depth;
             }
         } else {
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
-                                                  intersection.subsurface);
+            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
@@ -170,15 +169,15 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
         ray.max_t() = Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
-            worker.interface_change(sample_result.wi, intersection);
+            worker.interface_change(sample_result.wi, isec);
         }
 
-        from_subsurface |= intersection.subsurface;
+        from_subsurface |= isec.subsurface;
 
         if (!worker.interface_stack().empty()) {
             float3     vli;
             float3     vtr;
-            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
+            auto const hit = worker.volume(ray, isec, filter, vli, vtr);
 
             if (treat_as_singular) {
                 result += throughput * vli;
@@ -190,7 +189,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
                 SOFT_ASSERT(all_finite_and_positive(result));
                 break;
             }
-        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+        } else if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
             break;
         }
 
@@ -208,21 +207,20 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker,
     return compose_alpha(result, throughput, transparent);
 }
 
-float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersection,
-                                   Material_sample const& material_sample, Filter filter,
+float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
+                                   Material_sample const& mat_sample, Filter filter,
                                    Worker& worker) {
     float3 result(0.f);
 
-    if (!material_sample.ior_greater_one()) {
+    if (!mat_sample.ior_greater_one()) {
         return result;
     }
 
-    bool const translucent = material_sample.is_translucent();
+    bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = material_sample.offset_p(intersection.geo.p, intersection.subsurface,
-                                              translucent);
+    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
 
-    float3 const n = material_sample.geometric_normal();
+    float3 const n = mat_sample.geometric_normal();
 
     Ray shadow_ray;
     shadow_ray.origin     = p;
@@ -247,11 +245,11 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
             shadow_ray.max_t() = light_sample.t();
 
             float3 tr;
-            if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
+            if (!worker.transmitted(shadow_ray, mat_sample.wo(), isec, filter, tr)) {
                 continue;
             }
 
-            auto const bxdf = material_sample.evaluate_f(light_sample.wi);
+            auto const bxdf = mat_sample.evaluate_f(light_sample.wi);
 
             float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
@@ -282,11 +280,11 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& intersect
         shadow_ray.max_t() = light_sample.t();
 
         float3 tr;
-        if (!worker.transmitted(shadow_ray, material_sample.wo(), intersection, filter, tr)) {
+        if (!worker.transmitted(shadow_ray, mat_sample.wo(), isec, filter, tr)) {
             continue;
         }
 
-        auto const bxdf = material_sample.evaluate_f(light_sample.wi);
+        auto const bxdf = mat_sample.evaluate_f(light_sample.wi);
 
         float3 const radiance = light_ref.evaluate(light_sample, Filter::Nearest, worker);
 

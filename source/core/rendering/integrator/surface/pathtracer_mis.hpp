@@ -30,7 +30,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     void start_pixel(rnd::Generator& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
+    float4 li(Ray& ray, Intersection& isec, Worker& worker,
               Interface_stack const& initial_stack) final;
 
   private:
@@ -41,15 +41,14 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool split_photon;
     };
 
-    Result integrate(Ray& ray, Intersection& intersection, Worker& worker, bool integrate_photons);
+    Result integrate(Ray& ray, Intersection& isec, Worker& worker, bool integrate_photons);
 
-    float3 sample_lights(Ray const& ray, Intersection& intersection,
-                         Material_sample const& material_sample, Filter filter, Worker& worker);
+    float3 sample_lights(Ray const& ray, Intersection& isec, Material_sample const& material_sample,
+                         Filter filter, Worker& worker);
 
     float3 evaluate_light(Light const& light, float light_weight, Ray const& history,
-                          float3 const& p, uint32_t sampler_dimension,
-                          Intersection const& intersection, Material_sample const& material_sample,
-                          Filter filter, Worker& worker);
+                          float3 const& p, uint32_t sampler_dimension, Intersection const& isec,
+                          Material_sample const& mat_sample, Filter filter, Worker& worker);
 
     enum class State {
         Primary_ray       = 1 << 0,
@@ -62,13 +61,12 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     using Path_state = flags::Flags<State>;
 
-    float3 connect_light(Ray const& ray, float3 const& geo_n, Intersection const& intersection,
+    float3 connect_light(Ray const& ray, float3 const& geo_n, Intersection const& isec,
                          Bxdf_sample sample_result, Path_state state, Filter filter, Worker& worker,
                          bool& pure_emissive);
 
-    float connect_light_volume(Ray const& ray, float3 const& geo_n,
-                               Intersection const& intersection, float bxdf_pdf, Path_state state,
-                               Worker& worker) const;
+    float connect_light_volume(Ray const& ray, float3 const& geo_n, Intersection const& isec,
+                               float bxdf_pdf, Path_state state, Worker& worker) const;
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

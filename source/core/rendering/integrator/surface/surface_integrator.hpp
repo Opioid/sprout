@@ -20,7 +20,7 @@ class Integrator : public integrator::Integrator {
 
     ~Integrator() override;
 
-    virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker,
+    virtual float4 li(Ray& ray, Intersection& isec, Worker& worker,
                       Interface_stack const& initial_stack) = 0;
 };
 

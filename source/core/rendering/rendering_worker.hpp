@@ -87,22 +87,22 @@ class alignas(64) Worker : public scene::Worker {
 
     void particle_li(uint32_t frame, Interface_stack const& interface_stack);
 
-    Event volume(Ray& ray, Intersection& intersection, Filter filter, float3& li, float3& tr);
+    Event volume(Ray& ray, Intersection& isec, Filter filter, float3& li, float3& tr);
 
-    bool transmitted(Ray& ray, float3 const& wo, Intersection const& intersection, Filter filter,
+    bool transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
                      float3& tr);
 
     uint32_t bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration);
 
-    float3 photon_li(Intersection const& intersection, Material_sample const& sample) const;
+    float3 photon_li(Intersection const& isec, Material_sample const& sample) const;
 
     Particle_importance& particle_importance() const;
 
   protected:
     bool transmittance(Ray const& ray, float3& transmittance);
 
-    bool tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                           Filter filter, float3& tv);
+    bool tinted_visibility(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+                           float3& tv);
 
     integrator::surface::Integrator* surface_integrator_ = nullptr;
 
