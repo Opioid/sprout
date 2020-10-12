@@ -295,7 +295,7 @@ bool Tree::Node::split(float3 const& p) const {
     float const s2 = (ve * vg + ve * eg2 + ee * ee * vg);
     float const ns = 1.f / (1.f + std::sqrt(s2));
 
-  //  float const ns = std::pow(1.f / (1.f + std::sqrt(s2)), 1.f / 4.f);
+    //  float const ns = std::pow(1.f / (1.f + std::sqrt(s2)), 1.f / 4.f);
 
     // 0.01 ^ 4
     // return ns < 0.0001f;

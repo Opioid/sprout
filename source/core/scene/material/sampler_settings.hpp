@@ -6,17 +6,14 @@
 namespace scene::material {
 
 struct Sampler_settings {
-    enum class Address : uint32_t { Clamp = 0 << 0, Repeat = 1 << 0, Undefined = 0xFFFFFFFF };
-
-    enum class Address_flat : uint32_t {
-        Clamp_clamp   = 0,
-        Clamp_repeat  = 1,
-        Repeat_clamp  = 2,
-        Repeat_repeat = 3,
-        Mask          = 0x00000003
+    enum class Address : uint8_t {
+        Clamp     = 0 << 0,
+        Repeat    = 1 << 0,
+        Mask      = 0b00000011,
+        Undefined = 0xFF
     };
 
-    enum class Filter : uint32_t { Nearest = 0 << 2, Linear = 1 << 2, Undefined = 0xFFFFFFFF };
+    enum class Filter : uint8_t { Nearest = 0 << 2, Linear = 1 << 2, Undefined = 0xFF };
 
     Sampler_settings(Filter filter = Filter::Linear, Address address_u = Address::Repeat,
                      Address address_v = Address::Repeat);

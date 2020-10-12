@@ -192,8 +192,8 @@ bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& tr) 
     return Tracking::transmittance(ray, worker, tr);
 }
 
-Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter,
-                                 Worker& worker, float3& li, float3& tr) {
+Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker,
+                                 float3& li, float3& tr) {
     if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
         li = float3(0.f);
         tr = float3(1.f);
@@ -329,8 +329,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter,
 
                 float3 const p = ray.point(sample_t);
 
-                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec,
-                                              worker);
+                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec, worker);
 
                 float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
@@ -344,8 +343,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter,
 
                 float3 const p = ray.point(ray.min_t() + t);
 
-                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec,
-                                              worker);
+                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec, worker);
 
                 // Short version
                 lli += l * (1.f - tr) * scattering_albedo;
@@ -451,8 +449,8 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
     float3 const wo = -wi;  // sample_result.wi;
 
     // This will invalidate the contents of previous material sample.
-    auto const& mat_sample = tisec.sample(wo, bounce_ray, Filter::Undefined, false,
-                                                          sampler_, worker);
+    auto const& mat_sample = tisec.sample(wo, bounce_ray, Filter::Undefined, false, sampler_,
+                                          worker);
 
     if (!mat_sample.same_hemisphere(wo)) {
         return float3(0.f);
