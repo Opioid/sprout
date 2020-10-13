@@ -335,14 +335,15 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
         worker.scene().random_light(p, n, translucent, select, split, lights_);
 
-        for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
-            auto const  light     = lights_[l];
+        for (uint32_t l = 0; auto const light : lights_) {
             auto const& light_ref = worker.scene().light(light.id);
 
             float3 const el = evaluate_light(light_ref, light.pdf, ray, p, l, isec, mat_sample,
                                              filter, worker);
 
             result += el;
+
+            ++l;
         }
     }
 
