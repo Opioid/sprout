@@ -688,6 +688,8 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
                 value = Debug::Settings::Value::UV;
             } else if ("Splitting" == value_type) {
                 value = Debug::Settings::Value::Splitting;
+            } else if ("LightId" == value_type) {
+                value = Debug::Settings::Value::LightId;
             }
 
             return new Debug_pool(num_workers, value);

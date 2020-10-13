@@ -8,10 +8,7 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
-// Inspired by parts of
+// More or less complete implementation of
 // Importance Sampling of Many Lights with Adaptive Tree Splitting
 // http://aconty.com/pdf/many-lights-hpg2018.pdf
 
@@ -155,7 +152,7 @@ static inline float importance(float3 const& center, float3 const& p0, float3 co
     float3 const v0 = normalize(axis);
     float3 const v1 = normalize(p1 - center);
 
-    float3 const o0  = normalize(v0);
+    float3 const o0  = v0;
     float3 const uv2 = cross(v0, v1);
 
     float const uv2l = length(uv2);
@@ -189,31 +186,11 @@ static inline float importance(float3 const& center, float3 const& p0, float3 co
     if (cos_a1 < 0.f || dot(v0, v1) > cos_phi) {
         float const b_max = std::max(dot(v0, da), dot(v1, da));
 
-        if (b_max > 1.f) {
-            std::cout << b_max << std::endl;
-        }
-
-        cos_theta_min = b_max;
-
-        if (!std::isfinite(cos_theta_min)) {
-            std::cout << "a:" << std::endl;
-        }
+        cos_theta_min = std::min(b_max, 1.f);
     } else {
         float3 const v = cos_phi * o0 + sin_phi * o1;
 
         cos_theta_min = clamp(dot(v, da), -1.f, 1.f);
-
-        if (!std::isfinite(cos_theta_min)) {
-            std::cout << "b:" << std::endl;
-            std::cout << cos_a0 << std::endl;
-            std::cout << cos_a1 << std::endl;
-            std::cout << cos_phi << std::endl;
-            std::cout << sin_phi << std::endl;
-            std::cout << o0 << std::endl;
-            std::cout << o1 << std::endl;
-            std::cout << v << std::endl;
-            std::cout << da << std::endl;
-        }
     }
 
     float const cos_cone = cone[3];
@@ -225,15 +202,6 @@ static inline float importance(float3 const& center, float3 const& p0, float3 co
     float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
-
-    float const resul = std::max((d2 * power) / l, 0.001f);
-
-    if (!std::isfinite(resul)) {
-        std::cout << "we catched it" << std::endl;
-        std::cout << d0 << std::endl;
-        std::cout << cos_theta_min << std::endl;
-        std::cout << cos_theta_min << std::endl;
-    }
 
     return std::max((d2 * power) / l, 0.001f);
 }

@@ -9,7 +9,15 @@ namespace rendering::integrator::surface {
 class alignas(64) Debug final : public Integrator {
   public:
     struct Settings {
-        enum class Value { Tangent, Bitangent, Geometric_normal, Shading_normal, UV, Splitting };
+        enum class Value {
+            Tangent,
+            Bitangent,
+            Geometric_normal,
+            Shading_normal,
+            UV,
+            Splitting,
+            LightId
+        };
 
         Value value;
     };

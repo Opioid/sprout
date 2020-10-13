@@ -263,7 +263,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
 
     float const select = sampler.generate_sample_1D(rng, light::Tree::Max_lights);
 
-    bool const split = Light_sampling::Adaptive == settings_.light_sampling;
+    bool const split = splitting(ray.depth);
 
     worker.scene().random_light(p, n, translucent, select, split, lights_);
 
@@ -310,6 +310,11 @@ sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) {
     }
 
     return sampler_;
+}
+
+bool Pathtracer_DL::splitting(uint32_t bounce) const {
+    return (Light_sampling::Adaptive == settings_.light_sampling) &
+           (bounce < Num_dedicated_samplers);
 }
 
 Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, bool progressive,

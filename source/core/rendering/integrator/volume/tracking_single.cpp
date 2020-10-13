@@ -61,14 +61,10 @@ void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_p
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
     for (auto s : material_samplers_) {
-        //    s->resize(num_samples_per_pixel, 1, 0, 2);
-
         s->resize(num_samples_per_pixel, 1, 0, Max_lights);
     }
 
     for (auto s : light_samplers_) {
-        //   s->resize(num_samples_per_pixel, 2, 1, 2);
-
         s->resize(num_samples_per_pixel, 1, Max_lights, Max_lights + 1);
     }
 }
@@ -280,8 +276,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
 
-        auto const light = worker.scene().random_light(select);
-
+        auto const  light     = worker.scene().random_light(select);
         auto const& light_ref = worker.scene().light(light.id);
 
         float3 const l = direct_light(light_ref, light.pdf, ray, p, 0, isec, worker);
@@ -299,7 +294,9 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
         float const select = light_sampler(ray.depth).generate_sample_1D(rng,
                                                                          light::Tree::Max_lights);
 
-        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, true, lights_);
+        bool const split = ray.depth < Num_dedicated_samplers;
+
+        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights_);
 
         // li = one_bounce(ray, isec, material, worker);
 

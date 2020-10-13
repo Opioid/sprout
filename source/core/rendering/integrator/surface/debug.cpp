@@ -3,6 +3,8 @@
 #include "base/memory/align.hpp"
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
+#include "base/spectrum/mapping.hpp"
+#include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/material/material.hpp"
@@ -12,12 +14,13 @@
 
 namespace rendering::integrator::surface {
 
+using namespace scene;
+
 Debug::Debug(Settings const& settings) : settings_(settings) {
-    lights_.reserve(Settings::Value::Splitting == settings.value ? scene::light::Tree::Max_lights
-                                                                 : 0);
+    lights_.reserve(Settings::Value::Splitting == settings.value ? light::Tree::Max_lights : 0);
 }
 
-void Debug::prepare(scene::Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+void Debug::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
@@ -66,9 +69,21 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker,
 
             worker.scene().random_light(isec.geo.p, n, translucent, 1.f, true, lights_);
 
-            float const r = float(lights_.size()) / float(scene::light::Tree::Max_lights);
+            float const r = float(lights_.size()) / float(light::Tree::Max_lights);
 
             return float4(r, r, r, 1.f);
+        } break;
+        case Settings::Value::LightId: {
+            uint32_t const light_id = isec.light_id(worker);
+            if (!Light::is_light(light_id)) {
+                return float4(1.f);
+            }
+
+            uint32_t const stripped_id = light::Light::strip_mask(light_id);
+
+            float const s = float(stripped_id) / float(worker.scene().num_lights() - 1);
+
+            return float4(spectrum::gamma_to_linear_sRGB(spectrum::turbo(s)), 1.f);
         } break;
         default:
             return float4(0.f, 0.f, 0.f, 1.f);
