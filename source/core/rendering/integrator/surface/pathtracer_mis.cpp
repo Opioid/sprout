@@ -97,12 +97,12 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& isec, Worker& worker,
 
         Ray split_ray = ray;
 
-        Intersection split_intersection = isec;
+        Intersection split_isec = isec;
 
         bool const integrate_photons = (settings_.num_samples == i) &
                                        settings_.photons_not_only_through_specular;
 
-        Result const result = integrate(split_ray, split_intersection, worker, integrate_photons);
+        Result const result = integrate(split_ray, split_isec, worker, integrate_photons);
 
         li += result.li;
 
