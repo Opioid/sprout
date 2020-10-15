@@ -261,7 +261,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
         return result;
     }
 
-    float const select = sampler.generate_sample_1D(rng, light::Tree::Max_lights);
+    float const select = sampler.generate_sample_1D(rng, lights_.capacity());
 
     bool const split = splitting(ray.depth);
 
