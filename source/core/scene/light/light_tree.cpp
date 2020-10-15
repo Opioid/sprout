@@ -286,7 +286,7 @@ Light_pick Tree::Node::random_light(float3 const& p, float3 const& n, bool total
                                     float random, uint32_t const* const light_mapping,
                                     Scene const& scene) const {
     if (1 == num_lights) {
-        return {children_or_light, 1.f};
+        return {light_mapping[children_or_light], 1.f};
     }
 
     float weights[4] = {0.f, 0.f, 0.f, 0.f};
@@ -297,14 +297,14 @@ Light_pick Tree::Node::random_light(float3 const& p, float3 const& n, bool total
 
     auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
 
-    return {children_or_light + l.offset, l.pdf};
+    return {light_mapping[children_or_light + l.offset], l.pdf};
 }
 
 Light_pick Tree::Node::random_light(float3 const& p0, float3 const& p1, float3 const& dir,
                                     float random, uint32_t const* const light_mapping,
                                     Scene const& scene) const {
     if (1 == num_lights) {
-        return {children_or_light, 1.f};
+        return {light_mapping[children_or_light], 1.f};
     }
 
     float weights[4] = {0.f, 0.f, 0.f, 0.f};
@@ -315,7 +315,7 @@ Light_pick Tree::Node::random_light(float3 const& p0, float3 const& p1, float3 c
 
     auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
 
-    return {children_or_light + l.offset, l.pdf};
+    return {light_mapping[children_or_light + l.offset], l.pdf};
 }
 
 float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
@@ -399,7 +399,7 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
             Light_pick const pick = node.random_light(p, n, total_sphere, t.random, light_mapping_,
                                                       scene);
 
-            lights.push_back({light_mapping_[pick.id], pick.pdf * t.pdf});
+            lights.push_back({pick.id, pick.pdf * t.pdf});
 
             t = stack.pop();
 
@@ -475,7 +475,7 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
 
             Light_pick const pick = node.random_light(p0, p1, dir, t.random, light_mapping_, scene);
 
-            lights.push_back({light_mapping_[pick.id], pick.pdf * t.pdf});
+            lights.push_back({pick.id, pick.pdf * t.pdf});
 
             t = stack.pop();
 
