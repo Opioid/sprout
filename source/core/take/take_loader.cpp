@@ -692,6 +692,8 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
                 value = Debug::Settings::Value::LightId;
             }
 
+            load_light_sampling(n.value, light_sampling);
+
             return new Debug_pool(num_workers, value);
         }
     }
@@ -980,6 +982,9 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
             } else if ("All" == strategy) {
                 sampling = Light_sampling::All;
             }
+        } else if ("splitting_threshold" == n.name) {
+            float const st = json::read_float(n.value);
+            scene::light::Tree::set_splitting_threshold(st);
         }
     }
 }

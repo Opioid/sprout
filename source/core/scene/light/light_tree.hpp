@@ -39,6 +39,10 @@ class Tree {
         return split ? Max_lights : 1;
     }
 
+    static float splitting_threshold_;
+
+    static void set_splitting_threshold(float st);
+
     using Lights = memory::Array<Light_pick>;
 
     Tree();

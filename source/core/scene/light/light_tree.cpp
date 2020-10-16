@@ -83,6 +83,13 @@ static float4 cone_union(float4 a, float4 b) {
     return float4(axis, std::cos(o_angle));
 }
 
+// 0.08 ^ 4
+float Tree::splitting_threshold_ = 0.00004096f;
+
+void Tree::set_splitting_threshold(float st) {
+    splitting_threshold_ = pow4(st);
+}
+
 Tree::Tree()
     : num_lights_(0),
       num_infinite_lights_(0),
@@ -262,14 +269,9 @@ bool Tree::Node::split(float3 const& p) const {
 
     float const s2 = (ve * vg + ve * eg2 + ee * ee * vg);
     float const ns = 1.f / (1.f + std::sqrt(s2));
+    // float const ns = std::pow(1.f / (1.f + std::sqrt(s2)), 1.f / 4.f);
 
-    //  float const ns = std::pow(1.f / (1.f + std::sqrt(s2)), 1.f / 4.f);
-
-    // 0.01 ^ 4
-    // return ns < 0.0001f;
-
-    // 0.08 ^ 4
-    return ns < 0.00004096f;
+    return ns < Tree::splitting_threshold_;
 }
 
 bool Tree::Node::split(float3 const& p0, float3 const& dir) const {
