@@ -41,7 +41,7 @@ class Traversal_stack {
     }
 
   private:
-    static uint32_t constexpr Stack_size = (1 << (Tree::Split_depth - 1)) + 1;
+    static uint32_t constexpr Stack_size = (1 << (Tree::Max_split_depth - 1)) + 1;
 
     uint32_t end_ = 0;
 
@@ -368,7 +368,7 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            if (split && t.depth < Split_depth && node.split(p)) {
+            if (split && t.depth < Max_split_depth && node.split(p)) {
                 t.node = c0;
                 stack.push({t.pdf, t.random, c1, ++t.depth});
             } else {
@@ -395,13 +395,20 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
                 split = false;
             }
         } else {
-            SOFT_ASSERT(std::isfinite(pdf));
-            SOFT_ASSERT(pdf > 0.f);
+            if (split && t.depth < (Max_split_depth - ((node.num_lights - 1) >> 1)) &&
+                node.split(p)) {
+                for (uint32_t i = 0, len = node.num_lights; i < len; ++i) {
+                    lights.push_back({light_mapping_[node.children_or_light + i], t.pdf});
+                }
+            } else {
+                SOFT_ASSERT(std::isfinite(t.pdf));
+                SOFT_ASSERT(t.pdf > 0.f);
 
-            Light_pick const pick = node.random_light(p, n, total_sphere, t.random, light_mapping_,
-                                                      scene);
+                Light_pick const pick = node.random_light(p, n, total_sphere, t.random,
+                                                          light_mapping_, scene);
 
-            lights.push_back({pick.id, pick.pdf * t.pdf});
+                lights.push_back({pick.id, pick.pdf * t.pdf});
+            }
 
             t = stack.pop();
 
@@ -445,7 +452,7 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            if (split && t.depth < Split_depth && node.split(p0, dir)) {
+            if (split && t.depth < Max_split_depth && node.split(p0, dir)) {
                 t.node = c0;
                 stack.push({t.pdf, t.random, c1, ++t.depth});
             } else {
@@ -472,12 +479,20 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
                 split = false;
             }
         } else {
-            SOFT_ASSERT(std::isfinite(pdf));
-            SOFT_ASSERT(pdf > 0.f);
+            if (split && t.depth < (Max_split_depth - ((node.num_lights - 1) >> 1)) &&
+                node.split(p0, dir)) {
+                for (uint32_t i = 0, len = node.num_lights; i < len; ++i) {
+                    lights.push_back({light_mapping_[node.children_or_light + i], t.pdf});
+                }
+            } else {
+                SOFT_ASSERT(std::isfinite(t.pdf));
+                SOFT_ASSERT(t.pdf > 0.f);
 
-            Light_pick const pick = node.random_light(p0, p1, dir, t.random, light_mapping_, scene);
+                Light_pick const pick = node.random_light(p0, p1, dir, t.random, light_mapping_,
+                                                          scene);
 
-            lights.push_back({pick.id, pick.pdf * t.pdf});
+                lights.push_back({pick.id, pick.pdf * t.pdf});
+            }
 
             t = stack.pop();
 
@@ -507,7 +522,7 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, bool split,
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
-            if (split && depth < Split_depth && node.split(p)) {
+            if (split && depth < Max_split_depth && node.split(p)) {
                 if (lo < node.middle) {
                     nid = c0;
                 } else {
@@ -532,10 +547,15 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, bool split,
                 split = false;
             }
         } else {
-            SOFT_ASSERT(std::isfinite(pdf));
-            SOFT_ASSERT(pdf > 0.f);
+            if (split && depth < (Max_split_depth - ((node.num_lights - 1) >> 1)) &&
+                node.split(p)) {
+                return pdf;
+            } else {
+                SOFT_ASSERT(std::isfinite(pdf));
+                SOFT_ASSERT(pdf > 0.f);
 
-            return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, scene);
+                return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, scene);
+            }
         }
     }
 }
@@ -745,7 +765,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
         node.bounds            = bounds;
         node.cone              = cone;
         node.power             = total_power;
-        node.variance          = 0.f;
+        node.variance          = variance(lights, begin, end, scene);
         node.middle            = 0;
         node.children_or_light = begin;
         node.num_lights        = len;

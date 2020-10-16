@@ -32,8 +32,8 @@ struct Build_node {
 
 class Tree {
   public:
-    static uint32_t constexpr Split_depth = 4;
-    static uint32_t constexpr Max_lights  = 1 << Split_depth;
+    static uint32_t constexpr Max_split_depth = 4;
+    static uint32_t constexpr Max_lights      = 1 << Max_split_depth;
 
     static uint32_t constexpr max_lights(bool split) {
         return split ? Max_lights : 1;
