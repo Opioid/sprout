@@ -33,6 +33,8 @@ class alignas(64) Debug final : public Integrator {
               Interface_stack const& initial_stack) final;
 
   private:
+    static float3 light_id(Ray& ray, Intersection& isec, Worker& worker);
+
     Settings settings_;
 
     sampler::Random sampler_;

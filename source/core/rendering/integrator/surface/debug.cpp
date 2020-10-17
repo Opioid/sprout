@@ -79,22 +79,37 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker,
             return float4(float(mat_id), 0.f, 0.f, 1.f);
         } break;
         case Settings::Value::LightId: {
-            uint32_t const light_id = isec.light_id(worker);
-            if (!Light::is_light(light_id)) {
-                return float4(1.f);
-            }
-
-            uint32_t const stripped_id = light::Light::strip_mask(light_id);
-
-            float const s = float(stripped_id) / float(worker.scene().num_lights() - 1);
-
-            return float4(spectrum::gamma_to_linear_sRGB(spectrum::turbo(s)), 1.f);
+            return float4(light_id(ray, isec, worker), 1.f);
         } break;
         default:
             return float4(0.f, 0.f, 0.f, 1.f);
     }
 
     return float4(abs(0.5f * (vector + float3(1.f))), 1.f);
+}
+
+float3 Debug::light_id(Ray& ray, Intersection& isec, Worker& worker) {
+    for (uint32_t i = 0; i < 16; ++i) {
+        uint32_t const light_id = isec.light_id(worker);
+        if (!Light::is_light(light_id)) {
+            ray.min_t() = offset_f(ray.max_t());
+            ray.max_t() = scene::Ray_max_t;
+
+            if (!worker.intersect(ray, isec)) {
+                return float3(1.f);
+            }
+
+            continue;
+        }
+
+        uint32_t const stripped_id = light::Light::strip_mask(light_id);
+
+        float const s = float(stripped_id) / float(worker.scene().num_lights() - 1);
+
+        return spectrum::gamma_to_linear_sRGB(spectrum::turbo(s));
+    }
+
+    return float3(1.f);
 }
 
 Debug_pool::Debug_pool(uint32_t num_integrators, Debug::Settings::Value vector)
