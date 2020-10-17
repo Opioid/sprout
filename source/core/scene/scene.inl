@@ -118,6 +118,11 @@ inline material::Material const* Scene::prop_material(uint32_t entity, uint32_t 
     return material_resources_[materials_[p]];
 }
 
+inline uint32_t Scene::prop_material_id(uint32_t entity, uint32_t part) const {
+    uint32_t const p = prop_parts_[entity] + part;
+    return materials_[p];
+}
+
 inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const {
     return prop_topology_[entity];
 }

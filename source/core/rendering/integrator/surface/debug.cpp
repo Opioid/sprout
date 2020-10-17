@@ -73,6 +73,11 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker,
 
             return float4(r, r, r, 1.f);
         } break;
+        case Settings::Value::MaterialId: {
+            uint32_t const mat_id = worker.scene().prop_material_id(isec.prop, isec.geo.part);
+
+            return float4(float(mat_id), 0.f, 0.f, 1.f);
+        } break;
         case Settings::Value::LightId: {
             uint32_t const light_id = isec.light_id(worker);
             if (!Light::is_light(light_id)) {

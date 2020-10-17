@@ -594,7 +594,6 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
             stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
 
             vertex_stream = new Vertex_stream_separate_ts(num_vertices, p, ts, uv);
-
         } else {
             packed_float3* n = new packed_float3[num_vertices];
             stream.read(reinterpret_cast<char*>(n), num_vertices * sizeof(packed_float3));

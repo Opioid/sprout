@@ -221,6 +221,8 @@ class Scene {
 
     material::Material const* prop_material(uint32_t entity, uint32_t part) const;
 
+    uint32_t prop_material_id(uint32_t entity, uint32_t part) const;
+
     prop::Prop_topology const& prop_topology(uint32_t entity) const;
 
     Texture const* texture(uint32_t id) const;

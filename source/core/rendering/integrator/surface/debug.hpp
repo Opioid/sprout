@@ -16,6 +16,7 @@ class alignas(64) Debug final : public Integrator {
             Shading_normal,
             UV,
             Splitting,
+            MaterialId,
             LightId
         };
 
