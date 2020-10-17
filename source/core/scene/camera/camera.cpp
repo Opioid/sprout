@@ -41,19 +41,19 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
         Ray ray(transformation.position, normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t, 0, 0.f,
                 time);
 
-        prop::Intersection intersection;
+        prop::Intersection isec;
 
         for (;;) {
-            if (!scene.intersect_volume(ray, worker, intersection)) {
+            if (!scene.intersect_volume(ray, worker, isec)) {
                 break;
             }
 
-            if (intersection.same_hemisphere(ray.direction)) {
-                if (!interfaces_.remove(intersection)) {
-                    interface_stack_.push(intersection);
+            if (isec.same_hemisphere(ray.direction)) {
+                if (!interfaces_.remove(isec)) {
+                    interface_stack_.push(isec);
                 }
             } else {
-                interfaces_.push(intersection);
+                interfaces_.push(isec);
             }
 
             ray.min_t() = offset_f(ray.max_t());

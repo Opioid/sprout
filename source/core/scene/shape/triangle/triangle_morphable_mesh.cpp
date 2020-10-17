@@ -45,8 +45,8 @@ uint32_t Morphable_mesh::num_parts() const {
     return tree_.num_parts();
 }
 
-bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack, shape::Intersection& intersection) const {
+bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                               shape::Intersection& isec) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
@@ -56,7 +56,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
     scalar ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
@@ -83,14 +83,14 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
         Simd3f t_w     = transform_vector(rotation, t);
         Simd3f b_w     = bitangent_sign * cross(n_w, t_w);
 
-        intersection.p     = float3(p_w);
-        intersection.t     = float3(t_w);
-        intersection.b     = float3(b_w);
-        intersection.n     = float3(n_w);
-        intersection.geo_n = float3(geo_n_w);
+        isec.p     = float3(p_w);
+        isec.t     = float3(t_w);
+        isec.b     = float3(b_w);
+        isec.n     = float3(n_w);
+        isec.geo_n = float3(geo_n_w);
 
-        intersection.uv   = uv;
-        intersection.part = part;
+        isec.uv   = uv;
+        isec.part = part;
 
         return true;
     }
@@ -99,8 +99,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 }
 
 bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformation,
-                                   Node_stack&          node_stack,
-                                   shape::Intersection& intersection) const {
+                                   Node_stack& nodes, shape::Intersection& isec) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
@@ -110,7 +109,7 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
@@ -129,10 +128,10 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
 
-        intersection.p     = float3(p_w);
-        intersection.geo_n = float3(geo_n_w);
-        intersection.uv    = uv;
-        intersection.part  = part;
+        isec.p     = float3(p_w);
+        isec.geo_n = float3(geo_n_w);
+        isec.uv    = uv;
+        isec.part  = part;
 
         return true;
     }
@@ -140,8 +139,8 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
     return false;
 }
 
-bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack, Normals& normals) const {
+bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                               Normals& normals) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
@@ -151,7 +150,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
@@ -173,7 +172,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation,
 }
 
 bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transformation,
-                                 Node_stack& node_stack) const {
+                                 Node_stack& nodes) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
@@ -182,7 +181,7 @@ bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transform
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 
-    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack);
+    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes);
 }
 
 float Morphable_mesh::visibility(Ray const& ray, Transformation const& transformation,
@@ -218,13 +217,13 @@ bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*transform
     return false;
 }
 
-float Morphable_mesh::pdf(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
+float Morphable_mesh::pdf(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
                           Transformation const& /*transformation*/, float /*area*/,
                           bool /*two_sided*/, bool /*total_sphere*/) const {
     return 0.f;
 }
 
-float Morphable_mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
+float Morphable_mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
                                  Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
@@ -248,7 +247,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
     return false;
 }
 
-float Morphable_mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
+float Morphable_mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
                              Transformation const& /*transformation*/, float /*area*/,
                              bool /*two_sided*/) const {
     return 0.f;

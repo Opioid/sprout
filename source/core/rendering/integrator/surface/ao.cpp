@@ -36,8 +36,7 @@ void AO::start_pixel(rnd::Generator& rng) {
     sampler_->start_pixel(rng);
 }
 
-float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) {
+float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack) {
     worker.reset_interface_stack(initial_stack);
 
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
@@ -46,20 +45,19 @@ float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     float3 const wo = -ray.direction;
 
-    auto const& material_sample = intersection.sample(wo, ray, Filter::Undefined, false, *sampler_,
-                                                      worker);
+    auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, false, *sampler_, worker);
 
     Ray occlusion_ray;
-    occlusion_ray.origin  = material_sample.offset_p(intersection.geo.p, false, false);
+    occlusion_ray.origin  = mat_sample.offset_p(isec.geo.p, false, false);
     occlusion_ray.max_t() = settings_.radius;
     occlusion_ray.time    = ray.time;
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         float2 const sample = sampler_->generate_sample_2D(worker.rng());
 
-        //		float3 ws = intersection.geo.tangent_to_world(hs);
+        //		float3 ws = isec.geo.tangent_to_world(hs);
 
-        float3 const& n = material_sample.interpolated_normal();
+        float3 const& n = mat_sample.interpolated_normal();
 
         auto const tb = orthonormal_basis(n);
 

@@ -16,7 +16,7 @@
 #include "base/debug/assert.hpp"
 #include "shape_test.hpp"
 
-// Hearn and Baker sphere intersection test as seen
+// Hearn and Baker sphere isec test as seen
 // in "Precision Improvements for Ray/Sphere Intersection"
 // and
 // https://github.com/NVIDIAGameWorks/GettingStartedWithRTXRayTracing/blob/master/DXR-Sphereflake/Data/Sphereflake/sphereIntersect.hlsli
@@ -40,8 +40,7 @@ AABB Sphere::transformed_aabb(float4x4 const& m) const {
 }
 
 static inline void intersect(float hit_t, Ray const& ray,
-                             Shape::Transformation const& transformation,
-                             Intersection&                intersection) {
+                             Shape::Transformation const& transformation, Intersection& isec) {
     float3 const p = ray.point(hit_t);
 
     float3 const n = normalize(p - transformation.position);
@@ -58,17 +57,17 @@ static inline void intersect(float hit_t, Ray const& ray,
     float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
     t = normalize(transform_vector(transformation.rotation, t));
 
-    intersection.p     = p;
-    intersection.t     = t;
-    intersection.b     = -cross(t, n);
-    intersection.n     = n;
-    intersection.geo_n = n;
-    intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-    intersection.part  = 0;
+    isec.p     = p;
+    isec.t     = t;
+    isec.b     = -cross(t, n);
+    isec.n     = n;
+    isec.geo_n = n;
+    isec.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
+    isec.part  = 0;
 }
 
-bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       Intersection& intersection) const {
+bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                       Intersection& isec) const {
     float3 const v = transformation.position - ray.origin;
 
     float const b = dot(ray.direction, v);
@@ -84,9 +83,9 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const t0   = b - dist;
 
         if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
-            shape::intersect(t0, ray, transformation, intersection);
+            shape::intersect(t0, ray, transformation, isec);
 
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, transformation, ray));
 
             ray.max_t() = t0;
             return true;
@@ -95,9 +94,9 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const t1 = b + dist;
 
         if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
-            shape::intersect(t1, ray, transformation, intersection);
+            shape::intersect(t1, ray, transformation, isec);
 
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, transformation, ray));
 
             ray.max_t() = t1;
             return true;
@@ -108,8 +107,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 }
 
 static inline void intersect_nsf(float hit_t, Ray const& ray,
-                                 Shape::Transformation const& transformation,
-                                 Intersection&                intersection) {
+                                 Shape::Transformation const& transformation, Intersection& isec) {
     float3 const p = ray.point(hit_t);
 
     float3 const n = normalize(p - transformation.position);
@@ -119,14 +117,14 @@ static inline void intersect_nsf(float hit_t, Ray const& ray,
     float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
     float const theta = std::acos(xyz[1]);
 
-    intersection.p     = p;
-    intersection.geo_n = n;
-    intersection.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-    intersection.part  = 0;
+    isec.p     = p;
+    isec.geo_n = n;
+    isec.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
+    isec.part  = 0;
 }
 
-bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
-                           Node_stack& /*node_stack*/, Intersection& intersection) const {
+bool Sphere::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                           Intersection& isec) const {
     float3 const v = transformation.position - ray.origin;
 
     float const b = dot(ray.direction, v);
@@ -142,9 +140,9 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformat
         float const t0   = b - dist;
 
         if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
-            shape::intersect_nsf(t0, ray, transformation, intersection);
+            shape::intersect_nsf(t0, ray, transformation, isec);
 
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, transformation, ray));
 
             ray.max_t() = t0;
             return true;
@@ -153,9 +151,9 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformat
         float const t1 = b + dist;
 
         if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
-            shape::intersect_nsf(t1, ray, transformation, intersection);
+            shape::intersect_nsf(t1, ray, transformation, isec);
 
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, transformation, ray));
 
             ray.max_t() = t1;
             return true;
@@ -165,7 +163,7 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const&           transformat
     return false;
 }
 
-bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
                        Normals& normals) const {
     float3 const v = transformation.position - ray.origin;
 
@@ -212,7 +210,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
 }
 
 bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
-                         Node_stack& /*node_stack*/) const {
+                         Node_stack& /*nodes*/) const {
     float3 const v = transformation.position - ray.origin;
 
     float const b = dot(ray.direction, v);
@@ -396,7 +394,7 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
     return true;
 }
 
-float Sphere::pdf(Ray const&            ray, Intersection const& /*intersection*/,
+float Sphere::pdf(Ray const&            ray, Intersection const& /*isec*/,
                   Transformation const& transformation, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const {
     float3 const axis = transformation.position - ray.origin;
@@ -409,7 +407,7 @@ float Sphere::pdf(Ray const&            ray, Intersection const& /*intersection*
     return cone_pdf_uniform(cos_theta_max);
 }
 
-float Sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
                          Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
@@ -459,7 +457,7 @@ bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tr
     return false;
 }
 
-float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersection,
+float Sphere::pdf_uv(Ray const& ray, Intersection const&             isec,
                      Transformation const& /*transformation*/, float area,
                      bool /*two_sided*/) const {
     //	float3 xyz = transform_vector_transposed(wn, transformation.rotation);
@@ -469,10 +467,10 @@ float Sphere::pdf_uv(Ray const& ray, Intersection const&             intersectio
     //	// sin_theta because of the uv weight
     //	float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
 
-    float const sin_theta = std::sin(intersection.uv[1] * Pi);
+    float const sin_theta = std::sin(isec.uv[1] * Pi);
 
     float const sl = ray.max_t() * ray.max_t();
-    float const c  = -dot(intersection.geo_n, ray.direction);
+    float const c  = -dot(isec.geo_n, ray.direction);
     return sl / (c * area * sin_theta);
 }
 

@@ -98,7 +98,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
     Bxdf_sample sample_result;
 
-    Intersection intersection;
+    Intersection isec;
 
     uint32_t iteration = 0;
 
@@ -117,7 +117,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
             continue;
         }
 
-        if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+        if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
             continue;
         }
 
@@ -129,16 +129,16 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
         for (; ray.depth < settings_.max_bounces;) {
             float3 const wo = -ray.direction;
 
-            auto const& material_sample = worker.sample_material(
-                ray, wo, wo1, intersection, filter, avoid_caustics, from_subsurface, sampler_);
+            auto const& mat_sample = worker.sample_material(
+                ray, wo, wo1, isec, filter, avoid_caustics, from_subsurface, sampler_);
 
             wo1 = wo;
 
-            if (material_sample.is_pure_emissive()) {
+            if (mat_sample.is_pure_emissive()) {
                 break;
             }
 
-            material_sample.sample(sampler_, worker.rng(), sample_result);
+            mat_sample.sample(sampler_, worker.rng(), sample_result);
             if (0.f == sample_result.pdf) {
                 break;
             }
@@ -151,11 +151,11 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
             if (sample_result.type.no(Bxdf_type::Straight)) {
                 if (sample_result.type.no(Bxdf_type::Specular) &&
-                    (intersection.subsurface | material_sample.same_hemisphere(wo)) &&
+                    (isec.subsurface | mat_sample.same_hemisphere(wo)) &&
                     (caustic_path | settings_.full_light_path)) {
-                    if ((!infinite_world || unnatural_limit.intersect(intersection.geo.p))
+                    if ((!infinite_world || unnatural_limit.intersect(isec.geo.p))
 #ifdef ISLAND_MODE
-                        && frustum.intersect(intersection.geo.p, 0.1f)
+                        && frustum.intersect(isec.geo.p, 0.1f)
 #endif
 
                     ) {
@@ -163,19 +163,17 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                         float3 radi = radiance;
 
-                        if (intersection.subsurface &&
-                            (intersection.material(worker)->ior() > 1.f)) {
+                        if (isec.subsurface && (isec.material(worker)->ior() > 1.f)) {
                             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
-                            radi *= intersection.material(worker)->ior() / ior_t;
+                            radi *= isec.material(worker)->ior() / ior_t;
                         }
 
-                        photon.p        = intersection.geo.p;
+                        photon.p        = isec.geo.p;
                         photon.wi       = wo;
                         photon.alpha[0] = radi[0];
                         photon.alpha[1] = radi[1];
                         photon.alpha[2] = radi[2];
-                        photon.properties.set(Photon::Property::Volumetric,
-                                              intersection.subsurface);
+                        photon.properties.set(Photon::Property::Volumetric, isec.subsurface);
 
                         iteration = i + 1;
 
@@ -210,8 +208,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                     ++ray.depth;
                 }
             } else {
-                ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
-                                                      intersection.subsurface);
+                ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
                 ray.set_direction(sample_result.wi);
                 ++ray.depth;
 
@@ -225,7 +222,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
             }
 
             if (sample_result.type.is(Bxdf_type::Transmission)) {
-                auto const ior = worker.interface_change_ior(sample_result.wi, intersection);
+                auto const ior = worker.interface_change_ior(sample_result.wi, isec);
 
 #ifdef ISLAND_MODE
                 if (worker.interface_stack().empty()) {
@@ -237,12 +234,12 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 radiance *= eta * eta;
             }
 
-            from_subsurface |= intersection.subsurface;
+            from_subsurface |= isec.subsurface;
 
             if (!worker.interface_stack().empty()) {
                 float3     vli;
                 float3     vtr;
-                auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
+                auto const hit = worker.volume(ray, isec, filter, vli, vtr);
 
                 //   radiance += throughput * vli;
                 radiance *= vtr;
@@ -250,7 +247,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                 if (Event::Abort == hit) {
                     break;
                 }
-            } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+            } else if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
                 break;
             }
         }

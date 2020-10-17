@@ -8,21 +8,20 @@
 
 namespace scene {
 
-inline bool Worker::intersect(Ray& ray, Intersection& intersection) {
-    return scene_->intersect(ray, *this, intersection);
+inline bool Worker::intersect(Ray& ray, Intersection& isec) {
+    return scene_->intersect(ray, *this, isec);
 }
 
 inline bool Worker::intersect(Ray& ray, shape::Normals& normals) {
     return scene_->intersect(ray, *this, normals);
 }
 
-inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
-                                               Filter filter) {
-    if (!intersect(ray, intersection)) {
+inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
+    if (!intersect(ray, isec)) {
         return false;
     }
 
-    return resolve_mask(ray, intersection, filter);
+    return resolve_mask(ray, isec, filter);
 }
 
 inline Result1 Worker::visibility(Ray const& ray, Filter filter) {

@@ -23,7 +23,7 @@ bool Emission::transmittance(Ray const& ray, Worker& worker, float3& transmittan
     return Tracking::transmittance(ray, worker, transmittance);
 }
 
-Event Emission::integrate(Ray& /*ray*/, Intersection& /*intersection*/, Filter /*filter*/,
+Event Emission::integrate(Ray& /*ray*/, Intersection& /*isec*/, Filter /*filter*/,
                           Worker& /*worker*/, float3& /*li*/, float3& /*transmittance*/) {
     return Event::Pass;
 }

@@ -74,9 +74,9 @@ void Map::compile_finalize() {
     grid_.set_num_paths(num_paths_);
 }
 
-float3 Map::li(Intersection const& intersection, Material_sample const& sample,
+float3 Map::li(Intersection const& isec, Material_sample const& sample,
                scene::Worker const& worker) const {
-    return grid_.li(intersection, sample, worker);
+    return grid_.li(isec, sample, worker);
 }
 
 bool Map::caustics_only() const {

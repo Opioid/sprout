@@ -200,7 +200,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
     // Not sure wether the first test still makes sense.
     // The second test avoids falsely reporting very long volume sections,
-    // when in fact a very close intersection was missed.
+    // when in fact a very close isec was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
     if (scene::offset_f(ray.min_t()) >= d || scene::Almost_ray_max_t <= d) {

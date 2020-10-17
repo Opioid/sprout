@@ -19,8 +19,8 @@ class Integrator : public integrator::Integrator {
 
     virtual bool transmittance(Ray const& ray, Worker& worker, float3& tr) = 0;
 
-    virtual Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
-                            float3& li, float3& tr) = 0;
+    virtual Event integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker, float3& li,
+                            float3& tr) = 0;
 };
 
 class Pool {

@@ -32,33 +32,33 @@ AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
-bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                       Intersection& intersection) const {
+bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                       Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
-        intersection.p = ray.point(Ray_max_t);
-        intersection.t = transformation.rotation.r[0];
-        intersection.b = transformation.rotation.r[1];
+        isec.p = ray.point(Ray_max_t);
+        isec.t = transformation.rotation.r[0];
+        isec.b = transformation.rotation.r[1];
 
-        float3 const n     = -ray.direction;
-        intersection.n     = n;
-        intersection.geo_n = n;
-        intersection.part  = 0;
+        float3 const n = -ray.direction;
+        isec.n         = n;
+        isec.geo_n     = n;
+        isec.part      = 0;
 
         // paraboloid, so doesn't match hemispherical camera
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = normalize(xyz);
 
-        float2 const disk  = hemisphere_to_disk_equidistant(xyz);
-        intersection.uv[0] = 0.5f * disk[0] + 0.5f;
-        intersection.uv[1] = 0.5f * disk[1] + 0.5f;
+        float2 const disk = hemisphere_to_disk_equidistant(xyz);
+        isec.uv[0]        = 0.5f * disk[0] + 0.5f;
+        isec.uv[1]        = 0.5f * disk[1] + 0.5f;
 
         ray.max_t() = Ray_max_t;
 
-        SOFT_ASSERT(testing::check(intersection, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, transformation, ray));
 
         return true;
     }
@@ -66,31 +66,31 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
     return false;
 }
 
-bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformation,
-                           Node_stack& /*node_stack*/, Intersection& intersection) const {
+bool Canopy::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                           Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
-        intersection.p = ray.point(Ray_max_t);
+        isec.p = ray.point(Ray_max_t);
 
         float3 const n = -ray.direction;
 
-        intersection.geo_n = n;
-        intersection.part  = 0;
+        isec.geo_n = n;
+        isec.part  = 0;
 
         // paraboloid, so doesn't match hemispherical camera
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = normalize(xyz);
 
-        float2 const disk  = hemisphere_to_disk_equidistant(xyz);
-        intersection.uv[0] = 0.5f * disk[0] + 0.5f;
-        intersection.uv[1] = 0.5f * disk[1] + 0.5f;
+        float2 const disk = hemisphere_to_disk_equidistant(xyz);
+        isec.uv[0]        = 0.5f * disk[0] + 0.5f;
+        isec.uv[1]        = 0.5f * disk[1] + 0.5f;
 
         ray.max_t() = Ray_max_t;
 
-        SOFT_ASSERT(testing::check(intersection, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, transformation, ray));
 
         return true;
     }
@@ -98,7 +98,7 @@ bool Canopy::intersect_nsf(Ray& ray, Transformation const&           transformat
     return false;
 }
 
-bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
                        Normals& normals) const {
     if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
@@ -119,7 +119,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
 }
 
 bool Canopy::intersect_p(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                         Node_stack& /*node_stack*/) const {
+                         Node_stack& /*nodes*/) const {
     // Implementation for this is not really needed, so just skip it
     return false;
 }
@@ -162,13 +162,13 @@ bool Canopy::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
     return false;
 }
 
-float Canopy::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Canopy::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/) const {
     return 1.f / (2.f * Pi);
 }
 
-float Canopy::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Canopy::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
                          Transformation const& /*transformation*/, float /*area*/) const {
     return 0.f;
 }
@@ -230,7 +230,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
     return true;
 }
 
-float Canopy::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Canopy::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
                      Transformation const& /*transformation*/, float /*area*/,
                      bool /*two_sided*/) const {
     return 1.f / (2.f * Pi);

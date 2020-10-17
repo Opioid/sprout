@@ -262,8 +262,8 @@ void Perspective::update_focus(uint64_t time, Worker& worker) {
         Ray ray(transformation.position, transformation.object_to_world_vector(direction), 0.f,
                 Ray_max_t, 0, 0.f, time);
 
-        prop::Intersection intersection;
-        if (worker.intersect(ray, intersection)) {
+        prop::Intersection isec;
+        if (worker.intersect(ray, isec)) {
             focus_distance_ = ray.max_t() + focus_.point[2];
         } else {
             focus_distance_ = focus_.distance;

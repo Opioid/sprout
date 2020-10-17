@@ -72,17 +72,17 @@ class Shape {
 
     virtual uint32_t part_id_to_material_id(uint32_t part) const;
 
-    virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                           Intersection& intersection) const = 0;
+    virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                           Intersection& isec) const = 0;
 
-    virtual bool intersect_nsf(Ray& ray, Transformation const& transformation,
-                               Node_stack& node_stack, Intersection& intersection) const = 0;
+    virtual bool intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                               Intersection& isec) const = 0;
 
-    virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+    virtual bool intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
                            Normals& normals) const = 0;
 
     virtual bool intersect_p(Ray const& ray, Transformation const& transformation,
-                             Node_stack& node_stack) const = 0;
+                             Node_stack& nodes) const = 0;
 
     virtual float visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
                              Filter filter, Worker& worker) const = 0;
@@ -110,12 +110,12 @@ class Shape {
                         Sample_from& sample) const = 0;
 
     // All pdf functions implicitely assume that the passed
-    // ray/intersection/transformation combination actually lead to a hit.
-    virtual float pdf(Ray const& ray, Intersection const& intersection,
+    // ray/isec/transformation combination actually lead to a hit.
+    virtual float pdf(Ray const& ray, Intersection const& isec,
                       Transformation const& transformation, float area, bool two_sided,
                       bool total_sphere) const = 0;
 
-    virtual float pdf_volume(Ray const& ray, Intersection const& intersection,
+    virtual float pdf_volume(Ray const& ray, Intersection const& isec,
                              Transformation const& transformation, float volume) const = 0;
 
     // The following functions are used for textured lights
@@ -132,7 +132,7 @@ class Shape {
                         bool two_sided, float2 importance_uv, AABB const& bounds,
                         Sample_from& sample) const = 0;
 
-    virtual float pdf_uv(Ray const& ray, Intersection const& intersection,
+    virtual float pdf_uv(Ray const& ray, Intersection const& isec,
                          Transformation const& transformation, float area,
                          bool two_sided) const = 0;
 

@@ -26,81 +26,81 @@ AABB Distant_sphere::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
-bool Distant_sphere::intersect(Ray& ray, Transformation const&           transformation,
-                               Node_stack& /*node_stack*/, Intersection& intersection) const {
-    float3 const n = transformation.rotation.r[2];
-
-    float const b = dot(n, ray.direction);
-
-    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
-        return false;
-    }
-
-    float const radius = transformation.scale_x();
-    float const det    = (b * b) - dot(n, n) + (radius * radius);
-
-    if (det > 0.f) {
-        float constexpr hit_t = Almost_ray_max_t;
-
-        ray.max_t() = hit_t;
-
-        intersection.p     = ray.point(hit_t);
-        intersection.geo_n = n;
-        intersection.t     = transformation.rotation.r[0];
-        intersection.b     = transformation.rotation.r[1];
-        intersection.n     = n;
-
-        float3 const k  = ray.direction - n;
-        float3 const sk = k / radius;
-
-        intersection.uv[0] = (dot(intersection.t, sk) + 1.f) * 0.5f;
-        intersection.uv[1] = (dot(intersection.b, sk) + 1.f) * 0.5f;
-
-        intersection.part = 0;
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
-                                   Node_stack& /*node_stack*/, Intersection& intersection) const {
-    float3 const n = transformation.rotation.r[2];
-
-    float const b = dot(n, ray.direction);
-
-    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
-        return false;
-    }
-
-    float const radius = transformation.scale_x();
-    float const det    = (b * b) - dot(n, n) + (radius * radius);
-
-    if (det > 0.f) {
-        float constexpr hit_t = Almost_ray_max_t;
-
-        ray.max_t() = hit_t;
-
-        intersection.p     = ray.point(hit_t);
-        intersection.geo_n = n;
-
-        float3 const k  = ray.direction - n;
-        float3 const sk = k / radius;
-
-        intersection.uv[0] = (dot(intersection.t, sk) + 1.f) * 0.5f;
-        intersection.uv[1] = (dot(intersection.b, sk) + 1.f) * 0.5f;
-
-        intersection.part = 0;
-
-        return true;
-    }
-
-    return false;
-}
-
 bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformation,
-                               Node_stack& /*node_stack*/, Normals& normals) const {
+                               Node_stack& /*nodes*/, Intersection& isec) const {
+    float3 const n = transformation.rotation.r[2];
+
+    float const b = dot(n, ray.direction);
+
+    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
+        return false;
+    }
+
+    float const radius = transformation.scale_x();
+    float const det    = (b * b) - dot(n, n) + (radius * radius);
+
+    if (det > 0.f) {
+        float constexpr hit_t = Almost_ray_max_t;
+
+        ray.max_t() = hit_t;
+
+        isec.p     = ray.point(hit_t);
+        isec.geo_n = n;
+        isec.t     = transformation.rotation.r[0];
+        isec.b     = transformation.rotation.r[1];
+        isec.n     = n;
+
+        float3 const k  = ray.direction - n;
+        float3 const sk = k / radius;
+
+        isec.uv[0] = (dot(isec.t, sk) + 1.f) * 0.5f;
+        isec.uv[1] = (dot(isec.b, sk) + 1.f) * 0.5f;
+
+        isec.part = 0;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&      transformation,
+                                   Node_stack& /*nodes*/, Intersection& isec) const {
+    float3 const n = transformation.rotation.r[2];
+
+    float const b = dot(n, ray.direction);
+
+    if ((b > 0.f) | (ray.max_t() < Ray_max_t)) {
+        return false;
+    }
+
+    float const radius = transformation.scale_x();
+    float const det    = (b * b) - dot(n, n) + (radius * radius);
+
+    if (det > 0.f) {
+        float constexpr hit_t = Almost_ray_max_t;
+
+        ray.max_t() = hit_t;
+
+        isec.p     = ray.point(hit_t);
+        isec.geo_n = n;
+
+        float3 const k  = ray.direction - n;
+        float3 const sk = k / radius;
+
+        isec.uv[0] = (dot(isec.t, sk) + 1.f) * 0.5f;
+        isec.uv[1] = (dot(isec.b, sk) + 1.f) * 0.5f;
+
+        isec.part = 0;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Distant_sphere::intersect(Ray& ray, Transformation const& transformation,
+                               Node_stack& /*nodes*/, Normals& normals) const {
     float3 const n = transformation.rotation.r[2];
 
     float const b = dot(n, ray.direction);
@@ -125,7 +125,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformati
 }
 
 bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transformation,
-                                 Node_stack& /*node_stack*/) const {
+                                 Node_stack& /*nodes*/) const {
     float3 const n = transformation.rotation.r[2];
 
     float const b = dot(n, ray.direction);
@@ -211,13 +211,13 @@ bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& transformat
     return true;
 }
 
-float Distant_sphere::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Distant_sphere::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
                           Transformation const& /*transformation*/, float area, bool /*two_sided*/,
                           bool /*total_sphere*/) const {
     return 1.f / area;
 }
 
-float Distant_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Distant_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
                                  Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
@@ -241,7 +241,7 @@ bool Distant_sphere::sample(uint32_t /*part*/, float2 /*uv*/,
     return false;
 }
 
-float Distant_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Distant_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
                              Transformation const& /*transformation*/, float area,
                              bool /*two_sided*/) const {
     return 1.f / area;

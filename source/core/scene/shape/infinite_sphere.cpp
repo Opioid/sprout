@@ -30,30 +30,30 @@ AABB Infinite_sphere::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
-bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transformation,
-                                Node_stack& /*node_stack*/, Intersection& intersection) const {
+bool Infinite_sphere::intersect(Ray& ray, Transformation const&      transformation,
+                                Node_stack& /*nodes*/, Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
         // This is nonsense
-        intersection.t = transformation.rotation.r[0];
-        intersection.b = transformation.rotation.r[1];
+        isec.t = transformation.rotation.r[0];
+        isec.b = transformation.rotation.r[1];
 
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = normalize(xyz);
 
-        intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
-        intersection.uv[1] = std::acos(xyz[1]) * Pi_inv;
+        isec.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+        isec.uv[1] = std::acos(xyz[1]) * Pi_inv;
 
-        intersection.p = ray.point(Ray_max_t);
+        isec.p = ray.point(Ray_max_t);
 
         float3 const n = -ray.direction;
 
-        intersection.n     = n;
-        intersection.geo_n = n;
-        intersection.part  = 0;
+        isec.n     = n;
+        isec.geo_n = n;
+        isec.part  = 0;
 
         ray.max_t() = Ray_max_t;
 
-        SOFT_ASSERT(testing::check(intersection, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, transformation, ray));
 
         return true;
     }
@@ -61,25 +61,25 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&           transf
     return false;
 }
 
-bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const&           transformation,
-                                    Node_stack& /*node_stack*/, Intersection& intersection) const {
+bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const&      transformation,
+                                    Node_stack& /*nodes*/, Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
         float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
         xyz        = normalize(xyz);
 
-        intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
-        intersection.uv[1] = std::acos(xyz[1]) * Pi_inv;
+        isec.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+        isec.uv[1] = std::acos(xyz[1]) * Pi_inv;
 
-        intersection.p = ray.point(Ray_max_t);
+        isec.p = ray.point(Ray_max_t);
 
         float3 const n = -ray.direction;
 
-        intersection.geo_n = n;
-        intersection.part  = 0;
+        isec.geo_n = n;
+        isec.part  = 0;
 
         ray.max_t() = Ray_max_t;
 
-        SOFT_ASSERT(testing::check(intersection, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, transformation, ray));
 
         return true;
     }
@@ -88,7 +88,7 @@ bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const&           tr
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& /*transformation*/,
-                                Node_stack& /*node_stack*/, Normals& normals) const {
+                                Node_stack& /*nodes*/, Normals& normals) const {
     if (ray.max_t() >= Ray_max_t) {
         ray.max_t() = Ray_max_t;
 
@@ -104,7 +104,7 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const& /*transformation
 }
 
 bool Infinite_sphere::intersect_p(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                                  Node_stack& /*node_stack*/) const {
+                                  Node_stack& /*nodes*/) const {
     // Implementation for this is not really needed, so just skip it
     return false;
 }
@@ -172,7 +172,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*transfor
     return false;
 }
 
-float Infinite_sphere::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Infinite_sphere::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
                            Transformation const& /*transformation*/, float /*area*/,
                            bool /*two_sided*/, bool total_sphere) const {
     if (total_sphere) {
@@ -182,7 +182,7 @@ float Infinite_sphere::pdf(Ray const& /*ray*/, Intersection const& /*intersectio
     return 1.f / (2.f * Pi);
 }
 
-float Infinite_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Infinite_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
                                   Transformation const& /*transformation*/,
                                   float /*volume*/) const {
     return 0.f;
@@ -263,11 +263,11 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
     return true;
 }
 
-float Infinite_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& intersection,
+float Infinite_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& isec,
                               Transformation const& /*transformation*/, float /*area*/,
                               bool /*two_sided*/) const {
     // sin_theta because of the uv weight
-    float const sin_theta = std::sin(intersection.uv[1] * Pi);
+    float const sin_theta = std::sin(isec.uv[1] * Pi);
 
     if (0.f == sin_theta) {
         return 0.f;

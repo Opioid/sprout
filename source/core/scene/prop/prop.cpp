@@ -67,8 +67,7 @@ void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& 
     properties_.set(Property::Local_animation, local_animation);
 }
 
-bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker,
-                     shape::Intersection& intersection) const {
+bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -84,12 +83,10 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker,
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(),
-                                             intersection);
+    return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(), isec);
 }
 
-bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker,
-                         shape::Intersection& intersection) const {
+bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -105,8 +102,7 @@ bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker,
     Transformation temp;
     auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect_nsf(ray, transformation, worker.node_stack(),
-                                                 intersection);
+    return scene.prop_shape(self)->intersect_nsf(ray, transformation, worker.node_stack(), isec);
 }
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const {

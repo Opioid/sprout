@@ -70,11 +70,9 @@ class Prop {
 
     void morph(uint32_t self, Threads& threads, Scene const& scene);
 
-    bool intersect(uint32_t self, Ray& ray, Worker& worker,
-                   shape::Intersection& intersection) const;
+    bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const;
 
-    bool intersect_nsf(uint32_t self, Ray& ray, Worker& worker,
-                       shape::Intersection& intersection) const;
+    bool intersect_nsf(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const;
 
     bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const;
 

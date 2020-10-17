@@ -33,17 +33,17 @@ class alignas(64) Mesh final : public Shape {
 
     uint32_t part_id_to_material_id(uint32_t part) const final;
 
-    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                   shape::Intersection& intersection) const final;
+    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                   shape::Intersection& isec) const final;
 
-    bool intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                       shape::Intersection& intersection) const final;
+    bool intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                       shape::Intersection& isec) const final;
 
-    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
                    Normals& normals) const final;
 
     bool intersect_p(Ray const& ray, Transformation const& transformation,
-                     Node_stack& node_stack) const final;
+                     Node_stack& nodes) const final;
 
     float visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
                      Filter filter, Worker& worker) const final;
@@ -59,11 +59,10 @@ class alignas(64) Mesh final : public Shape {
                 Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
                 float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, shape::Intersection const& intersection,
-              Transformation const& transformation, float area, bool two_sided,
-              bool total_sphere) const final;
+    float pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& transformation,
+              float area, bool two_sided, bool total_sphere) const final;
 
-    float pdf_volume(Ray const& ray, shape::Intersection const& intersection,
+    float pdf_volume(Ray const& ray, shape::Intersection const& isec,
                      Transformation const& transformation, float volume) const final;
 
     bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& transformation,
@@ -76,7 +75,7 @@ class alignas(64) Mesh final : public Shape {
                 bool two_sided, float2 importance_uv, AABB const& bounds,
                 Sample_from& sample) const final;
 
-    float pdf_uv(Ray const& ray, shape::Intersection const& intersection,
+    float pdf_uv(Ray const& ray, shape::Intersection const& isec,
                  Transformation const& transformation, float area, bool two_sided) const final;
 
     float uv_weight(float2 uv) const final;

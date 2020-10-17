@@ -107,11 +107,11 @@ class Scene {
 
     bool has_volumes() const;
 
-    bool intersect(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker& worker, Intersection& isec) const;
 
     bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
 
-    bool intersect_volume(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect_volume(Ray& ray, Worker& worker, Intersection& isec) const;
 
     Result1 visibility(Ray const& ray, Filter filter, Worker& worker) const;
 

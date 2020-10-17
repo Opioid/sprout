@@ -29,23 +29,23 @@ uint32_t Null::num_materials() const {
     return 0;
 }
 
-bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/,
-                     Node_stack& /*node_stack*/, Intersection& /*intersection*/) const {
+bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/, Node_stack& /*nodes*/,
+                     Intersection& /*isec*/) const {
     return false;
 }
 
 bool Null::intersect_nsf(Ray& /*ray*/, Transformation const& /*transformation*/,
-                         Node_stack& /*node_stack*/, Intersection& /*intersection*/) const {
+                         Node_stack& /*nodes*/, Intersection& /*isec*/) const {
     return false;
 }
 
-bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/,
-                     Node_stack& /*node_stack*/, Normals& /*normals*/) const {
+bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/, Node_stack& /*nodes*/,
+                     Normals& /*normals*/) const {
     return false;
 }
 
 bool Null::intersect_p(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                       Node_stack& /*node_stack*/) const {
+                       Node_stack& /*nodes*/) const {
     return false;
 }
 
@@ -74,13 +74,13 @@ bool Null::sample(uint32_t /*part*/, Transformation const& /*transformation*/, f
     return false;
 }
 
-float Null::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Null::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
                 Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                 bool /*total_Null*/) const {
     return 0.f;
 }
 
-float Null::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Null::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
                        Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
@@ -103,7 +103,7 @@ bool Null::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tran
     return false;
 }
 
-float Null::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Null::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
                    Transformation const& /*transformation*/, float /*area*/,
                    bool /*two_sided*/) const {
     return 0.f;

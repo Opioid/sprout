@@ -36,9 +36,9 @@ class BVH_wrapper {
 
     AABB aabb() const;
 
-    bool intersect(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker& worker, Intersection& isec) const;
 
-    bool intersect_nsf(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect_nsf(Ray& ray, Worker& worker, Intersection& isec) const;
 
     bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
 

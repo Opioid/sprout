@@ -19,7 +19,7 @@ class alignas(64) Tracking_multi final : public Integrator {
 
     bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
 
-    Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker, float3& li,
+    Event integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker, float3& li,
                     float3& tr) final;
 };
 

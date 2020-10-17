@@ -7,9 +7,8 @@
 
 namespace rendering {
 
-inline Event Worker::volume(Ray& ray, Intersection& intersection, Filter filter, float3& li,
-                            float3& tr) {
-    return volume_integrator_->integrate(ray, intersection, filter, *this, li, tr);
+inline Event Worker::volume(Ray& ray, Intersection& isec, Filter filter, float3& li, float3& tr) {
+    return volume_integrator_->integrate(ray, isec, filter, *this, li, tr);
 }
 
 }  // namespace rendering

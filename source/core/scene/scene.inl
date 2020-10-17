@@ -17,16 +17,16 @@ inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
 
-inline bool Scene::intersect(Ray& ray, Worker& worker, Intersection& intersection) const {
-    return prop_bvh_.intersect(ray, worker, intersection);
+inline bool Scene::intersect(Ray& ray, Worker& worker, Intersection& isec) const {
+    return prop_bvh_.intersect(ray, worker, isec);
 }
 
 inline bool Scene::intersect(Ray& ray, Worker& worker, shape::Normals& normals) const {
     return prop_bvh_.intersect(ray, worker, normals);
 }
 
-inline bool Scene::intersect_volume(Ray& ray, Worker& worker, Intersection& intersection) const {
-    return volume_bvh_.intersect_nsf(ray, worker, intersection);
+inline bool Scene::intersect_volume(Ray& ray, Worker& worker, Intersection& isec) const {
+    return volume_bvh_.intersect_nsf(ray, worker, isec);
 }
 
 inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker& worker) const {

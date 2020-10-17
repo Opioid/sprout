@@ -19,14 +19,14 @@ class alignas(64) Whitted final : public Integrator {
 
     void start_pixel(rnd::Generator& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
+    float4 li(Ray& ray, Intersection& isec, Worker& worker,
               Interface_stack const& initial_stack) final;
 
   private:
-    float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker);
+    float3 shade(Ray const& ray, Intersection const& isec, Worker& worker);
 
-    float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                 Material_sample const& material_sample, Worker& worker);
+    float3 estimate_direct_light(Ray const& ray, Intersection const& isec,
+                                 Material_sample const& mat_sample, Worker& worker);
 
     sampler::Random sampler_;
 };

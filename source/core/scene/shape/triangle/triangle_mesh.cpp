@@ -78,8 +78,8 @@ uint32_t Mesh::part_id_to_material_id(uint32_t part) const {
     return parts_[part].material;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                     shape::Intersection& intersection) const {
+bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                     shape::Intersection& isec) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
@@ -89,7 +89,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
@@ -116,16 +116,16 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         Simd3f t_w     = transform_vector(rotation, t);
         Simd3f b_w     = bitangent_sign * cross(n_w, t_w);
 
-        intersection.p         = float3(p_w);
-        intersection.t         = float3(t_w);
-        intersection.b         = float3(b_w);
-        intersection.n         = float3(n_w);
-        intersection.geo_n     = float3(geo_n_w);
-        intersection.uv        = uv;
-        intersection.part      = part;
-        intersection.primitive = pi.index;
+        isec.p         = float3(p_w);
+        isec.t         = float3(t_w);
+        isec.b         = float3(b_w);
+        isec.n         = float3(n_w);
+        isec.geo_n     = float3(geo_n_w);
+        isec.uv        = uv;
+        isec.part      = part;
+        isec.primitive = pi.index;
 
-        SOFT_ASSERT(testing::check(intersection, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, transformation, ray));
 
         return true;
     }
@@ -133,8 +133,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
 }
 
-bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                         shape::Intersection& intersection) const {
+bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                         shape::Intersection& isec) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
@@ -144,7 +144,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
@@ -163,11 +163,11 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
 
-        intersection.p         = float3(p_w);
-        intersection.geo_n     = float3(geo_n_w);
-        intersection.uv        = uv;
-        intersection.part      = part;
-        intersection.primitive = pi.index;
+        isec.p         = float3(p_w);
+        isec.geo_n     = float3(geo_n_w);
+        isec.uv        = uv;
+        isec.part      = part;
+        isec.primitive = pi.index;
 
         return true;
     }
@@ -175,7 +175,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     return false;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
                      Normals& normals) const {
     Simd4x4f const world_to_object(transformation.world_to_object);
 
@@ -186,7 +186,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
@@ -208,14 +208,14 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 }
 
 bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
-                       Node_stack& node_stack) const {
+                       Node_stack& nodes) const {
     //	ray tray;
     //	tray.origin = transform_point(ray.origin, transformation.world_to_object);
     //	tray.set_direction(transform_vector(ray.direction, transformation.world_to_object));
     //	tray.min_t = ray.min_t;
     //	tray.max_t = ray.max_t;
 
-    //	return tree_.intersect_p(tray, node_stack);
+    //	return tree_.intersect_p(tray, nodes);
 
     Simd4x4f const world_to_object(transformation.world_to_object);
 
@@ -225,7 +225,7 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
     scalar const ray_min_t(ray.min_t());
     scalar const ray_max_t(ray.max_t());
 
-    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack);
+    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes);
 }
 
 float Mesh::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
@@ -308,10 +308,10 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     return true;
 }
 
-float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
+float Mesh::pdf(Ray const& ray, shape::Intersection const&      isec,
                 Transformation const& /*transformation*/, float area, bool two_sided,
                 bool /*total_sphere*/) const {
-    float c = -dot(intersection.geo_n, ray.direction);
+    float c = -dot(isec.geo_n, ray.direction);
 
     if (two_sided) {
         c = std::abs(c);
@@ -321,7 +321,7 @@ float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
     return sl / (c * area);
 }
 
-float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
+float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
                        Transformation const& /*transformation*/, float /*area*/) const {
     return 0.f;
 }
@@ -344,7 +344,7 @@ bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tran
     return false;
 }
 
-float Mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
+float Mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
                    Transformation const& /*transformation*/, float /*area*/,
                    bool /*two_sided*/) const {
     return 0.f;

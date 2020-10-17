@@ -48,13 +48,13 @@ uint32_t Tree::num_triangles() const {
 }
 
 bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                     scalar& ray_max_t, Node_stack& node_stack, Intersection& intersection) const {
+                     scalar& ray_max_t, Node_stack& nodes, Intersection& isec) const {
     Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
-    node_stack.push(0xFFFFFFFF);
+    nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
     uint32_t index = 0xFFFFFFFF;
@@ -71,10 +71,10 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    nodes.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    nodes.push(a);
                     n = b;
                 }
 
@@ -88,13 +88,13 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
             }
         }
 
-        n = node_stack.pop();
+        n = nodes.pop();
     }
 
     if (index != 0xFFFFFFFF) {
-        intersection.u     = Simd3f(u);
-        intersection.v     = Simd3f(v);
-        intersection.index = index;
+        isec.u     = Simd3f(u);
+        isec.v     = Simd3f(v);
+        isec.index = index;
         return true;
     }
 
@@ -102,13 +102,13 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
 }
 
 bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                     scalar& ray_max_t, Node_stack& node_stack) const {
+                     scalar& ray_max_t, Node_stack& nodes) const {
     Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
-    node_stack.push(0xFFFFFFFF);
+    nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
     uint32_t index = 0xFFFFFFFF;
@@ -122,10 +122,10 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    nodes.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    nodes.push(a);
                     n = b;
                 }
 
@@ -139,7 +139,7 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
             }
         }
 
-        n = node_stack.pop();
+        n = nodes.pop();
     }
 
     if (index != 0xFFFFFFFF) {
@@ -150,14 +150,13 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
 }
 
 bool Tree::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                       scalar const& ray_min_t, scalar const& ray_max_t,
-                       Node_stack& node_stack) const {
+                       scalar const& ray_min_t, scalar const& ray_max_t, Node_stack& nodes) const {
     Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
-    node_stack.push(0xFFFFFFFF);
+    nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
     while (0xFFFFFFFF != n) {
@@ -169,10 +168,10 @@ bool Tree::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    nodes.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    nodes.push(a);
                     n = b;
                 }
 
@@ -186,7 +185,7 @@ bool Tree::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
             }
         }
 
-        n = node_stack.pop();
+        n = nodes.pop();
     }
 
     return false;
@@ -194,9 +193,9 @@ bool Tree::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
 
 float Tree::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
                        Worker& worker) const {
-    auto& node_stack = worker.node_stack();
+    auto& nodes = worker.node_stack();
 
-    node_stack.push(0xFFFFFFFF);
+    nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
     float visibility = 1.f;
@@ -223,10 +222,10 @@ float Tree::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    nodes.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    nodes.push(a);
                     n = b;
                 }
 
@@ -250,7 +249,7 @@ float Tree::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
             }
         }
 
-        n = node_stack.pop();
+        n = nodes.pop();
     }
 
     return visibility;
@@ -258,9 +257,9 @@ float Tree::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
 
 bool Tree::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker& worker,
                       float3& ta) const {
-    auto& node_stack = worker.node_stack();
+    auto& nodes = worker.node_stack();
 
-    node_stack.push(0xFFFFFFFF);
+    nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
     float3 absorption(1.f);
@@ -287,10 +286,10 @@ bool Tree::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, W
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    nodes.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    nodes.push(a);
                     n = b;
                 }
 
@@ -319,7 +318,7 @@ bool Tree::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, W
             }
         }
 
-        n = node_stack.pop();
+        n = nodes.pop();
     }
 
     ta = absorption;

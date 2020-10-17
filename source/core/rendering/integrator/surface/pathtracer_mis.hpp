@@ -43,7 +43,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     Result integrate(Ray& ray, Intersection& isec, Worker& worker, bool integrate_photons);
 
-    float3 sample_lights(Ray const& ray, Intersection& isec, Material_sample const& material_sample,
+    float3 sample_lights(Ray const& ray, Intersection& isec, Material_sample const& mat_sample,
                          Filter filter, Worker& worker);
 
     float3 evaluate_light(Light const& light, float light_weight, Ray const& history,

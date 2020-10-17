@@ -26,16 +26,16 @@ AABB BVH_wrapper::aabb() const {
     return tree_.nodes_[0].aabb();
 }
 
-bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection) const {
-    auto& node_stack = worker.node_stack();
+bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& isec) const {
+    auto& stack = worker.node_stack();
 
     bool hit = false;
 
     uint32_t prop = prop::Null;
 
-    node_stack.clear();
+    stack.clear();
     if (0 != tree_.num_nodes_) {
-        node_stack.push(0);
+        stack.push(0);
     }
 
     uint32_t n = 0;
@@ -54,7 +54,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection
 
     uint32_t const* finite_props = tree_.indices_;
 
-    while (!node_stack.empty()) {
+    while (!stack.empty()) {
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
@@ -63,10 +63,10 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    stack.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    stack.push(a);
                     n = b;
                 }
 
@@ -75,7 +75,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 uint32_t const p = finite_props[i];
-                if (props[p].intersect(p, ray, worker, intersection.geo)) {
+                if (props[p].intersect(p, ray, worker, isec.geo)) {
                     prop      = p;
                     hit       = true;
                     ray_max_t = scalar(ray.max_t());
@@ -83,34 +83,34 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Intersection& intersection
             }
         }
 
-        n = node_stack.pop();
+        n = stack.pop();
     }
 
     uint32_t const* infinite_props = infinite_props_;
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         uint32_t const p = infinite_props[i];
-        if (props[p].intersect(p, ray, worker, intersection.geo)) {
+        if (props[p].intersect(p, ray, worker, isec.geo)) {
             prop = p;
             hit  = true;
         }
     }
 
-    intersection.prop       = prop;
-    intersection.subsurface = false;
+    isec.prop       = prop;
+    isec.subsurface = false;
     return hit;
 }
 
-bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersection) const {
-    auto& node_stack = worker.node_stack();
+bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& isec) const {
+    auto& stack = worker.node_stack();
 
     bool hit = false;
 
     uint32_t prop = prop::Null;
 
-    node_stack.clear();
+    stack.clear();
     if (0 != tree_.num_nodes_) {
-        node_stack.push(0);
+        stack.push(0);
     }
 
     uint32_t n = 0;
@@ -129,7 +129,7 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersec
 
     uint32_t const* finite_props = tree_.indices_;
 
-    while (!node_stack.empty()) {
+    while (!stack.empty()) {
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
@@ -138,10 +138,10 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersec
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    stack.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    stack.push(a);
                     n = b;
                 }
 
@@ -150,7 +150,7 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersec
 
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 uint32_t const p = finite_props[i];
-                if (props[p].intersect_nsf(p, ray, worker, intersection.geo)) {
+                if (props[p].intersect_nsf(p, ray, worker, isec.geo)) {
                     prop      = p;
                     hit       = true;
                     ray_max_t = scalar(ray.max_t());
@@ -158,32 +158,32 @@ bool BVH_wrapper::intersect_nsf(Ray& ray, Worker& worker, Intersection& intersec
             }
         }
 
-        n = node_stack.pop();
+        n = stack.pop();
     }
 
     uint32_t const* infinite_props = infinite_props_;
 
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         uint32_t const p = infinite_props[i];
-        if (props[p].intersect_nsf(p, ray, worker, intersection.geo)) {
+        if (props[p].intersect_nsf(p, ray, worker, isec.geo)) {
             prop = p;
             hit  = true;
         }
     }
 
-    intersection.prop = prop;
-    //   intersection.subsurface = false;
+    isec.prop = prop;
+    //   isec.subsurface = false;
     return hit;
 }
 
 bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) const {
-    auto& node_stack = worker.node_stack();
+    auto& stack = worker.node_stack();
 
     bool hit = false;
 
-    node_stack.clear();
+    stack.clear();
     if (0 != tree_.num_nodes_) {
-        node_stack.push(0);
+        stack.push(0);
     }
 
     uint32_t n = 0;
@@ -202,7 +202,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) c
 
     uint32_t const* finite_props = tree_.indices_;
 
-    while (!node_stack.empty()) {
+    while (!stack.empty()) {
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
@@ -211,10 +211,10 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) c
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    stack.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    stack.push(a);
                     n = b;
                 }
 
@@ -230,7 +230,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) c
             }
         }
 
-        n = node_stack.pop();
+        n = stack.pop();
     }
 
     uint32_t const* infinite_props = infinite_props_;
@@ -246,11 +246,11 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, shape::Normals& normals) c
 }
 
 bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
-    auto& node_stack = worker.node_stack();
+    auto& stack = worker.node_stack();
 
-    node_stack.clear();
+    stack.clear();
     if (0 != tree_.num_nodes_) {
-        node_stack.push(0);
+        stack.push(0);
     }
 
     uint32_t n = 0;
@@ -269,7 +269,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
 
     uint32_t const* finite_props = tree_.indices_;
 
-    while (!node_stack.empty()) {
+    while (!stack.empty()) {
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
@@ -278,10 +278,10 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    stack.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    stack.push(a);
                     n = b;
                 }
 
@@ -296,7 +296,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
             }
         }
 
-        n = node_stack.pop();
+        n = stack.pop();
     }
 
     uint32_t const* infinite_props = infinite_props_;
@@ -312,11 +312,11 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
 }
 
 Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) const {
-    auto& node_stack = worker.node_stack();
+    auto& stack = worker.node_stack();
 
-    node_stack.clear();
+    stack.clear();
     if (0 != tree_.num_nodes_) {
-        node_stack.push(0);
+        stack.push(0);
     }
 
     uint32_t n = 0;
@@ -337,7 +337,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
 
     uint32_t const* finite_props = tree_.indices_;
 
-    while (!node_stack.empty()) {
+    while (!stack.empty()) {
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
@@ -346,10 +346,10 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    stack.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    stack.push(a);
                     n = b;
                 }
 
@@ -365,7 +365,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
             }
         }
 
-        n = node_stack.pop();
+        n = stack.pop();
     }
 
     uint32_t const* infinite_props = infinite_props_;
@@ -382,11 +382,11 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
 }
 
 bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker, float3& ta) const {
-    auto& node_stack = worker.node_stack();
+    auto& stack = worker.node_stack();
 
-    node_stack.clear();
+    stack.clear();
     if (0 != tree_.num_nodes_) {
-        node_stack.push(0);
+        stack.push(0);
     }
 
     uint32_t n = 0;
@@ -407,7 +407,7 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
 
     uint32_t const* finite_props = tree_.indices_;
 
-    while (!node_stack.empty()) {
+    while (!stack.empty()) {
         auto const& node = nodes[n];
 
         if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
@@ -416,10 +416,10 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
                 uint32_t const b = a + 1;
 
                 if (0 == ray_signs[node.axis()]) {
-                    node_stack.push(b);
+                    stack.push(b);
                     n = a;
                 } else {
-                    node_stack.push(a);
+                    stack.push(a);
                     n = b;
                 }
 
@@ -438,7 +438,7 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
             }
         }
 
-        n = node_stack.pop();
+        n = stack.pop();
     }
 
     uint32_t const* infinite_props = infinite_props_;

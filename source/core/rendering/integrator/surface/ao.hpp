@@ -24,7 +24,7 @@ class alignas(64) AO final : public Integrator {
 
     void start_pixel(rnd::Generator& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
+    float4 li(Ray& ray, Intersection& isec, Worker& worker,
               Interface_stack const& initial_stack) final;
 
   private:

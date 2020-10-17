@@ -64,8 +64,8 @@ class alignas(64) Lighttracer final : public Integrator {
                             Light const*& light_out, uint32_t& light_id, Sample_from& light_sample);
 
     bool direct_camera(Camera const& camera, float3 const& radiance, Ray const& history,
-                       Intersection const& intersection, Material_sample const& material_sample,
-                       Filter filter, Worker& worker);
+                       Intersection const& isec, Material_sample const& mat_sample, Filter filter,
+                       Worker& worker);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

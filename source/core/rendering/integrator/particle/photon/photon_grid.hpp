@@ -49,7 +49,7 @@ class Grid {
 
     void set_num_paths(uint64_t num_paths);
 
-    float3 li(Intersection const& intersection, Material_sample const& sample,
+    float3 li(Intersection const& isec, Material_sample const& sample,
               scene::Worker const& worker) const;
 
   private:

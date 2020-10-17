@@ -32,22 +32,22 @@ AABB Cube::transformed_aabb(float4x4 const& m) const {
     return AABB(float3(-1.f), float3(1.f)).transform(m);
 }
 
-bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                     Intersection& intersection) const {
-    bool const hit = intersect_nsf(ray, transformation, node_stack, intersection);
+bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+                     Intersection& isec) const {
+    bool const hit = intersect_nsf(ray, transformation, nodes, isec);
 
-    intersection.n = intersection.geo_n;
+    isec.n = isec.geo_n;
 
-    auto const tb = orthonormal_basis(intersection.geo_n);
+    auto const tb = orthonormal_basis(isec.geo_n);
 
-    intersection.t = tb.a;
-    intersection.b = tb.b;
+    isec.t = tb.a;
+    isec.b = tb.b;
 
     return hit;
 }
 
-bool Cube::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                         Intersection& intersection) const {
+bool Cube::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                         Intersection& isec) const {
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
@@ -66,7 +66,7 @@ bool Cube::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
     ray.max_t() = hit_t;
 
-    intersection.p = ray.point(hit_t);
+    isec.p = ray.point(hit_t);
 
     float3 const local_p = local_ray.point(hit_t);
 
@@ -76,14 +76,14 @@ bool Cube::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
     float const s = copysign1(local_p[i]);
 
-    intersection.geo_n = s * transformation.rotation.r[i];
+    isec.geo_n = s * transformation.rotation.r[i];
 
-    intersection.part = 0;
+    isec.part = 0;
 
     return true;
 }
 
-bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
                      Normals& normals) const {
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
@@ -120,7 +120,7 @@ bool Cube::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 }
 
 bool Cube::intersect_p(Ray const& ray, Transformation const& transformation,
-                       Node_stack& /*node_stack*/) const {
+                       Node_stack& /*nodes*/) const {
     float3 const local_origin = transformation.world_to_object_point(ray.origin);
     float3 const local_dir    = transformation.world_to_object_vector(ray.direction);
 
@@ -242,9 +242,8 @@ bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation cons
     return true;
 }
 
-float Cube::pdf(Ray const&            ray, Intersection const& /*intersection*/,
-                Transformation const& transformation, float /*area*/, bool /*two_sided*/,
-                bool /*total_sphere*/) const {
+float Cube::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& transformation,
+                float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
     float3 const axis                = transformation.position - ray.origin;
     float const  axis_squared_length = squared_length(axis);
     float const  radius              = transformation.scale_x();
@@ -256,7 +255,7 @@ float Cube::pdf(Ray const&            ray, Intersection const& /*intersection*/,
     return math::cone_pdf_uniform(cos_theta_max);
 }
 
-float Cube::pdf_volume(Ray const& ray, Intersection const& /*intersection*/,
+float Cube::pdf_volume(Ray const& ray, Intersection const& /*isec*/,
                        Transformation const& /*transformation*/, float volume) const {
     float const sl = ray.max_t() * ray.max_t();
     return sl / (volume);
@@ -288,7 +287,7 @@ bool Cube::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tran
     return false;
 }
 
-float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
+float Cube::pdf_uv(Ray const& ray, Intersection const&             isec,
                    Transformation const& /*transformation*/, float area, bool /*two_sided*/) const {
     //	float3 xyz = transform_vector_transposed(wn, transformation.rotation);
     //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
@@ -297,10 +296,10 @@ float Cube::pdf_uv(Ray const& ray, Intersection const&             intersection,
     //	// sin_theta because of the uv weight
     //	float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
 
-    float const sin_theta = std::sin(intersection.uv[1] * Pi);
+    float const sin_theta = std::sin(isec.uv[1] * Pi);
 
     float const sl = ray.max_t() * ray.max_t();
-    float const c  = -dot(intersection.geo_n, ray.direction);
+    float const c  = -dot(isec.geo_n, ray.direction);
     return sl / (c * area * sin_theta);
 }
 

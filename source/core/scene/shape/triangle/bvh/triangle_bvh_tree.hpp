@@ -59,13 +59,13 @@ class Tree {
     uint32_t num_triangles() const;
 
     bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                   scalar& ray_max_t, Node_stack& node_stack, Intersection& intersection) const;
+                   scalar& ray_max_t, Node_stack& nodes, Intersection& isec) const;
 
     bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                   scalar& ray_max_t, Node_stack& node_stack) const;
+                   scalar& ray_max_t, Node_stack& nodes) const;
 
     bool intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                     scalar const& ray_max_t, Node_stack& node_stack) const;
+                     scalar const& ray_max_t, Node_stack& nodes) const;
 
     float visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker& worker) const;
 

@@ -57,8 +57,7 @@ void PM::start_pixel(rnd::Generator& rng) {
     }
 }
 
-float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) {
+float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack) {
     static uint32_t constexpr Max_bounces = 16;
 
     worker.reset_interface_stack(initial_stack);
@@ -78,20 +77,19 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
-                                                          worker);
+        auto const& mat_sample = isec.sample(wo, ray, filter, avoid_caustics, sampler_, worker);
 
 #ifndef ONLY_CAUSTICS
-        if (treat_as_singular & material_sample.same_hemisphere(wo)) {
-            result += throughput * material_sample.radiance();
+        if (treat_as_singular & mat_sample.same_hemisphere(wo)) {
+            result += throughput * mat_sample.radiance();
         }
 #endif
 
-        if (material_sample.is_pure_emissive()) {
+        if (mat_sample.is_pure_emissive()) {
             break;
         }
 
-        material_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
+        mat_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -105,12 +103,12 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         if (sample_result.type.no(Bxdf_type::Specular)) {
             if (ray.depth > 0 || settings_.photons_not_only_through_specular) {
-                result += throughput * worker.photon_li(intersection, material_sample);
+                result += throughput * worker.photon_li(isec, mat_sample);
             }
 
             if ((sample_result.type.no(Bxdf_type::Transmission) &&
-                 material_sample.same_hemisphere(wo)) ||
-                intersection.subsurface) {
+                 mat_sample.same_hemisphere(wo)) ||
+                isec.subsurface) {
                 break;
             }
         }
@@ -132,8 +130,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
         } else {
             throughput *= sample_result.reflection / sample_result.pdf;
 
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
-                                                  intersection.subsurface);
+            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
         }
@@ -141,13 +138,13 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
         ray.max_t() = scene::Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
-            worker.interface_change(sample_result.wi, intersection);
+            worker.interface_change(sample_result.wi, isec);
         }
 
         if (!worker.interface_stack().empty()) {
             float3     vli;
             float3     vtr;
-            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
+            auto const hit = worker.volume(ray, isec, filter, vli, vtr);
 
             // result += throughput * vli;
             throughput *= vtr;
@@ -155,7 +152,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
             if (Event::Abort == hit) {
                 break;
             }
-        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+        } else if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
             break;
         }
     }

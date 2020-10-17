@@ -32,8 +32,8 @@ AABB Disk::transformed_aabb(float4x4 const& m) const {
     return AABB(float3(-1.f, -1.f, -0.01f), float3(1.f, 1.f, 0.01f)).transform(m);
 }
 
-bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                     Intersection& intersection) const {
+bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                     Intersection& isec) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float const d     = dot(normal, transformation.position);
@@ -49,24 +49,24 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
-            intersection.p     = p;
-            intersection.geo_n = normal;
+            isec.p     = p;
+            isec.geo_n = normal;
 
             float3 const t = -transformation.rotation.r[0];
             float3 const b = -transformation.rotation.r[1];
 
-            intersection.t = t;
-            intersection.b = b;
-            intersection.n = normal;
+            isec.t = t;
+            isec.b = b;
+            isec.n = normal;
 
             float3 const sk       = k / radius;
             float const  uv_scale = 0.5f * transformation.scale_z();
-            intersection.uv[0]    = (dot(t, sk) + 1.f) * uv_scale;
-            intersection.uv[1]    = (dot(b, sk) + 1.f) * uv_scale;
+            isec.uv[0]            = (dot(t, sk) + 1.f) * uv_scale;
+            isec.uv[1]            = (dot(b, sk) + 1.f) * uv_scale;
 
-            intersection.part = 0;
+            isec.part = 0;
 
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, transformation, ray));
 
             ray.max_t() = hit_t;
             return true;
@@ -76,8 +76,8 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
 }
 
-bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                         Intersection& intersection) const {
+bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                         Intersection& isec) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float const d     = dot(normal, transformation.position);
@@ -93,20 +93,20 @@ bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
         float const radius = transformation.scale_x();
 
         if (l <= radius * radius) {
-            intersection.p     = p;
-            intersection.geo_n = normal;
+            isec.p     = p;
+            isec.geo_n = normal;
 
             float3 const t = -transformation.rotation.r[0];
             float3 const b = -transformation.rotation.r[1];
 
             float3 const sk       = k / radius;
             float const  uv_scale = 0.5f * transformation.scale_z();
-            intersection.uv[0]    = (dot(t, sk) + 1.f) * uv_scale;
-            intersection.uv[1]    = (dot(b, sk) + 1.f) * uv_scale;
+            isec.uv[0]            = (dot(t, sk) + 1.f) * uv_scale;
+            isec.uv[1]            = (dot(b, sk) + 1.f) * uv_scale;
 
-            intersection.part = 0;
+            isec.part = 0;
 
-            SOFT_ASSERT(testing::check(intersection, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, transformation, ray));
 
             ray.max_t() = hit_t;
             return true;
@@ -116,7 +116,7 @@ bool Disk::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     return false;
 }
 
-bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
                      Normals& normals) const {
     float3 const& normal = transformation.rotation.r[2];
 
@@ -146,7 +146,7 @@ bool Disk::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 }
 
 bool Disk::intersect_p(Ray const& ray, Transformation const& transformation,
-                       Node_stack& /*node_stack*/) const {
+                       Node_stack& /*nodes*/) const {
     float3 const& normal = transformation.rotation.r[2];
 
     float const d     = dot(normal, transformation.position);
@@ -289,9 +289,8 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& transformation, float
     return true;
 }
 
-float Disk::pdf(Ray const&            ray, Intersection const& /*intersection*/,
-                Transformation const& transformation, float area, bool two_sided,
-                bool /*total_sphere*/) const {
+float Disk::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& transformation,
+                float area, bool two_sided, bool /*total_sphere*/) const {
     float3 const normal = transformation.rotation.r[2];
 
     float c = -dot(normal, ray.direction);
@@ -304,7 +303,7 @@ float Disk::pdf(Ray const&            ray, Intersection const& /*intersection*/,
     return sl / (c * area);
 }
 
-float Disk::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Disk::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
                        Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
@@ -327,7 +326,7 @@ bool Disk::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tran
     return false;
 }
 
-float Disk::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Disk::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
                    Transformation const& /*transformation*/, float /*area*/,
                    bool /*two_sided*/) const {
     return 0.f;

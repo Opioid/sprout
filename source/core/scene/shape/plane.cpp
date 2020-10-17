@@ -25,8 +25,8 @@ AABB Plane::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
-bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
-                      Intersection& intersection) const {
+bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                      Intersection& isec) const {
     float3 const n = transformation.rotation.r[2];
 
     float const d     = dot(n, transformation.position);
@@ -37,15 +37,15 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
         float3 const t = -transformation.rotation.r[0];
         float3 const b = -transformation.rotation.r[1];
 
-        intersection.p     = p;
-        intersection.t     = t;
-        intersection.b     = b;
-        intersection.n     = n;
-        intersection.geo_n = n;
-        intersection.uv[0] = dot(t, p);
-        intersection.uv[1] = dot(b, p);
+        isec.p     = p;
+        isec.t     = t;
+        isec.b     = b;
+        isec.n     = n;
+        isec.geo_n = n;
+        isec.uv[0] = dot(t, p);
+        isec.uv[1] = dot(b, p);
 
-        intersection.part = 0;
+        isec.part = 0;
 
         ray.max_t() = hit_t;
         return true;
@@ -54,8 +54,8 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
     return false;
 }
 
-bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformation,
-                          Node_stack& /*node_stack*/, Intersection& intersection) const {
+bool Plane::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+                          Intersection& isec) const {
     float3 const n = transformation.rotation.r[2];
 
     float const d     = dot(n, transformation.position);
@@ -66,12 +66,12 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
         float3 t = -transformation.rotation.r[0];
         float3 b = -transformation.rotation.r[1];
 
-        intersection.p     = p;
-        intersection.geo_n = n;
-        intersection.uv[0] = dot(t, p);
-        intersection.uv[1] = dot(b, p);
+        isec.p     = p;
+        isec.geo_n = n;
+        isec.uv[0] = dot(t, p);
+        isec.uv[1] = dot(b, p);
 
-        intersection.part = 0;
+        isec.part = 0;
 
         ray.max_t() = hit_t;
         return true;
@@ -80,7 +80,7 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const&           transformati
     return false;
 }
 
-bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*node_stack*/,
+bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
                       Normals& normals) const {
     float3 const n = transformation.rotation.r[2];
 
@@ -100,7 +100,7 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
 }
 
 bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
-                        Node_stack& /*node_stack*/) const {
+                        Node_stack& /*nodes*/) const {
     float3 const n = transformation.rotation.r[2];
 
     float const d     = dot(n, transformation.position);
@@ -160,13 +160,13 @@ bool Plane::sample(uint32_t /*part*/, Transformation const& /*transformation*/, 
     return false;
 }
 
-float Plane::pdf(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Plane::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
                  bool /*total_sphere*/) const {
     return 0.f;
 }
 
-float Plane::pdf_volume(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Plane::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
                         Transformation const& /*transformation*/, float /*volume*/) const {
     return 0.f;
 }
@@ -189,7 +189,7 @@ bool Plane::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*tra
     return false;
 }
 
-float Plane::pdf_uv(Ray const& /*ray*/, Intersection const& /*intersection*/,
+float Plane::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
                     Transformation const& /*transformation*/, float /*area*/,
                     bool /*two_sided*/) const {
     return 0.f;
