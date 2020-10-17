@@ -28,7 +28,7 @@ static void w(std::ostream& stream, int64_t i);
 static void w(std::ostream& stream, std::string const& s);
 static void w(std::ostream& stream, Channel const& c);
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
+bool Writer::write(std::ostream& stream, Float4 const& image, Threads& threads) {
     stream.write(reinterpret_cast<const char*>(Signature), Signature_size);
 
     uint8_t version[4];
@@ -289,7 +289,7 @@ static inline void block_float(uint8_t* destination, Float4 const& image, int32_
 }
 
 bool Writer::zip_compression(std::ostream& stream, Float4 const& image, Compression compression,
-                             thread::Pool& threads) const {
+                             Threads& threads) const {
     auto const d = image.description().dimensions();
 
     int32_t const rows_per_block = exr::num_scanlines_per_block(compression);

@@ -9,7 +9,7 @@ class Material_base : public material::Material {
   public:
     Material_base(Sampler_settings const& sampler_settings, bool two_sided);
 
-    void commit(thread::Pool& threads, Scene const& scene) override;
+    void commit(Threads& threads, Scene const& scene) override;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              Worker const& worker) const override;

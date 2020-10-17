@@ -38,7 +38,7 @@ class Builder_SAH final : private scene::bvh::Builder_base {
     using Vertices  = Vertex_stream const&;
 
     void build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
-               thread::Pool& threads);
+               Threads& threads);
 
   private:
     using Node       = scene::bvh::Node;

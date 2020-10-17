@@ -76,11 +76,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    uint32_t const num_workers = thread::Pool::num_threads(args.threads);
+    uint32_t const num_workers = Threads::num_threads(args.threads);
 
     logging::info("#Threads " + string::to_string(num_workers));
 
-    thread::Pool threads(num_workers);
+    Threads threads(num_workers);
 
     resource::Manager resources(threads);
 

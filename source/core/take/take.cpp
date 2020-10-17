@@ -35,7 +35,7 @@ void View::clear() {
     pipeline.clear();
 }
 
-void View::init(thread::Pool& threads) {
+void View::init(Threads& threads) {
     if (camera) {
         pipeline.init(*camera, threads);
 

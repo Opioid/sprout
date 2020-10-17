@@ -8,6 +8,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace it::options {
 struct Options;
 }
@@ -17,9 +19,9 @@ struct Item;
 using Items = std::vector<Item>;
 
 namespace op {
-uint32_t add(Items const& items, it::options::Options const& options, thread::Pool& threads);
+uint32_t add(Items const& items, it::options::Options const& options, Threads& threads);
 
-uint32_t sub(Items const& items, it::options::Options const& options, thread::Pool& threads);
+uint32_t sub(Items const& items, it::options::Options const& options, Threads& threads);
 }  // namespace op
 
 #endif

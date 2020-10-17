@@ -9,6 +9,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 namespace material {
@@ -43,7 +45,7 @@ class Grid {
     void init_cells(uint32_t num_photons, Photon* photons);
 
     uint32_t reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                             thread::Pool& threads);
+                             Threads& threads);
 
     void set_num_paths(uint64_t num_paths);
 

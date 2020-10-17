@@ -21,6 +21,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 namespace entity {
@@ -104,8 +106,7 @@ class alignas(16) Light {
 
     float3 power(AABB const& scene_bb, Scene const& scene) const;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
-                          thread::Pool& threads) const;
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Threads& threads) const;
 
     bool equals(uint32_t prop, uint32_t part) const;
 

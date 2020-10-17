@@ -23,7 +23,7 @@ class Builder final : private Builder_base {
     ~Builder();
 
     void build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
-               thread::Pool& threads);
+               Threads& threads);
 
   private:
     void serialize(uint32_t source_node, uint32_t dest_node, Tree& tree, uint32_t& current_prop);

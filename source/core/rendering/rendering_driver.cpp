@@ -17,7 +17,7 @@ namespace rendering {
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
 
-Driver::Driver(thread::Pool& threads, progress::Sink& progressor)
+Driver::Driver(Threads& threads, progress::Sink& progressor)
     : threads_(threads),
       scene_(nullptr),
       view_(nullptr),

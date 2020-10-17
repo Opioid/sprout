@@ -17,7 +17,7 @@ Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_setti
 Emissionmap_animated::~Emissionmap_animated() = default;
 
 void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /*frame_length*/,
-                                    thread::Pool& /*threads*/, Scene const& scene) {
+                                    Threads& /*threads*/, Scene const& scene) {
     uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
 
     int32_t const element = int32_t((start / (animation_duration_ / num_elements)) % num_elements);
@@ -64,7 +64,7 @@ float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
 void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,
                                             Transformation const& /*transformation*/,
                                             float /*area*/, bool importance_sampling,
-                                            thread::Pool& threads, Scene const& scene) {
+                                            Threads& threads, Scene const& scene) {
     uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
 
     int32_t const element = int32_t((time / (animation_duration_ / num_elements)) % num_elements);

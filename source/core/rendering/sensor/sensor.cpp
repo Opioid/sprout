@@ -14,13 +14,13 @@ int2 Sensor::dimensions() const {
     return dimensions_;
 }
 
-void Sensor::resolve(thread::Pool& threads, image::Float4& target) const {
+void Sensor::resolve(Threads& threads, image::Float4& target) const {
     threads.run_range([this, &target](uint32_t /*id*/, int32_t begin,
                                       int32_t end) noexcept { resolve(begin, end, target); },
                       0, target.description().area());
 }
 
-void Sensor::resolve_accumulate(thread::Pool& threads, image::Float4& target) const {
+void Sensor::resolve_accumulate(Threads& threads, image::Float4& target) const {
     threads.run_range(
         [this, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             resolve_accumulate(begin, end, target);

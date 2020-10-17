@@ -10,7 +10,7 @@ namespace op {
 
 using namespace it::options;
 
-uint32_t add(Items const& items, Options const& /*options*/, thread::Pool& threads) {
+uint32_t add(Items const& items, Options const& /*options*/, Threads& threads) {
     int2 const d = max_dimensions_2(items);
 
     Float4 target = Float4(image::Description(d));
@@ -50,7 +50,7 @@ uint32_t add(Items const& items, Options const& /*options*/, thread::Pool& threa
     return uint32_t(items.size());
 }
 
-uint32_t sub(Items const& items, Options const& /*options*/, thread::Pool& threads) {
+uint32_t sub(Items const& items, Options const& /*options*/, Threads& threads) {
     int2 const d = items[0].image->dimensions().xy();
 
     Float4 target = Float4(image::Description(d));

@@ -53,7 +53,7 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 
 void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                    bool /*importance_sampling*/, Threads& /*threads*/,
                                     Scene const& /*scene*/) {}
 
 static int2 constexpr Bake_dimensions(256);
@@ -112,7 +112,7 @@ float Sky_baked_material::emission_pdf(float3 const& uvw, Filter filter,
 
 void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                           Transformation const& transformation, float /*area*/,
-                                          bool importance_sampling, thread::Pool& threads,
+                                          bool importance_sampling, Threads& threads,
                                           Scene const& /*scene*/) {
     using namespace image;
 

@@ -23,7 +23,7 @@ Material_coating_subsurface::Material_coating_subsurface(Sampler_settings const&
     properties_.set(Property::Caustic);
 }
 
-void Material_coating_subsurface::commit(thread::Pool& threads, Scene const& scene) {
+void Material_coating_subsurface::commit(Threads& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture(scene);
 

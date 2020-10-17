@@ -11,7 +11,7 @@ Octree_builder::Build_node::~Build_node() {
 }
 
 void Octree_builder::build(Gridtree& tree, Texture const& texture, CC const* ccs,
-                           thread::Pool& threads) {
+                           Threads& threads) {
     threads.wait_async();
 
     int3 const d = texture.dimensions();

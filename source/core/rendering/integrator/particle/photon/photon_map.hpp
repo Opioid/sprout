@@ -27,7 +27,7 @@ class Map {
 
     void insert(Photon const& photon, uint32_t index);
 
-    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& threads);
+    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths, Threads& threads);
 
     void compile_finalize();
 
@@ -37,7 +37,7 @@ class Map {
     bool caustics_only() const;
 
   private:
-    AABB calculate_aabb(uint32_t num_photons, thread::Pool& threads) const;
+    AABB calculate_aabb(uint32_t num_photons, Threads& threads) const;
 
     uint64_t num_paths_;
 

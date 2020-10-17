@@ -24,7 +24,7 @@ std::string Writer::file_extension() const {
     return "hdr";
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& /*threads*/) {
+bool Writer::write(std::ostream& stream, Float4 const& image, Threads& /*threads*/) {
     write_header(stream, image.description().dimensions().xy());
 
     write_pixels_rle(stream, image);

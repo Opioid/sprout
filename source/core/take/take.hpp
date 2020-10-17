@@ -53,7 +53,7 @@ struct View {
 
     void clear();
 
-    void init(thread::Pool& threads);
+    void init(Threads& threads);
 
     bool valid() const;
 

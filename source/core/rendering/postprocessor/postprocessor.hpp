@@ -11,6 +11,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace rendering::postprocessor {
 
 class Postprocessor {
@@ -21,15 +23,15 @@ class Postprocessor {
 
     virtual ~Postprocessor();
 
-    virtual void init(Camera const& camera, thread::Pool& threads) = 0;
+    virtual void init(Camera const& camera, Threads& threads) = 0;
 
     virtual bool alpha_out(bool alpha_in) const;
 
-    void apply(image::Float4 const& source, image::Float4& destination, thread::Pool& threads);
+    void apply(image::Float4 const& source, image::Float4& destination, Threads& threads);
 
   private:
     virtual void pre_apply(image::Float4 const& source, image::Float4& destination,
-                           thread::Pool& threads);
+                           Threads& threads);
 
     virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
                        image::Float4 const& source, image::Float4& destination) = 0;

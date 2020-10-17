@@ -11,7 +11,7 @@ class Writer : public image::Writer {
 
     std::string file_extension() const final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
+    bool write(std::ostream& stream, Float4 const& image, Threads& threads) final;
 };
 
 }  // namespace image::encoding::rgbe

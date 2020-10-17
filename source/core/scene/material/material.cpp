@@ -48,10 +48,10 @@ void Material::set_volumetric_anisotropy(float anisotropy) {
     volumetric_anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
-void Material::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
+void Material::commit(Threads& /*threads*/, Scene const& /*scene*/) {}
 
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
-                        thread::Pool& /*threads*/, Scene const& /*scene*/) {}
+                        Threads& /*threads*/, Scene const& /*scene*/) {}
 
 float3 Material::average_radiance(float /*extent*/) const {
     return float3(0.f);
@@ -139,7 +139,7 @@ float Material::similarity_relation_scale(uint32_t depth) const {
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                 Transformation const& /*transformation*/, float /*extent*/,
-                                bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                bool /*importance_sampling*/, Threads& /*threads*/,
                                 Scene const& /*scene*/) {}
 
 uint32_t Material::sampler_key() const {

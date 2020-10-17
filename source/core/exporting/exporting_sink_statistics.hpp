@@ -11,7 +11,7 @@ class Statistics final : public Sink {
 
     ~Statistics() final;
 
-    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) final;
+    void write(image::Float4 const& image, uint32_t frame, Threads& threads) final;
 };
 
 }  // namespace exporting

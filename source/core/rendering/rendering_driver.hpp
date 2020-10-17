@@ -43,7 +43,7 @@ class Driver {
     using Camera    = scene::camera::Camera;
     using Exporters = memory::Array<exporting::Sink*>;
 
-    Driver(thread::Pool& threads, progress::Sink& progressor);
+    Driver(Threads& threads, progress::Sink& progressor);
 
     ~Driver();
 
@@ -74,7 +74,7 @@ class Driver {
 
     void bake_photons(uint32_t frame);
 
-    thread::Pool& threads_;
+    Threads& threads_;
 
     Scene* scene_;
 

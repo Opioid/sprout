@@ -142,9 +142,9 @@ class Scene {
     void random_light(float3 const& p0, float3 const& p1, float random, bool split,
                       Lights& lights) const;
 
-    void simulate(uint64_t start, uint64_t end, thread::Pool& threads);
+    void simulate(uint64_t start, uint64_t end, Threads& threads);
 
-    void compile(uint64_t time, thread::Pool& threads);
+    void compile(uint64_t time, Threads& threads);
 
     uint32_t num_interpolation_frames() const;
 
@@ -210,8 +210,7 @@ class Scene {
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection, bool in_shadow);
 
     void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
-                               bool material_importance_sampling, bool volume,
-                               thread::Pool& threads);
+                               bool material_importance_sampling, bool volume, Threads& threads);
 
     AABB const& prop_aabb(uint32_t entity) const;
 

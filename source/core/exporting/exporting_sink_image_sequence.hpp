@@ -17,7 +17,7 @@ class Image_sequence final : public Sink {
 
     ~Image_sequence() final;
 
-    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) final;
+    void write(image::Float4 const& image, uint32_t frame, Threads& threads) final;
 
   private:
     std::string filename_;

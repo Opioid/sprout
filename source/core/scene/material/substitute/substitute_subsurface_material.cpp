@@ -22,7 +22,7 @@ Material_subsurface::Material_subsurface(Sampler_settings const& sampler_setting
     properties_.set(Property::Caustic);
 }
 
-void Material_subsurface::commit(thread::Pool& threads, Scene const& scene) {
+void Material_subsurface::commit(Threads& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture(scene);
 

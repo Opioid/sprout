@@ -62,7 +62,7 @@ class C : public Sink {
 
 struct Engine {
     Engine(bool progressive)
-        : threads(thread::Pool::num_threads(0)),
+        : threads(Threads::num_threads(0)),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
           texture_provider(false),
@@ -77,7 +77,7 @@ struct Engine {
           frame_iteration(0),
           progressive(progressive),
           valid(false) {}
-    thread::Pool threads;
+    Threads threads;
 
     resource::Manager resources;
 

@@ -24,6 +24,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 struct Ray;
@@ -69,10 +71,10 @@ class alignas(16) Material {
 
     void set_volumetric_anisotropy(float anisotropy);
 
-    virtual void commit(thread::Pool& threads, Scene const& scene);
+    virtual void commit(Threads& threads, Scene const& scene);
 
-    virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
-                          thread::Pool& threads, Scene const& scene);
+    virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length, Threads& threads,
+                          Scene const& scene);
 
     virtual Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, Sampler& sampler, Worker& worker) const = 0;
@@ -127,8 +129,7 @@ class alignas(16) Material {
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                                   Transformation const& transformation, float extent,
-                                  bool importance_sampling, thread::Pool& threads,
-                                  Scene const& scene);
+                                  bool importance_sampling, Threads& threads, Scene const& scene);
 
     uint32_t sampler_key() const;
 

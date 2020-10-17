@@ -10,7 +10,7 @@ class Material_coating_subsurface final : public Material_clearcoat {
   public:
     Material_coating_subsurface(Sampler_settings const& sampler_settings);
 
-    void commit(thread::Pool& threads, Scene const& scene) final;
+    void commit(Threads& threads, Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;

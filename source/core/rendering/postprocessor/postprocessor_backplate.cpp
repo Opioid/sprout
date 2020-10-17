@@ -8,7 +8,7 @@ namespace rendering::postprocessor {
 Backplate::Backplate(image::texture::Texture const* backplate)
     : Postprocessor(1), backplate_(backplate) {}
 
-void Backplate::init(scene::camera::Camera const& /*camera*/, thread::Pool& /*threads*/) {}
+void Backplate::init(scene::camera::Camera const& /*camera*/, Threads& /*threads*/) {}
 
 bool Backplate::alpha_out(bool /*alpha_in*/) const {
     return false;

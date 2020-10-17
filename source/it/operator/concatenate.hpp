@@ -32,7 +32,7 @@ struct Pipeline {
 };
 
 uint32_t concatenate(std::vector<Item> const& items, it::options::Options const& options,
-                     Pipeline& pipeline, thread::Pool& threads);
+                     Pipeline& pipeline, Threads& threads);
 }  // namespace op
 
 #endif

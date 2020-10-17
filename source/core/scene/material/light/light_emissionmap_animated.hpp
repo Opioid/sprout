@@ -13,7 +13,7 @@ class Emissionmap_animated : public Emissionmap {
 
     ~Emissionmap_animated() override;
 
-    void simulate(uint64_t start, uint64_t end, uint64_t frame_length, thread::Pool& threads,
+    void simulate(uint64_t start, uint64_t end, uint64_t frame_length, Threads& threads,
                   Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
@@ -26,8 +26,7 @@ class Emissionmap_animated : public Emissionmap {
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads,
-                          Scene const& scene) final;
+                          bool importance_sampling, Threads& threads, Scene const& scene) final;
 
     void set_emission_map(Texture_adapter const& emission_map, uint64_t animation_duration);
 

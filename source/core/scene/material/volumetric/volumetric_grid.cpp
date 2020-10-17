@@ -46,7 +46,7 @@ CCE Grid::collision_coefficients_emission(float3 const& uvw, Filter filter,
     return {{d * cc_.a, d * cc_.s}, emission_};
 }
 
-void Grid::commit(thread::Pool& threads, Scene const& scene) {
+void Grid::commit(Threads& threads, Scene const& scene) {
     auto const& texture = density_.texture(scene);
 
     Octree_builder builder;
@@ -135,7 +135,7 @@ CCE Grid_emission::collision_coefficients_emission(float3 const& uvw, Filter fil
     }
 }
 
-void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
+void Grid_emission::commit(Threads& threads, Scene const& scene) {
     auto const& texture = density_.texture(scene);
 
     Octree_builder builder;
@@ -192,7 +192,7 @@ void Grid_emission::commit(thread::Pool& threads, Scene const& scene) {
 
 void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                      Transformation const& /*transformation*/, float /*area*/,
-                                     bool importance_sampling, thread::Pool& threads,
+                                     bool importance_sampling, Threads& threads,
                                      Scene const& scene) {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
@@ -400,7 +400,7 @@ void Grid_color::set_attenuation(float scattering_factor, float distance) {
     scattering_factor_    = scattering_factor;
 }
 
-void Grid_color::commit(thread::Pool& threads, Scene const& scene) {
+void Grid_color::commit(Threads& threads, Scene const& scene) {
     auto const& texture = color_.texture(scene);
 
     CC const hack{float3(attenuation_distance_), float3(scattering_factor_)};

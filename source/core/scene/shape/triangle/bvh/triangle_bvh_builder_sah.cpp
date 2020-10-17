@@ -18,7 +18,7 @@ Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t
 Builder_SAH::~Builder_SAH() = default;
 
 void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
-                        thread::Pool& threads) {
+                        Threads& threads) {
     reserve(num_triangles);
 
     {

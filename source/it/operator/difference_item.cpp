@@ -39,7 +39,7 @@ float Difference_item::psnr() const {
 }
 
 void Difference_item::calculate_difference(Texture const* other, Scratch* scratch, float clamp,
-                                           float2 clip, thread::Pool& threads) {
+                                           float2 clip, Threads& threads) {
     int2 const d = image_->dimensions().xy();
 
     int32_t const num_pixel = d[0] * d[1];

@@ -16,7 +16,7 @@ Builder::Builder() : Builder_base(16, 64, 4) {}
 Builder::~Builder() = default;
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
-                    thread::Pool& threads) {
+                    Threads& threads) {
     uint32_t const num_primitives = uint32_t(indices.size());
 
     reserve(num_primitives);

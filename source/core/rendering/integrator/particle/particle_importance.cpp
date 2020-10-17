@@ -39,7 +39,7 @@ float Importance::denormalization_factor() const {
     return float(Dimensions * Dimensions);
 }
 
-void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& threads) {
+void Importance::prepare_sampling(uint32_t id, float* buffer, Threads& threads) {
     if (!distribution_.empty()) {
         return;
     }
@@ -82,7 +82,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
     distribution_.init();
 }
 
-void Importance::filter(float* buffer, thread::Pool& threads) const {
+void Importance::filter(float* buffer, Threads& threads) const {
     static int32_t constexpr Kernel_radius = 4;
 
     threads.run_range(
@@ -143,7 +143,7 @@ void Importance_cache::set_training(bool training) {
     training_ = training;
 }
 
-void Importance_cache::prepare_sampling(thread::Pool& threads) {
+void Importance_cache::prepare_sampling(Threads& threads) {
     // This entire ordeal is very hacky!
     // We need a proper way to select which light should have importances and which not.
     uint32_t const light = std::min(1u, uint32_t(importances_.size()) - 1);

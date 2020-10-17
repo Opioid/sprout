@@ -11,11 +11,10 @@ class Tonemapper : public Postprocessor {
 
     ~Tonemapper() override;
 
-    void init(Camera const& camera, thread::Pool& threads) final;
+    void init(Camera const& camera, Threads& threads) final;
 
   protected:
-    void pre_apply(image::Float4 const& source, image::Float4& destination,
-                   thread::Pool& threads) final;
+    void pre_apply(image::Float4 const& source, image::Float4& destination, Threads& threads) final;
 
     static float normalization_factor(float linear_max, float tonemapped_max);
 

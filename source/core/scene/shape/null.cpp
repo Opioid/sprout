@@ -7,7 +7,7 @@
 
 namespace scene::shape {
 
-Null::Null() : Shape(Properties(Property::Finite, Property::Analytical)) {}
+Null::Null() : Shape(Properties(Property::Analytical)) {}
 
 float3 Null::object_to_texture_point(float3 const& p) const {
     return p;

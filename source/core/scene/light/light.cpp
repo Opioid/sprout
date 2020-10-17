@@ -68,7 +68,7 @@ float3 Light::power(AABB const& scene_bb, Scene const& scene) const {
 }
 
 void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
-                             thread::Pool& threads) const {
+                             Threads& threads) const {
     switch (type_) {
         case Type::Null:
             break;

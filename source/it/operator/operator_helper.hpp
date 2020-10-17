@@ -9,9 +9,11 @@ namespace thread {
 class Pool;
 };
 
+using Threads = thread::Pool;
+
 namespace op {
 
-bool write(image::Float4 const& image, std::string const& name, bool alpha, thread::Pool& threads);
+bool write(image::Float4 const& image, std::string const& name, bool alpha, Threads& threads);
 
 }
 

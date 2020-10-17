@@ -172,7 +172,7 @@ void Scene::random_light(float3 const& p0, float3 const& p1, float random, bool 
     light_tree_.random_light(p0, p1, random, split, *this, lights);
 }
 
-void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) {
+void Scene::simulate(uint64_t start, uint64_t end, Threads& threads) {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;
     uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
@@ -194,7 +194,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) {
     compile(start, threads);
 }
 
-void Scene::compile(uint64_t time, thread::Pool& threads) {
+void Scene::compile(uint64_t time, Threads& threads) {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
 
@@ -502,7 +502,7 @@ void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflect
 
 void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light, uint64_t time,
                                   bool material_importance_sampling, bool volume,
-                                  thread::Pool& threads) {
+                                  Threads& threads) {
     auto shape = prop_shape(entity);
 
     shape->prepare_sampling(part);
@@ -518,8 +518,9 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
-    material_resources_[materials_[p]]->prepare_sampling(
-        *shape, part, time, transformation, extent, material_importance_sampling, threads, *this);
+    Material* material = material_resources_[materials_[p]];
+    material->prepare_sampling(*shape, part, time, transformation, extent,
+                               material_importance_sampling, threads, *this);
 
     lights_[light].set_extent(extent);
 

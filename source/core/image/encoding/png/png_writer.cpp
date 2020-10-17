@@ -19,7 +19,7 @@ std::string Writer::file_extension() const {
     return "png";
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
+bool Writer::write(std::ostream& stream, Float4 const& image, Threads& threads) {
     auto const d = image.description().dimensions();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
@@ -93,7 +93,7 @@ bool Writer::write(std::string_view name, Byte1 const& image) {
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           thread::Pool& threads) {
+                           Threads& threads) {
     uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
     float max_value = 0.f;
@@ -105,7 +105,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value, thread::Pool& threads) {
+                           float max_value, Threads& threads) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;

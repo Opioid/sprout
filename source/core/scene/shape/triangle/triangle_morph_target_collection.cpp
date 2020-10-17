@@ -23,7 +23,7 @@ uint32_t Morph_target_collection::num_vertices() const {
     return uint32_t(morph_targets_[0].size());
 }
 
-void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads,
+void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, Threads& threads,
                                     Vertex* vertices) {
     struct Args {
         Vertex const* va;

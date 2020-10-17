@@ -66,7 +66,7 @@ Keyframe const* Animation::interpolated_frames() const {
 
 Stage::Stage(uint32_t entity, Animation* animation) : entity_(entity), animation_(animation) {}
 
-void Stage::update(Scene& scene, thread::Pool& threads) const {
+void Stage::update(Scene& scene, Threads& threads) const {
     scene.prop_set_frames(entity_, animation_->interpolated_frames());
 
     if (shape::Morphable* morphable = scene.prop_shape(entity_)->morphable_shape(); morphable) {

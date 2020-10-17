@@ -13,7 +13,7 @@ namespace scene::material::metal {
 Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-void Material_isotropic::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+void Material_isotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 }
 
@@ -67,7 +67,7 @@ size_t Material_isotropic::sample_size() {
 Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-void Material_anisotropic::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+void Material_anisotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Caustic,
                     roughness_[0] <= ggx::Min_roughness || roughness_[1] <= ggx::Min_roughness);
 }

@@ -15,13 +15,15 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene::material::volumetric {
 
 class Octree_builder {
   public:
     using Texture = image::texture::Texture;
 
-    void build(Gridtree& tree, Texture const& texture, CC const* ccs, thread::Pool& threads);
+    void build(Gridtree& tree, Texture const& texture, CC const* ccs, Threads& threads);
 
   private:
     struct Build_node {

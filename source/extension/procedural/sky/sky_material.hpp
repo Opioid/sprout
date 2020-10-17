@@ -24,7 +24,7 @@ class Sky_material : public Material {
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads,
+                          bool importance_sampling, Threads& threads,
                           scene::Scene const& scene) final;
 };
 
@@ -49,7 +49,7 @@ class Sky_baked_material : public Material {
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads,
+                          bool importance_sampling, Threads& threads,
                           scene::Scene const& scene) final;
 
   private:

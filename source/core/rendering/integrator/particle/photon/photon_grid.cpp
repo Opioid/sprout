@@ -263,7 +263,7 @@ void Grid::init_cells(uint32_t num_photons, Photon* photons) {
 }
 
 uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                               thread::Pool& threads) {
+                               Threads& threads) {
     threads.run_range(
         [this, merge_radius, num_reduced](uint32_t id, int32_t begin, int32_t end) noexcept {
             num_reduced[id] = reduce(merge_radius, begin, end);

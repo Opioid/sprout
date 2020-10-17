@@ -8,6 +8,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace sampler {
 struct Camera_sample;
 struct Camera_sample_to;
@@ -26,9 +28,9 @@ class Sensor {
 
     int2 dimensions() const;
 
-    void resolve(thread::Pool& threads, image::Float4& target) const;
+    void resolve(Threads& threads, image::Float4& target) const;
 
-    void resolve_accumulate(thread::Pool& threads, image::Float4& target) const;
+    void resolve_accumulate(Threads& threads, image::Float4& target) const;
 
     void resize(int2 dimensions, int32_t num_layers);
 

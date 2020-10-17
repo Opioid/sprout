@@ -276,7 +276,7 @@ Morphable* Morphable_mesh::morphable_shape() {
     return this;
 }
 
-void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads) {
+void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, Threads& threads) {
     collection_->morph(a, b, weight, threads, vertices_);
 
     Vertex_stream_interleaved vertices(collection_->num_vertices(), vertices_);

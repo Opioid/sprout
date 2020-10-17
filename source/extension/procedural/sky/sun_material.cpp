@@ -46,7 +46,7 @@ float3 Sun_material::average_radiance(float /*area*/) const {
 
 void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
                                     Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                    bool /*importance_sampling*/, Threads& /*threads*/,
                                     Scene const& /*scene*/) {}
 
 Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
@@ -84,7 +84,7 @@ float3 Sun_baked_material::average_radiance(float /*area*/) const {
 void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                           uint64_t /*time*/,
                                           Transformation const& /*transformation*/, float /*area*/,
-                                          bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                          bool /*importance_sampling*/, Threads& /*threads*/,
                                           Scene const& /*scene*/) {
     using namespace image;
 

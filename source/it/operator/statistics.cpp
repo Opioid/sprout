@@ -79,7 +79,7 @@ class Histogram {
 };
 
 uint32_t statistics(std::vector<Item> const& items, it::options::Options const& options,
-                    thread::Pool& /*threads*/) {
+                    Threads& /*threads*/) {
     std::ostringstream stream;
 
     for (auto const& i : items) {

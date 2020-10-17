@@ -67,8 +67,7 @@ float Emissionmap::emission_pdf(float3 const& uvw, Filter filter, Worker const& 
 
 void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
                                    Transformation const& /*transformation*/, float /*area*/,
-                                   bool importance_sampling, thread::Pool& threads,
-                                   Scene const& scene) {
+                                   bool importance_sampling, Threads& threads, Scene const& scene) {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
@@ -89,7 +88,7 @@ void Emissionmap::set_emission_factor(float emission_factor) {
 }
 
 void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
-                                            bool importance_sampling, thread::Pool& threads,
+                                            bool importance_sampling, Threads& threads,
                                             Scene const& scene) {
     auto const& texture = emission_map_.texture(scene);
 

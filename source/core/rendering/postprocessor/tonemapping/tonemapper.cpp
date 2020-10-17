@@ -14,10 +14,10 @@ Tonemapper::Tonemapper(bool auto_expose, float exposure)
 
 Tonemapper::~Tonemapper() = default;
 
-void Tonemapper::init(Camera const& /*camera*/, thread::Pool& /*threads*/) {}
+void Tonemapper::init(Camera const& /*camera*/, Threads& /*threads*/) {}
 
 void Tonemapper::pre_apply(image::Float4 const& source, image::Float4& /*destination*/,
-                           thread::Pool&        threads) {
+                           Threads&             threads) {
     if (!auto_expose_) {
         return;
     }

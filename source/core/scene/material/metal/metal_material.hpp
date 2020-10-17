@@ -9,7 +9,7 @@ class alignas(64) Material_isotropic : public Material {
   public:
     Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided);
 
-    void commit(thread::Pool& threads, Scene const& scene) final;
+    void commit(Threads& threads, Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
@@ -35,7 +35,7 @@ class alignas(64) Material_anisotropic : public Material {
   public:
     Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided);
 
-    void commit(thread::Pool& threads, Scene const& scene) final;
+    void commit(Threads& threads, Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;

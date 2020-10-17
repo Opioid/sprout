@@ -12,6 +12,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 class Scene;
@@ -66,7 +68,7 @@ class Prop {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
-    void morph(uint32_t self, thread::Pool& threads, Scene const& scene);
+    void morph(uint32_t self, Threads& threads, Scene const& scene);
 
     bool intersect(uint32_t self, Ray& ray, Worker& worker,
                    shape::Intersection& intersection) const;
