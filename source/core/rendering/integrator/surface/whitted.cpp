@@ -23,7 +23,7 @@ void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel, 1, num_lights, num_lights);
 }
 
-void Whitted::start_pixel(rnd::Generator& rng) {
+void Whitted::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 }
 

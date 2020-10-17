@@ -23,21 +23,21 @@ struct Base_closure {
     bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                                      float wo_dot_h, Layer const& layer) const;
 
-    void diffuse_sample(float3 const& wo, Layer const& layer, Sampler& sampler, rnd::Generator& rng,
+    void diffuse_sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
                         bool avoid_caustics, bxdf::Sample& result) const;
 
     void diffuse_sample(float3 const& wo, Layer const& layer, float diffuse_factor,
-                        Sampler& sampler, rnd::Generator& rng, bool avoid_caustics,
+                        Sampler& sampler, RNG& rng, bool avoid_caustics,
                         bxdf::Sample& result) const;
 
-    void gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler, rnd::Generator& rng,
+    void gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
                       bxdf::Sample& result) const;
 
     void gloss_sample(float3 const& wo, Layer const& layer, float diffuse_factor, Sampler& sampler,
-                      rnd::Generator& rng, bxdf::Sample& result) const;
+                      RNG& rng, bxdf::Sample& result) const;
 
-    void pure_gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
-                           rnd::Generator& rng, bxdf::Sample& result) const;
+    void pure_gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
+                           bxdf::Sample& result) const;
 
     float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const;
 

@@ -8,11 +8,11 @@ namespace sampler {
 
 Random::Random() {}
 
-float2 Random::generate_sample_2D(rnd::Generator& rng, uint32_t /*dimension*/) {
+float2 Random::generate_sample_2D(RNG& rng, uint32_t /*dimension*/) {
     return float2(rng.random_float(), rng.random_float());
 }
 
-float Random::generate_sample_1D(rnd::Generator& rng, uint32_t /*dimension*/) {
+float Random::generate_sample_1D(RNG& rng, uint32_t /*dimension*/) {
     return rng.random_float();
 }
 

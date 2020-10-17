@@ -100,17 +100,17 @@ bool Cubic_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, uint
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    ray = create_ray(transformation.object_to_world_point(eye_offset),
-                     transformation.object_to_world_vector(direction), time);
+    ray = create_ray(trafo.object_to_world_point(eye_offset),
+                     trafo.object_to_world_vector(direction), time);
 
     return true;
 }
 
 bool Cubic_stereoscopic::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
                                 float3 const& /*p*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                                uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
+                                uint32_t /*sampler_d*/, Scene const& /*scene*/,
                                 Sample_to& /*sample*/) const {
     return false;
 }

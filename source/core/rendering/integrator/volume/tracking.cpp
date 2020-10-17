@@ -31,8 +31,8 @@ bool check(float3 const& majorant_mt, float mt);
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray const& ray,
                                                        float minorant_mu_t, float majorant_mu_t,
                                                        Tracking::Material const& material,
-                                                       float srs, Tracking::Filter filter,
-                                                       rnd::Generator& rng, Worker& worker) {
+                                                       float srs, Tracking::Filter filter, RNG& rng,
+                                                       Worker& worker) {
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t() - ray.min_t(), minorant_mu_t);
 
@@ -82,8 +82,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
 
 static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tracking::CM const& cm,
                                         Tracking::Material const& material, float srs,
-                                        Tracking::Filter filter, rnd::Generator& rng,
-                                        Worker& worker) {
+                                        Tracking::Filter filter, RNG& rng, Worker& worker) {
     float const mt = cm.majorant_mu_t();
 
     if (mt < Tracking::Min_mt) {
@@ -421,8 +420,7 @@ Event Tracking::tracking(ray const& ray, CM const& cm, Material const& material,
     }
 }
 
-bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
-                        float3& w) {
+bool Tracking::tracking(ray const& ray, CC const& mu, RNG& rng, float& t_out, float3& w) {
     float3 const mu_t = mu.a + mu.s;
 
     float const mt  = max_component(mu_t);
@@ -470,8 +468,8 @@ bool Tracking::tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float
     }
 }
 
-Event Tracking::tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
-                         float3& w, float3& li) {
+Event Tracking::tracking(ray const& ray, CCE const& cce, RNG& rng, float& t_out, float3& w,
+                         float3& li) {
     CC const& mu = cce.cc;
 
     float3 const mu_t = mu.a + mu.s;

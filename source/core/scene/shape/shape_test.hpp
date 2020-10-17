@@ -18,8 +18,7 @@ struct Sample_to;
 
 namespace testing {
 
-bool check(Intersection const& isec, const entity::Composed_transformation& transformation,
-           Ray const& ray);
+bool check(Intersection const& isec, const entity::Composed_transformation& trafo, Ray const& ray);
 
 bool check(const Sample_to& sample);
 

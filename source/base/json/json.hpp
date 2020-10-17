@@ -67,7 +67,7 @@ std::string read_string(json::Value const& value);
 std::string read_string(json::Value const& value, std::string_view name,
                         std::string const& default_value = "");
 
-void read_transformation(json::Value const& value, math::Transformation& transformation);
+void read_transformation(json::Value const& value, math::Transformation& trafo);
 
 }  // namespace json
 

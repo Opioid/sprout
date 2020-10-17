@@ -10,9 +10,9 @@ namespace scene::light {
 
 using Transformation = entity::Composed_transformation;
 
-inline Transformation const& Light::transformation_at(uint64_t time, Transformation& transformation,
+inline Transformation const& Light::transformation_at(uint64_t time, Transformation& trafo,
                                                       Scene const& scene) const {
-    return scene.prop_transformation_at(prop_, time, transformation);
+    return scene.prop_transformation_at(prop_, time, trafo);
 }
 
 inline bool Light::is_finite(Scene const& scene) const {

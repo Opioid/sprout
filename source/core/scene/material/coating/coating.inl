@@ -18,7 +18,7 @@ Result Coating_layer<Coating>::evaluate_b(float3 const& wi, float3 const& wo, fl
 }
 
 template <typename Coating>
-void Coating_layer<Coating>::sample(float3 const& wo, Sampler& sampler, rnd::Generator& rng,
+void Coating_layer<Coating>::sample(float3 const& wo, Sampler& sampler, RNG& rng,
                                     float3& attenuation, bxdf::Sample& result) const {
     Coating::sample(wo, *this, sampler, rng, attenuation, result);
 }

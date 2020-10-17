@@ -73,7 +73,7 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
     lights_.reserve(max_lights);
 }
 
-void Pathtracer_MIS::start_pixel(rnd::Generator& rng) {
+void Pathtracer_MIS::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {
@@ -351,13 +351,13 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 }
 
 float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ray const& history,
-                                      float3 const& p, uint32_t sampler_dimension,
-                                      Intersection const& isec, Material_sample const& mat_sample,
-                                      Filter filter, Worker& worker) {
+                                      float3 const& p, uint32_t sampler_d, Intersection const& isec,
+                                      Material_sample const& mat_sample, Filter filter,
+                                      Worker& worker) {
     // Light source importance sample
     Sample_to light_sample;
     if (!light.sample(p, mat_sample.geometric_normal(), history.time, mat_sample.is_translucent(),
-                      light_sampler(history.depth), sampler_dimension, worker, light_sample)) {
+                      light_sampler(history.depth), sampler_d, worker, light_sample)) {
         return float3(0.f);
     }
 

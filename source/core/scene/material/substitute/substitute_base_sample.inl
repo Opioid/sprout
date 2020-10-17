@@ -138,7 +138,7 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
-                                           rnd::Generator& rng, bool avoid_caustics,
+                                           RNG& rng, bool avoid_caustics,
                                            bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -168,9 +168,8 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
-                                           float diffuse_factor, Sampler& sampler,
-                                           rnd::Generator& rng, bool avoid_caustics,
-                                           bxdf::Sample& result) const {
+                                           float diffuse_factor, Sampler& sampler, RNG& rng,
+                                           bool avoid_caustics, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float2 const xi = sampler.generate_sample_2D(rng);
@@ -199,7 +198,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, Sampler& sampler,
-                                         rnd::Generator& rng, bxdf::Sample& result) const {
+                                         RNG& rng, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -220,8 +219,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, float diffuse_factor,
-                                         Sampler& sampler, rnd::Generator& rng,
-                                         bxdf::Sample& result) const {
+                                         Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
@@ -243,7 +241,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, f
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, Layer const& layer,
-                                              Sampler& sampler, rnd::Generator& rng,
+                                              Sampler& sampler, RNG& rng,
                                               bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 

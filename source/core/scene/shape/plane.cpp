@@ -25,17 +25,17 @@ AABB Plane::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
-bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                       Intersection& isec) const {
-    float3 const n = transformation.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(n, transformation.position);
+    float const d     = dot(n, trafo.position);
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 const p = ray.point(hit_t);
-        float3 const t = -transformation.rotation.r[0];
-        float3 const b = -transformation.rotation.r[1];
+        float3 const t = -trafo.rotation.r[0];
+        float3 const b = -trafo.rotation.r[1];
 
         isec.p     = p;
         isec.t     = t;
@@ -54,17 +54,17 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
     return false;
 }
 
-bool Plane::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Plane::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                           Intersection& isec) const {
-    float3 const n = transformation.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(n, transformation.position);
+    float const d     = dot(n, trafo.position);
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
-        float3 t = -transformation.rotation.r[0];
-        float3 b = -transformation.rotation.r[1];
+        float3 t = -trafo.rotation.r[0];
+        float3 b = -trafo.rotation.r[1];
 
         isec.p     = p;
         isec.geo_n = n;
@@ -80,11 +80,11 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const& transformation, Node_s
     return false;
 }
 
-bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                       Normals& normals) const {
-    float3 const n = transformation.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(n, transformation.position);
+    float const d     = dot(n, trafo.position);
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
@@ -99,26 +99,25 @@ bool Plane::intersect(Ray& ray, Transformation const& transformation, Node_stack
     return false;
 }
 
-bool Plane::intersect_p(Ray const& ray, Transformation const& transformation,
-                        Node_stack& /*nodes*/) const {
-    float3 const n = transformation.rotation.r[2];
+bool Plane::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(n, transformation.position);
+    float const d     = dot(n, trafo.position);
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     return (hit_t > ray.min_t()) & (hit_t < ray.max_t());
 }
 
-float Plane::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                        Filter filter, Worker& worker) const {
-    float3 const n = transformation.rotation.r[2];
+float Plane::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                        Worker& worker) const {
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(n, transformation.position);
+    float const d     = dot(n, trafo.position);
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
-        float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
+        float2 uv(dot(trafo.rotation.r[0], p), dot(trafo.rotation.r[1], p));
 
         return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
     }
@@ -126,16 +125,16 @@ float Plane::visibility(Ray const& ray, Transformation const& transformation, ui
     return 1.f;
 }
 
-bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+bool Plane::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                             Filter filter, Worker& worker, float3& ta) const {
-    float3 const n = transformation.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(n, transformation.position);
+    float const d     = dot(n, trafo.position);
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 p = ray.point(hit_t);
-        float2 uv(dot(transformation.rotation.r[0], p), dot(transformation.rotation.r[1], p));
+        float2 uv(dot(trafo.rotation.r[0], p), dot(trafo.rotation.r[1], p));
 
         ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv,
                                                                       ray.time, filter, worker);
@@ -146,52 +145,48 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& transformation
     return true;
 }
 
-bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*transformation*/,
+bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*trafo*/,
                    float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                   rnd::Generator& /*rng*/, uint32_t /*sampler_dimension*/,
-                   Sample_to& /*sample*/) const {
+                   rnd::Generator& /*rng*/, uint32_t /*sampler_d*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Plane::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+bool Plane::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
                    bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                   uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                   uint32_t /*sampler_d*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
                    Sample_from& /*sample*/) const {
     return false;
 }
 
-float Plane::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
-                 Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                 bool /*total_sphere*/) const {
+float Plane::pdf(Ray const& /*ray*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
+                 float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
     return 0.f;
 }
 
 float Plane::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
-                        Transformation const& /*transformation*/, float /*volume*/) const {
+                        Transformation const& /*trafo*/, float /*volume*/) const {
     return 0.f;
 }
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                   Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
+                   Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                    Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                   Transformation const& /*transformation*/, float /*volume*/,
-                   Sample_to& /*sample*/) const {
+                   Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Plane::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
+bool Plane::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/,
                    float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
                    AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
 float Plane::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
-                    Transformation const& /*transformation*/, float /*area*/,
-                    bool /*two_sided*/) const {
+                    Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/) const {
     return 0.f;
 }
 

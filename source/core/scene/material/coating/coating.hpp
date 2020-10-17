@@ -29,7 +29,7 @@ class Clearcoat {
     Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                       Layer const& layer, bool avoid_caustics) const;
 
-    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, rnd::Generator& rng,
+    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
                 float3& attenuation, bxdf::Sample& result) const;
 
   public:
@@ -57,7 +57,7 @@ class Thinfilm {
     Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                       Layer const& layer, bool avoid_caustics) const;
 
-    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, rnd::Generator& rng,
+    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
                 float3& attenuation, bxdf::Sample& result) const;
 
   public:
@@ -78,7 +78,7 @@ class Coating_layer : public Layer, public Coating {
     Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                       bool avoid_caustics) const;
 
-    void sample(float3 const& wo, Sampler& sampler, rnd::Generator& rng, float3& attenuation,
+    void sample(float3 const& wo, Sampler& sampler, RNG& rng, float3& attenuation,
                 bxdf::Sample& result) const;
 };
 

@@ -618,9 +618,9 @@ static float3 scattering_coefficient(prop::Intersection const& isec, Worker cons
 
     if (material.is_heterogeneous_volume()) {
         entity::Composed_transformation temp;
-        auto const& transformation = worker.scene().prop_transformation_at(isec.prop, 0, temp);
+        auto const& trafo = worker.scene().prop_transformation_at(isec.prop, 0, temp);
 
-        float3 const local_position = transformation.world_to_object_point(isec.geo.p);
+        float3 const local_position = trafo.world_to_object_point(isec.geo.p);
 
         auto const shape = worker.scene().prop_shape(isec.prop);
 

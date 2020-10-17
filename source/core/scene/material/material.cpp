@@ -138,7 +138,7 @@ float Material::similarity_relation_scale(uint32_t depth) const {
 }
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
-                                Transformation const& /*transformation*/, float /*extent*/,
+                                Transformation const& /*trafo*/, float /*extent*/,
                                 bool /*importance_sampling*/, Threads& /*threads*/,
                                 Scene const& /*scene*/) {}
 

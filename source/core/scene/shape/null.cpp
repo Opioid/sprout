@@ -29,83 +29,79 @@ uint32_t Null::num_materials() const {
     return 0;
 }
 
-bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/, Node_stack& /*nodes*/,
+bool Null::intersect(Ray& /*ray*/, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
                      Intersection& /*isec*/) const {
     return false;
 }
 
-bool Null::intersect_nsf(Ray& /*ray*/, Transformation const& /*transformation*/,
-                         Node_stack& /*nodes*/, Intersection& /*isec*/) const {
+bool Null::intersect_nsf(Ray& /*ray*/, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
+                         Intersection& /*isec*/) const {
     return false;
 }
 
-bool Null::intersect(Ray& /*ray*/, Transformation const& /*transformation*/, Node_stack& /*nodes*/,
+bool Null::intersect(Ray& /*ray*/, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
                      Normals& /*normals*/) const {
     return false;
 }
 
-bool Null::intersect_p(Ray const& /*ray*/, Transformation const& /*transformation*/,
+bool Null::intersect_p(Ray const& /*ray*/, Transformation const& /*trafo*/,
                        Node_stack& /*nodes*/) const {
     return false;
 }
 
-float Null::visibility(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                       uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/) const {
+float Null::visibility(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
+                       Filter /*filter*/, Worker& /*worker*/) const {
     return 1.f;
 }
 
-bool Null::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                           uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
-                           float3& ta) const {
+bool Null::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
+                           Filter /*filter*/, Worker& /*worker*/, float3& ta) const {
     ta = float3(0.f);
     return true;
 }
 
-bool Null::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*transformation*/,
+bool Null::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*trafo*/,
                   float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                  uint32_t /*sampler_dimension*/, Sample_to& /*sample*/) const {
+                  uint32_t /*sampler_d*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Null::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+bool Null::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
                   bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                  uint32_t /*sampler_dimension*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  uint32_t /*sampler_d*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
                   Sample_from& /*sample*/) const {
     return false;
 }
 
-float Null::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
-                Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                bool /*total_Null*/) const {
+float Null::pdf(Ray const& /*ray*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
+                float /*area*/, bool /*two_sided*/, bool /*total_Null*/) const {
     return 0.f;
 }
 
 float Null::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
-                       Transformation const& /*transformation*/, float /*volume*/) const {
+                       Transformation const& /*trafo*/, float /*volume*/) const {
     return 0.f;
 }
 
 bool Null::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
+                  Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Null::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                  Transformation const& /*transformation*/, float /*volume*/,
-                  Sample_to& /*sample*/) const {
+                  Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Null::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
-                  AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+bool Null::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/, float /*area*/,
+                  bool /*two_sided*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
 float Null::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
-                   Transformation const& /*transformation*/, float /*area*/,
-                   bool /*two_sided*/) const {
+                   Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/) const {
     return 0.f;
 }
 

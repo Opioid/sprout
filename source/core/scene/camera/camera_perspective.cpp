@@ -69,12 +69,12 @@ bool Perspective::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    float3 const origin_w = transformation.object_to_world_point(origin);
+    float3 const origin_w = trafo.object_to_world_point(origin);
 
     direction                = normalize(direction);
-    float3 const direction_w = transformation.object_to_world_vector(direction);
+    float3 const direction_w = trafo.object_to_world_vector(direction);
 
     ray = create_ray(origin_w, direction_w, time);
 
@@ -82,12 +82,12 @@ bool Perspective::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*
 }
 
 bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, float3 const& p,
-                         Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
-                         Scene const& scene, Sample_to& sample) const {
+                         Sampler& sampler, RNG& rng, uint32_t sampler_d, Scene const& scene,
+                         Sample_to& sample) const {
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    float3 const po = transformation.world_to_object_point(p);
+    float3 const po = trafo.world_to_object_point(p);
 
     float t;
 
@@ -96,7 +96,7 @@ bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, f
     float3 out_dir;
 
     if (lens_radius_ > 0.f) {
-        float2 const uv = sampler.generate_sample_2D(rng, sampler_dimension);
+        float2 const uv = sampler.generate_sample_2D(rng, sampler_d);
 
         float2 const lens = sample_disk_concentric(uv);
 
@@ -145,7 +145,7 @@ bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, f
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(x - fx, y - fy);
-    sample.dir      = transformation.object_to_world_vector(out_dir);
+    sample.dir      = trafo.object_to_world_vector(out_dir);
     sample.t        = t;
     sample.pdf      = wa * wb;
 
@@ -155,14 +155,14 @@ bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, f
 Ray_differential Perspective::calculate_ray_differential(float3 const& p, uint64_t time,
                                                          Scene const& scene) const {
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    float3 const p_w = transformation.position;
+    float3 const p_w = trafo.position;
 
     float3 const dir_w = normalize(p - p_w);
 
-    float3 const d_x_w = transformation.object_to_world_vector(d_x_);
-    float3 const d_y_w = transformation.object_to_world_vector(d_y_);
+    float3 const d_x_w = trafo.object_to_world_vector(d_x_);
+    float3 const d_y_w = trafo.object_to_world_vector(d_y_);
 
     float const ss = sample_spacing_;
 
@@ -227,21 +227,20 @@ void Perspective::on_update(uint64_t time, Worker& worker) {
     d_y_      = (left_bottom - left_top) / fr[1];
 
     Transformation temp;
-    auto const&    transformation = worker.scene().prop_transformation_at(entity_, time, temp);
+    auto const&    trafo = worker.scene().prop_transformation_at(entity_, time, temp);
 
-    float3 const ltw = transformation.object_to_world_point(left_top);
-    float3 const lbw = transformation.object_to_world_point(left_bottom);
-    float3 const rtw = transformation.object_to_world_point(right_top);
+    float3 const ltw = trafo.object_to_world_point(left_top);
+    float3 const lbw = trafo.object_to_world_point(left_bottom);
+    float3 const rtw = trafo.object_to_world_point(right_top);
     float3 const rbw = lbw + (rtw - ltw);
 
-    float3 const skewed_dir = normalize(float3(-0.6f, 0.f, 0.f) + transformation.rotation.r[2]);
+    float3 const skewed_dir = normalize(float3(-0.6f, 0.f, 0.f) + trafo.rotation.r[2]);
 
-    frustum_ = Frustum(
-        plane::create(transformation.position, ltw, lbw),
-        plane::create(transformation.position, rbw, rtw),
-        plane::create(transformation.position, rtw, ltw),
-        /*plane::create(transformation.position, lbw, rbw)*/
-        plane::create(-skewed_dir, transformation.position + 36.f * transformation.rotation.r[2]));
+    frustum_ = Frustum(plane::create(trafo.position, ltw, lbw),
+                       plane::create(trafo.position, rbw, rtw),
+                       plane::create(trafo.position, rtw, ltw),
+                       /*plane::create(trafo.position, lbw, rbw)*/
+                       plane::create(-skewed_dir, trafo.position + 36.f * trafo.rotation.r[2]));
 
     update_focus(time, worker);
 
@@ -257,10 +256,10 @@ void Perspective::update_focus(uint64_t time, Worker& worker) {
                                            focus_.point[1] * d_y_);
 
         Transformation temp;
-        auto const&    transformation = worker.scene().prop_transformation_at(entity_, time, temp);
+        auto const&    trafo = worker.scene().prop_transformation_at(entity_, time, temp);
 
-        Ray ray(transformation.position, transformation.object_to_world_vector(direction), 0.f,
-                Ray_max_t, 0, 0.f, time);
+        Ray ray(trafo.position, trafo.object_to_world_vector(direction), 0.f, Ray_max_t, 0, 0.f,
+                time);
 
         prop::Intersection isec;
         if (worker.intersect(ray, isec)) {

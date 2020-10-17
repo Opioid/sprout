@@ -225,7 +225,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         return nullptr;
     }
 
-    math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
+    math::Transformation trafo{float3(0.f), float3(1.f), quaternion::identity()};
 
     json::Value const* parameters_value = nullptr;
     json::Value const* animation_value  = nullptr;
@@ -239,8 +239,8 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         if ("parameters" == n.name) {
             parameters_value = &n.value;
             stereo           = peek_stereoscopic(n.value);
-        } else if ("transformation" == n.name) {
-            json::read_transformation(n.value, transformation);
+        } else if ("trafo" == n.name) {
+            json::read_transformation(n.value, trafo);
         } else if ("animation" == n.name) {
             animation_value = &n.value;
         } else if ("sensor" == n.name) {
@@ -324,12 +324,12 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         camera->init(prop_id);
 
         if (animation_value) {
-            if (auto animation = scene::animation::load(*animation_value, transformation, *scene);
+            if (auto animation = scene::animation::load(*animation_value, trafo, *scene);
                 animation) {
                 scene->create_animation_stage(prop_id, animation);
             }
         } else {
-            scene->prop_set_world_transformation(prop_id, transformation);
+            scene->prop_set_world_transformation(prop_id, trafo);
         }
     }
 

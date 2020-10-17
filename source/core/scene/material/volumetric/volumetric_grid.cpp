@@ -191,7 +191,7 @@ void Grid_emission::commit(Threads& threads, Scene const& scene) {
 }
 
 void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
-                                     Transformation const& /*transformation*/, float /*area*/,
+                                     Transformation const& /*trafo*/, float /*area*/,
                                      bool importance_sampling, Threads& threads,
                                      Scene const& scene) {
     if (average_emission_[0] >= 0.f) {

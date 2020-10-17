@@ -15,7 +15,7 @@ Golden_ratio::~Golden_ratio() {
     delete[] samples_;
 }
 
-float2 Golden_ratio::generate_sample_2D(rnd::Generator& rng, uint32_t dimension) {
+float2 Golden_ratio::generate_sample_2D(RNG& rng, uint32_t dimension) {
     SOFT_ASSERT(current_sample_[dimension] < num_samples_);
 
     uint32_t const current = current_sample_[dimension]++;
@@ -29,7 +29,7 @@ float2 Golden_ratio::generate_sample_2D(rnd::Generator& rng, uint32_t dimension)
     return samples_2D[dimension * num_samples_ + current];
 }
 
-float Golden_ratio::generate_sample_1D(rnd::Generator& rng, uint32_t dimension) {
+float Golden_ratio::generate_sample_1D(RNG& rng, uint32_t dimension) {
     SOFT_ASSERT(current_sample_[num_dimensions_2D_ + dimension] < num_samples_);
 
     uint32_t const current = current_sample_[num_dimensions_2D_ + dimension]++;
@@ -51,7 +51,7 @@ void Golden_ratio::on_resize() {
 
 void Golden_ratio::on_start_pixel(rnd::Generator& /*rng*/) {}
 
-void Golden_ratio::generate_2D(rnd::Generator& rng, uint32_t dimension) {
+void Golden_ratio::generate_2D(RNG& rng, uint32_t dimension) {
     float2 const r(rng.random_float(), rng.random_float());
 
     float2* begin = reinterpret_cast<float2*>(samples_) + dimension * num_samples_;
@@ -61,7 +61,7 @@ void Golden_ratio::generate_2D(rnd::Generator& rng, uint32_t dimension) {
     rnd::biased_shuffle(begin, num_samples_, rng);
 }
 
-void Golden_ratio::generate_1D(rnd::Generator& rng, uint32_t dimension) {
+void Golden_ratio::generate_1D(RNG& rng, uint32_t dimension) {
     float const r = rng.random_float();
 
     float* begin = samples_ + num_samples_ * 2 * num_dimensions_2D_ + dimension * num_samples_;

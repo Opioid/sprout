@@ -87,12 +87,12 @@ SU_LIBRARY_API int32_t su_camera_sensor_dimensions(int32_t* dimensions);
 
 SU_LIBRARY_API int32_t su_entity_allocate_frames(uint32_t entity);
 
-SU_LIBRARY_API int32_t su_entity_transformation(uint32_t entity, float* transformation);
+SU_LIBRARY_API int32_t su_entity_transformation(uint32_t entity, float* trafo);
 
-SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t entity, float const* transformation);
+SU_LIBRARY_API int32_t su_entity_set_transformation(uint32_t entity, float const* trafo);
 
 SU_LIBRARY_API int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame,
-                                                          float const* transformation);
+                                                          float const* trafo);
 
 SU_LIBRARY_API int32_t su_render(void);
 

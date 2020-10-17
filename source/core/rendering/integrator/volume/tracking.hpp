@@ -60,11 +60,10 @@ class Tracking {
     static Event tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                           Filter filter, Worker& worker, float& t_out, float3& w, float3& li);
 
-    static bool tracking(ray const& ray, CC const& mu, rnd::Generator& rng, float& t_out,
-                         float3& w);
+    static bool tracking(ray const& ray, CC const& mu, RNG& rng, float& t_out, float3& w);
 
-    static Event tracking(ray const& ray, CCE const& cce, rnd::Generator& rng, float& t_out,
-                          float3& w, float3& li);
+    static Event tracking(ray const& ray, CCE const& cce, RNG& rng, float& t_out, float3& w,
+                          float3& li);
 
     static float constexpr Min_mt        = 1e-10f;
     static float constexpr Abort_epsilon = 7.5e-4f;

@@ -37,10 +37,10 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
     uint32_t const prop = su_create_prop(SU_SHAPE_SPHERE, 1, materials);
 
-    float const transformation[] = {1.f, 0.f, 0.f, 0.f, 0.f,  1.f, 0.f, 0.f,
-                                    0.f, 0.f, 1.f, 0.f, -1.f, 1.f, 0.f, 1.f};
+    float const trafo[] = {1.f, 0.f, 0.f, 0.f, 0.f,  1.f, 0.f, 0.f,
+                           0.f, 0.f, 1.f, 0.f, -1.f, 1.f, 0.f, 1.f};
 
-    su_entity_set_transformation(prop, transformation);
+    su_entity_set_transformation(prop, trafo);
 
     su_render();
 

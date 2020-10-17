@@ -89,7 +89,7 @@ class Worker {
 
     Interface_stack& interface_stack();
 
-    rnd::Generator& rng();
+    RNG& rng();
 
     void reset_interface_stack(Interface_stack const& stack);
 

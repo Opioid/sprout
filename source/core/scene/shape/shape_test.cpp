@@ -20,14 +20,14 @@ void print(Intersection const& isec);
 
 void print_vector(float3 const& v);
 
-bool check(Intersection const& isec, entity::Composed_transformation const& transformation,
+bool check(Intersection const& isec, entity::Composed_transformation const& trafo,
            Ray const& /*ray*/) {
     if (!std::isfinite(length(isec.b)) || !all_finite(isec.t) || !all_finite(isec.b) ||
         !all_finite(isec.n) || !all_finite(isec.geo_n)) {
         print(isec);
 
-        std::cout << "t.rotation: " << transformation.rotation << std::endl;
-        std::cout << "t.scale: " << transformation.scale() << std::endl;
+        std::cout << "t.rotation: " << trafo.rotation << std::endl;
+        std::cout << "t.scale: " << trafo.scale() << std::endl;
 
         return false;
     }
@@ -49,13 +49,13 @@ void test() {
 
     Node_stack nodes;
 
-    math::Transformation transformation;
-    transformation.position = float3(0.f);
-    transformation.scale    = float3(1.f);
-    transformation.rotation = math::quaternion::identity();
+    math::Transformation trafo;
+    trafo.position = float3(0.f);
+    trafo.scale    = float3(1.f);
+    trafo.rotation = math::quaternion::identity();
 
     entity::Composed_transformation composed_transformation;
-    composed_transformation.set(transformation);
+    composed_transformation.set(trafo);
 
     scene::Ray ray;
     ray.origin = float3(0.f, 4.f, 0.f);

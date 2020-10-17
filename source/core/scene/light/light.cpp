@@ -88,9 +88,9 @@ void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
-                               float3 const& n, Transformation const& transformation,
-                               bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
-                               Worker& worker, Sample_to& result) {
+                               float3 const& n, Transformation const& trafo, bool total_sphere,
+                               Sampler& sampler, uint32_t sampler_d, Worker& worker,
+                               Sample_to& result) {
     shape::Shape const* shape = worker.scene().prop_shape(prop);
 
     auto const material = worker.scene().prop_material(prop, part);
@@ -98,13 +98,13 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 
     bool const two_sided = material->is_two_sided();
 
     if (total_sphere) {
-        if (!shape->sample(part, p, transformation, area, two_sided, sampler, worker.rng(),
-                           sampler_dimension, result)) {
+        if (!shape->sample(part, p, trafo, area, two_sided, sampler, worker.rng(), sampler_d,
+                           result)) {
             return false;
         }
     } else {
-        if (!shape->sample(part, p, n, transformation, area, two_sided, sampler, worker.rng(),
-                           sampler_dimension, result)) {
+        if (!shape->sample(part, p, n, trafo, area, two_sided, sampler, worker.rng(), sampler_d,
+                           result)) {
             return false;
         }
 
@@ -119,13 +119,12 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 
 }
 
 static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
-                                     float3 const& n, Transformation const& transformation,
-                                     bool total_sphere, Sampler& sampler,
-                                     uint32_t sampler_dimension, Worker& worker,
-                                     Sample_to& result) {
+                                     float3 const& n, Transformation const& trafo,
+                                     bool total_sphere, Sampler& sampler, uint32_t sampler_d,
+                                     Worker& worker, Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
-    float2 const s2d = sampler.generate_sample_2D(worker.rng(), sampler_dimension);
+    float2 const s2d = sampler.generate_sample_2D(worker.rng(), sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d, 0.f));
     if (0.f == rs.pdf()) {
@@ -135,8 +134,8 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw.xy(), transformation, area,
-                                                 two_sided, result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw.xy(), trafo, area, two_sided,
+                                                 result)) {
         return false;
     }
 
@@ -149,11 +148,11 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
 }
 
 static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
-                                 float3 const& n, Transformation const& transformation,
-                                 bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
-                                 Worker& worker, Sample_to& result) {
-    if (!worker.scene().prop_shape(prop)->sample_volume(part, p, transformation, volume, sampler,
-                                                        worker.rng(), sampler_dimension, result)) {
+                                 float3 const& n, Transformation const& trafo, bool total_sphere,
+                                 Sampler& sampler, uint32_t sampler_d, Worker& worker,
+                                 Sample_to& result) {
+    if (!worker.scene().prop_shape(prop)->sample_volume(part, p, trafo, volume, sampler,
+                                                        worker.rng(), sampler_d, result)) {
         return false;
     }
 
@@ -165,23 +164,22 @@ static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, flo
 }
 
 static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
-                                       float3 const& n, Transformation const& transformation,
-                                       bool total_sphere, Sampler& sampler,
-                                       uint32_t sampler_dimension, Worker& worker,
-                                       Sample_to& result) {
+                                       float3 const& n, Transformation const& trafo,
+                                       bool total_sphere, Sampler& sampler, uint32_t sampler_d,
+                                       Worker& worker, Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     auto& rng = worker.rng();
 
-    float2 const s2d = sampler.generate_sample_2D(rng, sampler_dimension);
-    float const  s1d = sampler.generate_sample_1D(rng, sampler_dimension);
+    float2 const s2d = sampler.generate_sample_2D(rng, sampler_d);
+    float const  s1d = sampler.generate_sample_1D(rng, sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d, s1d));
     if (0.f == rs.pdf()) {
         return false;
     }
 
-    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw, transformation, volume, result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw, trafo, volume, result)) {
         return false;
     }
 
@@ -193,24 +191,23 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
     return false;
 }
 
-bool Light::sample(float3 const& p, float3 const& n, Transformation const& transformation,
-                   bool total_sphere, Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
-                   Sample_to& result) const {
+bool Light::sample(float3 const& p, float3 const& n, Transformation const& trafo, bool total_sphere,
+                   Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const {
     switch (type_) {
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, extent_, p, n, transformation, total_sphere, sampler,
-                               sampler_dimension, worker, result);
+            return prop_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler, sampler_d,
+                               worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, extent_, p, n, transformation, total_sphere,
-                                     sampler, sampler_dimension, worker, result);
+            return prop_image_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler,
+                                     sampler_d, worker, result);
         case Type::Volume:
-            return volume_sample(prop_, part_, extent_, p, n, transformation, total_sphere, sampler,
-                                 sampler_dimension, worker, result);
+            return volume_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler,
+                                 sampler_d, worker, result);
         case Type::Volume_image:
-            return volume_image_sample(prop_, part_, extent_, p, n, transformation, total_sphere,
-                                       sampler, sampler_dimension, worker, result);
+            return volume_image_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler,
+                                       sampler_d, worker, result);
     }
 
     return false;
@@ -227,9 +224,8 @@ float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& wor
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
-                               Transformation const& transformation, Sampler& sampler,
-                               uint32_t sampler_dimension, AABB const& bounds, Worker& worker,
-                               Sample_from& result) {
+                               Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
+                               AABB const& bounds, Worker& worker, Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     bool const two_sided = material->is_two_sided();
@@ -238,9 +234,8 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 
     float2 const importance_uv = sampler.generate_sample_2D(rng);
 
-    if (!worker.scene().prop_shape(prop)->sample(part, transformation, area, two_sided, sampler,
-                                                 rng, sampler_dimension, importance_uv, bounds,
-                                                 result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, trafo, area, two_sided, sampler, rng,
+                                                 sampler_d, importance_uv, bounds, result)) {
         return false;
     }
 
@@ -248,14 +243,14 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 }
 
 static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
-                                     Transformation const& transformation, Sampler& sampler,
-                                     uint32_t sampler_dimension, AABB const& bounds, Worker& worker,
+                                     Transformation const& trafo, Sampler& sampler,
+                                     uint32_t sampler_d, AABB const& bounds, Worker& worker,
                                      Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     auto& rng = worker.rng();
 
-    float2 const s2d = sampler.generate_sample_2D(rng, sampler_dimension);
+    float2 const s2d = sampler.generate_sample_2D(rng, sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d, 0.f));
     if (0.f == rs.pdf()) {
@@ -267,7 +262,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     float2 const importance_uv = sampler.generate_sample_2D(rng);
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop_shape(prop)->sample(part, rs.uvw.xy(), transformation, area, two_sided,
+    if (!worker.scene().prop_shape(prop)->sample(part, rs.uvw.xy(), trafo, area, two_sided,
                                                  importance_uv, bounds, result)) {
         return false;
     }
@@ -277,18 +272,17 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     return true;
 }
 
-bool Light::sample(Transformation const& transformation, Sampler& sampler,
-                   uint32_t sampler_dimension, AABB const& bounds, Worker& worker,
-                   Sample_from& result) const {
+bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
+                   AABB const& bounds, Worker& worker, Sample_from& result) const {
     switch (type_) {
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, extent_, transformation, sampler, sampler_dimension,
-                               bounds, worker, result);
+            return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, bounds, worker,
+                               result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, extent_, transformation, sampler,
-                                     sampler_dimension, bounds, worker, result);
+            return prop_image_sample(prop_, part_, extent_, trafo, sampler, sampler_d, bounds,
+                                     worker, result);
         case Type::Volume:
             return false;
         case Type::Volume_image:
@@ -299,9 +293,9 @@ bool Light::sample(Transformation const& transformation, Sampler& sampler,
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
-                               Transformation const& transformation, Sampler& sampler,
-                               uint32_t sampler_dimension, Distribution_2D const& importance,
-                               AABB const& bounds, Worker& worker, Sample_from& result) {
+                               Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
+                               Distribution_2D const& importance, AABB const& bounds,
+                               Worker& worker, Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     bool const two_sided = material->is_two_sided();
@@ -315,9 +309,8 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
         return false;
     }
 
-    if (!worker.scene().prop_shape(prop)->sample(part, transformation, area, two_sided, sampler,
-                                                 rng, sampler_dimension, importance_uv.uv, bounds,
-                                                 result)) {
+    if (!worker.scene().prop_shape(prop)->sample(part, trafo, area, two_sided, sampler, rng,
+                                                 sampler_d, importance_uv.uv, bounds, result)) {
         return false;
     }
 
@@ -329,14 +322,14 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 }
 
 static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
-                                     Transformation const& transformation, Sampler& sampler,
-                                     uint32_t sampler_dimension, Distribution_2D const& importance,
+                                     Transformation const& trafo, Sampler& sampler,
+                                     uint32_t sampler_d, Distribution_2D const& importance,
                                      AABB const& bounds, Worker& worker, Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     auto& rng = worker.rng();
 
-    float2 const s2d0 = sampler.generate_sample_2D(rng, sampler_dimension);
+    float2 const s2d0 = sampler.generate_sample_2D(rng, sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d0, 0.f));
     if (0.f == rs.pdf()) {
@@ -353,7 +346,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     }
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    if (!worker.scene().prop_shape(prop)->sample(part, rs.uvw.xy(), transformation, area, two_sided,
+    if (!worker.scene().prop_shape(prop)->sample(part, rs.uvw.xy(), trafo, area, two_sided,
                                                  importance_uv.uv, bounds, result)) {
         return false;
     }
@@ -363,18 +356,18 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     return true;
 }
 
-bool Light::sample(Transformation const& transformation, Sampler& sampler,
-                   uint32_t sampler_dimension, Distribution_2D const& importance,
-                   AABB const& bounds, Worker& worker, Sample_from& result) const {
+bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
+                   Distribution_2D const& importance, AABB const& bounds, Worker& worker,
+                   Sample_from& result) const {
     switch (type_) {
         case Type::Null:
             return false;
         case Type::Prop:
-            return prop_sample(prop_, part_, extent_, transformation, sampler, sampler_dimension,
-                               importance, bounds, worker, result);
+            return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, importance, bounds,
+                               worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, extent_, transformation, sampler,
-                                     sampler_dimension, importance, bounds, worker, result);
+            return prop_image_sample(prop_, part_, extent_, trafo, sampler, sampler_d, importance,
+                                     bounds, worker, result);
         case Type::Volume:
             return false;
         case Type::Volume_image:
@@ -396,58 +389,55 @@ float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& w
 }
 
 bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
-                   Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
-                   Sample_to& result) const {
+                   Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const {
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
+    auto const&    trafo = transformation_at(time, temp, worker.scene());
 
-    return sample(p, n, transformation, total_sphere, sampler, sampler_dimension, worker, result);
+    return sample(p, n, trafo, total_sphere, sampler, sampler_d, worker, result);
 }
 
-bool Light::sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+bool Light::sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_d,
                    Worker& worker, Sample_to& result) const {
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
+    auto const&    trafo = transformation_at(time, temp, worker.scene());
 
-    return sample(p, float3(0.f), transformation, true, sampler, sampler_dimension, worker, result);
+    return sample(p, float3(0.f), trafo, true, sampler, sampler_d, worker, result);
 }
 
-bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
+bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB const& bounds,
                    Worker& worker, Sample_from& result) const {
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
+    auto const&    trafo = transformation_at(time, temp, worker.scene());
 
-    return sample(transformation, sampler, sampler_dimension, bounds, worker, result);
+    return sample(trafo, sampler, sampler_d, bounds, worker, result);
 }
 
-bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
                    Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                    Sample_from& result) const {
     Transformation temp;
-    auto const&    transformation = transformation_at(time, temp, worker.scene());
+    auto const&    trafo = transformation_at(time, temp, worker.scene());
 
-    return sample(transformation, sampler, sampler_dimension, importance, bounds, worker, result);
+    return sample(trafo, sampler, sampler_d, importance, bounds, worker, result);
 }
 
 static inline float prop_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
-                             shape::Intersection const& isec, Transformation const& transformation,
+                             shape::Intersection const& isec, Transformation const& trafo,
                              bool total_sphere, Worker const& worker) {
     bool const two_sided = worker.scene().prop_material(prop, part)->is_two_sided();
 
-    return worker.scene().prop_shape(prop)->pdf(ray, isec, transformation, area, two_sided,
-                                                total_sphere);
+    return worker.scene().prop_shape(prop)->pdf(ray, isec, trafo, area, two_sided, total_sphere);
 }
 
 static inline float prop_image_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
-                                   shape::Intersection const& isec,
-                                   Transformation const& transformation, Filter filter,
-                                   Worker const& worker) {
+                                   shape::Intersection const& isec, Transformation const& trafo,
+                                   Filter filter, Worker const& worker) {
     auto const material = worker.scene().prop_material(prop, part);
 
     bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
-    float const shape_pdf = worker.scene().prop_shape(prop)->pdf_uv(ray, isec, transformation, area,
+    float const shape_pdf = worker.scene().prop_shape(prop)->pdf_uv(ray, isec, trafo, area,
                                                                     two_sided);
 
     float const material_pdf = material->emission_pdf(float3(isec.uv, 0.f), filter, worker);
@@ -456,19 +446,17 @@ static inline float prop_image_pdf(uint32_t prop, uint32_t part, float area, Ray
 }
 
 static float volume_pdf(uint32_t prop, uint32_t /*part*/, float volume, Ray const& ray,
-                        shape::Intersection const& isec, Transformation const& transformation,
+                        shape::Intersection const& isec, Transformation const& trafo,
                         Worker const& worker) {
-    return worker.scene().prop_shape(prop)->pdf_volume(ray, isec, transformation, volume);
+    return worker.scene().prop_shape(prop)->pdf_volume(ray, isec, trafo, volume);
 }
 
 static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume, Ray const& ray,
-                                     shape::Intersection const& isec,
-                                     Transformation const& transformation, Filter filter,
-                                     Worker const& worker) {
+                                     shape::Intersection const& isec, Transformation const& trafo,
+                                     Filter filter, Worker const& worker) {
     auto const material = worker.scene().prop_material(prop, part);
 
-    float const shape_pdf = worker.scene().prop_shape(prop)->pdf_volume(ray, isec, transformation,
-                                                                        volume);
+    float const shape_pdf = worker.scene().prop_shape(prop)->pdf_volume(ray, isec, trafo, volume);
 
     float const material_pdf = material->emission_pdf(isec.p, filter, worker);
 
@@ -478,20 +466,19 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume,
 float Light::pdf(Ray const& ray, Intersection const& isec, bool total_sphere, Filter filter,
                  Worker const& worker) const {
     Transformation temp;
-    auto const&    transformation = transformation_at(ray.time, temp, worker.scene());
+    auto const&    trafo = transformation_at(ray.time, temp, worker.scene());
 
     switch (type_) {
         case Type::Null:
             return 0.f;
         case Type::Prop:
-            return prop_pdf(prop_, part_, extent_, ray, isec, transformation, total_sphere, worker);
+            return prop_pdf(prop_, part_, extent_, ray, isec, trafo, total_sphere, worker);
         case Type::Prop_image:
-            return prop_image_pdf(prop_, part_, extent_, ray, isec, transformation, filter, worker);
+            return prop_image_pdf(prop_, part_, extent_, ray, isec, trafo, filter, worker);
         case Type::Volume:
-            return volume_pdf(prop_, part_, extent_, ray, isec, transformation, worker);
+            return volume_pdf(prop_, part_, extent_, ray, isec, trafo, worker);
         case Type::Volume_image:
-            return volume_image_pdf(prop_, part_, extent_, ray, isec, transformation, filter,
-                                    worker);
+            return volume_image_pdf(prop_, part_, extent_, ray, isec, trafo, filter, worker);
     }
 
     return 0.f;

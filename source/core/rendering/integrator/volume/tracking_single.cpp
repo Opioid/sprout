@@ -69,7 +69,7 @@ void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_p
     }
 }
 
-void Tracking_single::start_pixel(rnd::Generator& rng) {
+void Tracking_single::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {
@@ -363,10 +363,10 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 }
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
-                                     float3 const& position, uint32_t sampler_dimension,
+                                     float3 const& position, uint32_t sampler_d,
                                      Intersection const& isec, Worker& worker) {
     shape::Sample_to light_sample;
-    if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_dimension, worker,
+    if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_d, worker,
                       light_sample)) {
         return float3(0.f);
     }

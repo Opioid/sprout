@@ -39,13 +39,13 @@ AABB Sphere::transformed_aabb(float4x4 const& m) const {
     return AABB(float3(-1.f), float3(1.f)).transform(m);
 }
 
-static inline void intersect(float hit_t, Ray const& ray,
-                             Shape::Transformation const& transformation, Intersection& isec) {
+static inline void intersect(float hit_t, Ray const& ray, Shape::Transformation const& trafo,
+                             Intersection& isec) {
     float3 const p = ray.point(hit_t);
 
-    float3 const n = normalize(p - transformation.position);
+    float3 const n = normalize(p - trafo.position);
 
-    float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, n));
+    float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, n));
 
     float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
     float const theta = std::acos(xyz[1]);
@@ -55,7 +55,7 @@ static inline void intersect(float hit_t, Ray const& ray,
     auto const [sin_phi, cos_phi] = sincos(phi);
 
     float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-    t = normalize(transform_vector(transformation.rotation, t));
+    t = normalize(transform_vector(trafo.rotation, t));
 
     isec.p     = p;
     isec.t     = t;
@@ -66,15 +66,15 @@ static inline void intersect(float hit_t, Ray const& ray,
     isec.part  = 0;
 }
 
-bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                        Intersection& isec) const {
-    float3 const v = transformation.position - ray.origin;
+    float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
@@ -83,9 +83,9 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const t0   = b - dist;
 
         if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
-            shape::intersect(t0, ray, transformation, isec);
+            shape::intersect(t0, ray, trafo, isec);
 
-            SOFT_ASSERT(testing::check(isec, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, trafo, ray));
 
             ray.max_t() = t0;
             return true;
@@ -94,9 +94,9 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
         float const t1 = b + dist;
 
         if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
-            shape::intersect(t1, ray, transformation, isec);
+            shape::intersect(t1, ray, trafo, isec);
 
-            SOFT_ASSERT(testing::check(isec, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, trafo, ray));
 
             ray.max_t() = t1;
             return true;
@@ -106,13 +106,13 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
     return false;
 }
 
-static inline void intersect_nsf(float hit_t, Ray const& ray,
-                                 Shape::Transformation const& transformation, Intersection& isec) {
+static inline void intersect_nsf(float hit_t, Ray const& ray, Shape::Transformation const& trafo,
+                                 Intersection& isec) {
     float3 const p = ray.point(hit_t);
 
-    float3 const n = normalize(p - transformation.position);
+    float3 const n = normalize(p - trafo.position);
 
-    float3 const xyz = normalize(transform_vector_transposed(transformation.rotation, n));
+    float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, n));
 
     float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
     float const theta = std::acos(xyz[1]);
@@ -123,15 +123,15 @@ static inline void intersect_nsf(float hit_t, Ray const& ray,
     isec.part  = 0;
 }
 
-bool Sphere::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Sphere::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                            Intersection& isec) const {
-    float3 const v = transformation.position - ray.origin;
+    float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
@@ -140,9 +140,9 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const& transformation, Node_
         float const t0   = b - dist;
 
         if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
-            shape::intersect_nsf(t0, ray, transformation, isec);
+            shape::intersect_nsf(t0, ray, trafo, isec);
 
-            SOFT_ASSERT(testing::check(isec, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, trafo, ray));
 
             ray.max_t() = t0;
             return true;
@@ -151,9 +151,9 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const& transformation, Node_
         float const t1 = b + dist;
 
         if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
-            shape::intersect_nsf(t1, ray, transformation, isec);
+            shape::intersect_nsf(t1, ray, trafo, isec);
 
-            SOFT_ASSERT(testing::check(isec, transformation, ray));
+            SOFT_ASSERT(testing::check(isec, trafo, ray));
 
             ray.max_t() = t1;
             return true;
@@ -163,15 +163,15 @@ bool Sphere::intersect_nsf(Ray& ray, Transformation const& transformation, Node_
     return false;
 }
 
-bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                        Normals& normals) const {
-    float3 const v = transformation.position - ray.origin;
+    float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
@@ -183,7 +183,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             ray.max_t() = t0;
 
             float3 const p = ray.point(t0);
-            float3 const n = normalize(p - transformation.position);
+            float3 const n = normalize(p - trafo.position);
 
             normals.geo_n = n;
             normals.n     = n;
@@ -197,7 +197,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
             ray.max_t() = t1;
 
             float3 const p = ray.point(t1);
-            float3 const n = normalize(p - transformation.position);
+            float3 const n = normalize(p - trafo.position);
 
             normals.geo_n = n;
             normals.n     = n;
@@ -209,15 +209,14 @@ bool Sphere::intersect(Ray& ray, Transformation const& transformation, Node_stac
     return false;
 }
 
-bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
-                         Node_stack& /*nodes*/) const {
-    float3 const v = transformation.position - ray.origin;
+bool Sphere::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
+    float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
@@ -239,15 +238,15 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& transformation,
     return false;
 }
 
-float Sphere::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
+float Sphere::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker) const {
-    float3 const v = transformation.position - ray.origin;
+    float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
@@ -256,9 +255,9 @@ float Sphere::visibility(Ray const& ray, Transformation const& transformation, u
         float const t0   = b - dist;
 
         if (t0 > ray.min_t() && t0 < ray.max_t()) {
-            float3 n = normalize(ray.point(t0) - transformation.position);
+            float3 n = normalize(ray.point(t0) - trafo.position);
 
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
+            float3 xyz = transform_vector_transposed(trafo.rotation, n);
             xyz        = normalize(xyz);
 
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
@@ -271,9 +270,9 @@ float Sphere::visibility(Ray const& ray, Transformation const& transformation, u
         float const t1 = b + dist;
 
         if (t1 > ray.min_t() && t1 < ray.max_t()) {
-            float3 n = normalize(ray.point(t1) - transformation.position);
+            float3 n = normalize(ray.point(t1) - trafo.position);
 
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
+            float3 xyz = transform_vector_transposed(trafo.rotation, n);
             xyz        = normalize(xyz);
 
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
@@ -287,15 +286,15 @@ float Sphere::visibility(Ray const& ray, Transformation const& transformation, u
     return 1.f;
 }
 
-bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                              Filter filter, Worker& worker, float3& ta) const {
-    float3 const v = transformation.position - ray.origin;
+    float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
 
     float3 const remedy_term = v - b * ray.direction;
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
@@ -304,9 +303,9 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
         float const t0   = b - dist;
 
         if (t0 > ray.min_t() && t0 < ray.max_t()) {
-            float3 n = normalize(ray.point(t0) - transformation.position);
+            float3 n = normalize(ray.point(t0) - trafo.position);
 
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
+            float3 xyz = transform_vector_transposed(trafo.rotation, n);
             xyz        = normalize(xyz);
 
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
@@ -320,9 +319,9 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
         float const t1 = b + dist;
 
         if (t1 > ray.min_t() && t1 < ray.max_t()) {
-            float3 n = normalize(ray.point(t1) - transformation.position);
+            float3 n = normalize(ray.point(t1) - trafo.position);
 
-            float3 xyz = transform_vector_transposed(transformation.rotation, n);
+            float3 xyz = transform_vector_transposed(trafo.rotation, n);
             xyz        = normalize(xyz);
 
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
@@ -338,13 +337,13 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& transformatio
     return true;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
-                    uint32_t sampler_dimension, Sample_to& sample) const {
-    float3 const v = transformation.position - p;
+bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& trafo, float /*area*/,
+                    bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                    Sample_to& sample) const {
+    float3 const v = trafo.position - p;
 
     float const axis_length   = length(v);
-    float const radius        = transformation.scale_x();
+    float const radius        = trafo.scale_x();
     float const sin_theta_max = std::min(radius / axis_length, 1.f);
     float const cos_theta_max = std::sqrt(1.f - sin_theta_max * sin_theta_max);
 
@@ -352,7 +351,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     auto const [x, y] = orthonormal_basis(z);
 
-    float2 const r2  = sampler.generate_sample_2D(rng, sampler_dimension);
+    float2 const r2  = sampler.generate_sample_2D(rng, sampler_d);
     float3 const dir = sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
     float const b = dot(dir, v);
@@ -373,14 +372,13 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
     return false;
 }
 
-bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
-                    bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
-                    uint32_t sampler_dimension, float2 importance_uv, AABB const& /*bounds*/,
-                    Sample_from& sample) const {
-    float2 const r0 = sampler.generate_sample_2D(rng, sampler_dimension);
+bool Sphere::sample(uint32_t /*part*/, Transformation const& trafo, float area, bool /*two_sided*/,
+                    Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
+                    AABB const& /*bounds*/, Sample_from& sample) const {
+    float2 const r0 = sampler.generate_sample_2D(rng, sampler_d);
     float3 const ls = sample_sphere_uniform(r0);
 
-    float3 const ws = transformation.position + (transformation.scale_x() * ls);
+    float3 const ws = trafo.position + (trafo.scale_x() * ls);
 
     auto const [x, y] = orthonormal_basis(ls);
 
@@ -394,13 +392,12 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& transformation, flo
     return true;
 }
 
-float Sphere::pdf(Ray const&            ray, Intersection const& /*isec*/,
-                  Transformation const& transformation, float /*area*/, bool /*two_sided*/,
-                  bool /*total_sphere*/) const {
-    float3 const axis = transformation.position - ray.origin;
+float Sphere::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& trafo,
+                  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+    float3 const axis = trafo.position - ray.origin;
 
     float const axis_length   = length(axis);
-    float const radius        = transformation.scale_x();
+    float const radius        = trafo.scale_x();
     float const sin_theta_max = std::min(radius / axis_length, 1.f);
     float const cos_theta_max = std::sqrt(1.f - sin_theta_max * sin_theta_max);
 
@@ -408,13 +405,12 @@ float Sphere::pdf(Ray const&            ray, Intersection const& /*isec*/,
 }
 
 float Sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
-                         Transformation const& /*transformation*/, float /*volume*/) const {
+                         Transformation const& /*trafo*/, float /*volume*/) const {
     return 0.f;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
-                    Transformation const& transformation, float area, bool /*two_sided*/,
-                    Sample_to& sample) const {
+bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv, Transformation const& trafo,
+                    float area, bool /*two_sided*/, Sample_to& sample) const {
     float phi   = (uv[0] + 0.75f) * (2.f * Pi);
     float theta = uv[1] * Pi;
 
@@ -424,7 +420,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
     float cos_phi   = std::cos(phi);
 
     float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-    float3 ws = transformation.object_to_world_point(ls);
+    float3 ws = trafo.object_to_world_point(ls);
 
     float3 axis = ws - p;
     float  sl   = squared_length(axis);
@@ -432,7 +428,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
 
     float3 dir = axis / d;
 
-    float3 wn = normalize(ws - transformation.position);
+    float3 wn = normalize(ws - trafo.position);
 
     float c = -dot(wn, dir);
 
@@ -446,21 +442,20 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv,
 }
 
 bool Sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                    Transformation const& /*transformation*/, float /*volume*/,
+                    Transformation const& /*trafo*/, float /*volume*/,
                     Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
+bool Sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/,
                     float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
                     AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
-float Sphere::pdf_uv(Ray const& ray, Intersection const&             isec,
-                     Transformation const& /*transformation*/, float area,
-                     bool /*two_sided*/) const {
-    //	float3 xyz = transform_vector_transposed(wn, transformation.rotation);
+float Sphere::pdf_uv(Ray const& ray, Intersection const& isec, Transformation const& /*trafo*/,
+                     float area, bool /*two_sided*/) const {
+    //	float3 xyz = transform_vector_transposed(wn, trafo.rotation);
     //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
     //	uv[1] =  std::acos(xyz[1]) * Pi_inv;
 

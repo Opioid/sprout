@@ -40,7 +40,7 @@ void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel
     }
 }
 
-void Lighttracer::start_pixel(rnd::Generator& rng) {
+void Lighttracer::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
     light_sampler_.start_pixel(rng);

@@ -18,7 +18,7 @@ bxdf::Result Sample_translucent::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_translucent::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
+void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
     float const p = sampler.generate_sample_1D(rng);

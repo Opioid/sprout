@@ -16,7 +16,7 @@ bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_subsurface::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
+void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     if (1.f == base_.metallic_) {
         base_.pure_gloss_sample(wo_, layer_, sampler, rng, result);
         result.wavelength = 0.f;
@@ -164,7 +164,7 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const {
     return result;
 }
 
-void Sample_subsurface::refract(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
+void Sample_subsurface::refract(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
     fresnel::Schlick1 const schlick(base_.f0_[0]);

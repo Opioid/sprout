@@ -13,7 +13,7 @@ class Sample_thin : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
     void set(float3 const& refraction_color, float3 const& absorption_coefficient, float ior,
              float ior_outside, float thickness);

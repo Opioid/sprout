@@ -62,9 +62,9 @@ float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
 }
 
 void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,
-                                            Transformation const& /*transformation*/,
-                                            float /*area*/, bool importance_sampling,
-                                            Threads& threads, Scene const& scene) {
+                                            Transformation const& /*trafo*/, float /*area*/,
+                                            bool importance_sampling, Threads& threads,
+                                            Scene const& scene) {
     uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
 
     int32_t const element = int32_t((time / (animation_duration_ / num_elements)) % num_elements);

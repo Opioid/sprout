@@ -57,17 +57,17 @@ bool Spherical_stereoscopic::generate_ray(Sample const& sample, uint32_t frame, 
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    ray = create_ray(transformation.object_to_world_point(eye_pos),
-                     transform_vector(transformation.rotation, dir), time);
+    ray = create_ray(trafo.object_to_world_point(eye_pos), transform_vector(trafo.rotation, dir),
+                     time);
 
     return true;
 }
 
 bool Spherical_stereoscopic::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
                                     float3 const& /*p*/, Sampler& /*sampler*/,
-                                    rnd::Generator& /*rng*/, uint32_t /*sampler_dimension*/,
+                                    rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
                                     Scene const& /*scene*/, Sample_to& /*sample*/) const {
     return false;
 }

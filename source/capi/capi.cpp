@@ -508,7 +508,7 @@ int32_t su_entity_allocate_frames(uint32_t entity) {
     return 0;
 }
 
-int32_t su_entity_transformation(uint32_t entity, float* transformation) {
+int32_t su_entity_transformation(uint32_t entity, float* trafo) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
@@ -517,19 +517,19 @@ int32_t su_entity_transformation(uint32_t entity, float* transformation) {
 
     float4x4 const m = engine->scene.prop_world_transformation(entity).object_to_world();
 
-    std::copy(m.r[0].v, &m.r[0].v[0] + 16, transformation);
+    std::copy(m.r[0].v, &m.r[0].v[0] + 16, trafo);
 
     return 0;
 }
 
-int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) {
+int32_t su_entity_set_transformation(uint32_t entity, float const* trafo) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
         return -2;
     }
 
-    float4x4 const m(transformation);
+    float4x4 const m(trafo);
 
     float3x3 r;
 
@@ -544,15 +544,14 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
     return 0;
 }
 
-int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame,
-                                           float const* transformation) {
+int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame, float const* trafo) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity || engine->scene.num_interpolation_frames() <= frame) {
         return -2;
     }
 
-    float4x4 const m(transformation);
+    float4x4 const m(trafo);
 
     float3x3 r;
 

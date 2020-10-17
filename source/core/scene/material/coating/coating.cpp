@@ -87,7 +87,7 @@ Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h
     return {ep * weight_ * ggx.reflection, attenuation, ggx.pdf()};
 }
 
-void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, rnd::Generator& rng,
+void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
                        float3& attenuation, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -152,7 +152,7 @@ Result Thinfilm::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h,
     return {ggx.reflection, attenuation, ggx.pdf()};
 }
 
-void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, rnd::Generator& rng,
+void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
                       float3& attenuation, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 

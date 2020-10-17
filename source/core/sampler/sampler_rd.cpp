@@ -49,7 +49,7 @@ RD::~RD() {
     memory::free_aligned(seeds_2D_);
 }
 
-float2 RD::generate_sample_2D(rnd::Generator& rng, uint32_t dimension) {
+float2 RD::generate_sample_2D(RNG& rng, uint32_t dimension) {
     if (Num_batch == consumed_2D_[dimension]) {
         generate_2D(rng, dimension);
     }
@@ -59,7 +59,7 @@ float2 RD::generate_sample_2D(rnd::Generator& rng, uint32_t dimension) {
     return samples_2D_[dimension * Num_batch + current];
 }
 
-float RD::generate_sample_1D(rnd::Generator& rng, uint32_t dimension) {
+float RD::generate_sample_1D(RNG& rng, uint32_t dimension) {
     if (Num_batch == consumed_1D_[dimension]) {
         generate_1D(rng, dimension);
     }
@@ -92,7 +92,7 @@ void RD::on_resize() {
     consumed_1D_ = consumed_2D_ + num_dimensions_2D_;
 }
 
-void RD::on_start_pixel(rnd::Generator& rng) {
+void RD::on_start_pixel(RNG& rng) {
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
         seeds_2D_[i] = float2(rng.random_float(), rng.random_float());
     }
@@ -106,7 +106,7 @@ void RD::on_start_pixel(rnd::Generator& rng) {
     }
 }
 
-void RD::generate_2D(rnd::Generator& rng, uint32_t dimension) {
+void RD::generate_2D(RNG& rng, uint32_t dimension) {
     float2 const seed = seeds_2D_[dimension];
 
     float2* begin = samples_2D_ + dimension * Num_batch;
@@ -124,7 +124,7 @@ void RD::generate_2D(rnd::Generator& rng, uint32_t dimension) {
     consumed_2D_[dimension] = 0;
 }
 
-void RD::generate_1D(rnd::Generator& rng, uint32_t dimension) {
+void RD::generate_1D(RNG& rng, uint32_t dimension) {
     float const seed = seeds_1D_[dimension];
 
     float* begin = samples_1D_ + dimension * Num_batch;

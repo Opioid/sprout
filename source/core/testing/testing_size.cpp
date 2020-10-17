@@ -70,7 +70,7 @@ void size() {
 
     print_size<float4x4>("float4x4", 64);
 
-    print_size<math::Transformation>("transformation", 48);
+    print_size<math::Transformation>("trafo", 48);
 
     print_size<scene::entity::Keyframe>("Keyframe", 48);
 

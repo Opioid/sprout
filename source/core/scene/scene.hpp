@@ -176,16 +176,16 @@ class Scene {
 
     void prop_set_world_transformation(uint32_t entity, math::Transformation const& t);
 
-    // Only the returned reference is guaranteed to contain the actual transformation data.
+    // Only the returned reference is guaranteed to contain the actual trafo data.
     // This might or might not be the same reference which is passed as a parameter,
     // depending on whether the entity is animated or not.
     // This can sometimes avoid a relatively costly copy,
     // while keeping the animated state out of the interface.
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time,
-                                                 Transformation& transformation) const;
+                                                 Transformation& trafo) const;
 
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time, bool is_static,
-                                                 Transformation& transformation) const;
+                                                 Transformation& trafo) const;
 
     Transformation const& prop_world_transformation(uint32_t entity) const;
 
@@ -203,7 +203,7 @@ class Scene {
 
     void prop_propagate_transformation(uint32_t entity);
 
-    void prop_inherit_transformation(uint32_t entity, const Transformation& transformation);
+    void prop_inherit_transformation(uint32_t entity, const Transformation& trafo);
 
     void prop_inherit_transformation(uint32_t entity, Keyframe const* frames);
 
@@ -242,7 +242,7 @@ class Scene {
 
   private:
     Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
-                                                          Transformation& transformation) const;
+                                                          Transformation& trafo) const;
 
     struct Prop_ptr {
         Prop* ptr;

@@ -32,16 +32,16 @@ AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
-bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                        Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
-        if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
+        if (dot(ray.direction, trafo.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
         isec.p = ray.point(Ray_max_t);
-        isec.t = transformation.rotation.r[0];
-        isec.b = transformation.rotation.r[1];
+        isec.t = trafo.rotation.r[0];
+        isec.b = trafo.rotation.r[1];
 
         float3 const n = -ray.direction;
         isec.n         = n;
@@ -49,7 +49,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
         isec.part      = 0;
 
         // paraboloid, so doesn't match hemispherical camera
-        float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
+        float3 xyz = transform_vector_transposed(trafo.rotation, ray.direction);
         xyz        = normalize(xyz);
 
         float2 const disk = hemisphere_to_disk_equidistant(xyz);
@@ -58,7 +58,7 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
 
         ray.max_t() = Ray_max_t;
 
-        SOFT_ASSERT(testing::check(isec, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, trafo, ray));
 
         return true;
     }
@@ -66,10 +66,10 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
     return false;
 }
 
-bool Canopy::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Canopy::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                            Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
-        if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
+        if (dot(ray.direction, trafo.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
@@ -81,7 +81,7 @@ bool Canopy::intersect_nsf(Ray& ray, Transformation const& transformation, Node_
         isec.part  = 0;
 
         // paraboloid, so doesn't match hemispherical camera
-        float3 xyz = transform_vector_transposed(transformation.rotation, ray.direction);
+        float3 xyz = transform_vector_transposed(trafo.rotation, ray.direction);
         xyz        = normalize(xyz);
 
         float2 const disk = hemisphere_to_disk_equidistant(xyz);
@@ -90,7 +90,7 @@ bool Canopy::intersect_nsf(Ray& ray, Transformation const& transformation, Node_
 
         ray.max_t() = Ray_max_t;
 
-        SOFT_ASSERT(testing::check(isec, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, trafo, ray));
 
         return true;
     }
@@ -98,10 +98,10 @@ bool Canopy::intersect_nsf(Ray& ray, Transformation const& transformation, Node_
     return false;
 }
 
-bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stack& /*nodes*/,
+bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                        Normals& normals) const {
     if (ray.max_t() >= Ray_max_t) {
-        if (dot(ray.direction, transformation.rotation.r[2]) < Canopy_eps) {
+        if (dot(ray.direction, trafo.rotation.r[2]) < Canopy_eps) {
             return false;
         }
 
@@ -118,19 +118,19 @@ bool Canopy::intersect(Ray& ray, Transformation const& transformation, Node_stac
     return false;
 }
 
-bool Canopy::intersect_p(Ray const& /*ray*/, Transformation const& /*transformation*/,
+bool Canopy::intersect_p(Ray const& /*ray*/, Transformation const& /*trafo*/,
                          Node_stack& /*nodes*/) const {
     // Implementation for this is not really needed, so just skip it
     return false;
 }
 
-float Canopy::visibility(Ray const& /*ray*/, Transformation const& /*transformation*/,
-                         uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/) const {
+float Canopy::visibility(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
+                         Filter /*filter*/, Worker& /*worker*/) const {
     // Implementation for this is not really needed, so just skip it
     return 1.f;
 }
 
-bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/,
                              uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
                              float3& ta) const {
     // Implementation for this is not really needed, so just skip it
@@ -138,13 +138,13 @@ bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*transfo
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
-                    uint32_t sampler_dimension, Sample_to& sample) const {
-    float2 const uv  = sampler.generate_sample_2D(rng, sampler_dimension);
-    float3 const dir = sample_oriented_hemisphere_uniform(uv, transformation.rotation);
+bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& trafo,
+                    float /*area*/, bool /*two_sided*/, Sampler& sampler, RNG& rng,
+                    uint32_t sampler_d, Sample_to& sample) const {
+    float2 const uv  = sampler.generate_sample_2D(rng, sampler_d);
+    float3 const dir = sample_oriented_hemisphere_uniform(uv, trafo.rotation);
 
-    float3 const xyz  = normalize(transform_vector_transposed(transformation.rotation, dir));
+    float3 const xyz  = normalize(transform_vector_transposed(trafo.rotation, dir));
     float2 const disk = hemisphere_to_disk_equidistant(xyz);
 
     sample = Sample_to(dir, float3(0.5f * disk[0] + 0.5f, 0.5f * disk[1] + 0.5f, 0.f),
@@ -155,27 +155,25 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, Transformation const& /*transformation*/, float /*area*/,
+bool Canopy::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
                     bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                    uint32_t /*sampler_dimension*/, float2 /*importance_uv*/,
-                    AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+                    uint32_t /*sampler_d*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                    Sample_from& /*sample*/) const {
     return false;
 }
 
-float Canopy::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
-                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
-                  bool /*total_sphere*/) const {
+float Canopy::pdf(Ray const& /*ray*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
+                  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
     return 1.f / (2.f * Pi);
 }
 
 float Canopy::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
-                         Transformation const& /*transformation*/, float /*area*/) const {
+                         Transformation const& /*trafo*/, float /*area*/) const {
     return 0.f;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
-                    Transformation const& transformation, float /*area*/, bool /*two_sided*/,
-                    Sample_to&            sample) const {
+bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv, Transformation const& trafo,
+                    float /*area*/, bool /*two_sided*/, Sample_to& sample) const {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     if (float const z = dot(disk, disk); z > 1.f) {
@@ -185,20 +183,20 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv,
 
     float3 const dir = disk_to_hemisphere_equidistant(disk);
 
-    sample = Sample_to(transform_vector(transformation.rotation, dir), float3(uv), 1.f / (2.f * Pi),
+    sample = Sample_to(transform_vector(trafo.rotation, dir), float3(uv), 1.f / (2.f * Pi),
                        Ray_max_t);
 
     return true;
 }
 
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                    Transformation const& /*transformation*/, float /*volume*/,
+                    Transformation const& /*trafo*/, float /*volume*/,
                     Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transformation,
-                    float /*area*/, bool /*two_sided*/, float2 importance_uv, AABB const& bounds,
+bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& trafo, float /*area*/,
+                    bool /*two_sided*/, float2 importance_uv, AABB const& bounds,
                     Sample_from& sample) const {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
@@ -209,7 +207,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 
     float3 const ls = disk_to_hemisphere_equidistant(disk);
 
-    float3 const ws = -transform_vector(transformation.rotation, ls);
+    float3 const ws = -transform_vector(trafo.rotation, ls);
 
     auto const [t, b] = orthonormal_basis(ws);
 
@@ -231,8 +229,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& transfor
 }
 
 float Canopy::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
-                     Transformation const& /*transformation*/, float /*area*/,
-                     bool /*two_sided*/) const {
+                     Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/) const {
     return 1.f / (2.f * Pi);
 }
 

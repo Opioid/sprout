@@ -81,9 +81,9 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Intersectio
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
+    auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(), isec);
+    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(), isec);
 }
 
 bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const {
@@ -100,9 +100,9 @@ bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker, shape::Interse
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
+    auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect_nsf(ray, transformation, worker.node_stack(), isec);
+    return scene.prop_shape(self)->intersect_nsf(ray, trafo, worker.node_stack(), isec);
 }
 
 bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const {
@@ -119,9 +119,9 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& no
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
+    auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect(ray, transformation, worker.node_stack(), normals);
+    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(), normals);
 }
 
 bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker& worker) const {
@@ -138,9 +138,9 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker& worker) const {
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, is_static, temp);
+    auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect_p(ray, transformation, worker.node_stack());
+    return scene.prop_shape(self)->intersect_p(ray, trafo, worker.node_stack());
 }
 
 bool Prop::visible(uint32_t ray_depth) const {
@@ -173,9 +173,9 @@ float Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker& wor
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
+    auto const&    trafo = scene.prop_transformation_at(self, ray.time, temp);
 
-    return scene.prop_shape(self)->visibility(ray, transformation, self, filter, worker);
+    return scene.prop_shape(self)->visibility(ray, trafo, self, filter, worker);
 }
 
 bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker& worker,
@@ -200,9 +200,9 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker&
     }
 
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(self, ray.time, temp);
+    auto const&    trafo = scene.prop_transformation_at(self, ray.time, temp);
 
-    return scene.prop_shape(self)->thin_absorption(ray, transformation, self, filter, worker, ta);
+    return scene.prop_shape(self)->thin_absorption(ray, trafo, self, filter, worker, ta);
 }
 
 bool Prop::has_masked_material() const {

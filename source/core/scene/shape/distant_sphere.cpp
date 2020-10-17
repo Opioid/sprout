@@ -26,9 +26,9 @@ AABB Distant_sphere::transformed_aabb(float4x4 const& /*m*/) const {
     return AABB::empty();
 }
 
-bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformation,
-                               Node_stack& /*nodes*/, Intersection& isec) const {
-    float3 const n = transformation.rotation.r[2];
+bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+                               Intersection& isec) const {
+    float3 const n = trafo.rotation.r[2];
 
     float const b = dot(n, ray.direction);
 
@@ -36,7 +36,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformati
         return false;
     }
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
@@ -46,8 +46,8 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformati
 
         isec.p     = ray.point(hit_t);
         isec.geo_n = n;
-        isec.t     = transformation.rotation.r[0];
-        isec.b     = transformation.rotation.r[1];
+        isec.t     = trafo.rotation.r[0];
+        isec.b     = trafo.rotation.r[1];
         isec.n     = n;
 
         float3 const k  = ray.direction - n;
@@ -64,9 +64,9 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const&      transformati
     return false;
 }
 
-bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&      transformation,
-                                   Node_stack& /*nodes*/, Intersection& isec) const {
-    float3 const n = transformation.rotation.r[2];
+bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+                                   Intersection& isec) const {
+    float3 const n = trafo.rotation.r[2];
 
     float const b = dot(n, ray.direction);
 
@@ -74,7 +74,7 @@ bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&      transfor
         return false;
     }
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
@@ -99,9 +99,9 @@ bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const&      transfor
     return false;
 }
 
-bool Distant_sphere::intersect(Ray& ray, Transformation const& transformation,
-                               Node_stack& /*nodes*/, Normals& normals) const {
-    float3 const n = transformation.rotation.r[2];
+bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+                               Normals& normals) const {
+    float3 const n = trafo.rotation.r[2];
 
     float const b = dot(n, ray.direction);
 
@@ -109,7 +109,7 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const& transformation,
         return false;
     }
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     if (det > 0.f) {
@@ -124,9 +124,9 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const& transformation,
     return false;
 }
 
-bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transformation,
+bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& trafo,
                                  Node_stack& /*nodes*/) const {
-    float3 const n = transformation.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
     float const b = dot(n, ray.direction);
 
@@ -134,19 +134,19 @@ bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& transform
         return false;
     }
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
     return det > 0.f;
 }
 
-float Distant_sphere::visibility(Ray const& /*ray*/, Transformation const& /*transformation*/,
+float Distant_sphere::visibility(Ray const& /*ray*/, Transformation const& /*trafo*/,
                                  uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/) const {
     // Implementation for this is not really needed, so just skip it
     return 1.f;
 }
 
-bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*transformation*/,
+bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/,
                                      uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
                                      float3& ta) const {
     // Implementation for this is not really needed, so just skip it
@@ -154,47 +154,45 @@ bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /
     return true;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/,
-                            Transformation const& transformation, float area, bool /*two_sided*/,
-                            Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
-                            Sample_to& sample) const {
-    float2 const r2 = sampler.generate_sample_2D(rng, sampler_dimension);
+bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& trafo,
+                            float area, bool /*two_sided*/, Sampler& sampler, RNG& rng,
+                            uint32_t sampler_d, Sample_to& sample) const {
+    float2 const r2 = sampler.generate_sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r2);
 
     float3 const ls = float3(xy, 0.f);
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
-    float3 const ws = radius * transform_vector(transformation.rotation, ls);
+    float3 const ws = radius * transform_vector(trafo.rotation, ls);
 
-    sample = Sample_to(normalize(ws - transformation.rotation.r[2]), float3(0.f), 1.f / area,
+    sample = Sample_to(normalize(ws - trafo.rotation.r[2]), float3(0.f), 1.f / area,
                        Almost_ray_max_t);
 
     return true;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& transformation, float area,
-                            bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
-                            uint32_t sampler_dimension, float2 importance_uv, AABB const& bounds,
-                            Sample_from& sample) const {
-    float2 const r2 = sampler.generate_sample_2D(rng, sampler_dimension);
+bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& trafo, float area,
+                            bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                            float2 importance_uv, AABB const& bounds, Sample_from& sample) const {
+    float2 const r2 = sampler.generate_sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r2);
 
     float3 const ls = float3(xy, 0.f);
 
-    float const radius = transformation.scale_x();
+    float const radius = trafo.scale_x();
 
-    float3 const ws = radius * transform_vector(transformation.rotation, ls);
+    float3 const ws = radius * transform_vector(trafo.rotation, ls);
 
-    float3 const dir = normalize(transformation.rotation.r[2] - ws);
+    float3 const dir = normalize(trafo.rotation.r[2] - ws);
 
-    AABB const ls_bounds = bounds.transform_transposed(transformation.rotation);
+    AABB const ls_bounds = bounds.transform_transposed(trafo.rotation);
 
     float3 const ls_extent = ls_bounds.max() - ls_bounds.min();
 
     float2 const ls_rect = float2(ls_extent[0], ls_extent[1]);
 
-    float3 const photon_rect = transform_vector(transformation.rotation,
+    float3 const photon_rect = transform_vector(trafo.rotation,
                                                 float3((importance_uv - 0.5f) * ls_rect, 0.f));
 
     float const bounds_radius = 0.5f * ls_extent[2];
@@ -212,37 +210,36 @@ bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& transformat
 }
 
 float Distant_sphere::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
-                          Transformation const& /*transformation*/, float area, bool /*two_sided*/,
+                          Transformation const& /*trafo*/, float area, bool /*two_sided*/,
                           bool /*total_sphere*/) const {
     return 1.f / area;
 }
 
 float Distant_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
-                                 Transformation const& /*transformation*/, float /*volume*/) const {
+                                 Transformation const& /*trafo*/, float /*volume*/) const {
     return 0.f;
 }
 
 bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                            Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, Sample_to& /*sample*/) const {
-    return false;
-}
-
-bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                            Transformation const& /*transformation*/, float /*volume*/,
+                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                             Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, float2 /*uv*/,
-                            Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
-                            Sample_from& /*sample*/) const {
+bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+                            Transformation const& /*trafo*/, float /*volume*/,
+                            Sample_to& /*sample*/) const {
+    return false;
+}
+
+bool Distant_sphere::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/,
+                            float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
+                            AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
 float Distant_sphere::pdf_uv(Ray const& /*ray*/, Intersection const& /*isec*/,
-                             Transformation const& /*transformation*/, float area,
+                             Transformation const& /*trafo*/, float area,
                              bool /*two_sided*/) const {
     return 1.f / area;
 }

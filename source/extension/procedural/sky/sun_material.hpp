@@ -20,9 +20,8 @@ class Sun_material : public Material {
     float3 average_radiance(float area) const final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
-                          Transformation const& transformation, float area,
-                          bool importance_sampling, Threads& threads,
-                          scene::Scene const& scene) final;
+                          Transformation const& trafo, float area, bool importance_sampling,
+                          Threads& threads, scene::Scene const& scene) final;
 };
 
 class Sun_baked_material : public Material {
@@ -39,9 +38,8 @@ class Sun_baked_material : public Material {
     float3 average_radiance(float area) const final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
-                          Transformation const& transformation, float area,
-                          bool importance_sampling, Threads& threads,
-                          scene::Scene const& scene) final;
+                          Transformation const& trafo, float area, bool importance_sampling,
+                          Threads& threads, scene::Scene const& scene) final;
 
   private:
     math::Interpolated_function_1D<float3> emission_;

@@ -23,7 +23,7 @@ struct alignas(16) Keyframe {
 
     void transform(Keyframe& __restrict result, Keyframe const& __restrict from) const;
 
-    math::Transformation transformation;
+    math::Transformation trafo;
 };
 
 }  // namespace scene::entity

@@ -422,13 +422,12 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
-        auto const& transformation = prop_world_transformation(entity);
+        auto const& trafo = prop_world_transformation(entity);
 
-        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(
-            transformation.object_to_world());
+        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(trafo.object_to_world());
 
         for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
-            prop_inherit_transformation(child, transformation);
+            prop_inherit_transformation(child, trafo);
 
             child = prop_topology(child).next;
         }
@@ -441,11 +440,11 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
 
         Shape const* shape = prop_shape(entity);
 
-        AABB aabb = shape->transformed_aabb(float4x4(frames[0].transformation));
+        AABB aabb = shape->transformed_aabb(float4x4(frames[0].trafo));
 
         for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
-            auto const& a = frames[i].transformation;
-            auto const& b = frames[i + 1].transformation;
+            auto const& a = frames[i].trafo;
+            auto const& b = frames[i + 1].trafo;
 
             float t = Interval;
             for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
@@ -465,7 +464,7 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
     }
 }
 
-void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& transformation) {
+void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& trafo) {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null != f) {
@@ -475,7 +474,7 @@ void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& t
 
         for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
             uint32_t const lf = local_animation ? i : 0;
-            frames[len + lf].transform(frames[i], transformation);
+            frames[len + lf].transform(frames[i], trafo);
         }
     }
 
@@ -508,9 +507,9 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     shape->prepare_sampling(part);
 
     Transformation temp;
-    auto const&    transformation = prop_transformation_at(entity, time, temp);
+    auto const&    trafo = prop_transformation_at(entity, time, temp);
 
-    float3 const scale = transformation.scale();
+    float3 const scale = trafo.scale();
 
     float const extent = volume ? shape->volume(part, scale) : shape->area(part, scale);
 
@@ -519,18 +518,18 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
     Material* material = material_resources_[materials_[p]];
-    material->prepare_sampling(*shape, part, time, transformation, extent,
-                               material_importance_sampling, threads, *this);
+    material->prepare_sampling(*shape, part, time, trafo, extent, material_importance_sampling,
+                               threads, *this);
 
     lights_[light].set_extent(extent);
 
     light_powers_[light] = max_component(lights_[light].power(aabb(), *this));
 
-    light_aabbs_[light] = shape->transformed_part_aabb(part, transformation.object_to_world());
+    light_aabbs_[light] = shape->transformed_part_aabb(part, trafo.object_to_world());
 
     float4 const cone = shape->cone(part);
 
-    light_cones_[light] = float4(transformation.object_to_world_normal(cone.xyz()), cone[3]);
+    light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()), cone[3]);
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) {
@@ -547,8 +546,9 @@ void Scene::create_animation_stage(uint32_t entity, animation::Animation* animat
     prop_allocate_frames(entity, true);
 }
 
-Scene::Transformation const& Scene::prop_animated_transformation_at(
-    uint32_t frames_id, uint64_t time, Transformation& transformation) const {
+Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t        frames_id,
+                                                                    uint64_t        time,
+                                                                    Transformation& trafo) const {
     entity::Keyframe const* frames = &keyframes_[frames_id];
 
     uint64_t const i = (time - current_time_start_) / tick_duration_;
@@ -562,9 +562,9 @@ Scene::Transformation const& Scene::prop_animated_transformation_at(
 
     float const t = float(delta) / float(tick_duration_);
 
-    transformation.set(lerp(a.transformation, b.transformation, t));
+    trafo.set(lerp(a.trafo, b.trafo, t));
 
-    return transformation;
+    return trafo;
 }
 
 Scene::Prop_ptr Scene::allocate_prop() {

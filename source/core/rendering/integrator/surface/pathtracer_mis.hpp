@@ -28,7 +28,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel(rnd::Generator& rng) final;
+    void start_pixel(RNG& rng) final;
 
     float4 li(Ray& ray, Intersection& isec, Worker& worker,
               Interface_stack const& initial_stack) final;
@@ -47,7 +47,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
                          Filter filter, Worker& worker);
 
     float3 evaluate_light(Light const& light, float light_weight, Ray const& history,
-                          float3 const& p, uint32_t sampler_dimension, Intersection const& isec,
+                          float3 const& p, uint32_t sampler_d, Intersection const& isec,
                           Material_sample const& mat_sample, Filter filter, Worker& worker);
 
     enum class State {

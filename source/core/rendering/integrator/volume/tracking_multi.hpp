@@ -15,7 +15,7 @@ class alignas(64) Tracking_multi final : public Integrator {
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel(rnd::Generator& rng) final;
+    void start_pixel(RNG& rng) final;
 
     bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
 

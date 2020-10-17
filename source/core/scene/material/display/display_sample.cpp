@@ -51,7 +51,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     return {ggx.reflection, ggx.pdf()};
 }
 
-void Sample::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
+void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;

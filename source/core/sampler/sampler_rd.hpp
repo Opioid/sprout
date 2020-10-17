@@ -11,17 +11,17 @@ class alignas(64) RD final : public Sampler {
 
     ~RD() final;
 
-    float2 generate_sample_2D(rnd::Generator& rng, uint32_t dimension = 0) final;
+    float2 generate_sample_2D(RNG& rng, uint32_t dimension = 0) final;
 
-    float generate_sample_1D(rnd::Generator& rng, uint32_t dimension = 0) final;
+    float generate_sample_1D(RNG& rng, uint32_t dimension = 0) final;
 
   private:
     void on_resize() final;
 
-    void on_start_pixel(rnd::Generator& rng) final;
+    void on_start_pixel(RNG& rng) final;
 
-    void generate_2D(rnd::Generator& rng, uint32_t dimension);
-    void generate_1D(rnd::Generator& rng, uint32_t dimension);
+    void generate_2D(RNG& rng, uint32_t dimension);
+    void generate_1D(RNG& rng, uint32_t dimension);
 
     static uint32_t constexpr Num_batch = 16;
 

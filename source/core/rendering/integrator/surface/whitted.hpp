@@ -17,7 +17,7 @@ class alignas(64) Whitted final : public Integrator {
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel(rnd::Generator& rng) final;
+    void start_pixel(RNG& rng) final;
 
     float4 li(Ray& ray, Intersection& isec, Worker& worker,
               Interface_stack const& initial_stack) final;

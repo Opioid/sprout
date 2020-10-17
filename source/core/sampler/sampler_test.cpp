@@ -22,24 +22,24 @@ using namespace image::procedural;
 
 static float constexpr Dot_radius = 0.004f;
 
-void render_set(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+void render_set(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
                 Byte3& target);
 
-void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+void render_disk(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
                  Byte3& target);
 
 void render_triangle(std::string const& name, Sampler& sampler, Renderer& renderer, Byte3& target);
 
-void render_triangle_heitz(std::string const& name, Sampler& sampler, rnd::Generator& rng,
-                           Renderer& renderer, Byte3& target);
+void render_triangle_heitz(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
+                           Byte3& target);
 
-void render_triangle_one(std::string const& name, Sampler& sampler, rnd::Generator& rng,
-                         Renderer& renderer, Byte3& target);
+void render_triangle_one(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
+                         Byte3& target);
 
-void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+void render_quad(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
                  Byte3& target);
 
-void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, float2 center,
+void render_quad(std::string const& name, Sampler& sampler, RNG& rng, float2 center,
                  Renderer& renderer, Byte3& target);
 
 // https://drive.google.com/file/d/1J-183vt4BrN9wmqItECIjjLIKwm29qSg/view
@@ -140,7 +140,7 @@ void test() {
     }
 }
 
-void render_set(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+void render_set(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
                 Byte3& target) {
     //    render_disk(name + "_disk_0.png", sampler, renderer, target);
     //    render_disk(name + "_disk_1.png", sampler, renderer, target);
@@ -158,7 +158,7 @@ void render_set(std::string const& name, Sampler& sampler, rnd::Generator& rng, 
     render_quad(name + "_quad_1.png", sampler, rng, renderer, target);
 }
 
-void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+void render_disk(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
                  Byte3& target) {
     std::cout << name << ": ";
 
@@ -228,8 +228,8 @@ void render_disk(std::string const& name, Sampler& sampler, rnd::Generator& rng,
     encoding::png::Writer::write(name, target);
 }
 
-void render_triangle(std::string const& name, Sampler& sampler, rnd::Generator& rng,
-                     Renderer& renderer, Byte3& target) {
+void render_triangle(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
+                     Byte3& target) {
     std::cout << name << ": " << std::endl;
 
     renderer.set_brush(float3(0.18f));
@@ -282,8 +282,8 @@ void render_triangle(std::string const& name, Sampler& sampler, rnd::Generator& 
     encoding::png::Writer::write(name, target);
 }
 
-void render_triangle_heitz(std::string const& name, Sampler& sampler, rnd::Generator& rng,
-                           Renderer& renderer, Byte3& target) {
+void render_triangle_heitz(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
+                           Byte3& target) {
     std::cout << name << ": " << std::endl;
 
     renderer.set_brush(float3(0.18f));
@@ -336,8 +336,8 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, rnd::Gener
     encoding::png::Writer::write(name, target);
 }
 
-void render_triangle_one(std::string const& name, Sampler& sampler, rnd::Generator& rng,
-                         Renderer& renderer, Byte3& target) {
+void render_triangle_one(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
+                         Byte3& target) {
     std::cout << name << ": " << std::endl;
 
     renderer.set_brush(float3(0.18f));
@@ -390,7 +390,7 @@ void render_triangle_one(std::string const& name, Sampler& sampler, rnd::Generat
     encoding::png::Writer::write(name, target);
 }
 
-void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, Renderer& renderer,
+void render_quad(std::string const& name, Sampler& sampler, RNG& rng, Renderer& renderer,
                  Byte3& target) {
     std::cout << name << std::endl;
 
@@ -436,7 +436,7 @@ void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng,
     encoding::png::Writer::write(name, target);
 }
 
-void render_quad(std::string const& name, Sampler& sampler, rnd::Generator& rng, float2 center,
+void render_quad(std::string const& name, Sampler& sampler, RNG& rng, float2 center,
                  Renderer& renderer, Byte3& target) {
     renderer.set_brush(float3(0.18f));
     renderer.clear();

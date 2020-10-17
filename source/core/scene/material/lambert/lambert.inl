@@ -26,7 +26,7 @@ inline bxdf::Result Isotropic::reflection(float3 const& color, float n_dot_wi, L
 }
 
 inline float Isotropic::reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
-                                rnd::Generator& rng, bxdf::Sample& result) {
+                                RNG& rng, bxdf::Sample& result) {
     float2 const s2d = sampler.generate_sample_2D(rng);
 
     float3 const is = sample_hemisphere_cosine(s2d);

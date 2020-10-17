@@ -20,6 +20,7 @@ namespace scene {
 
 static material::Sampler_cache const Sampler_cache;
 
+using Transformation     = entity::Composed_transformation;
 using Material_sample    = scene::material::Sample;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 using Texture_sampler_3D = image::texture::Sampler_3D;
@@ -186,13 +187,13 @@ static float4 calculate_screenspace_differential(float3 const& p, float3 const& 
 float4 Worker::screenspace_differential(Renderstate const& rs, uint64_t time) const {
     Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
 
-    entity::Composed_transformation temp;
-    auto const& transformation = scene_->prop_transformation_at(rs.prop, time, temp);
+    Transformation temp;
+    auto const&    trafo = scene_->prop_transformation_at(rs.prop, time, temp);
 
     auto const ds = scene_->prop_shape(rs.prop)->differential_surface(rs.primitive);
 
-    float3 const dpdu_w = transformation.object_to_world_vector(ds.dpdu);
-    float3 const dpdv_w = transformation.object_to_world_vector(ds.dpdv);
+    float3 const dpdu_w = trafo.object_to_world_vector(ds.dpdu);
+    float3 const dpdv_w = trafo.object_to_world_vector(ds.dpdv);
 
     return calculate_screenspace_differential(rs.p, rs.geo_n, rd, dpdu_w, dpdv_w);
 }

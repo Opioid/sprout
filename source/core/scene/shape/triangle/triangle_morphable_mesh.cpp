@@ -45,9 +45,9 @@ uint32_t Morphable_mesh::num_parts() const {
     return tree_.num_parts();
 }
 
-bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                                shape::Intersection& isec) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -61,7 +61,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, N
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f object_to_world(transformation.object_to_world());
+        Simd4x4f object_to_world(trafo.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -76,7 +76,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, N
 
         uint32_t part = tree_.triangle_part(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
@@ -98,9 +98,9 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, N
     return false;
 }
 
-bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformation,
-                                   Node_stack& nodes, shape::Intersection& isec) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& nodes,
+                                   shape::Intersection& isec) const {
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -114,7 +114,7 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f const object_to_world(transformation.object_to_world());
+        Simd4x4f const object_to_world(trafo.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -124,7 +124,7 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
 
         uint32_t const part = tree_.triangle_part(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
 
@@ -139,9 +139,9 @@ bool Morphable_mesh::intersect_nsf(Ray& ray, Transformation const& transformatio
     return false;
 }
 
-bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                                Normals& normals) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -157,7 +157,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, N
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
@@ -171,9 +171,9 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& transformation, N
     return false;
 }
 
-bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transformation,
+bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& trafo,
                                  Node_stack& nodes) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -184,71 +184,68 @@ bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& transform
     return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes);
 }
 
-float Morphable_mesh::visibility(Ray const& ray, Transformation const& transformation,
-                                 uint32_t entity, Filter filter, Worker& worker) const {
-    math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
+float Morphable_mesh::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
+                                 Filter filter, Worker& worker) const {
+    math::ray tray(trafo.world_to_object_point(ray.origin),
+                   trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.visibility(tray, ray.time, entity, filter, worker);
 }
 
-bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& transformation,
-                                     uint32_t entity, Filter filter, Worker& worker,
-                                     float3& ta) const {
-    math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
+bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
+                                     Filter filter, Worker& worker, float3& ta) const {
+    math::ray tray(trafo.world_to_object_point(ray.origin),
+                   trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/,
-                            Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                            rnd::Generator& /*rng*/, uint32_t /*sampler_dimension*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*trafo*/,
+                            float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+                            rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
                             Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*transformation*/,
-                            float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                            rnd::Generator& /*rng*/, uint32_t /*sampler_dimension*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
+                            bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+                            rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
                             float2 /*importance_uv*/, AABB const& /*bounds*/,
                             Sample_from& /*sample*/) const {
     return false;
 }
 
 float Morphable_mesh::pdf(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
-                          Transformation const& /*transformation*/, float /*area*/,
-                          bool /*two_sided*/, bool /*total_sphere*/) const {
+                          Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                          bool /*total_sphere*/) const {
     return 0.f;
 }
 
 float Morphable_mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
-                                 Transformation const& /*transformation*/, float /*volume*/) const {
+                                 Transformation const& /*trafo*/, float /*volume*/) const {
     return 0.f;
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                            Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, Sample_to& /*sample*/) const {
-    return false;
-}
-
-bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                            Transformation const& /*transformation*/, float /*volume*/,
+                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                             Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/,
-                            Transformation const& /*transformation*/, float /*area*/,
-                            bool /*two_sided*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
-                            Sample_from& /*sample*/) const {
+bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+                            Transformation const& /*trafo*/, float /*volume*/,
+                            Sample_to& /*sample*/) const {
+    return false;
+}
+
+bool Morphable_mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/,
+                            float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
+                            AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
 float Morphable_mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
-                             Transformation const& /*transformation*/, float /*area*/,
+                             Transformation const& /*trafo*/, float /*area*/,
                              bool /*two_sided*/) const {
     return 0.f;
 }

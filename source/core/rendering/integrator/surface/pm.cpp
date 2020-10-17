@@ -49,7 +49,7 @@ void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     }
 }
 
-void PM::start_pixel(rnd::Generator& rng) {
+void PM::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {

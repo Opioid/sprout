@@ -55,7 +55,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     return {coating.reflection + coating.attenuation * bottom, pdf};
 }
 
-void Sample::sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const {
+void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
@@ -137,7 +137,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
     }
 }
 
-void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, rnd::Generator& rng,
+void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
                                 bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -184,7 +184,7 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
     }
 }
 
-void Sample::Flakes_layer::sample(float3 const& wo, Sampler& sampler, rnd::Generator& rng,
+void Sample::Flakes_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
                                   float3& fresnel_result, bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 

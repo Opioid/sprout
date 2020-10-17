@@ -14,7 +14,7 @@ class alignas(64) Tracking_single final : public Integrator {
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel(rnd::Generator& rng) final;
+    void start_pixel(RNG& rng) final;
 
     bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
 
@@ -23,7 +23,7 @@ class alignas(64) Tracking_single final : public Integrator {
 
   private:
     float3 direct_light(Light const& light, float light_pdf, Ray const& ray, float3 const& position,
-                        uint32_t sampler_dimension, Intersection const& isec, Worker& worker);
+                        uint32_t sampler_d, Intersection const& isec, Worker& worker);
 
     float3 one_bounce(Ray const& ray, Intersection const& isec, Material const& material,
                       Worker& worker);

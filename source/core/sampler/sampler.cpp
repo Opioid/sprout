@@ -30,7 +30,7 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
     }
 }
 
-void Sampler::start_pixel(rnd::Generator& rng) {
+void Sampler::start_pixel(RNG& rng) {
     for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
         current_sample_[i] = 0;
     }
@@ -42,7 +42,7 @@ uint32_t Sampler::num_samples() const {
     return num_samples_;
 }
 
-Camera_sample Sampler::generate_camera_sample(rnd::Generator& rng, int2 pixel) {
+Camera_sample Sampler::generate_camera_sample(RNG& rng, int2 pixel) {
     float2 const image_sample = generate_sample_2D(rng, 0);
     float2 const lens_sample  = generate_sample_2D(rng, 1);
     float const  time_sample  = generate_sample_1D(rng, 0);

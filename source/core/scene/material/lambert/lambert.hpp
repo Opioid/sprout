@@ -28,7 +28,7 @@ class Isotropic {
     static bxdf::Result reflection(float3 const& color, float n_dot_wi, Layer const& layer);
 
     static float reflect(float3 const& color, Layer const& layer, sampler::Sampler& sampler,
-                         rnd::Generator& rng, bxdf::Sample& result);
+                         RNG& rng, bxdf::Sample& result);
 };
 
 }  // namespace lambert

@@ -11,7 +11,7 @@ class Sample : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(Sampler& sampler, rnd::Generator& rng, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
     struct Base_layer : material::Layer {
         void set(float3 const& color_a, float3 const& color_b, float alpha);
@@ -20,8 +20,7 @@ class Sample : public material::Sample {
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h,
                               float wo_dot_h) const;
 
-        void sample(float3 const& wo, Sampler& sampler, rnd::Generator& rng,
-                    bxdf::Sample& result) const;
+        void sample(float3 const& wo, Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
         float3 color_a_;
         float3 color_b_;
@@ -36,7 +35,7 @@ class Sample : public material::Sample {
         bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
                               float3& fresnel_result) const;
 
-        void sample(float3 const& wo, Sampler& sampler, rnd::Generator& rng, float3& fresnel_result,
+        void sample(float3 const& wo, Sampler& sampler, RNG& rng, float3& fresnel_result,
                     bxdf::Sample& result) const;
 
         float3 ior_;

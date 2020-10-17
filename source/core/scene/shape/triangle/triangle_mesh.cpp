@@ -78,9 +78,9 @@ uint32_t Mesh::part_id_to_material_id(uint32_t part) const {
     return parts_[part].material;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                      shape::Intersection& isec) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -94,7 +94,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f const object_to_world(transformation.object_to_world());
+        Simd4x4f const object_to_world(trafo.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -109,7 +109,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         uint32_t part = tree_.triangle_part(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
@@ -125,7 +125,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
         isec.part      = part;
         isec.primitive = pi.index;
 
-        SOFT_ASSERT(testing::check(isec, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, trafo, ray));
 
         return true;
     }
@@ -133,9 +133,9 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
 }
 
-bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+bool Mesh::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                          shape::Intersection& isec) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -149,7 +149,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f const object_to_world(transformation.object_to_world());
+        Simd4x4f const object_to_world(trafo.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -159,7 +159,7 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
         uint32_t part = tree_.triangle_part(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
 
@@ -175,9 +175,9 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     return false;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& nodes,
+bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                      Normals& normals) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -193,7 +193,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
@@ -207,17 +207,16 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
 }
 
-bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
-                       Node_stack& nodes) const {
+bool Mesh::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const {
     //	ray tray;
-    //	tray.origin = transform_point(ray.origin, transformation.world_to_object);
-    //	tray.set_direction(transform_vector(ray.direction, transformation.world_to_object));
+    //	tray.origin = transform_point(ray.origin, trafo.world_to_object);
+    //	tray.set_direction(transform_vector(ray.direction, trafo.world_to_object));
     //	tray.min_t = ray.min_t;
     //	tray.max_t = ray.max_t;
 
     //	return tree_.intersect_p(tray, nodes);
 
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -228,36 +227,36 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
     return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes);
 }
 
-float Mesh::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                       Filter filter, Worker& worker) const {
-    math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
+float Mesh::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                       Worker& worker) const {
+    math::ray tray(trafo.world_to_object_point(ray.origin),
+                   trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.visibility(tray, ray.time, entity, filter, worker);
 }
 
-bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                            Filter filter, Worker& worker, float3& ta) const {
-    math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
+    math::ray tray(trafo.world_to_object_point(ray.origin),
+                   trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                  bool two_sided, Sampler& sampler, rnd::Generator& rng, uint32_t sampler_dimension,
+bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
+                  bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
-    float const  r  = sampler.generate_sample_1D(rng, sampler_dimension);
-    float2 const r2 = sampler.generate_sample_2D(rng, sampler_dimension);
+    float const  r  = sampler.generate_sample_1D(rng, sampler_d);
+    float2 const r2 = sampler.generate_sample_2D(rng, sampler_d);
     auto const   s  = parts_[part].sample(r);
 
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r2, sv, tc);
-    float3 const v = transformation.object_to_world_point(sv);
+    float3 const v = trafo.object_to_world_point(sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = transform_vector(transformation.rotation, sn);
+    float3 const wn = transform_vector(trafo.rotation, sn);
 
     float3 const axis = v - p;
     float const  sl   = squared_length(axis);
@@ -279,22 +278,21 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
     return true;
 }
 
-bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
-                  bool /*two_sided*/, Sampler& sampler, rnd::Generator& rng,
-                  uint32_t sampler_dimension, float2 importance_uv, AABB const& /*bounds*/,
-                  Sample_from& sample) const {
-    float const r = sampler.generate_sample_1D(rng, sampler_dimension);
+bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /*two_sided*/,
+                  Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
+                  AABB const& /*bounds*/, Sample_from& sample) const {
+    float const r = sampler.generate_sample_1D(rng, sampler_d);
     auto const  s = parts_[part].sample(r);
 
-    float2 const r0 = sampler.generate_sample_2D(rng, sampler_dimension);
+    float2 const r0 = sampler.generate_sample_2D(rng, sampler_d);
 
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r0, sv, tc);
-    float3 const ws = transformation.object_to_world_point(sv);
+    float3 const ws = trafo.object_to_world_point(sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = transform_vector(transformation.rotation, sn);
+    float3 const wn = transform_vector(trafo.rotation, sn);
 
     auto const [x, y] = orthonormal_basis(wn);
 
@@ -308,9 +306,8 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     return true;
 }
 
-float Mesh::pdf(Ray const& ray, shape::Intersection const&      isec,
-                Transformation const& /*transformation*/, float area, bool two_sided,
-                bool /*total_sphere*/) const {
+float Mesh::pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& /*trafo*/,
+                float area, bool two_sided, bool /*total_sphere*/) const {
     float c = -dot(isec.geo_n, ray.direction);
 
     if (two_sided) {
@@ -322,31 +319,29 @@ float Mesh::pdf(Ray const& ray, shape::Intersection const&      isec,
 }
 
 float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
-                       Transformation const& /*transformation*/, float /*area*/) const {
+                       Transformation const& /*trafo*/, float /*area*/) const {
     return 0.f;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
+                  Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                  Transformation const& /*transformation*/, float /*volume*/,
-                  Sample_to& /*sample*/) const {
+                  Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
-                  AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/, float /*area*/,
+                  bool /*two_sided*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
 float Mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
-                   Transformation const& /*transformation*/, float /*area*/,
-                   bool /*two_sided*/) const {
+                   Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/) const {
     return 0.f;
 }
 

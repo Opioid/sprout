@@ -67,37 +67,35 @@ class alignas(16) Light {
 
     void set_extent(float extent);
 
-    Transformation const& transformation_at(uint64_t time, Transformation& transformation,
+    Transformation const& transformation_at(uint64_t time, Transformation& trafo,
                                             Scene const& scene) const;
 
     bool is_finite(Scene const& scene) const;
 
-    bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
-                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
-                Sample_to& result) const;
+    bool sample(float3 const& p, float3 const& n, Transformation const& trafo, bool total_sphere,
+                Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const;
 
     float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const;
 
-    bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
                 AABB const& bounds, Worker& worker, Sample_from& result) const;
 
-    bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
                 Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
 
     float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const;
 
     bool sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
-                Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
-                Sample_to& result) const;
+                Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const;
 
-    bool sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_d,
                 Worker& worker, Sample_to& result) const;
 
-    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
+    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB const& bounds,
                 Worker& worker, Sample_from& result) const;
 
-    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
                 Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
 

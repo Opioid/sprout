@@ -74,7 +74,7 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
     lights_.reserve(max_lights);
 }
 
-void Pathtracer_DL::start_pixel(rnd::Generator& rng) {
+void Pathtracer_DL::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {
