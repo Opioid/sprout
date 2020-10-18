@@ -272,7 +272,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         // Setting the following properties on the entity is deferred,
         // until after potential children are attached.
         for (auto& n : e.GetObject()) {
-            if ("trafo" == n.name) {
+            if ("transformation" == n.name) {
                 json::read_transformation(n.value, trafo);
             } else if ("animation" == n.name) {
                 animation_value = &n.value;

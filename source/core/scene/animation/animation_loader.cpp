@@ -56,7 +56,7 @@ Animation* load_keyframes(json::Value const&    keyframes_value,
 
             if ("time" == node_name) {
                 keyframe.time = time(json::read_double(n.value));
-            } else if ("trafo" == node_name) {
+            } else if ("transformation" == node_name) {
                 json::read_transformation(n.value, keyframe.k.trafo);
             } else if ("morphing" == node_name) {
                 read_morphing(n.value, keyframe.m);

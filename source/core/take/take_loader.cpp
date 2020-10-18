@@ -239,7 +239,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         if ("parameters" == n.name) {
             parameters_value = &n.value;
             stereo           = peek_stereoscopic(n.value);
-        } else if ("trafo" == n.name) {
+        } else if ("transformation" == n.name) {
             json::read_transformation(n.value, trafo);
         } else if ("animation" == n.name) {
             animation_value = &n.value;
