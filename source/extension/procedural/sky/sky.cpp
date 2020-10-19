@@ -103,7 +103,7 @@ void Sky::private_update(Scene& scene) {
     model_.set_turbidity(turbidity_);
 
     math::Transformation const trafo{float3(0.f), float3(Model::radius()),
-                                     math::quaternion::create(sun_rotation_)};
+                                     quaternion::create(sun_rotation_)};
 
     scene.prop_set_world_transformation(sun_, trafo);
 
