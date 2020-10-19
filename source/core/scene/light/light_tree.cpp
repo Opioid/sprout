@@ -348,7 +348,7 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
 
         SOFT_ASSERT(pdf > 0.f);
 
-        lights.push_back({l.offset, pdf});
+        lights.push_back({light_mapping_[l.offset], pdf});
 
         return;
     }
@@ -430,7 +430,7 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
 
         SOFT_ASSERT(pdf > 0.f);
 
-        lights.push_back({l.offset, pdf});
+        lights.push_back({light_mapping_[l.offset], pdf});
 
         return;
     }
