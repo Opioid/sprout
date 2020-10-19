@@ -145,7 +145,7 @@ static inline float importance(float3 const& center, float3 const& p, float3 con
         return std::max(d2 * base, 0.001f);
     }
 
-    float const cos_n = std::min(std::abs(dot(n, na)), 1.f);
+    float const cos_n = saturate(dot(n, na));
     float const sin_n = std::sqrt(1.f - cos_n * cos_n);
     float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
