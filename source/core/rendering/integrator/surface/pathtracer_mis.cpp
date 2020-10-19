@@ -60,8 +60,8 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 
     bool const all = Light_sampling::All == settings_.light_sampling;
 
-    uint32_t const max_lights = light::Tree::max_lights(Light_sampling::Adaptive ==
-                                                        settings_.light_sampling);
+    uint32_t const max_lights = light::Tree::max_lights(
+        num_lights, Light_sampling::Adaptive == settings_.light_sampling);
 
     uint32_t const nd2 = all ? num_lights : max_lights;
     uint32_t const nd1 = all ? num_lights : max_lights + 1;

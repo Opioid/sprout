@@ -342,13 +342,19 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
     float const ip = infinite_weight_;
 
     if (random < infinite_guard_) {
-        auto const l = infinite_light_distribution_.sample_discrete(random);
+        if (uint32_t len = num_infinite_lights_; split && len < Max_lights) {
+            for (uint32_t i = 0; i < len; ++i) {
+                lights.push_back({light_mapping_[i], ip});
+            }
+        } else {
+            auto const l = infinite_light_distribution_.sample_discrete(random);
 
-        float const pdf = l.pdf * ip;
+            float const pdf = l.pdf * ip;
 
-        SOFT_ASSERT(pdf > 0.f);
+            SOFT_ASSERT(pdf > 0.f);
 
-        lights.push_back({light_mapping_[l.offset], pdf});
+            lights.push_back({light_mapping_[l.offset], pdf});
+        }
 
         return;
     }
@@ -424,13 +430,19 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
     float const ip = infinite_weight_;
 
     if (random < infinite_guard_) {
-        auto const l = infinite_light_distribution_.sample_discrete(random);
+        if (uint32_t len = num_infinite_lights_; split && len < Max_lights) {
+            for (uint32_t i = 0; i < len; ++i) {
+                lights.push_back({light_mapping_[i], ip});
+            }
+        } else {
+            auto const l = infinite_light_distribution_.sample_discrete(random);
 
-        float const pdf = l.pdf * ip;
+            float const pdf = l.pdf * ip;
 
-        SOFT_ASSERT(pdf > 0.f);
+            SOFT_ASSERT(pdf > 0.f);
 
-        lights.push_back({light_mapping_[l.offset], pdf});
+            lights.push_back({light_mapping_[l.offset], pdf});
+        }
 
         return;
     }
@@ -508,6 +520,10 @@ float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, bool split,
     uint32_t const lo = light_orders_[id];
 
     if (lo < infinite_end_) {
+        if (split && num_infinite_lights_ < Max_lights) {
+            return ip;
+        }
+
         return ip * infinite_light_distribution_.pdf(lo);
     }
 

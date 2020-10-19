@@ -35,8 +35,8 @@ class Tree {
     static uint32_t constexpr Max_split_depth = 4;
     static uint32_t constexpr Max_lights      = 1 << Max_split_depth;
 
-    static uint32_t constexpr max_lights(bool split) {
-        return split ? Max_lights : 1;
+    static uint32_t constexpr max_lights(uint32_t num_lights, bool split) {
+        return split ? std::min(Max_lights, num_lights) : 1;
     }
 
     static float splitting_threshold_;
