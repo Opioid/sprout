@@ -61,7 +61,7 @@ inline float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo
     //	float const a = 1.f + fmo * pow5(1.f - n_dot_wi);
     //	float const b = 1.f + fmo * pow5(1.f - n_dot_wo);
 
-    //	return (a * b) * (Pi_inv * layer.diffuse_color_);
+    //	return (a * b) * (Pi_inv * layer.albedo_);
 
     // More energy conserving variant
     float const energy_bias   = lerp(0.f, 0.5f, alpha);

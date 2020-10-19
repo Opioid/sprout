@@ -15,7 +15,7 @@ namespace scene::material::substitute {
 template <typename Diffuse>
 void Base_closure<Diffuse>::set(float3 const& color, float f0, float alpha, float metallic,
                                 bool avoid_caustics) {
-    diffuse_color_ = (1.f - metallic) * color;
+    albedo_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
 
@@ -34,7 +34,7 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
+    auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha_, albedo_);
 
     if (avoid_caustics_ && alpha_ <= ggx::Min_alpha) {
         if constexpr (Forward) {
@@ -74,7 +74,7 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha_,
-                                       diffuse_factor * diffuse_color_);
+                                       diffuse_factor * albedo_);
 
     if (avoid_caustics_ && alpha_ <= ggx::Min_alpha) {
         if constexpr (Forward) {
@@ -144,8 +144,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
     float2 const xi = sampler.generate_sample_2D(rng);
 
-    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_, diffuse_color_, xi,
-                                            result);
+    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_, albedo_, xi, result);
 
     if (avoid_caustics & (alpha_ <= ggx::Min_alpha)) {
         result.reflection *= n_dot_wi;
@@ -174,8 +173,8 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, Layer const& layer,
 
     float2 const xi = sampler.generate_sample_2D(rng);
 
-    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_,
-                                            diffuse_factor * diffuse_color_, xi, result);
+    float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha_, diffuse_factor * albedo_,
+                                            xi, result);
 
     if (avoid_caustics & (alpha_ <= ggx::Min_alpha)) {
         result.reflection *= n_dot_wi;
@@ -211,7 +210,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, S
 
     result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha_);
 
-    auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_, diffuse_color_);
+    auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_, albedo_);
 
     result.reflection = n_dot_wi * (result.reflection + d.reflection);
     result.pdf        = 0.5f * (result.pdf + d.pdf());
@@ -233,7 +232,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, Layer const& layer, f
     result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha_);
 
     auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
-                                       diffuse_factor * diffuse_color_);
+                                       diffuse_factor * albedo_);
 
     result.reflection = n_dot_wi * (result.reflection + d.reflection);
     result.pdf        = 0.5f * (result.pdf + d.pdf());

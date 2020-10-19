@@ -41,7 +41,7 @@ struct Base_closure {
 
     float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const;
 
-    float3 diffuse_color_;
+    float3 albedo_;
     float3 f0_;
 
     float metallic_;

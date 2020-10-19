@@ -166,7 +166,7 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
 
         float const alpha = roughness * roughness;
 
-        sample.base_.diffuse_color_ = lerp(sample.base_.diffuse_color_, float3(1.f), weight);
+        sample.base_.albedo_ = lerp(sample.base_.albedo_, float3(1.f), weight);
 
         sample.base_.f0_ = lerp(sample.base_.f0_, float3(fresnel::schlick_f0(1.31f, rs.ior)),
                                 weight);
