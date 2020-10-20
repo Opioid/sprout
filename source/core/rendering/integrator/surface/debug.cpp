@@ -52,7 +52,7 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker,
                 return float4(0.f, 0.f, 0.f, 1.f);
             }
 
-            vector = mat_sample.interpolated_normal();
+            vector = mat_sample.shading_normal();
         } break;
         case Settings::Value::UV:
             vector = float3(0.5f * isec.geo.uv, -1.f);
@@ -63,7 +63,7 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker,
             auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, false, sampler_,
                                                  worker);
 
-            float3 const n = mat_sample.interpolated_normal();
+            float3 const& n = mat_sample.interpolated_normal();
 
             bool const translucent = mat_sample.is_translucent();
 
