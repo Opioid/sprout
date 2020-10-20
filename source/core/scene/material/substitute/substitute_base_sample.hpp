@@ -50,10 +50,6 @@ struct Base_closure {
     bool avoid_caustics_;
 };
 
-class Sample_base : public material::Sample {
-  public:
-};
-
 }  // namespace scene::material::substitute
 
 #endif

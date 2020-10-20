@@ -6,7 +6,7 @@
 
 namespace scene::material::substitute {
 
-class alignas(64) Sample : public Sample_base {
+class Sample : public material::Sample {
   public:
     bxdf::Result evaluate_f(float3 const& wi) const final;
 

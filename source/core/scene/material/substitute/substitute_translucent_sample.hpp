@@ -6,7 +6,7 @@
 
 namespace scene::material::substitute {
 
-class Sample_translucent : public Sample_base {
+class Sample_translucent : public material::Sample {
   public:
     bxdf::Result evaluate_f(float3 const& wi) const final;
 

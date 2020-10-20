@@ -7,7 +7,7 @@
 
 namespace scene::material::substitute {
 
-class Sample_subsurface final : public Sample_base {
+class Sample_subsurface final : public material::Sample {
   public:
     bxdf::Result evaluate_f(float3 const& wi) const final;
 

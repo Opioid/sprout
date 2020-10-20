@@ -8,7 +8,7 @@
 namespace scene::material::substitute {
 
 template <typename Coating_layer, typename Diffuse>
-class Sample_coating : public Sample_base {
+class Sample_coating : public material::Sample {
   public:
     bxdf::Result evaluate_f(float3 const& wi) const override;
 
