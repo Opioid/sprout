@@ -5,7 +5,7 @@
 
 namespace scene::material::metal {
 
-class alignas(64) Sample_isotropic : public material::Sample {
+class Sample_isotropic : public material::Sample {
   public:
     bxdf::Result evaluate_f(float3 const& wi) const final;
 
@@ -14,8 +14,6 @@ class alignas(64) Sample_isotropic : public material::Sample {
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
     void set(float3 const& ior, float3 const& absorption, float alpha, bool avoid_caustics);
-
-    Layer layer_;
 
   private:
     template <bool Forward>
@@ -29,7 +27,7 @@ class alignas(64) Sample_isotropic : public material::Sample {
     bool avoid_caustics_;
 };
 
-class alignas(64) Sample_anisotropic : public material::Sample {
+class Sample_anisotropic : public material::Sample {
   public:
     bxdf::Result evaluate_f(float3 const& wi) const final;
 
@@ -42,17 +40,11 @@ class alignas(64) Sample_anisotropic : public material::Sample {
     bxdf::Result evaluate(float3 const& wi) const;
 
   public:
-    struct PLayer : material::Layer {
-        void set(float3 const& ior, float3 const& absorption, float2 roughness);
+    void set(float3 const& ior, float3 const& absorption, float2 roughness);
 
-        float3 ior_;
-        float3 absorption_;
-        float2 a_;
-        float2 alpha2_;
-        float  axy_;
-    };
-
-    PLayer layer_;
+    float3 ior_;
+    float3 absorption_;
+    float2 alpha_;
 
     bool avoid_caustics_;
 };

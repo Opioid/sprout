@@ -52,11 +52,11 @@ namespace testing {
 template <typename T>
 void print_size(std::string const& name, size_t expected_size) {
     if (sizeof(T) != expected_size) {
-        std::cout << "ALARM: ";
+        std::cout << "ALARM: sizeof(" << name << ") == " << sizeof(T) << " (" << expected_size
+                  << ")" << std::endl;
+    } else {
+        std::cout << "sizeof(" << name << ") == " << sizeof(T) << std::endl;
     }
-
-    std::cout << "sizeof(" << name << ") == " << sizeof(T) << " (" << expected_size << ")"
-              << std::endl;
 }
 
 void size() {
@@ -92,19 +92,19 @@ void size() {
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
     print_size<scene::material::debug::Material>("debug::Material", 96);
-    print_size<scene::material::debug::Sample>("debug::Sample", 160);
+    print_size<scene::material::debug::Sample>("debug::Sample", 144);
 
     print_size<scene::material::glass::Glass>("glass::Glass", 176);
-    print_size<scene::material::glass::Sample>("glass::Sample", 192);
+    print_size<scene::material::glass::Sample>("glass::Sample", 176);
 
     print_size<scene::material::light::Constant>("light::Constant", 128);
     print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
-    print_size<scene::material::light::Sample>("light::Sample", 128);
+    print_size<scene::material::light::Sample>("light::Sample", 144);
 
     print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 192);
     print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 192);
     print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
-    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 256);
+    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 192);
 
     print_size<scene::material::substitute::Material>("substitute::Material", 176);
     print_size<scene::material::substitute::Sample>("substitute::Sample", 192);

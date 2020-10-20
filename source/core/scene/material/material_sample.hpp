@@ -83,8 +83,8 @@ class Sample {
     float clamp_geo_n_dot(float3 const& v) const;
 
     float3 const& geometric_normal() const;
-
     float3 const& interpolated_normal() const;
+    float3 const& shading_normal() const;
 
     bool same_hemisphere(float3 const& v) const;
 
@@ -106,6 +106,9 @@ class Sample {
     };
 
     flags::Flags<Property> properties_;
+
+  public:
+    Layer layer_;
 };
 
 struct IoR {

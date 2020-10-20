@@ -5,7 +5,7 @@
 
 namespace scene::material::glass {
 
-class alignas(64) Sample : public material::Sample {
+class Sample : public material::Sample {
   public:
     Sample();
 
@@ -18,8 +18,6 @@ class alignas(64) Sample : public material::Sample {
     void set(float3 const& refraction_color, float ior, float ior_outside);
 
     void sample(float ior, float p, bxdf::Sample& result) const;
-
-    Layer layer_;
 
     float3 color_;
 

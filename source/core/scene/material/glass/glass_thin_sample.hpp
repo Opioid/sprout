@@ -18,8 +18,6 @@ class Sample_thin : public material::Sample {
     void set(float3 const& refraction_color, float3 const& absorption_coefficient, float ior,
              float ior_outside, float thickness);
 
-    Layer layer_;
-
     float3 color_;
     float3 absorption_coefficient_;
 

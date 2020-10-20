@@ -94,7 +94,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.layer_.set(ior3_, absorption_, roughness_);
+    sample.set(ior3_, absorption_, roughness_);
     sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;

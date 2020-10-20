@@ -52,7 +52,6 @@ struct Base_closure {
 
 class Sample_base : public material::Sample {
   public:
-    Layer layer_;
 };
 
 }  // namespace scene::material::substitute

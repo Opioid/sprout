@@ -5,7 +5,7 @@
 
 namespace scene::material::light {
 
-class alignas(64) Sample : public material::Sample {
+class Sample : public material::Sample {
   public:
     Sample();
 

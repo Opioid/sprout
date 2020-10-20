@@ -16,8 +16,6 @@ class Sample_rough final : public material::Sample {
     void set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
              bool avoid_caustics);
 
-    Layer layer_;
-
     float3 color_;
 
     float f0_;

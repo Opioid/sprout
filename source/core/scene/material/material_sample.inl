@@ -128,6 +128,10 @@ inline float3 const& Sample::interpolated_normal() const {
     return n_;
 }
 
+inline float3 const& Sample::shading_normal() const {
+    return layer_.n_;
+}
+
 inline bool Sample::same_hemisphere(float3 const& v) const {
     return dot(geo_n_, v) > 0.f;
 }

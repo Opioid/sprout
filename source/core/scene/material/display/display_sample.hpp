@@ -15,8 +15,6 @@ class Sample : public material::Sample {
 
     void set(float3 const& radiance, float f0, float alpha);
 
-    Layer layer_;
-
     float f0_;
     float alpha_;
 };

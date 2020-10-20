@@ -413,16 +413,21 @@ inline float Isotropic::refract(float3 const& wo, float3 const& h, float n_dot_w
     return n_dot_wi;
 }
 
-template <typename Layer, typename Fresnel>
+template <typename Fresnel>
 bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_dot_wo,
-                                     float wo_dot_h, Layer const& layer, Fresnel const& fresnel) {
+                                     float wo_dot_h, float2 alpha, Layer const& layer,
+                                     Fresnel const& fresnel) {
     float const n_dot_h = saturate(dot(layer.n_, h));
 
     float const x_dot_h = dot(layer.t_, h);
     float const y_dot_h = dot(layer.b_, h);
 
-    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.alpha2_, layer.axy_);
-    float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
+    float2 const alpha2 = alpha * alpha;
+
+    float const axy = alpha[0] * alpha[1];
+
+    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha2, axy);
+    float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, axy);
     float3 const f = fresnel(wo_dot_h);
 
     float const  pdf        = (d * n_dot_h) / (4.f * wo_dot_h);
@@ -433,15 +438,15 @@ bxdf::Result Anisotropic::reflection(float3 const& h, float n_dot_wi, float n_do
     return {reflection, pdf};
 }
 
-template <typename Layer, typename Fresnel>
-float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+template <typename Fresnel>
+float Anisotropic::reflect(float3 const& wo, float n_dot_wo, float2 alpha, Layer const& layer,
                            Fresnel const& fresnel, float2 xi, bxdf::Sample& result) {
     float const phi     = (2.f * Pi) * xi[0];
     float const sin_phi = std::sin(phi);
     float const cos_phi = std::cos(phi);
 
     float const  t0 = std::sqrt(xi[1] / (1.f - xi[1]));
-    float3 const t1 = layer.a_[0] * cos_phi * layer.t_ + layer.a_[1] * sin_phi * layer.b_;
+    float3 const t1 = alpha[0] * cos_phi * layer.t_ + alpha[1] * sin_phi * layer.b_;
 
     float3 const h = normalize(t0 * t1 + layer.n_);
 
@@ -455,8 +460,12 @@ float Anisotropic::reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
-    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.alpha2_, layer.axy_);
-    float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
+    float2 const alpha2 = alpha * alpha;
+
+    float const axy = alpha[0] * alpha[1];
+
+    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha2, axy);
+    float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, axy);
     float3 const f = fresnel(wo_dot_h);
 
     result.reflection = d * g * f;
