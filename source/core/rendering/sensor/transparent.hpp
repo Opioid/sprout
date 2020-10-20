@@ -33,7 +33,7 @@ class Transparent : public Sensor {
 
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const final;
 
-    void on_resize(int2 dimensions, int32_t num_layers) override;
+    void on_resize(int2 dimensions, int32_t num_layers) final;
 
     struct Pixel {
         float4 color;
