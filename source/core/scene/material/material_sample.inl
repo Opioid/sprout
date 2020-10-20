@@ -132,6 +132,14 @@ inline float3 const& Sample::shading_normal() const {
     return layer_.n_;
 }
 
+inline float3 const& Sample::shading_tangent() const {
+    return layer_.t_;
+}
+
+inline float3 const& Sample::shading_bitangent() const {
+    return layer_.b_;
+}
+
 inline bool Sample::same_hemisphere(float3 const& v) const {
     return dot(geo_n_, v) > 0.f;
 }

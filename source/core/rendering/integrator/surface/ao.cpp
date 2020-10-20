@@ -55,13 +55,11 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         float2 const sample = sampler_->generate_sample_2D(worker.rng());
 
-        //		float3 ws = isec.geo.tangent_to_world(hs);
+        float3 const& t = mat_sample.shading_tangent();
+        float3 const& b = mat_sample.shading_bitangent();
+        float3 const& n = mat_sample.shading_normal();
 
-        float3 const& n = mat_sample.interpolated_normal();
-
-        auto const tb = orthonormal_basis(n);
-
-        float3 const ws = sample_oriented_hemisphere_cosine(sample, tb.a, tb.b, n);
+        float3 const ws = sample_oriented_hemisphere_cosine(sample, t, b, n);
 
         occlusion_ray.set_direction(ws);
 

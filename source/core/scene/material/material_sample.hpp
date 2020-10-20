@@ -85,6 +85,8 @@ class Sample {
     float3 const& geometric_normal() const;
     float3 const& interpolated_normal() const;
     float3 const& shading_normal() const;
+    float3 const& shading_tangent() const;
+    float3 const& shading_bitangent() const;
 
     bool same_hemisphere(float3 const& v) const;
 
