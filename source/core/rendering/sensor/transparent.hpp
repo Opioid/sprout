@@ -35,13 +35,11 @@ class Transparent : public Sensor {
 
     void on_resize(int2 dimensions, int32_t num_layers) final;
 
-    struct Pixel {
-        float4 color;
-        float  weight;
-    };
+    float* layer_weights_;
+    float* pixel_weights_;
 
-    Pixel* layers_;
-    Pixel* pixels_;
+    float4* layers_;
+    float4* pixels_;
 };
 
 }  // namespace rendering::sensor

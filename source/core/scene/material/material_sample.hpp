@@ -66,8 +66,6 @@ class Sample {
 
     virtual void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const = 0;
 
-    float3 const& radiance() const;
-
     bool is_pure_emissive() const;
 
     bool is_translucent() const;
@@ -78,15 +76,17 @@ class Sample {
 
     float3 offset_p(float3 const& p, float3 const& wi, bool subsurface) const;
 
-    float3 const& wo() const;
-
-    float clamp_geo_n_dot(float3 const& v) const;
-
     float3 const& geometric_normal() const;
     float3 const& interpolated_normal() const;
     float3 const& shading_normal() const;
     float3 const& shading_tangent() const;
     float3 const& shading_bitangent() const;
+
+    float3 const& wo() const;
+
+    float3 const& radiance() const;
+
+    float clamp_geo_n_dot(float3 const& v) const;
 
     bool same_hemisphere(float3 const& v) const;
 

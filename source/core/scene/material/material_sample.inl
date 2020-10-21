@@ -76,10 +76,6 @@ inline Sample::Sample() : radiance_(0.f), properties_(Property::Can_evaluate) {}
 
 inline Sample::~Sample() = default;
 
-inline float3 const& Sample::radiance() const {
-    return radiance_;
-}
-
 inline bool Sample::is_pure_emissive() const {
     return properties_.is(Property::Pure_emissive);
 }
@@ -112,14 +108,6 @@ inline float3 Sample::offset_p(float3 const& p, float3 const& wi, bool subsurfac
     return offset_ray(p, same_hemisphere(wi) ? geo_n_ : -geo_n_);
 }
 
-inline float3 const& Sample::wo() const {
-    return wo_;
-}
-
-inline float Sample::clamp_geo_n_dot(float3 const& v) const {
-    return clamp_dot(geo_n_, v);
-}
-
 inline float3 const& Sample::geometric_normal() const {
     return geo_n_;
 }
@@ -138,6 +126,18 @@ inline float3 const& Sample::shading_tangent() const {
 
 inline float3 const& Sample::shading_bitangent() const {
     return layer_.b_;
+}
+
+inline float3 const& Sample::wo() const {
+    return wo_;
+}
+
+inline float3 const& Sample::radiance() const {
+    return radiance_;
+}
+
+inline float Sample::clamp_geo_n_dot(float3 const& v) const {
+    return clamp_dot(geo_n_, v);
 }
 
 inline bool Sample::same_hemisphere(float3 const& v) const {
