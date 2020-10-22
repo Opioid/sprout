@@ -18,6 +18,8 @@ namespace light {
 class Light;
 
 struct Build_node {
+    void count_max_split_unitl(uint32_t depth, Build_node* nodes, uint32_t& splits);
+
     AABB bounds;
 
     float4 cone;
@@ -97,6 +99,7 @@ class Tree {
     float infinite_guard_;
 
     uint32_t infinite_end_;
+    uint32_t infinite_depth_bias_;
     uint32_t num_lights_;
     uint32_t num_infinite_lights_;
     uint32_t num_nodes_;

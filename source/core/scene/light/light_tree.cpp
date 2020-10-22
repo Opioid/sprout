@@ -14,6 +14,21 @@
 
 namespace scene::light {
 
+void Build_node::count_max_split_unitl(uint32_t depth, Build_node* nodes, uint32_t& splits) {
+    if (0 == middle) {
+        if (depth < (Tree::Max_split_depth - ((num_lights - 1) >> 1))) {
+            splits += num_lights;
+        }
+    } else {
+        if (depth == Tree::Max_split_depth - 1) {
+            splits += 2;
+        } else {
+            nodes[children_or_light].count_max_split_unitl(depth + 1, nodes, splits);
+            nodes[children_or_light + 1].count_max_split_unitl(depth + 1, nodes, splits);
+        }
+    }
+}
+
 class Traversal_stack {
   public:
     Traversal_stack() = default;
@@ -339,14 +354,22 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
                         bool split, Scene const& scene, Lights& lights) const {
     lights.clear();
 
-    float const ip = infinite_weight_;
+    float ip = 0.f;
 
-    if (random < infinite_guard_) {
-        if (uint32_t len = num_infinite_lights_; split && len < Max_lights) {
-            for (uint32_t i = 0; i < len; ++i) {
-                lights.push_back({light_mapping_[i], ip});
-            }
-        } else {
+    uint32_t depth_bias = 0;
+
+    uint32_t const num_infinite_lights = num_infinite_lights_;
+
+    if (split && num_infinite_lights < Max_lights - 1) {
+        depth_bias = infinite_depth_bias_;
+
+        for (uint32_t i = 0; i < num_infinite_lights; ++i) {
+            lights.push_back({light_mapping_[i], 1.f});
+        }
+    } else {
+        ip = infinite_weight_;
+
+        if (random < infinite_guard_) {
             auto const l = infinite_light_distribution_.sample_discrete(random);
 
             float const pdf = l.pdf * ip;
@@ -354,16 +377,16 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
             SOFT_ASSERT(pdf > 0.f);
 
             lights.push_back({light_mapping_[l.offset], pdf});
-        }
 
-        return;
+            return;
+        }
     }
 
     float const pdf = 1.f - ip;
 
     Traversal_stack stack;
 
-    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, 0};
+    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, depth_bias};
 
     stack.push(t);
 
@@ -427,14 +450,22 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
                         Scene const& scene, Lights& lights) const {
     lights.clear();
 
-    float const ip = infinite_weight_;
+    float ip = 0.f;
 
-    if (random < infinite_guard_) {
-        if (uint32_t len = num_infinite_lights_; split && len < Max_lights) {
-            for (uint32_t i = 0; i < len; ++i) {
-                lights.push_back({light_mapping_[i], ip});
-            }
-        } else {
+    uint32_t depth_bias = 0;
+
+    uint32_t const num_infinite_lights = num_infinite_lights_;
+
+    if (split && num_infinite_lights < Max_lights - 1) {
+        depth_bias = infinite_depth_bias_;
+
+        for (uint32_t i = 0; i < num_infinite_lights; ++i) {
+            lights.push_back({light_mapping_[i], 1.f});
+        }
+    } else {
+        ip = infinite_weight_;
+
+        if (random < infinite_guard_) {
             auto const l = infinite_light_distribution_.sample_discrete(random);
 
             float const pdf = l.pdf * ip;
@@ -442,9 +473,9 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
             SOFT_ASSERT(pdf > 0.f);
 
             lights.push_back({light_mapping_[l.offset], pdf});
-        }
 
-        return;
+            return;
+        }
     }
 
     float3 const dir = normalize(p0 - p1);
@@ -453,7 +484,7 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
 
     Traversal_stack stack;
 
-    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, 0};
+    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, depth_bias};
 
     stack.push(t);
 
@@ -515,23 +546,27 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
 
 float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, bool split, uint32_t id,
                 Scene const& scene) const {
-    float const ip = infinite_weight_;
-
     uint32_t const lo = light_orders_[id];
 
-    if (lo < infinite_end_) {
-        if (split && num_infinite_lights_ < Max_lights) {
-            return ip;
-        }
+    uint32_t const num_infinite_lights = num_infinite_lights_;
 
-        return ip * infinite_light_distribution_.pdf(lo);
+    bool const split_infinite = split && num_infinite_lights < Max_lights - 1;
+
+    if (lo < infinite_end_) {
+        if (split_infinite) {
+            return 1.f;
+        } else {
+            return infinite_weight_ * infinite_light_distribution_.pdf(lo);
+        }
     }
+
+    float const ip = split_infinite ? 0.f : infinite_weight_;
 
     float pdf = 1.f - ip;
 
     SOFT_ASSERT(pdf > 0.f);
 
-    for (uint32_t nid = 0, depth = 0;; ++depth) {
+    for (uint32_t nid = 0, depth = infinite_depth_bias_;; ++depth) {
         Node const& node = nodes_[nid];
 
         if (node.middle > 0) {
@@ -658,6 +693,8 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
 
     uint32_t const num_finite_lights = scene.num_lights() - num_infinite_lights;
 
+    uint32_t infinite_depth_bias = 0;
+
     if (num_finite_lights > 0) {
         delete[] build_nodes_;
 
@@ -681,7 +718,20 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
 
         tree.allocate_nodes(current_node_);
         serialize(tree.nodes_);
+
+        uint32_t max_splits = 0;
+        build_nodes_[0].count_max_split_unitl(0, build_nodes_, max_splits);
+
+        if (num_infinite_lights > 0 && num_infinite_lights < Tree::Max_lights - 1) {
+            uint32_t const left = Tree::Max_lights - max_splits;
+            if (left < num_infinite_lights) {
+                infinite_depth_bias = std::max(
+                    uint32_t(std::ceil(std::log2(num_infinite_lights - left))), 1u);
+            }
+        }
     }
+
+    tree.infinite_depth_bias_ = infinite_depth_bias;
 
     float const p0 = infinite_total_power;
     float const p1 = 0 == num_finite_lights ? 0.f : build_nodes_[0].power;
