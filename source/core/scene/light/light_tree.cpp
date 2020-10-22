@@ -767,9 +767,10 @@ static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end
 
     uint32_t const len = end - begin;
 
-    std::sort(candidates, candidates + len - 1,
-              [](Tree_builder::Split_candidate const& a,
-                 Tree_builder::Split_candidate const& b) noexcept { return a.weight < b.weight; });
+    using SC = Tree_builder::Split_candidate;
+
+    std::nth_element(candidates, candidates, candidates + len - 1,
+                     [](SC const& a, SC const& b) noexcept { return a.weight < b.weight; });
 }
 
 static float cone_importance(float cos) {
