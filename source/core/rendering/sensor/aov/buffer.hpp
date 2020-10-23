@@ -19,6 +19,8 @@ public:
 
     void add_pixel(int32_t id, float4 const& value, float weight, Property aov);
 
+    float4 value(int32_t id, Property aov) const;
+
 private:
 
     uint32_t len_;

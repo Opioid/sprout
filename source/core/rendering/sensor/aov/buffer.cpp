@@ -33,4 +33,12 @@ void Buffer::add_pixel(int32_t id, float4 const& value, float weight, Property a
     }
 }
 
+float4 Buffer::value(int32_t id, Property aov) const {
+    if (Property::Shading_normal == aov) {
+        return float4(shading_normal_[id], 0.f);
+    }
+
+    return float4(0.f);
+}
+
 }

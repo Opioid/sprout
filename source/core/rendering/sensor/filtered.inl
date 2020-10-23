@@ -4,6 +4,7 @@
 #include "base/math/vector4.inl"
 #include "filtered.hpp"
 #include "sampler/camera_sample.hpp"
+#include "aov/value.hpp"
 
 namespace rendering::sensor {
 
@@ -35,9 +36,9 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 con
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
         if ((uint32_t(pixel[0] - isolated[0]) <= uint32_t(isolated[2])) &
             (uint32_t(pixel[1] - isolated[1]) <= uint32_t(isolated[3]))) {
-            Base::add_pixel(pixel, value, weight, aov);
+            Base::add_pixeli(pixel, value, weight, aov);
         } else {
-            Base::add_pixel_atomic(pixel, value, weight, aov);
+            Base::add_pixel_atomici(pixel, value, weight, aov);
         }
     }
 }
@@ -220,6 +221,10 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
     Filtered_base::add_weighted(int2(x, y + 2), wx2 * wy4, clamped, isolated, bounds);
     Filtered_base::add_weighted(int2(x + 1, y + 2), wx3 * wy4, clamped, isolated, bounds);
     Filtered_base::add_weighted(int2(x + 2, y + 2), wx4 * wy4, clamped, isolated, bounds);
+
+    {
+        Filtered_base::add_weighted(int2(x, y), 1.f, aov.value(), aov::Property::Shading_normal, isolated, bounds);
+    }
 }
 
 template <class Base, class Clamp, class F>

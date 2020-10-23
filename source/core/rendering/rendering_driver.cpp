@@ -186,7 +186,13 @@ void Driver::export_frame(uint32_t frame, Exporters& exporters) {
         e->write(target_, aov::Property::Default, frame, threads_);
     }
 
+    {
     view_->camera->sensor().resolve(aov::Property::Shading_normal, threads_, target_);
+
+    for (auto& e : exporters) {
+        e->write(target_, aov::Property::Shading_normal, frame, threads_);
+    }
+    }
 
     auto const export_duration = chrono::seconds_since(export_start);
     logging::info("Export time %f s", export_duration);

@@ -3,6 +3,10 @@
 
 namespace rendering::sensor::aov {
 
+void Value::clear() {
+    v_ = float3(0.);
+}
+
 void Value::insert(float3 const& v) {
     v_ = v;
 }

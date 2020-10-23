@@ -64,11 +64,11 @@ class Sensor {
   protected:
     virtual void add_pixel(int2 pixel, float4 const& color, float weight) = 0;
 
-    void add_pixel(int2 pixel, float4 const& value, float weight, aov::Property aov);
+    void add_pixeli(int2 pixel, float4 const& value, float weight, aov::Property aov);
 
     virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
 
-    void add_pixel_atomic(int2 pixel, float4 const& value, float weight, aov::Property aov);
+    void add_pixel_atomici(int2 pixel, float4 const& value, float weight, aov::Property aov);
 
     virtual void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
 
@@ -76,7 +76,7 @@ class Sensor {
 
     virtual void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const = 0;
 
-    void resolve(int32_t begin, int32_t end, aov::Property aov, image::Float4& target) const;
+    virtual void resolve(int32_t begin, int32_t end, aov::Property aov, image::Float4& target) const = 0;
 
     virtual void on_resize(int2 dimensions, int32_t num_layers) = 0;
 

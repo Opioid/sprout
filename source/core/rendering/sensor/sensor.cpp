@@ -59,7 +59,7 @@ void Sensor::clear(float weight) {
     aov_.clear();
 }
 
-void Sensor::add_pixel(int2 pixel, float4 const& value, float weight, aov::Property aov) {
+void Sensor::add_pixeli(int2 pixel, float4 const& value, float weight, aov::Property aov) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
@@ -67,7 +67,7 @@ void Sensor::add_pixel(int2 pixel, float4 const& value, float weight, aov::Prope
     aov_.add_pixel(id, value, weight, aov);
 }
 
-void Sensor::add_pixel_atomic(int2 pixel, float4 const& value, float weight, aov::Property aov) {
+void Sensor::add_pixel_atomici(int2 pixel, float4 const& value, float weight, aov::Property aov) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];

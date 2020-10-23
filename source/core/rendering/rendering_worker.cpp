@@ -114,6 +114,8 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
             int2 const pixel(x, y);
 
             for (uint32_t i = num_samples; i > 0; --i) {
+                aov.clear();
+
                 auto const sample = sampler_->generate_camera_sample(rng(), pixel);
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {

@@ -71,6 +71,16 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
     }
 }
 
+void Opaque::resolve(int32_t begin, int32_t end, aov::Property aov, image::Float4& target) const {
+    for (int32_t i = begin; i < end; ++i) {
+        float const weight = pixels_[i][3];
+
+        float4 const color = aov_.value(i, aov) / weight;
+
+        target.store(i, color);
+    }
+}
+
 void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const {
     for (int32_t i = begin; i < end; ++i) {
         auto const& value = pixels_[i];

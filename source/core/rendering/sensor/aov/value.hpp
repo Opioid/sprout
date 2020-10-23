@@ -9,6 +9,8 @@ namespace rendering::sensor::aov {
 class Value {
 public:
 
+    void clear();
+
     void insert(float3 const& v);
 
     float4 value() const;

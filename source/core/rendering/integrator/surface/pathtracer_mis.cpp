@@ -6,6 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "rendering/sensor/aov/value.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -102,7 +103,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& isec, Worker& worker,
         bool const integrate_photons = (settings_.num_samples == i) &
                                        settings_.photons_not_only_through_specular;
 
-        Result const result = integrate(split_ray, split_isec, worker, integrate_photons);
+        Result const result = integrate(split_ray, split_isec, worker, integrate_photons, aov);
 
         li += result.li;
 
@@ -121,7 +122,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& isec, Worker& worker,
 }
 
 Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, Worker& worker,
-                                                 bool integrate_photons) {
+                                                 bool integrate_photons, AOV& aov) {
     uint32_t const max_bounces = settings_.max_bounces;
 
     Filter filter = Filter::Undefined;
@@ -157,6 +158,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
         // Subsequent hits are handled by MIS.
         if ((0 == i) & same_side) {
             result_li += mat_sample.radiance();
+        }
+
+        if (0 == i) {
+            aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)));
         }
 
         if (mat_sample.is_pure_emissive()) {
