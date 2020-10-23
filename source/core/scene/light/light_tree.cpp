@@ -14,17 +14,19 @@
 
 namespace scene::light {
 
-void Build_node::count_max_split_unitl(uint32_t depth, Build_node* nodes, uint32_t& splits) {
+void Build_node::count_max_split_until(uint32_t depth, Build_node* nodes, uint32_t& splits) {
     if (0 == middle) {
         if (depth < (Tree::Max_split_depth - ((num_lights - 1) >> 1))) {
             splits += num_lights;
+        } else {
+            ++splits;
         }
     } else {
         if (depth == Tree::Max_split_depth - 1) {
             splits += 2;
         } else {
-            nodes[children_or_light].count_max_split_unitl(depth + 1, nodes, splits);
-            nodes[children_or_light + 1].count_max_split_unitl(depth + 1, nodes, splits);
+            nodes[children_or_light].count_max_split_until(depth + 1, nodes, splits);
+            nodes[children_or_light + 1].count_max_split_until(depth + 1, nodes, splits);
         }
     }
 }
@@ -720,7 +722,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
         serialize(tree.nodes_);
 
         uint32_t max_splits = 0;
-        build_nodes_[0].count_max_split_unitl(0, build_nodes_, max_splits);
+        build_nodes_[0].count_max_split_until(0, build_nodes_, max_splits);
 
         if (num_infinite_lights > 0 && num_infinite_lights < Tree::Max_lights - 1) {
             uint32_t const left = Tree::Max_lights - max_splits;

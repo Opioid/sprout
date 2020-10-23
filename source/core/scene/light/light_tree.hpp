@@ -18,7 +18,7 @@ namespace light {
 class Light;
 
 struct Build_node {
-    void count_max_split_unitl(uint32_t depth, Build_node* nodes, uint32_t& splits);
+    void count_max_split_until(uint32_t depth, Build_node* nodes, uint32_t& splits);
 
     AABB bounds;
 
