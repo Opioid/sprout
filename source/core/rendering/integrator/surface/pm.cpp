@@ -57,7 +57,7 @@ void PM::start_pixel(RNG& rng) {
     }
 }
 
-float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack) {
+float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack, AOV& aov) {
     static uint32_t constexpr Max_bounces = 16;
 
     worker.reset_interface_stack(initial_stack);

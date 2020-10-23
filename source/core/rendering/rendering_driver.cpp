@@ -177,12 +177,16 @@ void Driver::postprocess() {
     }
 }
 
-void Driver::export_frame(uint32_t frame, Exporters& exporters) const {
+void Driver::export_frame(uint32_t frame, Exporters& exporters) {
+    using namespace sensor;
+
     auto const export_start = std::chrono::high_resolution_clock::now();
 
     for (auto& e : exporters) {
-        e->write(target_, frame, threads_);
+        e->write(target_, aov::Property::Default, frame, threads_);
     }
+
+    view_->camera->sensor().resolve(aov::Property::Shading_normal, threads_, target_);
 
     auto const export_duration = chrono::seconds_since(export_start);
     logging::info("Export time %f s", export_duration);

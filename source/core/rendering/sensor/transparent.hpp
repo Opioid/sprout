@@ -14,8 +14,6 @@ class Transparent : public Sensor {
 
     void set_layer(int32_t layer) final;
 
-    void clear(float weight) final;
-
     void set_weights(float weight) final;
 
     void fix_zero_weights() final;
@@ -34,6 +32,8 @@ class Transparent : public Sensor {
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const final;
 
     void on_resize(int2 dimensions, int32_t num_layers) final;
+
+        void on_clear(float weight) final;
 
     float* layer_weights_;
     float* pixel_weights_;
