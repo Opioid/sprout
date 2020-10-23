@@ -28,7 +28,7 @@ void Whitted::start_pixel(RNG& rng) {
 }
 
 float4 Whitted::li(Ray& ray, Intersection& isec, Worker& worker,
-                   Interface_stack const& initial_stack, AOV& aov) {
+                   Interface_stack const& initial_stack) {
     worker.reset_interface_stack(initial_stack);
 
     //	float3 result(0.f);

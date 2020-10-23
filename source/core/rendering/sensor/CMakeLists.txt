@@ -1,4 +1,3 @@
-add_subdirectory(aov)
 add_subdirectory(filter)
 
 target_sources(core

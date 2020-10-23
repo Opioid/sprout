@@ -25,7 +25,7 @@ class alignas(64) Pathtracer final : public Integrator {
     void start_pixel(RNG& rng) final;
 
     float4 li(Ray& ray, Intersection& isec, Worker& worker,
-              Interface_stack const& initial_stack, AOV& aov) final;
+              Interface_stack const& initial_stack) final;
 
   private:
     float4 integrate(Ray& ray, Intersection& isec, Worker& worker);

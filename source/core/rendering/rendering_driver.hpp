@@ -61,13 +61,15 @@ class Driver {
 
     void postprocess();
 
-    void export_frame(uint32_t frame, Exporters& exporters);
+    void export_frame(uint32_t frame, Exporters& exporters) const;
 
   private:
     void render_frame_backward(uint32_t frame);
+
     void render_frame_backward(uint32_t frame, uint32_t iteration);
 
     void render_frame_forward(uint32_t frame);
+
     void render_frame_forward(uint32_t frame, uint32_t iteration);
 
     void bake_photons(uint32_t frame);

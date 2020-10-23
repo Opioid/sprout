@@ -2,7 +2,6 @@
 #define SU_CORE_RENDERING_SENSOR_FILTERED_HPP
 
 #include "base/math/vector.hpp"
-#include "aov/property.hpp"
 
 namespace sampler {
 struct Camera_sample;
@@ -10,10 +9,6 @@ struct Camera_sample_to;
 }  // namespace sampler
 
 namespace rendering::sensor {
-
-namespace aov {
-class Value;
-}
 
 namespace filter {
 class Filter;
@@ -28,9 +23,6 @@ class alignas(64) Filtered : public Base {
 
   protected:
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& isolated,
-                      int4 const& bounds);
-
-    void add_weighted(int2 pixel, float weight, float4 const& value, aov::Property aov, int4 const& isolated,
                       int4 const& bounds);
 
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& bounds);
@@ -56,7 +48,7 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_1p0(Clamp const& clamp, F&& filter);
 
-    void add_sample(Sample const& sample, float4 const&, aov::Value const& aov, int4 const& isolated, int2 offset,
+    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
@@ -73,7 +65,7 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_2p0(Clamp const& clamp, F&& filter);
 
-    void add_sample(Sample const& sample, float4 const&, aov::Value const& aov, int4 const& isolated, int2 offset,
+    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
@@ -90,7 +82,7 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
 
     Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius);
 
-    void add_sample(Sample const& sample, float4 const&, aov::Value const& aov, int4 const& isolated, int2 offset,
+    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
                     int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,

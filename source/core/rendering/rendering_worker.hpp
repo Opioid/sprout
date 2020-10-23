@@ -26,10 +26,6 @@ namespace rendering {
 
 enum class Event;
 
-namespace sensor::aov {
-class Value;
-}
-
 namespace integrator {
 
 namespace particle {
@@ -71,7 +67,6 @@ class alignas(64) Worker : public scene::Worker {
     using Photon_map          = integrator::particle::photon::Map;
     using Photon_mapper       = integrator::particle::photon::Mapper;
     using Particle_importance = integrator::particle::Importance_cache;
-    using AOV = rendering::sensor::aov::Value;
 
     Worker();
 
@@ -88,7 +83,7 @@ class alignas(64) Worker : public scene::Worker {
 
     void particles(uint32_t frame, uint64_t offset, ulong2 const& range);
 
-    float4 li(Ray& ray, Interface_stack const& interface_stack, AOV& aov);
+    float4 li(Ray& ray, Interface_stack const& interface_stack);
 
     void particle_li(uint32_t frame, Interface_stack const& interface_stack);
 

@@ -10,7 +10,7 @@ Statistics::Statistics() = default;
 
 Statistics::~Statistics() = default;
 
-void Statistics::write(image::Float4 const& image, AOV /*aov*/, uint32_t frame, Threads& /*threads*/) {
+void Statistics::write(image::Float4 const& image, uint32_t frame, Threads& /*threads*/) {
     logging::info("Frame: " + string::to_string(frame));
 
     float3 max_rgb;

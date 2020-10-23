@@ -15,6 +15,13 @@ void Opaque::set_layer(int32_t layer) {
     pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
 }
 
+void Opaque::clear(float weight) {
+    auto const d = dimensions();
+    for (int32_t i = 0, len = d[0] * d[1] * num_layers_; i < len; ++i) {
+        pixels_[i] = float4(0.f, 0.f, 0.f, weight);
+    }
+}
+
 void Opaque::set_weights(float weight) {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
@@ -94,13 +101,6 @@ void Opaque::on_resize(int2 dimensions, int32_t num_layers) {
         layers_ = new float4[uint32_t(len)];
 
         pixels_ = layers_;
-    }
-}
-
-void Opaque::on_clear(float weight) {
-    auto const d = dimensions();
-    for (int32_t i = 0, len = d[0] * d[1] * num_layers_; i < len; ++i) {
-        pixels_[i] = float4(0.f, 0.f, 0.f, weight);
     }
 }
 

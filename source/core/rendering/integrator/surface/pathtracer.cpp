@@ -62,7 +62,7 @@ void Pathtracer::start_pixel(RNG& rng) {
 }
 
 float4 Pathtracer::li(Ray& ray, Intersection& isec, Worker& worker,
-                      Interface_stack const& initial_stack, AOV& aov) {
+                      Interface_stack const& initial_stack) {
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
 
     float4 result = float4(0.f);

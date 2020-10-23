@@ -87,7 +87,7 @@ void Pathtracer_DL::start_pixel(RNG& rng) {
 }
 
 float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
-                         Interface_stack const& initial_stack, AOV& aov) {
+                         Interface_stack const& initial_stack) {
     worker.reset_interface_stack(initial_stack);
 
     Filter filter = Filter::Undefined;

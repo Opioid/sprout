@@ -23,6 +23,13 @@ void Transparent::set_layer(int32_t layer) {
     pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
 }
 
+void Transparent::clear(float weight) {
+    auto const d = dimensions();
+    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+        pixel_weights_[i] = weight;
+        pixels_[i]        = float4(0.f);
+    }
+}
 
 void Transparent::set_weights(float weight) {
     auto const d = dimensions();
@@ -108,15 +115,6 @@ void Transparent::on_resize(int2 dimensions, int32_t num_layers) {
 
         layers_ = new float4[len];
         pixels_ = layers_;
-    }
-}
-
-
-void Transparent::on_clear(float weight) {
-    auto const d = dimensions();
-    for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
-        pixel_weights_[i] = weight;
-        pixels_[i]        = float4(0.f);
     }
 }
 
