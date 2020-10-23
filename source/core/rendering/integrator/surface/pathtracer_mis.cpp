@@ -86,7 +86,7 @@ void Pathtracer_MIS::start_pixel(RNG& rng) {
 }
 
 float4 Pathtracer_MIS::li(Ray& ray, Intersection& isec, Worker& worker,
-                          Interface_stack const& initial_stack) {
+                          Interface_stack const& initial_stack, AOV& aov) {
     float4 li(0.f);
     float3 photon_li(0.f);
 

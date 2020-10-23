@@ -24,7 +24,7 @@ class alignas(64) PM final : public Integrator {
     void start_pixel(RNG& rng) final;
 
     float4 li(Ray& ray, Intersection& isec, Worker& worker,
-              Interface_stack const& initial_stack) final;
+              Interface_stack const& initial_stack, AOV& aov) final;
 
   private:
     sampler::Sampler& material_sampler(uint32_t bounce);

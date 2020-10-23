@@ -11,6 +11,7 @@
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "rendering/sensor/sensor.hpp"
+#include "rendering/sensor/aov/value.hpp"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
@@ -99,6 +100,8 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
 
     uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
 
+    sensor::aov::Value aov;
+
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
         uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
@@ -114,10 +117,10 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
                 auto const sample = sampler_->generate_camera_sample(rng(), pixel);
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
-                    float4 const color = li(ray, camera.interface_stack());
-                    sensor.add_sample(sample, color, isolated_bounds, offset, crop);
+                    float4 const color = li(ray, camera.interface_stack(), aov);
+                    sensor.add_sample(sample, color, aov, isolated_bounds, offset, crop);
                 } else {
-                    sensor.add_sample(sample, float4(0.f), isolated_bounds, offset, crop);
+                    sensor.add_sample(sample, float4(0.f), aov, isolated_bounds, offset, crop);
                 }
             }
         }
@@ -138,7 +141,7 @@ void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     }
 }
 
-float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
+float4 Worker::li(Ray& ray, Interface_stack const& interface_stack, AOV& aov) {
     Intersection isec;
 
     if (!interface_stack.empty()) {
@@ -154,7 +157,7 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
 
         Interface_stack const temp_stack = interface_stack_;
 
-        float4 const li = surface_integrator_->li(ray, isec, *this, temp_stack);
+        float4 const li = surface_integrator_->li(ray, isec, *this, temp_stack, aov);
 
         SOFT_ASSERT(all_finite_and_positive(li));
 
@@ -162,7 +165,7 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
     }
 
     if (intersect_and_resolve_mask(ray, isec, Filter::Undefined)) {
-        float4 const li = surface_integrator_->li(ray, isec, *this, interface_stack);
+        float4 const li = surface_integrator_->li(ray, isec, *this, interface_stack, aov);
 
         SOFT_ASSERT(all_finite_and_positive(li));
 
