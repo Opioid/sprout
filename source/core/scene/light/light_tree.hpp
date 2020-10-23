@@ -18,7 +18,7 @@ namespace light {
 class Light;
 
 struct Build_node {
-    void count_max_split_until(uint32_t depth, Build_node* nodes, uint32_t& splits);
+    void count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits);
 
     AABB bounds;
 
@@ -35,7 +35,10 @@ struct Build_node {
 class Tree {
   public:
     static uint32_t constexpr Max_split_depth = 4;
-    static uint32_t constexpr Max_lights      = 1 << Max_split_depth;
+
+    // (Max_split_depth + 1) to have space for worst case where we want to split on leaf node,
+    // which can have up to 4 lights
+    static uint32_t constexpr Max_lights = 1 << (Max_split_depth + 1);
 
     static uint32_t constexpr max_lights(uint32_t num_lights, bool split) {
         return split ? std::min(Max_lights, num_lights) : 1;
