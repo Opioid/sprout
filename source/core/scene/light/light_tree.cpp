@@ -368,6 +368,10 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
         for (uint32_t i = 0; i < num_infinite_lights; ++i) {
             lights.push_back({light_mapping_[i], 1.f});
         }
+
+        if (0 == num_nodes_) {
+            return;
+        }
     } else {
         ip = infinite_weight_;
 
@@ -464,6 +468,10 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
 
         for (uint32_t i = 0; i < num_infinite_lights; ++i) {
             lights.push_back({light_mapping_[i], 1.f});
+        }
+
+        if (0 == num_nodes_) {
+            return;
         }
     } else {
         ip = infinite_weight_;
@@ -733,6 +741,8 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
                     uint32_t(std::ceil(std::log2(num_infinite_lights - left))), 1u);
             }
         }
+    } else {
+        tree.allocate_nodes(0);
     }
 
     tree.infinite_depth_bias_ = infinite_depth_bias;
