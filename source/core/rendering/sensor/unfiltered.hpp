@@ -10,6 +10,10 @@ struct Camera_sample_to;
 
 namespace rendering::sensor {
 
+namespace aov {
+class Value;
+}
+
 template <class Base, class Clamp>
 class Unfiltered final : public Base {
   public:

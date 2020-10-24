@@ -17,7 +17,7 @@ class Value {
         uint8_t m[4] = {255, 255, 255, 255};
     };
 
-    void init(Mapping mapping, uint32_t num_slots, Property const* const properties);
+    void init(Mapping mapping, uint32_t num_slots);
 
     bool empty() const;
 
@@ -40,8 +40,7 @@ class Value {
     uint32_t num_slots_;
 
     struct alignas(16) Slot {
-        float    v[3];
-        Property p;
+        float v[3];
     };
 
     Slot* slots_;
@@ -52,6 +51,8 @@ class Value_pool {
     Value_pool();
 
     ~Value_pool();
+
+    void configure(uint32_t num_slots, Property const* properties);
 
     void init(uint32_t num_values);
 

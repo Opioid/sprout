@@ -1,6 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_UNFILTERED_INL
 #define SU_CORE_RENDERING_SENSOR_UNFILTERED_INL
 
+#include "aov/value.inl"
 #include "base/math/vector4.inl"
 #include "sampler/camera_sample.hpp"
 #include "unfiltered.hpp"
@@ -14,7 +15,15 @@ template <class Base, class Clamp>
 void Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4 const& color,
                                          aov::Value const& aov, int4 const& /*isolated*/,
                                          int2              offset, int4 const& /*bounds*/) {
-    Base::add_pixel(offset + sample.pixel, clamp_.clamp(color), 1.f);
+    int2 const pixel = offset + sample.pixel;
+
+    Base::add_pixel(pixel, clamp_.clamp(color), 1.f);
+
+    for (uint32_t i = 0, len = aov.num_slots(); i < len; ++i) {
+        auto const r = aov.value(i);
+
+        Base::add_aov(pixel, i, r, 1.f);
+    }
 }
 
 template <class Base, class Clamp>

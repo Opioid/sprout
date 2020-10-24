@@ -9,18 +9,12 @@ Value::~Value() {
     delete[] slots_;
 }
 
-void Value::init(Mapping mapping, uint32_t num_slots, Property const* const properties) {
+void Value::init(Mapping mapping, uint32_t num_slots) {
     mapping_ = mapping;
 
     num_slots_ = num_slots;
 
     slots_ = new Slot[num_slots];
-
-    for (uint32_t i = 0; i < num_slots; ++i) {
-        auto const p = properties[i];
-
-        slots_[i].p = p;
-    }
 }
 
 void Value::clear() {
@@ -33,31 +27,37 @@ void Value::clear() {
 
 Value_pool::Value_pool() : values_(nullptr) {}
 
-void Value_pool::init(uint32_t num_values) {
-    values_ = new Value[num_values];
+Value_pool::~Value_pool() {
+    delete[] properties_;
+    delete[] values_;
+}
 
-    uint32_t const num_slots = 2;
+void Value_pool::configure(uint32_t num_slots, Property const* properties) {
+    num_slots_ = num_slots;
+
+    properties_ = new Property[num_slots];
+
+    for (uint32_t i = 0; i < num_slots; ++i) {
+        properties_[i] = properties[i];
+    }
 
     for (uint32_t i = 0; i < 4; ++i) {
         mapping_.m[i] = 255;
     }
 
-    properties_ = new Property[num_slots];
-
-    properties_[0] = Property::Geometric_normal;
-    properties_[1] = Property::Shading_normal;
-
     for (uint32_t i = 0; i < num_slots; ++i) {
-        auto const p = properties_[i];
+        auto const p = properties[i];
 
         mapping_.m[uint32_t(p)] = i;
     }
+}
+
+void Value_pool::init(uint32_t num_values) {
+    values_ = new Value[num_values];
 
     for (uint32_t i = 0; i < num_values; ++i) {
-        values_[i].init(mapping_, num_slots, properties_);
+        values_[i].init(mapping_, num_slots_);
     }
-
-    num_slots_ = num_slots;
 }
 
 Value::Mapping const& Value_pool::mapping() const {
@@ -70,11 +70,6 @@ uint32_t Value_pool::num_slots() const {
 
 Property Value_pool::property(uint32_t slot) const {
     return properties_[slot];
-}
-
-Value_pool::~Value_pool() {
-    delete[] properties_;
-    delete[] values_;
 }
 
 Value* Value_pool::get(uint32_t id) const {
