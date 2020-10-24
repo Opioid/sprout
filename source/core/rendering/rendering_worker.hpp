@@ -28,7 +28,8 @@ enum class Event;
 
 namespace sensor::aov {
 class Value;
-}
+class Value_pool;
+}  // namespace sensor::aov
 
 namespace integrator {
 
@@ -71,7 +72,8 @@ class alignas(64) Worker : public scene::Worker {
     using Photon_map          = integrator::particle::photon::Map;
     using Photon_mapper       = integrator::particle::photon::Mapper;
     using Particle_importance = integrator::particle::Importance_cache;
-    using AOV = rendering::sensor::aov::Value;
+    using AOV                 = sensor::aov::Value;
+    using AOV_pool            = sensor::aov::Value_pool;
 
     Worker();
 
@@ -81,7 +83,8 @@ class alignas(64) Worker : public scene::Worker {
               Surface_pool const* surfaces, Volume_pool const& volumes,
               sampler::Pool const& samplers, Photon_map* photon_map,
               take::Photon_settings const& photon_settings_, Lighttracer_pool const* lighttracers,
-              uint32_t num_particles_per_chunk, Particle_importance* particle_importance);
+              uint32_t num_particles_per_chunk, AOV_pool const& aovs,
+              Particle_importance* particle_importance);
 
     void render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                 uint32_t num_samples);
@@ -120,6 +123,8 @@ class alignas(64) Worker : public scene::Worker {
     Photon_map* photon_map_ = nullptr;
 
     integrator::particle::Lighttracer* lighttracer_ = nullptr;
+
+    AOV* aov_ = nullptr;
 
     Particle_importance* particle_importance_ = nullptr;
 };

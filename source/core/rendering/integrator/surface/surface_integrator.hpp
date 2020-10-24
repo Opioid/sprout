@@ -19,7 +19,7 @@ namespace integrator::surface {
 class Integrator : public integrator::Integrator {
   public:
     using Interface_stack = scene::prop::Interface_stack;
-    using AOV = sensor::aov::Value;
+    using AOV             = sensor::aov::Value;
 
     Integrator();
 

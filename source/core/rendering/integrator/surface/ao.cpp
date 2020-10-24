@@ -36,7 +36,8 @@ void AO::start_pixel(RNG& rng) {
     sampler_->start_pixel(rng);
 }
 
-float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack, AOV& aov) {
+float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV& aov) {
     worker.reset_interface_stack(initial_stack);
 
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);

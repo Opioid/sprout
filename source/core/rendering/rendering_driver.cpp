@@ -45,7 +45,7 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
 
     int2 const d = camera.sensor_dimensions();
 
-    camera.sensor().resize(d, progressive && view.lighttracers ? 2 : 1);
+    camera.sensor().resize(d, progressive && view.lighttracers ? 2 : 1, view.aovs);
 
     target_.resize(d);
 
@@ -87,7 +87,8 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
     for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
         workers_[i].init(i, scene, camera, view.num_samples_per_pixel, view.surface_integrators,
                          *view.volume_integrators, *view.samplers, photon_map, view.photon_settings,
-                         view.lighttracers, Num_particles_per_chunk, &particle_importance_);
+                         view.lighttracers, Num_particles_per_chunk, view.aovs,
+                         &particle_importance_);
     }
 }
 
@@ -183,15 +184,15 @@ void Driver::export_frame(uint32_t frame, Exporters& exporters) {
     auto const export_start = std::chrono::high_resolution_clock::now();
 
     for (auto& e : exporters) {
-        e->write(target_, aov::Property::Default, frame, threads_);
+        e->write(target_, aov::Property::Unknown, frame, threads_);
     }
 
-    {
-    view_->camera->sensor().resolve(aov::Property::Shading_normal, threads_, target_);
+    for (uint32_t i = 0, len = view_->aovs.num_slots(); i < len; ++i) {
+        view_->camera->sensor().resolve(i, threads_, target_);
 
-    for (auto& e : exporters) {
-        e->write(target_, aov::Property::Shading_normal, frame, threads_);
-    }
+        for (auto& e : exporters) {
+            e->write(target_, view_->aovs.property(i), frame, threads_);
+        }
     }
 
     auto const export_duration = chrono::seconds_since(export_start);

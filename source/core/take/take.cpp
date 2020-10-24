@@ -1,5 +1,6 @@
 #include "take.hpp"
 #include "base/memory/array.inl"
+#include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "rendering/integrator/particle/lighttracer.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
@@ -37,6 +38,8 @@ void View::clear() {
 
 void View::init(Threads& threads) {
     if (camera) {
+        aovs.init(threads.num_threads());
+
         pipeline.init(*camera, threads);
 
         uint32_t const spp = num_samples_per_pixel > 0 ? num_samples_per_pixel

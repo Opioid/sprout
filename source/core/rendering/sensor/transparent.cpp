@@ -23,7 +23,6 @@ void Transparent::set_layer(int32_t layer) {
     pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
 }
 
-
 void Transparent::set_weights(float weight) {
     auto const d = dimensions();
     for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
@@ -86,8 +85,12 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) con
     }
 }
 
-void Transparent::resolve(int32_t begin, int32_t end, aov::Property aov, image::Float4& target) const {
+void Transparent::resolve(int32_t begin, int32_t end, uint32_t slot, image::Float4& target) const {
+    for (int32_t i = begin; i < end; ++i) {
+        float3 const color = aov_.value(i, slot) / pixel_weights_[i];
 
+        target.store(i, float4(color, 0.f));
+    }
 }
 
 void Transparent::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const {
@@ -114,7 +117,6 @@ void Transparent::on_resize(int2 dimensions, int32_t num_layers) {
         pixels_ = layers_;
     }
 }
-
 
 void Transparent::on_clear(float weight) {
     auto const d = dimensions();

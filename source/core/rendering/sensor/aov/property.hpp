@@ -3,10 +3,7 @@
 
 namespace rendering::sensor::aov {
 
-enum class Property {
-    Default = 0,
-    Shading_normal
-};
+enum class Property { Geometric_normal = 0, Shading_normal, Unknown };
 
 }
 

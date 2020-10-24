@@ -26,8 +26,7 @@ char read_key() {
 
     DWORD count;
 
-    do
-        ReadConsoleInput(hstdin, &inrec, 1, &count);
+    do ReadConsoleInput(hstdin, &inrec, 1, &count);
     while ((inrec.EventType != KEY_EVENT) || inrec.Event.KeyEvent.bKeyDown);
 
     // Restore the original console mode

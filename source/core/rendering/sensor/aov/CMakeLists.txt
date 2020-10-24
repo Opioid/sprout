@@ -6,4 +6,5 @@
     "property.inl"
    	"value.cpp"
 	"value.hpp"
+    "value.inl"
 	) 

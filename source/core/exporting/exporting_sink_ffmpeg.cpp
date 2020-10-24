@@ -40,7 +40,7 @@ Ffmpeg::~Ffmpeg() {
 }
 
 void Ffmpeg::write(image::Float4 const& image, AOV aov, uint32_t /*frame*/, Threads& threads) {
-    if (!stream_ || AOV::Default != aov) {
+    if (!stream_ || AOV::Unknown != aov) {
         return;
     }
 

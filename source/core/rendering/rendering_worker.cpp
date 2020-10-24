@@ -10,8 +10,8 @@
 #include "rendering/integrator/particle/photon/photon_mapper.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
-#include "rendering/sensor/sensor.hpp"
 #include "rendering/sensor/aov/value.hpp"
+#include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/material.hpp"
@@ -40,7 +40,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
                   Volume_pool const& volumes, sampler::Pool const& samplers, Photon_map* photon_map,
                   take::Photon_settings const& photon_settings,
                   Lighttracer_pool const* lighttracers, uint32_t num_particles_per_chunk,
-                  Particle_importance* particle_importance) {
+                  AOV_pool const& aovs, Particle_importance* particle_importance) {
     scene::Worker::init(scene, camera);
 
     if (surfaces) {
@@ -71,6 +71,8 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
         lighttracer_->prepare(scene, num_particles_per_chunk);
     }
 
+    aov_ = aovs.get(id);
+
     particle_importance_ = particle_importance;
 }
 
@@ -100,7 +102,7 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
 
     uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
 
-    sensor::aov::Value aov;
+    AOV& aov = *aov_;
 
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
         uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;

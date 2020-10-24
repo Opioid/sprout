@@ -1,9 +1,9 @@
 #ifndef SU_CORE_RENDERING_SENSOR_SENSOR_HPP
 #define SU_CORE_RENDERING_SENSOR_SENSOR_HPP
 
+#include "aov/buffer.hpp"
 #include "base/math/vector2.hpp"
 #include "image/typed_image_fwd.hpp"
-#include "aov/buffer.hpp"
 
 namespace thread {
 class Pool;
@@ -17,10 +17,6 @@ struct Camera_sample_to;
 }  // namespace sampler
 
 namespace rendering::sensor {
-
-namespace aov {
-class Value;
-}
 
 class Sensor {
   public:
@@ -37,9 +33,9 @@ class Sensor {
 
     void resolve_accumulate(Threads& threads, image::Float4& target) const;
 
-    void resolve(aov::Property aov, Threads& threads, image::Float4& target) const;
+    void resolve(uint32_t slot, Threads& threads, image::Float4& target) const;
 
-    void resize(int2 dimensions, int32_t num_layers);
+    void resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs);
 
     int32_t filter_radius_int() const;
 
@@ -53,8 +49,8 @@ class Sensor {
 
     virtual void fix_zero_weights() = 0;
 
-    virtual void add_sample(Camera_sample const& sample, float4 const& color, aov::Value const& aov, int4 const& isolated,
-                            int2 offset, int4 const& bounds) = 0;
+    virtual void add_sample(Camera_sample const& sample, float4 const& color, aov::Value const& aov,
+                            int4 const& isolated, int2 offset, int4 const& bounds) = 0;
 
     virtual void splat_sample(Camera_sample_to const& sample, float4 const& color, int2 offset,
                               int4 const& bounds) = 0;
@@ -64,11 +60,11 @@ class Sensor {
   protected:
     virtual void add_pixel(int2 pixel, float4 const& color, float weight) = 0;
 
-    void add_pixeli(int2 pixel, float4 const& value, float weight, aov::Property aov);
-
     virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
 
-    void add_pixel_atomici(int2 pixel, float4 const& value, float weight, aov::Property aov);
+    void add_aov(int2 pixel, uint32_t slot, float3 const& value, float weight);
+
+    void add_aov_atomic(int2 pixel, uint32_t slot, float3 const& value, float weight);
 
     virtual void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
 
@@ -76,7 +72,8 @@ class Sensor {
 
     virtual void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const = 0;
 
-    virtual void resolve(int32_t begin, int32_t end, aov::Property aov, image::Float4& target) const = 0;
+    virtual void resolve(int32_t begin, int32_t end, uint32_t slot,
+                         image::Float4& target) const = 0;
 
     virtual void on_resize(int2 dimensions, int32_t num_layers) = 0;
 

@@ -26,8 +26,8 @@ void Debug::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
 
 void Debug::start_pixel(rnd::Generator& /*rng*/) {}
 
-float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker,
-                 Interface_stack const& initial_stack, AOV& aov) {
+float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+                 AOV& aov) {
     worker.reset_interface_stack(initial_stack);
 
     float3 vector;

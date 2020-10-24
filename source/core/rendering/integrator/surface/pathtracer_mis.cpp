@@ -6,7 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
-#include "rendering/sensor/aov/value.hpp"
+#include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -160,8 +160,11 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             result_li += mat_sample.radiance();
         }
 
-        if (0 == i) {
-            aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)));
+        if (!aov.empty() && 0 == i) {
+            aov.insert(abs(0.5f * (mat_sample.geometric_normal() + 1.f)),
+                       sensor::aov::Property::Geometric_normal);
+            aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)),
+                       sensor::aov::Property::Shading_normal);
         }
 
         if (mat_sample.is_pure_emissive()) {

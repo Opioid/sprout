@@ -29,13 +29,13 @@ class Transparent : public Sensor {
 
     void resolve(int32_t begin, int32_t end, image::Float4& target) const final;
 
-    void resolve(int32_t begin, int32_t end, aov::Property aov, image::Float4& target) const final;
+    void resolve(int32_t begin, int32_t end, uint32_t slot, image::Float4& target) const final;
 
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const final;
 
     void on_resize(int2 dimensions, int32_t num_layers) final;
 
-        void on_clear(float weight) final;
+    void on_clear(float weight) final;
 
     float* layer_weights_;
     float* pixel_weights_;

@@ -24,8 +24,8 @@ class alignas(64) AO final : public Integrator {
 
     void start_pixel(RNG& rng) final;
 
-    float4 li(Ray& ray, Intersection& isec, Worker& worker,
-              Interface_stack const& initial_stack, AOV& aov) final;
+    float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV& aov) final;
 
   private:
     Settings const settings_;

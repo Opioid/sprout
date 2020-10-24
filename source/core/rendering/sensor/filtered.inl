@@ -1,10 +1,10 @@
 #ifndef SU_CORE_RENDERING_SENSOR_FILTERED_INL
 #define SU_CORE_RENDERING_SENSOR_FILTERED_INL
 
+#include "aov/value.inl"
 #include "base/math/vector4.inl"
 #include "filtered.hpp"
 #include "sampler/camera_sample.hpp"
-#include "aov/value.hpp"
 
 namespace rendering::sensor {
 
@@ -30,15 +30,16 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 con
 }
 
 template <class Base, class Clamp, class F>
-void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 const& value, aov::Property aov, int4 const& isolated,
-                  int4 const& bounds) {
+void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, uint32_t slot, float weight,
+                                            float3 const& value, int4 const& isolated,
+                                            int4 const& bounds) {
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
         if ((uint32_t(pixel[0] - isolated[0]) <= uint32_t(isolated[2])) &
             (uint32_t(pixel[1] - isolated[1]) <= uint32_t(isolated[3]))) {
-            Base::add_pixeli(pixel, value, weight, aov);
+            Base::add_aov(pixel, slot, value, weight);
         } else {
-            Base::add_pixel_atomici(pixel, value, weight, aov);
+            Base::add_aov_atomic(pixel, slot, value, weight);
         }
     }
 }
@@ -89,9 +90,9 @@ Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp const& clamp, F&& filter)
     : Filtered_base(clamp, std::move(filter), 1) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color, aov::Value const& aov,
-                                              int4 const& isolated, int2 offset,
-                                              int4 const& bounds) {
+void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
+                                              aov::Value const& aov, int4 const& isolated,
+                                              int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = offset[0] + sample.pixel[0];
@@ -164,9 +165,9 @@ Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp const& clamp, F&& filter)
     : Filtered_base(clamp, std::move(filter), 2) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color, aov::Value const& aov,
-                                              int4 const& isolated, int2 offset,
-                                              int4 const& bounds) {
+void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
+                                              aov::Value const& aov, int4 const& isolated,
+                                              int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = offset[0] + sample.pixel[0];
@@ -222,8 +223,10 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
     Filtered_base::add_weighted(int2(x + 1, y + 2), wx3 * wy4, clamped, isolated, bounds);
     Filtered_base::add_weighted(int2(x + 2, y + 2), wx4 * wy4, clamped, isolated, bounds);
 
-    {
-        Filtered_base::add_weighted(int2(x, y), 1.f, aov.value(), aov::Property::Shading_normal, isolated, bounds);
+    for (uint32_t i = 0, len = aov.num_slots(); i < len; ++i) {
+        auto const r = aov.value(i);
+
+        Filtered_base::add_weighted(int2(x, y), i, 1.f, r, isolated, bounds);
     }
 }
 
@@ -292,9 +295,9 @@ Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float
       filter_radius_(filter_radius) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color, aov::Value const& aov,
-                                              int4 const& isolated, int2 offset,
-                                              int4 const& bounds) {
+void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
+                                              aov::Value const& aov, int4 const& isolated,
+                                              int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const px = offset[0] + sample.pixel[0];
