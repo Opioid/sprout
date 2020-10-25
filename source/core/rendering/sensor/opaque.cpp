@@ -71,11 +71,12 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
     }
 }
 
-void Opaque::resolve(int32_t begin, int32_t end, uint32_t slot, uint32_t num_samples, image::Float4& target) const {
+void Opaque::resolve(int32_t begin, int32_t end, uint32_t slot, uint32_t num_samples,
+                     image::Float4& target) const {
     float const weight = float(num_samples);
 
     for (int32_t i = begin; i < end; ++i) {
-    //    float const weight = pixels_[i][3];
+        //    float const weight = pixels_[i][3];
 
         float3 const color = aov_.value(i, slot) / weight;
 

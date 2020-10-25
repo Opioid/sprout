@@ -46,16 +46,30 @@ bool Writer::write(std::ostream& stream, Float4 const& image, Threads& threads) 
     return true;
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, bool /*data*/, Threads& threads) {
+bool Writer::write(std::ostream& stream, Float4 const& image, bool data, Threads& threads) {
     auto const d = image.description().dimensions();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
 
     resize(num_pixels);
 
-    threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
-                                     int32_t end) noexcept { to_byte(image, begin, end); },
-                      0, d[1]);
+    if (data) {
+        threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                         int32_t end) noexcept { to_byte(image, begin, end); },
+                          0, d[1]);
+    } else {
+#ifdef SU_ACESCG
+        threads.run_range(
+            [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+                ACEScg_to_sRGB(image, begin, end);
+            },
+            0, d[1]);
+#else
+        threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                         int32_t end) noexcept { to_sRGB(image, begin, end); },
+                          0, d[1]);
+#endif
+    }
 
     int32_t const num_channels = alpha() ? 4 : 3;
 

@@ -26,8 +26,6 @@ class Buffer {
     uint32_t buffers_len_;
     uint32_t buffer_len_;
 
-    Value::Mapping mapping_;
-
     float3** buffers_;
 };
 

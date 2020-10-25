@@ -69,7 +69,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
 
     float const n_dot_wo = sample.coating_.clamp_abs_n_dot(wo);
 
-    sample.set_radiance(sample.radiance() * sample.coating_.attenuation(n_dot_wo));
+    sample.set_color(sample.albedo(), sample.radiance() * sample.coating_.attenuation(n_dot_wo));
 
     return sample;
 }

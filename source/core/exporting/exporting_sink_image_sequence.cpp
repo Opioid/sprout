@@ -6,7 +6,7 @@
 
 namespace exporting {
 
-static char const* AOV_names[] = {"_gn", "_sn", ""};
+static char const* AOV_names[] = {"_albedo", "_gn", "_sn", ""};
 
 Image_sequence::Image_sequence(std::string filename, image::Writer* writer)
     : filename_(std::move(filename)), writer_(writer) {}
@@ -24,10 +24,14 @@ void Image_sequence::write(image::Float4 const& image, AOV aov, uint32_t frame, 
         return;
     }
 
-    if (rendering::sensor::aov::Property::Unknown == aov) {
+    using namespace rendering::sensor;
+
+    if (aov::Property::Unknown == aov) {
         writer_->write(stream, image, threads);
     } else {
-        writer_->write(stream, image, true, threads);
+        bool const is_data = aov::is_data(aov);
+
+        writer_->write(stream, image, is_data, threads);
     }
 }
 

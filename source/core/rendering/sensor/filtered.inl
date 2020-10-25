@@ -37,9 +37,9 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, uint32_t slot, float wei
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
         if ((uint32_t(pixel[0] - isolated[0]) <= uint32_t(isolated[2])) &
             (uint32_t(pixel[1] - isolated[1]) <= uint32_t(isolated[3]))) {
-            Base::add_aov(pixel, slot, value, weight);
+            Base::add_AOV(pixel, slot, value, weight);
         } else {
-            Base::add_aov_atomic(pixel, slot, value, weight);
+            Base::add_AOV_atomic(pixel, slot, value, weight);
         }
     }
 }

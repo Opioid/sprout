@@ -39,7 +39,9 @@ material::Sample const& Sky_material::sample(float3 const&      wo, scene::Ray c
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.set(sky_.model().evaluate_sky(-wo));
+    float3 const radiance = sky_.model().evaluate_sky(-wo);
+
+    sample.set_color(radiance, radiance);
 
     return sample;
 }
@@ -82,7 +84,7 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene:
 
     float3 const radiance = sampler.sample_3(cache_texture_, rs.uv);
 
-    sample.set(radiance);
+    sample.set_color(radiance, radiance);
 
     return sample;
 }

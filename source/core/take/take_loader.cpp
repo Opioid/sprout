@@ -95,7 +95,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
 static void load_light_sampling(json::Value const& value, Light_sampling& sampling);
 
-static void load_aovs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
+static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
                   uint32_t start_frame, bool progressive, Scene& scene, Resources& resources) {
@@ -126,7 +126,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         } else if ("integrator" == n.name) {
             integrator_value = &n.value;
         } else if ("aov" == n.name) {
-            load_aovs(n.value, take.view.aovs);
+            load_AOVs(n.value, take.view.aovs);
         } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
@@ -995,13 +995,17 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
     }
 }
 
-void load_aovs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs) {
+void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs) {
     using namespace rendering::sensor::aov;
 
     std::vector<Property> properties;
 
     for (auto& n : value.GetObject()) {
-        if ("Geometric_normal" == n.name) {
+        if ("Albedo" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Albedo);
+            }
+        } else if ("Geometric_normal" == n.name) {
             if (json::read_bool(n.value)) {
                 properties.push_back(Property::Geometric_normal);
             }

@@ -21,7 +21,9 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.set(emittance_.radiance(worker.scene().light_area(rs.prop, rs.part)));
+    float3 const radiance = emittance_.radiance(worker.scene().light_area(rs.prop, rs.part));
+
+    sample.set_color(radiance, radiance);
 
     return sample;
 }

@@ -19,6 +19,10 @@ class Srgb {
 
     void to_sRGB(Float4 const& image, int32_t begin, int32_t end);
 
+#ifdef SU_ACESCG
+    void ACEScg_to_sRGB(Float4 const& image, int32_t begin, int32_t end);
+#endif
+
     void to_byte(Float4 const& image, int32_t begin, int32_t end);
 
   protected:

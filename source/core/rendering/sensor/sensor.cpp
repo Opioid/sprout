@@ -28,7 +28,8 @@ void Sensor::resolve_accumulate(Threads& threads, image::Float4& target) const {
         0, target.description().area());
 }
 
-void Sensor::resolve(uint32_t slot, uint32_t num_samples, Threads& threads, image::Float4& target) const {
+void Sensor::resolve(uint32_t slot, uint32_t num_samples, Threads& threads,
+                     image::Float4& target) const {
     threads.run_range(
         [this, slot, num_samples, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             resolve(begin, end, slot, num_samples, target);
@@ -61,7 +62,7 @@ void Sensor::clear(float weight) {
     aov_.clear();
 }
 
-void Sensor::add_aov(int2 pixel, uint32_t slot, float3 const& value, float weight) {
+void Sensor::add_AOV(int2 pixel, uint32_t slot, float3 const& value, float weight) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
@@ -69,7 +70,7 @@ void Sensor::add_aov(int2 pixel, uint32_t slot, float3 const& value, float weigh
     aov_.add_pixel(id, slot, value, weight);
 }
 
-void Sensor::add_aov_atomic(int2 pixel, uint32_t slot, float3 const& value, float weight) {
+void Sensor::add_AOV_atomic(int2 pixel, uint32_t slot, float3 const& value, float weight) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];

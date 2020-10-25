@@ -3,8 +3,10 @@
 
 namespace rendering::sensor::aov {
 
-enum class Property { Geometric_normal = 0, Shading_normal, Unknown };
+enum class Property { Albedo = 0, Geometric_normal, Shading_normal, Unknown };
 
-}
+bool is_data(Property property);
+
+}  // namespace rendering::sensor::aov
 
 #endif

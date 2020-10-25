@@ -33,7 +33,8 @@ class Sensor {
 
     void resolve_accumulate(Threads& threads, image::Float4& target) const;
 
-    void resolve(uint32_t slot, uint32_t num_samples, Threads& threads, image::Float4& target) const;
+    void resolve(uint32_t slot, uint32_t num_samples, Threads& threads,
+                 image::Float4& target) const;
 
     void resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs);
 
@@ -62,9 +63,9 @@ class Sensor {
 
     virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
 
-    void add_aov(int2 pixel, uint32_t slot, float3 const& value, float weight);
+    void add_AOV(int2 pixel, uint32_t slot, float3 const& value, float weight);
 
-    void add_aov_atomic(int2 pixel, uint32_t slot, float3 const& value, float weight);
+    void add_AOV_atomic(int2 pixel, uint32_t slot, float3 const& value, float weight);
 
     virtual void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
 

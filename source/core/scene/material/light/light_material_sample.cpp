@@ -23,8 +23,4 @@ void Sample::sample(Sampler& /*sampler*/, rnd::Generator& /*rng*/, bxdf::Sample&
     result.pdf        = 0.f;
 }
 
-void Sample::set(float3 const& radiance) {
-    radiance_ = radiance;
-}
-
 }  // namespace scene::material::light

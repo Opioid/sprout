@@ -117,7 +117,7 @@ void Setup::test(float3 const& wi, float3 const& wo, float3 const& t, float3 con
                  float3 const& n, sampler::Sampler& /*sampler*/) {
     Sample sample;
 
-    sample.set_radiance(radiance);
+    sample.set_color(color, radiance);
     sample.base_.set(color, constant_f0, roughness, metallic, false);
 
     //   sample.set_basis(n, wo);

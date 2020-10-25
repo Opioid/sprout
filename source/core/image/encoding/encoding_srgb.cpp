@@ -1,6 +1,7 @@
 #include "encoding_srgb.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector3.inl"
+#include "base/spectrum/aces.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "image/typed_image.hpp"
 
@@ -115,10 +116,57 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
     }
 }
 
-void Srgb::to_byte(Float4 const& image, int32_t begin, int32_t end) {
+#ifdef SU_ACESCG
+static inline float3 AP1_to_gamma_sRGB(float3 c) {
+    return min(spectrum::AP1_to_sRGB(spectrum::linear_to_gamma_sRGB(c)), 1.f);
+}
+
+void Srgb::ACEScg_to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
     int2 const d = image.description().dimensions().xy();
 
+    if (alpha_) {
+        byte4* rgba = reinterpret_cast<byte4*>(buffer_);
 
+        if (error_diffusion_) {
+            for (int32_t y = begin, i = begin * d[0]; y < end; ++y) {
+                float4 error(golden_ratio(y) - 0.5f);
+
+                for (int32_t x = 0; x < d[0]; ++x, ++i) {
+                    float4 linear = image.at(i);
+
+                    linear[3] = std::min(linear[3], 1.f);
+
+                    if (!pre_multiplied_alpha_ && linear[3] > 0.f) {
+                        linear = float4(linear.xyz() / linear[3], linear[3]);
+                    }
+
+                    float4 const color = float4(AP1_to_gamma_sRGB(linear.xyz()), linear[3]);
+
+                    float4 const cf = 255.f * color;
+
+                    byte4 const ci = byte4(cf + error + 0.5f);
+
+                    error += cf - float4(ci);
+
+                    rgba[i] = ci;
+                }
+            }
+        } else {
+            for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+                float4 linear = image.at(i);
+
+                linear[3] = std::min(linear[3], 1.f);
+
+                if (!pre_multiplied_alpha_ && linear[3] > 0.f) {
+                    linear = float4(linear.xyz() / linear[3], linear[3]);
+                }
+
+                float4 const color = float4(AP1_to_gamma_sRGB(linear.xyz()), linear[3]);
+
+                rgba[i] = ::encoding::float_to_unorm(color);
+            }
+        }
+    } else {
         byte3* rgb = reinterpret_cast<byte3*>(buffer_);
 
         if (error_diffusion_) {
@@ -126,11 +174,11 @@ void Srgb::to_byte(Float4 const& image, int32_t begin, int32_t end) {
                 float3 error(golden_ratio(y) - 0.5f);
 
                 for (int32_t x = 0; x < d[0]; ++x, ++i) {
-                    float3 const color = image.at(i).xyz();
+                    float3 const color = AP1_to_gamma_sRGB(image.at(i).xyz());
 
                     float3 const cf = 255.f * color;
 
-                    byte3 const ci = max(min(byte3(cf + error + 0.5f), uint8_t(255)), uint8_t(0));
+                    byte3 const ci = byte3(cf + error + 0.5f);
 
                     error += cf - float3(ci);
 
@@ -139,12 +187,43 @@ void Srgb::to_byte(Float4 const& image, int32_t begin, int32_t end) {
             }
         } else {
             for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
-                float3 const color = image.at(i).xyz();
+                float3 const color = AP1_to_gamma_sRGB(image.at(i).xyz());
 
-                rgb[i] = max(min(::encoding::float_to_unorm(color), uint8_t(255u)), uint8_t(0));
+                rgb[i] = ::encoding::float_to_unorm(color);
             }
         }
+    }
+}
+#endif
 
+void Srgb::to_byte(Float4 const& image, int32_t begin, int32_t end) {
+    int2 const d = image.description().dimensions().xy();
+
+    byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+
+    if (error_diffusion_) {
+        for (int32_t y = begin, i = begin * d[0]; y < end; ++y) {
+            float3 error(golden_ratio(y) - 0.5f);
+
+            for (int32_t x = 0; x < d[0]; ++x, ++i) {
+                float3 const color = image.at(i).xyz();
+
+                float3 const cf = 255.f * color;
+
+                byte3 const ci = max(min(byte3(cf + error + 0.5f), uint8_t(255)), uint8_t(0));
+
+                error += cf - float3(ci);
+
+                rgb[i] = ci;
+            }
+        }
+    } else {
+        for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+            float3 const color = image.at(i).xyz();
+
+            rgb[i] = max(min(::encoding::float_to_unorm(color), uint8_t(255u)), uint8_t(0));
+        }
+    }
 }
 
 }  // namespace image::encoding

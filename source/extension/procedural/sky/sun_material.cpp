@@ -30,7 +30,9 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
 
     sample.set_basis(rs.geo_n, rs.n, wo);
 
-    sample.set(sky_.model().evaluate_sky_and_sun(-wo));
+    float3 const radiance = sky_.model().evaluate_sky_and_sun(-wo);
+
+    sample.set_color(radiance, radiance);
 
     return sample;
 }
@@ -62,7 +64,7 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
 
     SOFT_ASSERT(all_finite_and_positive(radiance));
 
-    sample.set(radiance);
+    sample.set_color(radiance, radiance);
 
     return sample;
 }

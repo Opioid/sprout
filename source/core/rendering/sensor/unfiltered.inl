@@ -22,7 +22,7 @@ void Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4 const& col
     for (uint32_t i = 0, len = aov.num_slots(); i < len; ++i) {
         auto const r = aov.value(i);
 
-        Base::add_aov(pixel, i, r, 1.f);
+        Base::add_AOV(pixel, i, r, 1.f);
     }
 }
 

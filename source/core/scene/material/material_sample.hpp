@@ -84,6 +84,7 @@ class Sample {
 
     float3 const& wo() const;
 
+    float3 const& albedo() const;
     float3 const& radiance() const;
 
     float clamp_geo_n_dot(float3 const& v) const;
@@ -92,12 +93,15 @@ class Sample {
 
     void set_basis(float3 const& geo_n, float3 const& n, float3 const& wo);
 
-    void set_radiance(float3 const& radiance);
+    void set_color(float3 const& albedo, float3 const& radiance);
+
+    Layer layer_;
 
   protected:
     float3 geo_n_;
     float3 n_;
     float3 wo_;
+    float3 albedo_;
     float3 radiance_;
 
     enum class Property {
@@ -108,9 +112,6 @@ class Sample {
     };
 
     flags::Flags<Property> properties_;
-
-  public:
-    Layer layer_;
 };
 
 struct IoR {

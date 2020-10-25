@@ -99,7 +99,7 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
         radiance = float3(0.f);
     }
 
-    sample.set_radiance(radiance);
+    sample.set_color(color, radiance);
     sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[0], surface[1],
                      rs.avoid_caustics);
 
