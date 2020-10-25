@@ -158,14 +158,14 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
         // Subsequent hits are handled by MIS.
         if ((0 == i) & same_side) {
             result_li += mat_sample.radiance();
-        }
 
-        if (!aov.empty() && 0 == i) {
-            aov.insert(mat_sample.albedo(), sensor::aov::Property::Albedo);
-            aov.insert(abs(0.5f * (mat_sample.geometric_normal() + 1.f)),
-                       sensor::aov::Property::Geometric_normal);
-            aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)),
-                       sensor::aov::Property::Shading_normal);
+            if (!aov.empty()) {
+                aov.insert(mat_sample.albedo(), sensor::aov::Property::Albedo);
+                aov.insert(abs(0.5f * (mat_sample.geometric_normal() + 1.f)),
+                           sensor::aov::Property::Geometric_normal);
+                aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)),
+                           sensor::aov::Property::Shading_normal);
+            }
         }
 
         if (mat_sample.is_pure_emissive()) {

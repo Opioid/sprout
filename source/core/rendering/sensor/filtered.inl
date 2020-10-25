@@ -123,6 +123,12 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
     Filtered_base::add_weighted(int2(x - 1, y + 1), wx0 * wy2, clamped, isolated, bounds);
     Filtered_base::add_weighted(int2(x, y + 1), wx1 * wy2, clamped, isolated, bounds);
     Filtered_base::add_weighted(int2(x + 1, y + 1), wx2 * wy2, clamped, isolated, bounds);
+
+    for (uint32_t i = 0, len = aov.num_slots(); i < len; ++i) {
+        auto const r = aov.value(i);
+
+        Filtered_base::add_weighted(int2(x, y), i, 1.f, r, isolated, bounds);
+    }
 }
 
 template <class Base, class Clamp, class F>
@@ -316,6 +322,12 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
                 Filtered_base::weight_and_add(pixel, ro, clamped, isolated, bounds);
             }
         }
+    }
+
+    for (uint32_t i = 0, len = aov.num_slots(); i < len; ++i) {
+        auto const r = aov.value(i);
+
+        Filtered_base::add_weighted(int2(px, py), i, 1.f, r, isolated, bounds);
     }
 }
 
