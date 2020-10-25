@@ -46,6 +46,33 @@ bool Writer::write(std::ostream& stream, Float4 const& image, Threads& threads) 
     return true;
 }
 
+bool Writer::write(std::ostream& stream, Float4 const& image, bool /*data*/, Threads& threads) {
+    auto const d = image.description().dimensions();
+
+    uint32_t const num_pixels = uint32_t(d[0] * d[1]);
+
+    resize(num_pixels);
+
+    threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                     int32_t end) noexcept { to_byte(image, begin, end); },
+                      0, d[1]);
+
+    int32_t const num_channels = alpha() ? 4 : 3;
+
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], num_channels,
+                                                               &buffer_len);
+    if (!png_buffer) {
+        return false;
+    }
+
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
+
+    mz_free(png_buffer);
+
+    return true;
+}
+
 bool Writer::write(std::string_view name, Byte3 const& image) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {

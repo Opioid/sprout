@@ -25,7 +25,7 @@ void Value::clear() {
     }
 }
 
-Value_pool::Value_pool() : values_(nullptr) {}
+Value_pool::Value_pool() : num_slots_(0), properties_(nullptr), values_(nullptr) {}
 
 Value_pool::~Value_pool() {
     delete[] properties_;

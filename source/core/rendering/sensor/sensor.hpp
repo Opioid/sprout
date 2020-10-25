@@ -33,7 +33,7 @@ class Sensor {
 
     void resolve_accumulate(Threads& threads, image::Float4& target) const;
 
-    void resolve(uint32_t slot, Threads& threads, image::Float4& target) const;
+    void resolve(uint32_t slot, uint32_t num_samples, Threads& threads, image::Float4& target) const;
 
     void resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs);
 
@@ -72,7 +72,7 @@ class Sensor {
 
     virtual void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const = 0;
 
-    virtual void resolve(int32_t begin, int32_t end, uint32_t slot,
+    virtual void resolve(int32_t begin, int32_t end, uint32_t slot, uint32_t num_samples,
                          image::Float4& target) const = 0;
 
     virtual void on_resize(int2 dimensions, int32_t num_layers) = 0;

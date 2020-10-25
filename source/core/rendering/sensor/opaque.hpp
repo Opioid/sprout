@@ -28,7 +28,7 @@ class Opaque : public Sensor {
 
     void resolve(int32_t begin, int32_t end, image::Float4& target) const final;
 
-    void resolve(int32_t begin, int32_t end, uint32_t slot, image::Float4& target) const final;
+    void resolve(int32_t begin, int32_t end, uint32_t slot, uint32_t num_samples, image::Float4& target) const final;
 
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const final;
 

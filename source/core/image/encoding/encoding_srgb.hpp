@@ -19,6 +19,8 @@ class Srgb {
 
     void to_sRGB(Float4 const& image, int32_t begin, int32_t end);
 
+    void to_byte(Float4 const& image, int32_t begin, int32_t end);
+
   protected:
     char* buffer_;
 

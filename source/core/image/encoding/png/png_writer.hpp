@@ -14,6 +14,8 @@ class Writer : public image::Writer, Srgb {
 
     bool write(std::ostream& stream, Float4 const& image, Threads& threads) final;
 
+    bool write(std::ostream& stream, Float4 const& image, bool data, Threads& threads) final;
+
     static bool write(std::string_view name, Byte3 const& image);
 
     static bool write(std::string_view name, Byte1 const& image);

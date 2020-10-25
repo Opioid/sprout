@@ -85,9 +85,13 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) con
     }
 }
 
-void Transparent::resolve(int32_t begin, int32_t end, uint32_t slot, image::Float4& target) const {
+void Transparent::resolve(int32_t begin, int32_t end, uint32_t slot, uint32_t num_samples, image::Float4& target) const {
+    float const weight = float(num_samples);
+
     for (int32_t i = begin; i < end; ++i) {
-        float3 const color = aov_.value(i, slot) / pixel_weights_[i];
+    //    float const weight = pixel_weights_[i];
+
+        float3 const color = aov_.value(i, slot) / weight;
 
         target.store(i, float4(color, 0.f));
     }

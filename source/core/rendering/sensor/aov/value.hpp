@@ -14,7 +14,7 @@ class Value {
     ~Value();
 
     struct Mapping {
-        uint8_t m[4] = {255, 255, 255, 255};
+        uint8_t m[4];
     };
 
     void init(Mapping mapping, uint32_t num_slots);

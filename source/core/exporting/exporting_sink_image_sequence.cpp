@@ -24,7 +24,11 @@ void Image_sequence::write(image::Float4 const& image, AOV aov, uint32_t frame, 
         return;
     }
 
-    writer_->write(stream, image, threads);
+    if (rendering::sensor::aov::Property::Unknown == aov) {
+        writer_->write(stream, image, threads);
+    } else {
+        writer_->write(stream, image, true, threads);
+    }
 }
 
 }  // namespace exporting

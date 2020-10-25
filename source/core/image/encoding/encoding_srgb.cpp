@@ -115,4 +115,36 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
     }
 }
 
+void Srgb::to_byte(Float4 const& image, int32_t begin, int32_t end) {
+    int2 const d = image.description().dimensions().xy();
+
+
+        byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+
+        if (error_diffusion_) {
+            for (int32_t y = begin, i = begin * d[0]; y < end; ++y) {
+                float3 error(golden_ratio(y) - 0.5f);
+
+                for (int32_t x = 0; x < d[0]; ++x, ++i) {
+                    float3 const color = image.at(i).xyz();
+
+                    float3 const cf = 255.f * color;
+
+                    byte3 const ci = max(min(byte3(cf + error + 0.5f), uint8_t(255)), uint8_t(0));
+
+                    error += cf - float3(ci);
+
+                    rgb[i] = ci;
+                }
+            }
+        } else {
+            for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+                float3 const color = image.at(i).xyz();
+
+                rgb[i] = max(min(::encoding::float_to_unorm(color), uint8_t(255u)), uint8_t(0));
+            }
+        }
+
+}
+
 }  // namespace image::encoding

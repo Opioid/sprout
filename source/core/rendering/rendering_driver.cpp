@@ -188,7 +188,7 @@ void Driver::export_frame(uint32_t frame, Exporters& exporters) {
     }
 
     for (uint32_t i = 0, len = view_->aovs.num_slots(); i < len; ++i) {
-        view_->camera->sensor().resolve(i, threads_, target_);
+        view_->camera->sensor().resolve(i, view_->num_samples_per_pixel, threads_, target_);
 
         for (auto& e : exporters) {
             e->write(target_, view_->aovs.property(i), frame, threads_);

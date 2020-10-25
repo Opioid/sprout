@@ -28,10 +28,10 @@ void Sensor::resolve_accumulate(Threads& threads, image::Float4& target) const {
         0, target.description().area());
 }
 
-void Sensor::resolve(uint32_t slot, Threads& threads, image::Float4& target) const {
+void Sensor::resolve(uint32_t slot, uint32_t num_samples, Threads& threads, image::Float4& target) const {
     threads.run_range(
-        [this, slot, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            resolve(begin, end, slot, target);
+        [this, slot, num_samples, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            resolve(begin, end, slot, num_samples, target);
         },
         0, target.description().area());
 }
