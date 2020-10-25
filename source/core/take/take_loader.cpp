@@ -696,6 +696,8 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
                 value = Debug::Settings::Value::MaterialId;
             } else if ("LightId" == value_type) {
                 value = Debug::Settings::Value::LightId;
+            } else if ("Backface" == value_type) {
+                value = Debug::Settings::Value::Backface;
             }
 
             load_light_sampling(n.value, light_sampling);

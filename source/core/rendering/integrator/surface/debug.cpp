@@ -81,6 +81,13 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
         case Settings::Value::LightId: {
             return float4(light_id(ray, isec, worker), 1.f);
         } break;
+        case Settings::Value::Backface: {
+            float3 const wo = -ray.direction;
+
+            auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, false, sampler_,
+                                                 worker);
+            return mat_sample.same_hemisphere(wo) ? float4(0.f, 0.f, 0.f, 1.f) : float4(1.f);
+        } break;
         default:
             return float4(0.f, 0.f, 0.f, 1.f);
     }
