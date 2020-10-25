@@ -33,6 +33,15 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
     float3 vector;
 
     switch (settings_.value) {
+        case Settings::Value::Albedo: {
+            float3 const wo = -ray.direction;
+
+            auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, false, sampler_,
+                                                 worker);
+
+            return float4(mat_sample.albedo(), 1.f);
+        } break;
+
         case Settings::Value::Tangent:
             vector = isec.geo.t;
             break;

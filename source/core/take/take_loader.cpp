@@ -680,7 +680,9 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
 
             std::string const value_type = json::read_string(n.value, "value");
 
-            if ("Tangent" == value_type) {
+            if ("Albedo" == value_type) {
+                value = Debug::Settings::Value::Albedo;
+            } else if ("Tangent" == value_type) {
                 value = Debug::Settings::Value::Tangent;
             } else if ("Bitangent" == value_type) {
                 value = Debug::Settings::Value::Bitangent;

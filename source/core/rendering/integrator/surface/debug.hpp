@@ -10,6 +10,7 @@ class alignas(64) Debug final : public Integrator {
   public:
     struct Settings {
         enum class Value {
+            Albedo,
             Tangent,
             Bitangent,
             Geometric_normal,
