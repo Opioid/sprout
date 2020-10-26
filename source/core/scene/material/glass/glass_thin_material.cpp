@@ -33,7 +33,7 @@ material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*r
     }
 
     sample.set_basis(rs.geo_n, n, wo);
-
+    sample.set_color(refraction_color_, float3(0.f));
     sample.set(refraction_color_, absorption_coefficient_, ior_, rs.ior, thickness_);
 
     return sample;

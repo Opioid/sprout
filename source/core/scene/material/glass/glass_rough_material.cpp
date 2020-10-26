@@ -41,6 +41,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
         alpha = alpha_;
     }
 
+    sample.set_color(refraction_color_, float3(0.f));
     sample.set(refraction_color_, ior_, rs.ior, alpha, rs.avoid_caustics);
 
     return sample;

@@ -29,6 +29,7 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
+    sample.set_color(refraction_color_, float3(0.f));
     sample.set(refraction_color_, ior_, rs.ior);
 
     return sample;
