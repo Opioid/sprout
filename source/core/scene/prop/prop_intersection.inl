@@ -34,8 +34,8 @@ inline float3 Intersection::thin_absorption(float3 const& wo, uint64_t time, Fil
 }
 
 inline material::Sample const& Intersection::sample(float3 const& wo, Ray const& ray, Filter filter,
-                                                    bool avoid_caustics, Sampler& sampler,
-                                                    Worker& worker) const {
+                                                    float alpha, bool avoid_caustics,
+                                                    Sampler& sampler, Worker& worker) const {
     material::Material const* material = Intersection::material(worker);
 
     Renderstate rs;
@@ -53,7 +53,8 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
 
     rs.uv = geo.uv;
 
-    rs.ior = worker.ior_outside(wo, *this);
+    rs.ior   = worker.ior_outside(wo, *this);
+    rs.alpha = alpha;
 
     rs.prop      = prop;
     rs.part      = geo.part;

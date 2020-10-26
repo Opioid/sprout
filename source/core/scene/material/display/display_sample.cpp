@@ -71,12 +71,8 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     result.wavelength = 0.f;
 }
 
-void Sample::set(float3 const& radiance, float f0, float alpha) {
-    radiance_ = radiance;
-
+void Sample::set(float f0) {
     f0_ = f0;
-
-    alpha_ = alpha;
 }
 
 }  // namespace scene::material::display

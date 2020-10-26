@@ -682,6 +682,8 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
 
             if ("Albedo" == value_type) {
                 value = Debug::Settings::Value::Albedo;
+            } else if ("Roughness" == value_type) {
+                value = Debug::Settings::Value::Roughness;
             } else if ("Tangent" == value_type) {
                 value = Debug::Settings::Value::Tangent;
             } else if ("Bitangent" == value_type) {
@@ -694,10 +696,10 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
                 value = Debug::Settings::Value::UV;
             } else if ("Splitting" == value_type) {
                 value = Debug::Settings::Value::Splitting;
-            } else if ("MaterialId" == value_type) {
-                value = Debug::Settings::Value::MaterialId;
-            } else if ("LightId" == value_type) {
-                value = Debug::Settings::Value::LightId;
+            } else if ("Material_id" == value_type) {
+                value = Debug::Settings::Value::Material_id;
+            } else if ("Light_id" == value_type) {
+                value = Debug::Settings::Value::Light_id;
             } else if ("Backface" == value_type) {
                 value = Debug::Settings::Value::Backface;
             }
@@ -1009,6 +1011,10 @@ void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aov
             if (json::read_bool(n.value)) {
                 properties.push_back(Property::Albedo);
             }
+        } else if ("Roughness" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Roughness);
+            }
         } else if ("Geometric_normal" == n.name) {
             if (json::read_bool(n.value)) {
                 properties.push_back(Property::Geometric_normal);
@@ -1016,6 +1022,10 @@ void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aov
         } else if ("Shading_normal" == n.name) {
             if (json::read_bool(n.value)) {
                 properties.push_back(Property::Shading_normal);
+            }
+        } else if ("Material_id" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Material_id);
             }
         }
     }

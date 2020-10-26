@@ -97,8 +97,8 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
     for (;;) {
         float3 const wo = -ray.direction;
 
-        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, avoid_caustics,
-                                                        from_subsurface, sampler_);
+        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, 0.f,
+                                                        avoid_caustics, from_subsurface, sampler_);
 
         wo1 = wo;
 

@@ -40,7 +40,7 @@ class Sample_anisotropic : public material::Sample {
     bxdf::Result evaluate(float3 const& wi) const;
 
   public:
-    void set(float3 const& ior, float3 const& absorption, float2 roughness);
+    void set(float3 const& ior, float3 const& absorption, float2 alpha);
 
     float3 ior_;
     float3 absorption_;

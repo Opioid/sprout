@@ -78,7 +78,8 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        auto const& mat_sample = isec.sample(wo, ray, filter, avoid_caustics, sampler_, worker);
+        auto const& mat_sample = isec.sample(wo, ray, filter, 0.f, avoid_caustics, sampler_,
+                                             worker);
 
 #ifndef ONLY_CAUSTICS
         if (treat_as_singular & mat_sample.same_hemisphere(wo)) {

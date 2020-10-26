@@ -46,7 +46,7 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
 
     float3 const wo = -ray.direction;
 
-    auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, false, *sampler_, worker);
+    auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, *sampler_, worker);
 
     Ray occlusion_ray;
     occlusion_ray.origin  = mat_sample.offset_p(isec.geo.p, false, false);

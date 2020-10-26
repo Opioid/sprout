@@ -29,8 +29,7 @@ material::Sample const& Glass_dispersion::sample(float3 const& wo, Ray const& ra
         sample.layer_.set_tangent_frame(rs.t, rs.b, n);
     }
 
-    sample.set_basis(rs.geo_n, n, wo);
-    sample.set_color(refraction_color_, float3(0.f));
+    sample.set_common(rs.geo_n, n, wo, refraction_color_, float3(0.f), rs.alpha);
     sample.set(refraction_color_, ior_, rs.ior);
     sample.set_dispersion(abbe_, ray.wavelength);
 

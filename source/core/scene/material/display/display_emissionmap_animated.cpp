@@ -18,15 +18,15 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
                                                      Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    float3 const radiance = emission_map_.sample_3(worker, sampler, rs.uv, element_);
+    float3 const radiance = emission_factor_ *
+                            emission_map_.sample_3(worker, sampler, rs.uv, element_);
 
-    sample.set(emission_factor_ * radiance, fresnel::schlick_f0(ior_, rs.ior), alpha_);
+    sample.set_common(rs.geo_n, rs.n, wo, radiance, radiance, alpha_);
+    sample.set(fresnel::schlick_f0(ior_, rs.ior));
 
     return sample;
 }

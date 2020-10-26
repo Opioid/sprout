@@ -35,13 +35,11 @@ material::Sample const& Sky_material::sample(float3 const&      wo, scene::Ray c
                                              Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     float3 const radiance = sky_.model().evaluate_sky(-wo);
 
-    sample.set_color(radiance, radiance);
+    sample.set_common(rs.geo_n, rs.n, wo, radiance, radiance, 0.f);
 
     return sample;
 }
@@ -78,13 +76,11 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene:
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     float3 const radiance = sampler.sample_3(cache_texture_, rs.uv);
 
-    sample.set_color(radiance, radiance);
+    sample.set_common(rs.geo_n, rs.n, wo, radiance, radiance, 0.f);
 
     return sample;
 }

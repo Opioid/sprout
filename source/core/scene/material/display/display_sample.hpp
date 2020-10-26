@@ -13,10 +13,9 @@ class Sample : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    void set(float3 const& radiance, float f0, float alpha);
+    void set(float f0);
 
     float f0_;
-    float alpha_;
 };
 
 }  // namespace scene::material::display

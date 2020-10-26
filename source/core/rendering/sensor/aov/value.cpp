@@ -18,7 +18,7 @@ void Value::init(Mapping mapping, uint32_t num_slots) {
 }
 
 void Value::clear() {
-    for (uint32_t i = 0, len = num_slots_; i < len; ++i) {
+    for (uint32_t i = 0, len = uint32_t(num_slots_); i < len; ++i) {
         slots_[i].v[0] = 0.f;
         slots_[i].v[1] = 0.f;
         slots_[i].v[2] = 0.f;

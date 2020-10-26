@@ -113,7 +113,7 @@ material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const
 }
 
 Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
-                                               Intersection const& isec, Filter filter,
+                                               Intersection const& isec, Filter filter, float alpha,
                                                bool avoid_caustics, bool straight_border,
                                                Sampler& sampler) {
     auto material = isec.material(*this);
@@ -130,13 +130,13 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
         float const vbh = material->border(wi, n);
         float const nsc = material::non_symmetry_compensation(wi, wo1, geo_n, n);
 
-        sample.set_basis(geo_n, n, wo);
+        sample.set_common(geo_n, n, wo, float3(0.f), float3(0.f), alpha);
         sample.factor_ = nsc * vbh;
 
         return sample;
     }
 
-    return isec.sample(wo, ray, filter, avoid_caustics, sampler, *this);
+    return isec.sample(wo, ray, filter, alpha, avoid_caustics, sampler, *this);
 }
 
 // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html

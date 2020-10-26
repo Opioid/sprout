@@ -67,7 +67,7 @@ float3 Whitted::shade(Ray const& ray, Intersection const& isec, Worker& worker) 
 
     float3 const wo = -ray.direction;
 
-    auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, false, sampler_, worker);
+    auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_, worker);
 
     if (mat_sample.same_hemisphere(wo)) {
         result += mat_sample.radiance();

@@ -140,6 +140,10 @@ inline float3 const& Sample::radiance() const {
     return radiance_;
 }
 
+inline float Sample::alpha() const {
+    return alpha_;
+}
+
 inline float Sample::clamp_geo_n_dot(float3 const& v) const {
     return clamp_dot(geo_n_, v);
 }
@@ -148,14 +152,17 @@ inline bool Sample::same_hemisphere(float3 const& v) const {
     return dot(geo_n_, v) >= 0.f;
 }
 
-inline void Sample::set_basis(float3 const& geo_n, float3 const& n, float3 const& wo) {
-    geo_n_ = geo_n;
-    n_     = n;
-    wo_    = wo;
+inline void Sample::set_common(float3 const& geo_n, float3 const& n, float3 const& wo,
+                               float3 const& albedo, float3 const& radiance, float alpha) {
+    geo_n_    = geo_n;
+    n_        = n;
+    wo_       = wo;
+    albedo_   = albedo;
+    radiance_ = radiance;
+    alpha_    = alpha;
 }
 
-inline void Sample::set_color(float3 const& albedo, float3 const& radiance) {
-    albedo_   = albedo;
+inline void Sample::set_radiance(float3 const& radiance) {
     radiance_ = radiance;
 }
 

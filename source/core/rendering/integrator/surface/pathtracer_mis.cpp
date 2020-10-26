@@ -140,6 +140,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
     float3 geo_n(0.f);
     float3 wo1(0.);
 
+    float alpha = 0.f;
+
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
@@ -147,8 +149,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
 
         bool const straight_border = state.is(State::From_subsurface);
 
-        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, avoid_caustics,
-                                                        straight_border, sampler_);
+        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
+                                                        avoid_caustics, straight_border, sampler_);
+
+        alpha = mat_sample.alpha();
 
         wo1 = wo;
 
@@ -161,10 +165,16 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
 
             if (!aov.empty()) {
                 aov.insert(mat_sample.albedo(), sensor::aov::Property::Albedo);
+
                 aov.insert(abs(0.5f * (mat_sample.geometric_normal() + 1.f)),
                            sensor::aov::Property::Geometric_normal);
+
                 aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)),
                            sensor::aov::Property::Shading_normal);
+
+                aov.insert(float3(float(worker.scene().prop_material_id(isec.prop, isec.geo.part)) /
+                                  255.f),
+                           sensor::aov::Property::Material_id);
             }
         }
 
@@ -418,7 +428,7 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n, Inters
     float3 const wo = -sample_result.wi;
 
     // This will invalidate the contents of previous material sample.
-    auto const& mat_sample = isec.sample(wo, ray, filter, false, sampler_, worker);
+    auto const& mat_sample = isec.sample(wo, ray, filter, 0.f, false, sampler_, worker);
 
     pure_emissive = mat_sample.is_pure_emissive();
 

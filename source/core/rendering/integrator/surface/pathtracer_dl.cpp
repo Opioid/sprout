@@ -103,13 +103,17 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
     float3 result(0.f);
     float3 wo1(0.);
 
+    float alpha = 0.f;
+
     for (;;) {
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
-        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, avoid_caustics,
-                                                        from_subsurface, sampler_);
+        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
+                                                        avoid_caustics, from_subsurface, sampler_);
+
+        alpha = mat_sample.alpha();
 
         wo1 = wo;
 

@@ -34,7 +34,7 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
         sample.layer_.set_tangent_frame(rs.t, rs.b, n);
     }
 
-    sample.set_basis(rs.geo_n, n, wo);
+    sample.set_common(rs.geo_n, n, wo, ior3_, float3(0.), alpha_);
 
     sample.set(ior3_, absorption_, alpha_, rs.avoid_caustics);
 
@@ -68,8 +68,7 @@ Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_setti
     : Material(sampler_settings, two_sided) {}
 
 void Material_anisotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
-    properties_.set(Property::Caustic,
-                    roughness_[0] <= ggx::Min_roughness || roughness_[1] <= ggx::Min_roughness);
+    properties_.set(Property::Caustic, alpha_[0] <= ggx::Min_alpha || alpha_[1] <= ggx::Min_alpha);
 }
 
 material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray const& /*ray*/,
@@ -77,7 +76,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
                                                      Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    sample.set_common(rs.geo_n, rs.n, wo, ior3_, float3(0.f), alpha_[0]);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -94,7 +93,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set(ior3_, absorption_, roughness_);
+    sample.set(ior3_, absorption_, alpha_);
     sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
@@ -118,7 +117,9 @@ void Material_anisotropic::set_absorption(float3 const& absorption) {
 }
 
 void Material_anisotropic::set_roughness(float2 roughness) {
-    roughness_ = float2(ggx::clamp_roughness(roughness[0]), ggx::clamp_roughness(roughness[1]));
+    float2 const r = float2(ggx::clamp_roughness(roughness[0]), ggx::clamp_roughness(roughness[1]));
+
+    alpha_ = r * r;
 }
 
 size_t Material_anisotropic::sample_size() {

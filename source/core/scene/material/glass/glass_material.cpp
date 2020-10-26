@@ -18,8 +18,6 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
                                       Filter filter, Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     if (normal_map_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -29,7 +27,7 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_color(refraction_color_, float3(0.f));
+    sample.set_common(rs.geo_n, rs.n, wo, refraction_color_, float3(0.f), rs.alpha);
     sample.set(refraction_color_, ior_, rs.ior);
 
     return sample;

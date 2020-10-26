@@ -65,8 +65,6 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
         sample.layer_.set_tangent_frame(n);
@@ -99,7 +97,7 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
         radiance = float3(0.f);
     }
 
-    sample.set_color(color, radiance);
+    sample.set_common(rs.geo_n, rs.n, wo, color, radiance, surface[0]);
     sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[0], surface[1],
                      rs.avoid_caustics);
 

@@ -93,6 +93,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker) {
     float3 result(0.f);
     float3 wo1(0.f);
 
+    float alpha = 0.f;
+
 #ifdef ONLY_CAUSTICS
     bool caustic_path = false;
 #endif
@@ -102,8 +104,10 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker) {
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
-        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, avoid_caustics,
-                                                        from_subsurface, sampler_);
+        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
+                                                        avoid_caustics, from_subsurface, sampler_);
+
+        alpha = mat_sample.alpha();
 
         wo1 = wo;
 

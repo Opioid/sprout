@@ -56,7 +56,7 @@ class alignas(64) Material_anisotropic : public Material {
     float3 ior3_;
     float3 absorption_;
 
-    float2 roughness_;
+    float2 alpha_;
 };
 
 }  // namespace scene::material::metal

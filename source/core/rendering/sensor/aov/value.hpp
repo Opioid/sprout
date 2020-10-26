@@ -14,7 +14,7 @@ class Value {
     ~Value();
 
     struct Mapping {
-        uint8_t m[4];
+        uint8_t m[7];
     };
 
     void init(Mapping mapping, uint32_t num_slots);
@@ -37,7 +37,7 @@ class Value {
   private:
     Mapping mapping_;
 
-    uint32_t num_slots_;
+    uint8_t num_slots_;
 
     struct alignas(16) Slot {
         float v[3];
@@ -67,7 +67,7 @@ class Value_pool {
   private:
     Value::Mapping mapping_;
 
-    uint32_t num_slots_;
+    uint8_t num_slots_;
 
     Property* properties_;
 

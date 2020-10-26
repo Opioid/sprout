@@ -446,7 +446,7 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
     float3 const wo = -wi;  // sample_result.wi;
 
     // This will invalidate the contents of previous material sample.
-    auto const& mat_sample = tisec.sample(wo, bounce_ray, Filter::Undefined, false, sampler_,
+    auto const& mat_sample = tisec.sample(wo, bounce_ray, Filter::Undefined, 0.f, false, sampler_,
                                           worker);
 
     if (!mat_sample.same_hemisphere(wo)) {

@@ -21,8 +21,6 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
                                             Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_rough>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     if (normal_map_.is_valid()) {
@@ -41,7 +39,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
         alpha = alpha_;
     }
 
-    sample.set_color(refraction_color_, float3(0.f));
+    sample.set_common(rs.geo_n, rs.n, wo, refraction_color_, float3(0.f), alpha);
     sample.set(refraction_color_, ior_, rs.ior, alpha, rs.avoid_caustics);
 
     return sample;

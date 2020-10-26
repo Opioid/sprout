@@ -11,14 +11,15 @@ class alignas(64) Debug final : public Integrator {
     struct Settings {
         enum class Value {
             Albedo,
+            Roughness,
             Tangent,
             Bitangent,
             Geometric_normal,
             Shading_normal,
             UV,
             Splitting,
-            MaterialId,
-            LightId,
+            Material_id,
+            Light_id,
             Backface
         };
 

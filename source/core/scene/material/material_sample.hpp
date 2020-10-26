@@ -87,13 +87,16 @@ class Sample {
     float3 const& albedo() const;
     float3 const& radiance() const;
 
+    float alpha() const;
+
     float clamp_geo_n_dot(float3 const& v) const;
 
     bool same_hemisphere(float3 const& v) const;
 
-    void set_basis(float3 const& geo_n, float3 const& n, float3 const& wo);
+    void set_common(float3 const& geo_n, float3 const& n, float3 const& wo, float3 const& albedo,
+                    float3 const& radiance, float alpha);
 
-    void set_color(float3 const& albedo, float3 const& radiance);
+    void set_radiance(float3 const& radiance);
 
     Layer layer_;
 
@@ -103,6 +106,7 @@ class Sample {
     float3 wo_;
     float3 albedo_;
     float3 radiance_;
+    float  alpha_;
 
     enum class Property {
         None          = 0,

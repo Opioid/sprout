@@ -121,10 +121,10 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
     }
 }
 
-void Sample_anisotropic::set(float3 const& ior, float3 const& absorption, float2 roughness) {
+void Sample_anisotropic::set(float3 const& ior, float3 const& absorption, float2 alpha) {
     ior_        = ior;
     absorption_ = absorption;
-    alpha_      = roughness * roughness;
+    alpha_      = alpha;
 }
 
 }  // namespace scene::material::metal

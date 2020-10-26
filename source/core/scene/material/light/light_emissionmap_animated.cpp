@@ -35,12 +35,10 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     float3 const radiance  = emission_map_.sample_3(worker, sampler, rs.uv, element_);
     float3 const fradiance = emission_factor_ * radiance;
 
-    sample.set_color(fradiance, fradiance);
+    sample.set_common(rs.geo_n, rs.n, wo, fradiance, fradiance, 0.f);
 
     return sample;
 }
