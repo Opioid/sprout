@@ -799,6 +799,9 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
                 } else if ("Roughness" == texture_description.usage) {
                     options.set("usage", Texture_usage::Roughness);
                     surface_map = create_texture(texture_description, options, resources);
+                } else if ("Roughness_in_alpha" == texture_description.usage) {
+                    options.set("usage", Texture_usage::Roughness_in_alpha);
+                    surface_map = create_texture(texture_description, options, resources);
                 } else if ("Gloss" == texture_description.usage) {
                     options.set("usage", Texture_usage::Gloss);
                     surface_map = create_texture(texture_description, options, resources);

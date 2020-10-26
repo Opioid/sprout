@@ -49,6 +49,8 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
         channels = Channels::XY;
     } else if (Usage::Roughness == usage) {
         channels = Channels::X;
+    } else if (Usage::Roughness_in_alpha == usage) {
+        channels = Channels::W;
     } else if (Usage::Gloss == usage) {
         channels = Channels::X;
         invert   = true;
