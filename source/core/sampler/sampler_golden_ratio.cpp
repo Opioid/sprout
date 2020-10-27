@@ -56,9 +56,11 @@ void Golden_ratio::generate_2D(RNG& rng, uint32_t dimension) {
 
     float2* begin = reinterpret_cast<float2*>(samples_) + dimension * num_samples_;
 
-    golden_ratio(begin, num_samples_, r);
+    uint32_t const num_samples = num_samples_;
 
-    rnd::biased_shuffle(begin, num_samples_, rng);
+    golden_ratio(begin, num_samples, r);
+
+    rnd::biased_shuffle(begin, num_samples, rng);
 }
 
 void Golden_ratio::generate_1D(RNG& rng, uint32_t dimension) {
@@ -66,9 +68,11 @@ void Golden_ratio::generate_1D(RNG& rng, uint32_t dimension) {
 
     float* begin = samples_ + num_samples_ * 2 * num_dimensions_2D_ + dimension * num_samples_;
 
-    golden_ratio(begin, num_samples_, r);
+    uint32_t const num_samples = num_samples_;
 
-    rnd::biased_shuffle(begin, num_samples_, rng);
+    golden_ratio(begin, num_samples, r);
+
+    rnd::biased_shuffle(begin, num_samples, rng);
 }
 
 template class Typed_pool<Golden_ratio>;
