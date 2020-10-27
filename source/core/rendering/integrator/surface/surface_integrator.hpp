@@ -29,8 +29,8 @@ class Integrator : public integrator::Integrator {
                       Interface_stack const& initial_stack, AOV& aov) = 0;
 
   protected:
-    void common_AOVs(Intersection& isec, Material_sample const& mat_sample, Worker& worker,
-                     AOV& aov);
+    void common_AOVs(float3 const& throughput, Ray const& ray, Intersection const& isec,
+                     Material_sample const& mat_sample, bool primary_ray, Worker& worker, AOV& aov);
 };
 
 class Pool {

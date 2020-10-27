@@ -35,8 +35,8 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
 
     auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_, worker);
 
-    if (!aov.empty() && mat_sample.same_hemisphere(wo)) {
-        common_AOVs(isec, mat_sample, worker, aov);
+    if (!aov.empty()) {
+        common_AOVs(float3(1.f), ray, isec, mat_sample, true, worker, aov);
     }
 
     float3 vector;

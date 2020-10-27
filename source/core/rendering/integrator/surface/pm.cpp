@@ -74,6 +74,7 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
 
     bool const avoid_caustics = true;
 
+    bool primary_ray       = true;
     bool treat_as_singular = true;
 
     for (uint32_t i = ray.depth;; ++i) {
@@ -88,8 +89,8 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
         }
 #endif
 
-        if (0 == i && !aov.empty() && mat_sample.same_hemisphere(wo)) {
-            common_AOVs(isec, mat_sample, worker, aov);
+        if (!aov.empty()) {
+            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, aov);
         }
 
         if (mat_sample.is_pure_emissive()) {
@@ -105,6 +106,7 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
             treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
             filter            = Filter::Nearest;
+            primary_ray       = false;
             treat_as_singular = false;
         }
 

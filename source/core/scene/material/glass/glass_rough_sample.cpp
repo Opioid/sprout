@@ -91,8 +91,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
     result.wavelength = 0.f;
 }
 
-void Sample_rough::set(float ior, float ior_outside,
-                       bool avoid_caustics) {
+void Sample_rough::set(float ior, float ior_outside, bool avoid_caustics) {
     properties_.set(Property::Can_evaluate, ior != ior_outside);
 
     f0_ = fresnel::schlick_f0(ior, ior_outside);

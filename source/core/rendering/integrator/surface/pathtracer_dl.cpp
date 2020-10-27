@@ -102,7 +102,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
 
     float3 throughput(1.f);
     float3 result(0.f);
-    float3 wo1(0.);
+    float3 wo1(0.f);
 
     float alpha = 0.f;
 
@@ -122,10 +122,10 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             if (treat_as_singular) {
                 result += throughput * mat_sample.radiance();
             }
+        }
 
-            if (0 == i && !aov.empty()) {
-                common_AOVs(isec, mat_sample, worker, aov);
-            }
+        if (!aov.empty()) {
+            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, aov);
         }
 
         if (mat_sample.is_pure_emissive()) {
@@ -149,8 +149,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
 
             treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            primary_ray       = false;
             filter            = Filter::Nearest;
+            primary_ray       = false;
             treat_as_singular = false;
         }
 

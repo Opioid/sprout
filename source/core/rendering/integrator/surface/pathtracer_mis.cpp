@@ -138,7 +138,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
     float3 result_li(0.f);
     float3 photon_li(0.f);
     float3 geo_n(0.f);
-    float3 wo1(0.);
+    float3 wo1(0.f);
 
     float alpha = 0.f;
 
@@ -160,10 +160,11 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
         // Subsequent hits are handled by MIS.
         if (0 == i && mat_sample.same_hemisphere(wo)) {
             result_li += mat_sample.radiance();
+        }
 
-            if (!aov.empty()) {
-                common_AOVs(isec, mat_sample, worker, aov);
-            }
+        if (!aov.empty()) {
+            common_AOVs(throughput, ray, isec, mat_sample, state.is(State::Primary_ray), worker,
+                        aov);
         }
 
         if (mat_sample.is_pure_emissive()) {

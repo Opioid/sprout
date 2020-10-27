@@ -120,10 +120,10 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV& 
 #else
             result += throughput * mat_sample.radiance();
 #endif
+        }
 
-            if (0 == i && !aov.empty()) {
-                common_AOVs(isec, mat_sample, worker, aov);
-            }
+        if (!aov.empty()) {
+            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, aov);
         }
 
         if (mat_sample.is_pure_emissive()) {
@@ -155,8 +155,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV& 
             }
 #endif
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            primary_ray = false;
             filter      = Filter::Nearest;
+            primary_ray = false;
         }
 
         if (0.f == ray.wavelength) {

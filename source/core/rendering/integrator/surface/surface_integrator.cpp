@@ -10,11 +10,18 @@ Integrator::Integrator() = default;
 
 Integrator::~Integrator() = default;
 
-void Integrator::common_AOVs(Intersection& isec, Material_sample const& mat_sample, Worker& worker,
+void Integrator::common_AOVs(float3 const& throughput, Ray const& ray, Intersection const& isec,
+                             Material_sample const& mat_sample, bool primary_ray, Worker& worker,
                              AOV& aov) {
     using Property = sensor::aov::Property;
 
-    aov.insert(mat_sample.albedo(), Property::Albedo);
+    if (primary_ray && mat_sample.ior_greater_one()) {
+        aov.insert(throughput * mat_sample.albedo(), Property::Albedo);
+    }
+
+    if (ray.depth > 0) {
+        return;
+    }
 
     if (aov.active(Property::Roughness)) {
         float const a = mat_sample.alpha();
