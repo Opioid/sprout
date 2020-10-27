@@ -315,7 +315,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
                                      Worker& worker) {
     float3 result(0.f);
 
-    if (!mat_sample.ior_greater_one()) {
+    if (!mat_sample.can_evaluate()) {
         return result;
     }
 

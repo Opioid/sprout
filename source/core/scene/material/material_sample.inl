@@ -84,7 +84,7 @@ inline bool Sample::is_translucent() const {
     return properties_.is(Property::Translucent);
 }
 
-inline bool Sample::ior_greater_one() const {
+inline bool Sample::can_evaluate() const {
     return properties_.is(Property::Can_evaluate);
 }
 

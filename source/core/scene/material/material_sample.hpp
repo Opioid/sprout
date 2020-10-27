@@ -70,10 +70,9 @@ class Sample {
 
     bool is_translucent() const;
 
-    bool ior_greater_one() const;
+    bool can_evaluate() const;
 
     float3 offset_p(float3 const& p, bool subsurface, bool translucent) const;
-
     float3 offset_p(float3 const& p, float3 const& wi, bool subsurface) const;
 
     float3 const& geometric_normal() const;
