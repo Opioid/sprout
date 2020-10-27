@@ -18,7 +18,7 @@ bxdf::Result Sample_subsurface::evaluate_b(float3 const& wi) const {
 
 void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     if (1.f == base_.metallic_) {
-        base_.pure_gloss_sample(wo_, layer_, sampler, rng, result);
+        base_.pure_gloss_sample(wo_, *this, sampler, rng, result);
         result.wavelength = 0.f;
         return;
     }
@@ -41,9 +41,9 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             refract(sampler, rng, result);
         } else {
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, layer_, sampler, rng, base_.avoid_caustics_, result);
+                base_.diffuse_sample(wo_, *this, sampler, rng, base_.avoid_caustics_, result);
             } else {
-                base_.gloss_sample(wo_, layer_, sampler, rng, result);
+                base_.gloss_sample(wo_, *this, sampler, rng, result);
             }
         }
 
@@ -56,7 +56,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
         float2 const xi = sampler.generate_sample_2D(rng);
 
         float        n_dot_h;
-        float3 const h = ggx::Isotropic::sample(wo_, layer, base_.alpha_, xi, n_dot_h);
+        float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
 
         float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
@@ -82,19 +82,19 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
 
         if (p < f) {
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, layer, base_.alpha_, result);
+                                                           wo_dot_h, layer, alpha_, result);
 
             result.reflection *= n_dot_wi;
         } else {
             float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
-            float const n_dot_wi = ggx::Isotropic::refract(
-                wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h, layer, base_.alpha_, ior, result);
+            float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
+                                                           r_wo_dot_h, layer, alpha_, ior, result);
 
             result.reflection *= n_dot_wi;
         }
 
-        result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, base_.alpha_, ior_.eta_t);
+        result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
     }
 
     result.wavelength = 0.f;
@@ -140,9 +140,9 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const {
         fresnel::Schlick1 const schlick(base_.f0_[0]);
 
         auto ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
-                                              base_.alpha_, ior, schlick);
+                                              alpha_, ior, schlick);
 
-        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, base_.alpha_, ior_.eta_t);
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
 
         if (Forward) {
             return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf()};
@@ -156,10 +156,10 @@ bxdf::Result Sample_subsurface::evaluate(float3 const& wi) const {
     float const wo_dot_h = clamp_dot(wo_, h);
 
     if (1.f == base_.metallic_) {
-        return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
+        return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
     }
 
-    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
+    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
     result.pdf() *= 0.5f;
     return result;
 }
@@ -171,8 +171,8 @@ void Sample_subsurface::refract(Sampler& sampler, RNG& rng, bxdf::Sample& result
 
     float2 const xi = sampler.generate_sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, base_.alpha_, ior_,
-                                                   schlick, xi, result);
+    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, alpha_, ior_, schlick, xi,
+                                                   result);
 
     result.reflection *= n_dot_wi;
 }

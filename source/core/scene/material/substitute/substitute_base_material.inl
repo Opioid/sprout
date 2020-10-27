@@ -61,15 +61,14 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
         radiance = float3(0.f);
     }
 
-    if (alpha > ggx::Min_alpha) {
-        alpha = std::max(rs.alpha, alpha);
-    }
+    //    if (alpha > ggx::Min_alpha) {
+    //        alpha = std::max(rs.alpha, alpha);
+    //    }
 
     // std::max(surface[0], std::min(float(depth * depth) * 0.025f, 1.f))
 
     sample.set_common(rs.geo_n, rs.n, wo, color, radiance, alpha);
-    sample.base_.set(color, fresnel::schlick_f0(ior_, ior_outside), alpha, metallic,
-                     rs.avoid_caustics);
+    sample.base_.set(color, fresnel::schlick_f0(ior_, ior_outside), metallic, rs.avoid_caustics);
 }
 
 }  // namespace scene::material::substitute

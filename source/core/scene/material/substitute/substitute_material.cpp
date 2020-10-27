@@ -98,8 +98,7 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
     }
 
     sample.set_common(rs.geo_n, rs.n, wo, color, radiance, surface[0]);
-    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[0], surface[1],
-                     rs.avoid_caustics);
+    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[1], rs.avoid_caustics);
 
     return sample;
 }
@@ -169,7 +168,7 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
         sample.base_.f0_ = lerp(sample.base_.f0_, float3(fresnel::schlick_f0(1.31f, rs.ior)),
                                 weight);
 
-        sample.base_.alpha_ = lerp(sample.base_.alpha_, alpha, weight);
+        sample.alpha_ = lerp(sample.alpha_, alpha, weight);
 
         sample.base_.metallic_ = lerp(sample.base_.metallic_, 0.f, weight);
     }

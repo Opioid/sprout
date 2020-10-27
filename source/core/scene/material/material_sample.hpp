@@ -100,7 +100,7 @@ class Sample {
 
     Layer layer_;
 
-  protected:
+    // protected:
     float3 geo_n_;
     float3 n_;
     float3 wo_;

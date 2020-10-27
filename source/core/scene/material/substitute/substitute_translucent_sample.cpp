@@ -46,18 +46,18 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
             float const o = 1.f - t;
 
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, layer_, o, sampler, rng, base_.avoid_caustics_, result);
+                base_.diffuse_sample(wo_, *this, o, sampler, rng, base_.avoid_caustics_, result);
             } else {
-                base_.gloss_sample(wo_, layer_, o, sampler, rng, result);
+                base_.gloss_sample(wo_, *this, o, sampler, rng, result);
             }
         }
 
         result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
-            base_.diffuse_sample(wo_, layer_, sampler, rng, base_.avoid_caustics_, result);
+            base_.diffuse_sample(wo_, *this, sampler, rng, base_.avoid_caustics_, result);
         } else {
-            base_.gloss_sample(wo_, layer_, sampler, rng, result);
+            base_.gloss_sample(wo_, *this, sampler, rng, result);
         }
     }
 
@@ -111,7 +111,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
 
     float const o = 1.f - t;
 
-    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, o);
+    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this, o);
 
     if (thickness_ > 0.f) {
         result.pdf() *= 0.5f;

@@ -64,9 +64,8 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3 const& wi) const 
     float const metallic = base_.metallic_;
 
     auto const base = 1.f == metallic
-                          ? base_.template pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h,
-                                                                        layer_)
-                          : base_.template base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_);
+                          ? base_.template pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this)
+                          : base_.template base_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
 
     float const pdf = 0.5f * (coating.pdf + base.pdf());
     return {coating.reflection + coating.attenuation * base.reflection, pdf};
@@ -80,9 +79,9 @@ void Sample_coating<Coating, Diffuse>::coating_sample_and_base(Sampler& sampler,
 
     auto const base = 1.f == base_.metallic_
                           ? base_.template pure_gloss_evaluate<true>(result.wi, wo_, result.h,
-                                                                     result.h_dot_wi, layer_)
+                                                                     result.h_dot_wi, *this)
                           : base_.template base_evaluate<true>(result.wi, wo_, result.h,
-                                                               result.h_dot_wi, layer_);
+                                                               result.h_dot_wi, *this);
 
     result.reflection = result.reflection + coating_attenuation * base.reflection;
     result.pdf        = 0.5f * (result.pdf + base.pdf());
@@ -91,7 +90,7 @@ void Sample_coating<Coating, Diffuse>::coating_sample_and_base(Sampler& sampler,
 template <typename Coating, typename Diffuse>
 void Sample_coating<Coating, Diffuse>::diffuse_sample_and_coating(Sampler& sampler, RNG& rng,
                                                                   bxdf::Sample& result) const {
-    base_.diffuse_sample(wo_, layer_, sampler, rng, base_.avoid_caustics_, result);
+    base_.diffuse_sample(wo_, *this, sampler, rng, base_.avoid_caustics_, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
                                              base_.avoid_caustics_);
@@ -103,7 +102,7 @@ void Sample_coating<Coating, Diffuse>::diffuse_sample_and_coating(Sampler& sampl
 template <typename Coating, typename Diffuse>
 void Sample_coating<Coating, Diffuse>::gloss_sample_and_coating(Sampler& sampler, RNG& rng,
                                                                 bxdf::Sample& result) const {
-    base_.gloss_sample(wo_, layer_, sampler, rng, result);
+    base_.gloss_sample(wo_, *this, sampler, rng, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
                                              base_.avoid_caustics_);
@@ -115,7 +114,7 @@ void Sample_coating<Coating, Diffuse>::gloss_sample_and_coating(Sampler& sampler
 template <typename Coating, typename Diffuse>
 void Sample_coating<Coating, Diffuse>::pure_gloss_sample_and_coating(Sampler& sampler, RNG& rng,
                                                                      bxdf::Sample& result) const {
-    base_.pure_gloss_sample(wo_, layer_, sampler, rng, result);
+    base_.pure_gloss_sample(wo_, *this, sampler, rng, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
                                              base_.avoid_caustics_);
