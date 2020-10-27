@@ -5,6 +5,7 @@
 #include "base/random/generator.inl"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 #include "scene/material/material.hpp"
@@ -47,6 +48,10 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
     float3 const wo = -ray.direction;
 
     auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, *sampler_, worker);
+
+    if (!aov.empty() && mat_sample.same_hemisphere(wo)) {
+        common_AOVs(isec, mat_sample, worker, aov);
+    }
 
     Ray occlusion_ray;
     occlusion_ray.origin  = mat_sample.offset_p(isec.geo.p, false, false);

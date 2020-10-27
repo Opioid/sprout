@@ -23,6 +23,8 @@ class Value {
 
     uint32_t num_slots() const;
 
+    bool active(Property aov) const;
+
     void clear();
 
     void insert(float3 const& v, Property aov);

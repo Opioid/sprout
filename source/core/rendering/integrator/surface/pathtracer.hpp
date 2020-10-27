@@ -28,7 +28,7 @@ class alignas(64) Pathtracer final : public Integrator {
               AOV& aov) final;
 
   private:
-    float4 integrate(Ray& ray, Intersection& isec, Worker& worker);
+    float4 integrate(Ray& ray, Intersection& isec, Worker& worker, AOV& aov);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

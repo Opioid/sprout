@@ -7,6 +7,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -105,7 +106,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
 
     float alpha = 0.f;
 
-    for (;;) {
+    for (uint32_t i = 0;; ++i) {
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
@@ -117,10 +118,14 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
 
         wo1 = wo;
 
-        bool const same_side = mat_sample.same_hemisphere(wo);
+        if (mat_sample.same_hemisphere(wo)) {
+            if (treat_as_singular) {
+                result += throughput * mat_sample.radiance();
+            }
 
-        if (treat_as_singular & same_side) {
-            result += throughput * mat_sample.radiance();
+            if (0 == i && !aov.empty()) {
+                common_AOVs(isec, mat_sample, worker, aov);
+            }
         }
 
         if (mat_sample.is_pure_emissive()) {

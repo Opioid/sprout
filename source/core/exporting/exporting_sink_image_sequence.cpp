@@ -6,7 +6,7 @@
 
 namespace exporting {
 
-static char const* AOV_names[] = {"_albedo", "_rougness", "_gn", "_sn", "_mat_id", ""};
+static char const* AOV_names[] = {"_albedo", "_roughness", "_gn", "_sn", "_mat_id", ""};
 
 Image_sequence::Image_sequence(std::string filename, image::Writer* writer)
     : filename_(std::move(filename)), writer_(writer) {}

@@ -27,6 +27,10 @@ class Integrator : public integrator::Integrator {
 
     virtual float4 li(Ray& ray, Intersection& isec, Worker& worker,
                       Interface_stack const& initial_stack, AOV& aov) = 0;
+
+  protected:
+    void common_AOVs(Intersection& isec, Material_sample const& mat_sample, Worker& worker,
+                     AOV& aov);
 };
 
 class Pool {

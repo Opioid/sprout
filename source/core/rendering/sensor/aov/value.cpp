@@ -41,7 +41,7 @@ void Value_pool::configure(uint32_t num_slots, Property const* properties) {
         properties_[i] = properties[i];
     }
 
-    for (uint32_t i = 0; i < 4; ++i) {
+    for (uint32_t i = 0; i < 7; ++i) {
         mapping_.m[i] = 255;
     }
 

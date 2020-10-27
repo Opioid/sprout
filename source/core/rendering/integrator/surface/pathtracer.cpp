@@ -6,6 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.hpp"
 #include "scene/material/bxdf.hpp"
@@ -74,13 +75,13 @@ float4 Pathtracer::li(Ray& ray, Intersection& isec, Worker& worker,
 
         Intersection split_intersection = isec;
 
-        result += num_samples_reciprocal * integrate(split_ray, split_intersection, worker);
+        result += num_samples_reciprocal * integrate(split_ray, split_intersection, worker, aov);
     }
 
     return result;
 }
 
-float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker) {
+float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV& aov) {
     Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -99,7 +100,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker) {
     bool caustic_path = false;
 #endif
 
-    for (;;) {
+    for (uint32_t i = 0;; ++i) {
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
@@ -119,6 +120,10 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker) {
 #else
             result += throughput * mat_sample.radiance();
 #endif
+
+            if (0 == i && !aov.empty()) {
+                common_AOVs(isec, mat_sample, worker, aov);
+            }
         }
 
         if (mat_sample.is_pure_emissive()) {

@@ -156,25 +156,13 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
 
         wo1 = wo;
 
-        bool const same_side = mat_sample.same_hemisphere(wo);
-
         // Only check direct eye-light connections for the very first hit.
         // Subsequent hits are handled by MIS.
-        if ((0 == i) & same_side) {
+        if (0 == i && mat_sample.same_hemisphere(wo)) {
             result_li += mat_sample.radiance();
 
             if (!aov.empty()) {
-                aov.insert(mat_sample.albedo(), sensor::aov::Property::Albedo);
-
-                aov.insert(abs(0.5f * (mat_sample.geometric_normal() + 1.f)),
-                           sensor::aov::Property::Geometric_normal);
-
-                aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)),
-                           sensor::aov::Property::Shading_normal);
-
-                aov.insert(float3(float(worker.scene().prop_material_id(isec.prop, isec.geo.part)) /
-                                  255.f),
-                           sensor::aov::Property::Material_id);
+                common_AOVs(isec, mat_sample, worker, aov);
             }
         }
 

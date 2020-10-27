@@ -7,6 +7,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/sensor/aov/value.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
@@ -30,23 +31,21 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
                  AOV& aov) {
     worker.reset_interface_stack(initial_stack);
 
+    float3 const wo = -ray.direction;
+
+    auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_, worker);
+
+    if (!aov.empty() && mat_sample.same_hemisphere(wo)) {
+        common_AOVs(isec, mat_sample, worker, aov);
+    }
+
     float3 vector;
 
     switch (settings_.value) {
         case Settings::Value::Albedo: {
-            float3 const wo = -ray.direction;
-
-            auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_,
-                                                 worker);
-
             return float4(mat_sample.albedo(), 1.f);
         } break;
         case Settings::Value::Roughness: {
-            float3 const wo = -ray.direction;
-
-            auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_,
-                                                 worker);
-
             float const a = mat_sample.alpha();
             float const r = std::sqrt(a);
             return float4(r, r, r, 1.f);
@@ -61,11 +60,6 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
             vector = isec.geo.geo_n;
             break;
         case Settings::Value::Shading_normal: {
-            float3 const wo = -ray.direction;
-
-            auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_,
-                                                 worker);
-
             if (!mat_sample.same_hemisphere(wo)) {
                 return float4(0.f, 0.f, 0.f, 1.f);
             }
@@ -76,11 +70,6 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
             vector = float3(0.5f * isec.geo.uv, -1.f);
             break;
         case Settings::Value::Splitting: {
-            float3 const wo = -ray.direction;
-
-            auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_,
-                                                 worker);
-
             float3 const& n = mat_sample.interpolated_normal();
 
             bool const translucent = mat_sample.is_translucent();
@@ -100,10 +89,6 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
             return float4(light_id(ray, isec, worker), 1.f);
         } break;
         case Settings::Value::Backface: {
-            float3 const wo = -ray.direction;
-
-            auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, sampler_,
-                                                 worker);
             return mat_sample.same_hemisphere(wo) ? float4(0.f, 0.f, 0.f, 1.f) : float4(1.f);
         } break;
         default:
