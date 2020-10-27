@@ -15,7 +15,7 @@ void Integrator::common_AOVs(float3 const& throughput, Ray const& ray, Intersect
                              AOV& aov) {
     using Property = sensor::aov::Property;
 
-    if (primary_ray && mat_sample.ior_greater_one()) {
+    if (primary_ray && mat_sample.can_evaluate()) {
         aov.insert(throughput * mat_sample.albedo(), Property::Albedo);
     }
 
