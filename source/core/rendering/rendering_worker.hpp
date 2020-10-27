@@ -91,10 +91,6 @@ class alignas(64) Worker : public scene::Worker {
 
     void particles(uint32_t frame, uint64_t offset, ulong2 const& range);
 
-    float4 li(Ray& ray, Interface_stack const& interface_stack, AOV& aov);
-
-    void particle_li(uint32_t frame, Interface_stack const& interface_stack);
-
     Event volume(Ray& ray, Intersection& isec, Filter filter, float3& li, float3& tr);
 
     bool transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
@@ -106,7 +102,9 @@ class alignas(64) Worker : public scene::Worker {
 
     Particle_importance& particle_importance() const;
 
-  protected:
+  private:
+    float4 li(Ray& ray, Interface_stack const& interface_stack, AOV& aov);
+
     bool transmittance(Ray const& ray, float3& transmittance);
 
     bool tinted_visibility(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,

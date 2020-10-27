@@ -145,6 +145,38 @@ void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     }
 }
 
+bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+                         float3& tr) {
+    if (float3 a; tinted_visibility(ray, wo, isec, filter, a)) {
+        if (float3 b; transmittance(ray, b)) {
+            tr = a * b;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration) {
+    if (photon_mapper_) {
+        return photon_mapper_->bake(*photon_map_, begin, end, frame, iteration, *this);
+    }
+
+    return 0;
+}
+
+float3 Worker::photon_li(Intersection const& isec, Material_sample const& sample) const {
+    if (photon_map_) {
+        return photon_map_->li(isec, sample, *this);
+    }
+
+    return float3(0.f);
+}
+
+Worker::Particle_importance& Worker::particle_importance() const {
+    return *particle_importance_;
+}
+
 float4 Worker::li(Ray& ray, Interface_stack const& interface_stack, AOV& aov) {
     Intersection isec;
 
@@ -177,38 +209,6 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack, AOV& aov) {
     }
 
     return float4(0.f);
-}
-
-bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
-                         float3& tr) {
-    if (float3 a; tinted_visibility(ray, wo, isec, filter, a)) {
-        if (float3 b; transmittance(ray, b)) {
-            tr = a * b;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration) {
-    if (photon_mapper_) {
-        return photon_mapper_->bake(*photon_map_, begin, end, frame, iteration, *this);
-    }
-
-    return 0;
-}
-
-float3 Worker::photon_li(Intersection const& isec, Material_sample const& sample) const {
-    if (photon_map_) {
-        return photon_map_->li(isec, sample, *this);
-    }
-
-    return float3(0.f);
-}
-
-Worker::Particle_importance& Worker::particle_importance() const {
-    return *particle_importance_;
 }
 
 bool Worker::transmittance(Ray const& ray, float3& transmittance) {

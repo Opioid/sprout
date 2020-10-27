@@ -72,7 +72,7 @@ inline float3 Layer::world_to_tangent(float3 const& v) const {
                   v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline Sample::Sample() : radiance_(0.f), properties_(Property::Can_evaluate) {}
+inline Sample::Sample() : properties_(Property::Can_evaluate) {}
 
 inline Sample::~Sample() = default;
 
