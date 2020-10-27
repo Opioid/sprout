@@ -212,7 +212,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
                                    Worker& worker) {
     float3 result(0.f);
 
-    if (!mat_sample.ior_greater_one()) {
+    if (!mat_sample.can_evaluate()) {
         return result;
     }
 
