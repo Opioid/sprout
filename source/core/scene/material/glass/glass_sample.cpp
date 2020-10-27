@@ -37,8 +37,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     result.wavelength = 0.f;
 }
 
-void Sample::set(float3 const& refraction_color, float ior, float ior_outside) {
-    color_       = refraction_color;
+void Sample::set(float ior, float ior_outside) {
     ior_         = ior;
     ior_outside_ = ior_outside;
 }
@@ -74,7 +73,7 @@ void Sample::sample(float ior, float p, bxdf::Sample& result) const {
     if (p <= f) {
         reflect(wo_, n, n_dot_wo, result);
     } else {
-        refract(wo_, n, color_, n_dot_wo, n_dot_t, eta, result);
+        refract(wo_, n, albedo_, n_dot_wo, n_dot_t, eta, result);
     }
 }
 

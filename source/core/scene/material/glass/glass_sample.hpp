@@ -15,11 +15,9 @@ class Sample : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const override;
 
-    void set(float3 const& refraction_color, float ior, float ior_outside);
+    void set(float ior, float ior_outside);
 
     void sample(float ior, float p, bxdf::Sample& result) const;
-
-    float3 color_;
 
     float ior_;
     float ior_outside_;

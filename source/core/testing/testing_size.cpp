@@ -92,22 +92,22 @@ void size() {
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
     print_size<scene::material::debug::Material>("debug::Material", 96);
-    print_size<scene::material::debug::Sample>("debug::Sample", 144);
+    print_size<scene::material::debug::Sample>("debug::Sample", 160);
 
     print_size<scene::material::glass::Glass>("glass::Glass", 176);
-    print_size<scene::material::glass::Sample>("glass::Sample", 176);
+    print_size<scene::material::glass::Sample>("glass::Sample", 160);
 
     print_size<scene::material::light::Constant>("light::Constant", 128);
     print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
-    print_size<scene::material::light::Sample>("light::Sample", 144);
+    print_size<scene::material::light::Sample>("light::Sample", 160);
 
     print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 192);
     print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 192);
-    print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
-    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 192);
+    print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 208);
+    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 208);
 
     print_size<scene::material::substitute::Material>("substitute::Material", 176);
-    print_size<scene::material::substitute::Sample>("substitute::Sample", 192);
+    print_size<scene::material::substitute::Sample>("substitute::Sample", 208);
 
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);
     print_size<scene::material::volumetric::Grid>("volumetric::Grid", 192);

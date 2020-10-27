@@ -40,7 +40,7 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
     }
 
     sample.set_common(rs.geo_n, rs.n, wo, refraction_color_, float3(0.f), alpha);
-    sample.set(refraction_color_, ior_, rs.ior, alpha, rs.avoid_caustics);
+    sample.set(ior_, rs.ior, rs.avoid_caustics);
 
     return sample;
 }

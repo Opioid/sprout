@@ -28,7 +28,7 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
     }
 
     sample.set_common(rs.geo_n, rs.n, wo, refraction_color_, float3(0.f), rs.alpha);
-    sample.set(refraction_color_, ior_, rs.ior);
+    sample.set(ior_, rs.ior);
 
     return sample;
 }

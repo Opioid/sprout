@@ -23,7 +23,7 @@ bxdf::Result Sample_rough::evaluate_b(float3 const& wi) const {
 
 void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     if (ior_.eta_i == ior_.eta_t) {
-        result.reflection = color_;
+        result.reflection = albedo_;
         result.wi         = -wo_;
         result.pdf        = 1.f;
         result.wavelength = 0.f;
@@ -81,7 +81,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
         float const omf = 1.f - f;
 
-        result.reflection *= omf * n_dot_wi * color_;
+        result.reflection *= omf * n_dot_wi * albedo_;
         result.pdf *= omf;
         result.type.set(bxdf::Type::Caustic);
     }
@@ -91,15 +91,11 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
     result.wavelength = 0.f;
 }
 
-void Sample_rough::set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
+void Sample_rough::set(float ior, float ior_outside,
                        bool avoid_caustics) {
     properties_.set(Property::Can_evaluate, ior != ior_outside);
 
-    color_ = refraction_color;
-
     f0_ = fresnel::schlick_f0(ior, ior_outside);
-
-    alpha_ = alpha;
 
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
@@ -149,9 +145,9 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
         ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
 
         if constexpr (Forward) {
-            return {std::min(n_dot_wi, n_dot_wo) * color_ * ggx.reflection, ggx.pdf()};
+            return {std::min(n_dot_wi, n_dot_wo) * albedo_ * ggx.reflection, ggx.pdf()};
         } else {
-            return {color_ * ggx.reflection, ggx.pdf()};
+            return {albedo_ * ggx.reflection, ggx.pdf()};
         }
     } else {
         float const n_dot_wi = layer_.clamp_n_dot(wi);
