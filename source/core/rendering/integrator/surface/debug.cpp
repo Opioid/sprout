@@ -95,7 +95,7 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
             return float4(0.f, 0.f, 0.f, 1.f);
     }
 
-    return float4(abs(0.5f * (vector + 1.f)), 1.f);
+    return float4(saturate(0.5f * (vector + 1.f)), 1.f);
 }
 
 float3 Debug::light_id(Ray& ray, Intersection& isec, Worker& worker) {

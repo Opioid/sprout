@@ -1,5 +1,5 @@
-#ifndef SU_CORE_IMAGE_IMGE_HELPER_HPP
-#define SU_CORE_IMAGE_IMGE_HELPER_HPP
+#ifndef SU_CORE_IMAGE_HELPER_HPP
+#define SU_CORE_IMAGE_HELPER_HPP
 
 #include "typed_image_fwd.hpp"
 

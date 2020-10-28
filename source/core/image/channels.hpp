@@ -16,6 +16,8 @@ enum class Channels {
 
 enum class Swizzle { XYZW, YXZW };
 
+enum class Encoding { Color, SNorm, UNorm, UInt };
+
 }  // namespace image
 
 #endif

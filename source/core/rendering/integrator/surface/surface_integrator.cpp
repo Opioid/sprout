@@ -30,11 +30,11 @@ void Integrator::common_AOVs(float3 const& throughput, Ray const& ray, Intersect
     }
 
     if (aov.active(Property::Geometric_normal)) {
-        aov.insert(abs(0.5f * (mat_sample.geometric_normal() + 1.f)), Property::Geometric_normal);
+        aov.insert(mat_sample.geometric_normal(), Property::Geometric_normal);
     }
 
     if (aov.active(Property::Shading_normal)) {
-        aov.insert(abs(0.5f * (mat_sample.shading_normal() + 1.f)), Property::Shading_normal);
+        aov.insert(mat_sample.shading_normal(), Property::Shading_normal);
     }
 
     if (aov.active(Property::Material_id)) {

@@ -29,9 +29,9 @@ void Image_sequence::write(image::Float4 const& image, AOV aov, uint32_t frame, 
     if (aov::Property::Unknown == aov) {
         writer_->write(stream, image, threads);
     } else {
-        bool const is_data = aov::is_data(aov);
+        image::Encoding encoding = aov::encoding(aov);
 
-        writer_->write(stream, image, is_data, threads);
+        writer_->write(stream, image, encoding, threads);
     }
 }
 

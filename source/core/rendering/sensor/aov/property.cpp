@@ -2,12 +2,21 @@
 
 namespace rendering::sensor::aov {
 
-bool is_data(Property property) {
-    if (Property::Albedo == property) {
-        return false;
-    }
+image::Encoding encoding(Property property) {
+    using Encoding = image::Encoding;
 
-    return true;
+    switch (property) {
+        case Property::Unknown:
+        case Property::Albedo:
+            return Encoding::Color;
+        case Property::Geometric_normal:
+        case Property::Shading_normal:
+            return Encoding::SNorm;
+        case Property::Roughness:
+            return Encoding::UNorm;
+        case Property::Material_id:
+            return Encoding::UInt;
+    }
 }
 
 }  // namespace rendering::sensor::aov

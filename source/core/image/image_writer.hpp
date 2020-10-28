@@ -1,6 +1,7 @@
 #ifndef CORE_IMAGE_WRITER_HPP
 #define CORE_IMAGE_WRITER_HPP
 
+#include "channels.hpp"
 #include "typed_image_fwd.hpp"
 
 #include <iosfwd>
@@ -22,7 +23,8 @@ class Writer {
 
     virtual bool write(std::ostream& stream, Float4 const& image, Threads& threads) = 0;
 
-    virtual bool write(std::ostream& stream, Float4 const& image, bool data, Threads& threads);
+    virtual bool write(std::ostream& stream, Float4 const& image, Encoding encoding,
+                       Threads& threads);
 };
 
 }  // namespace image

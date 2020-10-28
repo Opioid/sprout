@@ -23,7 +23,9 @@ class Srgb {
     void ACEScg_to_sRGB(Float4 const& image, int32_t begin, int32_t end);
 #endif
 
-    void to_byte(Float4 const& image, int32_t begin, int32_t end);
+    void to_unorm(Float4 const& image, int32_t begin, int32_t end);
+
+    void to_snorm(Float4 const& image, int32_t begin, int32_t end);
 
   protected:
     char* buffer_;
