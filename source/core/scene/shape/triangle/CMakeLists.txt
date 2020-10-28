@@ -19,8 +19,6 @@ target_sources(core
     "triangle_primitive_mt.hpp"
     "triangle_primitive_mt.inl"
     "triangle_primitive.hpp"
-    "vertex_encoding.hpp"
-    "vertex_encoding.inl"
     "vertex_layout_description.cpp"
     "vertex_layout_description.hpp"
     )

@@ -3,7 +3,6 @@
 #include "base/math/vector3.inl"
 #include "base/string/string.hpp"
 #include "triangle_json_handler.hpp"
-#include "vertex_encoding.inl"
 #include "vertex_layout_description.hpp"
 
 #include <fstream>
