@@ -13,13 +13,13 @@ class Value {
 
     ~Value();
 
+    static uint32_t constexpr Max_slots = 7;
+
     struct Mapping {
-        uint8_t m[7];
+        uint8_t m[Max_slots];
     };
 
     void init(Mapping mapping, uint32_t num_slots);
-
-    bool empty() const;
 
     uint32_t num_slots() const;
 

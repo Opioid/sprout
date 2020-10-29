@@ -88,7 +88,7 @@ void Pathtracer_DL::start_pixel(RNG& rng) {
 }
 
 float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
-                         Interface_stack const& initial_stack, AOV& aov) {
+                         Interface_stack const& initial_stack, AOV* aov) {
     worker.reset_interface_stack(initial_stack);
 
     Filter filter = Filter::Undefined;
@@ -124,8 +124,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             }
         }
 
-        if (!aov.empty()) {
-            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, aov);
+        if (aov) {
+            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, *aov);
         }
 
         if (mat_sample.is_pure_emissive()) {

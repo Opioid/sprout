@@ -33,6 +33,10 @@ Value_pool::~Value_pool() {
 }
 
 void Value_pool::configure(uint32_t num_slots, Property const* properties) {
+    if (0 == num_slots) {
+        return;
+    }
+
     num_slots_ = num_slots;
 
     properties_ = new Property[num_slots];
@@ -41,7 +45,7 @@ void Value_pool::configure(uint32_t num_slots, Property const* properties) {
         properties_[i] = properties[i];
     }
 
-    for (uint32_t i = 0; i < 7; ++i) {
+    for (uint32_t i = 0; i < Value::Max_slots; ++i) {
         mapping_.m[i] = 255;
     }
 
@@ -53,6 +57,10 @@ void Value_pool::configure(uint32_t num_slots, Property const* properties) {
 }
 
 void Value_pool::init(uint32_t num_values) {
+    if (0 == num_slots_) {
+        return;
+    }
+
     values_ = new Value[num_values];
 
     for (uint32_t i = 0; i < num_values; ++i) {
@@ -73,7 +81,7 @@ Property Value_pool::property(uint32_t slot) const {
 }
 
 Value* Value_pool::get(uint32_t id) const {
-    return &values_[id];
+    return 0 == num_slots_ ? nullptr : &values_[id];
 }
 
 }  // namespace rendering::sensor::aov

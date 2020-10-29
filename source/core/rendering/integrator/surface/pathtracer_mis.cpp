@@ -87,7 +87,7 @@ void Pathtracer_MIS::start_pixel(RNG& rng) {
 }
 
 float4 Pathtracer_MIS::li(Ray& ray, Intersection& isec, Worker& worker,
-                          Interface_stack const& initial_stack, AOV& aov) {
+                          Interface_stack const& initial_stack, AOV* aov) {
     float4 li(0.f);
     float3 photon_li(0.f);
 
@@ -122,7 +122,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& isec, Worker& worker,
 }
 
 Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, Worker& worker,
-                                                 bool integrate_photons, AOV& aov) {
+                                                 bool integrate_photons, AOV* aov) {
     uint32_t const max_bounces = settings_.max_bounces;
 
     Filter filter = Filter::Undefined;
@@ -162,9 +162,9 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             result_li += mat_sample.radiance();
         }
 
-        if (!aov.empty()) {
+        if (aov) {
             common_AOVs(throughput, ray, isec, mat_sample, state.is(State::Primary_ray), worker,
-                        aov);
+                        *aov);
         }
 
         if (mat_sample.is_pure_emissive()) {

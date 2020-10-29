@@ -38,7 +38,7 @@ void AO::start_pixel(RNG& rng) {
 }
 
 float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
-              AOV& aov) {
+              AOV* aov) {
     worker.reset_interface_stack(initial_stack);
 
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
@@ -49,8 +49,8 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
 
     auto const& mat_sample = isec.sample(wo, ray, Filter::Undefined, 0.f, false, *sampler_, worker);
 
-    if (!aov.empty()) {
-        common_AOVs(float3(1.f), ray, isec, mat_sample, true, worker, aov);
+    if (aov) {
+        common_AOVs(float3(1.f), ray, isec, mat_sample, true, worker, *aov);
     }
 
     Ray occlusion_ray;

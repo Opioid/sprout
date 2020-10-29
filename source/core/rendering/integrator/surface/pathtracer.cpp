@@ -63,7 +63,7 @@ void Pathtracer::start_pixel(RNG& rng) {
 }
 
 float4 Pathtracer::li(Ray& ray, Intersection& isec, Worker& worker,
-                      Interface_stack const& initial_stack, AOV& aov) {
+                      Interface_stack const& initial_stack, AOV* aov) {
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
 
     float4 result = float4(0.f);
@@ -81,7 +81,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& isec, Worker& worker,
     return result;
 }
 
-float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV& aov) {
+float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* aov) {
     Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -122,8 +122,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV& 
 #endif
         }
 
-        if (!aov.empty()) {
-            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, aov);
+        if (aov) {
+            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, *aov);
         }
 
         if (mat_sample.is_pure_emissive()) {

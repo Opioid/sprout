@@ -31,7 +31,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     void start_pixel(RNG& rng) final;
 
     float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
-              AOV& aov) final;
+              AOV* aov) final;
 
   private:
     struct Result {
@@ -42,7 +42,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     };
 
     Result integrate(Ray& ray, Intersection& isec, Worker& worker, bool integrate_photons,
-                     AOV& aov);
+                     AOV* aov);
 
     float3 sample_lights(Ray const& ray, Intersection& isec, Material_sample const& mat_sample,
                          Filter filter, Worker& worker);

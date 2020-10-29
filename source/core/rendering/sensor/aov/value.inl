@@ -6,10 +6,6 @@
 
 namespace rendering::sensor::aov {
 
-inline bool Value::empty() const {
-    return 0 == num_slots_;
-}
-
 inline uint32_t Value::num_slots() const {
     return num_slots_;
 }

@@ -102,7 +102,7 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
 
     uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
 
-    AOV& aov = *aov_;
+    AOV* aov = aov_;
 
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
         uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;
@@ -116,7 +116,9 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
             int2 const pixel(x, y);
 
             for (uint32_t i = num_samples; i > 0; --i) {
-                aov.clear();
+                if (aov) {
+                    aov->clear();
+                }
 
                 auto const sample = sampler_->generate_camera_sample(rng(), pixel);
 
@@ -177,7 +179,7 @@ Worker::Particle_importance& Worker::particle_importance() const {
     return *particle_importance_;
 }
 
-float4 Worker::li(Ray& ray, Interface_stack const& interface_stack, AOV& aov) {
+float4 Worker::li(Ray& ray, Interface_stack const& interface_stack, AOV* aov) {
     Intersection isec;
 
     if (!interface_stack.empty()) {

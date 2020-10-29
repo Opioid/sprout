@@ -103,7 +103,7 @@ class alignas(64) Worker : public scene::Worker {
     Particle_importance& particle_importance() const;
 
   private:
-    float4 li(Ray& ray, Interface_stack const& interface_stack, AOV& aov);
+    float4 li(Ray& ray, Interface_stack const& interface_stack, AOV* aov);
 
     bool transmittance(Ray const& ray, float3& transmittance);
 

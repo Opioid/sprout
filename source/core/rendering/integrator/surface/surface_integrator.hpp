@@ -26,7 +26,7 @@ class Integrator : public integrator::Integrator {
     ~Integrator() override;
 
     virtual float4 li(Ray& ray, Intersection& isec, Worker& worker,
-                      Interface_stack const& initial_stack, AOV& aov) = 0;
+                      Interface_stack const& initial_stack, AOV* aov) = 0;
 
   protected:
     void common_AOVs(float3 const& throughput, Ray const& ray, Intersection const& isec,
