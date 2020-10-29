@@ -46,7 +46,7 @@ struct Ray;
 
 namespace light {
 
-static uint32_t constexpr Null = 0xFFFFFFFF;
+inline uint32_t constexpr Null = 0xFFFFFFFF;
 
 class alignas(16) Light {
   public:

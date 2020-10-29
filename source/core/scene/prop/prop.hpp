@@ -32,7 +32,7 @@ struct Normals;
 
 namespace prop {
 
-static uint32_t constexpr Null = 0xFFFFFFFF;
+inline uint32_t constexpr Null = 0xFFFFFFFF;
 
 class Prop {
   public:
