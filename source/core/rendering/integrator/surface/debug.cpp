@@ -42,9 +42,8 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
     float3 vector;
 
     switch (settings_.value) {
-        case Settings::Value::Albedo: {
+        case Settings::Value::Albedo:
             return float4(mat_sample.albedo(), 1.f);
-        } break;
         case Settings::Value::Roughness: {
             float const a = mat_sample.alpha();
             float const r = std::sqrt(a);
@@ -67,8 +66,7 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
             vector = mat_sample.shading_normal();
         } break;
         case Settings::Value::UV:
-            vector = float3(0.5f * isec.geo.uv, -1.f);
-            break;
+            return float4(frac(isec.geo.uv[0]), frac(isec.geo.uv[1]), 0.f, 1.f);
         case Settings::Value::Splitting: {
             float3 const& n = mat_sample.interpolated_normal();
 
@@ -85,9 +83,8 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
 
             return float4(float(mat_id), 0.f, 0.f, 1.f);
         } break;
-        case Settings::Value::Light_id: {
+        case Settings::Value::Light_id:
             return float4(light_id(ray, isec, worker), 1.f);
-        } break;
         case Settings::Value::Backface: {
             return mat_sample.same_hemisphere(wo) ? float4(0.f, 0.f, 0.f, 1.f) : float4(1.f);
         } break;
