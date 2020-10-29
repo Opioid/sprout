@@ -27,6 +27,7 @@
 #include "metal/metal_presets.hpp"
 #include "metallic_paint/metallic_paint_material.hpp"
 #include "mix/mix_material.hpp"
+#include "null/null_material.hpp"
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
 #include "scene/scene_constants.hpp"
@@ -112,7 +113,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
             if ("Light" == n.name) {
                 material = load_light(n.value, resources);
             } else {
-                material = new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
+                material = new debug::Material(Sampler_settings());
             }
         } else {
             if ("Debug" == n.name) {
@@ -129,6 +130,8 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
                 material = load_metallic_paint(n.value, resources);
             } else if ("Mix" == n.name) {
                 material = load_mix(n.value, resources);
+            } else if ("Null" == n.name) {
+                material = new null::Material(Sampler_settings());
             } else if ("Substitute" == n.name) {
                 material = load_substitute(n.value, resources);
             } else if ("Volumetric" == n.name) {
