@@ -107,7 +107,7 @@ void Setup::test(float3 const& wi, float3 const& /*wo*/, float3 const& t, float3
                  float3 const& n, sampler::Sampler& sampler, RNG& rng) {
     Sample_isotropic sample;
 
-    sample.set(ior, absorption, roughness, false);
+    sample.set(ior, absorption, false);
 
     //   sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);

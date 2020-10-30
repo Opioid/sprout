@@ -13,7 +13,7 @@ class Sample_isotropic : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    void set(float3 const& ior, float3 const& absorption, float alpha, bool avoid_caustics);
+    void set(float3 const& ior, float3 const& absorption, bool avoid_caustics);
 
   private:
     template <bool Forward>
@@ -21,8 +21,6 @@ class Sample_isotropic : public material::Sample {
 
     float3 ior_;
     float3 absorption_;
-
-    float alpha_;
 
     bool avoid_caustics_;
 };
