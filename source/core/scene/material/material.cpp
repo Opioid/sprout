@@ -38,6 +38,17 @@ void Material::set_ior(float ior) {
     ior_ = ior;
 }
 
+void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+                               float distance) {
+    if (any_greater_zero(scattering_color)) {
+        cc_ = attenuation(absorption_color, scattering_color, distance);
+    } else {
+        cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
+    }
+
+    attenuation_distance_ = distance;
+}
+
 void Material::set_volumetric_anisotropy(float anisotropy) {
     volumetric_anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }

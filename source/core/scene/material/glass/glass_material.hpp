@@ -16,8 +16,6 @@ class Glass : public Material {
 
     void set_refraction_color(float3 const& color);
 
-    void set_attenuation(float3 const& absorption_color, float distance);
-
     static size_t sample_size();
 
   protected:

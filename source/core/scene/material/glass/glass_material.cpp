@@ -42,12 +42,6 @@ void Glass::set_refraction_color(float3 const& color) {
     refraction_color_ = color;
 }
 
-void Glass::set_attenuation(float3 const& absorption_color, float distance) {
-    cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
-
-    attenuation_distance_ = distance;
-}
-
 size_t Glass::sample_size() {
     return sizeof(Sample);
 }

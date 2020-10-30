@@ -69,6 +69,9 @@ class Material {
 
     void set_ior(float ior);
 
+    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+                         float distance);
+
     void set_volumetric_anisotropy(float anisotropy);
 
     virtual void commit(Threads& threads, Scene const& scene);
@@ -132,23 +135,14 @@ class Material {
     uint32_t sampler_key() const;
 
     bool is_masked() const;
-
     bool is_two_sided() const;
-
     bool is_animated() const;
-
     bool is_caustic() const;
-
     bool has_tinted_shadow() const;
-
     bool has_emission_map() const;
-
     bool is_emissive() const;
-
     bool is_scattering_volume() const;
-
     bool is_textured_volume() const;
-
     bool is_heterogeneous_volume() const;
 
     float ior() const;

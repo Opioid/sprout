@@ -17,9 +17,6 @@ class Material_coating_subsurface final : public Material_clearcoat {
 
     void set_density_map(Texture_adapter const& density_map);
 
-    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                         float distance);
-
     CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const final;
 
     CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const final;

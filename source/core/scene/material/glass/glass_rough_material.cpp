@@ -58,12 +58,6 @@ void Glass_rough::set_refraction_color(float3 const& color) {
     refraction_color_ = color;
 }
 
-void Glass_rough::set_attenuation(float3 const& absorption_color, float distance) {
-    cc_.a = attenuation_coefficient(absorption_color, distance);
-
-    attenuation_distance_ = distance;
-}
-
 void Glass_rough::set_roughness(float roughness) {
     float const r = ggx::clamp_roughness(roughness);
 

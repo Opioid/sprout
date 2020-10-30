@@ -16,7 +16,6 @@ class Glass_rough : public Material {
     void set_roughness_map(Texture_adapter const& roughness_map);
 
     void set_refraction_color(float3 const& color);
-    void set_attenuation(float3 const& absorption_color, float distance);
     void set_roughness(float roughness);
 
     static size_t sample_size();

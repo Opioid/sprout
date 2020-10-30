@@ -64,18 +64,6 @@ void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
 }
 
-void Material_subsurface::set_attenuation(float3 const& absorption_color,
-                                          float3 const& scattering_color, float distance) {
-    if (any_greater_zero(scattering_color)) {
-        cc_ = attenuation(absorption_color, scattering_color, distance);
-    } else {
-        cc_.a = attenuation_coefficient(absorption_color, distance);
-        cc_.s = float3(0.f);
-    }
-
-    attenuation_distance_ = distance;
-}
-
 CC Material_subsurface::collision_coefficients(float2 uv, Filter filter,
                                                Worker const& worker) const {
     if (color_map_.is_valid()) {

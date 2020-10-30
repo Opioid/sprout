@@ -327,7 +327,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         material->set_normal_map(normal_map);
         material->set_roughness_map(roughness_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
         material->set_ior(ior);
         material->set_roughness(roughness);
         return material;
@@ -348,7 +348,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         auto material = new glass::Glass_dispersion(sampler_settings);
         material->set_normal_map(normal_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
         material->set_ior(ior);
         material->set_abbe(abbe);
         return material;
@@ -357,7 +357,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
     auto material = new glass::Glass(sampler_settings);
     material->set_normal_map(normal_map);
     material->set_refraction_color(refraction_color);
-    material->set_attenuation(absorption_color, attenuation_distance);
+    material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
     material->set_ior(ior);
     return material;
 }
