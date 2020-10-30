@@ -4,6 +4,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/ggx/ggx.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"

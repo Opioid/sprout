@@ -12,6 +12,7 @@
 #include "extension.hpp"
 #include "image/texture/texture.hpp"
 #include "light/light.inl"
+#include "material/material.inl"
 #include "prop/prop.inl"
 #include "prop/prop_intersection.hpp"
 #include "resource/resource.hpp"

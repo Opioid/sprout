@@ -8,7 +8,7 @@
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene_ray.inl"

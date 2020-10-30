@@ -1,6 +1,7 @@
 #include "substitute_translucent_material.hpp"
 #include "base/math/vector4.inl"
 #include "image/texture/texture_adapter.inl"
+#include "scene/material/material.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "substitute_base_material.inl"

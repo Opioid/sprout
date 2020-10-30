@@ -8,6 +8,7 @@
 #include "resource/resource.hpp"
 #include "scene/animation/animation.hpp"
 #include "scene/entity/composed_transformation.inl"
+#include "scene/material/material.inl"
 #include "scene/scene.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"

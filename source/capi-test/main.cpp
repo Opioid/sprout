@@ -22,13 +22,13 @@ int main(int /*argc*/, char* /*argv*/[]) {
     }
 
     std::string const material_source = R"({
-	"rendering": {
-		"Substitute": {
-			"color": [0, 1, 0.5],
-			"roughness": 0.0,
-			"metallic": 1
-		}
-	}
+    "rendering": {
+        "Substitute": {
+            "color": [0, 1, 0.5],
+            "roughness": 0.0,
+            "metallic": 1
+        }
+    }
 })";
 
     uint32_t const material = su_create_material(material_source.c_str());

@@ -6,6 +6,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/scene.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"

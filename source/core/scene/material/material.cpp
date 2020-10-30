@@ -6,14 +6,7 @@
 #include "base/spectrum/xyz.hpp"
 #include "collision_coefficients.inl"
 #include "fresnel/fresnel.inl"
-#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
-
-//#include "base/spectrum/rgb.hpp"
-//#include "base/encoding/encoding.inl"
-//#include "core/image/typed_image.hpp"
-//#include "core/image/encoding/png/png_writer.hpp"
 
 namespace scene::material {
 
@@ -69,20 +62,6 @@ Material::Radiance_sample Material::radiance_sample(float3 const& r3) const {
 
 float Material::emission_pdf(float3 const& /*uvw*/, Filter /*filter*/,
                              Worker const& /*worker*/) const {
-    return 1.f;
-}
-
-float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker const& worker) const {
-    if (mask_.is_valid()) {
-        auto const& sampler = worker.sampler_2D(sampler_key_, filter);
-
-        if (element_ < 0) {
-            return mask_.sample_1(worker, sampler, uv);
-        } else {
-            return mask_.sample_1(worker, sampler, uv, element_);
-        }
-    }
-
     return 1.f;
 }
 
@@ -143,34 +122,6 @@ void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint6
                                 bool /*importance_sampling*/, Threads& /*threads*/,
                                 Scene const& /*scene*/) {}
 
-uint32_t Material::sampler_key() const {
-    return sampler_key_;
-}
-
-bool Material::is_two_sided() const {
-    return properties_.is(Property::Two_sided);
-}
-
-bool Material::is_masked() const {
-    return mask_.is_valid();
-}
-
-bool Material::is_animated() const {
-    return properties_.is(Property::Animated);
-}
-
-bool Material::is_caustic() const {
-    return properties_.is(Property::Caustic);
-}
-
-bool Material::has_tinted_shadow() const {
-    return properties_.is(Property::Tinted_shadow);
-}
-
-bool Material::has_emission_map() const {
-    return properties_.is(Property::Emission_map);
-}
-
 bool Material::is_emissive() const {
     if (properties_.is(Property::Emission_map)) {
         return true;
@@ -178,22 +129,6 @@ bool Material::is_emissive() const {
 
     float3 const e = average_radiance(1.f);
     return any_greater_zero(e);
-}
-
-bool Material::is_scattering_volume() const {
-    return properties_.is(Property::Scattering_volume);
-}
-
-bool Material::is_textured_volume() const {
-    return properties_.is(Property::Textured_volume);
-}
-
-bool Material::is_heterogeneous_volume() const {
-    return properties_.is(Property::Heterogeneous_volume);
-}
-
-float Material::ior() const {
-    return ior_;
 }
 
 float Material::van_de_hulst_anisotropy(uint32_t depth) const {

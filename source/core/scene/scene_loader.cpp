@@ -14,6 +14,7 @@
 #include "image/texture/texture_provider.hpp"
 #include "light/light.hpp"
 #include "logging/logging.hpp"
+#include "material/material.inl"
 #include "prop/prop.hpp"
 #include "resource/resource_manager.inl"
 #include "scene.inl"

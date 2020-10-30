@@ -4,7 +4,7 @@
 #include "base/math/vector3.inl"
 #include "prop.hpp"
 #include "prop_intersection.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/scene.inl"
 #include "scene/scene_ray.hpp"
 #include "scene/scene_renderstate.hpp"

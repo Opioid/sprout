@@ -6,6 +6,7 @@
 #include "scene/entity/composed_transformation.hpp"
 //#include "scene/material/coating/coating.inl"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/material.inl"
 #include "scene/material/volumetric/volumetric_octree_builder.hpp"
 #include "scene/material/volumetric/volumetric_sample.hpp"
 #include "scene/scene_renderstate.hpp"

@@ -1,10 +1,10 @@
-
 #include "triangle_bvh_tree.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector3.inl"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/scene.inl"
 #include "scene/scene_worker.inl"
 #include "scene/shape/node_stack.inl"

@@ -14,7 +14,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop.hpp"

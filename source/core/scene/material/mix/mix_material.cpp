@@ -1,6 +1,7 @@
 #include "mix_material.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "sampler/sampler.hpp"
+#include "scene/material/material.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 

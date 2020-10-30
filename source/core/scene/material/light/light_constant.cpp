@@ -2,6 +2,7 @@
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
 #include "light_material_sample.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/scene.inl"
 #include "scene/scene_renderstate.hpp"

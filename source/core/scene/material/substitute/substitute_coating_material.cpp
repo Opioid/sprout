@@ -2,6 +2,7 @@
 #include "base/math/vector4.inl"
 #include "scene/material/coating/coating.inl"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/material.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "substitute_coating_sample.inl"

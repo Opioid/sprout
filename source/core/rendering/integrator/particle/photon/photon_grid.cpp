@@ -7,7 +7,7 @@
 #include "photon.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/bxdf.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene_worker.inl"

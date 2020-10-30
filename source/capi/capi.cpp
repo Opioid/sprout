@@ -19,6 +19,7 @@
 #include "core/sampler/sampler_random.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "core/scene/camera/camera_perspective.hpp"
+#include "core/scene/material/material.inl"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.inl"
