@@ -99,27 +99,16 @@ void Material_coating_subsurface::set_attenuation(float3 const& absorption_color
     attenuation_distance_ = distance;
 }
 
-float3 Material_coating_subsurface::absorption_coefficient(float2 uv, Filter filter,
-                                                           Worker const& worker) const {
+CC Material_coating_subsurface::collision_coefficients(float2 uv, Filter filter,
+                                                       Worker const& worker) const {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
         float3 const color   = color_map_.sample_3(worker, sampler, uv);
 
-        return attenuation_coefficient(color, attenuation_distance_);
+        return scattering(cc_.a, color);
     }
 
-    return cc_.a;
-}
-
-CC Material_coating_subsurface::collision_coefficients(float2 uv, Filter filter,
-                                                       Worker const& worker) const {
-    SOFT_ASSERT(color_map_.is_valid());
-
-    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-
-    float3 const color = color_map_.sample_3(worker, sampler, uv);
-
-    return scattering(cc_.a, color);
+    return cc_;
 }
 
 CC Material_coating_subsurface::collision_coefficients(float3 const& p, Filter filter,

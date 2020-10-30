@@ -61,15 +61,14 @@ void Sample_thin::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const
         float3 const attenuation = rendering::attenuation(approximated_distance,
                                                           absorption_coefficient_);
 
-        refract(wo_, attenuation * color_, result);
+        refract(wo_, attenuation * albedo_, result);
     }
 
     result.wavelength = 0.f;
 }
 
-void Sample_thin::set(float3 const& refraction_color, float3 const& absorption_coefficient,
-                      float ior, float ior_outside, float thickness) {
-    color_                  = refraction_color;
+void Sample_thin::set(float3 const& absorption_coefficient, float ior, float ior_outside,
+                      float thickness) {
     absorption_coefficient_ = absorption_coefficient;
     ior_                    = ior;
     ior_outside_            = ior_outside;

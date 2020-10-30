@@ -94,7 +94,7 @@ void size() {
     print_size<scene::material::debug::Material>("debug::Material", 96);
     print_size<scene::material::debug::Sample>("debug::Sample", 160);
 
-    print_size<scene::material::glass::Glass>("glass::Glass", 176);
+    print_size<scene::material::glass::Glass>("glass::Glass", 128);
     print_size<scene::material::glass::Sample>("glass::Sample", 160);
 
     print_size<scene::material::light::Constant>("light::Constant", 128);

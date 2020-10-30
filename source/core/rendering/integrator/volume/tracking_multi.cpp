@@ -72,7 +72,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& isec, Filter filter, Wor
 
     if (!material.is_scattering_volume()) {
         // Basically the "glass" case
-        float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
+        float3 const mu_a = material.collision_coefficients(interface->uv, filter, worker).a;
 
         li = float3(0.f);
         tr = attenuation(d - ray.min_t(), mu_a);

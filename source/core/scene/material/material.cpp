@@ -95,11 +95,6 @@ float Material::border(float3 const& wi, float3 const& n) const {
     return f;
 }
 
-float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                        Worker const& /*worker*/) const {
-    return cc_.a;
-}
-
 CC Material::collision_coefficients() const {
     return cc_;
 }

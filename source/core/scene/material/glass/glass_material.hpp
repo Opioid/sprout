@@ -5,14 +5,12 @@
 
 namespace scene::material::glass {
 
-class alignas(16) Glass : public Material {
+class Glass : public Material {
   public:
     Glass(Sampler_settings const& sampler_settings);
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const override;
-
-    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
 
     void set_normal_map(Texture_adapter const& normal_map);
 
@@ -26,9 +24,6 @@ class alignas(16) Glass : public Material {
     Texture_adapter normal_map_;
 
     float3 refraction_color_;
-    float3 absorption_coefficient_;
-    float3 absorption_color_;
-    float  attenuation_distance_;
 };
 
 }  // namespace scene::material::glass

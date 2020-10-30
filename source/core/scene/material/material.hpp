@@ -49,7 +49,7 @@ class Gridtree;
 
 class Sample;
 
-class alignas(16) Material {
+class Material {
   public:
     using Filter          = Sampler_settings::Filter;
     using Shape           = shape::Shape;
@@ -103,8 +103,6 @@ class alignas(16) Material {
                                    Filter filter, Worker const& worker) const;
 
     float border(float3 const& wi, float3 const& n) const;
-
-    virtual float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const;
 
     CC collision_coefficients() const;
 

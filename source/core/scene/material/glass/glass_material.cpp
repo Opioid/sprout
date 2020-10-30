@@ -33,11 +33,6 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
     return sample;
 }
 
-float3 Glass::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                     Worker const& /*worker*/) const {
-    return absorption_coefficient_;
-}
-
 void Glass::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
@@ -47,9 +42,7 @@ void Glass::set_refraction_color(float3 const& color) {
 }
 
 void Glass::set_attenuation(float3 const& absorption_color, float distance) {
-    absorption_color_ = absorption_color;
-
-    absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
+    cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
 
     attenuation_distance_ = distance;
 }

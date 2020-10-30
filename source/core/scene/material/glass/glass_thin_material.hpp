@@ -27,8 +27,8 @@ class Glass_thin : public Material {
     Texture_adapter normal_map_;
 
     float3 refraction_color_;
-    float3 absorption_coefficient_;
-    float  thickness_;
+
+    float thickness_;
 };
 
 }  // namespace scene::material::glass
