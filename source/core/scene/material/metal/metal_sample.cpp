@@ -34,8 +34,7 @@ void Sample_isotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-void Sample_isotropic::set(float3 const& ior, float3 const& absorption,
-                           bool avoid_caustics) {
+void Sample_isotropic::set(float3 const& ior, float3 const& absorption, bool avoid_caustics) {
     ior_            = ior;
     absorption_     = absorption;
     avoid_caustics_ = avoid_caustics;

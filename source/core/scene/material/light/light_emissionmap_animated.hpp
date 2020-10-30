@@ -22,8 +22,6 @@ class Emissionmap_animated : public Emissionmap {
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              Worker const& worker) const final;
 
-    float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const final;
-
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
                           Transformation const& trafo, float area, bool importance_sampling,
                           Threads& threads, Scene const& scene) final;
@@ -32,8 +30,6 @@ class Emissionmap_animated : public Emissionmap {
 
   protected:
     uint64_t animation_duration_;
-
-    int32_t element_;
 };
 
 }  // namespace scene::material::light

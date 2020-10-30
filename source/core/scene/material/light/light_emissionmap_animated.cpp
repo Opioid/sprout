@@ -10,7 +10,7 @@
 namespace scene::material::light {
 
 Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided)
-    : Emissionmap(sampler_settings, two_sided), element_(-1) {
+    : Emissionmap(sampler_settings, two_sided) {
     properties_.set(Property::Animated);
 }
 
@@ -48,16 +48,6 @@ float3 Emissionmap_animated::evaluate_radiance(float3 const& /*wi*/, float3 cons
                                                Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy(), element_);
-}
-
-float Emissionmap_animated::opacity(float2 uv, uint64_t /*time*/, Filter filter,
-                                    Worker const& worker) const {
-    if (mask_.is_valid()) {
-        auto& sampler = worker.sampler_2D(sampler_key(), filter);
-        return mask_.sample_1(worker, sampler, uv, element_);
-    }
-
-    return 1.f;
 }
 
 void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,

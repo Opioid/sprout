@@ -28,7 +28,8 @@ Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
       emission_(0.f),
       ior_(1.5f),
       attenuation_distance_(0.f),
-      volumetric_anisotropy_(0.f) {}
+      volumetric_anisotropy_(0.f),
+      element_(-1) {}
 
 Material::~Material() = default;
 
@@ -74,7 +75,12 @@ float Material::emission_pdf(float3 const& /*uvw*/, Filter /*filter*/,
 float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker const& worker) const {
     if (mask_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key_, filter);
-        return mask_.sample_1(worker, sampler, uv);
+
+        if (element_ < 0) {
+            return mask_.sample_1(worker, sampler, uv);
+        } else {
+            return mask_.sample_1(worker, sampler, uv, element_);
+        }
     }
 
     return 1.f;

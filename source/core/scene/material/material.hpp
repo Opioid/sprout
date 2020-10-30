@@ -97,7 +97,7 @@ class Material {
 
     virtual float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const;
 
-    virtual float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const;
+    float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const;
 
     virtual float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                                    Filter filter, Worker const& worker) const;
@@ -179,10 +179,10 @@ class Material {
     float3 emission_;
 
     float ior_;
-
     float attenuation_distance_;
-
     float volumetric_anisotropy_;
+
+    int32_t element_;
 
   public:
     static void init_rainbow();
