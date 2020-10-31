@@ -3,6 +3,7 @@
 
 #include "scene/material/disney/disney.hpp"
 #include "substitute_base_sample.hpp"
+#include "scene/material/material_sample.hpp"
 
 namespace scene::material::substitute {
 

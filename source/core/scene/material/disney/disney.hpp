@@ -3,7 +3,7 @@
 
 #include "base/math/vector3.hpp"
 
-namespace scene ::material {
+namespace scene::material {
 
 namespace bxdf {
 struct Result;
