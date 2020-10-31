@@ -12,7 +12,7 @@ Value::~Value() {
 void Value::init(Mapping mapping, uint32_t num_slots) {
     mapping_ = mapping;
 
-    num_slots_ = num_slots;
+    num_slots_ = uint8_t(num_slots);
 
     slots_ = new Slot[num_slots];
 }
@@ -37,7 +37,7 @@ void Value_pool::configure(uint32_t num_slots, Property const* properties) {
         return;
     }
 
-    num_slots_ = num_slots;
+    num_slots_ = uint8_t(num_slots);
 
     properties_ = new Property[num_slots];
 
@@ -52,7 +52,7 @@ void Value_pool::configure(uint32_t num_slots, Property const* properties) {
     for (uint32_t i = 0; i < num_slots; ++i) {
         auto const p = properties[i];
 
-        mapping_.m[uint32_t(p)] = i;
+        mapping_.m[uint32_t(p)] = uint8_t(i);
     }
 }
 

@@ -676,37 +676,37 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
         }
 
         if ("Debug" == n.name) {
-            auto value = Debug::Settings::Value::Shading_normal;
+            auto dvalue = Debug::Settings::Value::Shading_normal;
 
             std::string const value_type = json::read_string(n.value, "value");
 
             if ("Albedo" == value_type) {
-                value = Debug::Settings::Value::Albedo;
+                dvalue = Debug::Settings::Value::Albedo;
             } else if ("Roughness" == value_type) {
-                value = Debug::Settings::Value::Roughness;
+                dvalue = Debug::Settings::Value::Roughness;
             } else if ("Tangent" == value_type) {
-                value = Debug::Settings::Value::Tangent;
+                dvalue = Debug::Settings::Value::Tangent;
             } else if ("Bitangent" == value_type) {
-                value = Debug::Settings::Value::Bitangent;
+                dvalue = Debug::Settings::Value::Bitangent;
             } else if ("Geometric_normal" == value_type) {
-                value = Debug::Settings::Value::Geometric_normal;
+                dvalue = Debug::Settings::Value::Geometric_normal;
             } else if ("Shading_normal" == value_type) {
-                value = Debug::Settings::Value::Shading_normal;
+                dvalue = Debug::Settings::Value::Shading_normal;
             } else if ("UV" == value_type) {
-                value = Debug::Settings::Value::UV;
+                dvalue = Debug::Settings::Value::UV;
             } else if ("Splitting" == value_type) {
-                value = Debug::Settings::Value::Splitting;
+                dvalue = Debug::Settings::Value::Splitting;
             } else if ("Material_id" == value_type) {
-                value = Debug::Settings::Value::Material_id;
+                dvalue = Debug::Settings::Value::Material_id;
             } else if ("Light_id" == value_type) {
-                value = Debug::Settings::Value::Light_id;
+                dvalue = Debug::Settings::Value::Light_id;
             } else if ("Backface" == value_type) {
-                value = Debug::Settings::Value::Backface;
+                dvalue = Debug::Settings::Value::Backface;
             }
 
             load_light_sampling(n.value, light_sampling);
 
-            return new Debug_pool(num_workers, value);
+            return new Debug_pool(num_workers, dvalue);
         }
     }
 
@@ -1030,7 +1030,7 @@ void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aov
         }
     }
 
-    aovs.configure(properties.size(), properties.data());
+    aovs.configure(uint32_t(properties.size()), properties.data());
 }
 
 }  // namespace take
