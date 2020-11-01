@@ -45,7 +45,10 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
     file::Type const type = file::query_type(*stream);
 
     if (file::Type::EXR == type) {
-        return encoding::exr::Reader::read(*stream);
+        bool color = false;
+        options.query("color", color);
+
+        return encoding::exr::Reader::read(*stream, color);
     }
 
     if (file::Type::PNG == type) {
