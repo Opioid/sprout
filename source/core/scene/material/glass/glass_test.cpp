@@ -103,7 +103,7 @@ void rough_refraction() {
 
     sample.set(ior, 1.f);
 
-    sample_rough.set(ior, 1.f, false);
+    sample_rough.set(ior, 1.f);
 
     //  bool const same_side = sample.same_hemisphere(wo);
 

@@ -42,7 +42,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
     if (rs.subsurface) {
         auto& sample = worker.sample<volumetric::Sample>();
 
-        sample.set_common(rs.geo_n, rs.n, wo, float3(0.f), float3(0.f), rs.alpha);
+        sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha);
 
         sample.set(volumetric_anisotropy_);
 

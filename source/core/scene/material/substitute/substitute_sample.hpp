@@ -2,8 +2,8 @@
 #define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_SAMPLE_HPP
 
 #include "scene/material/disney/disney.hpp"
-#include "substitute_base_sample.hpp"
 #include "scene/material/material_sample.hpp"
+#include "substitute_base_sample.hpp"
 
 namespace scene::material::substitute {
 

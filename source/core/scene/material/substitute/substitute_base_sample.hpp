@@ -1,8 +1,7 @@
 #ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_HPP
 #define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_HPP
 
-#include "base/math/vector.hpp"
-
+#include "base/math/vector3.hpp"
 
 namespace rnd {
 class Generator;
@@ -29,7 +28,7 @@ template <typename Diffuse>
 struct Base_closure {
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& color, float f0, float metallic, bool avoid_caustics);
+    void set(float3 const& color, float f0, float metallic);
 
     template <bool Forward>
     bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
@@ -44,11 +43,10 @@ struct Base_closure {
                                      float wo_dot_h, material::Sample const& sample) const;
 
     void diffuse_sample(float3 const& wo, material::Sample const& sample, Sampler& sampler,
-                        RNG& rng, bool avoid_caustics, bxdf::Sample& result) const;
+                        RNG& rng, bxdf::Sample& result) const;
 
     void diffuse_sample(float3 const& wo, material::Sample const& sample, float diffuse_factor,
-                        Sampler& sampler, RNG& rng, bool avoid_caustics,
-                        bxdf::Sample& result) const;
+                        Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
     void gloss_sample(float3 const& wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
                       bxdf::Sample& result) const;
@@ -65,10 +63,9 @@ struct Base_closure {
     float3 f0_;
 
     float metallic_;
-
-    bool avoid_caustics_;
 };
 
-}}  // namespace scene::material::substitute
+}  // namespace substitute
+}  // namespace scene::material
 
 #endif

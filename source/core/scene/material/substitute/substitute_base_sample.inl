@@ -13,15 +13,12 @@
 namespace scene::material::substitute {
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::set(float3 const& color, float f0, float metallic,
-                                bool avoid_caustics) {
+void Base_closure<Diffuse>::set(float3 const& color, float f0, float metallic) {
     albedo_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
 
     metallic_ = metallic;
-
-    avoid_caustics_ = avoid_caustics;
 }
 
 template <typename Diffuse>
@@ -38,7 +35,7 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
 
     auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, albedo_);
 
-    if (avoid_caustics_ && alpha <= ggx::Min_alpha) {
+    if (sample.avoid_caustics() && alpha <= ggx::Min_alpha) {
         if constexpr (Forward) {
             return {n_dot_wi * d.reflection, d.pdf()};
         } else {
@@ -83,7 +80,7 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
     auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha,
                                        diffuse_factor * albedo_);
 
-    if (avoid_caustics_ && alpha <= ggx::Min_alpha) {
+    if (sample.avoid_caustics() && alpha <= ggx::Min_alpha) {
         if constexpr (Forward) {
             return {n_dot_wi * d.reflection, d.pdf()};
         } else {
@@ -121,7 +118,7 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
     float const alpha = sample.alpha_;
 
-    if (avoid_caustics_ & (alpha <= ggx::Min_alpha)) {
+    if (sample.avoid_caustics() & (alpha <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
 
@@ -149,8 +146,7 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 
 template <typename Diffuse>
 void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample const& sample,
-                                           Sampler& sampler, RNG& rng, bool avoid_caustics,
-                                           bxdf::Sample& result) const {
+                                           Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
     float const alpha = sample.alpha_;
@@ -161,7 +157,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample co
 
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha, albedo_, xi, result);
 
-    if (avoid_caustics & (alpha <= ggx::Min_alpha)) {
+    if (sample.avoid_caustics() & (alpha <= ggx::Min_alpha)) {
         result.reflection *= n_dot_wi;
         return;
     }
@@ -183,7 +179,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample co
 template <typename Diffuse>
 void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample const& sample,
                                            float diffuse_factor, Sampler& sampler, RNG& rng,
-                                           bool avoid_caustics, bxdf::Sample& result) const {
+                                           bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
     float const alpha = sample.alpha_;
@@ -195,7 +191,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample co
     float const n_dot_wi = Diffuse::reflect(wo, n_dot_wo, layer, alpha, diffuse_factor * albedo_,
                                             xi, result);
 
-    if (avoid_caustics & (alpha <= ggx::Min_alpha)) {
+    if (sample.avoid_caustics() & (alpha <= ggx::Min_alpha)) {
         result.reflection *= n_dot_wi;
         return;
     }

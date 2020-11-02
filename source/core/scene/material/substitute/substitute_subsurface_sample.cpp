@@ -41,7 +41,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             refract(sampler, rng, result);
         } else {
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, *this, sampler, rng, base_.avoid_caustics_, result);
+                base_.diffuse_sample(wo_, *this, sampler, rng, result);
             } else {
                 base_.gloss_sample(wo_, *this, sampler, rng, result);
             }

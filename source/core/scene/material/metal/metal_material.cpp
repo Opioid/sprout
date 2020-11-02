@@ -31,8 +31,8 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs.geo_n, rs.n, wo, ior3_, float3(0.), alpha_);
-    sample.set(ior3_, absorption_, rs.avoid_caustics);
+    sample.set_common(rs, wo, ior3_, float3(0.), alpha_);
+    sample.set(ior3_, absorption_);
 
     return sample;
 }
@@ -72,7 +72,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
                                                      Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
 
-    sample.set_common(rs.geo_n, rs.n, wo, ior3_, float3(0.f), alpha_[0]);
+    sample.set_common(rs, wo, ior3_, float3(0.f), alpha_[0]);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -90,7 +90,6 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
     }
 
     sample.set(ior3_, absorption_, alpha_);
-    sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
 }

@@ -31,7 +31,7 @@ material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*r
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs.geo_n, rs.n, wo, refraction_color_, float3(0.f), rs.alpha);
+    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha);
     sample.set(cc_.a, ior_, rs.ior, thickness_);
 
     return sample;

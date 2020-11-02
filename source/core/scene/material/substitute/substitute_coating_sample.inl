@@ -59,7 +59,7 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3 const& wi) const 
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, base_.avoid_caustics_);
+    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics());
 
     float const metallic = base_.metallic_;
 
@@ -90,10 +90,10 @@ void Sample_coating<Coating, Diffuse>::coating_sample_and_base(Sampler& sampler,
 template <typename Coating, typename Diffuse>
 void Sample_coating<Coating, Diffuse>::diffuse_sample_and_coating(Sampler& sampler, RNG& rng,
                                                                   bxdf::Sample& result) const {
-    base_.diffuse_sample(wo_, *this, sampler, rng, base_.avoid_caustics_, result);
+    base_.diffuse_sample(wo_, *this, sampler, rng, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
-                                             base_.avoid_caustics_);
+                                             avoid_caustics());
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = 0.5f * (result.pdf + coating.pdf);
@@ -105,7 +105,7 @@ void Sample_coating<Coating, Diffuse>::gloss_sample_and_coating(Sampler& sampler
     base_.gloss_sample(wo_, *this, sampler, rng, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
-                                             base_.avoid_caustics_);
+                                             avoid_caustics());
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = 0.5f * (result.pdf + coating.pdf);
@@ -117,7 +117,7 @@ void Sample_coating<Coating, Diffuse>::pure_gloss_sample_and_coating(Sampler& sa
     base_.pure_gloss_sample(wo_, *this, sampler, rng, result);
 
     auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
-                                             base_.avoid_caustics_);
+                                             avoid_caustics());
 
     result.reflection = coating.attenuation * result.reflection + coating.reflection;
     result.pdf        = 0.5f * (result.pdf + coating.pdf);

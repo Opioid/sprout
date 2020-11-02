@@ -91,15 +91,13 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
     result.wavelength = 0.f;
 }
 
-void Sample_rough::set(float ior, float ior_outside, bool avoid_caustics) {
+void Sample_rough::set(float ior, float ior_outside) {
     properties_.set(Property::Can_evaluate, ior != ior_outside);
 
     f0_ = fresnel::schlick_f0(ior, ior_outside);
 
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
-
-    avoid_caustics_ = avoid_caustics;
 }
 
 template <bool Forward>
@@ -109,7 +107,7 @@ bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
     }
 
     if (!same_hemisphere(wo_)) {
-        if (avoid_caustics_) {
+        if (avoid_caustics()) {
             return {float3(0.f), 0.f};
         }
 

@@ -38,13 +38,13 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
     options.query("usage", usage);
 
     bool invert = false;
-    bool color = false;
+    bool color  = false;
 
     if (Usage::Color == usage) {
         color = true;
     } else if (Usage::Color_with_alpha == usage) {
         channels = Channels::XYZW;
-        color = true;
+        color    = true;
     } else if (Usage::Mask == usage) {
         channels = Channels::W;
     } else if (Usage::Anisotropy == usage) {

@@ -147,7 +147,7 @@ Split_candidate Kernel::splitting_plane(References const& references, AABB const
         }
     } else {
         threads.run_range(
-            [&scs = split_candidates_, &references, aabb_surface_area](
+            [& scs = split_candidates_, &references, aabb_surface_area](
                 uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) noexcept {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
                     scs[uint32_t(i)].evaluate(references, aabb_surface_area);

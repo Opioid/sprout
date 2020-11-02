@@ -24,7 +24,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
 
     float3 const color = same_side ? Color_front : Color_back;
 
-    sample.set_common(rs.geo_n, rs.n, wo, color, float3(0.f), 1.f);
+    sample.set_common(rs, wo, color, float3(0.f), 1.f);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

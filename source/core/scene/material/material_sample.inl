@@ -88,6 +88,10 @@ inline bool Sample::can_evaluate() const {
     return properties_.is(Property::Can_evaluate);
 }
 
+inline bool Sample::avoid_caustics() const {
+    return properties_.is(Property::Avoid_caustics);
+}
+
 inline float3 Sample::offset_p(float3 const& p, bool subsurface, bool translucent) const {
     if (subsurface) {
         return float3(p[0], p[1], p[2], 0.f);
@@ -152,13 +156,25 @@ inline bool Sample::same_hemisphere(float3 const& v) const {
     return dot(geo_n_, v) >= 0.f;
 }
 
-inline void Sample::set_common(float3 const& geo_n, float3 const& n, float3 const& wo,
-                               float3 const& albedo, float3 const& radiance, float alpha) {
-    geo_n_    = geo_n;
-    n_        = n;
+inline void Sample::set_common(Renderstate const& rs, float3 const& wo, float3 const& albedo,
+                               float3 const& radiance, float alpha) {
+    geo_n_    = rs.geo_n;
+    n_        = rs.n;
     wo_       = wo;
     albedo_   = albedo;
     radiance_ = radiance;
+    alpha_    = alpha;
+
+    properties_.set(Property::Avoid_caustics, rs.avoid_caustics);
+}
+
+inline void Sample::set_common(float3 const& geo_n, float3 const& n, float3 const& wo,
+                               float alpha) {
+    geo_n_    = geo_n;
+    n_        = n;
+    wo_       = wo;
+    albedo_   = float3(0.f);
+    radiance_ = float3(0.f);
     alpha_    = alpha;
 }
 
