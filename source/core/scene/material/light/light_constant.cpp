@@ -22,7 +22,7 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
 
     float3 const radiance = emittance_.radiance(worker.scene().light_area(rs.prop, rs.part));
 
-    sample.set_common(rs.geo_n, rs.n, wo, radiance, radiance, 0.f);
+    sample.set_common(rs, wo, radiance, radiance, 0.f);
 
     return sample;
 }

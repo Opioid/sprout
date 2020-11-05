@@ -23,7 +23,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>();
 
-        sample.set_common(rs.geo_n, rs.n, wo, float3(0.f), float3(0.f), rs.alpha);
+        sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha);
 
         float const gs = van_de_hulst_anisotropy(ray.depth);
 
@@ -34,7 +34,7 @@ material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Rende
 
     auto& sample = worker.sample<null::Sample>();
 
-    sample.set_common(rs.geo_n, rs.n, wo, float3(0.f), float3(0.f), rs.alpha);
+    sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha);
 
     return sample;
 }

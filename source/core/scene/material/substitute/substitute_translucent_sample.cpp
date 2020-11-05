@@ -46,7 +46,7 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
             float const o = 1.f - t;
 
             if (p < 0.75f) {
-                base_.diffuse_sample(wo_, *this, o, sampler, rng, base_.avoid_caustics_, result);
+                base_.diffuse_sample(wo_, *this, o, sampler, rng, result);
             } else {
                 base_.gloss_sample(wo_, *this, o, sampler, rng, result);
             }
@@ -55,7 +55,7 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
         result.pdf *= 0.5f;
     } else {
         if (p < 0.5f) {
-            base_.diffuse_sample(wo_, *this, sampler, rng, base_.avoid_caustics_, result);
+            base_.diffuse_sample(wo_, *this, sampler, rng, result);
         } else {
             base_.gloss_sample(wo_, *this, sampler, rng, result);
         }

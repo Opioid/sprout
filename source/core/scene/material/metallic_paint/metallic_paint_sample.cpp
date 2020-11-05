@@ -18,7 +18,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi) const {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics());
 
     float3     flakes_fresnel;
     auto const flakes = flakes_.evaluate<true>(wi, wo_, h, wo_dot_h, flakes_fresnel);
@@ -41,7 +41,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate_b(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto const coating = coating_.evaluate_b(wi, wo_, h, wo_dot_h, avoid_caustics());
 
     float3     flakes_fresnel;
     auto const flakes = flakes_.evaluate<false>(wi, wo_, h, wo_dot_h, flakes_fresnel);
@@ -81,7 +81,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
         base_.sample(wo_, sampler, rng, result);
 
         auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
-                                                 avoid_caustics_);
+                                                 avoid_caustics());
 
         float3     flakes_fresnel;
         auto const flakes = flakes_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
@@ -96,7 +96,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
         flakes_.sample(wo_, sampler, rng, flakes_fresnel, result);
 
         auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
-                                                 avoid_caustics_);
+                                                 avoid_caustics());
 
         auto const base = base_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi);
 

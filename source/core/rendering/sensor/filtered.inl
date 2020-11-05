@@ -126,9 +126,9 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
     if (aov) {
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
-            auto const r = aov->value(i);
+            auto const v = aov->value(i);
 
-            Filtered_base::add_weighted(int2(x, y), i, 1.f, r, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y), i, 1.f, v, isolated, bounds);
         }
     }
 }
@@ -233,9 +233,9 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
     if (aov) {
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
-            auto const r = aov->value(i);
+            auto const v = aov->value(i);
 
-            Filtered_base::add_weighted(int2(x, y), i, 1.f, r, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y), i, 1.f, v, isolated, bounds);
         }
     }
 }
@@ -330,9 +330,9 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
 
     if (aov) {
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
-            auto const r = aov->value(i);
+            auto const v = aov->value(i);
 
-            Filtered_base::add_weighted(int2(px, py), i, 1.f, r, isolated, bounds);
+            Filtered_base::add_weighted(int2(px, py), i, 1.f, v, isolated, bounds);
         }
     }
 }

@@ -38,9 +38,13 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
     options.query("usage", usage);
 
     bool invert = false;
+    bool color  = false;
 
-    if (Usage::Color_with_alpha == usage) {
+    if (Usage::Color == usage) {
+        color = true;
+    } else if (Usage::Color_with_alpha == usage) {
         channels = Channels::XYZW;
+        color    = true;
     } else if (Usage::Mask == usage) {
         channels = Channels::W;
     } else if (Usage::Anisotropy == usage) {
@@ -67,6 +71,10 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
 
     if (invert) {
         image_options.set("invert", invert);
+    }
+
+    if (color) {
+        image_options.set("color", color);
     }
 
     uint32_t const image_id = decode_name(filename);

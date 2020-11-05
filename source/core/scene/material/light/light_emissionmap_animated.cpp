@@ -39,7 +39,7 @@ material::Sample const& Emissionmap_animated::sample(float3 const&      wo, Ray 
     float3 const radiance  = emission_map_.sample_3(worker, sampler, rs.uv, element_);
     float3 const fradiance = emission_factor_ * radiance;
 
-    sample.set_common(rs.geo_n, rs.n, wo, fradiance, fradiance, 0.f);
+    sample.set_common(rs, wo, fradiance, fradiance, 0.f);
 
     return sample;
 }

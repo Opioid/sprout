@@ -34,15 +34,14 @@ void Sample_isotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-void Sample_isotropic::set(float3 const& ior, float3 const& absorption, bool avoid_caustics) {
-    ior_            = ior;
-    absorption_     = absorption;
-    avoid_caustics_ = avoid_caustics;
+void Sample_isotropic::set(float3 const& ior, float3 const& absorption) {
+    ior_        = ior;
+    absorption_ = absorption;
 }
 
 template <bool Forward>
 bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
-    if (!same_hemisphere(wo_) || (avoid_caustics_ && alpha_ <= ggx::Min_alpha)) {
+    if (!same_hemisphere(wo_) || (avoid_caustics() && alpha_ <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
 

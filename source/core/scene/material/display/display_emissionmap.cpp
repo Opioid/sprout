@@ -25,7 +25,7 @@ material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*
 
     float3 const radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
 
-    sample.set_common(rs.geo_n, rs.n, wo, radiance, radiance, alpha_);
+    sample.set_common(rs, wo, radiance, radiance, alpha_);
 
     sample.set(fresnel::schlick_f0(ior_, rs.ior));
 

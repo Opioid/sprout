@@ -22,7 +22,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
                                          Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_common(rs.geo_n, rs.n, wo, color_a_, float3(0.f), alpha_);
+    sample.set_common(rs, wo, color_a_, float3(0.f), alpha_);
 
     sample.base_.set_tangent_frame(rs.t, rs.b, rs.n);
 
@@ -55,8 +55,6 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
 
     sample.coating_.set(coating_.absorption_coefficient, coating_.thickness, coating_.ior,
                         fresnel::schlick_f0(coating_.ior, rs.ior), coating_.alpha, 1.f);
-
-    sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
 }

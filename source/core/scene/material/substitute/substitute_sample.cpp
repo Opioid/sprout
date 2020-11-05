@@ -27,7 +27,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
         float const p = sampler.generate_sample_1D(rng);
 
         if (p < 0.5f) {
-            base_.diffuse_sample(wo_, *this, sampler, rng, base_.avoid_caustics_, result);
+            base_.diffuse_sample(wo_, *this, sampler, rng, result);
         } else {
             base_.gloss_sample(wo_, *this, sampler, rng, result);
         }

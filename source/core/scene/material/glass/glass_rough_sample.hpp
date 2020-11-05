@@ -13,13 +13,11 @@ class Sample_rough final : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    void set(float ior, float ior_outside, bool avoid_caustics);
+    void set(float ior, float ior_outside);
 
     float f0_;
 
     IoR ior_;
-
-    bool avoid_caustics_;
 
   private:
     template <bool Forward>

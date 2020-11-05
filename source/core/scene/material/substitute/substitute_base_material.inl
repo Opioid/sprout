@@ -67,8 +67,9 @@ void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float io
 
     // std::max(surface[0], std::min(float(depth * depth) * 0.025f, 1.f))
 
-    sample.set_common(rs.geo_n, rs.n, wo, color, radiance, alpha);
-    sample.base_.set(color, fresnel::schlick_f0(ior_, ior_outside), metallic, rs.avoid_caustics);
+    sample.set_common(rs, wo, color, radiance, alpha);
+
+    sample.base_.set(color, fresnel::schlick_f0(ior_, ior_outside), metallic);
 }
 
 }  // namespace scene::material::substitute

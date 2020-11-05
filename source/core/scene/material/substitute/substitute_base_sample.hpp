@@ -1,15 +1,34 @@
 #ifndef SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_HPP
 #define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_SAMPLE_HPP
 
-#include "scene/material/material_sample.hpp"
+#include "base/math/vector3.hpp"
 
-namespace scene::material::substitute {
+namespace rnd {
+class Generator;
+}
+
+using RNG = rnd::Generator;
+
+namespace sampler {
+class Sampler;
+}
+
+namespace scene::material {
+
+namespace bxdf {
+struct Result;
+struct Sample;
+}  // namespace bxdf
+
+class Sample;
+
+namespace substitute {
 
 template <typename Diffuse>
 struct Base_closure {
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& color, float f0, float metallic, bool avoid_caustics);
+    void set(float3 const& color, float f0, float metallic);
 
     template <bool Forward>
     bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
@@ -21,14 +40,13 @@ struct Base_closure {
 
     template <bool Forward>
     bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                                     float wo_dot_h, Sample const& sample) const;
+                                     float wo_dot_h, material::Sample const& sample) const;
 
     void diffuse_sample(float3 const& wo, material::Sample const& sample, Sampler& sampler,
-                        RNG& rng, bool avoid_caustics, bxdf::Sample& result) const;
+                        RNG& rng, bxdf::Sample& result) const;
 
     void diffuse_sample(float3 const& wo, material::Sample const& sample, float diffuse_factor,
-                        Sampler& sampler, RNG& rng, bool avoid_caustics,
-                        bxdf::Sample& result) const;
+                        Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
     void gloss_sample(float3 const& wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
                       bxdf::Sample& result) const;
@@ -45,10 +63,9 @@ struct Base_closure {
     float3 f0_;
 
     float metallic_;
-
-    bool avoid_caustics_;
 };
 
-}  // namespace scene::material::substitute
+}  // namespace substitute
+}  // namespace scene::material
 
 #endif

@@ -98,8 +98,8 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
         radiance = float3(0.f);
     }
 
-    sample.set_common(rs.geo_n, rs.n, wo, color, radiance, surface[0]);
-    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[1], rs.avoid_caustics);
+    sample.set_common(rs, wo, color, radiance, surface[0]);
+    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[1]);
 
     return sample;
 }

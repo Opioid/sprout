@@ -37,6 +37,10 @@ int32_t num_scanlines_per_block(Compression compression) {
 int32_t num_scanline_blocks(int32_t num_scanlines, Compression compression) {
     int32_t const pb = num_scanlines_per_block(compression);
 
+    if (0 == pb) {
+        return 0;
+    }
+
     int32_t const x = num_scanlines / pb;
 
     return num_scanlines % pb ? x + 1 : x;

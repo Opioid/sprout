@@ -117,8 +117,8 @@ void Setup::test(float3 const& wi, float3 const& wo, float3 const& t, float3 con
                  float3 const& n, sampler::Sampler& /*sampler*/) {
     Sample sample;
 
-    sample.set_common(n, n, wo, color, radiance, roughness * roughness);
-    sample.base_.set(color, constant_f0, metallic, false);
+    sample.set_common(n, n, wo, /*color, radiance,*/ roughness * roughness);
+    sample.base_.set(color, constant_f0, metallic);
 
     //   sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);

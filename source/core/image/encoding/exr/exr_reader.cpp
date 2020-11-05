@@ -48,9 +48,9 @@ static void channel_list(std::istream& stream, Channels& channels);
 
 static Compression compression(std::istream& stream);
 
-static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels);
+static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels, bool color);
 
-Image* Reader::read(std::istream& stream) {
+Image* Reader::read(std::istream& stream, bool color) {
     uint8_t header[Signature_size];
 
     // Check signature
@@ -136,7 +136,7 @@ Image* Reader::read(std::istream& stream) {
     }
 
     if (Compression::ZIP == compression) {
-        return read_zip(stream, data_window.zw() + 1, channels);
+        return read_zip(stream, data_window.zw() + 1, channels, color);
     }
 
     logging::push_error("only ZIP compression is supported");
@@ -288,7 +288,8 @@ static void interleave_sse2(uint8_t const* source, int32_t len, uint8_t* out) {
     }
 }
 
-static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels) {
+static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& channels,
+                       bool color) {
     int32_t const rows_per_block = exr::num_scanlines_per_block(Compression::ZIP);
     int32_t const row_blocks     = exr::num_scanline_blocks(dimensions[1], Compression::ZIP);
 
@@ -351,14 +352,17 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
                     uint16_t const g = shorts[o + 1 * dimensions[0] + x];
                     uint16_t const b = shorts[o + 0 * dimensions[0] + x];
 
+                    if (color) {
 #ifdef SU_ACESCG
-                    float3 const  rgbf(half_to_float(ushort3(r, g, b)));
-                    ushort3 const rgb(float_to_half(spectrum::sRGB_to_AP1(rgbf)));
+                        float3 const  rgbf(half_to_float(ushort3(r, g, b)));
+                        ushort3 const rgb(float_to_half(spectrum::sRGB_to_AP1(rgbf)));
 #else
-                    ushort3 const rgb(r, g, b);
+                        ushort3 const       rgb(r, g, b);
 #endif
-
-                    image_s3.store(p, rgb);
+                        image_s3.store(p, rgb);
+                    } else {
+                        image_s3.store(p, ushort3(r, g, b));
+                    }
                 }
             }
         } else {
@@ -373,13 +377,16 @@ static Image* read_zip(std::istream& stream, int2 dimensions, Channels const& ch
                     float const g = floats[o + 1 * dimensions[0] + x];
                     float const b = floats[o + 0 * dimensions[0] + x];
 
+                    if (color) {
 #ifdef SU_ACESCG
-                    packed_float3 const rgb(spectrum::sRGB_to_AP1(float3(r, g, b)));
+                        packed_float3 const rgb(spectrum::sRGB_to_AP1(float3(r, g, b)));
 #else
-                    packed_float3 const rgb(r, g, b);
+                        packed_float3 const rgb(r, g, b);
 #endif
-
-                    image_f3.store(p, rgb);
+                        image_f3.store(p, rgb);
+                    } else {
+                        image_f3.store(p, packed_float3(r, g, b));
+                    }
                 }
             }
         }
