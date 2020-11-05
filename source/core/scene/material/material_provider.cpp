@@ -338,7 +338,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         material->set_mask(mask);
         material->set_normal_map(normal_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
         material->set_ior(ior);
         material->set_thickness(thickness);
         return material;
