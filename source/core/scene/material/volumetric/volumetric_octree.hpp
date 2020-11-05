@@ -22,7 +22,7 @@ struct Box {
     int3 bounds[2];
 };
 
-struct alignas(8) Node {
+struct Node {
     bool is_parent() const {
         return 0 != has_children;
     }
