@@ -26,7 +26,7 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
     if (thickness_ > 0.f) {
         float const t = transparency_;
 
-        if (p < 0.5f) {
+        if (p < t) {
             float const n_dot_wi = lambert::Isotropic::reflect(base_.albedo_, layer_, sampler, rng,
                                                                result);
 
@@ -42,17 +42,19 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
             float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
 
             result.reflection *= (t * n_dot_wi * (1.f - f)) * attenuation;
+
+            result.pdf *= t;
         } else {
             float const o = 1.f - t;
 
-            if (p < 0.75f) {
+            if (p < t + 0.5f * o) {
                 base_.diffuse_sample(wo_, *this, o, sampler, rng, result);
             } else {
                 base_.gloss_sample(wo_, *this, o, sampler, rng, result);
             }
-        }
 
-        result.pdf *= 0.5f;
+            result.pdf *= o;
+        }
     } else {
         if (p < 0.5f) {
             base_.diffuse_sample(wo_, *this, sampler, rng, result);
@@ -100,9 +102,9 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
 
         float const f = base_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
-        float const pdf = n_dot_wi * (0.5f * Pi_inv);
+        float const pdf = n_dot_wi * (t * Pi_inv);
 
-        return {(t * n_dot_wi * Pi_inv * (1.f - f)) * (attenuation * base_.albedo_), pdf};
+        return {(pdf * (1.f - f)) * (attenuation * base_.albedo_), pdf};
     }
 
     float3 const h = normalize(wo_ + wi);
@@ -114,7 +116,7 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
     auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this, o);
 
     if (thickness_ > 0.f) {
-        result.pdf() *= 0.5f;
+        result.pdf() *= o;
     }
 
     return result;

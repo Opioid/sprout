@@ -937,7 +937,7 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
         return material;
     }
 
-    if (attenuation_distance > 0.f || density_map.is_valid()) {
+    if (!two_sided && (attenuation_distance > 0.f || density_map.is_valid())) {
         auto material = new substitute::Material_subsurface(sampler_settings);
 
         material->set_mask(mask);
