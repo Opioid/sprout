@@ -32,7 +32,7 @@ class Checkers : public Material_base {
     float scale_;
 };
 
-class alignas(16) Frozen : public Material_base {
+class Frozen : public Material_base {
   public:
     Frozen(Sampler_settings const& sampler_settings, bool two_sided);
 
