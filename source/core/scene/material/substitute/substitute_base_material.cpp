@@ -40,10 +40,6 @@ float3 Material_base::average_radiance(float /*area*/) const {
     return float3(0.f);
 }
 
-void Material_base::set_color_map(Texture_adapter const& color_map) {
-    color_map_ = color_map;
-}
-
 void Material_base::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }

@@ -64,19 +64,6 @@ void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
 }
 
-CC Material_subsurface::collision_coefficients(float2 uv, Filter filter,
-                                               Worker const& worker) const {
-    if (color_map_.is_valid()) {
-        auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-
-        float3 const color = color_map_.sample_3(worker, sampler, uv);
-
-        return scattering(cc_.a, color);
-    }
-
-    return cc_;
-}
-
 CC Material_subsurface::collision_coefficients(float3 const& p, Filter filter,
                                                Worker const& worker) const {
     SOFT_ASSERT(density_map_.is_valid());

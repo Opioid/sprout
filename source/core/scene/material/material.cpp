@@ -4,8 +4,7 @@
 #include "base/spectrum/aces.hpp"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
-#include "collision_coefficients.inl"
-#include "fresnel/fresnel.inl"
+
 #include "scene/scene_renderstate.hpp"
 
 namespace scene::material {
@@ -28,6 +27,10 @@ Material::~Material() = default;
 
 void Material::set_mask(Texture_adapter const& mask) {
     mask_ = mask;
+}
+
+void Material::set_color_map(Texture_adapter const& color_map) {
+    color_map_ = color_map;
 }
 
 void Material::set_emission(float3 const& emission) {
@@ -79,25 +82,6 @@ float Material::emission_pdf(float3 const& /*uvw*/, Filter /*filter*/,
 float3 Material::thin_absorption(float3 const& /*wi*/, float3 const& /*n*/, float2 uv,
                                  uint64_t time, Filter filter, Worker const& worker) const {
     return float3(1.f - opacity(uv, time, filter, worker));
-}
-
-float Material::border(float3 const& wi, float3 const& n) const {
-    float const f0 = fresnel::schlick_f0(ior_, 1.f);
-
-    float const n_dot_wi = std::max(dot(n, wi), 0.f);
-
-    float const f = 1.f - fresnel::schlick(n_dot_wi, f0);
-
-    return f;
-}
-
-CC Material::collision_coefficients() const {
-    return cc_;
-}
-
-CC Material::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
-                                    Worker const& /*worker*/) const {
-    return cc_;
 }
 
 CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,

@@ -65,6 +65,8 @@ class Material {
 
     void set_mask(Texture_adapter const& mask);
 
+    void set_color_map(Texture_adapter const& color_map);
+
     void set_emission(float3 const& emission);
 
     void set_ior(float ior);
@@ -109,7 +111,7 @@ class Material {
 
     CC collision_coefficients() const;
 
-    virtual CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const;
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const;
 
     virtual CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const;
 
@@ -167,6 +169,7 @@ class Material {
     flags::Flags<Property> properties_;
 
     Texture_adapter mask_;
+    Texture_adapter color_map_;
 
     CC cc_;
 
