@@ -205,7 +205,7 @@ bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& traf
 
     auto const [x, y] = orthonormal_basis(z);
 
-    float2 const r2  = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r2  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
     float const d = axis_length - radius;  // this is not accurate
@@ -225,8 +225,8 @@ bool Cube::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*ar
 bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation const& trafo,
                          float volume, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                          Sample_to& sample) const {
-    float2 const r2 = sampler.generate_sample_2D(rng, sampler_d);
-    float const  r1 = sampler.generate_sample_1D(rng, sampler_d);
+    float2 const r2 = sampler.sample_2D(rng, sampler_d);
+    float const  r1 = sampler.sample_1D(rng, sampler_d);
 
     float3 const r3(r2, r1);
     float3 const xyz  = 2.f * (r3 - 0.5f);

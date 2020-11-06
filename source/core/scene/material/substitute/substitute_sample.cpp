@@ -24,7 +24,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     if (1.f == base_.metallic_) {
         base_.pure_gloss_sample(wo_, *this, sampler, rng, result);
     } else {
-        float const p = sampler.generate_sample_1D(rng);
+        float const p = sampler.sample_1D(rng);
 
         if (p < 0.5f) {
             base_.diffuse_sample(wo_, *this, sampler, rng, result);

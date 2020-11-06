@@ -73,7 +73,7 @@ material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ra
 
     set_coating_basis(wo, rs, sampler, worker, sample);
 
-    sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
+    sample.coating_.set(coating_.absorption_coef, thickness, coating_ior,
                         fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
 
     float const n_dot_wo = sample.coating_.clamp_abs_n_dot(wo);

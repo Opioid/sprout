@@ -96,7 +96,7 @@ bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, f
     float3 out_dir;
 
     if (lens_radius_ > 0.f) {
-        float2 const uv = sampler.generate_sample_2D(rng, sampler_d);
+        float2 const uv = sampler.sample_2D(rng, sampler_d);
 
         float2 const lens = sample_disk_concentric(uv);
 

@@ -1,15 +1,17 @@
 #ifndef SU_CORE_SCENE_MATERIAL_LAMBERT_HPP
 #define SU_CORE_SCENE_MATERIAL_LAMBERT_HPP
 
-#include "base/math/vector3.hpp"
+#include "base/math/vector.hpp"
 
 namespace sampler {
 class Sampler;
 }
 
-namespace rng {
+namespace rnd {
 class Generator;
 }
+
+using RNG = rnd::Generator;
 
 namespace scene::material {
 

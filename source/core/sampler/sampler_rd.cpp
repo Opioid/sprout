@@ -49,7 +49,7 @@ RD::~RD() {
     memory::free_aligned(seeds_2D_);
 }
 
-float2 RD::generate_sample_2D(RNG& rng, uint32_t dimension) {
+float2 RD::sample_2D(RNG& rng, uint32_t dimension) {
     if (Num_batch == consumed_2D_[dimension]) {
         generate_2D(rng, dimension);
     }
@@ -59,7 +59,7 @@ float2 RD::generate_sample_2D(RNG& rng, uint32_t dimension) {
     return samples_2D_[dimension * Num_batch + current];
 }
 
-float RD::generate_sample_1D(RNG& rng, uint32_t dimension) {
+float RD::sample_1D(RNG& rng, uint32_t dimension) {
     if (Num_batch == consumed_1D_[dimension]) {
         generate_1D(rng, dimension);
     }

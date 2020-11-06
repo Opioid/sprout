@@ -191,12 +191,12 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
                                      Sample_from& light_sample) {
     auto& rng = worker.rng();
 
-    float const select = light_sampler_.generate_sample_1D(rng, 1);
+    float const select = light_sampler_.sample_1D(rng, 1);
 
     auto const  light     = worker.scene().random_light(select);
     auto const& light_ref = worker.scene().light(light.id);
 
-    uint64_t const time = worker.absolute_time(frame, light_sampler_.generate_sample_1D(rng, 2));
+    uint64_t const time = worker.absolute_time(frame, light_sampler_.sample_1D(rng, 2));
 
     Importance const& importance = worker.particle_importance().importance(light.id);
 

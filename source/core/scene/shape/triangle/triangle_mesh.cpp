@@ -246,8 +246,8 @@ bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
 bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
                   bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
-    float const  r  = sampler.generate_sample_1D(rng, sampler_d);
-    float2 const r2 = sampler.generate_sample_2D(rng, sampler_d);
+    float const  r  = sampler.sample_1D(rng, sampler_d);
+    float2 const r2 = sampler.sample_2D(rng, sampler_d);
     auto const   s  = parts_[part].sample(r);
 
     float3 sv;
@@ -281,10 +281,10 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& trafo, f
 bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /*two_sided*/,
                   Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                   AABB const& /*bounds*/, Sample_from& sample) const {
-    float const r = sampler.generate_sample_1D(rng, sampler_d);
+    float const r = sampler.sample_1D(rng, sampler_d);
     auto const  s = parts_[part].sample(r);
 
-    float2 const r0 = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r0 = sampler.sample_2D(rng, sampler_d);
 
     float3 sv;
     float2 tc;

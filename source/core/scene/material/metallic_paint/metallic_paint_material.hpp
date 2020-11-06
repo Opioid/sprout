@@ -43,7 +43,7 @@ class Material : public material::Material {
     float flakes_alpha_;
 
     struct Clearcoat_data {
-        float3 absorption_coefficient;
+        float3 absorption_coef;
 
         float thickness;
         float ior;

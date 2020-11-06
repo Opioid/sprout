@@ -15,9 +15,9 @@ class Sample_thin : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    void set(float3 const& absorption_coefficient, float ior, float ior_outside, float thickness);
+    void set(float3 const& absorption_coef, float ior, float ior_outside, float thickness);
 
-    float3 absorption_coefficient_;
+    float3 absorption_coef_;
 
     float ior_;
     float ior_outside_;

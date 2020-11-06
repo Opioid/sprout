@@ -120,7 +120,7 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
                     aov->clear();
                 }
 
-                auto const sample = sampler_->generate_camera_sample(rng(), pixel);
+                auto const sample = sampler_->camera_sample(rng(), pixel);
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
                     float4 const color = li(ray, camera.interface_stack(), aov);

@@ -26,11 +26,11 @@ class Sampler {
 
     uint32_t num_samples() const;
 
-    Camera_sample generate_camera_sample(RNG& rng, int2 pixel);
+    Camera_sample camera_sample(RNG& rng, int2 pixel);
 
-    virtual float2 generate_sample_2D(RNG& rng, uint32_t dimension = 0) = 0;
+    virtual float2 sample_2D(RNG& rng, uint32_t dimension = 0) = 0;
 
-    virtual float generate_sample_1D(RNG& rng, uint32_t dimension = 0) = 0;
+    virtual float sample_1D(RNG& rng, uint32_t dimension = 0) = 0;
 
   protected:
     virtual void on_resize() = 0;

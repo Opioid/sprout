@@ -35,7 +35,7 @@ void Sample_coating<Coating, Diffuse>::sample(Sampler& sampler, RNG& rng,
         return;
     }
 
-    if (float const p = sampler.generate_sample_1D(rng); p < 0.5f) {
+    if (float const p = sampler.sample_1D(rng); p < 0.5f) {
         coating_sample_and_base(sampler, rng, result);
     } else {
         if (1.f == base_.metallic_) {

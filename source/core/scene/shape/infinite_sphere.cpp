@@ -130,7 +130,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
                              Sample_to& sample) const {
     auto const [x, y] = orthonormal_basis(n);
 
-    float2 const uv  = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const uv  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = sample_oriented_hemisphere_uniform(uv, x, y, n);
 
     float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, dir));
@@ -148,7 +148,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 cons
 bool Infinite_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& trafo,
                              float /*area*/, bool /*two_sided*/, Sampler& sampler, RNG& rng,
                              uint32_t sampler_d, Sample_to& sample) const {
-    float2 const uv  = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const uv  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = sample_sphere_uniform(uv);
 
     float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, dir));
@@ -227,7 +227,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     auto const [t, b] = orthonormal_basis(ws);
 
-    float2 const r0 = importance_uv;  // sampler.generate_sample_2D(sampler_d);
+    float2 const r0 = importance_uv;  // sampler.sample_2D(sampler_d);
 
     float const radius_2 = squared_length(bounds.halfsize());
 

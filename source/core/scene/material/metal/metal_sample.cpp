@@ -25,7 +25,7 @@ void Sample_isotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) 
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    float2 const xi = sampler.generate_sample_2D(rng);
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, conductor, xi,
                                                    result);
@@ -84,7 +84,7 @@ void Sample_anisotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    float2 const xi = sampler.generate_sample_2D(rng);
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, alpha_, layer_, conductor, xi,
                                                      result);

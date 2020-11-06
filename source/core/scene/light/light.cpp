@@ -124,7 +124,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
                                      Worker& worker, Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
-    float2 const s2d = sampler.generate_sample_2D(worker.rng(), sampler_d);
+    float2 const s2d = sampler.sample_2D(worker.rng(), sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d, 0.f));
     if (0.f == rs.pdf()) {
@@ -171,8 +171,8 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
 
     auto& rng = worker.rng();
 
-    float2 const s2d = sampler.generate_sample_2D(rng, sampler_d);
-    float const  s1d = sampler.generate_sample_1D(rng, sampler_d);
+    float2 const s2d = sampler.sample_2D(rng, sampler_d);
+    float const  s1d = sampler.sample_1D(rng, sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d, s1d));
     if (0.f == rs.pdf()) {
@@ -232,7 +232,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 
     auto& rng = worker.rng();
 
-    float2 const importance_uv = sampler.generate_sample_2D(rng);
+    float2 const importance_uv = sampler.sample_2D(rng);
 
     if (!worker.scene().prop_shape(prop)->sample(part, trafo, area, two_sided, sampler, rng,
                                                  sampler_d, importance_uv, bounds, result)) {
@@ -250,7 +250,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     auto& rng = worker.rng();
 
-    float2 const s2d = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const s2d = sampler.sample_2D(rng, sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d, 0.f));
     if (0.f == rs.pdf()) {
@@ -259,7 +259,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     bool const two_sided = material->is_two_sided();
 
-    float2 const importance_uv = sampler.generate_sample_2D(rng);
+    float2 const importance_uv = sampler.sample_2D(rng);
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
     if (!worker.scene().prop_shape(prop)->sample(part, rs.uvw.xy(), trafo, area, two_sided,
@@ -302,7 +302,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 
     auto& rng = worker.rng();
 
-    float2 const s2d = sampler.generate_sample_2D(rng);
+    float2 const s2d = sampler.sample_2D(rng);
 
     auto const importance_uv = importance.sample_continuous(s2d);
     if (0.f == importance_uv.pdf) {
@@ -329,7 +329,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     auto& rng = worker.rng();
 
-    float2 const s2d0 = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const s2d0 = sampler.sample_2D(rng, sampler_d);
 
     auto const rs = material->radiance_sample(float3(s2d0, 0.f));
     if (0.f == rs.pdf()) {
@@ -338,7 +338,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 
     bool const two_sided = material->is_two_sided();
 
-    float2 const s2d1 = sampler.generate_sample_2D(rng);
+    float2 const s2d1 = sampler.sample_2D(rng);
 
     auto const importance_uv = importance.sample_continuous(s2d1);
     if (0.f == importance_uv.pdf) {

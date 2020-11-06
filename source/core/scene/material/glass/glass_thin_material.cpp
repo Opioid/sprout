@@ -56,9 +56,9 @@ float3 Glass_thin::thin_absorption(float3 const& wi, float3 const& n, float2 uv,
 
     float const n_dot_wi = clamp(n_dot_wo);
 
-    float const approximated_distance = thickness_ / n_dot_wi;
+    float const approx_distance = thickness_ / n_dot_wi;
 
-    float3 const attenuation = rendering::attenuation(approximated_distance, cc_.a);
+    float3 const attenuation = rendering::attenuation(approx_distance, cc_.a);
 
     float const o = opacity(uv, time, filter, worker);
 

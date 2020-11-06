@@ -27,7 +27,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
 }
 
 void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
-    float2 const s2d = sampler.generate_sample_2D(rng);
+    float2 const s2d = sampler.sample_2D(rng);
 
     float3 const is = sample_hemisphere_cosine(s2d);
 

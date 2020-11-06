@@ -30,7 +30,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
 }
 
 void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
-    float2 const r2 = sampler.generate_sample_2D(rng);
+    float2 const r2 = sampler.sample_2D(rng);
 
     float4 const ps = sample(wo_, r2);
 

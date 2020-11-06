@@ -240,7 +240,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                     Tracking::tracking(local_ray, data, material, 1.f, filter, worker, t, w)) {
                     float3 const p = ray.point(t);
 
-                    float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+                    float const select = light_sampler(ray.depth).sample_1D(rng, 1);
 
                     auto const  light     = scene.random_light(select);
                     auto const& light_ref = scene.light(light.id);
@@ -274,7 +274,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         float3 const p = ray.point(ray.min_t() + t);
 
-        float const select = light_sampler(ray.depth).generate_sample_1D(rng, 1);
+        float const select = light_sampler(ray.depth).sample_1D(rng, 1);
 
         auto const  light     = worker.scene().random_light(select);
         auto const& light_ref = worker.scene().light(light.id);
@@ -291,8 +291,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         tr = exp(-(d - ray.min_t()) * attenuation);
 
-        float const select = light_sampler(ray.depth).generate_sample_1D(rng,
-                                                                         light::Tree::Max_lights);
+        float const select = light_sampler(ray.depth).sample_1D(rng, light::Tree::Max_lights);
 
         bool const split = ray.depth < Num_dedicated_samplers;
 
@@ -319,7 +318,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                 float const theta_a = std::atan2(ray.min_t() - delta, D);
                 float const theta_b = std::atan2(d - delta, D);
 
-                float const r = material_sampler(ray.depth).generate_sample_1D(rng, il);
+                float const r = material_sampler(ray.depth).sample_1D(rng, il);
                 float const t = D * std::tan(lerp(theta_a, theta_b, r));
 
                 float const sample_t = delta + t;
@@ -335,7 +334,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                 lli += (l * attenuation) * (scattering_albedo * w) / pdf;
             } else {
                 // Distance sampling
-                float const r = material_sampler(ray.depth).generate_sample_1D(rng, 0);
+                float const r = material_sampler(ray.depth).sample_1D(rng, 0);
                 float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
                 float3 const p = ray.point(ray.min_t() + t);
@@ -404,7 +403,7 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
 
     auto& rng = worker.rng();
 
-    float const r = material_sampler(ray.depth).generate_sample_1D(rng, 0);
+    float const r = material_sampler(ray.depth).sample_1D(rng, 0);
     float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
     float3 const p = ray.point(ray.min_t() + t);

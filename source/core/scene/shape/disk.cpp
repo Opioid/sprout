@@ -237,7 +237,7 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
 bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& trafo, float area,
                   bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
-    float2 const r2 = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r2 = sampler.sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r2);
 
     float3 const ls = float3(xy, 0.f);
@@ -270,7 +270,7 @@ bool Disk::sample(uint32_t /*part*/, float3 const& p, Transformation const& traf
 bool Disk::sample(uint32_t /*part*/, Transformation const& trafo, float area, bool /*two_sided*/,
                   Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                   AABB const& /*bounds*/, Sample_from& sample) const {
-    float2 const r0 = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r0 = sampler.sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r0);
 
     float3 const ls = float3(xy, 0.f);

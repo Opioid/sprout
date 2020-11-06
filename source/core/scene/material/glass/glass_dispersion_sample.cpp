@@ -19,7 +19,7 @@ void Sample_dispersion::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
     float3 weight;
     float  wavelength = wavelength_;
 
-    float2 const r = sampler.generate_sample_2D(rng);
+    float2 const r = sampler.sample_2D(rng);
 
     if (0.f == wavelength) {
         float const start = Material::Spectrum::start_wavelength();

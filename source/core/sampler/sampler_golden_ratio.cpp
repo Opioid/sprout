@@ -15,7 +15,7 @@ Golden_ratio::~Golden_ratio() {
     delete[] samples_;
 }
 
-float2 Golden_ratio::generate_sample_2D(RNG& rng, uint32_t dimension) {
+float2 Golden_ratio::sample_2D(RNG& rng, uint32_t dimension) {
     SOFT_ASSERT(current_sample_[dimension] < num_samples_);
 
     uint32_t const current = current_sample_[dimension]++;
@@ -29,7 +29,7 @@ float2 Golden_ratio::generate_sample_2D(RNG& rng, uint32_t dimension) {
     return samples_2D[dimension * num_samples_ + current];
 }
 
-float Golden_ratio::generate_sample_1D(RNG& rng, uint32_t dimension) {
+float Golden_ratio::sample_1D(RNG& rng, uint32_t dimension) {
     SOFT_ASSERT(current_sample_[num_dimensions_2D_ + dimension] < num_samples_);
 
     uint32_t const current = current_sample_[num_dimensions_2D_ + dimension]++;

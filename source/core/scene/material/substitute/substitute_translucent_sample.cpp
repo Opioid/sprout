@@ -21,7 +21,7 @@ bxdf::Result Sample_translucent::evaluate_b(float3 const& wi) const {
 void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
-    float const p = sampler.generate_sample_1D(rng);
+    float const p = sampler.sample_1D(rng);
 
     if (thickness_ > 0.f) {
         float const t = transparency_;
@@ -37,9 +37,9 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
 
             result.wi *= -1.f;
 
-            float const approximated_distance = thickness_ / n_dot_wi;
+            float const approx_distance = thickness_ / n_dot_wi;
 
-            float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
+            float3 const attenuation = rendering::attenuation(approx_distance, attenuation_);
 
             result.reflection *= (t * n_dot_wi * (1.f - f)) * attenuation;
 
@@ -93,9 +93,9 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
     if (thickness_ > 0.f && !same_hemisphere(wi)) {
         float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
 
-        float const approximated_distance = thickness_ / n_dot_wi;
+        float const approx_distance = thickness_ / n_dot_wi;
 
-        float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
+        float3 const attenuation = rendering::attenuation(approx_distance, attenuation_);
 
         // This is the least attempt we can do at energy conservation
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);

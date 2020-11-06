@@ -11,9 +11,9 @@ class alignas(32) Golden_ratio final : public Sampler {
 
     ~Golden_ratio() final;
 
-    float2 generate_sample_2D(RNG& rng, uint32_t dimension = 0) final;
+    float2 sample_2D(RNG& rng, uint32_t dimension = 0) final;
 
-    float generate_sample_1D(RNG& rng, uint32_t dimension = 0) final;
+    float sample_1D(RNG& rng, uint32_t dimension = 0) final;
 
   private:
     void on_resize() final;

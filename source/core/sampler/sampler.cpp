@@ -42,10 +42,10 @@ uint32_t Sampler::num_samples() const {
     return num_samples_;
 }
 
-Camera_sample Sampler::generate_camera_sample(RNG& rng, int2 pixel) {
-    float2 const image_sample = generate_sample_2D(rng, 0);
-    float2 const lens_sample  = generate_sample_2D(rng, 1);
-    float const  time_sample  = generate_sample_1D(rng, 0);
+Camera_sample Sampler::camera_sample(RNG& rng, int2 pixel) {
+    float2 const image_sample = sample_2D(rng, 0);
+    float2 const lens_sample  = sample_2D(rng, 1);
+    float const  time_sample  = sample_1D(rng, 0);
 
     return Camera_sample{pixel, image_sample, lens_sample, time_sample};
 }

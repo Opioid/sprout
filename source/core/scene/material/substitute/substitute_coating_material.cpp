@@ -32,7 +32,7 @@ float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float3 const&
 
         coating::Clearcoat clearcoat;
 
-        clearcoat.set(coating_.absorption_coefficient, thickness, 1.f, 1.f, coating_.alpha, 1.f);
+        clearcoat.set(coating_.absorption_coef, thickness, 1.f, 1.f, coating_.alpha, 1.f);
 
         return clearcoat.attenuation(1.f) * radiance;
     }
@@ -65,7 +65,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
 
     set_coating_basis(wo, rs, sampler, worker, sample);
 
-    sample.coating_.set(coating_.absorption_coefficient, thickness, coating_ior,
+    sample.coating_.set(coating_.absorption_coef, thickness, coating_ior,
                         fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
 
     float const n_dot_wo = sample.coating_.clamp_abs_n_dot(wo);
@@ -76,7 +76,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
 }
 
 void Material_clearcoat::set_coating_attenuation(float3 const& absorption_color, float distance) {
-    coating_.absorption_coefficient = attenuation_coefficient(absorption_color, distance);
+    coating_.absorption_coef = attenuation_coefficient(absorption_color, distance);
 }
 
 void Material_clearcoat::set_coating_ior(float ior) {

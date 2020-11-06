@@ -34,7 +34,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
 
     bool const same_side = same_hemisphere(wo_);
 
-    float const p = sampler.generate_sample_1D(rng);
+    float const p = sampler.sample_1D(rng);
 
     if (same_side) {
         if (p < 0.5f) {
@@ -53,7 +53,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
 
         IoR const ior = ior_.swapped();
 
-        float2 const xi = sampler.generate_sample_2D(rng);
+        float2 const xi = sampler.sample_2D(rng);
 
         float        n_dot_h;
         float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
@@ -169,7 +169,7 @@ void Sample_subsurface::refract(Sampler& sampler, RNG& rng, bxdf::Sample& result
 
     fresnel::Schlick1 const schlick(base_.f0_[0]);
 
-    float2 const xi = sampler.generate_sample_2D(rng);
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, alpha_, ior_, schlick, xi,
                                                    result);

@@ -59,7 +59,7 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
     occlusion_ray.time    = ray.time;
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
-        float2 const sample = sampler_->generate_sample_2D(worker.rng());
+        float2 const sample = sampler_->sample_2D(worker.rng());
 
         float3 const& t = mat_sample.shading_tangent();
         float3 const& b = mat_sample.shading_bitangent();

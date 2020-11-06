@@ -15,8 +15,8 @@ class Clearcoat {
   public:
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& absorption_coefficient, float thickness, float ior, float f0,
-             float alpha, float weight);
+    void set(float3 const& absorption_coef, float thickness, float ior, float f0, float alpha,
+             float weight);
 
     float3 attenuation(float n_dot_wo) const;
 
@@ -33,7 +33,7 @@ class Clearcoat {
                 float3& attenuation, bxdf::Sample& result) const;
 
   public:
-    float3 absorption_coefficient_;
+    float3 absorption_coef_;
 
     float thickness_;
     float ior_;

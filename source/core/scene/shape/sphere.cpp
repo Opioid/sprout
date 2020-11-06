@@ -352,7 +352,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 
     auto const [x, y] = orthonormal_basis(z);
 
-    float2 const r2  = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r2  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
     float const b = dot(dir, v);
@@ -376,7 +376,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& tr
 bool Sphere::sample(uint32_t /*part*/, Transformation const& trafo, float area, bool /*two_sided*/,
                     Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                     AABB const& /*bounds*/, Sample_from& sample) const {
-    float2 const r0 = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r0 = sampler.sample_2D(rng, sampler_d);
     float3 const ls = sample_sphere_uniform(r0);
 
     float3 const ws = trafo.position + (trafo.scale_x() * ls);

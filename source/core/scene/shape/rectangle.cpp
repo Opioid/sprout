@@ -259,7 +259,7 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
 bool Rectangle::sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
                        bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                        Sample_to& sample) const {
-    float2 const r2 = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r2 = sampler.sample_2D(rng, sampler_d);
 
     return Rectangle::sample(part, p, r2, trafo, area, two_sided, sample);
 }
@@ -267,7 +267,7 @@ bool Rectangle::sample(uint32_t part, float3 const& p, Transformation const& tra
 bool Rectangle::sample(uint32_t /*part*/, Transformation const& trafo, float area,
                        bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                        float2 importance_uv, AABB const& /*bounds*/, Sample_from& sample) const {
-    float2 const r0 = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const r0 = sampler.sample_2D(rng, sampler_d);
 
     float3 const ls(-2.f * r0 + 1.f, 0.f);
     float3 const ws = trafo.object_to_world_point(ls);

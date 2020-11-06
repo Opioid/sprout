@@ -141,7 +141,7 @@ bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/
 bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& trafo,
                     float /*area*/, bool /*two_sided*/, Sampler& sampler, RNG& rng,
                     uint32_t sampler_d, Sample_to& sample) const {
-    float2 const uv  = sampler.generate_sample_2D(rng, sampler_d);
+    float2 const uv  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = sample_oriented_hemisphere_uniform(uv, trafo.rotation);
 
     float3 const xyz  = normalize(transform_vector_transposed(trafo.rotation, dir));

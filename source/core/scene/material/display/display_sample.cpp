@@ -61,7 +61,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
 
     fresnel::Schlick const schlick(f0_);
 
-    float2 const xi = sampler.generate_sample_2D(rng);
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, schlick, xi,
                                                    result);

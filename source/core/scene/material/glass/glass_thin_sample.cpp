@@ -49,17 +49,15 @@ void Sample_thin::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const
         f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
     }
 
-    float const p = sampler.generate_sample_1D(rng);
+    float const p = sampler.sample_1D(rng);
 
     if (p <= f) {
         reflect(wo_, n, n_dot_wo, result);
     } else {
-        float const n_dot_wi = clamp(n_dot_wo);
+        float const n_dot_wi        = clamp(n_dot_wo);
+        float const approx_distance = thickness_ / n_dot_wi;
 
-        float const approximated_distance = thickness_ / n_dot_wi;
-
-        float3 const attenuation = rendering::attenuation(approximated_distance,
-                                                          absorption_coefficient_);
+        float3 const attenuation = rendering::attenuation(approx_distance, absorption_coef_);
 
         refract(wo_, attenuation * albedo_, result);
     }
@@ -67,12 +65,12 @@ void Sample_thin::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const
     result.wavelength = 0.f;
 }
 
-void Sample_thin::set(float3 const& absorption_coefficient, float ior, float ior_outside,
+void Sample_thin::set(float3 const& absorption_coef, float ior, float ior_outside,
                       float thickness) {
-    absorption_coefficient_ = absorption_coefficient;
-    ior_                    = ior;
-    ior_outside_            = ior_outside;
-    thickness_              = thickness;
+    absorption_coef_ = absorption_coef;
+    ior_             = ior;
+    ior_outside_     = ior_outside;
+    thickness_       = thickness;
 }
 
 void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result) {

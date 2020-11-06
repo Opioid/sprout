@@ -37,7 +37,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
     IoR const ior = ior_.swapped(same_side);
 
-    float2 const xi = sampler.generate_sample_2D(rng);
+    float2 const xi = sampler.sample_2D(rng);
 
     float        n_dot_h;
     float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
@@ -64,7 +64,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
         f = fresnel::schlick(cos_x, f0_);
     }
 
-    if (sampler.generate_sample_1D(rng) <= f) {
+    if (sampler.sample_1D(rng) <= f) {
         float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                        wo_dot_h, layer, alpha_, result);
 

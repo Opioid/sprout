@@ -61,7 +61,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
         return;
     }
 
-    float const p = sampler.generate_sample_1D(rng);
+    float const p = sampler.sample_1D(rng);
 
     if (p < 0.4f) {
         float3 coating_attenuation;
@@ -147,7 +147,7 @@ void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
 
     fresnel::Schlick const fresnel(color);
 
-    float2 const xi = sampler.generate_sample_2D(rng);
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, fresnel, xi,
                                                    result);
@@ -190,7 +190,7 @@ void Sample::Flakes_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    float2 const xi = sampler.generate_sample_2D(rng);
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, conductor, xi,
                                                    fresnel_result, result);

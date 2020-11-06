@@ -300,7 +300,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
         }
 
         if (ray.depth >= settings_.min_bounces) {
-            if (russian_roulette(throughput, sampler_.generate_sample_1D(worker.rng()))) {
+            if (russian_roulette(throughput, sampler_.sample_1D(worker.rng()))) {
                 break;
             }
         }
@@ -337,7 +337,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
     } else {
         float3 const n = mat_sample.geometric_normal();
 
-        float const select = light_sampler(ray.depth).generate_sample_1D(rng, lights_.capacity());
+        float const select = light_sampler(ray.depth).sample_1D(rng, lights_.capacity());
 
         bool const split = splitting(ray.depth);
 
