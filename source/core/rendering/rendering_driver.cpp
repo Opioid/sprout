@@ -332,7 +332,7 @@ void Driver::render_frame_forward(uint32_t frame) {
             uint32_t const num_samples = view_->num_samples_per_pixel;
 
             for (int4 tile; tiles_.pop(tile);) {
-                worker.render(frame_, frame_view_, 0, tile, num_samples);
+                worker.render_ex(frame_, frame_view_, 0, tile, num_samples);
 
                 progressor_.tick();
             }

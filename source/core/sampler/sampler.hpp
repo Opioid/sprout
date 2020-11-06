@@ -38,6 +38,7 @@ class Sampler {
     virtual void on_start_pixel(RNG& rng) = 0;
 
     uint32_t num_samples_;
+    uint32_t capacity_;
 
     uint32_t num_dimensions_2D_;
     uint32_t num_dimensions_1D_;

@@ -117,11 +117,124 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
 
             double m_oldM, m_newM, m_oldS, m_newS;
 
-            uint32_t n = 0;
+            uint32_t n = 1;
 
-            float rendered_samples = float(num_samples - 1);
+            float const rendered_samples = float(num_samples - 1);
+
+            float total = 0.f;
 
             for (uint32_t i = num_samples; i > 0; --i, ++n) {
+                if (aov) {
+                    aov->clear();
+                }
+
+                auto const sample = sampler_->camera_sample(rng(), pixel);
+
+                float avg = 0.f;
+
+
+
+                if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
+                    float4 const color = li(ray, camera.interface_stack(), aov);
+                    sensor.add_sample(sample, color, aov, isolated_bounds, offset, crop);
+
+                    avg = max_component(/*min*/(color.xyz()/*, 1.f*/));
+                } else {
+                    sensor.add_sample(sample, float4(0.f), aov, isolated_bounds, offset, crop);
+                }
+
+                // https://www.johndcook.com/blog/standard_deviation/
+                if (1 == n) {
+                    m_oldM = m_newM = avg;
+                    m_oldS          = 0.0;
+                } else {
+                    m_newM = m_oldM + (avg - m_oldM) / n;
+                    m_newS = m_oldS + (avg - m_oldM) * (avg - m_newM);
+
+                    // set up for next iteration
+                    m_oldM = m_newM;
+                    m_oldS = m_newS;
+                }
+
+
+                total += avg;
+//                if (n > 16) {
+//                    float const variance = m_newS / (n - 1);
+
+//                    if (variance <= 0.0001f) {
+//                        rendered_samples = float(n);
+//                        break;
+//                    }
+//                }
+            }
+
+            float const average = total / float(num_samples);
+
+            float const variance = m_newS / rendered_samples;
+            sensor.set_variance(pixel, average > 0.f ? std::min(std::sqrt(variance / average), 1.f) : 0.f);
+            //  sensor.set_variance(pixel, rendered_samples);
+        }
+    }
+}
+
+void Worker::render_ex(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
+                    uint32_t num_samples) {
+    Camera const& camera = *camera_;
+
+    int2 const offset = camera.view_offset(view);
+
+    int4 crop = camera.crop();
+    crop[2] -= crop[0] + 1;
+    crop[3] -= crop[1] + 1;
+    crop[0] += offset[0];
+    crop[1] += offset[1];
+
+    int4 const view_tile(offset + tile.xy(), offset + tile.zw());
+
+    auto& sensor = camera.sensor();
+
+    int4 isolated_bounds = sensor.isolated_tile(view_tile);
+    isolated_bounds[2] -= isolated_bounds[0];
+    isolated_bounds[3] -= isolated_bounds[1];
+
+    int32_t const fr = sensor.filter_radius_int();
+
+    int2 const r = camera.resolution() + 2 * fr;
+
+    uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
+
+    AOV* aov = aov_;
+
+
+    uint32_t const num_initial_samples = 16;
+
+    for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
+        uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;
+        for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
+
+            surface_integrator_->prepare(*scene_, num_initial_samples);
+        volume_integrator_->prepare(*scene_, num_initial_samples);
+
+
+        sampler_->resize(num_initial_samples, 1, 2, 1);
+
+            rng_.start(0, o1 + uint64_t(x + fr));
+
+            sampler_->start_pixel(rng());
+            surface_integrator_->start_pixel(rng());
+            volume_integrator_->start_pixel(rng());
+
+            int2 const pixel(x, y);
+
+            double m_oldM, m_newM, m_oldS, m_newS;
+
+            uint32_t n = 1;
+
+            float const rendered_samples = float(num_initial_samples - 1);
+
+            float total = 0.f;
+
+            for (uint32_t i = num_initial_samples; i > 0; --i, ++n) {
                 if (aov) {
                     aov->clear();
                 }
@@ -134,13 +247,13 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
                     float4 const color = li(ray, camera.interface_stack(), aov);
                     sensor.add_sample(sample, color, aov, isolated_bounds, offset, crop);
 
-                    avg = average(color);
+                    avg = max_component(/*min*/(color.xyz()/*, 1.f*/));
                 } else {
                     sensor.add_sample(sample, float4(0.f), aov, isolated_bounds, offset, crop);
                 }
 
                 // https://www.johndcook.com/blog/standard_deviation/
-                if (0 == n) {
+                if (1 == n) {
                     m_oldM = m_newM = avg;
                     m_oldS          = 0.0;
                 } else {
@@ -152,22 +265,66 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
                     m_oldS = m_newS;
                 }
 
-                if (n > 16) {
-                    float const variance = m_newS / (n - 1);
 
-                    if (variance <= 0.0001f) {
-                        rendered_samples = float(n);
-                        break;
-                    }
-                }
+                total += avg;
+//                if (n > 16) {
+//                    float const variance = m_newS / (n - 1);
+
+//                    if (variance <= 0.0001f) {
+//                        rendered_samples = float(n);
+//                        break;
+//                    }
+//                }
             }
 
-            float const variance = m_newS / (num_samples - 1);
-            sensor.set_variance(pixel, variance);
+            float const average = total / float(num_initial_samples);
+
+            float const variance = m_newS / rendered_samples;
+            sensor.set_variance(pixel, average > 0.f ? std::min(std::sqrt(variance / average), 1.f) : 0.f);
             //  sensor.set_variance(pixel, rendered_samples);
+
+
+
+            float const guess = average > 0.f ? std::min(std::sqrt(variance / average), 1.f) : 0.f;
+
+            uint32_t const new_samples = uint32_t(float(num_samples) * guess);
+
+            surface_integrator_->prepare(*scene_, new_samples);
+        volume_integrator_->prepare(*scene_, new_samples);
+
+
+        sampler_->resize(new_samples, 1, 2, 1);
+
+            sampler_->start_pixel(rng());
+            surface_integrator_->start_pixel(rng());
+            volume_integrator_->start_pixel(rng());
+
+            for (uint32_t i = new_samples; i > 0; --i) {
+
+                auto const sample = sampler_->camera_sample(rng(), pixel);
+
+                if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
+                    float4 const color = li(ray, camera.interface_stack(), aov);
+                    sensor.add_sample(sample, color, aov, isolated_bounds, offset, crop);
+                } else {
+                    sensor.add_sample(sample, float4(0.f), aov, isolated_bounds, offset, crop);
+                }
+
+
+            }
+
+
+
+
+
+
         }
     }
+
+
+
 }
+
 
 void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     Camera const& camera = *camera_;

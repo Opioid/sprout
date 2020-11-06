@@ -45,7 +45,9 @@ void Sensor::resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& 
     if (dimensions_[0] * dimensions_[1] != dimensions[0] * dimensions[1]) {
         delete variance_;
 
-        variance_ = new float[dimensions[0] * dimensions[1]];
+        int32_t const m = filter_radius_int() > 0 ? 2 : 1;
+
+        variance_ = new float[m * dimensions[0] * dimensions[1]];
     }
     
     on_resize(dimensions, num_layers);
@@ -68,7 +70,53 @@ void Sensor::set_variance(int2 pixel, float variance) {
 }
 
 void Sensor::export_variance(Threads& threads) const {
+
     image::encoding::png::Writer::write_heatmap("variance.png", variance_, dimensions_, threads);
+
+    int32_t const r = filter_radius_int();
+
+    if (r > 0) {
+        int2 const d = dimensions_;
+
+        float* target = variance_ + d[0] * d[1];
+
+        float max_variance = 0.f;
+
+        for (int32_t y = 0; y < d[1]; ++y) {
+            for (int32_t x = 0; x < d[0]; ++x) {
+                float variance = 0.f;
+                for (int32_t fy = -r; fy < r; ++fy) {
+                    for (int32_t fx = -r; fx < r; ++fx) {
+                        int32_t const lx = x + fx;
+                        int32_t const ly = y + fy;
+
+                        if (lx < 0 || lx >= d[0] || ly < 0 || ly >= d[1]) {
+                            continue;;
+                        }
+
+                        int32_t const i = d[0] * ly + lx;
+
+                        variance = std::max(variance, variance_[i]);
+                    }
+                }
+
+                int32_t const i = d[0] * y + x;
+
+                target[i] = variance;
+
+                max_variance = std::max(max_variance, variance);
+            }
+        }
+
+        float* front = variance_;
+
+        for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
+            front[i] = target[i] / max_variance;
+        }
+
+        image::encoding::png::Writer::write_heatmap("variance_a.png", target, dimensions_, threads);
+        image::encoding::png::Writer::write_heatmap("variance_b.png", front, dimensions_, threads);
+    }
 }
 
 int32_t Sensor::filter_radius_int() const {
