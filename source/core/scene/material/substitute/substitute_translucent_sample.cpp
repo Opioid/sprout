@@ -18,17 +18,17 @@ bxdf::Result Sample_translucent::evaluate_b(float3 const& wi) const {
     return evaluate<false>(wi);
 }
 
-void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     // No side check needed because the material is two-sided by definition.
 
-    float const p = sampler.generate_sample_1D();
+    float const p = sampler.sample_1D(rng);
 
     if (thickness_ > 0.f) {
         float const t = transparency_;
 
-        if (p < 0.5f) {
-            float const n_dot_wi = lambert::Isotropic::reflect(base_.diffuse_color_, layer_,
-                                                               sampler, result);
+        if (p < t) {
+            float const n_dot_wi = lambert::Isotropic::reflect(base_.albedo_, layer_, sampler, rng,
+                                                               result);
 
             // This is the least attempt we can do at energy conservation
             float const n_dot_wo = layer_.clamp_n_dot(wo_);
@@ -37,27 +37,29 @@ void Sample_translucent::sample(Sampler& sampler, bxdf::Sample& result) const {
 
             result.wi *= -1.f;
 
-            float const approximated_distance = thickness_ / n_dot_wi;
+            float const approx_distance = thickness_ / n_dot_wi;
 
-            float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
+            float3 const attenuation = rendering::attenuation(approx_distance, attenuation_);
 
             result.reflection *= (t * n_dot_wi * (1.f - f)) * attenuation;
+
+            result.pdf *= t;
         } else {
             float const o = 1.f - t;
 
-            if (p < 0.75f) {
-                base_.diffuse_sample(wo_, layer_, o, sampler, base_.avoid_caustics_, result);
+            if (p < t + 0.5f * o) {
+                base_.diffuse_sample(wo_, *this, o, sampler, rng, result);
             } else {
-                base_.gloss_sample(wo_, layer_, o, sampler, result);
+                base_.gloss_sample(wo_, *this, o, sampler, rng, result);
             }
-        }
 
-        result.pdf *= 0.5f;
+            result.pdf *= o;
+        }
     } else {
         if (p < 0.5f) {
-            base_.diffuse_sample(wo_, layer_, sampler, base_.avoid_caustics_, result);
+            base_.diffuse_sample(wo_, *this, sampler, rng, result);
         } else {
-            base_.gloss_sample(wo_, layer_, sampler, result);
+            base_.gloss_sample(wo_, *this, sampler, rng, result);
         }
     }
 
@@ -91,18 +93,18 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
     if (thickness_ > 0.f && !same_hemisphere(wi)) {
         float const n_dot_wi = layer_.clamp_abs_n_dot(wi);
 
-        float const approximated_distance = thickness_ / n_dot_wi;
+        float const approx_distance = thickness_ / n_dot_wi;
 
-        float3 const attenuation = rendering::attenuation(approximated_distance, attenuation_);
+        float3 const attenuation = rendering::attenuation(approx_distance, attenuation_);
 
         // This is the least attempt we can do at energy conservation
         float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
         float const f = base_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
-        float const pdf = n_dot_wi * (0.5f * Pi_inv);
+        float const pdf = n_dot_wi * (t * Pi_inv);
 
-        return {(t * n_dot_wi * Pi_inv * (1.f - f)) * (attenuation * base_.diffuse_color_), pdf};
+        return {(pdf * (1.f - f)) * (attenuation * base_.albedo_), pdf};
     }
 
     float3 const h = normalize(wo_ + wi);
@@ -111,10 +113,10 @@ bxdf::Result Sample_translucent::evaluate(float3 const& wi) const {
 
     float const o = 1.f - t;
 
-    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, layer_, o);
+    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this, o);
 
     if (thickness_ > 0.f) {
-        result.pdf() *= 0.5f;
+        result.pdf() *= o;
     }
 
     return result;

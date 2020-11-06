@@ -14,6 +14,7 @@
 #include "image/texture/texture_provider.hpp"
 #include "light/light.hpp"
 #include "logging/logging.hpp"
+#include "material/material.inl"
 #include "prop/prop.hpp"
 #include "resource/resource_manager.inl"
 #include "scene.inl"
@@ -263,7 +264,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             continue;
         }
 
-        math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
+        math::Transformation trafo{float3(0.f), float3(1.f), quaternion::identity()};
 
         json::Value const* animation_value = nullptr;
         json::Value const* children        = nullptr;
@@ -273,7 +274,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         // until after potential children are attached.
         for (auto& n : e.GetObject()) {
             if ("transformation" == n.name) {
-                json::read_transformation(n.value, transformation);
+                json::read_transformation(n.value, trafo);
             } else if ("animation" == n.name) {
                 animation_value = &n.value;
             } else if ("entities" == n.name) {
@@ -283,25 +284,25 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             }
         }
 
-        if (transformation.scale[1] <= 0.f && transformation.scale[2] <= 0.f &&
+        if (trafo.scale[1] <= 0.f && trafo.scale[2] <= 0.f &&
             1 == scene.prop_shape(entity_id)->num_parts()) {
             auto const material = scene.prop_material(entity_id, 0);
 
             if (material->is_heterogeneous_volume()) {
                 auto const bounds = material->volume_texture_space_bounds(scene);
 
-                float const voxel_scale = transformation.scale[0];
+                float const voxel_scale = trafo.scale[0];
 
-                transformation.scale = 0.5f * voxel_scale * float3(bounds.max);
+                trafo.scale = 0.5f * voxel_scale * float3(bounds.max);
 
-                transformation.position += transformation.scale + voxel_scale * float3(bounds.min);
+                trafo.position += trafo.scale + voxel_scale * float3(bounds.min);
             }
         }
 
         animation::Animation* animation = nullptr;
 
         if (animation_value) {
-            animation = animation::load(*animation_value, transformation, scene);
+            animation = animation::load(*animation_value, trafo, scene);
             if (animation) {
                 scene.create_animation_stage(entity_id, animation);
             }
@@ -313,13 +314,13 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
 
         if (!animation) {
             if (scene.prop_has_animated_frames(entity_id)) {
-                scene.prop_set_transformation(entity_id, transformation);
+                scene.prop_set_transformation(entity_id, trafo);
             } else {
                 if (prop::Null != parent_id) {
-                    transformation = transformation.transform(parent_transformation);
+                    trafo = trafo.transform(parent_transformation);
                 }
 
-                scene.prop_set_world_transformation(entity_id, transformation);
+                scene.prop_set_world_transformation(entity_id, trafo);
             }
         }
 
@@ -328,7 +329,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (children) {
-            load_entities(*children, entity_id, transformation, local_materials, scene);
+            load_entities(*children, entity_id, trafo, local_materials, scene);
         }
     }
 }

@@ -15,7 +15,7 @@ class Ffmpeg final : public Sink, image::encoding::Srgb {
 
     ~Ffmpeg() final;
 
-    void write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) final;
+    void write(image::Float4 const& image, AOV aov, uint32_t frame, Threads& threads) final;
 
   private:
     FILE* stream_;

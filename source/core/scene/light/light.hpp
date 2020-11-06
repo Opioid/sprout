@@ -21,6 +21,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 namespace entity {
@@ -44,7 +46,7 @@ struct Ray;
 
 namespace light {
 
-static uint32_t constexpr Null = 0xFFFFFFFF;
+inline uint32_t constexpr Null = 0xFFFFFFFF;
 
 class alignas(16) Light {
   public:
@@ -65,47 +67,44 @@ class alignas(16) Light {
 
     void set_extent(float extent);
 
-    Transformation const& transformation_at(uint64_t time, Transformation& transformation,
+    Transformation const& transformation_at(uint64_t time, Transformation& trafo,
                                             Scene const& scene) const;
 
     bool is_finite(Scene const& scene) const;
 
-    bool sample(float3 const& p, float3 const& n, Transformation const& transformation,
-                bool total_sphere, Sampler& sampler, uint32_t sampler_dimension,
-                Worker const& worker, Sample_to& result) const;
+    bool sample(float3 const& p, float3 const& n, Transformation const& trafo, bool total_sphere,
+                Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const;
 
     float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const;
 
-    bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
-                AABB const& bounds, Worker const& worker, Sample_from& result) const;
+    bool sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
+                AABB const& bounds, Worker& worker, Sample_from& result) const;
 
-    bool sample(Transformation const& transformation, Sampler& sampler, uint32_t sampler_dimension,
-                Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+    bool sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
+                Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
 
     float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const;
 
     bool sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
-                Sampler& sampler, uint32_t sampler_dimension, Worker const& worker,
-                Sample_to& result) const;
+                Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const;
 
-    bool sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                Worker const& worker, Sample_to& result) const;
+    bool sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_d,
+                Worker& worker, Sample_to& result) const;
 
-    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension, AABB const& bounds,
-                Worker const& worker, Sample_from& result) const;
+    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB const& bounds,
+                Worker& worker, Sample_from& result) const;
 
-    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_dimension,
-                Distribution_2D const& importance, AABB const& bounds, Worker const& worker,
+    bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
+                Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
 
-    float pdf(Ray const& ray, Intersection const& intersection, bool total_sphere, Filter filter,
+    float pdf(Ray const& ray, Intersection const& isec, bool total_sphere, Filter filter,
               Worker const& worker) const;
 
     float3 power(AABB const& scene_bb, Scene const& scene) const;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
-                          thread::Pool& threads) const;
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Threads& threads) const;
 
     bool equals(uint32_t prop, uint32_t part) const;
 
@@ -126,9 +125,7 @@ class alignas(16) Light {
     float extent_;
 };
 
-struct Light_ref {
-    light::Light const& ref;
-
+struct Light_pick {
     uint32_t id;
 
     float pdf;

@@ -11,21 +11,13 @@ class Sample_rough final : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(Sampler& sampler, bxdf::Sample& result) const final;
+    void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    void set(float3 const& refraction_color, float ior, float ior_outside, float alpha,
-             bool avoid_caustics);
-
-    Layer layer_;
-
-    float3 color_;
+    void set(float ior, float ior_outside);
 
     float f0_;
-    float alpha_;
 
     IoR ior_;
-
-    bool avoid_caustics_;
 
   private:
     template <bool Forward>

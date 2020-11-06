@@ -34,7 +34,7 @@ static inline uint8_t adjacent(float s, float2 cell_bound) {
     return None;
 }
 
-static float3 scattering_coefficient(prop::Intersection const& intersection, Worker const& worker);
+static float3 scattering_coefficient(prop::Intersection const& isec, Worker const& worker);
 
 Sparse_grid::Sparse_grid(float search_radius, float grid_cell_factor, bool check_disk)
     : num_photons_(0),
@@ -289,7 +289,7 @@ void Sparse_grid::init_cells(uint32_t num_photons, Photon* photons) {
 }
 
 uint32_t Sparse_grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                                      thread::Pool& threads) {
+                                      Threads& threads) {
     threads.run_range(
         [this, merge_radius, num_reduced](uint32_t id, int32_t begin, int32_t end) {
             num_reduced[id] = reduce(merge_radius, begin, end);
@@ -337,13 +337,13 @@ void Sparse_grid::set_num_paths(uint64_t num_paths) {
     volume_normalization_ = 1.f / (((4.f / 3.f) * Pi) * (radius_3 * float(num_paths)));
 }
 
-float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& sample,
-                       Photon_ref* /*photon_refs*/, scene::Worker const&        worker) const {
+float3 Sparse_grid::li(Intersection const& isec, Material_sample const&  sample,
+                       Photon_ref* /*photon_refs*/, scene::Worker const& worker) const {
     if (0 == num_photons_) {
         return float3(0.f);
     }
 
-    float3 const position = intersection.geo.p;
+    float3 const position = isec.geo.p;
 
     if (!aabb_.intersect(position)) {
         return float3(0.f);
@@ -354,7 +354,7 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
     Adjacency adjacency;
     adjacent_cells(position, cell_bound_, adjacency);
 
-    if (intersection.subsurface) {
+    if (isec.subsurface) {
         float const radius_2 = search_radius_ * search_radius_;
 
         for (uint32_t c = 0; c < adjacency.num_cells; ++c) {
@@ -375,7 +375,7 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
             }
         }
 
-        float3 const mu_s = scattering_coefficient(intersection, worker);
+        float3 const mu_s = scattering_coefficient(isec, worker);
 
         result *= volume_normalization_ / mu_s;
     } else {
@@ -383,7 +383,7 @@ float3 Sparse_grid::li(Intersection const& intersection, Material_sample const& 
 
         float const inv_radius_2 = 1.f / radius_2;
 
-        Plane const disk = plane::create(intersection.geo.n, position);
+        Plane const disk = plane::create(isec.geo.n, position);
 
         float const disk_thickness = search_radius_ * 0.125f;
 
@@ -611,19 +611,18 @@ void Sparse_grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& 
     }
 }
 
-static float3 scattering_coefficient(prop::Intersection const& intersection, Worker const& worker) {
+static float3 scattering_coefficient(prop::Intersection const& isec, Worker const& worker) {
     using Filter = material::Sampler_settings::Filter;
 
-    auto const& material = *intersection.material(worker);
+    auto const& material = *isec.material(worker);
 
     if (material.is_heterogeneous_volume()) {
         entity::Composed_transformation temp;
-        auto const& transformation = worker.scene().prop_transformation_at(intersection.prop, 0,
-                                                                           temp);
+        auto const& trafo = worker.scene().prop_transformation_at(isec.prop, 0, temp);
 
-        float3 const local_position = transformation.world_to_object_point(intersection.geo.p);
+        float3 const local_position = trafo.world_to_object_point(isec.geo.p);
 
-        auto const shape = worker.scene().prop_shape(intersection.prop);
+        auto const shape = worker.scene().prop_shape(isec.prop);
 
         float3 const uvw = shape->object_to_texture_point(local_position);
 
@@ -631,7 +630,7 @@ static float3 scattering_coefficient(prop::Intersection const& intersection, Wor
     }
 
     if (material.is_textured_volume()) {
-        return material.collision_coefficients(intersection.geo.uv, Filter::Undefined, worker).s;
+        return material.collision_coefficients(isec.geo.uv, Filter::Undefined, worker).s;
     }
 
     return material.collision_coefficients().s;

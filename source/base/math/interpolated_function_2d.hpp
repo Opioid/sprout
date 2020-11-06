@@ -33,6 +33,21 @@ class Interpolated_function_2D {
     T* samples_ = nullptr;
 };
 
+template <typename T, uint32_t X, uint32_t Y>
+class Interpolated_function_2D_N {
+  public:
+    Interpolated_function_2D_N();
+
+    Interpolated_function_2D_N(T const t[]);
+
+    void from_array(T const t[]);
+
+    T operator()(float x, float y) const;
+
+  private:
+    T samples_[X * Y];
+};
+
 }  // namespace math
 
 #endif

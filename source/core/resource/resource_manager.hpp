@@ -12,6 +12,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace resource {
 
 class Cache;
@@ -29,13 +31,13 @@ class Manager {
   public:
     using Variants = memory::Variant_map;
 
-    Manager(thread::Pool& threads);
+    Manager(Threads& threads);
 
     ~Manager();
 
     file::System& filesystem();
 
-    thread::Pool& threads();
+    Threads& threads();
 
     void clear();
 
@@ -77,7 +79,7 @@ class Manager {
 
     file::System filesystem_;
 
-    thread::Pool& threads_;
+    Threads& threads_;
 
     std::map<std::string, Cache*> caches_;
 };

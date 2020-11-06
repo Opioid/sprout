@@ -110,9 +110,9 @@ void Array<T>::reserve(uint32_t capacity) {
 
 template <typename T>
 void Array<T>::push_back(T const& v) {
-    data_[size_] = v;
+    SOFT_ASSERT(size_ < capacity_);
 
-    ++size_;
+    data_[size_++] = v;
 }
 
 template <typename T>

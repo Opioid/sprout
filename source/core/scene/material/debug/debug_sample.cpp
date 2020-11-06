@@ -6,47 +6,28 @@
 
 namespace scene::material::debug {
 
-static float3 constexpr color_front(0.4f, 0.9f, 0.1f);
-static float3 constexpr color_back(0.9f, 0.1f, 0.4f);
-
 bxdf::Result Sample::evaluate_f(float3 const& wi) const {
-    float3 const n = cross(layer_.t_, layer_.b_);
-
-    bool const same_side = dot(n, layer_.n_) > 0.f;
-
     float const n_dot_wi = layer_.clamp_n_dot(wi);
-
-    float3 const color = same_side ? color_front : color_back;
 
     float const pdf = n_dot_wi * Pi_inv;
 
-    float3 const lambert = Pi_inv * color;
+    float3 const lambert = Pi_inv * albedo_;
 
     return {n_dot_wi * lambert, pdf};
 }
 
 bxdf::Result Sample::evaluate_b(float3 const& wi) const {
-    float3 const n = cross(layer_.t_, layer_.b_);
-
-    bool const same_side = dot(n, layer_.n_) > 0.f;
-
     float const n_dot_wi = layer_.clamp_n_dot(wi);
-
-    float3 const color = same_side ? color_front : color_back;
 
     float const pdf = n_dot_wi * Pi_inv;
 
-    float3 const lambert = Pi_inv * color;
+    float3 const lambert = Pi_inv * albedo_;
 
     return {lambert, pdf};
 }
 
-void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
-    float3 const n = cross(layer_.t_, layer_.b_);
-
-    bool const same_side = dot(n, layer_.n_) > 0.f;
-
-    float2 const s2d = sampler.generate_sample_2D();
+void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
+    float2 const s2d = sampler.sample_2D(rng);
 
     float3 const is = sample_hemisphere_cosine(s2d);
 
@@ -54,9 +35,7 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
 
     float const n_dot_wi = layer_.clamp_n_dot(wi);
 
-    float3 const color = same_side ? color_front : color_back;
-
-    result.reflection = n_dot_wi * Pi_inv * color;
+    result.reflection = n_dot_wi * Pi_inv * albedo_;
     result.wi         = wi;
     result.pdf        = n_dot_wi * Pi_inv;
     result.wavelength = 0.f;

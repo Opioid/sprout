@@ -22,7 +22,7 @@ Kernel::Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primi
 Kernel::~Kernel() = default;
 
 void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
-                   thread::Pool& threads, Tasks& tasks) {
+                   Threads& threads, Tasks& tasks) {
     Node& node = build_nodes_[node_id];
 
     node.set_aabb(aabb);
@@ -86,7 +86,7 @@ void Kernel::split(uint32_t node_id, References& references, AABB const& aabb, u
 }
 
 Split_candidate Kernel::splitting_plane(References const& references, AABB const& aabb,
-                                        uint32_t depth, bool& exhausted, thread::Pool& threads) {
+                                        uint32_t depth, bool& exhausted, Threads& threads) {
     static uint8_t constexpr X = 0;
     static uint8_t constexpr Y = 1;
     static uint8_t constexpr Z = 2;
@@ -194,7 +194,7 @@ void Kernel::reserve(uint32_t num_primitives) {
     reference_ids_.reserve((num_primitives * 12) / 10);
 }
 
-void Builder_base::work_on_tasks(thread::Pool& threads, Tasks& tasks) {
+void Builder_base::work_on_tasks(Threads& threads, Tasks& tasks) {
     if (tasks.empty()) {
         return;
     }
@@ -272,7 +272,7 @@ Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32
 
 Builder_base::~Builder_base() {}
 
-void Builder_base::split(References& references, AABB const& aabb, thread::Pool& threads) {
+void Builder_base::split(References& references, AABB const& aabb, Threads& threads) {
     float const log2_num_references = std::log2(float(references.size()));
 
     spatial_split_threshold_ = uint32_t(std::lrint(log2_num_references / 2.f));
@@ -299,8 +299,8 @@ void Builder_base::reserve(uint32_t num_primitives) {
     current_node_ = 0;
 }
 
-bvh::Node& Builder_base::new_node() {
-    return nodes_[current_node_++];
+void Builder_base::new_node() {
+    current_node_++;
 }
 
 uint32_t Builder_base::current_node_index() const {

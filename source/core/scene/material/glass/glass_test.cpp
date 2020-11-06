@@ -69,7 +69,7 @@ void test() {
 void rough_refraction() {
     rnd::Generator rng(0, 0);
 
-    sampler::Random sampler(rng);
+    sampler::Random sampler;
     sampler.resize(0, 1, 1, 1);
 
     Sample sample;
@@ -101,9 +101,9 @@ void rough_refraction() {
     float roughness = 0.5f;  // ggx::Min_roughness;
     float alpha     = roughness * roughness;
 
-    sample.set(refraction_color, ior, 1.f);
+    sample.set(ior, 1.f);
 
-    sample_rough.set(refraction_color, ior, 1.f, alpha, false);
+    sample_rough.set(ior, 1.f);
 
     //  bool const same_side = sample.same_hemisphere(wo);
 

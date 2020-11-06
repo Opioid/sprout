@@ -10,19 +10,12 @@ class Material_subsurface final : public Material_base {
   public:
     Material_subsurface(Sampler_settings const& sampler_settings);
 
-    void commit(thread::Pool& threads, Scene const& scene) final;
+    void commit(Threads& threads, Scene const& scene) final;
 
     material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
     void set_density_map(Texture_adapter const& density_map);
-
-    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                         float distance);
-
-    float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const final;
-
-    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const final;
 
     CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const final;
 

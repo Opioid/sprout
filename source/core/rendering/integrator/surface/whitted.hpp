@@ -13,39 +13,29 @@ namespace rendering::integrator::surface {
 
 class alignas(64) Whitted final : public Integrator {
   public:
-    struct Settings {
-        uint32_t num_light_samples;
-        float    num_light_samples_reciprocal;
-    };
-
-    Whitted(rnd::Generator& rng, Settings const& settings);
+    Whitted();
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(RNG& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) final;
+    float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV* aov) final;
 
   private:
-    float3 shade(Ray const& ray, Intersection const& intersection, Worker& worker);
+    float3 shade(Ray const& ray, Intersection const& isec, Worker& worker);
 
-    float3 estimate_direct_light(Ray const& ray, Intersection const& intersection,
-                                 Material_sample const& material_sample, Worker& worker);
-
-    Settings const settings_;
+    float3 estimate_direct_light(Ray const& ray, Intersection const& isec,
+                                 Material_sample const& mat_sample, Worker& worker);
 
     sampler::Random sampler_;
 };
 
 class Whitted_pool final : public Typed_pool<Whitted> {
   public:
-    Whitted_pool(uint32_t num_integrators, uint32_t num_light_samples);
+    Whitted_pool(uint32_t num_integrators);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
-
-  private:
-    Whitted::Settings settings_;
+    Integrator* get(uint32_t id) const final;
 };
 
 }  // namespace rendering::integrator::surface

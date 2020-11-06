@@ -16,8 +16,8 @@ Json_handler::Json_handler(Json_handler&& other) {
 }
 
 Json_handler::Json_handler(Json_handler const& other) {
-    // MSVC insists on the parameter being const
-    // On the one hand I don't like the cast, on the other hand the uggliness is explicit now...
+    // Not happy with this, but in practice it makes life easiser with std::function
+    // On one hand I don't like the cast, on the other hand the uggliness is explicit now...
     Json_handler& mo = const_cast<Json_handler&>(other);
 
     parts_.swap(mo.parts_);

@@ -13,14 +13,14 @@ namespace integrator::volume {
 
 class Integrator : public integrator::Integrator {
   public:
-    Integrator(rnd::Generator& rng);
+    Integrator();
 
     virtual ~Integrator();
 
     virtual bool transmittance(Ray const& ray, Worker& worker, float3& tr) = 0;
 
-    virtual Event integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
-                            float3& li, float3& tr) = 0;
+    virtual Event integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker, float3& li,
+                            float3& tr) = 0;
 };
 
 class Pool {
@@ -29,7 +29,7 @@ class Pool {
 
     virtual ~Pool();
 
-    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const = 0;
+    virtual Integrator* get(uint32_t id) const = 0;
 
   protected:
     uint32_t num_integrators_;

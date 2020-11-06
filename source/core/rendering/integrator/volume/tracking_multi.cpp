@@ -8,6 +8,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/material.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
@@ -23,28 +24,27 @@ namespace rendering::integrator::volume {
 
 using namespace scene::prop;
 
-static inline void set_scattering(Intersection& intersection, Interface const* interface,
-                                  float3 const& p) {
-    intersection.prop       = interface->prop;
-    intersection.geo.p      = p;
-    intersection.geo.uv     = interface->uv;
-    intersection.geo.part   = interface->part;
-    intersection.subsurface = true;
+static inline void set_scattering(Intersection& isec, Interface const* interface, float3 const& p) {
+    isec.prop       = interface->prop;
+    isec.geo.p      = p;
+    isec.geo.uv     = interface->uv;
+    isec.geo.part   = interface->part;
+    isec.subsurface = true;
 }
 
-Tracking_multi::Tracking_multi(rnd::Generator& rng) : Integrator(rng) {}
+Tracking_multi::Tracking_multi() = default;
 
 void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
-void Tracking_multi::start_pixel() {}
+void Tracking_multi::start_pixel(rnd::Generator& /*rng*/) {}
 
 bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& tr) {
-    return Tracking::transmittance(ray, rng_, worker, tr);
+    return Tracking::transmittance(ray, worker, tr);
 }
 
-Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter filter, Worker& worker,
+Event Tracking_multi::integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker,
                                 float3& li, float3& tr) {
-    if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+    if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
         li = float3(0.f);
         tr = float3(1.f);
         return Event::Abort;
@@ -54,7 +54,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
     // Not sure wether the first test still makes sense.
     // The second test avoids falsely reporting very long volume sections,
-    // when in fact a very short intersection was missed.
+    // when in fact a very short isec was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
     if (scene::offset_f(ray.min_t()) >= d || scene::Almost_ray_max_t <= d) {
@@ -69,9 +69,11 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
     auto const& material = *interface->material(worker);
 
+    auto& rng = worker.rng();
+
     if (!material.is_scattering_volume()) {
         // Basically the "glass" case
-        float3 const mu_a = material.absorption_coefficient(interface->uv, filter, worker);
+        float3 const mu_a = material.collision_coefficients(interface->uv, filter, worker).a;
 
         li = float3(0.f);
         tr = attenuation(d - ray.min_t(), mu_a);
@@ -99,10 +101,10 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
                     float      t;
                     auto const result = Tracking::tracking(local_ray, cm, material, srs, filter,
-                                                           rng_, worker, t, w, li);
+                                                           worker, t, w, li);
 
                     if (Event::Scatter == result) {
-                        set_scattering(intersection, interface, ray.point(t));
+                        set_scattering(isec, interface, ray.point(t));
                         event = Event::Scatter;
                         break;
                     }
@@ -111,7 +113,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                         tr          = w;
                         ray.max_t() = t;
                         // This is in local space on purpose!
-                        intersection.geo.p = local_ray.point(t);
+                        isec.geo.p = local_ray.point(t);
                         return Event::Absorb;
                     }
                 }
@@ -127,9 +129,9 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
                     cm.minorant_mu_s *= srs;
                     cm.majorant_mu_s *= srs;
 
-                    if (float t; Tracking::tracking(local_ray, cm, material, srs, filter, rng_,
-                                                    worker, t, w)) {
-                        set_scattering(intersection, interface, ray.point(t));
+                    if (float t;
+                        Tracking::tracking(local_ray, cm, material, srs, filter, worker, t, w)) {
+                        set_scattering(isec, interface, ray.point(t));
                         event = Event::Scatter;
                         break;
                     }
@@ -152,8 +154,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         float3 w;
         Event  event = Event::Pass;
 
-        if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-            set_scattering(intersection, interface, ray.point(t));
+        if (float t; Tracking::tracking(ray, mu, rng, t, w)) {
+            set_scattering(isec, interface, ray.point(t));
             event = Event::Scatter;
         }
 
@@ -169,12 +171,12 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
         auto const cce = material.collision_coefficients_emission();
 
         float      t;
-        auto const result = Tracking::tracking(ray, cce, rng_, t, w, li);
+        auto const result = Tracking::tracking(ray, cce, rng, t, w, li);
 
         tr = w;
 
         if (Event::Scatter == result) {
-            set_scattering(intersection, interface, ray.point(t));
+            set_scattering(isec, interface, ray.point(t));
             event = Event::Scatter;
         } else if (Event::Absorb == result) {
             ray.max_t() = t;
@@ -186,8 +188,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 
     auto const mu = material.collision_coefficients();
 
-    if (float t; Tracking::tracking(ray, mu, rng_, t, w)) {
-        set_scattering(intersection, interface, ray.point(t));
+    if (float t; Tracking::tracking(ray, mu, rng, t, w)) {
+        set_scattering(isec, interface, ray.point(t));
         event = Event::Scatter;
     }
 
@@ -211,7 +213,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
     if (t < td) {
         float3 const p = ray.point(ray.min_t + t);
 
-        set_scattering(intersection, interface, p);
+        set_scattering(isec, interface, p);
 
         event = Event::Scatter;
 
@@ -236,10 +238,10 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& intersection, Filter fil
 Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators)
     : Typed_pool<Tracking_multi>(num_integrators) {}
 
-Integrator* Tracking_multi_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* Tracking_multi_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Tracking_multi(rng);
+        return new (&integrators_[id]) Tracking_multi();
     }
 
     return &integrators_[id];

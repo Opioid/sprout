@@ -1,5 +1,5 @@
-#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
-#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL1
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_DL
 
 #include "sampler/sampler_random.hpp"
 #include "scene/material/sampler_settings.hpp"
@@ -19,24 +19,26 @@ class alignas(64) Pathtracer_DL final : public Integrator {
         bool avoid_caustics;
     };
 
-    Pathtracer_DL(rnd::Generator& rng, Settings const& settings, bool progressive);
+    Pathtracer_DL(Settings const& settings, bool progressive);
 
     ~Pathtracer_DL() final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(RNG& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) final;
+    float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV* aov) final;
 
   private:
-    float3 direct_light(Ray const& ray, Intersection const& intersection,
-                        Material_sample const& material_sample, Filter filter, Worker& worker);
+    float3 direct_light(Ray const& ray, Intersection const& isec, Material_sample const& mat_sample,
+                        Filter filter, Worker& worker);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 
     sampler::Sampler& light_sampler(uint32_t bounce);
+
+    bool splitting(uint32_t bounce) const;
 
     Settings const settings_;
 
@@ -49,6 +51,8 @@ class alignas(64) Pathtracer_DL final : public Integrator {
     sampler::Sampler* material_samplers_[Num_dedicated_samplers];
 
     sampler::Sampler* light_samplers_[Num_dedicated_samplers];
+
+    Lights lights_;
 };
 
 class Pathtracer_DL_pool final : public Typed_pool<Pathtracer_DL> {
@@ -57,7 +61,7 @@ class Pathtracer_DL_pool final : public Typed_pool<Pathtracer_DL> {
                        uint32_t min_bounces, uint32_t max_bounces, Light_sampling light_sampling,
                        bool enable_caustics);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     Pathtracer_DL::Settings settings_;

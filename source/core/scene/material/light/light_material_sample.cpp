@@ -18,13 +18,9 @@ bxdf::Result Sample::evaluate_b(float3 const& /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
-void Sample::sample(Sampler& /*sampler*/, bxdf::Sample& result) const {
+void Sample::sample(Sampler& /*sampler*/, rnd::Generator& /*rng*/, bxdf::Sample& result) const {
     result.reflection = float3(0.f);
     result.pdf        = 0.f;
-}
-
-void Sample::set(float3 const& radiance) {
-    radiance_ = radiance;
 }
 
 }  // namespace scene::material::light

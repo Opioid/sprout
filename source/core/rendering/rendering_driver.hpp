@@ -35,7 +35,7 @@ class Sink;
 
 namespace rendering {
 
-class Camera_worker;
+class Worker;
 
 class Driver {
   public:
@@ -43,16 +43,11 @@ class Driver {
     using Camera    = scene::camera::Camera;
     using Exporters = memory::Array<exporting::Sink*>;
 
-    Driver(thread::Pool& threads, progress::Sink& progressor);
+    Driver(Threads& threads, progress::Sink& progressor);
 
     ~Driver();
 
     void init(take::View& view, Scene& scene, bool progressive);
-
-    Camera& camera();
-
-    Scene const& scene() const;
-    Scene&       scene();
 
     image::Float4 const& target() const;
 
@@ -66,26 +61,24 @@ class Driver {
 
     void postprocess();
 
-    void export_frame(uint32_t frame, Exporters& exporters) const;
+    void export_frame(uint32_t frame, Exporters& exporters);
 
   private:
     void render_frame_backward(uint32_t frame);
-
     void render_frame_backward(uint32_t frame, uint32_t iteration);
 
     void render_frame_forward(uint32_t frame);
-
     void render_frame_forward(uint32_t frame, uint32_t iteration);
 
     void bake_photons(uint32_t frame);
 
-    thread::Pool& threads_;
+    Threads& threads_;
 
     Scene* scene_;
 
     take::View* view_;
 
-    Camera_worker* workers_;
+    Worker* workers_;
 
     uint32_t frame_;
     uint32_t frame_view_;

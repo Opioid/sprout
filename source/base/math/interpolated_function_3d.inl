@@ -3,7 +3,6 @@
 
 #include "interpolated_function_3d.hpp"
 #include "math.hpp"
-#include "memory/align.hpp"
 #include "vector3.inl"
 
 namespace math {
@@ -30,7 +29,7 @@ Interpolated_function_3D<T>::Interpolated_function_3D(float3 const& range_begin,
 
 template <typename T>
 Interpolated_function_3D<T>::~Interpolated_function_3D() {
-    memory::free_aligned(samples_);
+    delete[] samples_;
 }
 
 template <typename T>
@@ -39,9 +38,9 @@ void Interpolated_function_3D<T>::from_array(float3 const& range_begin, float3 c
     uint32_t const volume = num_samples[0] * num_samples[1] * num_samples[2];
 
     if (num_samples_[0] * num_samples_[1] * num_samples_[2] != volume) {
-        memory::free_aligned(samples_);
+        delete[] samples_;
 
-        samples_ = memory::allocate_aligned<T>(volume);
+        samples_ = new T[volume];
     }
 
     num_samples_ = num_samples;
@@ -88,6 +87,57 @@ T Interpolated_function_3D<T>::operator()(float x, float y, float z) const {
     uint32_t const area   = num_samples_[0] * num_samples_[1];
     uint32_t const slice0 = offset[2] * area;
     uint32_t const slice1 = std::min(offset[2] + 1, back_[2]) * area;
+
+    T const c000 = samples_[offset[0] + row0 + slice0];
+    T const c100 = samples_[col1 + row0 + slice0];
+    T const c010 = samples_[offset[0] + row1 + slice0];
+    T const c110 = samples_[col1 + row1 + slice0];
+    T const c001 = samples_[offset[0] + row0 + slice1];
+    T const c101 = samples_[col1 + row0 + slice1];
+    T const c011 = samples_[offset[0] + row1 + slice1];
+    T const c111 = samples_[col1 + row1 + slice1];
+
+    T const c0 = bilinear(c000, c100, c010, c110, t[0], t[1]);
+    T const c1 = bilinear(c001, c101, c011, c111, t[0], t[1]);
+
+    return lerp(c0, c1, t[2]);
+}
+
+template <typename T, uint32_t X, uint32_t Y, uint32_t Z>
+Interpolated_function_3D_N<T, X, Y, Z>::Interpolated_function_3D_N() = default;
+
+template <typename T, uint32_t X, uint32_t Y, uint32_t Z>
+Interpolated_function_3D_N<T, X, Y, Z>::Interpolated_function_3D_N(T const t[]) {
+    from_array(t);
+}
+
+template <typename T, uint32_t X, uint32_t Y, uint32_t Z>
+void Interpolated_function_3D_N<T, X, Y, Z>::from_array(T const t[]) {
+    for (uint32_t i = 0; i < X * Y * Z; ++i) {
+        samples_[i] = t[i];
+    }
+}
+
+template <typename T, uint32_t X, uint32_t Y, uint32_t Z>
+T Interpolated_function_3D_N<T, X, Y, Z>::operator()(float x, float y, float z) const {
+    x = std::min(x, 1.f);
+    y = std::min(y, 1.f);
+    z = std::min(y, 1.f);
+
+    float3 const o = float3(x, y, z) * float3(X - 1, Y - 1, Z - 1);
+
+    uint3 const offset = uint3(o);
+
+    float3 const t = o - float3(offset);
+
+    uint32_t const col1 = std::min(offset[0] + 1, X - 1);
+
+    uint32_t const row0 = offset[1] * X;
+    uint32_t const row1 = std::min(offset[1] + 1, Y - 1) * X;
+
+    uint32_t constexpr area = X * Y;
+    uint32_t const slice0   = offset[2] * area;
+    uint32_t const slice1   = std::min(offset[2] + 1, Z - 1) * area;
 
     T const c000 = samples_[offset[0] + row0 + slice0];
     T const c100 = samples_[col1 + row0 + slice0];

@@ -21,7 +21,7 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row);
 void copy(texture::Texture const& source, Float4& destination, int2 offset, float2 clip);
 
 uint32_t concatenate(std::vector<Item> const& items, it::options::Options const& options,
-                     Pipeline& pipeline, thread::Pool& threads) {
+                     Pipeline& pipeline, Threads& threads) {
     uint32_t num_per_row = options.concat_num_per_row;
 
     float2 const clip = options.clip;

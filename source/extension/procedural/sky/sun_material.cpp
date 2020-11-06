@@ -28,9 +28,9 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
                                              Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    float3 const radiance = sky_.model().evaluate_sky_and_sun(-wo);
 
-    sample.set(sky_.model().evaluate_sky_and_sun(-wo));
+    sample.set_common(rs, wo, radiance, radiance, 0.f);
 
     return sample;
 }
@@ -45,8 +45,8 @@ float3 Sun_material::average_radiance(float /*area*/) const {
 }
 
 void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
-                                    Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                    Transformation const& /*trafo*/, float /*area*/,
+                                    bool /*importance_sampling*/, Threads& /*threads*/,
                                     Scene const& /*scene*/) {}
 
 Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
@@ -56,13 +56,11 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
                                                    Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     float3 const radiance = emission_(sky_.sun_v(-wo));
 
     SOFT_ASSERT(all_finite_and_positive(radiance));
 
-    sample.set(radiance);
+    sample.set_common(rs, wo, radiance, radiance, 0.f);
 
     return sample;
 }
@@ -82,10 +80,9 @@ float3 Sun_baked_material::average_radiance(float /*area*/) const {
 }
 
 void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
-                                          uint64_t /*time*/,
-                                          Transformation const& /*transformation*/, float /*area*/,
-                                          bool /*importance_sampling*/, thread::Pool& /*threads*/,
-                                          Scene const& /*scene*/) {
+                                          uint64_t /*time*/, Transformation const& /*trafo*/,
+                                          float /*area*/, bool /*importance_sampling*/,
+                                          Threads& /*threads*/, Scene const& /*scene*/) {
     using namespace image;
 
     if (!sky_.sun_changed_since_last_check()) {

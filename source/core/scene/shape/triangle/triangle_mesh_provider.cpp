@@ -348,7 +348,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
 }
 
 Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
-                             thread::Pool& threads) {
+                             Threads& threads) {
     if (triangles.empty() || vertices.empty() || !num_parts) {
         logging::error("No mesh data.");
         return nullptr;
@@ -373,7 +373,7 @@ Shape* Provider::create_mesh(Triangles& triangles, Vertices& vertices, uint32_t 
 }
 
 void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                         Vertex_stream const& vertices, thread::Pool& threads) {
+                         Vertex_stream const& vertices, Threads& threads) {
     bvh::Builder_SAH builder(16, 64, 4);
     builder.build(mesh.tree(), num_triangles, triangles, vertices, threads);
 }
@@ -432,7 +432,7 @@ void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* co
     }
 }
 
-Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
+Shape* Provider::load_binary(std::istream& stream, Threads& threads) {
 #ifdef SU_DEBUG
     auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
@@ -594,7 +594,6 @@ Shape* Provider::load_binary(std::istream& stream, thread::Pool& threads) {
             stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
 
             vertex_stream = new Vertex_stream_separate_ts(num_vertices, p, ts, uv);
-
         } else {
             packed_float3* n = new packed_float3[num_vertices];
             stream.read(reinterpret_cast<char*>(n), num_vertices * sizeof(packed_float3));

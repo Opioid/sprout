@@ -9,6 +9,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 namespace material {
@@ -42,12 +44,12 @@ class Sparse_grid {
     void init_cells(uint32_t num_photons, Photon* photons);
 
     uint32_t reduce_and_move(Photon* photons, float merge_radius, uint32_t* num_reduced,
-                             thread::Pool& threads);
+                             Threads& threads);
 
     void set_num_paths(uint64_t num_paths);
 
-    float3 li(Intersection const& intersection, Material_sample const& sample,
-              Photon_ref* photon_refs, scene::Worker const& worker) const;
+    float3 li(Intersection const& isec, Material_sample const& sample, Photon_ref* photon_refs,
+              scene::Worker const& worker) const;
 
   private:
     void release();

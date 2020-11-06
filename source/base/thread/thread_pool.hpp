@@ -103,4 +103,6 @@ class Pool {
 
 }  // namespace thread
 
+using Threads = thread::Pool;
+
 #endif

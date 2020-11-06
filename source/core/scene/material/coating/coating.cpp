@@ -8,9 +8,9 @@
 
 namespace scene::material::coating {
 
-void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float ior, float f0,
+void Clearcoat::set(float3 const& absorption_coef, float thickness, float ior, float f0,
                     float alpha, float weight) {
-    absorption_coefficient_ = absorption_coefficient;
+    absorption_coef_ = absorption_coef;
 
     thickness_ = thickness;
 
@@ -26,7 +26,7 @@ void Clearcoat::set(float3 const& absorption_coefficient, float thickness, float
 float3 Clearcoat::attenuation(float n_dot_wo) const {
     float const d = thickness_ * (1.f / n_dot_wo);
 
-    return rendering::attenuation(d, absorption_coefficient_);
+    return rendering::attenuation(d, absorption_coef_);
 }
 
 float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const {
@@ -34,7 +34,7 @@ float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const {
 
     float const d = thickness_ * (1.f / n_dot_wi + 1.f / n_dot_wo);
 
-    float3 const absorption = rendering::attenuation(d, absorption_coefficient_);
+    float3 const absorption = rendering::attenuation(d, absorption_coef_);
 
     float3 const attenuation = (1.f - f) * absorption;
 
@@ -87,13 +87,13 @@ Result Clearcoat::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h
     return {ep * weight_ * ggx.reflection, attenuation, ggx.pdf()};
 }
 
-void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
-                       bxdf::Sample& result) const {
+void Clearcoat::sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
+                       float3& attenuation, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
                                                    result);
@@ -152,13 +152,13 @@ Result Thinfilm::evaluate_b(float3 const& wi, float3 const& wo, float3 const& h,
     return {ggx.reflection, attenuation, ggx.pdf()};
 }
 
-void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, float3& attenuation,
-                      bxdf::Sample& result) const {
+void Thinfilm::sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
+                      float3& attenuation, bxdf::Sample& result) const {
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Thinfilm const thinfilm(1.f, ior_, ior_internal_, thickness_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, thinfilm, xi,
                                                    attenuation, result);

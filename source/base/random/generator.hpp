@@ -28,4 +28,6 @@ class Generator {
 
 }  // namespace rnd
 
+using RNG = rnd::Generator;
+
 #endif

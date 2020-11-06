@@ -3,6 +3,7 @@
 
 #include "base/memory/array.hpp"
 #include "rendering/postprocessor/postprocessor_pipeline.hpp"
+#include "rendering/sensor/aov/value.hpp"
 
 #include <string>
 
@@ -53,7 +54,7 @@ struct View {
 
     void clear();
 
-    void init(thread::Pool& threads);
+    void init(Threads& threads);
 
     bool valid() const;
 
@@ -66,6 +67,8 @@ struct View {
     sampler::Pool* samplers = nullptr;
 
     scene::camera::Camera* camera = nullptr;
+
+    rendering::sensor::aov::Value_pool aovs;
 
     rendering::postprocessor::Pipeline pipeline;
 

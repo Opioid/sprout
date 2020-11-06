@@ -8,25 +8,25 @@
 namespace scene::material::substitute {
 
 template <typename Coating_layer, typename Diffuse>
-class Sample_coating : public Sample_base {
+class Sample_coating : public material::Sample {
   public:
     bxdf::Result evaluate_f(float3 const& wi) const override;
 
     bxdf::Result evaluate_b(float3 const& wi) const override;
 
-    void sample(Sampler& sampler, bxdf::Sample& result) const override;
+    void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const override;
 
   protected:
     template <bool Forward>
     bxdf::Result evaluate(float3 const& wi) const;
 
-    void coating_sample_and_base(Sampler& sampler, bxdf::Sample& result) const;
+    void coating_sample_and_base(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
-    void diffuse_sample_and_coating(Sampler& sampler, bxdf::Sample& result) const;
+    void diffuse_sample_and_coating(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
-    void gloss_sample_and_coating(Sampler& sampler, bxdf::Sample& result) const;
+    void gloss_sample_and_coating(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
-    void pure_gloss_sample_and_coating(Sampler& sampler, bxdf::Sample& result) const;
+    void pure_gloss_sample_and_coating(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
   public:
     Base_closure<Diffuse> base_;

@@ -27,6 +27,7 @@
 #include "metal/metal_presets.hpp"
 #include "metallic_paint/metallic_paint_material.hpp"
 #include "mix/mix_material.hpp"
+#include "null/null_material.hpp"
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
 #include "scene/scene_constants.hpp"
@@ -42,65 +43,21 @@
 
 namespace scene::material {
 
-using Texture       = image::texture::Texture;
-using Texture_usage = image::texture::Provider::Usage;
-using Resources     = resource::Manager;
-using Variants      = memory::Variant_map;
-
-static Material* load_debug(json::Value const& debug_value, Resources& resources);
-
-static Material* load_display(json::Value const& display_value, Resources& resources);
-
-static Material* load_glass(json::Value const& glass_value, Resources& resources);
-
-static Material* load_light(json::Value const& light_value, Resources& resources);
-
-static Material* load_metal(json::Value const& metal_value, Resources& resources);
-
-static Material* load_metallic_paint(json::Value const& paint_value, Resources& resources);
-
-static Material* load_substitute(json::Value const& substitute_value, Resources& resources);
-
-static Material* load_volumetric(json::Value const& volumetric_value, Resources& resources);
-
-struct Texture_description {
-    std::string filename;
-
-    std::string usage = "Color";
-
-    image::Swizzle swizzle = image::Swizzle::XYZW;
-
-    float scale = 1.f;
-
-    int32_t num_elements = 1;
-};
+using Texture             = image::texture::Texture;
+using Texture_usage       = image::texture::Provider::Usage;
+using Texture_description = Provider::Texture_description;
+using Resources           = resource::Manager;
+using Variants            = memory::Variant_map;
 
 static void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& settings);
 
-static Texture_description read_texture_description(json::Value const& texture_value);
-
-static Texture_adapter create_texture(Texture_description const& description,
-                                      memory::Variant_map& options, resource::Manager& resources);
-
-struct Coating_description {
-    float3 color = float3(1.f);
-
-    float attenuation_distance = 0.1f;
-    float ior                  = 1.5f;
-    float roughness            = 0.2f;
-    float thickness            = 0.f;
-
-    bool in_nm = false;
-
-    Texture_description normal_map_description;
-    Texture_description thickness_map_description;
-};
-
-static void read_coating_description(json::Value const& value, Coating_description& description);
+static Texture_adapter create_texture(Texture_description const& description, Variants& options,
+                                      resource::Manager& resources);
 
 static float3 read_color(json::Value const& color_value);
 
-Provider::Provider(bool force_debug_material) : force_debug_material_(force_debug_material) {
+Provider::Provider(bool no_textures_dwim, bool force_debug_material)
+    : no_textures_dwim_(no_textures_dwim), force_debug_material_(force_debug_material) {
     Material::init_rainbow();
 }
 
@@ -138,7 +95,7 @@ Material* Provider::create_fallback_material() {
 }
 
 Material* Provider::load(json::Value const& value, std::string_view mount_folder,
-                         Resources& resources) {
+                         Resources& resources) const {
     json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
     if (value.MemberEnd() == rendering_node) {
         logging::push_error("Material has no render node.");
@@ -156,7 +113,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
             if ("Light" == n.name) {
                 material = load_light(n.value, resources);
             } else {
-                material = new debug::Material(Sampler_settings(Sampler_settings::Filter::Linear));
+                material = new debug::Material(Sampler_settings());
             }
         } else {
             if ("Debug" == n.name) {
@@ -173,6 +130,8 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
                 material = load_metallic_paint(n.value, resources);
             } else if ("Mix" == n.name) {
                 material = load_mix(n.value, resources);
+            } else if ("Null" == n.name) {
+                material = new null::Material(Sampler_settings());
             } else if ("Substitute" == n.name) {
                 material = load_substitute(n.value, resources);
             } else if ("Volumetric" == n.name) {
@@ -195,7 +154,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
     return material;
 }
 
-Material* load_debug(json::Value const& debug_value, Resources& resources) {
+Material* Provider::load_debug(json::Value const& debug_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -227,7 +186,7 @@ Material* load_debug(json::Value const& debug_value, Resources& resources) {
     return material;
 }
 
-Material* load_display(json::Value const& display_value, Resources& resources) {
+Material* Provider::load_display(json::Value const& display_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -306,7 +265,7 @@ Material* load_display(json::Value const& display_value, Resources& resources) {
     return material;
 }
 
-Material* load_glass(json::Value const& glass_value, Resources& resources) {
+Material* Provider::load_glass(json::Value const& glass_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -368,7 +327,7 @@ Material* load_glass(json::Value const& glass_value, Resources& resources) {
         material->set_normal_map(normal_map);
         material->set_roughness_map(roughness_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
         material->set_ior(ior);
         material->set_roughness(roughness);
         return material;
@@ -379,7 +338,7 @@ Material* load_glass(json::Value const& glass_value, Resources& resources) {
         material->set_mask(mask);
         material->set_normal_map(normal_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
         material->set_ior(ior);
         material->set_thickness(thickness);
         return material;
@@ -389,7 +348,7 @@ Material* load_glass(json::Value const& glass_value, Resources& resources) {
         auto material = new glass::Glass_dispersion(sampler_settings);
         material->set_normal_map(normal_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, attenuation_distance);
+        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
         material->set_ior(ior);
         material->set_abbe(abbe);
         return material;
@@ -398,12 +357,12 @@ Material* load_glass(json::Value const& glass_value, Resources& resources) {
     auto material = new glass::Glass(sampler_settings);
     material->set_normal_map(normal_map);
     material->set_refraction_color(refraction_color);
-    material->set_attenuation(absorption_color, attenuation_distance);
+    material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
     material->set_ior(ior);
     return material;
 }
 
-Material* load_light(json::Value const& light_value, Resources& resources) {
+Material* Provider::load_light(json::Value const& light_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
     std::string quantity;
@@ -497,7 +456,7 @@ Material* load_light(json::Value const& light_value, Resources& resources) {
     return material;
 }
 
-Material* load_metal(json::Value const& metal_value, Resources& resources) {
+Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
     Texture_adapter normal_map;
@@ -580,7 +539,8 @@ Material* load_metal(json::Value const& metal_value, Resources& resources) {
     return material;
 }
 
-Material* load_metallic_paint(json::Value const& paint_value, Resources& resources) {
+Material* Provider::load_metallic_paint(json::Value const& paint_value,
+                                        Resources&         resources) const {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -682,7 +642,7 @@ Material* load_metallic_paint(json::Value const& paint_value, Resources& resourc
     return material;
 }
 
-Material* Provider::load_mix(json::Value const& mix_value, Resources& resources) {
+Material* Provider::load_mix(json::Value const& mix_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
     Texture_adapter mask;
@@ -744,7 +704,8 @@ Material* Provider::load_mix(json::Value const& mix_value, Resources& resources)
     return material;
 }
 
-Material* load_substitute(json::Value const& substitute_value, Resources& resources) {
+Material* Provider::load_substitute(json::Value const& substitute_value,
+                                    Resources&         resources) const {
     Sampler_settings sampler_settings;
 
     Texture_adapter color_map;
@@ -756,14 +717,14 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
 
     bool two_sided = false;
 
-    float3 color(0.6f, 0.6f, 0.6f);
+    float3 color(0.5f, 0.5f, 0.5f);
     float3 absorption_color(0.f);
     float3 scattering_color(0.f);
 
     float3 checkers[2];
     float  checkers_scale = 0.f;
 
-    float roughness             = 0.9f;
+    float roughness             = 0.8f;
     float metallic              = 0.f;
     float ior                   = 1.46f;
     float emission_factor       = 1.f;
@@ -840,6 +801,9 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
                     surface_map = create_texture(texture_description, options, resources);
                 } else if ("Roughness" == texture_description.usage) {
                     options.set("usage", Texture_usage::Roughness);
+                    surface_map = create_texture(texture_description, options, resources);
+                } else if ("Roughness_in_alpha" == texture_description.usage) {
+                    options.set("usage", Texture_usage::Roughness_in_alpha);
                     surface_map = create_texture(texture_description, options, resources);
                 } else if ("Gloss" == texture_description.usage) {
                     options.set("usage", Texture_usage::Gloss);
@@ -973,7 +937,7 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
         return material;
     }
 
-    if (attenuation_distance > 0.f || density_map.is_valid()) {
+    if (!two_sided && (attenuation_distance > 0.f || density_map.is_valid())) {
         auto material = new substitute::Material_subsurface(sampler_settings);
 
         material->set_mask(mask);
@@ -1075,7 +1039,8 @@ Material* load_substitute(json::Value const& substitute_value, Resources& resour
     return material;
 }
 
-Material* load_volumetric(json::Value const& volumetric_value, Resources& resources) {
+Material* Provider::load_volumetric(json::Value const& volumetric_value,
+                                    Resources&         resources) const {
     Sampler_settings sampler_settings(Sampler_settings::Filter::Linear,
                                       Sampler_settings::Address::Clamp,
                                       Sampler_settings::Address::Clamp);
@@ -1222,7 +1187,8 @@ void read_sampler_settings(json::Value const& sampler_value, Sampler_settings& s
     }
 }
 
-Texture_description read_texture_description(json::Value const& texture_value) {
+Provider::Texture_description Provider::read_texture_description(
+    json::Value const& texture_value) const {
     Texture_description description;
 
     for (auto& n : texture_value.GetObject()) {
@@ -1244,11 +1210,15 @@ Texture_description read_texture_description(json::Value const& texture_value) {
         }
     }
 
+    if (no_textures_dwim_ && "Emission" != description.usage) {
+        description.filename.clear();
+    }
+
     return description;
 }
 
-Texture_adapter create_texture(Texture_description const& description, memory::Variant_map& options,
-                               Resources& resources) {
+Texture_adapter create_texture(Provider::Texture_description const& description,
+                               memory::Variant_map& options, Resources& resources) {
     if (description.num_elements > 1) {
         options.set("num_elements", description.num_elements);
     }
@@ -1261,7 +1231,8 @@ Texture_adapter create_texture(Texture_description const& description, memory::V
                            description.scale);
 }
 
-void read_coating_description(json::Value const& value, Coating_description& description) {
+void Provider::read_coating_description(json::Value const&   value,
+                                        Coating_description& description) const {
     if (!value.IsObject()) {
         return;
     }
@@ -1394,7 +1365,9 @@ uint32_t Provider::max_sample_size() {
     num_bytes = std::max(substitute::Material_translucent::sample_size(), num_bytes);
     num_bytes = std::max(volumetric::Material::sample_size(), num_bytes);
 
-    num_bytes += num_bytes % 64;
+    size_t const r = num_bytes % 64;
+
+    num_bytes += 0 == r ? 0 : 64 - r;
 
     return uint32_t(num_bytes);
 }

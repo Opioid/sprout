@@ -14,22 +14,22 @@ T const& Float1_t<T>::image() const {
 
 template <typename T>
 float Float1_t<T>::at_1(int32_t x, int32_t y) const {
-    return image_.load(x, y);
+    return image_.at(x, y);
 }
 
 template <typename T>
 float2 Float1_t<T>::at_2(int32_t x, int32_t y) const {
-    return float2(image_.load(x, y), 0.f);
+    return float2(image_.at(x, y), 0.f);
 }
 
 template <typename T>
 float3 Float1_t<T>::at_3(int32_t x, int32_t y) const {
-    return float3(image_.load(x, y), 0.f, 0.f);
+    return float3(image_.at(x, y), 0.f, 0.f);
 }
 
 template <typename T>
 float4 Float1_t<T>::at_4(int32_t x, int32_t y) const {
-    return float4(image_.load(x, y), 0.f, 0.f, 1.f);
+    return float4(image_.at(x, y), 0.f, 0.f, 1.f);
 }
 
 template <typename T>
@@ -76,22 +76,42 @@ float3 Float1_t<T>::at_element_3(int32_t x, int32_t y, int32_t element) const {
 
 template <typename T>
 float Float1_t<T>::at_1(int32_t x, int32_t y, int32_t z) const {
-    return image_.load(x, y, z);
+    return image_.at(x, y, z);
 }
 
 template <typename T>
 float2 Float1_t<T>::at_2(int32_t x, int32_t y, int32_t z) const {
-    return float2(image_.load(x, y, z), 0.f);
+    return float2(image_.at(x, y, z), 0.f);
 }
 
 template <typename T>
 float3 Float1_t<T>::at_3(int32_t x, int32_t y, int32_t z) const {
-    return float3(image_.load(x, y, z), 0.f, 0.f);
+    return float3(image_.at(x, y, z), 0.f, 0.f);
 }
 
 template <typename T>
 float4 Float1_t<T>::at_4(int32_t x, int32_t y, int32_t z) const {
-    return float4(image_.load(x, y, z), 0.f, 0.f, 1.f);
+    return float4(image_.at(x, y, z), 0.f, 0.f, 1.f);
+}
+
+template <typename T>
+void Float1_t<T>::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+    image_.gather(xyz, xyz1, c);
+}
+
+template <typename T>
+void Float1_t<T>::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+    float v[8];
+    image_.gather(xyz, xyz1, v);
+
+    c[0] = float2(v[0], 0.f);
+    c[1] = float2(v[1], 0.f);
+    c[2] = float2(v[2], 0.f);
+    c[3] = float2(v[3], 0.f);
+    c[4] = float2(v[4], 0.f);
+    c[5] = float2(v[5], 0.f);
+    c[6] = float2(v[6], 0.f);
+    c[7] = float2(v[7], 0.f);
 }
 
 template class Float1_t<image::Float1>;

@@ -3,6 +3,7 @@
 #include "glass_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
@@ -18,8 +19,6 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
                                       Filter filter, Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     if (normal_map_.is_valid()) {
         auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -29,14 +28,10 @@ material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Rend
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set(refraction_color_, ior_, rs.ior);
+    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha);
+    sample.set(ior_, rs.ior);
 
     return sample;
-}
-
-float3 Glass::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                     Worker const& /*worker*/) const {
-    return absorption_coefficient_;
 }
 
 void Glass::set_normal_map(Texture_adapter const& normal_map) {
@@ -45,14 +40,6 @@ void Glass::set_normal_map(Texture_adapter const& normal_map) {
 
 void Glass::set_refraction_color(float3 const& color) {
     refraction_color_ = color;
-}
-
-void Glass::set_attenuation(float3 const& absorption_color, float distance) {
-    absorption_color_ = absorption_color;
-
-    absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
-
-    attenuation_distance_ = distance;
 }
 
 size_t Glass::sample_size() {

@@ -95,6 +95,8 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
 static void load_light_sampling(json::Value const& value, Light_sampling& sampling);
 
+static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
+
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
                   uint32_t start_frame, bool progressive, Scene& scene, Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
@@ -123,6 +125,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
             take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
             integrator_value = &n.value;
+        } else if ("aov" == n.name) {
+            load_AOVs(n.value, take.view.aovs);
         } else if ("post" == n.name || "postprocessors" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
@@ -225,7 +229,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         return nullptr;
     }
 
-    math::Transformation transformation{float3(0.f), float3(1.f), quaternion::identity()};
+    math::Transformation trafo{float3(0.f), float3(1.f), quaternion::identity()};
 
     json::Value const* parameters_value = nullptr;
     json::Value const* animation_value  = nullptr;
@@ -240,7 +244,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
             parameters_value = &n.value;
             stereo           = peek_stereoscopic(n.value);
         } else if ("transformation" == n.name) {
-            json::read_transformation(n.value, transformation);
+            json::read_transformation(n.value, trafo);
         } else if ("animation" == n.name) {
             animation_value = &n.value;
         } else if ("sensor" == n.name) {
@@ -324,12 +328,12 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         camera->init(prop_id);
 
         if (animation_value) {
-            if (auto animation = scene::animation::load(*animation_value, transformation, *scene);
+            if (auto animation = scene::animation::load(*animation_value, trafo, *scene);
                 animation) {
                 scene->create_animation_stage(prop_id, animation);
             }
         } else {
-            scene->prop_set_world_transformation(prop_id, transformation);
+            scene->prop_set_world_transformation(prop_id, trafo);
         }
     }
 
@@ -337,12 +341,12 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
 }
 
 template <typename Filter>
-Filter load_filter(json::Value const& /*filter_value*/);
+Filter load_filter(json::Value const& /*filter_value*/, float& radius);
 
 template <>
-rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value) {
-    float radius = 1.f;
-    float alpha  = 1.8f;
+rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value, float& radius) {
+    radius      = 1.f;
+    float alpha = 1.8f;
 
     for (auto& n : filter_value.GetObject()) {
         if ("Gaussian" == n.name) {
@@ -357,10 +361,10 @@ rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value)
 }
 
 template <>
-rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value) {
-    float radius = 2.f;
-    float b      = 1.f / 3.f;
-    float c      = 1.f / 3.f;
+rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value, float& radius) {
+    radius  = 2.f;
+    float b = 1.f / 3.f;
+    float c = 1.f / 3.f;
 
     for (auto& n : filter_value.GetObject()) {
         if ("Mitchell" == n.name) {
@@ -381,34 +385,36 @@ static Sensor* make_filtered_sensor(float3 const& clamp_max, json::Value const& 
 
     bool const clamp = !any_negative(clamp_max);
 
-    Filter filter = load_filter<Filter>(filter_value);
+    float  radius;
+    Filter filter = load_filter<Filter>(filter_value, radius);
 
     if (clamp) {
-        if (filter.radius() <= 1.f) {
+        if (radius <= 1.f) {
             return new Filtered_1p0<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                                 std::move(filter));
         }
 
-        if (filter.radius() <= 2.f) {
+        if (radius <= 2.f) {
             return new Filtered_2p0<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                                 std::move(filter));
         }
 
         return new Filtered_inf<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
-                                                            std::move(filter));
+                                                            std::move(filter), radius);
     }
 
-    if (filter.radius() <= 1.f) {
+    if (radius <= 1.f) {
         return new Filtered_1p0<Base, clamp::Identity, Filter>(clamp::Identity(),
                                                                std::move(filter));
     }
 
-    if (filter.radius() <= 2.f) {
+    if (radius <= 2.f) {
         return new Filtered_2p0<Base, clamp::Identity, Filter>(clamp::Identity(),
                                                                std::move(filter));
     }
 
-    return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter));
+    return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter),
+                                                           radius);
 }
 
 enum class Sensor_filter_type { Undefined, Gaussian, Mitchell };
@@ -586,7 +592,7 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
     uint32_t constexpr Default_min_bounces = 4;
     uint32_t constexpr Default_max_bounces = 8;
 
-    Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
+    Light_sampling light_sampling{Light_sampling::Adaptive};
 
     bool constexpr Default_caustics = true;
 
@@ -600,10 +606,7 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
         }
 
         if ("Whitted" == n.name) {
-            uint32_t const num_light_samples = json::read_uint(n.value, "num_light_samples",
-                                                               light_sampling.num_samples);
-
-            return new Whitted_pool(num_workers, num_light_samples);
+            return new Whitted_pool(num_workers);
         }
 
         if ("PM" == n.name) {
@@ -673,23 +676,37 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
         }
 
         if ("Debug" == n.name) {
-            auto vector = Debug::Settings::Vector::Shading_normal;
+            auto dvalue = Debug::Settings::Value::Shading_normal;
 
-            std::string const vector_type = json::read_string(n.value, "vector");
+            std::string const value_type = json::read_string(n.value, "value");
 
-            if ("Tangent" == vector_type) {
-                vector = Debug::Settings::Vector::Tangent;
-            } else if ("Bitangent" == vector_type) {
-                vector = Debug::Settings::Vector::Bitangent;
-            } else if ("Geometric_normal" == vector_type) {
-                vector = Debug::Settings::Vector::Geometric_normal;
-            } else if ("Shading_normal" == vector_type) {
-                vector = Debug::Settings::Vector::Shading_normal;
-            } else if ("UV" == vector_type) {
-                vector = Debug::Settings::Vector::UV;
+            if ("Albedo" == value_type) {
+                dvalue = Debug::Settings::Value::Albedo;
+            } else if ("Roughness" == value_type) {
+                dvalue = Debug::Settings::Value::Roughness;
+            } else if ("Tangent" == value_type) {
+                dvalue = Debug::Settings::Value::Tangent;
+            } else if ("Bitangent" == value_type) {
+                dvalue = Debug::Settings::Value::Bitangent;
+            } else if ("Geometric_normal" == value_type) {
+                dvalue = Debug::Settings::Value::Geometric_normal;
+            } else if ("Shading_normal" == value_type) {
+                dvalue = Debug::Settings::Value::Shading_normal;
+            } else if ("UV" == value_type) {
+                dvalue = Debug::Settings::Value::UV;
+            } else if ("Splitting" == value_type) {
+                dvalue = Debug::Settings::Value::Splitting;
+            } else if ("Material_id" == value_type) {
+                dvalue = Debug::Settings::Value::Material_id;
+            } else if ("Light_id" == value_type) {
+                dvalue = Debug::Settings::Value::Light_id;
+            } else if ("Backface" == value_type) {
+                dvalue = Debug::Settings::Value::Backface;
             }
 
-            return new Debug_pool(num_workers, vector);
+            load_light_sampling(n.value, light_sampling);
+
+            return new Debug_pool(num_workers, dvalue);
         }
     }
 
@@ -745,7 +762,7 @@ void Loader::set_default_integrators(uint32_t num_workers, bool progressive, Vie
     using namespace rendering::integrator;
 
     if (!view.surface_integrators && !view.lighttracers) {
-        Light_sampling const light_sampling{Light_sampling::Strategy::Single, 1};
+        Light_sampling const light_sampling{Light_sampling::Single};
 
         uint32_t const num_samples = 1;
         uint32_t const min_bounces = 4;
@@ -971,14 +988,49 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
             std::string const strategy = json::read_string(n.value);
 
             if ("Single" == strategy) {
-                sampling.strategy = Light_sampling::Strategy::Single;
+                sampling = Light_sampling::Single;
+            } else if ("Adaptive" == strategy) {
+                sampling = Light_sampling::Adaptive;
             } else if ("All" == strategy) {
-                sampling.strategy = Light_sampling::Strategy::All;
+                sampling = Light_sampling::All;
             }
-        } else if ("num_samples" == n.name) {
-            sampling.num_samples = json::read_uint(n.value);
+        } else if ("splitting_threshold" == n.name) {
+            float const st = json::read_float(n.value);
+            scene::light::Tree::set_splitting_threshold(st);
         }
     }
+}
+
+void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs) {
+    using namespace rendering::sensor::aov;
+
+    std::vector<Property> properties;
+
+    for (auto& n : value.GetObject()) {
+        if ("Albedo" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Albedo);
+            }
+        } else if ("Roughness" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Roughness);
+            }
+        } else if ("Geometric_normal" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Geometric_normal);
+            }
+        } else if ("Shading_normal" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Shading_normal);
+            }
+        } else if ("Material_id" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Material_id);
+            }
+        }
+    }
+
+    aovs.configure(uint32_t(properties.size()), properties.data());
 }
 
 }  // namespace take

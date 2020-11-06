@@ -1,7 +1,6 @@
 #include "opaque.hpp"
 #include "base/atomic/atomic.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 #include "image/typed_image.hpp"
 
 namespace rendering::sensor {
@@ -9,18 +8,11 @@ namespace rendering::sensor {
 Opaque::Opaque(int32_t filter_radius) : Sensor(filter_radius), layers_(nullptr), pixels_(nullptr) {}
 
 Opaque::~Opaque() {
-    memory::free_aligned(layers_);
+    delete[] layers_;
 }
 
 void Opaque::set_layer(int32_t layer) {
     pixels_ = layers_ + layer * (dimensions_[0] * dimensions_[1]);
-}
-
-void Opaque::clear(float weight) {
-    auto const d = dimensions();
-    for (int32_t i = 0, len = d[0] * d[1] * num_layers_; i < len; ++i) {
-        pixels_[i] = float4(0.f, 0.f, 0.f, weight);
-    }
 }
 
 void Opaque::set_weights(float weight) {
@@ -79,13 +71,26 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
     }
 }
 
+void Opaque::resolve(int32_t begin, int32_t end, uint32_t slot, uint32_t num_samples,
+                     image::Float4& target) const {
+    float const weight = float(num_samples);
+
+    for (int32_t i = begin; i < end; ++i) {
+        //    float const weight = pixels_[i][3];
+
+        float3 const color = aov_.value(i, slot) / weight;
+
+        target.store(i, float4(color, 0.f));
+    }
+}
+
 void Opaque::resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const {
     for (int32_t i = begin; i < end; ++i) {
         auto const& value = pixels_[i];
 
         float3 const color = value.xyz() / value[3];
 
-        float3 const old = target.load(i).xyz();
+        float3 const old = target.at(i).xyz();
 
         target.store(i, float4(old + color, 1.f));
     }
@@ -97,11 +102,18 @@ void Opaque::on_resize(int2 dimensions, int32_t num_layers) {
     int32_t const len = dimensions[0] * dimensions[1] * num_layers;
 
     if (len != current_len) {
-        memory::free_aligned(layers_);
+        delete[] layers_;
 
-        layers_ = memory::allocate_aligned<float4>(uint32_t(len));
+        layers_ = new float4[uint32_t(len)];
 
         pixels_ = layers_;
+    }
+}
+
+void Opaque::on_clear(float weight) {
+    auto const d = dimensions();
+    for (int32_t i = 0, len = d[0] * d[1] * num_layers_; i < len; ++i) {
+        pixels_[i] = float4(0.f, 0.f, 0.f, weight);
     }
 }
 

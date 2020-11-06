@@ -250,7 +250,7 @@ std::string read_string(rapidjson::Value const& value, std::string_view name,
     return default_value;
 }
 
-void read_transformation(rapidjson::Value const& value, math::Transformation& transformation) {
+void read_transformation(rapidjson::Value const& value, math::Transformation& trafo) {
     if (value.IsArray()) {
         float4x4 const m(
             value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat(), value[3].GetFloat(),
@@ -260,9 +260,9 @@ void read_transformation(rapidjson::Value const& value, math::Transformation& tr
 
         float3x3 r;
 
-        decompose(m, r, transformation.scale, transformation.position);
+        decompose(m, r, trafo.scale, trafo.position);
 
-        transformation.rotation = quaternion::create(r);
+        trafo.rotation = quaternion::create(r);
     } else {
         float3 up(0.f, 1.f, 0.f);
         float3 look_at(0.f, 0.f, 1.f);
@@ -273,11 +273,11 @@ void read_transformation(rapidjson::Value const& value, math::Transformation& tr
             std::string_view const node_name(n.name.GetString(), n.name.GetStringLength());
 
             if ("position" == node_name) {
-                transformation.position = json::read_float3(n.value);
+                trafo.position = json::read_float3(n.value);
             } else if ("scale" == node_name) {
-                transformation.scale = json::read_float3(n.value);
+                trafo.scale = json::read_float3(n.value);
             } else if ("rotation" == node_name) {
-                transformation.rotation = json::read_local_rotation(n.value);
+                trafo.rotation = json::read_local_rotation(n.value);
             } else if ("up" == node_name) {
                 up = json::read_float3(n.value);
             } else if ("look_at" == node_name) {
@@ -287,12 +287,12 @@ void read_transformation(rapidjson::Value const& value, math::Transformation& tr
         }
 
         if (look) {
-            float3 const dir   = normalize(look_at - transformation.position);
+            float3 const dir   = normalize(look_at - trafo.position);
             float3 const right = -cross(dir, up);
 
             float3x3 const r(right, up, dir);
 
-            transformation.rotation = quaternion::create(r);
+            trafo.rotation = quaternion::create(r);
         }
     }
 }

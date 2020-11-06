@@ -10,20 +10,27 @@ struct Camera_sample_to;
 
 namespace rendering::sensor {
 
+namespace aov {
+class Value;
+}
+
 namespace filter {
 class Filter;
 }
 
 template <class Base, class Clamp, class F>
-class Filtered : public Base {
+class alignas(64) Filtered : public Base {
   public:
-    Filtered(Clamp const& clamp, F&& filter);
+    Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius);
 
     ~Filtered() override;
 
   protected:
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& isolated,
                       int4 const& bounds);
+
+    void add_weighted(int2 pixel, uint32_t slot, float weight, float3 const& value,
+                      int4 const& isolated, int4 const& bounds);
 
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& bounds);
 
@@ -48,8 +55,8 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_1p0(Clamp const& clamp, F&& filter);
 
-    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
-                    int4 const& bounds) final;
+    void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
+                    int4 const& isolated, int2 offset, int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;
@@ -65,8 +72,8 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_2p0(Clamp const& clamp, F&& filter);
 
-    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
-                    int4 const& bounds) final;
+    void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
+                    int4 const& isolated, int2 offset, int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;
@@ -80,13 +87,16 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_inf(Clamp const& clamp, F&& filter);
+    Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius);
 
-    void add_sample(Sample const& sample, float4 const&, int4 const& isolated, int2 offset,
-                    int4 const& bounds) final;
+    void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
+                    int4 const& isolated, int2 offset, int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;
+
+  private:
+    float filter_radius_;
 };
 
 }  // namespace rendering::sensor

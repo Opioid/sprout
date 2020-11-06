@@ -11,6 +11,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene::bvh {
 
 class Kernel {
@@ -42,10 +44,10 @@ class Kernel {
     using Tasks = std::vector<Task>;
 
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
-               thread::Pool& threads, Tasks& tasks);
+               Threads& threads, Tasks& tasks);
 
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
-                                    bool& exhausted, thread::Pool& threads);
+                                    bool& exhausted, Threads& threads);
 
     void assign(Node& node, References const& references);
 
@@ -72,13 +74,13 @@ class Builder_base : protected Kernel {
 
     ~Builder_base();
 
-    void split(References& references, AABB const& aabb, thread::Pool& threads);
+    void split(References& references, AABB const& aabb, Threads& threads);
 
-    void work_on_tasks(thread::Pool& threads, Tasks& tasks);
+    void work_on_tasks(Threads& threads, Tasks& tasks);
 
     void reserve(uint32_t num_primitives);
 
-    Node& new_node();
+    void new_node();
 
     uint32_t current_node_index() const;
 

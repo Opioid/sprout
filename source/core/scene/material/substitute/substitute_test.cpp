@@ -27,7 +27,7 @@ struct Setup {
 
 void test() {
     rnd::Generator  rng(0, 0);
-    sampler::Random sampler(rng);
+    sampler::Random sampler;
     sampler.resize(0, 1, 1, 1);
 
     std::cout << "substitute::testing::test()" << std::endl;
@@ -117,8 +117,8 @@ void Setup::test(float3 const& wi, float3 const& wo, float3 const& t, float3 con
                  float3 const& n, sampler::Sampler& /*sampler*/) {
     Sample sample;
 
-    sample.set_radiance(radiance);
-    sample.base_.set(color, constant_f0, roughness, metallic, false);
+    sample.set_common(n, n, wo, /*color, radiance,*/ roughness * roughness);
+    sample.base_.set(color, constant_f0, metallic);
 
     //   sample.set_basis(n, wo);
     sample.layer_.set_tangent_frame(t, b, n);

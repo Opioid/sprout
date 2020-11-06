@@ -18,7 +18,7 @@ class Glass_thin : public Material {
     void set_normal_map(Texture_adapter const& normal_map);
 
     void set_refraction_color(float3 const& color);
-    void set_attenuation(float3 const& absorption_color, float distance);
+
     void set_thickness(float thickness);
 
     static size_t sample_size();
@@ -27,8 +27,8 @@ class Glass_thin : public Material {
     Texture_adapter normal_map_;
 
     float3 refraction_color_;
-    float3 absorption_coefficient_;
-    float  thickness_;
+
+    float thickness_;
 };
 
 }  // namespace scene::material::glass

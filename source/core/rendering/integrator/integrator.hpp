@@ -1,13 +1,10 @@
 #ifndef SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 #define SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 
+#include "base/memory/array.hpp"
 #include "scene/material/sampler_settings.hpp"
 
 #include <cstdint>
-
-namespace rnd {
-class Generator;
-}
 
 namespace scene {
 
@@ -33,7 +30,7 @@ class Sample;
 
 namespace light {
 class Light;
-struct Light_ref;
+struct Light_pick;
 }  // namespace light
 
 namespace prop {
@@ -46,14 +43,19 @@ class Scene;
 
 }  // namespace scene
 
-namespace rendering::integrator {
+namespace rnd {
+class Generator;
+}
 
-struct Light_sampling {
-    enum class Strategy { Single, All };
+using RNG = rnd::Generator;
 
-    Strategy strategy;
-    uint32_t num_samples;
-};
+namespace rendering {
+
+class Worker;
+
+namespace integrator {
+
+enum class Light_sampling { Single, Adaptive, All };
 
 class Integrator {
   public:
@@ -61,7 +63,7 @@ class Integrator {
     using Scene           = scene::Scene;
     using Transformation  = scene::entity::Composed_transformation;
     using Light           = scene::light::Light;
-    using Light_ref       = scene::light::Light_ref;
+    using Lights          = memory::Array<scene::light::Light_pick>;
     using Material        = scene::material::Material;
     using Material_sample = scene::material::Sample;
     using Filter          = scene::material::Sampler_settings::Filter;
@@ -71,18 +73,16 @@ class Integrator {
     using Intersection    = scene::prop::Intersection;
     using Visibility      = scene::shape::Visibility;
 
-    Integrator(rnd::Generator& rng);
+    Integrator();
 
     virtual ~Integrator();
 
     virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) = 0;
 
-    virtual void start_pixel() = 0;
-
-  protected:
-    rnd::Generator& rng_;
+    virtual void start_pixel(RNG& rng) = 0;
 };
 
-}  // namespace rendering::integrator
+}  // namespace integrator
+}  // namespace rendering
 
 #endif

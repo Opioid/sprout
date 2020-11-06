@@ -9,7 +9,6 @@
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "triangle_bvh_helper.hpp"
-#include "triangle_bvh_tree.inl"
 
 namespace scene::shape::triangle::bvh {
 
@@ -18,8 +17,8 @@ Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t
 
 Builder_SAH::~Builder_SAH() = default;
 
-void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles triangles,
-                        Vertices vertices, thread::Pool& threads) {
+void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
+                        Threads& threads) {
     reserve(num_triangles);
 
     {
@@ -68,7 +67,7 @@ void Builder_SAH::build(triangle::Tree& tree, uint32_t num_triangles, Triangles 
 }
 
 void Builder_SAH::serialize(uint32_t source_node, uint32_t dest_node, Triangles triangles,
-                            Vertices vertices, triangle::Tree& tree, uint32_t& current_triangle) {
+                            Vertices vertices, Tree& tree, uint32_t& current_triangle) {
     Node const& node = build_nodes_[source_node];
 
     auto& n = nodes_[dest_node];

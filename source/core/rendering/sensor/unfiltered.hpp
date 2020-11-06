@@ -10,6 +10,10 @@ struct Camera_sample_to;
 
 namespace rendering::sensor {
 
+namespace aov {
+class Value;
+}
+
 template <class Base, class Clamp>
 class Unfiltered final : public Base {
   public:
@@ -18,8 +22,8 @@ class Unfiltered final : public Base {
 
     Unfiltered(Clamp const& clamp);
 
-    void add_sample(Sample const& sample, float4 const& color, int4 const& isolated, int2 offset,
-                    int4 const& bounds) final;
+    void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
+                    int4 const& isolated, int2 offset, int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;

@@ -15,11 +15,10 @@ class Glare final : public Postprocessor {
 
     ~Glare() final;
 
-    void init(Camera const& camera, thread::Pool& threads) final;
+    void init(Camera const& camera, Threads& threads) final;
 
   private:
-    void pre_apply(image::Float4 const& source, image::Float4& destination,
-                   thread::Pool& threads) final;
+    void pre_apply(image::Float4 const& source, image::Float4& destination, Threads& threads) final;
 
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
                image::Float4& destination) final;

@@ -39,7 +39,7 @@ float Importance::denormalization_factor() const {
     return float(Dimensions * Dimensions);
 }
 
-void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& threads) {
+void Importance::prepare_sampling(uint32_t id, float* buffer, Threads& threads) {
     if (!distribution_.empty()) {
         return;
     }
@@ -48,7 +48,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
 
     std::string const name = "particle_importance_" + std::to_string(id) + ".png";
 
-    image::encoding::png::Writer::write_heatmap(name, buffer, int2(Dimensions));
+    image::encoding::png::Writer::write_heatmap(name, buffer, int2(Dimensions), threads);
 
     distribution_.allocate(Dimensions);
 
@@ -59,7 +59,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
 
     threads.run_range(
         [this, buffer, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            Distribution_2D::Distribution_impl* conditional = distribution_.conditional();
+            Distribution_1D* conditional = distribution_.conditional();
 
             auto weights = memory::Buffer<float>(Dimensions);
 
@@ -82,7 +82,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, thread::Pool& thre
     distribution_.init();
 }
 
-void Importance::filter(float* buffer, thread::Pool& threads) const {
+void Importance::filter(float* buffer, Threads& threads) const {
     static int32_t constexpr Kernel_radius = 4;
 
     threads.run_range(
@@ -125,10 +125,10 @@ void Importance::filter(float* buffer, thread::Pool& threads) const {
 }
 
 Importance_cache::Importance_cache()
-    : buffer_(memory::allocate_aligned<float>(Importance::Dimensions * Importance::Dimensions)) {}
+    : buffer_(new float[Importance::Dimensions * Importance::Dimensions]) {}
 
 Importance_cache::~Importance_cache() {
-    memory::free_aligned(buffer_);
+    delete[] buffer_;
 }
 
 void Importance_cache::init(scene::Scene const& scene) {
@@ -143,7 +143,7 @@ void Importance_cache::set_training(bool training) {
     training_ = training;
 }
 
-void Importance_cache::prepare_sampling(thread::Pool& threads) {
+void Importance_cache::prepare_sampling(Threads& threads) {
     // This entire ordeal is very hacky!
     // We need a proper way to select which light should have importances and which not.
     uint32_t const light = std::min(1u, uint32_t(importances_.size()) - 1);

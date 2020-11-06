@@ -1,12 +1,11 @@
 #include "triangle_mesh.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/buffer.hpp"
-#include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
@@ -14,42 +13,39 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "triangle_intersection.hpp"
-
 #ifdef SU_DEBUG
 #include "scene/shape/shape_test.hpp"
 #endif
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene::shape::triangle {
 
-Mesh::Mesh()
-    : Shape(Properties(Property::Complex, Property::Finite)),
-      distributions_(nullptr),
-      part_materials_(nullptr) {}
+Mesh::Mesh() : Shape(Properties(Property::Complex, Property::Finite)), parts_(nullptr) {}
 
 Mesh::~Mesh() {
-    memory::free_aligned(part_materials_);
-    memory::destroy_aligned(distributions_, tree_.num_parts());
+    delete[] parts_;
 }
 
-Tree& Mesh::tree() {
+bvh::Tree& Mesh::tree() {
     return tree_;
 }
 
 void Mesh::allocate_parts(uint32_t num_parts) {
     tree_.allocate_parts(num_parts);
 
-    distributions_ = memory::construct_aligned<Distribution>(num_parts);
-
-    part_materials_ = memory::allocate_aligned<uint32_t>(num_parts);
+    parts_ = new Part[num_parts];
 }
 
 void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
-    part_materials_[part] = material;
+    parts_[part].material = material;
 }
 
 float3 Mesh::object_to_texture_point(float3 const& p) const {
-    return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
+    AABB const aabb = tree_.aabb();
+    return (p - aabb.bounds[0]) / aabb.extent();
 }
 
 float3 Mesh::object_to_texture_vector(float3 const& v) const {
@@ -60,6 +56,10 @@ AABB Mesh::transformed_aabb(float4x4 const& m) const {
     return tree_.aabb().transform(m);
 }
 
+AABB Mesh::transformed_part_aabb(uint32_t part, float4x4 const& m) const {
+    return parts_[part].aabb.transform(m);
+}
+
 uint32_t Mesh::num_parts() const {
     return tree_.num_parts();
 }
@@ -68,19 +68,19 @@ uint32_t Mesh::num_materials() const {
     uint32_t id = 0;
 
     for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
-        id = std::max(id, part_materials_[i]);
+        id = std::max(id, parts_[i].material);
     }
 
     return id + 1;
 }
 
 uint32_t Mesh::part_id_to_material_id(uint32_t part) const {
-    return part_materials_[part];
+    return parts_[part].material;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                     shape::Intersection& intersection) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
+                     shape::Intersection& isec) const {
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -89,12 +89,12 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f const object_to_world(transformation.object_to_world());
+        Simd4x4f const object_to_world(trafo.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -109,23 +109,23 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
 
         uint32_t part = tree_.triangle_part(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
         Simd3f t_w     = transform_vector(rotation, t);
         Simd3f b_w     = bitangent_sign * cross(n_w, t_w);
 
-        intersection.p         = float3(p_w);
-        intersection.t         = float3(t_w);
-        intersection.b         = float3(b_w);
-        intersection.n         = float3(n_w);
-        intersection.geo_n     = float3(geo_n_w);
-        intersection.uv        = uv;
-        intersection.part      = part;
-        intersection.primitive = pi.index;
+        isec.p         = float3(p_w);
+        isec.t         = float3(t_w);
+        isec.b         = float3(b_w);
+        isec.n         = float3(n_w);
+        isec.geo_n     = float3(geo_n_w);
+        isec.uv        = uv;
+        isec.part      = part;
+        isec.primitive = pi.index;
 
-        SOFT_ASSERT(testing::check(intersection, transformation, ray));
+        SOFT_ASSERT(testing::check(isec, trafo, ray));
 
         return true;
     }
@@ -133,9 +133,9 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
 }
 
-bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                         shape::Intersection& intersection) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+bool Mesh::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& nodes,
+                         shape::Intersection& isec) const {
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -144,12 +144,12 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
-        Simd4x4f const object_to_world(transformation.object_to_world());
+        Simd4x4f const object_to_world(trafo.object_to_world());
 
         Simd3f p_w = transform_point(object_to_world, p);
 
@@ -159,15 +159,15 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
 
         uint32_t part = tree_.triangle_part(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
 
-        intersection.p         = float3(p_w);
-        intersection.geo_n     = float3(geo_n_w);
-        intersection.uv        = uv;
-        intersection.part      = part;
-        intersection.primitive = pi.index;
+        isec.p         = float3(p_w);
+        isec.geo_n     = float3(geo_n_w);
+        isec.uv        = uv;
+        isec.part      = part;
+        isec.primitive = pi.index;
 
         return true;
     }
@@ -175,9 +175,9 @@ bool Mesh::intersect_nsf(Ray& ray, Transformation const& transformation, Node_st
     return false;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                      Normals& normals) const {
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -186,14 +186,14 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     scalar       ray_max_t(ray.max_t());
 
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
         Simd3f n = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
 
         Simd3f geo_n = tree_.triangle_normal_v(pi.index);
 
-        Simd3x3f rotation(transformation.rotation);
+        Simd3x3f rotation(trafo.rotation);
 
         Simd3f geo_n_w = transform_vector(rotation, geo_n);
         Simd3f n_w     = transform_vector(rotation, n);
@@ -207,17 +207,16 @@ bool Mesh::intersect(Ray& ray, Transformation const& transformation, Node_stack&
     return false;
 }
 
-bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
-                       Node_stack& node_stack) const {
+bool Mesh::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const {
     //	ray tray;
-    //	tray.origin = transform_point(ray.origin, transformation.world_to_object);
-    //	tray.set_direction(transform_vector(ray.direction, transformation.world_to_object));
+    //	tray.origin = transform_point(ray.origin, trafo.world_to_object);
+    //	tray.set_direction(transform_vector(ray.direction, trafo.world_to_object));
     //	tray.min_t = ray.min_t;
     //	tray.max_t = ray.max_t;
 
-    //	return tree_.intersect_p(tray, node_stack);
+    //	return tree_.intersect_p(tray, nodes);
 
-    Simd4x4f const world_to_object(transformation.world_to_object);
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
     Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
@@ -225,39 +224,39 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& transformation,
     scalar const ray_min_t(ray.min_t());
     scalar const ray_max_t(ray.max_t());
 
-    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, node_stack);
+    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes);
 }
 
-float Mesh::visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                       Filter filter, Worker& worker) const {
-    math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
+float Mesh::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                       Worker& worker) const {
+    math::ray tray(trafo.world_to_object_point(ray.origin),
+                   trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.visibility(tray, ray.time, entity, filter, worker);
 }
 
-bool Mesh::thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                            Filter filter, Worker& worker, float3& ta) const {
-    math::ray tray(transformation.world_to_object_point(ray.origin),
-                   transformation.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
+    math::ray tray(trafo.world_to_object_point(ray.origin),
+                   trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                  bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
+bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
+                  bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
-    float const  r  = sampler.generate_sample_1D(sampler_dimension);
-    float2 const r2 = sampler.generate_sample_2D(sampler_dimension);
-    auto const   s  = distributions_[part].sample(r);
+    float const  r  = sampler.sample_1D(rng, sampler_d);
+    float2 const r2 = sampler.sample_2D(rng, sampler_d);
+    auto const   s  = parts_[part].sample(r);
 
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r2, sv, tc);
-    float3 const v = transformation.object_to_world_point(sv);
+    float3 const v = trafo.object_to_world_point(sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = transform_vector(transformation.rotation, sn);
+    float3 const wn = transform_vector(trafo.rotation, sn);
 
     float3 const axis = v - p;
     float const  sl   = squared_length(axis);
@@ -270,26 +269,30 @@ bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& transfor
         c = std::abs(c);
     }
 
+    if (c <= Dot_min) {
+        return false;
+    }
+
     sample = Sample_to(dir, float3(tc), sl / (c * area), offset_b(d));
 
     return true;
 }
 
-bool Mesh::sample(uint32_t part, Transformation const& transformation, float area,
-                  bool /*two_sided*/, Sampler& sampler, uint32_t sampler_dimension,
-                  float2 importance_uv, AABB const& /*bounds*/, Sample_from& sample) const {
-    float const r = sampler.generate_sample_1D(sampler_dimension);
-    auto const  s = distributions_[part].sample(r);
+bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /*two_sided*/,
+                  Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
+                  AABB const& /*bounds*/, Sample_from& sample) const {
+    float const r = sampler.sample_1D(rng, sampler_d);
+    auto const  s = parts_[part].sample(r);
 
-    float2 const r0 = sampler.generate_sample_2D(sampler_dimension);
+    float2 const r0 = sampler.sample_2D(rng, sampler_d);
 
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r0, sv, tc);
-    float3 const ws = transformation.object_to_world_point(sv);
+    float3 const ws = trafo.object_to_world_point(sv);
 
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = transform_vector(transformation.rotation, sn);
+    float3 const wn = transform_vector(trafo.rotation, sn);
 
     auto const [x, y] = orthonormal_basis(wn);
 
@@ -303,10 +306,9 @@ bool Mesh::sample(uint32_t part, Transformation const& transformation, float are
     return true;
 }
 
-float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
-                Transformation const& /*transformation*/, float area, bool two_sided,
-                bool /*total_sphere*/) const {
-    float c = -dot(intersection.geo_n, ray.direction);
+float Mesh::pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& /*trafo*/,
+                float area, bool two_sided, bool /*total_sphere*/) const {
+    float c = -dot(isec.geo_n, ray.direction);
 
     if (two_sided) {
         c = std::abs(c);
@@ -316,32 +318,30 @@ float Mesh::pdf(Ray const& ray, shape::Intersection const&      intersection,
     return sl / (c * area);
 }
 
-float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
-                       Transformation const& /*transformation*/, float /*area*/) const {
+float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
+                       Transformation const& /*trafo*/, float /*area*/) const {
     return 0.f;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                  Transformation const& /*transformation*/, float /*area*/, bool /*two_sided*/,
+                  Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                   Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
-                  Transformation const& /*transformation*/, float /*volume*/,
-                  Sample_to& /*sample*/) const {
+                  Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*transformation*/,
-                  float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
-                  AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+bool Mesh::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/, float /*area*/,
+                  bool /*two_sided*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
-float Mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*intersection*/,
-                   Transformation const& /*transformation*/, float /*area*/,
-                   bool /*two_sided*/) const {
+float Mesh::pdf_uv(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
+                   Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/) const {
     return 0.f;
 }
 
@@ -351,7 +351,7 @@ float Mesh::uv_weight(float2 /*uv*/) const {
 
 float Mesh::area(uint32_t part, float3 const& scale) const {
     // HACK: This only really works for uniform scales!
-    return distributions_[part].distribution.integral() * (scale[0] * scale[1]);
+    return parts_[part].distribution.integral() * (scale[0] * scale[1]);
 }
 
 float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
@@ -397,46 +397,82 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     }
 
     return {dpdu, dpdv};
-
-    //  return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
 }
 
 void Mesh::prepare_sampling(uint32_t part) {
-    if (distributions_[part].empty()) {
-        auto& d = distributions_[part];
+    auto& p = parts_[part];
 
-        d.init(part, tree_);
-
-        float3 center(0.f);
-
-        float const n = 1.f / float(d.num_triangles);
-
-        for (uint32_t i = 0, len = d.num_triangles; i < len; ++i) {
-            uint32_t const t = d.triangle_mapping[i];
-
-            center += n * tree_.triangle_center(t);
+    // This counts the triangles for _every_ part as an optimization
+    if (0xFFFFFFFF == p.num_triangles) {
+        for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
+            parts_[i].num_triangles = 0;
         }
 
-        d.center = center;
+        for (uint32_t i = 0, len = tree_.num_triangles(); i < len; ++i) {
+            ++parts_[tree_.triangle_part(i)].num_triangles;
+        }
+    }
+
+    if (p.empty()) {
+        p.init(part, tree_);
+
+        AABB bb = AABB::empty();
+
+        float3 dominant_axis(0.f);
+
+        float const a = 1.f / parts_[part].distribution.integral();
+
+        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
+            uint32_t const t = p.triangle_mapping[i];
+
+            float3 va;
+            float3 vb;
+            float3 vc;
+            tree_.triangle(t, va, vb, vc);
+
+            bb.insert(va);
+            bb.insert(vb);
+            bb.insert(vc);
+
+            dominant_axis += a * tree_.triangle_area(t) * tree_.triangle_normal(t);
+        }
+
+        dominant_axis = normalize(dominant_axis);
+
+        float angle = 0.f;
+
+        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
+            uint32_t const t = p.triangle_mapping[i];
+
+            float3 const n = tree_.triangle_normal(t);
+
+            float const c = dot(dominant_axis, n);
+
+            SOFT_ASSERT(std::isfinite(c));
+
+            angle = std::max(angle, std::acos(c));
+        }
+
+        p.aabb = bb;
+
+        p.cone = float4(dominant_axis, std::cos(angle));
     }
 }
 
-float3 Mesh::center(uint32_t part) const {
-    return distributions_[part].center;
+float4 Mesh::cone(uint32_t part) const {
+    return parts_[part].cone;
 }
 
-Mesh::Distribution::~Distribution() {
-    memory::free_aligned(triangle_mapping);
+Mesh::Part::~Part() {
+    delete[] triangle_mapping;
 }
 
-void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
-    uint32_t const num = tree.num_triangles(part);
+void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
+    uint32_t const num = num_triangles;
 
     memory::Buffer<float> areas(num);
 
-    num_triangles = num;
-
-    triangle_mapping = memory::allocate_aligned<uint32_t>(num);
+    triangle_mapping = new uint32_t[num];
 
     for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_part(t) == part) {
@@ -448,14 +484,14 @@ void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
         }
     }
 
-    distribution.init(areas, num_triangles);
+    distribution.init(areas, num);
 }
 
-bool Mesh::Distribution::empty() const {
+bool Mesh::Part::empty() const {
     return nullptr == triangle_mapping;
 }
 
-Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r) const {
+Mesh::Part::Distribution_1D::Discrete Mesh::Part::sample(float r) const {
     auto const result = distribution.sample_discrete(r);
     return {triangle_mapping[result.offset], result.pdf};
 }

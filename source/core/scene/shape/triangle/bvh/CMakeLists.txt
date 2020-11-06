@@ -8,6 +8,6 @@ target_sources(core
     "triangle_bvh_helper.hpp"
     "triangle_bvh_indexed_data.hpp"
     "triangle_bvh_indexed_data.inl"
+    "triangle_bvh_tree.cpp"
     "triangle_bvh_tree.hpp"
-    "triangle_bvh_tree.inl"
     )

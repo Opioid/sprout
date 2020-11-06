@@ -48,6 +48,10 @@ static inline int16_t float_to_half2(float f) {
     return uint16_t(sign);
 }
 
+static inline ushort3 float_to_half(float3 const& f) {
+    return ushort3(float_to_half(f[0]), float_to_half(f[1]), float_to_half(f[2]));
+}
+
 static inline ushort3 float_to_half(packed_float3 const& f) {
     return ushort3(float_to_half(f[0]), float_to_half(f[1]), float_to_half(f[2]));
 }

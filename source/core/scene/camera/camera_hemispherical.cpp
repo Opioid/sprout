@@ -50,10 +50,10 @@ bool Hemispherical::generate_ray(Sample const& sample, uint32_t frame, uint32_t 
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto&          transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto&          trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    ray.origin = transformation.position;
-    ray.set_direction(transform_vector(transformation.rotation, dir));
+    ray.origin = trafo.position;
+    ray.set_direction(transform_vector(trafo.rotation, dir));
     ray.min_t() = 0.f;
     ray.max_t() = Ray_max_t;
     ray.time    = time;
@@ -63,8 +63,8 @@ bool Hemispherical::generate_ray(Sample const& sample, uint32_t frame, uint32_t 
 }
 
 bool Hemispherical::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
-                           float3 const& /*p*/, Sampler& /*sampler*/,
-                           uint32_t /*sampler_dimension*/, Scene const& /*scene*/,
+                           float3 const& /*p*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
+                           uint32_t /*sampler_d*/, Scene const& /*scene*/,
                            Sample_to& /*sample*/) const {
     return false;
 }

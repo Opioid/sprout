@@ -71,14 +71,16 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::address(float2 uv) const {
 
 template <typename Address_mode_U, typename Address_mode_V>
 int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(Texture const& texture, float2 uv) {
-    float2 const d = texture.dimensions_float().xy();
+    int2 const d = texture.dimensions().xy();
+
+    float2 const df = float2(d);
 
     float const u = Address_mode_U::f(uv[0]);
     float const v = Address_mode_V::f(uv[1]);
 
-    int2 const b = texture.back().xy();
+    int2 const b = d - 1;
 
-    return int2(std::min(int32_t(u * d[0]), b[0]), std::min(int32_t(v * d[1]), b[1]));
+    return int2(std::min(int32_t(u * df[0]), b[0]), std::min(int32_t(v * df[1]), b[1]));
 }
 
 template <typename Address_U, typename Address_V>
@@ -169,10 +171,12 @@ float2 Linear_2D<Address_U, Address_V>::address(float2 uv) const {
 
 template <typename Address_U, typename Address_V>
 float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv, int4& xy_xy1) {
-    float2 const d = texture.dimensions_float().xy();
+    int2 const d = texture.dimensions().xy();
 
-    float const u = Address_U::f(uv[0]) * d[0] - 0.5f;
-    float const v = Address_V::f(uv[1]) * d[1] - 0.5f;
+    float2 const df = float2(d);
+
+    float const u = Address_U::f(uv[0]) * df[0] - 0.5f;
+    float const v = Address_V::f(uv[1]) * df[1] - 0.5f;
 
     float const fu = std::floor(u);
     float const fv = std::floor(v);
@@ -180,7 +184,7 @@ float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv, i
     int32_t const x = int32_t(fu);
     int32_t const y = int32_t(fv);
 
-    int2 const b = texture.back().xy();
+    int2 const b = d - 1;
 
     xy_xy1[0] = Address_U::lower_bound(x, b[0]);
     xy_xy1[1] = Address_V::lower_bound(y, b[1]);
@@ -227,16 +231,18 @@ float3 Nearest_3D<Address_mode>::address(float3 const& uvw) const {
 
 template <typename Address_mode>
 int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) {
-    float3 const d = texture.dimensions_float();
+    int3 const d = texture.dimensions();
+
+    float3 const df = float3(d);
 
     float const u = Address_mode::f(uvw[0]);
     float const v = Address_mode::f(uvw[1]);
     float const w = Address_mode::f(uvw[2]);
 
-    int3 const b = texture.back();
+    int3 const b = d - 1;
 
-    return int3(std::min(int32_t(u * d[0]), b[0]), std::min(int32_t(v * d[1]), b[1]),
-                std::min(int32_t(w * d[2]), b[2]));
+    return int3(std::min(int32_t(u * df[0]), b[0]), std::min(int32_t(v * df[1]), b[1]),
+                std::min(int32_t(w * df[2]), b[2]));
 }
 
 template <typename Address_mode>
@@ -245,17 +251,11 @@ float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uv
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
-    float const c000 = texture.at_1(xyz[0], xyz[1], xyz[2]);
-    float const c100 = texture.at_1(xyz1[0], xyz[1], xyz[2]);
-    float const c010 = texture.at_1(xyz[0], xyz1[1], xyz[2]);
-    float const c110 = texture.at_1(xyz1[0], xyz1[1], xyz[2]);
-    float const c001 = texture.at_1(xyz[0], xyz[1], xyz1[2]);
-    float const c101 = texture.at_1(xyz1[0], xyz[1], xyz1[2]);
-    float const c011 = texture.at_1(xyz[0], xyz1[1], xyz1[2]);
-    float const c111 = texture.at_1(xyz1[0], xyz1[1], xyz1[2]);
+    float c[8];
+    texture.gather_1(xyz, xyz1, c);
 
-    float const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
-    float const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
+    float const c0 = bilinear(c[0], c[1], c[2], c[3], stu[0], stu[1]);
+    float const c1 = bilinear(c[4], c[5], c[6], c[7], stu[0], stu[1]);
 
     return lerp(c0, c1, stu[2]);
 }
@@ -266,17 +266,11 @@ float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3 const& u
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
 
-    float2 const c000 = texture.at_2(xyz[0], xyz[1], xyz[2]);
-    float2 const c100 = texture.at_2(xyz1[0], xyz[1], xyz[2]);
-    float2 const c010 = texture.at_2(xyz[0], xyz1[1], xyz[2]);
-    float2 const c110 = texture.at_2(xyz1[0], xyz1[1], xyz[2]);
-    float2 const c001 = texture.at_2(xyz[0], xyz[1], xyz1[2]);
-    float2 const c101 = texture.at_2(xyz1[0], xyz[1], xyz1[2]);
-    float2 const c011 = texture.at_2(xyz[0], xyz1[1], xyz1[2]);
-    float2 const c111 = texture.at_2(xyz1[0], xyz1[1], xyz1[2]);
+    float2 c[8];
+    texture.gather_2(xyz, xyz1, c);
 
-    float2 const c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
-    float2 const c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
+    float2 const c0 = bilinear(c[0], c[1], c[2], c[3], stu[0], stu[1]);
+    float2 const c1 = bilinear(c[4], c[5], c[6], c[7], stu[0], stu[1]);
 
     return lerp(c0, c1, stu[2]);
 }
@@ -331,11 +325,13 @@ float3 Linear_3D<Address_mode>::address(float3 const& uvw) const {
 template <typename Address_mode>
 float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, int3& xyz0,
                                     int3& xyz1) {
-    auto const& d = texture.dimensions_float();
+    int3 const d = texture.dimensions();
 
-    float const u = Address_mode::f(uvw[0]) * d[0] - 0.5f;
-    float const v = Address_mode::f(uvw[1]) * d[1] - 0.5f;
-    float const w = Address_mode::f(uvw[2]) * d[2] - 0.5f;
+    float3 const df = float3(d);
+
+    float const u = Address_mode::f(uvw[0]) * df[0] - 0.5f;
+    float const v = Address_mode::f(uvw[1]) * df[1] - 0.5f;
+    float const w = Address_mode::f(uvw[2]) * df[2] - 0.5f;
 
     float const fu = std::floor(u);
     float const fv = std::floor(v);
@@ -345,7 +341,7 @@ float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, i
     int32_t const y = int32_t(fv);
     int32_t const z = int32_t(fw);
 
-    auto const& b = texture.back();
+    int3 const b = d - 1;
 
     xyz0[0] = Address_mode::lower_bound(x, b[0]);
     xyz0[1] = Address_mode::lower_bound(y, b[1]);

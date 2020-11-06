@@ -4,6 +4,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/ggx/ggx.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
@@ -20,8 +21,6 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
                                             Renderstate const& rs, Filter filter,
                                             Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_rough>();
-
-    sample.set_basis(rs.geo_n, rs.n, wo);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -41,7 +40,8 @@ material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*
         alpha = alpha_;
     }
 
-    sample.set(refraction_color_, ior_, rs.ior, alpha, rs.avoid_caustics);
+    sample.set_common(rs, wo, refraction_color_, float3(0.f), alpha);
+    sample.set(ior_, rs.ior);
 
     return sample;
 }
@@ -56,12 +56,6 @@ void Glass_rough::set_roughness_map(Texture_adapter const& roughness_map) {
 
 void Glass_rough::set_refraction_color(float3 const& color) {
     refraction_color_ = color;
-}
-
-void Glass_rough::set_attenuation(float3 const& absorption_color, float distance) {
-    cc_.a = attenuation_coefficient(absorption_color, distance);
-
-    attenuation_distance_ = distance;
 }
 
 void Glass_rough::set_roughness(float roughness) {

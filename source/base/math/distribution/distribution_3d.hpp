@@ -2,14 +2,12 @@
 #define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_3D_HPP
 
 #include "distribution_2d.hpp"
-#include "math/vector3.hpp"
+#include "math/vector4.hpp"
 
 namespace math {
 
 class Distribution_3D {
   public:
-    using Distribution_impl = Distribution_2D::Distribution_impl;
-
     Distribution_3D();
 
     ~Distribution_3D();
@@ -20,16 +18,12 @@ class Distribution_3D {
 
     float integral() const;
 
-    struct Continuous {
-        float3 uvw;
-        float  pdf;
-    };
-    Continuous sample_continuous(float3 const& r3) const;
+    float4 sample_continuous(float3 const& r3) const;
 
     float pdf(float3 const& uvw) const;
 
   private:
-    Distribution_impl marginal_;
+    Distribution_1D marginal_;
 
     uint32_t conditional_size_;
 

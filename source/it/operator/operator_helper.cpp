@@ -10,7 +10,7 @@ namespace op {
 
 using namespace image;
 
-bool write(Float4 const& image, std::string const& name, bool alpha, thread::Pool& threads) {
+bool write(Float4 const& image, std::string const& name, bool alpha, Threads& threads) {
     std::string_view const s = string::suffix(name);
 
     std::ofstream stream(name, std::ios::binary);

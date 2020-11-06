@@ -1,6 +1,7 @@
 #include "substitute_material.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
+#include "scene/material/material.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
@@ -65,8 +66,6 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
-
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
         sample.layer_.set_tangent_frame(n);
@@ -99,9 +98,8 @@ material::Sample const& Checkers::sample(float3 const& wo, Ray const& ray, Rende
         radiance = float3(0.f);
     }
 
-    sample.set_radiance(radiance);
-    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[0], surface[1],
-                     rs.avoid_caustics);
+    sample.set_common(rs, wo, color, radiance, surface[0]);
+    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[1]);
 
     return sample;
 }
@@ -166,12 +164,12 @@ material::Sample const& Frozen::sample(float3 const& wo, Ray const& /*ray*/, Ren
 
         float const alpha = roughness * roughness;
 
-        sample.base_.diffuse_color_ = lerp(sample.base_.diffuse_color_, float3(1.f), weight);
+        sample.base_.albedo_ = lerp(sample.base_.albedo_, float3(1.f), weight);
 
         sample.base_.f0_ = lerp(sample.base_.f0_, float3(fresnel::schlick_f0(1.31f, rs.ior)),
                                 weight);
 
-        sample.base_.alpha_ = lerp(sample.base_.alpha_, alpha, weight);
+        sample.alpha_ = lerp(sample.alpha_, alpha, weight);
 
         sample.base_.metallic_ = lerp(sample.base_.metallic_, 0.f, weight);
     }

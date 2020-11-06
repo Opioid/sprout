@@ -4,7 +4,7 @@
 #include "base/math/vector3.inl"
 #include "prop.hpp"
 #include "prop_intersection.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/scene.inl"
 #include "scene/scene_ray.hpp"
 #include "scene/scene_renderstate.hpp"
@@ -34,8 +34,8 @@ inline float3 Intersection::thin_absorption(float3 const& wo, uint64_t time, Fil
 }
 
 inline material::Sample const& Intersection::sample(float3 const& wo, Ray const& ray, Filter filter,
-                                                    bool avoid_caustics, Sampler& sampler,
-                                                    Worker& worker) const {
+                                                    float alpha, bool avoid_caustics,
+                                                    Sampler& sampler, Worker& worker) const {
     material::Material const* material = Intersection::material(worker);
 
     Renderstate rs;
@@ -53,7 +53,8 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
 
     rs.uv = geo.uv;
 
-    rs.ior = worker.ior_outside(wo, *this);
+    rs.ior   = worker.ior_outside(wo, *this);
+    rs.alpha = alpha;
 
     rs.prop      = prop;
     rs.part      = geo.part;
@@ -66,7 +67,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
 }
 
 inline bool Intersection::same_hemisphere(float3 const& v) const {
-    return dot(geo.geo_n, v) > 0.f;
+    return dot(geo.geo_n, v) >= 0.f;
 }
 
 }  // namespace scene::prop

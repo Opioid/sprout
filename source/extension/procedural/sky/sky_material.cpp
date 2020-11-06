@@ -35,9 +35,11 @@ material::Sample const& Sky_material::sample(float3 const&      wo, scene::Ray c
                                              Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.set(sky_.model().evaluate_sky(-wo));
+    float3 const radiance = sky_.model().evaluate_sky(-wo);
+
+    sample.set_common(rs, wo, radiance, radiance, 0.f);
 
     return sample;
 }
@@ -52,8 +54,8 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 }
 
 void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
-                                    Transformation const& /*transformation*/, float /*area*/,
-                                    bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                    Transformation const& /*trafo*/, float /*area*/,
+                                    bool /*importance_sampling*/, Threads& /*threads*/,
                                     Scene const& /*scene*/) {}
 
 static int2 constexpr Bake_dimensions(256);
@@ -74,11 +76,11 @@ material::Sample const& Sky_baked_material::sample(float3 const&      wo, scene:
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
     float3 const radiance = sampler.sample_3(cache_texture_, rs.uv);
 
-    sample.set(radiance);
+    sample.set_common(rs, wo, radiance, radiance, 0.f);
 
     return sample;
 }
@@ -111,8 +113,8 @@ float Sky_baked_material::emission_pdf(float3 const& uvw, Filter filter,
 }
 
 void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
-                                          Transformation const& transformation, float /*area*/,
-                                          bool importance_sampling, thread::Pool& threads,
+                                          Transformation const& trafo, float /*area*/,
+                                          bool importance_sampling, Threads& threads,
                                           Scene const& /*scene*/) {
     using namespace image;
 
@@ -127,14 +129,13 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     //	}
 
     if (importance_sampling) {
-        Distribution_2D::Distribution_impl* conditional = distribution_.allocate(
-            Bake_dimensions[1]);
+        Distribution_1D* conditional = distribution_.allocate(Bake_dimensions[1]);
 
         memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 
         threads.run_range(
-            [this, &transformation, &conditional, &artws, &shape](uint32_t id, int32_t begin,
-                                                                  int32_t end) noexcept {
+            [this, &trafo, &conditional, &artws, &shape](uint32_t id, int32_t begin,
+                                                         int32_t end) noexcept {
                 image::Float3& cache = cache_;
 
                 float2 const idf = 1.f / float2(Bake_dimensions);
@@ -150,7 +151,7 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
                         float const u = idf[0] * (x + 0.5f);
 
                         float2 const uv = float2(u, v);
-                        float3 const wi = unclipped_canopy_mapping(transformation, uv);
+                        float3 const wi = unclipped_canopy_mapping(trafo, uv);
                         float3 const li = sky_.model().evaluate_sky(wi);
 
                         cache.store(x, y, packed_float3(li));
@@ -189,13 +190,12 @@ void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     }
 }
 
-float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& transformation,
-                                                    float2                uv) {
+float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& trafo, float2 uv) {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     float3 const dir = disk_to_hemisphere_equidistant(disk);
 
-    return transform_vector(transformation.rotation, dir);
+    return transform_vector(trafo.rotation, dir);
 }
 
 }  // namespace procedural::sky

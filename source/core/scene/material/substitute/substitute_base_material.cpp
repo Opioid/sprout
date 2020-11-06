@@ -4,6 +4,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_worker.inl"
 #include "substitute_sample.hpp"
@@ -13,7 +14,7 @@ namespace scene::material::substitute {
 Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
-void Material_base::commit(thread::Pool& /*threads*/, Scene const& scene) {
+void Material_base::commit(Threads& /*threads*/, Scene const& scene) {
     properties_.set(Property::Caustic, !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha);
 
     if (emission_map_.is_valid()) {
@@ -37,10 +38,6 @@ float3 Material_base::average_radiance(float /*area*/) const {
     }
 
     return float3(0.f);
-}
-
-void Material_base::set_color_map(Texture_adapter const& color_map) {
-    color_map_ = color_map;
 }
 
 void Material_base::set_normal_map(Texture_adapter const& normal_map) {

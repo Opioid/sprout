@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_PROP_INTERFACE_STACK_INL
 #define SU_CORE_SCENE_PROP_INTERFACE_STACK_INL
 
-#include "base/memory/align.hpp"
 #include "interface_stack.hpp"
 #include "prop.hpp"
 #include "prop_intersection.hpp"
@@ -17,20 +16,19 @@ inline material::Material const* Interface::material(Worker const& worker) const
     return worker.scene().prop_material(prop, part);
 }
 
-inline bool Interface::matches(Intersection const& intersection) const {
-    return (prop == intersection.prop) & (part == intersection.geo.part);
+inline bool Interface::matches(Intersection const& isec) const {
+    return (prop == isec.prop) & (part == isec.geo.part);
 }
 
-inline Interface_stack::Interface_stack()
-    : index_(0), stack_(memory::allocate_aligned<Interface>(Num_entries)) {}
+inline Interface_stack::Interface_stack() : index_(0), stack_(new Interface[Num_entries]) {}
 
 inline Interface_stack::Interface_stack(Interface_stack const& other)
-    : stack_(memory::allocate_aligned<Interface>(Num_entries)) {
+    : stack_(new Interface[Num_entries]) {
     *this = other;
 }
 
 inline Interface_stack::~Interface_stack() {
-    memory::free_aligned(stack_);
+    delete[] stack_;
 }
 
 inline void Interface_stack::operator=(Interface_stack const& other) {
@@ -98,19 +96,19 @@ inline bool Interface_stack::straight(Worker const& worker) const {
     return true;
 }
 
-inline void Interface_stack::push(Intersection const& intersection) {
+inline void Interface_stack::push(Intersection const& isec) {
     SOFT_ASSERT(index_ < Num_entries - 1);
 
     if (index_ < Num_entries - 1) {
-        stack_[index_] = {intersection.prop, intersection.geo.part, intersection.geo.uv};
+        stack_[index_] = {isec.prop, isec.geo.part, isec.geo.uv};
         ++index_;
     }
 }
 
-inline bool Interface_stack::remove(Intersection const& intersection) {
+inline bool Interface_stack::remove(Intersection const& isec) {
     int32_t const back = index_ - 1;
     for (int32_t i = back; i >= 0; --i) {
-        if (stack_[i].matches(intersection)) {
+        if (stack_[i].matches(isec)) {
             for (int32_t j = i; j < back; ++j) {
                 stack_[j] = stack_[j + 1];
             }
@@ -123,14 +121,13 @@ inline bool Interface_stack::remove(Intersection const& intersection) {
     return false;
 }
 
-inline float Interface_stack::peek_ior(Intersection const& intersection,
-                                       Worker const&       worker) const {
+inline float Interface_stack::peek_ior(Intersection const& isec, Worker const& worker) const {
     if (index_ <= 1) {
         return 1.f;
     }
 
     int32_t const back = index_ - 1;
-    if (stack_[back].matches(intersection)) {
+    if (stack_[back].matches(isec)) {
         return stack_[back - 1].material(worker)->ior();
     } else {
         return stack_[back].material(worker)->ior();

@@ -12,8 +12,6 @@ struct Tree {
 
     ~Tree();
 
-    using Node = bvh::Node;
-
     Node* allocate_nodes(uint32_t num_nodes);
 
     void alllocate_indices(uint32_t num_indices);
@@ -24,8 +22,6 @@ struct Tree {
     Node* nodes_ = nullptr;
 
     uint32_t* indices_ = nullptr;
-
-    AABB aabb_;
 };
 
 }  // namespace scene::bvh

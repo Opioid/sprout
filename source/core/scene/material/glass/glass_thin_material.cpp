@@ -5,6 +5,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
@@ -22,19 +23,16 @@ material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*r
                                            Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_thin>();
 
-    float3 n;
     if (normal_map_.is_valid()) {
-        auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-        n                   = sample_normal(wo, rs, normal_map_, sampler, worker);
+        auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
+        float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker);
         sample.layer_.set_tangent_frame(n);
     } else {
-        n = rs.n;
-        sample.layer_.set_tangent_frame(rs.t, rs.b, n);
+        sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_basis(rs.geo_n, n, wo);
-
-    sample.set(refraction_color_, absorption_coefficient_, ior_, rs.ior, thickness_);
+    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha);
+    sample.set(cc_.a, ior_, rs.ior, thickness_);
 
     return sample;
 }
@@ -58,10 +56,9 @@ float3 Glass_thin::thin_absorption(float3 const& wi, float3 const& n, float2 uv,
 
     float const n_dot_wi = clamp(n_dot_wo);
 
-    float const approximated_distance = thickness_ / n_dot_wi;
+    float const approx_distance = thickness_ / n_dot_wi;
 
-    float3 const attenuation = rendering::attenuation(approximated_distance,
-                                                      absorption_coefficient_);
+    float3 const attenuation = rendering::attenuation(approx_distance, cc_.a);
 
     float const o = opacity(uv, time, filter, worker);
 
@@ -76,10 +73,6 @@ void Glass_thin::set_normal_map(Texture_adapter const& normal_map) {
 
 void Glass_thin::set_refraction_color(float3 const& color) {
     refraction_color_ = color;
-}
-
-void Glass_thin::set_attenuation(float3 const& absorption_color, float distance) {
-    absorption_coefficient_ = attenuation_coefficient(absorption_color, distance);
 }
 
 void Glass_thin::set_thickness(float thickness) {

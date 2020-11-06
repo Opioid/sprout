@@ -8,6 +8,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene::shape {
 
 struct Vertex;
@@ -26,7 +28,7 @@ class Morph_target_collection {
 
     void add_swap_vertices(std::vector<Vertex>& vertices);
 
-    void morph(uint32_t a, uint32_t b, float weight, thread::Pool& threads, Vertex* vertices);
+    void morph(uint32_t a, uint32_t b, float weight, Threads& threads, Vertex* vertices);
 
   private:
     std::vector<Index_triangle> triangles_;

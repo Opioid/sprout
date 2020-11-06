@@ -5,6 +5,7 @@
 #include "base/spectrum/mapping.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/collision_coefficients.inl"
+#include "scene/material/material.inl"
 #include "scene/material/volumetric/volumetric_octree_builder.hpp"
 #include "scene/material/volumetric/volumetric_sample.hpp"
 #include "scene/scene_renderstate.hpp"
@@ -22,7 +23,7 @@ Material_subsurface::Material_subsurface(Sampler_settings const& sampler_setting
     properties_.set(Property::Caustic);
 }
 
-void Material_subsurface::commit(thread::Pool& threads, Scene const& scene) {
+void Material_subsurface::commit(Threads& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
         auto const& texture = density_map_.texture(scene);
 
@@ -41,7 +42,7 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
     if (rs.subsurface) {
         auto& sample = worker.sample<volumetric::Sample>();
 
-        sample.set_basis(rs.geo_n, rs.n, wo);
+        sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha);
 
         sample.set(volumetric_anisotropy_);
 
@@ -61,41 +62,6 @@ material::Sample const& Material_subsurface::sample(float3 const&      wo, Ray c
 
 void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
     density_map_ = density_map;
-}
-
-void Material_subsurface::set_attenuation(float3 const& absorption_color,
-                                          float3 const& scattering_color, float distance) {
-    if (any_greater_zero(scattering_color)) {
-        cc_ = attenuation(absorption_color, scattering_color, distance);
-    } else {
-        cc_.a = attenuation_coefficient(absorption_color, distance);
-        cc_.s = float3(0.f);
-    }
-
-    attenuation_distance_ = distance;
-}
-
-float3 Material_subsurface::absorption_coefficient(float2 uv, Filter filter,
-                                                   Worker const& worker) const {
-    if (color_map_.is_valid()) {
-        auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const color   = color_map_.sample_3(worker, sampler, uv);
-
-        return attenuation_coefficient(color, attenuation_distance_);
-    }
-
-    return cc_.a;
-}
-
-CC Material_subsurface::collision_coefficients(float2 uv, Filter filter,
-                                               Worker const& worker) const {
-    SOFT_ASSERT(color_map_.is_valid());
-
-    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-
-    float3 const color = color_map_.sample_3(worker, sampler, uv);
-
-    return scattering(cc_.a, color);
 }
 
 CC Material_subsurface::collision_coefficients(float3 const& p, Filter filter,

@@ -6,6 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.hpp"
 #include "scene/material/bxdf.hpp"
@@ -26,15 +27,13 @@ using namespace scene;
 
 namespace rendering::integrator::surface {
 
-Pathtracer::Pathtracer(rnd::Generator& rng, Settings const& settings, bool progressive)
-    : Integrator(rng),
-      settings_(settings),
-      sampler_(rng),
+Pathtracer::Pathtracer(Settings const& settings, bool progressive)
+    : settings_(settings),
       sampler_pool_(progressive ? nullptr
                                 : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(i, rng);
+            material_samplers_[i] = sampler_pool_->get(i);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -55,16 +54,16 @@ void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel)
     }
 }
 
-void Pathtracer::start_pixel() {
-    sampler_.start_pixel();
+void Pathtracer::start_pixel(RNG& rng) {
+    sampler_.start_pixel(rng);
 
     for (auto& s : material_samplers_) {
-        s->start_pixel();
+        s->start_pixel(rng);
     }
 }
 
-float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
-                      Interface_stack const& initial_stack) {
+float4 Pathtracer::li(Ray& ray, Intersection& isec, Worker& worker,
+                      Interface_stack const& initial_stack, AOV* aov) {
     float const num_samples_reciprocal = 1.f / float(settings_.num_samples);
 
     float4 result = float4(0.f);
@@ -74,15 +73,15 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker,
 
         Ray split_ray = ray;
 
-        Intersection split_intersection = intersection;
+        Intersection split_intersection = isec;
 
-        result += num_samples_reciprocal * integrate(split_ray, split_intersection, worker);
+        result += num_samples_reciprocal * integrate(split_ray, split_intersection, worker, aov);
     }
 
     return result;
 }
 
-float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worker) {
+float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* aov) {
     Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
@@ -95,32 +94,40 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
     float3 result(0.f);
     float3 wo1(0.f);
 
+    float alpha = 0.f;
+
 #ifdef ONLY_CAUSTICS
     bool caustic_path = false;
 #endif
 
-    for (;;) {
+    for (uint32_t i = 0;; ++i) {
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
-        auto const& material_sample = worker.sample_material(
-            ray, wo, wo1, intersection, filter, avoid_caustics, from_subsurface, sampler_);
+        auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
+                                                        avoid_caustics, from_subsurface, sampler_);
+
+        alpha = mat_sample.alpha();
 
         wo1 = wo;
 
-        if (material_sample.same_hemisphere(wo)) {
+        if (mat_sample.same_hemisphere(wo)) {
 #ifdef ONLY_CAUSTICS
             if (caustic_path) {
-                result += throughput * material_sample.radiance();
+                result += throughput * mat_sample.radiance();
             }
 #else
-            result += throughput * material_sample.radiance();
+            result += throughput * mat_sample.radiance();
 #endif
         }
 
-        if (material_sample.is_pure_emissive()) {
-            transparent &= (!intersection.visible_in_camera(worker)) & (ray.max_t() >= Ray_max_t);
+        if (aov) {
+            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, *aov);
+        }
+
+        if (mat_sample.is_pure_emissive()) {
+            transparent &= (!isec.visible_in_camera(worker)) & (ray.max_t() >= Ray_max_t);
             break;
         }
 
@@ -129,12 +136,12 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         }
 
         if (ray.depth > settings_.min_bounces) {
-            if (russian_roulette(throughput, sampler_.generate_sample_1D())) {
+            if (russian_roulette(throughput, sampler_.sample_1D(worker.rng()))) {
                 break;
             }
         }
 
-        material_sample.sample(material_sampler(ray.depth), sample_result);
+        mat_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -148,8 +155,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
             }
 #endif
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            primary_ray = false;
             filter      = Filter::Nearest;
+            primary_ray = false;
         }
 
         if (0.f == ray.wavelength) {
@@ -165,8 +172,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
                 ++ray.depth;
             }
         } else {
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
-                                                  intersection.subsurface);
+            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
@@ -177,15 +183,15 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
         ray.max_t() = Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
-            worker.interface_change(sample_result.wi, intersection);
+            worker.interface_change(sample_result.wi, isec);
         }
 
-        from_subsurface |= intersection.subsurface;
+        from_subsurface |= isec.subsurface;
 
         if (!worker.interface_stack().empty()) {
             float3     vli;
             float3     vtr;
-            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
+            auto const hit = worker.volume(ray, isec, filter, vli, vtr);
 
             result += throughput * vli;
 
@@ -195,7 +201,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& intersection, Worker& worke
                 SOFT_ASSERT(all_finite_and_positive(result));
                 break;
             }
-        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+        } else if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
             break;
         }
     }
@@ -217,10 +223,10 @@ Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, bool progressive, uin
       settings_{num_samples, min_bounces, max_bounces, !enable_caustics},
       progressive_(progressive) {}
 
-Integrator* Pathtracer_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* Pathtracer_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer(rng, settings_, progressive_);
+        return new (&integrators_[id]) Pathtracer(settings_, progressive_);
     }
 
     return &integrators_[id];

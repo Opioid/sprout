@@ -18,10 +18,10 @@ namespace prop {
 struct Intersection;
 class Prop;
 
-struct Interface {
+struct alignas(16) Interface {
     material::Material const* material(Worker const& worker) const;
 
-    bool matches(Intersection const& intersection) const;
+    bool matches(Intersection const& isec) const;
 
     uint32_t prop;
     uint32_t part;
@@ -54,11 +54,11 @@ class Interface_stack {
 
     bool straight(Worker const& worker) const;
 
-    void push(Intersection const& intersection);
+    void push(Intersection const& isec);
 
-    bool remove(Intersection const& intersection);
+    bool remove(Intersection const& isec);
 
-    float peek_ior(Intersection const& intersection, Worker const& worker) const;
+    float peek_ior(Intersection const& isec, Worker const& worker) const;
 
     void pop();
 

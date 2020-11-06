@@ -4,16 +4,8 @@
 #include "base/spectrum/aces.hpp"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
-#include "collision_coefficients.inl"
-#include "fresnel/fresnel.inl"
-#include "image/texture/texture_adapter.inl"
-#include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
 
-//#include "base/spectrum/rgb.hpp"
-//#include "base/encoding/encoding.inl"
-//#include "core/image/typed_image.hpp"
-//#include "core/image/encoding/png/png_writer.hpp"
+#include "scene/scene_renderstate.hpp"
 
 namespace scene::material {
 
@@ -28,12 +20,17 @@ Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
       emission_(0.f),
       ior_(1.5f),
       attenuation_distance_(0.f),
-      volumetric_anisotropy_(0.f) {}
+      volumetric_anisotropy_(0.f),
+      element_(-1) {}
 
 Material::~Material() = default;
 
 void Material::set_mask(Texture_adapter const& mask) {
     mask_ = mask;
+}
+
+void Material::set_color_map(Texture_adapter const& color_map) {
+    color_map_ = color_map;
 }
 
 void Material::set_emission(float3 const& emission) {
@@ -44,14 +41,25 @@ void Material::set_ior(float ior) {
     ior_ = ior;
 }
 
+void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+                               float distance) {
+    if (any_greater_zero(scattering_color)) {
+        cc_ = attenuation(absorption_color, scattering_color, distance);
+    } else {
+        cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
+    }
+
+    attenuation_distance_ = distance;
+}
+
 void Material::set_volumetric_anisotropy(float anisotropy) {
     volumetric_anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
 }
 
-void Material::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {}
+void Material::commit(Threads& /*threads*/, Scene const& /*scene*/) {}
 
 void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
-                        thread::Pool& /*threads*/, Scene const& /*scene*/) {}
+                        Threads& /*threads*/, Scene const& /*scene*/) {}
 
 float3 Material::average_radiance(float /*extent*/) const {
     return float3(0.f);
@@ -71,42 +79,9 @@ float Material::emission_pdf(float3 const& /*uvw*/, Filter /*filter*/,
     return 1.f;
 }
 
-float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter, Worker const& worker) const {
-    if (mask_.is_valid()) {
-        auto const& sampler = worker.sampler_2D(sampler_key_, filter);
-        return mask_.sample_1(worker, sampler, uv);
-    }
-
-    return 1.f;
-}
-
 float3 Material::thin_absorption(float3 const& /*wi*/, float3 const& /*n*/, float2 uv,
                                  uint64_t time, Filter filter, Worker const& worker) const {
     return float3(1.f - opacity(uv, time, filter, worker));
-}
-
-float Material::border(float3 const& wi, float3 const& n) const {
-    float const f0 = fresnel::schlick_f0(ior_, 1.f);
-
-    float const n_dot_wi = std::max(dot(n, wi), 0.f);
-
-    float const f = 1.f - fresnel::schlick(n_dot_wi, f0);
-
-    return f;
-}
-
-float3 Material::absorption_coefficient(float2 /*uv*/, Filter /*filter*/,
-                                        Worker const& /*worker*/) const {
-    return cc_.a;
-}
-
-CC Material::collision_coefficients() const {
-    return cc_;
-}
-
-CC Material::collision_coefficients(float2 /*uv*/, Filter /*filter*/,
-                                    Worker const& /*worker*/) const {
-    return cc_;
 }
 
 CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
@@ -138,37 +113,9 @@ float Material::similarity_relation_scale(uint32_t depth) const {
 }
 
 void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
-                                Transformation const& /*transformation*/, float /*extent*/,
-                                bool /*importance_sampling*/, thread::Pool& /*threads*/,
+                                Transformation const& /*trafo*/, float /*extent*/,
+                                bool /*importance_sampling*/, Threads& /*threads*/,
                                 Scene const& /*scene*/) {}
-
-uint32_t Material::sampler_key() const {
-    return sampler_key_;
-}
-
-bool Material::is_two_sided() const {
-    return properties_.is(Property::Two_sided);
-}
-
-bool Material::is_masked() const {
-    return mask_.is_valid();
-}
-
-bool Material::is_animated() const {
-    return properties_.is(Property::Animated);
-}
-
-bool Material::is_caustic() const {
-    return properties_.is(Property::Caustic);
-}
-
-bool Material::has_tinted_shadow() const {
-    return properties_.is(Property::Tinted_shadow);
-}
-
-bool Material::has_emission_map() const {
-    return properties_.is(Property::Emission_map);
-}
 
 bool Material::is_emissive() const {
     if (properties_.is(Property::Emission_map)) {
@@ -177,22 +124,6 @@ bool Material::is_emissive() const {
 
     float3 const e = average_radiance(1.f);
     return any_greater_zero(e);
-}
-
-bool Material::is_scattering_volume() const {
-    return properties_.is(Property::Scattering_volume);
-}
-
-bool Material::is_textured_volume() const {
-    return properties_.is(Property::Textured_volume);
-}
-
-bool Material::is_heterogeneous_volume() const {
-    return properties_.is(Property::Heterogeneous_volume);
-}
-
-float Material::ior() const {
-    return ior_;
 }
 
 float Material::van_de_hulst_anisotropy(uint32_t depth) const {

@@ -4,6 +4,7 @@
 #include "base/math/aabb.hpp"
 #include "base/math/vector3.hpp"
 #include "scene/material/sampler_settings.hpp"
+#include "triangle_bvh_indexed_data.hpp"
 
 namespace math {
 struct Ray;
@@ -38,7 +39,6 @@ struct Data_triangle;
 
 namespace bvh {
 
-template <typename Data>
 class Tree {
   public:
     Tree();
@@ -58,16 +58,14 @@ class Tree {
 
     uint32_t num_triangles() const;
 
-    uint32_t num_triangles(uint32_t part) const;
+    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
+                   scalar& ray_max_t, Node_stack& nodes, Intersection& isec) const;
 
     bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                   scalar& ray_max_t, Node_stack& node_stack, Intersection& intersection) const;
-
-    bool intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                   scalar& ray_max_t, Node_stack& node_stack) const;
+                   scalar& ray_max_t, Node_stack& nodes) const;
 
     bool intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
-                     scalar const& ray_max_t, Node_stack& node_stack) const;
+                     scalar const& ray_max_t, Node_stack& nodes) const;
 
     float visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker& worker) const;
 
@@ -99,12 +97,12 @@ class Tree {
 
     float3 triangle_center(uint32_t index) const;
 
+    void triangle(uint32_t index, float3& pa, float3& pb, float3& pc) const;
+
     void triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva, float2& uvb,
                   float2& uvc) const;
 
-    //    void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const ;
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
-    //    void sample(uint32_t index, float2 r2, float3& p) const ;
 
     void allocate_parts(uint32_t num_parts);
 
@@ -119,9 +117,7 @@ class Tree {
 
     Node* nodes_;
 
-    uint32_t* num_part_triangles_;
-
-    Data data_;
+    Indexed_data data_;
 };
 
 }  // namespace bvh

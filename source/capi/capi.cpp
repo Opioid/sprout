@@ -19,6 +19,7 @@
 #include "core/sampler/sampler_random.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "core/scene/camera/camera_perspective.hpp"
+#include "core/scene/material/material.inl"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.inl"
@@ -62,12 +63,12 @@ class C : public Sink {
 
 struct Engine {
     Engine(bool progressive)
-        : threads(thread::Pool::num_threads(0)),
+        : threads(Threads::num_threads(0)),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
           texture_provider(false),
           texture_resources(resources.register_provider(texture_provider)),
-          material_provider(false),
+          material_provider(false, false),
           material_resources(resources.register_provider(material_provider)),
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),
@@ -77,7 +78,7 @@ struct Engine {
           frame_iteration(0),
           progressive(progressive),
           valid(false) {}
-    thread::Pool threads;
+    Threads threads;
 
     resource::Manager resources;
 
@@ -508,7 +509,7 @@ int32_t su_entity_allocate_frames(uint32_t entity) {
     return 0;
 }
 
-int32_t su_entity_transformation(uint32_t entity, float* transformation) {
+int32_t su_entity_transformation(uint32_t entity, float* trafo) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
@@ -517,19 +518,19 @@ int32_t su_entity_transformation(uint32_t entity, float* transformation) {
 
     float4x4 const m = engine->scene.prop_world_transformation(entity).object_to_world();
 
-    std::copy(m.r[0].v, &m.r[0].v[0] + 16, transformation);
+    std::copy(m.r[0].v, &m.r[0].v[0] + 16, trafo);
 
     return 0;
 }
 
-int32_t su_entity_set_transformation(uint32_t entity, float const* transformation) {
+int32_t su_entity_set_transformation(uint32_t entity, float const* trafo) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity) {
         return -2;
     }
 
-    float4x4 const m(transformation);
+    float4x4 const m(trafo);
 
     float3x3 r;
 
@@ -544,15 +545,14 @@ int32_t su_entity_set_transformation(uint32_t entity, float const* transformatio
     return 0;
 }
 
-int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame,
-                                           float const* transformation) {
+int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame, float const* trafo) {
     ASSERT_ENGINE(-1)
 
     if (engine->scene.num_props() <= entity || engine->scene.num_interpolation_frames() <= frame) {
         return -2;
     }
 
-    float4x4 const m(transformation);
+    float4x4 const m(trafo);
 
     float3x3 r;
 

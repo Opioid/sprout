@@ -15,7 +15,7 @@ class Gaussian {
   public:
     Gaussian(float radius, float alpha);
 
-    void apply(Typed_image<T>& target, thread::Pool& threads);
+    void apply(Typed_image<T>& target, Threads& threads);
 
   private:
     Typed_image<T> scratch_;

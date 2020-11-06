@@ -1,6 +1,7 @@
 #include "substitute_translucent_material.hpp"
 #include "base/math/vector4.inl"
 #include "image/texture/texture_adapter.inl"
+#include "scene/material/material.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.inl"
 #include "substitute_base_material.inl"
@@ -24,8 +25,7 @@ material::Sample const& Material_translucent::sample(float3 const&      wo, Ray 
     float thickness;
 
     thickness = thickness_;
-    sample.set_transluceny(sample.base_.diffuse_color_, thickness, attenuation_distance_,
-                           transparency_);
+    sample.set_transluceny(sample.base_.albedo_, thickness, attenuation_distance_, transparency_);
 
     return sample;
 }

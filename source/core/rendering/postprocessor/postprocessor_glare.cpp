@@ -43,7 +43,7 @@ static inline float f3(float theta, float lambda) {
     return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }
 
-void Glare::init(Camera const& camera, thread::Pool& threads) {
+void Glare::init(Camera const& camera, Threads& threads) {
     auto const dim = camera.sensor_dimensions();
 
     uint32_t const buffer_size = uint32_t(dim[0] * dim[1]);
@@ -190,7 +190,7 @@ void Glare::init(Camera const& camera, thread::Pool& threads) {
 }
 
 void Glare::pre_apply(image::Float4 const& /*source*/, image::Float4& /*destination*/,
-                      thread::Pool& /*threads*/) {
+                      Threads& /*threads*/) {
     high_.clear();
 }
 

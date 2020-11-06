@@ -16,19 +16,18 @@
 
 namespace scene::shape::testing {
 
-void print(Intersection const& intersection);
+void print(Intersection const& isec);
 
 void print_vector(float3 const& v);
 
-bool check(Intersection const& intersection, entity::Composed_transformation const& transformation,
+bool check(Intersection const& isec, entity::Composed_transformation const& trafo,
            Ray const& /*ray*/) {
-    if (!std::isfinite(length(intersection.b)) || !all_finite(intersection.t) ||
-        !all_finite(intersection.b) || !all_finite(intersection.n) ||
-        !all_finite(intersection.geo_n)) {
-        print(intersection);
+    if (!std::isfinite(length(isec.b)) || !all_finite(isec.t) || !all_finite(isec.b) ||
+        !all_finite(isec.n) || !all_finite(isec.geo_n)) {
+        print(isec);
 
-        std::cout << "t.rotation: " << transformation.rotation << std::endl;
-        std::cout << "t.scale: " << transformation.scale() << std::endl;
+        std::cout << "t.rotation: " << trafo.rotation << std::endl;
+        std::cout << "t.scale: " << trafo.scale() << std::endl;
 
         return false;
     }
@@ -48,15 +47,15 @@ bool check(const Sample_to& sample) {
 void test() {
     std::cout << "scene::shape::testing::test()" << std::endl;
 
-    Node_stack node_stack;
+    Node_stack nodes;
 
-    math::Transformation transformation;
-    transformation.position = float3(0.f);
-    transformation.scale    = float3(1.f);
-    transformation.rotation = math::quaternion::identity();
+    math::Transformation trafo;
+    trafo.position = float3(0.f);
+    trafo.scale    = float3(1.f);
+    trafo.rotation = math::quaternion::identity();
 
     entity::Composed_transformation composed_transformation;
-    composed_transformation.set(transformation);
+    composed_transformation.set(trafo);
 
     scene::Ray ray;
     ray.origin = float3(0.f, 4.f, 0.f);
@@ -64,12 +63,12 @@ void test() {
     ray.max_t() = scene::Ray_max_t;
     ray.min_t() = 0.f;
 
-    Intersection intersection;
+    Intersection isec;
 
     //	{
     //		Infinite_sphere infinite_sphere;
-    //		if (infinite_sphere.intersect(composed_transformation, ray, node_stack,
-    // intersection)) { 			print(intersection);
+    //		if (infinite_sphere.intersect(composed_transformation, ray, nodes,
+    // isec)) { 			print(isec);
     //		}
     //	}
 
@@ -78,8 +77,8 @@ void test() {
         ray.set_direction(float3(0.f, -1.f, 0.f));
 
         Sphere sphere;
-        if (sphere.intersect(ray, composed_transformation, node_stack, intersection)) {
-            print(intersection);
+        if (sphere.intersect(ray, composed_transformation, nodes, isec)) {
+            print(isec);
         }
     }
 
@@ -88,22 +87,22 @@ void test() {
     //		ray.set_direction(float3(0.f, -1.f, 0.f));
 
     //		Sphere sphere;
-    //		if (sphere.intersect(composed_transformation, ray, node_stack, intersection)) {
-    //			print(intersection);
+    //		if (sphere.intersect(composed_transformation, ray, nodes, isec)) {
+    //			print(isec);
     //		}
     //	}
 }
 
-void print(Intersection const& intersection) {
+void print(Intersection const& isec) {
     std::cout << "n: ";
-    print_vector(intersection.n);
+    print_vector(isec.n);
     std::cout << "t: ";
-    print_vector(intersection.t);
+    print_vector(isec.t);
     std::cout << "b: ";
-    print_vector(intersection.b);
-    std::cout << "uv: " << intersection.uv << std::endl;
+    print_vector(isec.b);
+    std::cout << "uv: " << isec.uv << std::endl;
     std::cout << "geo_n: ";
-    print_vector(intersection.geo_n);
+    print_vector(isec.geo_n);
 }
 
 void print_vector(float3 const& v) {

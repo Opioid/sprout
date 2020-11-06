@@ -13,6 +13,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 struct Item;
 
 namespace op {
@@ -42,7 +44,7 @@ class Difference_item {
     float psnr() const;
 
     void calculate_difference(Texture const* other, Scratch* scratch, float clamp, float2 clip,
-                              thread::Pool& threads);
+                              Threads& threads);
 
   private:
     std::string name_;

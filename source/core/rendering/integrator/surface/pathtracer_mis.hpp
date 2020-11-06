@@ -22,16 +22,16 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool photons_not_only_through_specular;
     };
 
-    Pathtracer_MIS(rnd::Generator& rng, Settings const& settings, bool progressive);
+    Pathtracer_MIS(Settings const& settings, bool progressive);
 
     ~Pathtracer_MIS() final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(RNG& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) final;
+    float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV* aov) final;
 
   private:
     struct Result {
@@ -41,15 +41,15 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool split_photon;
     };
 
-    Result integrate(Ray& ray, Intersection& intersection, Worker& worker, bool integrate_photons);
+    Result integrate(Ray& ray, Intersection& isec, Worker& worker, bool integrate_photons,
+                     AOV* aov);
 
-    float3 sample_lights(Ray const& ray, Intersection& intersection,
-                         Material_sample const& material_sample, Filter filter, Worker& worker);
+    float3 sample_lights(Ray const& ray, Intersection& isec, Material_sample const& mat_sample,
+                         Filter filter, Worker& worker);
 
     float3 evaluate_light(Light const& light, float light_weight, Ray const& history,
-                          float3 const& p, uint32_t sampler_dimension,
-                          Intersection const& intersection, Material_sample const& material_sample,
-                          Filter filter, Worker& worker);
+                          float3 const& p, uint32_t sampler_d, Intersection const& isec,
+                          Material_sample const& mat_sample, Filter filter, Worker& worker);
 
     enum class State {
         Primary_ray       = 1 << 0,
@@ -62,16 +62,18 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     using Path_state = flags::Flags<State>;
 
-    float3 connect_light(Ray const& ray, float3 const& geo_n, Intersection const& intersection,
+    float3 connect_light(Ray const& ray, float3 const& geo_n, Intersection const& isec,
                          Bxdf_sample sample_result, Path_state state, Filter filter, Worker& worker,
                          bool& pure_emissive);
 
-    float connect_light_volume(Ray const& ray, Intersection const& intersection, float bxdf_pdf,
-                               Path_state state, Worker& worker) const;
+    float connect_light_volume(Ray const& ray, float3 const& geo_n, Intersection const& isec,
+                               float bxdf_pdf, Path_state state, Worker& worker) const;
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 
     sampler::Sampler& light_sampler(uint32_t bounce);
+
+    bool splitting(uint32_t bounce) const;
 
     Settings const settings_;
 
@@ -84,6 +86,8 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     sampler::Sampler* material_samplers_[Num_dedicated_samplers];
 
     sampler::Sampler* light_samplers_[Num_dedicated_samplers];
+
+    Lights lights_;
 };
 
 class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
@@ -92,7 +96,7 @@ class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
                         uint32_t min_bounces, uint32_t max_bounces, Light_sampling light_sampling,
                         bool enable_caustics, bool photons_only_through_specular);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     Pathtracer_MIS::Settings settings_;

@@ -27,17 +27,17 @@ class Map {
 
     void insert(Photon const& photon, uint32_t index);
 
-    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& threads);
+    uint32_t compile_iteration(uint32_t num_photons, uint64_t num_paths, Threads& threads);
 
     void compile_finalize();
 
-    float3 li(Intersection const& intersection, Material_sample const& sample,
+    float3 li(Intersection const& isec, Material_sample const& sample,
               scene::Worker const& worker) const;
 
     bool caustics_only() const;
 
   private:
-    AABB calculate_aabb(uint32_t num_photons, thread::Pool& threads) const;
+    AABB calculate_aabb(uint32_t num_photons, Threads& threads) const;
 
     uint64_t num_paths_;
 

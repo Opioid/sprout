@@ -58,12 +58,12 @@ class Isotropic {
 
 class Anisotropic {
   public:
-    template <typename Layer, typename Fresnel>
+    template <typename Fresnel>
     static bxdf::Result reflection(float3 const& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-                                   Layer const& layer, Fresnel const& fresnel);
+                                   float2 alpha, Layer const& layer, Fresnel const& fresnel);
 
-    template <typename Layer, typename Fresnel>
-    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer,
+    template <typename Fresnel>
+    static float reflect(float3 const& wo, float n_dot_wo, float2 alpha, Layer const& layer,
                          Fresnel const& fresnel, float2 xi, bxdf::Sample& result);
 };
 

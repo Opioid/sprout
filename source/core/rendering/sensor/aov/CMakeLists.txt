@@ -1,0 +1,11 @@
+ target_sources(core
+	PRIVATE
+	"buffer.cpp"
+	"buffer.hpp"
+    "property.cpp"
+	"property.hpp"
+    "property.inl"
+   	"value.cpp"
+	"value.hpp"
+    "value.inl"
+	) 

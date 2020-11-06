@@ -2,7 +2,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
+#include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.hpp"
 
 #include "base/debug/assert.hpp"
@@ -12,16 +12,16 @@ namespace scene::material::volumetric {
 Gridtree::Gridtree() : num_nodes_(0), num_data_(0), nodes_(nullptr), data_(nullptr) {}
 
 Gridtree::~Gridtree() {
-    memory::free_aligned(data_);
-    memory::free_aligned(nodes_);
+    delete[] data_;
+    delete[] nodes_;
 }
 
 Node* Gridtree::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes != num_nodes_) {
         num_nodes_ = num_nodes;
 
-        memory::free_aligned(nodes_);
-        nodes_ = memory::allocate_aligned<Node>(num_nodes);
+        delete[] nodes_;
+        nodes_ = new Node[num_nodes];
     }
 
     return nodes_;
@@ -31,8 +31,8 @@ CM* Gridtree::allocate_data(uint32_t num_data) {
     if (num_data != num_data_) {
         num_data_ = num_data;
 
-        memory::free_aligned(data_);
-        data_ = memory::allocate_aligned<CM>(num_data);
+        delete[] data_;
+        data_ = new CM[num_data];
     }
 
     return data_;

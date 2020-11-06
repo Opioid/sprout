@@ -14,6 +14,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace rendering::integrator::particle {
 
 class Importance {
@@ -28,12 +30,12 @@ class Importance {
 
     float denormalization_factor() const;
 
-    void prepare_sampling(uint32_t id, float* buffer, thread::Pool& threads);
+    void prepare_sampling(uint32_t id, float* buffer, Threads& threads);
 
     static int32_t constexpr Dimensions = 256;
 
   private:
-    void filter(float* buffer, thread::Pool& threads) const;
+    void filter(float* buffer, Threads& threads) const;
 
     struct Weight {
         float w;
@@ -58,7 +60,7 @@ class Importance_cache {
 
     void set_training(bool training);
 
-    void prepare_sampling(thread::Pool& threads);
+    void prepare_sampling(Threads& threads);
 
     void increment(uint32_t light_id, float2 uv);
 

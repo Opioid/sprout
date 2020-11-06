@@ -73,6 +73,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.quit = true;
     } else if ("no-textures" == command) {
         result.no_textures = true;
+    } else if ("no-tex-dwim" == command) {
+        result.no_tex_dwim = true;
     } else if ("debug-material" == command) {
         result.debug_material = true;
     } else {
@@ -121,7 +123,8 @@ Usage:
                               logical CPUs minus x.
                               The default value is 0.
   -q, --quit                  Automatically quit sprout after rendering.
-      --no-textures           Disables loading of all textures)";
+      --no-textures           Disables loading of all textures
+      --no-tex-dwim           Disables loading of most textures)";
 
     logging::info(text);
 }

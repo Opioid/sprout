@@ -53,6 +53,8 @@ struct Shading_vertex_MT {
 };
 
 struct Shading_vertex_MTC {
+    Shading_vertex_MTC();
+
     Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv);
 
     float4 n_u;

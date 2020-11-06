@@ -12,6 +12,7 @@
 #include "extension.hpp"
 #include "image/texture/texture.hpp"
 #include "light/light.inl"
+#include "material/material.inl"
 #include "prop/prop.inl"
 #include "prop/prop_intersection.hpp"
 #include "resource/resource.hpp"
@@ -96,10 +97,10 @@ void Scene::finish() {
         allocate_light(light::Light::Type::Null, dummy, 0);
     }
 
-    light_powers_.resize(uint32_t(lights_.size()));
+    light_temp_powers_.resize(uint32_t(lights_.size()));
 }
 
-AABB const& Scene::aabb() const {
+AABB Scene::aabb() const {
     return prop_bvh_.aabb();
 }
 
@@ -128,18 +129,18 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
 
     float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
 
-    return {lights_[id], id, pdf};
+    return {id, pdf};
 }
 
 Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
-                          bool calculate_pdf) const {
+                          bool split, bool calculate_pdf) const {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
 
-    float const pdf = calculate_pdf ? light_tree_.pdf(p, n, total_sphere, id) : 1.f;
+    float const pdf = calculate_pdf ? light_tree_.pdf(p, n, total_sphere, split, id, *this) : 1.f;
 
-    return {lights_[id], id, pdf};
+    return {id, pdf};
 }
 
 Scene::Light Scene::random_light(float random) const {
@@ -149,17 +150,30 @@ Scene::Light Scene::random_light(float random) const {
 
     SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
 
-    return {lights_[l.offset], l.offset, l.pdf};
+    return {l.offset, l.pdf};
 }
 
-Scene::Light Scene::random_light(float3 const& p, float3 const& n, bool total_sphere,
-                                 float random) const {
-    auto const l = light_tree_.random_light(p, n, total_sphere, random);
+void Scene::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                         bool split, Lights& lights) const {
+    light_tree_.random_light(p, n, total_sphere, random, split, *this, lights);
 
-    return {lights_[l.id], l.id, l.pdf};
+#ifdef SU_DEBUG
+    for (auto const l : lights) {
+        float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, split, l.id, *this);
+
+        float const diff = std::abs(guessed_pdf - l.pdf);
+
+        SOFT_ASSERT(diff < 1e-8f);
+    }
+#endif
 }
 
-void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) {
+void Scene::random_light(float3 const& p0, float3 const& p1, float random, bool split,
+                         Lights& lights) const {
+    light_tree_.random_light(p0, p1, random, split, *this, lights);
+}
+
+void Scene::simulate(uint64_t start, uint64_t end, Threads& threads) {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;
     uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
@@ -181,7 +195,7 @@ void Scene::simulate(uint64_t start, uint64_t end, thread::Pool& threads) {
     compile(start, threads);
 }
 
-void Scene::compile(uint64_t time, thread::Pool& threads) {
+void Scene::compile(uint64_t time, Threads& threads) {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
 
@@ -214,10 +228,10 @@ void Scene::compile(uint64_t time, thread::Pool& threads) {
     for (uint32_t i = 0, len = uint32_t(lights_.size()); i < len; ++i) {
         auto& l = lights_[i];
         l.prepare_sampling(i, time, *this, threads);
-        light_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
+        light_temp_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
     }
 
-    light_distribution_.init(light_powers_.data(), uint32_t(light_powers_.size()));
+    light_distribution_.init(light_temp_powers_.data(), uint32_t(light_temp_powers_.size()));
 
     light::Tree_builder light_tree_builder;
     light_tree_builder.build(light_tree_, *this);
@@ -409,13 +423,12 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
-        auto const& transformation = prop_world_transformation(entity);
+        auto const& trafo = prop_world_transformation(entity);
 
-        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(
-            transformation.object_to_world());
+        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(trafo.object_to_world());
 
         for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
-            prop_inherit_transformation(child, transformation);
+            prop_inherit_transformation(child, trafo);
 
             child = prop_topology(child).next;
         }
@@ -428,11 +441,11 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
 
         Shape const* shape = prop_shape(entity);
 
-        AABB aabb = shape->transformed_aabb(float4x4(frames[0].transformation));
+        AABB aabb = shape->transformed_aabb(float4x4(frames[0].trafo));
 
         for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
-            auto const& a = frames[i].transformation;
-            auto const& b = frames[i + 1].transformation;
+            auto const& a = frames[i].trafo;
+            auto const& b = frames[i + 1].trafo;
 
             float t = Interval;
             for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
@@ -452,7 +465,7 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
     }
 }
 
-void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& transformation) {
+void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& trafo) {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null != f) {
@@ -462,7 +475,7 @@ void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& t
 
         for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
             uint32_t const lf = local_animation ? i : 0;
-            frames[len + lf].transform(frames[i], transformation);
+            frames[len + lf].transform(frames[i], trafo);
         }
     }
 
@@ -489,28 +502,35 @@ void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflect
 
 void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light, uint64_t time,
                                   bool material_importance_sampling, bool volume,
-                                  thread::Pool& threads) {
+                                  Threads& threads) {
     auto shape = prop_shape(entity);
 
     shape->prepare_sampling(part);
 
     Transformation temp;
-    auto const&    transformation = prop_transformation_at(entity, time, temp);
+    auto const&    trafo = prop_transformation_at(entity, time, temp);
 
-    float3 const scale = transformation.scale();
+    float3 const scale = trafo.scale();
 
     float const extent = volume ? shape->volume(part, scale) : shape->area(part, scale);
-
-    lights_[light].set_extent(extent);
-
-    light_centers_[light] = transformation.object_to_world_point(shape->center(part));
 
     uint32_t const p = prop_parts_[entity] + part;
 
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
-    material_resources_[materials_[p]]->prepare_sampling(
-        *shape, part, time, transformation, extent, material_importance_sampling, threads, *this);
+    Material* material = material_resources_[materials_[p]];
+    material->prepare_sampling(*shape, part, time, trafo, extent, material_importance_sampling,
+                               threads, *this);
+
+    lights_[light].set_extent(extent);
+
+    light_powers_[light] = max_component(lights_[light].power(aabb(), *this));
+
+    light_aabbs_[light] = shape->transformed_part_aabb(part, trafo.object_to_world());
+
+    float4 const cone = shape->cone(part);
+
+    light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()), cone[3]);
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) {
@@ -527,8 +547,9 @@ void Scene::create_animation_stage(uint32_t entity, animation::Animation* animat
     prop_allocate_frames(entity, true);
 }
 
-Scene::Transformation const& Scene::prop_animated_transformation_at(
-    uint32_t frames_id, uint64_t time, Transformation& transformation) const {
+Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t        frames_id,
+                                                                    uint64_t        time,
+                                                                    Transformation& trafo) const {
     entity::Keyframe const* frames = &keyframes_[frames_id];
 
     uint64_t const i = (time - current_time_start_) / tick_duration_;
@@ -542,9 +563,9 @@ Scene::Transformation const& Scene::prop_animated_transformation_at(
 
     float const t = float(delta) / float(tick_duration_);
 
-    transformation.set(lerp(a.transformation, b.transformation, t));
+    trafo.set(lerp(a.trafo, b.trafo, t));
 
-    return transformation;
+    return trafo;
 }
 
 Scene::Prop_ptr Scene::allocate_prop() {
@@ -565,7 +586,9 @@ Scene::Prop_ptr Scene::allocate_prop() {
 void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) {
     lights_.emplace_back(type, entity, part);
 
-    light_centers_.emplace_back(0.f);
+    light_powers_.emplace_back(0.f);
+    light_aabbs_.emplace_back(AABB(float3(0.f), float3(0.f)));
+    light_cones_.emplace_back(float4(0.f, 0.f, 0.f, Pi));
 }
 
 bool Scene::prop_is_instance(Shape_ptr shape, Material_ptr const* materials,
@@ -576,11 +599,13 @@ bool Scene::prop_is_instance(Shape_ptr shape, Material_ptr const* materials,
 
     uint32_t const p = prop_parts_[props_.size() - 2];
     for (uint32_t i = 0; i < num_parts; ++i) {
-        if (materials[shape.ptr->part_id_to_material_id(i)].id != materials_[p + i]) {
+        auto const m = materials[shape.ptr->part_id_to_material_id(i)];
+
+        if (m.id != materials_[p + i]) {
             return false;
         }
 
-        if (light_ids_[p + i] != light::Null) {
+        if (m.ptr->is_emissive()) {
             return false;
         }
     }

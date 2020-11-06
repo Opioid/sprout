@@ -8,8 +8,6 @@
 #include "image/texture/texture_adapter.hpp"
 #include "sampler_settings.hpp"
 
-#include <string_view>
-
 namespace math {
 struct ray;
 }  // namespace math
@@ -25,6 +23,8 @@ class Sampler;
 namespace thread {
 class Pool;
 }
+
+using Threads = thread::Pool;
 
 namespace scene {
 
@@ -49,7 +49,7 @@ class Gridtree;
 
 class Sample;
 
-class alignas(16) Material {
+class Material {
   public:
     using Filter          = Sampler_settings::Filter;
     using Shape           = shape::Shape;
@@ -65,16 +65,21 @@ class alignas(16) Material {
 
     void set_mask(Texture_adapter const& mask);
 
+    void set_color_map(Texture_adapter const& color_map);
+
     void set_emission(float3 const& emission);
 
     void set_ior(float ior);
 
+    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+                         float distance);
+
     void set_volumetric_anisotropy(float anisotropy);
 
-    virtual void commit(thread::Pool& threads, Scene const& scene);
+    virtual void commit(Threads& threads, Scene const& scene);
 
-    virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length,
-                          thread::Pool& threads, Scene const& scene);
+    virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length, Threads& threads,
+                          Scene const& scene);
 
     virtual Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
                                  Filter filter, Sampler& sampler, Worker& worker) const = 0;
@@ -97,18 +102,16 @@ class alignas(16) Material {
 
     virtual float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const;
 
-    virtual float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const;
+    float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const;
 
     virtual float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
                                    Filter filter, Worker const& worker) const;
 
     float border(float3 const& wi, float3 const& n) const;
 
-    virtual float3 absorption_coefficient(float2 uv, Filter filter, Worker const& worker) const;
-
     CC collision_coefficients() const;
 
-    virtual CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const;
+    CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const;
 
     virtual CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const;
 
@@ -128,30 +131,20 @@ class alignas(16) Material {
     float similarity_relation_scale(uint32_t depth) const;
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
-                                  Transformation const& transformation, float extent,
-                                  bool importance_sampling, thread::Pool& threads,
-                                  Scene const& scene);
+                                  Transformation const& trafo, float extent,
+                                  bool importance_sampling, Threads& threads, Scene const& scene);
 
     uint32_t sampler_key() const;
 
     bool is_masked() const;
-
     bool is_two_sided() const;
-
     bool is_animated() const;
-
     bool is_caustic() const;
-
     bool has_tinted_shadow() const;
-
     bool has_emission_map() const;
-
     bool is_emissive() const;
-
     bool is_scattering_volume() const;
-
     bool is_textured_volume() const;
-
     bool is_heterogeneous_volume() const;
 
     float ior() const;
@@ -176,16 +169,17 @@ class alignas(16) Material {
     flags::Flags<Property> properties_;
 
     Texture_adapter mask_;
+    Texture_adapter color_map_;
 
     CC cc_;
 
     float3 emission_;
 
     float ior_;
-
     float attenuation_distance_;
-
     float volumetric_anisotropy_;
+
+    int32_t element_;
 
   public:
     static void init_rainbow();

@@ -18,11 +18,11 @@ void Sky::init(uint32_t sky, uint32_t sun, Scene& scene) {
     sky_ = sky;
     sun_ = sun;
 
-    const math::Transformation transformation{
+    const math::Transformation trafo{
         float3(0.f), float3(1.f),
         math::quaternion::create_rotation_x(math::degrees_to_radians(90.f))};
 
-    scene.prop_set_world_transformation(sky, transformation);
+    scene.prop_set_world_transformation(sky, trafo);
 }
 
 void Sky::set_parameters(json::Value const& parameters, Scene& scene) {
@@ -102,10 +102,10 @@ void Sky::private_update(Scene& scene) {
     model_.set_ground_albedo(ground_albedo_);
     model_.set_turbidity(turbidity_);
 
-    math::Transformation const transformation{float3(0.f), float3(Model::radius()),
-                                              math::quaternion::create(sun_rotation_)};
+    math::Transformation const trafo{float3(0.f), float3(Model::radius()),
+                                     quaternion::create(sun_rotation_)};
 
-    scene.prop_set_world_transformation(sun_, transformation);
+    scene.prop_set_world_transformation(sun_, trafo);
 
     model_.compile();
 

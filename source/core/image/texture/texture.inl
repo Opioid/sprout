@@ -8,11 +8,10 @@
 
 namespace image::texture {
 
-#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                                \
-    inline Texture::Texture(TYPE const& texture)                         \
-        : type_(Type::TYPE),                                             \
-          back_(texture.image().description().dimensions() - 1),         \
-          dimensions_float_(texture.image().description().dimensions()), \
+#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                          \
+    inline Texture::Texture(TYPE const& texture)                   \
+        : dimensions_(texture.image().description().dimensions()), \
+          type_(Type::TYPE),                                       \
           MEMBER(texture) {}
 
 TEXTURE_CONSTRUCTOR(Byte1_unorm, byte1_unorm_)
@@ -92,17 +91,7 @@ inline int32_t Texture::volume() const {
 }
 
 inline int3 const& Texture::dimensions() const {
-    TEXTURE_DELEGATE(image().description().dimensions)
-
-    return byte1_unorm_.image().description().dimensions();
-}
-
-inline int3 const& Texture::back() const {
-    return back_;
-}
-
-inline float3 const& Texture::dimensions_float() const {
-    return dimensions_float_;
+    return dimensions_;
 }
 
 inline int3 const& Texture::offset() const {
@@ -187,6 +176,14 @@ inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_4, x, y, z)
 
     return float4(0.f);
+}
+
+inline void Texture::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+    TEXTURE_DELEGATE(gather_1, xyz, xyz1, c);
+}
+
+inline void Texture::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+    TEXTURE_DELEGATE(gather_2, xyz, xyz1, c);
 }
 
 }  // namespace image::texture

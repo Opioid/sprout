@@ -25,6 +25,7 @@ struct Renderstate {
     float2 uv;     // texture coordinates
 
     float ior;
+    float alpha;
 
     uint32_t prop;
     uint32_t part;

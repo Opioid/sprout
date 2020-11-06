@@ -1,10 +1,11 @@
 #ifndef SU_BASE_MATH_MATH_HPP
 #define SU_BASE_MATH_MATH_HPP
 
+#include "simd/simd_const.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
-#include "simd/simd_const.hpp"
 
 namespace math {
 

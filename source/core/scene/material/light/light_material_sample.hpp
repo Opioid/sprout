@@ -5,7 +5,7 @@
 
 namespace scene::material::light {
 
-class alignas(64) Sample : public material::Sample {
+class Sample : public material::Sample {
   public:
     Sample();
 
@@ -13,9 +13,7 @@ class alignas(64) Sample : public material::Sample {
 
     bxdf::Result evaluate_b(float3 const& wi) const final;
 
-    void sample(Sampler& sampler, bxdf::Sample& result) const final;
-
-    void set(float3 const& radiance);
+    void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 };
 
 }  // namespace scene::material::light

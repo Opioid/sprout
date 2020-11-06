@@ -23,7 +23,7 @@ class Grid : public Material {
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const override;
 
-    void commit(thread::Pool& threads, Scene const& scene) override;
+    void commit(Threads& threads, Scene const& scene) override;
 
     Gridtree const* volume_tree() const final;
 
@@ -55,12 +55,11 @@ class Grid_emission : public Grid {
     CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
                                         Worker const& worker) const final;
 
-    void commit(thread::Pool& threads, Scene const& scene) final;
+    void commit(Threads& threads, Scene const& scene) final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
-                          Transformation const& transformation, float area,
-                          bool importance_sampling, thread::Pool& threads,
-                          Scene const& scene) final;
+                          Transformation const& trafo, float area, bool importance_sampling,
+                          Threads& threads, Scene const& scene) final;
 
     void set_temperature_map(Texture_adapter const& temperature_map);
 
@@ -96,7 +95,7 @@ class Grid_color : public Material {
 
     void set_attenuation(float scattering_factor, float distance);
 
-    void commit(thread::Pool& threads, Scene const& scene) final;
+    void commit(Threads& threads, Scene const& scene) final;
 
     Gridtree const* volume_tree() const final;
 

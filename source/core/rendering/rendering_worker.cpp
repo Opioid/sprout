@@ -2,6 +2,7 @@
 #include "base/math/sample_distribution.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
+#include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/particle/lighttracer.hpp"
@@ -9,8 +10,11 @@
 #include "rendering/integrator/particle/photon/photon_mapper.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "rendering/integrator/volume/volume_integrator.hpp"
+#include "rendering/sensor/aov/value.hpp"
+#include "rendering/sensor/sensor.hpp"
+#include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop.hpp"
@@ -32,21 +36,22 @@ Worker::~Worker() {
 }
 
 void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
-                  uint32_t num_samples_per_pixel, Surface_pool* surfaces, Volume_pool& volumes,
-                  sampler::Pool& samplers, Photon_map* photon_map,
-                  take::Photon_settings const& photon_settings, Lighttracer_pool* lighttracers,
-                  uint32_t num_particles_per_chunk, Particle_importance* particle_importance) {
+                  uint32_t num_samples_per_pixel, Surface_pool const* surfaces,
+                  Volume_pool const& volumes, sampler::Pool const& samplers, Photon_map* photon_map,
+                  take::Photon_settings const& photon_settings,
+                  Lighttracer_pool const* lighttracers, uint32_t num_particles_per_chunk,
+                  AOV_pool const& aovs, Particle_importance* particle_importance) {
     scene::Worker::init(scene, camera);
 
     if (surfaces) {
-        surface_integrator_ = surfaces->get(id, rng_);
+        surface_integrator_ = surfaces->get(id);
         surface_integrator_->prepare(scene, num_samples_per_pixel);
     }
 
-    volume_integrator_ = volumes.get(id, rng_);
+    volume_integrator_ = volumes.get(id);
     volume_integrator_->prepare(scene, num_samples_per_pixel);
 
-    sampler_ = samplers.get(id, rng_);
+    sampler_ = samplers.get(id);
     sampler_->resize(num_samples_per_pixel, 1, 2, 1);
 
     if (photon_settings.num_photons > 0) {
@@ -55,57 +60,132 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
         Photon_mapper::Settings const ps{photon_settings.max_bounces,
                                          photon_settings.full_light_path};
 
-        photon_mapper_ = new Photon_mapper(rng_, ps);
+        photon_mapper_ = new Photon_mapper(ps);
         photon_mapper_->prepare(scene, 0);
     }
 
     photon_map_ = photon_map;
 
     if (lighttracers) {
-        lighttracer_ = lighttracers->get(id, rng_);
+        lighttracer_ = lighttracers->get(id);
         lighttracer_->prepare(scene, num_particles_per_chunk);
     }
+
+    aov_ = aovs.get(id);
 
     particle_importance_ = particle_importance;
 }
 
-float4 Worker::li(Ray& ray, Interface_stack const& interface_stack) {
-    Intersection intersection;
+void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
+                    uint32_t num_samples) {
+    Camera const& camera = *camera_;
 
-    if (!interface_stack.empty()) {
-        reset_interface_stack(interface_stack);
+    int2 const offset = camera.view_offset(view);
 
-        float3 vli;
-        float3 vtr;
-        if (auto const event = volume_integrator_->integrate(ray, intersection, Filter::Undefined,
-                                                             *this, vli, vtr);
-            Event::Absorb == event) {
-            return float4(vli, 1.f);
+    int4 crop = camera.crop();
+    crop[2] -= crop[0] + 1;
+    crop[3] -= crop[1] + 1;
+    crop[0] += offset[0];
+    crop[1] += offset[1];
+
+    int4 const view_tile(offset + tile.xy(), offset + tile.zw());
+
+    auto& sensor = camera.sensor();
+
+    int4 isolated_bounds = sensor.isolated_tile(view_tile);
+    isolated_bounds[2] -= isolated_bounds[0];
+    isolated_bounds[3] -= isolated_bounds[1];
+
+    int32_t const fr = sensor.filter_radius_int();
+
+    int2 const r = camera.resolution() + 2 * fr;
+
+    uint64_t const o0 = uint64_t(iteration) * uint64_t(r[0] * r[1]);
+
+    AOV* aov = aov_;
+
+    for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
+        uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;
+        for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
+            rng_.start(0, o1 + uint64_t(x + fr));
+
+            sampler_->start_pixel(rng());
+            surface_integrator_->start_pixel(rng());
+            volume_integrator_->start_pixel(rng());
+
+            int2 const pixel(x, y);
+
+            double m_oldM, m_newM, m_oldS, m_newS;
+
+            uint32_t n = 0;
+
+            float rendered_samples = float(num_samples - 1);
+
+            for (uint32_t i = num_samples; i > 0; --i, ++n) {
+                if (aov) {
+                    aov->clear();
+                }
+
+                auto const sample = sampler_->camera_sample(rng(), pixel);
+
+                float avg = 0.f;
+
+                if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
+                    float4 const color = li(ray, camera.interface_stack(), aov);
+                    sensor.add_sample(sample, color, aov, isolated_bounds, offset, crop);
+
+                    avg = average(color);
+                } else {
+                    sensor.add_sample(sample, float4(0.f), aov, isolated_bounds, offset, crop);
+                }
+
+                // https://www.johndcook.com/blog/standard_deviation/
+                if (0 == n) {
+                    m_oldM = m_newM = avg;
+                    m_oldS          = 0.0;
+                } else {
+                    m_newM = m_oldM + (avg - m_oldM) / n;
+                    m_newS = m_oldS + (avg - m_oldM) * (avg - m_newM);
+
+                    // set up for next iteration
+                    m_oldM = m_newM;
+                    m_oldS = m_newS;
+                }
+
+                if (n > 16) {
+                    float const variance = m_newS / (n - 1);
+
+                    if (variance <= 0.0001f) {
+                        rendered_samples = float(n);
+                        break;
+                    }
+                }
+            }
+
+            float const variance = m_newS / (num_samples - 1);
+            sensor.set_variance(pixel, variance);
+            //  sensor.set_variance(pixel, rendered_samples);
         }
-
-        Interface_stack const temp_stack = interface_stack_;
-
-        float4 const li = surface_integrator_->li(ray, intersection, *this, temp_stack);
-
-        SOFT_ASSERT(all_finite_and_positive(li));
-
-        return float4(vtr * li.xyz() + vli, li[3]);
     }
-
-    if (intersect_and_resolve_mask(ray, intersection, Filter::Undefined)) {
-        float4 const li = surface_integrator_->li(ray, intersection, *this, interface_stack);
-
-        SOFT_ASSERT(all_finite_and_positive(li));
-
-        return li;
-    }
-
-    return float4(0.f);
 }
 
-bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& intersection,
-                         Filter filter, float3& tr) {
-    if (float3 a; tinted_visibility(ray, wo, intersection, filter, a)) {
+void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
+    Camera const& camera = *camera_;
+
+    lighttracer_->start_pixel(rng());
+
+    auto const& interface_stack = camera.interface_stack();
+
+    for (uint64_t i = range[0]; i < range[1]; ++i) {
+        rng_.start(0, i + offset);
+
+        lighttracer_->li(frame, *this, interface_stack);
+    }
+}
+
+bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+                         float3& tr) {
+    if (float3 a; tinted_visibility(ray, wo, isec, filter, a)) {
         if (float3 b; transmittance(ray, b)) {
             tr = a * b;
             return true;
@@ -123,9 +203,9 @@ uint32_t Worker::bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32
     return 0;
 }
 
-float3 Worker::photon_li(Intersection const& intersection, Material_sample const& sample) const {
+float3 Worker::photon_li(Intersection const& isec, Material_sample const& sample) const {
     if (photon_map_) {
-        return photon_map_->li(intersection, sample, *this);
+        return photon_map_->li(isec, sample, *this);
     }
 
     return float3(0.f);
@@ -133,6 +213,40 @@ float3 Worker::photon_li(Intersection const& intersection, Material_sample const
 
 Worker::Particle_importance& Worker::particle_importance() const {
     return *particle_importance_;
+}
+
+float4 Worker::li(Ray& ray, Interface_stack const& interface_stack, AOV* aov) {
+    Intersection isec;
+
+    if (!interface_stack.empty()) {
+        reset_interface_stack(interface_stack);
+
+        float3 vli;
+        float3 vtr;
+        if (auto const event = volume_integrator_->integrate(ray, isec, Filter::Undefined, *this,
+                                                             vli, vtr);
+            Event::Absorb == event) {
+            return float4(vli, 1.f);
+        }
+
+        Interface_stack const temp_stack = interface_stack_;
+
+        float4 const li = surface_integrator_->li(ray, isec, *this, temp_stack, aov);
+
+        SOFT_ASSERT(all_finite_and_positive(li));
+
+        return float4(vtr * li.xyz() + vli, li[3]);
+    }
+
+    if (intersect_and_resolve_mask(ray, isec, Filter::Undefined)) {
+        float4 const li = surface_integrator_->li(ray, isec, *this, interface_stack, aov);
+
+        SOFT_ASSERT(all_finite_and_positive(li));
+
+        return li;
+    }
+
+    return float4(0.f);
 }
 
 bool Worker::transmittance(Ray const& ray, float3& transmittance) {
@@ -145,7 +259,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
 
     // This is the typical SSS case:
     // A medium is on the stack but we already considered it during shadow calculation,
-    // igonoring the IoR. Therefore remove the medium from the stack.
+    // ignoring the IoR. Therefore remove the medium from the stack.
     if (!interface_stack_.straight(*this)) {
         interface_stack_.pop();
     }
@@ -154,12 +268,12 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
 
     Ray tray = ray;
 
-    Intersection intersection;
+    Intersection isec;
 
     float3 w(1.f);
 
     for (;;) {
-        bool const hit = scene_->intersect_volume(tray, *this, intersection);
+        bool const hit = scene_->intersect_volume(tray, *this, isec);
 
         SOFT_ASSERT(tray.max_t() >= tray.min_t());
 
@@ -175,10 +289,10 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
             break;
         }
 
-        if (intersection.same_hemisphere(tray.direction)) {
-            interface_stack_.remove(intersection);
+        if (isec.same_hemisphere(tray.direction)) {
+            interface_stack_.remove(isec);
         } else {
-            interface_stack_.push(intersection);
+            interface_stack_.push(isec);
         }
 
         tray.min_t() = scene::offset_f(tray.max_t());
@@ -195,13 +309,13 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     return true;
 }
 
-bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& intersection,
-                               Filter filter, float3& tv) {
+bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+                               float3& tv) {
     using namespace scene::material;
 
-    auto const& material = *intersection.material(*this);
+    auto const& material = *isec.material(*this);
 
-    if (intersection.subsurface & (material.ior() > 1.f)) {
+    if (isec.subsurface & (material.ior() > 1.f)) {
         float const ray_max_t = ray.max_t();
 
         if (scene::shape::Normals normals; intersect(ray, normals)) {

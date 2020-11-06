@@ -45,22 +45,22 @@ bool Perspective_stereoscopic::generate_ray(Sample const& sample, uint32_t frame
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto&          transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto&          trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    ray = create_ray(transformation.object_to_world_point(eye_offsets_[view]),
-                     transformation.object_to_world_vector(direction), time);
+    ray = create_ray(trafo.object_to_world_point(eye_offsets_[view]),
+                     trafo.object_to_world_vector(direction), time);
 
     return true;
 }
 
 bool Perspective_stereoscopic::sample(uint32_t view, int4 const& bounds, uint64_t time,
                                       float3 const& p, Sampler& /*sampler*/,
-                                      uint32_t /*sampler_dimension*/, Scene const& scene,
-                                      Sample_to& sample) const {
+                                      rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
+                                      Scene const& scene, Sample_to& sample) const {
     Transformation temp;
-    auto const&    transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    float3 const po = transformation.world_to_object_point(p) - eye_offsets_[view];
+    float3 const po = trafo.world_to_object_point(p) - eye_offsets_[view];
 
     float t;
 
@@ -102,7 +102,7 @@ bool Perspective_stereoscopic::sample(uint32_t view, int4 const& bounds, uint64_
 
     sample.pixel    = pixel;
     sample.pixel_uv = float2(x - fx, y - fy);
-    sample.dir      = transformation.object_to_world_vector(out_dir);
+    sample.dir      = trafo.object_to_world_vector(out_dir);
     sample.t        = t;
     sample.pdf      = wa * wb;
 

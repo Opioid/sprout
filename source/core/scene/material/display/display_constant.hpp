@@ -16,16 +16,12 @@ class Constant : public Material {
 
     float3 average_radiance(float area) const final;
 
-    void set_emission(float3 const& radiance);
-
     void set_roughness(float roughness);
 
     static size_t sample_size();
 
   private:
     Texture_adapter emission_map_;
-
-    float3 emission_;
 
     float alpha_;
 };

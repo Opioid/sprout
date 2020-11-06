@@ -19,7 +19,7 @@ std::string Writer::file_extension() const {
     return "png";
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& threads) {
+bool Writer::write(std::ostream& stream, Float4 const& image, Threads& threads) {
     auto const d = image.description().dimensions();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
@@ -31,6 +31,51 @@ bool Writer::write(std::ostream& stream, Float4 const& image, thread::Pool& thre
                       0, d[1]);
 
     int32_t const num_channels = alpha() ? 4 : 3;
+
+    size_t buffer_len = 0;
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], num_channels,
+                                                               &buffer_len);
+    if (!png_buffer) {
+        return false;
+    }
+
+    stream.write(static_cast<char*>(png_buffer), buffer_len);
+
+    mz_free(png_buffer);
+
+    return true;
+}
+
+bool Writer::write(std::ostream& stream, Float4 const& image, Encoding encoding, Threads& threads) {
+    auto const d = image.description().dimensions();
+
+    uint32_t const num_pixels = uint32_t(d[0] * d[1]);
+
+    resize(num_pixels);
+
+    if (Encoding::Color == encoding) {
+#ifdef SU_ACESCG
+        threads.run_range(
+            [this, &image](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+                ACEScg_to_sRGB(image, begin, end);
+            },
+            0, d[1]);
+#else
+        threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                         int32_t end) noexcept { to_sRGB(image, begin, end); },
+                          0, d[1]);
+#endif
+    } else if (Encoding::SNorm == encoding) {
+        threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                         int32_t end) noexcept { to_snorm(image, begin, end); },
+                          0, d[1]);
+    } else /*if (Encoding::UNorm == encoding)*/ {
+        threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                         int32_t end) noexcept { to_unorm(image, begin, end); },
+                          0, d[1]);
+    }
+
+    int32_t const num_channels = 3;
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], num_channels,
@@ -92,149 +137,8 @@ bool Writer::write(std::string_view name, Byte1 const& image) {
     return true;
 }
 
-bool Writer::write(std::string_view name, float const* data, int2 dimensions, float scale,
-                   bool srgb) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
-
-    uint8_t* bytes = memory::allocate_aligned<uint8_t>(area);
-
-    for (uint32_t i = 0; i < area; ++i) {
-        float scaled = scale * data[i];
-
-        if (srgb) {
-            scaled = spectrum::linear_to_gamma_sRGB(scaled);
-        }
-
-        bytes[i] = ::encoding::float_to_unorm(scaled);
-    }
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
-                                                               1, &buffer_len);
-
-    memory::free_aligned(bytes);
-
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write(std::string_view name, float2 const* data, int2 dimensions, float scale) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
-
-    byte3* bytes = memory::allocate_aligned<byte3>(area);
-
-    for (uint32_t i = 0; i < area; ++i) {
-        bytes[i] = byte3(uint8_t(scale * data[i][0]), uint8_t(scale * data[i][1]), 0);
-    }
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
-                                                               3, &buffer_len);
-
-    memory::free_aligned(bytes);
-
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write(std::string_view name, packed_float3 const* data, int2 dimensions, float scale) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
-
-    byte3* bytes = memory::allocate_aligned<byte3>(area);
-
-    for (uint32_t i = 0; i < area; ++i) {
-        bytes[i] = byte3(uint8_t(scale * data[i][0]), uint8_t(scale * data[i][1]),
-                         uint8_t(scale * data[i][2]));
-    }
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
-                                                               3, &buffer_len);
-
-    memory::free_aligned(bytes);
-
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
-
-    byte3* bytes = memory::allocate_aligned<byte3>(area);
-
-    uint32_t max_value = 0;
-    for (uint32_t i = 0; i < area; ++i) {
-        max_value = std::max(data[i], max_value);
-    }
-
-    float const im = max_value > 0 ? 1.f / float(max_value) : 1.f;
-    for (uint32_t i = 0; i < area; ++i) {
-        float const n = float(data[i]) * im;
-
-        float3 const hm = spectrum::heatmap(n);
-
-        bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
-    }
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
-                                                               3, &buffer_len);
-
-    memory::free_aligned(bytes);
-
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions) {
+bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                           Threads& threads) {
     uint32_t const area = uint32_t(dimensions[0] * dimensions[1]);
 
     float max_value = 0.f;
@@ -242,51 +146,11 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         max_value = std::max(data[i], max_value);
     }
 
-    return write_heatmap(name, data, dimensions, max_value);
+    return write_heatmap(name, data, dimensions, max_value, threads);
 }
 
 bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value) {
-    std::ofstream stream(name.data(), std::ios::binary);
-    if (!stream) {
-        return false;
-    }
-
-    uint32_t const num_pixels = uint32_t(dimensions[0] * dimensions[1]);
-
-    byte3* bytes = memory::allocate_aligned<byte3>(num_pixels);
-
-    float const im = max_value > 0.f ? 1.f / max_value : 1.f;
-
-    for (uint32_t i = 0; i < num_pixels; ++i) {
-        float const n = data[i] * im;
-
-        //    float3 const hm = spectrum::heatmap(n);
-
-        //    bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
-
-        bytes[i] = spectrum::turbo(n);
-    }
-
-    size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
-                                                               3, &buffer_len);
-
-    memory::free_aligned(bytes);
-
-    if (!png_buffer) {
-        return false;
-    }
-
-    stream.write(static_cast<char*>(png_buffer), buffer_len);
-
-    mz_free(png_buffer);
-
-    return true;
-}
-
-bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                           float max_value, thread::Pool& threads) {
+                           float max_value, Threads& threads) {
     std::ofstream stream(name.data(), std::ios::binary);
     if (!stream) {
         return false;
@@ -302,10 +166,6 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
         [bytes, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 float const n = data[i] * im;
-
-                //   float3 const hm = spectrum::heatmap(n);
-
-                //  bytes[i] = ::encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(hm));
 
                 bytes[i] = spectrum::turbo(n);
             }

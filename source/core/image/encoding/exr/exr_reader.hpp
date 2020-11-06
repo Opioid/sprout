@@ -11,7 +11,7 @@ namespace encoding::exr {
 
 class Reader {
   public:
-    static Image* read(std::istream& stream);
+    static Image* read(std::istream& stream, bool color);
 };
 
 }  // namespace encoding::exr

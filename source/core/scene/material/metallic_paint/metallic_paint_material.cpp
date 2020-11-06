@@ -6,6 +6,7 @@
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
@@ -21,7 +22,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
                                          Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    sample.set_common(rs, wo, color_a_, float3(0.f), alpha_);
 
     sample.base_.set_tangent_frame(rs.t, rs.b, rs.n);
 
@@ -52,10 +53,8 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
 
     sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_alpha, flakes_weight);
 
-    sample.coating_.set(coating_.absorption_coefficient, coating_.thickness, coating_.ior,
+    sample.coating_.set(coating_.absorption_coef, coating_.thickness, coating_.ior,
                         fresnel::schlick_f0(coating_.ior, rs.ior), coating_.alpha, 1.f);
-
-    sample.avoid_caustics_ = rs.avoid_caustics;
 
     return sample;
 }
@@ -98,7 +97,7 @@ void Material::set_coating_thickness(float thickness) {
 }
 
 void Material::set_coating_attenuation(float3 const& absorption_color, float distance) {
-    coating_.absorption_coefficient = attenuation_coefficient(absorption_color, distance);
+    coating_.absorption_coef = attenuation_coefficient(absorption_color, distance);
 }
 
 void Material::set_coating_ior(float ior) {

@@ -11,7 +11,7 @@ Octree_builder::Build_node::~Build_node() {
 }
 
 void Octree_builder::build(Gridtree& tree, Texture const& texture, CC const* ccs,
-                           thread::Pool& threads) {
+                           Threads& threads) {
     threads.wait_async();
 
     int3 const d = texture.dimensions();
@@ -26,30 +26,37 @@ void Octree_builder::build(Gridtree& tree, Texture const& texture, CC const* ccs
 
     Splitter* splitters = new Splitter[threads.num_threads()];
 
-    threads.run_range(
-        [splitters, grid, &texture, ccs, &num_cells](uint32_t id, int32_t begin,
-                                                     int32_t end) noexcept {
-            Splitter& splitter = splitters[id];
+    current_task_ = 0;
 
-            int32_t const area = num_cells[0] * num_cells[1];
+    threads.run_parallel([this, splitters, grid, &texture, ccs, &num_cells](uint32_t id) noexcept {
+        Splitter& splitter = splitters[id];
 
-            for (int32_t i = begin; i < end; ++i) {
-                int3 c;
-                c[2] = i / area;
+        int32_t const area = num_cells[0] * num_cells[1];
 
-                int32_t const t = c[2] * area;
+        uint32_t const cell_len = uint32_t(area * num_cells[2]);
 
-                c[1] = (i - t) / num_cells[0];
-                c[0] = i - (t + c[1] * num_cells[0]);
+        for (;;) {
+            uint32_t const i = current_task_.fetch_add(1, std::memory_order_relaxed);
 
-                int3 const min = c << Gridtree::Log2_cell_dim;
-                int3 const max = min + Gridtree::Cell_dim;
-
-                Box const box{{min, max}};
-                splitter.split(&grid[i], box, texture, ccs, 0);
+            if (i >= cell_len) {
+                return;
             }
-        },
-        0, static_cast<int32_t>(cell_len));
+
+            int3 c;
+            c[2] = i / area;
+
+            int32_t const t = c[2] * area;
+
+            c[1] = (i - t) / num_cells[0];
+            c[0] = i - (t + c[1] * num_cells[0]);
+
+            int3 const min = c << Gridtree::Log2_cell_dim;
+            int3 const max = min + Gridtree::Cell_dim;
+
+            Box const box{{min, max}};
+            splitter.split(&grid[i], box, texture, ccs, 0);
+        }
+    });
 
     uint32_t num_nodes = cell_len;
     uint32_t num_data  = 0;

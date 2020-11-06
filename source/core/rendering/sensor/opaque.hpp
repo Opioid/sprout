@@ -13,8 +13,6 @@ class Opaque : public Sensor {
 
     void set_layer(int32_t layer) final;
 
-    void clear(float weight) final;
-
     void set_weights(float weight) final;
 
     void fix_zero_weights() final;
@@ -30,9 +28,14 @@ class Opaque : public Sensor {
 
     void resolve(int32_t begin, int32_t end, image::Float4& target) const final;
 
+    void resolve(int32_t begin, int32_t end, uint32_t slot, uint32_t num_samples,
+                 image::Float4& target) const final;
+
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const final;
 
-    void on_resize(int2 dimensions, int32_t num_layers) override;
+    void on_resize(int2 dimensions, int32_t num_layers) final;
+
+    void on_clear(float weight) final;
 
     // weight_sum is saved in pixel.w
     float4* layers_;

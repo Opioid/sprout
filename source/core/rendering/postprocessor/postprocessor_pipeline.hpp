@@ -13,6 +13,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace rendering {
 
 namespace sensor {
@@ -37,18 +39,17 @@ class Pipeline {
 
     void add(Postprocessor* pp);
 
-    void init(scene::camera::Camera const& camera, thread::Pool& threads);
+    void init(scene::camera::Camera const& camera, Threads& threads);
 
     bool has_alpha_transparency(bool alpha_in) const;
 
-    void seed(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads);
+    void seed(sensor::Sensor const& sensor, image::Float4& target, Threads& threads);
 
-    void apply(image::Float4& target, thread::Pool& threads);
+    void apply(image::Float4& target, Threads& threads);
 
-    void apply(sensor::Sensor const& sensor, image::Float4& target, thread::Pool& threads);
+    void apply(sensor::Sensor const& sensor, image::Float4& target, Threads& threads);
 
-    void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
-                          thread::Pool& threads);
+    void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target, Threads& threads);
 
   private:
     image::Float4 scratch_;

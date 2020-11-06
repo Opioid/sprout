@@ -2,6 +2,7 @@
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
 #include "light_material_sample.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/scene.inl"
 #include "scene/scene_renderstate.hpp"
@@ -17,9 +18,11 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
                                          Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.set(emittance_.radiance(worker.scene().light_area(rs.prop, rs.part)));
+    float3 const radiance = emittance_.radiance(worker.scene().light_area(rs.prop, rs.part));
+
+    sample.set_common(rs, wo, radiance, radiance, 0.f);
 
     return sample;
 }

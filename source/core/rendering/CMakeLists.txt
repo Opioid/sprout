@@ -4,8 +4,6 @@ add_subdirectory(sensor)
 
 target_sources(core
     PRIVATE
-    "rendering_camera_worker.cpp"
-    "rendering_camera_worker.hpp"
     "rendering_driver.cpp"
     "rendering_driver.hpp"
     "rendering_worker.cpp"

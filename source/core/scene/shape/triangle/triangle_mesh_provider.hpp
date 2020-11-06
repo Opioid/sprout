@@ -10,6 +10,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene::shape {
 
 class Shape;
@@ -60,15 +62,15 @@ class Provider : public resource::Provider<Shape> {
                                Resources& resources);
 
     static Shape* create_mesh(Triangles& triangles, Vertices& vertices, uint32_t num_parts,
-                              thread::Pool& threads);
+                              Threads& threads);
 
     static void build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle const* const triangles,
-                          Vertex_stream const& vertices, thread::Pool& threads);
+                          Vertex_stream const& vertices, Threads& threads);
 
     //	static void build_bvh(Mesh& mesh, Triangles const& triangles, Vertices const& vertices,
-    //						  BVH_preset bvh_preset, thread::Pool& threads);
+    //						  BVH_preset bvh_preset, Threads& threads);
 
-    static Shape* load_binary(std::istream& stream, thread::Pool& threads);
+    static Shape* load_binary(std::istream& stream, Threads& threads);
 };
 
 }  // namespace triangle

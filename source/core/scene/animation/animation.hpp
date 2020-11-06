@@ -9,6 +9,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 class Scene;
@@ -45,7 +47,7 @@ class Stage {
   public:
     Stage(uint32_t entity, Animation* animation);
 
-    void update(Scene& scene, thread::Pool& threads) const;
+    void update(Scene& scene, Threads& threads) const;
 
   private:
     uint32_t entity_;

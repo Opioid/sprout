@@ -3,6 +3,7 @@
 #include "image/texture/texture_adapter.inl"
 #include "metal_sample.hpp"
 #include "scene/material/ggx/ggx.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_renderstate.hpp"
@@ -13,7 +14,7 @@ namespace scene::material::metal {
 Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-void Material_isotropic::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
+void Material_isotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 }
 
@@ -22,21 +23,16 @@ material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray co
                                                    Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_isotropic>();
 
-    float3 n;
-
     if (normal_map_.is_valid()) {
-        auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-
-        n = sample_normal(wo, rs, normal_map_, sampler, worker);
+        auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
+        float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker);
         sample.layer_.set_tangent_frame(n);
     } else {
-        n = rs.n;
-        sample.layer_.set_tangent_frame(rs.t, rs.b, n);
+        sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_basis(rs.geo_n, n, wo);
-
-    sample.set(ior3_, absorption_, alpha_, rs.avoid_caustics);
+    sample.set_common(rs, wo, ior3_, float3(0.), alpha_);
+    sample.set(ior3_, absorption_);
 
     return sample;
 }
@@ -67,9 +63,8 @@ size_t Material_isotropic::sample_size() {
 Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
-void Material_anisotropic::commit(thread::Pool& /*threads*/, Scene const& /*scene*/) {
-    properties_.set(Property::Caustic,
-                    roughness_[0] <= ggx::Min_roughness || roughness_[1] <= ggx::Min_roughness);
+void Material_anisotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
+    properties_.set(Property::Caustic, alpha_[0] <= ggx::Min_alpha || alpha_[1] <= ggx::Min_alpha);
 }
 
 material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray const& /*ray*/,
@@ -77,7 +72,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
                                                      Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    sample.set_common(rs, wo, ior3_, float3(0.f), alpha_[0]);
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -94,8 +89,7 @@ material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray 
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.layer_.set(ior3_, absorption_, roughness_);
-    sample.avoid_caustics_ = rs.avoid_caustics;
+    sample.set(ior3_, absorption_, alpha_);
 
     return sample;
 }
@@ -118,7 +112,9 @@ void Material_anisotropic::set_absorption(float3 const& absorption) {
 }
 
 void Material_anisotropic::set_roughness(float2 roughness) {
-    roughness_ = float2(ggx::clamp_roughness(roughness[0]), ggx::clamp_roughness(roughness[1]));
+    float2 const r = float2(ggx::clamp_roughness(roughness[0]), ggx::clamp_roughness(roughness[1]));
+
+    alpha_ = r * r;
 }
 
 size_t Material_anisotropic::sample_size() {

@@ -2,7 +2,7 @@
 
 namespace rendering::integrator::volume {
 
-Integrator::Integrator(rnd::Generator& rng) : integrator::Integrator(rng) {}
+Integrator::Integrator() = default;
 
 Integrator::~Integrator() = default;
 

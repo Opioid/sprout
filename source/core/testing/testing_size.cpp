@@ -1,5 +1,6 @@
 #include "testing_size.hpp"
 #include "base/math/vector3.inl"
+#include "image/image.hpp"
 #include "image/texture/texture.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_byte3_srgb.hpp"
@@ -7,7 +8,7 @@
 #include "rendering/integrator/particle/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
-#include "rendering/rendering_camera_worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/bvh/scene_bvh_builder_base.hpp"
@@ -40,7 +41,6 @@
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_indexed_data.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
-#include "scene/shape/triangle/triangle_mesh_bvh.hpp"
 #include "scene/shape/triangle/triangle_morphable_mesh.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
 
@@ -52,11 +52,11 @@ namespace testing {
 template <typename T>
 void print_size(std::string const& name, size_t expected_size) {
     if (sizeof(T) != expected_size) {
-        std::cout << "ALARM: ";
+        std::cout << "ALARM: sizeof(" << name << ") == " << sizeof(T) << " (" << expected_size
+                  << ")" << std::endl;
+    } else {
+        std::cout << "sizeof(" << name << ") == " << sizeof(T) << std::endl;
     }
-
-    std::cout << "sizeof(" << name << ") == " << sizeof(T) << " (" << expected_size << ")"
-              << std::endl;
 }
 
 void size() {
@@ -81,7 +81,7 @@ void size() {
 
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
-    print_size<sampler::Sampler>("Sampler", 48);
+    print_size<sampler::Sampler>("Sampler", 32);
     print_size<sampler::Golden_ratio>("Golden_ratio", 64);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
@@ -94,20 +94,20 @@ void size() {
     print_size<scene::material::debug::Material>("debug::Material", 96);
     print_size<scene::material::debug::Sample>("debug::Sample", 160);
 
-    print_size<scene::material::glass::Glass>("glass::Glass", 176);
-    print_size<scene::material::glass::Sample>("glass::Sample", 192);
+    print_size<scene::material::glass::Glass>("glass::Glass", 128);
+    print_size<scene::material::glass::Sample>("glass::Sample", 160);
 
     print_size<scene::material::light::Constant>("light::Constant", 128);
     print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
-    print_size<scene::material::light::Sample>("light::Sample", 128);
+    print_size<scene::material::light::Sample>("light::Sample", 160);
 
-    print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 192);
-    print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 192);
+    print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 160);
+    print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 160);
     print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
-    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 256);
+    print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 208);
 
     print_size<scene::material::substitute::Material>("substitute::Material", 176);
-    print_size<scene::material::substitute::Sample>("substitute::Sample", 192);
+    print_size<scene::material::substitute::Sample>("substitute::Sample", 208);
 
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);
     print_size<scene::material::volumetric::Grid>("volumetric::Grid", 192);
@@ -127,8 +127,7 @@ void size() {
     print_size<scene::shape::triangle::Mesh>("Mesh", 128);
     print_size<scene::shape::triangle::Morphable_mesh>("Morphable_mesh", 128);
 
-    print_size<scene::shape::triangle::bvh::Indexed_data<
-        scene::shape::triangle::Shading_vertex_type>::Index_triangle>("Index_triangle", 16);
+    print_size<scene::shape::triangle::bvh::Indexed_data::Index_triangle>("Index_triangle", 16);
 
     //	print_size<scene::shape::triangle::Shading_vertex_MT>("Shading_vertex_MT", 48);
 
@@ -136,9 +135,11 @@ void size() {
 
     print_size<scene::shape::Vertex>("Vertex", 48);
 
+    print_size<image::Image>("image::Image", 64);
+
     print_size<image::Byte3>("image::Byte3", 48);
 
-    print_size<image::texture::Texture>("texture::Texture", 64);
+    print_size<image::texture::Texture>("texture::Texture", 24);
 
     print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 8);
 
@@ -148,11 +149,10 @@ void size() {
 
     print_size<scene::shape::Node_stack>("scene::shape::Node_stack", 512);
 
-    print_size<scene::Worker>("scene::Worker", 1152);
-    print_size<rendering::Worker>("rendering::Worker", 1216);
-    print_size<rendering::Camera_worker>("rendering::Camera_worker", 1216);
+    print_size<scene::Worker>("scene::Worker", 1088);
+    print_size<rendering::Worker>("rendering::Worker", 1152);
 
-    print_size<rendering::integrator::surface::Whitted>("Whitted", 128);
+    print_size<rendering::integrator::surface::Whitted>("Whitted", 64);
     print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 192);
 }
 

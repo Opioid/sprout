@@ -13,6 +13,7 @@
 #include "shape/null.hpp"
 
 #include <map>
+#include <string_view>
 #include <vector>
 
 namespace resource {
@@ -61,7 +62,6 @@ class Prop;
 struct Prop_part;
 struct Prop_frames;
 struct Prop_topology;
-struct Prop_ptr;
 
 }  // namespace prop
 
@@ -78,11 +78,11 @@ class Scene {
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
-    using Light          = light::Light_ref;
+    using Light          = light::Light_pick;
+    using Lights         = memory::Array<Light>;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;
-    using Prop_ptr       = prop::Prop_ptr;
     using Material       = material::Material;
     using Shape          = shape::Shape;
     using Shape_ptr      = resource::Resource_ptr<Shape>;
@@ -99,7 +99,7 @@ class Scene {
 
     void finish();
 
-    AABB const& aabb() const;
+    AABB aabb() const;
 
     AABB caustic_aabb() const;
 
@@ -107,11 +107,11 @@ class Scene {
 
     bool has_volumes() const;
 
-    bool intersect(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker& worker, Intersection& isec) const;
 
     bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
 
-    bool intersect_volume(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect_volume(Ray& ray, Worker& worker, Intersection& isec) const;
 
     Result1 visibility(Ray const& ray, Filter filter, Worker& worker) const;
 
@@ -131,16 +131,20 @@ class Scene {
 
     Light light(uint32_t id, bool calculate_pdf) const;
 
-    Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
+    Light light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere, bool split,
                 bool calculate_pdf) const;
 
     Light random_light(float random) const;
 
-    Light random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
+    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random, bool split,
+                      Lights& lights) const;
 
-    void simulate(uint64_t start, uint64_t end, thread::Pool& threads);
+    void random_light(float3 const& p0, float3 const& p1, float random, bool split,
+                      Lights& lights) const;
 
-    void compile(uint64_t time, thread::Pool& threads);
+    void simulate(uint64_t start, uint64_t end, Threads& threads);
+
+    void compile(uint64_t time, Threads& threads);
 
     uint32_t num_interpolation_frames() const;
 
@@ -172,16 +176,16 @@ class Scene {
 
     void prop_set_world_transformation(uint32_t entity, math::Transformation const& t);
 
-    // Only the returned reference is guaranteed to contain the actual transformation data.
+    // Only the returned reference is guaranteed to contain the actual trafo data.
     // This might or might not be the same reference which is passed as a parameter,
     // depending on whether the entity is animated or not.
     // This can sometimes avoid a relatively costly copy,
     // while keeping the animated state out of the interface.
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time,
-                                                 Transformation& transformation) const;
+                                                 Transformation& trafo) const;
 
     Transformation const& prop_transformation_at(uint32_t entity, uint64_t time, bool is_static,
-                                                 Transformation& transformation) const;
+                                                 Transformation& trafo) const;
 
     Transformation const& prop_world_transformation(uint32_t entity) const;
 
@@ -199,15 +203,14 @@ class Scene {
 
     void prop_propagate_transformation(uint32_t entity);
 
-    void prop_inherit_transformation(uint32_t entity, const Transformation& transformation);
+    void prop_inherit_transformation(uint32_t entity, const Transformation& trafo);
 
     void prop_inherit_transformation(uint32_t entity, Keyframe const* frames);
 
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection, bool in_shadow);
 
     void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
-                               bool material_importance_sampling, bool volume,
-                               thread::Pool& threads);
+                               bool material_importance_sampling, bool volume, Threads& threads);
 
     AABB const& prop_aabb(uint32_t entity) const;
 
@@ -217,6 +220,8 @@ class Scene {
 
     material::Material const* prop_material(uint32_t entity, uint32_t part) const;
 
+    uint32_t prop_material_id(uint32_t entity, uint32_t part) const;
+
     prop::Prop_topology const& prop_topology(uint32_t entity) const;
 
     Texture const* texture(uint32_t id) const;
@@ -225,7 +230,11 @@ class Scene {
 
     float light_area(uint32_t entity, uint32_t part) const;
 
-    float3 light_center(uint32_t light) const;
+    float light_power(uint32_t light) const;
+
+    AABB light_aabb(uint32_t light) const;
+
+    float4 light_cone(uint32_t light) const;
 
     animation::Animation* create_animation(uint32_t count);
 
@@ -233,8 +242,13 @@ class Scene {
 
   private:
     Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
-                                                          Transformation& transformation) const;
+                                                          Transformation& trafo) const;
 
+    struct Prop_ptr {
+        Prop* ptr;
+
+        uint32_t id;
+    };
     Prop_ptr allocate_prop();
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part);
@@ -274,7 +288,9 @@ class Scene {
     std::vector<AABB> prop_aabbs_;
 
     std::vector<light::Light> lights_;
-    std::vector<float3>       light_centers_;
+    std::vector<float>        light_powers_;
+    std::vector<AABB>         light_aabbs_;
+    std::vector<float4>       light_cones_;
 
     std::vector<uint32_t> materials_;
     std::vector<uint32_t> light_ids_;
@@ -286,9 +302,9 @@ class Scene {
 
     std::map<std::string, uint32_t, std::less<>> named_props_;
 
-    memory::Array<float> light_powers_;
+    memory::Array<float> light_temp_powers_;
 
-    Distribution_implicit_pdf_lut_lin_1D light_distribution_;
+    Distribution_1D light_distribution_;
 
     light::Tree light_tree_;
 

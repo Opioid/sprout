@@ -18,7 +18,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi) const {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics());
 
     float3     flakes_fresnel;
     auto const flakes = flakes_.evaluate<true>(wi, wo_, h, wo_dot_h, flakes_fresnel);
@@ -41,7 +41,7 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    auto const coating = coating_.evaluate_b(wi, wo_, h, wo_dot_h, avoid_caustics_);
+    auto const coating = coating_.evaluate_b(wi, wo_, h, wo_dot_h, avoid_caustics());
 
     float3     flakes_fresnel;
     auto const flakes = flakes_.evaluate<false>(wi, wo_, h, wo_dot_h, flakes_fresnel);
@@ -55,17 +55,17 @@ bxdf::Result Sample::evaluate_b(float3 const& wi) const {
     return {coating.reflection + coating.attenuation * bottom, pdf};
 }
 
-void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
+void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     if (!same_hemisphere(wo_)) {
         result.pdf = 0.f;
         return;
     }
 
-    float const p = sampler.generate_sample_1D();
+    float const p = sampler.sample_1D(rng);
 
     if (p < 0.4f) {
         float3 coating_attenuation;
-        coating_.sample(wo_, sampler, coating_attenuation, result);
+        coating_.sample(wo_, sampler, rng, coating_attenuation, result);
 
         float3     flakes_fresnel;
         auto const flakes = flakes_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
@@ -78,10 +78,10 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
         result.reflection = result.reflection + coating_attenuation * bottom;
         result.pdf        = (result.pdf + base.pdf() + flakes.pdf()) * 0.4f;
     } else if (p < 0.8f) {
-        base_.sample(wo_, sampler, result);
+        base_.sample(wo_, sampler, rng, result);
 
         auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
-                                                 avoid_caustics_);
+                                                 avoid_caustics());
 
         float3     flakes_fresnel;
         auto const flakes = flakes_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi,
@@ -93,10 +93,10 @@ void Sample::sample(Sampler& sampler, bxdf::Sample& result) const {
         result.pdf        = (result.pdf + coating.pdf + flakes.pdf()) * 0.4f;
     } else {
         float3 flakes_fresnel;
-        flakes_.sample(wo_, sampler, flakes_fresnel, result);
+        flakes_.sample(wo_, sampler, rng, flakes_fresnel, result);
 
         auto const coating = coating_.evaluate_f(result.wi, wo_, result.h, result.h_dot_wi,
-                                                 avoid_caustics_);
+                                                 avoid_caustics());
 
         auto const base = base_.evaluate<true>(result.wi, wo_, result.h, result.h_dot_wi);
 
@@ -137,7 +137,8 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
     }
 }
 
-void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, bxdf::Sample& result) const {
+void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
+                                bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     float const f = n_dot_wo;
@@ -146,7 +147,7 @@ void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, bxdf::Sample
 
     fresnel::Schlick const fresnel(color);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, fresnel, xi,
                                                    result);
@@ -183,13 +184,13 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
     }
 }
 
-void Sample::Flakes_layer::sample(float3 const& wo, Sampler& sampler, float3& fresnel_result,
-                                  bxdf::Sample& result) const {
+void Sample::Flakes_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
+                                  float3& fresnel_result, bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    float2 const xi = sampler.generate_sample_2D();
+    float2 const xi = sampler.sample_2D(rng);
 
     float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, conductor, xi,
                                                    fresnel_result, result);

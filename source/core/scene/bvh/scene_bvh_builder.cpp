@@ -16,7 +16,7 @@ Builder::Builder() : Builder_base(16, 64, 4) {}
 Builder::~Builder() = default;
 
 void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB> const& aabbs,
-                    thread::Pool& threads) {
+                    Threads& threads) {
     uint32_t const num_primitives = uint32_t(indices.size());
 
     reserve(num_primitives);
@@ -26,49 +26,48 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
 
         tree.alllocate_indices(0);
         tree.allocate_nodes(0);
-    } else {
-        {
-            References references(num_primitives);
 
-            memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, AABB::empty()*/);
+        return;
+    }
+    {
+        References references(num_primitives);
 
-            threads.run_range(
-                [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin,
-                                                         int32_t end) noexcept {
-                    Simd_AABB aabb(AABB::empty());
+        memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, AABB::empty()*/);
 
-                    for (int32_t i = begin; i < end; ++i) {
-                        uint32_t const prop = indices[uint32_t(i)];
+        threads.run_range(
+            [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin,
+                                                     int32_t end) noexcept {
+                Simd_AABB aabb(AABB::empty());
 
-                        Simd_AABB const b(aabbs[prop]);
+                for (int32_t i = begin; i < end; ++i) {
+                    uint32_t const prop = indices[uint32_t(i)];
 
-                        references[uint32_t(i)].set(b.min, b.max, prop);
+                    Simd_AABB const b(aabbs[prop]);
 
-                        aabb.merge_assign(b);
-                    }
+                    references[uint32_t(i)].set(b.min, b.max, prop);
 
-                    taabbs[id] = aabb;
-                    // taabbs[id].merge_assign(aabb);
-                },
-                0, int32_t(indices.size()));
+                    aabb.merge_assign(b);
+                }
 
-            Simd_AABB aabb(AABB::empty());
-            for (auto const& b : taabbs) {
-                aabb.merge_assign(b);
-            }
+                taabbs[id] = aabb;
+                // taabbs[id].merge_assign(aabb);
+            },
+            0, int32_t(indices.size()));
 
-            split(references, AABB(aabb.min, aabb.max), threads);
+        Simd_AABB aabb(AABB::empty());
+        for (auto const& b : taabbs) {
+            aabb.merge_assign(b);
         }
 
-        tree.alllocate_indices(uint32_t(reference_ids_.size()));
-        nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
-
-        uint32_t current_prop = 0;
-        new_node();
-        serialize(0, 0, tree, current_prop);
+        split(references, AABB(aabb.min, aabb.max), threads);
     }
 
-    tree.aabb_ = build_nodes_[0].aabb();
+    tree.alllocate_indices(uint32_t(reference_ids_.size()));
+    nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
+
+    uint32_t current_prop = 0;
+    new_node();
+    serialize(0, 0, tree, current_prop);
 }
 
 void Builder::serialize(uint32_t source_node, uint32_t dest_node, Tree& tree,

@@ -1,6 +1,7 @@
 #include "encoding_srgb.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector3.inl"
+#include "base/spectrum/aces.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "image/typed_image.hpp"
 
@@ -112,6 +113,48 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
                 rgb[i] = ::encoding::float_to_unorm(color);
             }
         }
+    }
+}
+
+#ifdef SU_ACESCG
+static inline float3 AP1_to_gamma_sRGB(float3 c) {
+    return min(spectrum::AP1_to_sRGB(spectrum::linear_to_gamma_sRGB(c)), 1.f);
+}
+
+void Srgb::ACEScg_to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
+    int2 const d = image.description().dimensions().xy();
+
+    byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+
+    for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+        float3 const color = AP1_to_gamma_sRGB(image.at(i).xyz());
+
+        rgb[i] = ::encoding::float_to_unorm(color);
+    }
+}
+#endif
+
+void Srgb::to_unorm(Float4 const& image, int32_t begin, int32_t end) {
+    int2 const d = image.description().dimensions().xy();
+
+    byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+
+    for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+        float3 const color = image.at(i).xyz();
+
+        rgb[i] = ::encoding::float_to_unorm(color);
+    }
+}
+
+void Srgb::to_snorm(Float4 const& image, int32_t begin, int32_t end) {
+    int2 const d = image.description().dimensions().xy();
+
+    byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+
+    for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+        float3 const color = image.at(i).xyz();
+
+        rgb[i] = ::encoding::float_to_snorm(color);
     }
 }
 

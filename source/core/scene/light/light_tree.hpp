@@ -1,8 +1,11 @@
 #ifndef SU_CORE_SCENE_LIGHT_TREE_HPP
 #define SU_CORE_SCENE_LIGHT_TREE_HPP
 
+#include "base/math/aabb.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
-#include "base/math/vector3.hpp"
+#include "base/math/vector4.hpp"
+#include "base/memory/array.hpp"
+#include "light.hpp"
 
 #include <vector>
 
@@ -15,89 +18,136 @@ namespace light {
 class Light;
 
 struct Build_node {
-    Build_node();
+    void count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits);
 
-    ~Build_node();
+    AABB bounds;
 
-    void gather(uint32_t const* orders);
-
-    float3 center;
+    float4 cone;
 
     float power;
+    float variance;
 
     uint32_t middle;
-    uint32_t end;
-
-    uint32_t light;
-
-    Build_node* children[2];
+    uint32_t children_or_light;
+    uint32_t num_lights;
 };
 
 class Tree {
   public:
+    static uint32_t constexpr Max_split_depth = 4;
+
+    // (Max_split_depth + 1) to have space for worst case where we want to split on leaf node,
+    // which can have up to 4 lights
+    static uint32_t constexpr Max_lights = 1 << (Max_split_depth + 1);
+
+    static uint32_t constexpr max_lights(uint32_t num_lights, bool split) {
+        return split ? std::min(Max_lights, num_lights) : 1;
+    }
+
+    static float splitting_threshold_;
+
+    static void set_splitting_threshold(float st);
+
+    using Lights = memory::Array<Light_pick>;
+
     Tree();
 
     ~Tree();
 
-    struct Result {
-        uint32_t id;
-        float    pdf;
-    };
-
     struct Node {
         float weight(float3 const& p, float3 const& n, bool total_sphere) const;
 
-        float3 center;
+        float weight(float3 const& p0, float3 const& p1, float3 const& dir) const;
+
+        bool split(float3 const& p) const;
+
+        bool split(float3 const& p0, float3 const& dir) const;
+
+        Light_pick random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+                                uint32_t const* const light_mapping, Scene const& scene) const;
+
+        Light_pick random_light(float3 const& p0, float3 const& p1, float3 const& dir, float random,
+                                uint32_t const* const light_mapping, Scene const& scene) const;
+
+        float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
+                  uint32_t const* const light_mapping, Scene const& scene) const;
+
+        float4 center;
+        float4 cone;
 
         float power;
-
-        bool children;
+        float variance;
 
         uint32_t middle;
-
-        uint32_t next_or_light;
+        uint32_t children_or_light;
+        uint32_t num_lights;
     };
 
-    Result random_light(float3 const& p, float3 const& n, bool total_sphere, float random) const;
+    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random, bool split,
+                      Scene const& scene, Lights& lights) const;
 
-    float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id) const;
+    void random_light(float3 const& p0, float3 const& p1, float random, bool split,
+                      Scene const& scene, Lights& lights) const;
 
-    void allocate(uint32_t num_finite_lights, uint32_t num_infinite_lights);
+    float pdf(float3 const& p, float3 const& n, bool total_sphere, bool split, uint32_t id,
+              Scene const& scene) const;
+
+    void allocate_light_mapping(uint32_t num_lights);
+
+    void allocate(uint32_t num_infinite_lights);
+
+    void allocate_nodes(uint32_t num_nodes);
 
     float infinite_weight_;
     float infinite_guard_;
 
     uint32_t infinite_end_;
-
-    uint32_t num_finite_lights_;
+    uint32_t infinite_depth_bias_;
+    uint32_t num_lights_;
     uint32_t num_infinite_lights_;
+    uint32_t num_nodes_;
 
     Node* nodes_;
 
     uint32_t* light_orders_;
+    uint32_t* light_mapping_;
 
     float* infinite_light_powers_;
 
-    Distribution_implicit_pdf_lut_lin_1D infinite_light_distribution_;
+    Distribution_1D infinite_light_distribution_;
 };
 
 class Tree_builder {
   public:
+    Tree_builder();
+
+    ~Tree_builder();
+
     void build(Tree& tree, Scene const& scene);
 
+    struct Split_candidate {
+        Split_candidate();
+
+        void init(uint32_t begin, uint32_t end, uint32_t split, float surface_area,
+                  float cone_weight, uint32_t const* const lights, Scene const& scene);
+
+        uint32_t split_node;
+
+        float weight;
+    };
+
   private:
-    using Lights = std::vector<uint32_t>;
+    uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
 
-    void split(Tree& tree, Build_node* node, uint32_t begin, uint32_t end, Lights& lights,
-               Scene const& scene);
+    void serialize(Tree::Node* nodes);
 
-    void serialize(Build_node* node);
+    Build_node* build_nodes_;
 
-    Tree::Node* nodes_;
-
-    uint32_t current_;
+    uint32_t current_node_;
 
     uint32_t light_order_;
+
+    Split_candidate* candidates_;
 };
 
 }  // namespace light

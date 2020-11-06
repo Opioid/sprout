@@ -72,13 +72,9 @@ inline float3 Layer::world_to_tangent(float3 const& v) const {
                   v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline Sample::Sample() : radiance_(0.f), properties_(Property::Can_evaluate) {}
+inline Sample::Sample() : properties_(Property::Can_evaluate) {}
 
 inline Sample::~Sample() = default;
-
-inline float3 const& Sample::radiance() const {
-    return radiance_;
-}
 
 inline bool Sample::is_pure_emissive() const {
     return properties_.is(Property::Pure_emissive);
@@ -88,8 +84,12 @@ inline bool Sample::is_translucent() const {
     return properties_.is(Property::Translucent);
 }
 
-inline bool Sample::ior_greater_one() const {
+inline bool Sample::can_evaluate() const {
     return properties_.is(Property::Can_evaluate);
+}
+
+inline bool Sample::avoid_caustics() const {
+    return properties_.is(Property::Avoid_caustics);
 }
 
 inline float3 Sample::offset_p(float3 const& p, bool subsurface, bool translucent) const {
@@ -112,14 +112,6 @@ inline float3 Sample::offset_p(float3 const& p, float3 const& wi, bool subsurfac
     return offset_ray(p, same_hemisphere(wi) ? geo_n_ : -geo_n_);
 }
 
-inline float3 const& Sample::wo() const {
-    return wo_;
-}
-
-inline float Sample::clamp_geo_n_dot(float3 const& v) const {
-    return clamp_dot(geo_n_, v);
-}
-
 inline float3 const& Sample::geometric_normal() const {
     return geo_n_;
 }
@@ -128,14 +120,62 @@ inline float3 const& Sample::interpolated_normal() const {
     return n_;
 }
 
-inline bool Sample::same_hemisphere(float3 const& v) const {
-    return dot(geo_n_, v) > 0.f;
+inline float3 const& Sample::shading_normal() const {
+    return layer_.n_;
 }
 
-inline void Sample::set_basis(float3 const& geo_n, float3 const& n, float3 const& wo) {
-    geo_n_ = geo_n;
-    n_     = n;
-    wo_    = wo;
+inline float3 const& Sample::shading_tangent() const {
+    return layer_.t_;
+}
+
+inline float3 const& Sample::shading_bitangent() const {
+    return layer_.b_;
+}
+
+inline float3 const& Sample::wo() const {
+    return wo_;
+}
+
+inline float3 const& Sample::albedo() const {
+    return albedo_;
+}
+
+inline float3 const& Sample::radiance() const {
+    return radiance_;
+}
+
+inline float Sample::alpha() const {
+    return alpha_;
+}
+
+inline float Sample::clamp_geo_n_dot(float3 const& v) const {
+    return clamp_dot(geo_n_, v);
+}
+
+inline bool Sample::same_hemisphere(float3 const& v) const {
+    return dot(geo_n_, v) >= 0.f;
+}
+
+inline void Sample::set_common(Renderstate const& rs, float3 const& wo, float3 const& albedo,
+                               float3 const& radiance, float alpha) {
+    geo_n_    = rs.geo_n;
+    n_        = rs.n;
+    wo_       = wo;
+    albedo_   = albedo;
+    radiance_ = radiance;
+    alpha_    = alpha;
+
+    properties_.set(Property::Avoid_caustics, rs.avoid_caustics);
+}
+
+inline void Sample::set_common(float3 const& geo_n, float3 const& n, float3 const& wo,
+                               float alpha) {
+    geo_n_    = geo_n;
+    n_        = n;
+    wo_       = wo;
+    albedo_   = float3(0.f);
+    radiance_ = float3(0.f);
+    alpha_    = alpha;
 }
 
 inline void Sample::set_radiance(float3 const& radiance) {

@@ -21,11 +21,11 @@ material::Sample const& Constant::sample(float3 const&      wo, Ray const& /*ray
                                          Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_basis(rs.geo_n, rs.n, wo);
+    sample.set_common(rs, wo, emission_, emission_, alpha_);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    sample.set(emission_, fresnel::schlick_f0(ior_, rs.ior), alpha_);
+    sample.set(fresnel::schlick_f0(ior_, rs.ior));
 
     return sample;
 }
@@ -37,10 +37,6 @@ float3 Constant::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, 
 
 float3 Constant::average_radiance(float /*area*/) const {
     return emission_;
-}
-
-void Constant::set_emission(float3 const& radiance) {
-    emission_ = radiance;
 }
 
 void Constant::set_roughness(float roughness) {

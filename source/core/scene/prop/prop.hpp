@@ -12,6 +12,8 @@ namespace thread {
 class Pool;
 }
 
+using Threads = thread::Pool;
+
 namespace scene {
 
 class Scene;
@@ -30,7 +32,7 @@ struct Normals;
 
 namespace prop {
 
-static uint32_t constexpr Null = 0xFFFFFFFF;
+inline uint32_t constexpr Null = 0xFFFFFFFF;
 
 class Prop {
   public:
@@ -66,13 +68,11 @@ class Prop {
 
     void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
-    void morph(uint32_t self, thread::Pool& threads, Scene const& scene);
+    void morph(uint32_t self, Threads& threads, Scene const& scene);
 
-    bool intersect(uint32_t self, Ray& ray, Worker& worker,
-                   shape::Intersection& intersection) const;
+    bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const;
 
-    bool intersect_nsf(uint32_t self, Ray& ray, Worker& worker,
-                       shape::Intersection& intersection) const;
+    bool intersect_nsf(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const;
 
     bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const;
 
@@ -105,16 +105,6 @@ class Prop {
     flags::Flags<Property> properties_;
 
     uint32_t shape_ = resource::Null;
-};
-
-struct Prop_ptr {
-    Prop* ptr;
-
-    uint32_t id;
-
-    static Prop_ptr constexpr Null() {
-        return {nullptr, prop::Null};
-    }
 };
 
 struct alignas(8) Prop_topology {

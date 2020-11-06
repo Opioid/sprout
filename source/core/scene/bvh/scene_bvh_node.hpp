@@ -11,7 +11,7 @@ struct AABB;
 
 namespace scene::bvh {
 
-class Node {
+class alignas(32) Node {
   public:
     Node();
 

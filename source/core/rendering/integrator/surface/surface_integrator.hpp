@@ -10,20 +10,27 @@ class Interface_stack;
 
 namespace rendering {
 
-class Worker;
+namespace sensor::aov {
+class Value;
+}
 
 namespace integrator::surface {
 
 class Integrator : public integrator::Integrator {
   public:
     using Interface_stack = scene::prop::Interface_stack;
+    using AOV             = sensor::aov::Value;
 
-    Integrator(rnd::Generator& rng);
+    Integrator();
 
     ~Integrator() override;
 
-    virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-                      Interface_stack const& initial_stack) = 0;
+    virtual float4 li(Ray& ray, Intersection& isec, Worker& worker,
+                      Interface_stack const& initial_stack, AOV* aov) = 0;
+
+  protected:
+    void common_AOVs(float3 const& throughput, Ray const& ray, Intersection const& isec,
+                     Material_sample const& mat_sample, bool primary_ray, Worker& worker, AOV& aov);
 };
 
 class Pool {
@@ -32,7 +39,7 @@ class Pool {
 
     virtual ~Pool();
 
-    virtual Integrator* get(uint32_t id, rnd::Generator& rng) const = 0;
+    virtual Integrator* get(uint32_t id) const = 0;
 
   protected:
     uint32_t num_integrators_;

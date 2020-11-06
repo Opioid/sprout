@@ -12,30 +12,20 @@ class Writer : public image::Writer, Srgb {
 
     std::string file_extension() const final;
 
-    bool write(std::ostream& stream, Float4 const& image, thread::Pool& threads) final;
+    bool write(std::ostream& stream, Float4 const& image, Threads& threads) final;
+
+    bool write(std::ostream& stream, Float4 const& image, Encoding encoding,
+               Threads& threads) final;
 
     static bool write(std::string_view name, Byte3 const& image);
 
     static bool write(std::string_view name, Byte1 const& image);
 
-    static bool write(std::string_view name, float const* data, int2 dimensions, float scale = 1.f,
-                      bool srgb = false);
-
-    static bool write(std::string_view name, float2 const* data, int2 dimensions,
-                      float scale = 1.f);
-
-    static bool write(std::string_view name, packed_float3 const* data, int2 dimensions,
-                      float scale = 1.f);
-
-    static bool write_heatmap(std::string_view name, uint32_t const* data, int2 dimensions);
-
-    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions);
+    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
+                              Threads& threads);
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                              float max_value);
-
-    static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
-                              float max_value, thread::Pool& threads);
+                              float max_value, Threads& threads);
 };
 
 }  // namespace image::encoding::png

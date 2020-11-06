@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 project(sprout)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -13,6 +13,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 option(ACEScg "Render in ACEScg color space instead of sRGB" ON)
+option(IBL_MIS_Compensation "Enable MIS compensation technique for IBLs" ON)
 option(NAN "Soft assert on NaN" OFF)
 option(ZSTD "Build with ZSTD support" ON)
 option(Valgrind "Valgrind compatible build" OFF)
@@ -22,6 +23,10 @@ option(MSAN "clang memory-sanitizer" OFF)
 
 if (${ACEScg})
 	add_definitions(-DSU_ACESCG)
+endif ()
+
+if (${IBL_MIS_Compensation})
+	add_definitions(-DSU_IBL_MIS_COMPENSATION)
 endif ()
 
 if (${NAN})

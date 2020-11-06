@@ -31,7 +31,7 @@ Gaussian<T>::Gaussian(float radius, float alpha) : scratch_(Description()) {
 }
 
 template <typename T>
-void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& threads) {
+void Gaussian<T>::apply(Typed_image<T>& target, Threads& threads) {
     auto const d = target.description().dimensions;
 
     scratch_.resize(d);

@@ -14,7 +14,7 @@ bool Postprocessor::alpha_out(bool alpha_in) const {
 }
 
 void Postprocessor::apply(image::Float4 const& source, image::Float4& destination,
-                          thread::Pool& threads) {
+                          Threads& threads) {
     pre_apply(source, destination, threads);
 
     for (uint32_t p = 0; p < num_passes_; ++p) {
@@ -29,7 +29,7 @@ void Postprocessor::apply(image::Float4 const& source, image::Float4& destinatio
 }
 
 void Postprocessor::pre_apply(image::Float4 const& /*source*/, image::Float4& /*destination*/,
-                              thread::Pool& /*threads*/) {}
+                              Threads& /*threads*/) {}
 
 void Postprocessor::post_pass(uint32_t /*pass*/) {}
 

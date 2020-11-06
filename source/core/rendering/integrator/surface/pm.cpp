@@ -6,6 +6,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
+#include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -22,15 +23,13 @@
 
 namespace rendering::integrator::surface {
 
-PM::PM(rnd::Generator& rng, Settings const& settings, bool progressive)
-    : Integrator(rng),
-      settings_(settings),
-      sampler_(rng),
+PM::PM(Settings const& settings, bool progressive)
+    : settings_(settings),
       sampler_pool_(progressive ? nullptr
                                 : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(i, rng);
+            material_samplers_[i] = sampler_pool_->get(i);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -51,16 +50,16 @@ void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     }
 }
 
-void PM::start_pixel() {
-    sampler_.start_pixel();
+void PM::start_pixel(RNG& rng) {
+    sampler_.start_pixel(rng);
 
     for (auto s : material_samplers_) {
-        s->start_pixel();
+        s->start_pixel(rng);
     }
 }
 
-float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) {
+float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV* aov) {
     static uint32_t constexpr Max_bounces = 16;
 
     worker.reset_interface_stack(initial_stack);
@@ -75,25 +74,30 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
 
     bool const avoid_caustics = true;
 
+    bool primary_ray       = true;
     bool treat_as_singular = true;
 
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        auto const& material_sample = intersection.sample(wo, ray, filter, avoid_caustics, sampler_,
-                                                          worker);
+        auto const& mat_sample = isec.sample(wo, ray, filter, 0.f, avoid_caustics, sampler_,
+                                             worker);
 
 #ifndef ONLY_CAUSTICS
-        if (treat_as_singular & material_sample.same_hemisphere(wo)) {
-            result += throughput * material_sample.radiance();
+        if (treat_as_singular & mat_sample.same_hemisphere(wo)) {
+            result += throughput * mat_sample.radiance();
         }
 #endif
 
-        if (material_sample.is_pure_emissive()) {
+        if (aov) {
+            common_AOVs(throughput, ray, isec, mat_sample, primary_ray, worker, *aov);
+        }
+
+        if (mat_sample.is_pure_emissive()) {
             break;
         }
 
-        material_sample.sample(material_sampler(ray.depth), sample_result);
+        mat_sample.sample(material_sampler(ray.depth), worker.rng(), sample_result);
         if (0.f == sample_result.pdf) {
             break;
         }
@@ -102,17 +106,18 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
             treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
             filter            = Filter::Nearest;
+            primary_ray       = false;
             treat_as_singular = false;
         }
 
         if (sample_result.type.no(Bxdf_type::Specular)) {
             if (ray.depth > 0 || settings_.photons_not_only_through_specular) {
-                result += throughput * worker.photon_li(intersection, material_sample);
+                result += throughput * worker.photon_li(isec, mat_sample);
             }
 
             if ((sample_result.type.no(Bxdf_type::Transmission) &&
-                 material_sample.same_hemisphere(wo)) ||
-                intersection.subsurface) {
+                 mat_sample.same_hemisphere(wo)) ||
+                isec.subsurface) {
                 break;
             }
         }
@@ -134,8 +139,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
         } else {
             throughput *= sample_result.reflection / sample_result.pdf;
 
-            ray.origin = material_sample.offset_p(intersection.geo.p, sample_result.wi,
-                                                  intersection.subsurface);
+            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
         }
@@ -143,13 +147,13 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
         ray.max_t() = scene::Ray_max_t;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
-            worker.interface_change(sample_result.wi, intersection);
+            worker.interface_change(sample_result.wi, isec);
         }
 
         if (!worker.interface_stack().empty()) {
             float3     vli;
             float3     vtr;
-            auto const hit = worker.volume(ray, intersection, filter, vli, vtr);
+            auto const hit = worker.volume(ray, isec, filter, vli, vtr);
 
             // result += throughput * vli;
             throughput *= vtr;
@@ -157,7 +161,7 @@ float4 PM::li(Ray& ray, Intersection& intersection, Worker& worker,
             if (Event::Abort == hit) {
                 break;
             }
-        } else if (!worker.intersect_and_resolve_mask(ray, intersection, filter)) {
+        } else if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
             break;
         }
     }
@@ -179,10 +183,10 @@ PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounce
       settings_{min_bounces, max_bounces, !photons_only_through_specular},
       progressive_(progressive) {}
 
-Integrator* PM_pool::get(uint32_t id, rnd::Generator& rng) const {
+Integrator* PM_pool::get(uint32_t id) const {
     if (uint32_t const zero = 0;
         0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) PM(rng, settings_, progressive_);
+        return new (&integrators_[id]) PM(settings_, progressive_);
     }
 
     return &integrators_[id];

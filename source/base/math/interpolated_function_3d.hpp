@@ -35,6 +35,21 @@ class Interpolated_function_3D {
     T* samples_ = nullptr;
 };
 
+template <typename T, uint32_t X, uint32_t Y, uint32_t Z>
+class Interpolated_function_3D_N {
+  public:
+    Interpolated_function_3D_N();
+
+    Interpolated_function_3D_N(T const t[]);
+
+    void from_array(T const t[]);
+
+    T operator()(float x, float y, float z) const;
+
+  private:
+    T samples_[X * Y * Z];
+};
+
 }  // namespace math
 
 #endif

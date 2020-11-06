@@ -16,19 +16,19 @@ class alignas(64) Pathtracer final : public Integrator {
         bool avoid_caustics;
     };
 
-    Pathtracer(rnd::Generator& rng, Settings const& settings, bool progressive);
+    Pathtracer(Settings const& settings, bool progressive);
 
     ~Pathtracer() final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(RNG& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) final;
+    float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV* aov) final;
 
   private:
-    float4 integrate(Ray& ray, Intersection& intersection, Worker& worker);
+    float4 integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* aov);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 
@@ -48,7 +48,7 @@ class Pathtracer_pool final : public Typed_pool<Pathtracer> {
     Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
                     uint32_t min_bounces, uint32_t max_bounces, bool enable_caustics);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     Pathtracer::Settings settings_;

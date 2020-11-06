@@ -6,6 +6,8 @@
 
 namespace exporting {
 
+static char const* AOV_names[] = {"_albedo", "_roughness", "_gn", "_sn", "_mat_id", ""};
+
 Image_sequence::Image_sequence(std::string filename, image::Writer* writer)
     : filename_(std::move(filename)), writer_(writer) {}
 
@@ -13,14 +15,24 @@ Image_sequence::~Image_sequence() {
     delete writer_;
 }
 
-void Image_sequence::write(image::Float4 const& image, uint32_t frame, thread::Pool& threads) {
-    std::ofstream stream(filename_ + string::to_string(frame, 6) + "." + writer_->file_extension(),
+void Image_sequence::write(image::Float4 const& image, AOV aov, uint32_t frame, Threads& threads) {
+    std::ofstream stream(filename_ + string::to_string(frame, 6) +
+                             std::string(AOV_names[uint32_t(aov)]) + "." +
+                             writer_->file_extension(),
                          std::ios::binary);
     if (!stream) {
         return;
     }
 
-    writer_->write(stream, image, threads);
+    using namespace rendering::sensor;
+
+    if (aov::Property::Unknown == aov) {
+        writer_->write(stream, image, threads);
+    } else {
+        image::Encoding encoding = aov::encoding(aov);
+
+        writer_->write(stream, image, encoding, threads);
+    }
 }
 
 }  // namespace exporting

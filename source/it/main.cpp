@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
     //   logging::info("#Threads " + string::to_string(num_workers));
 
-    thread::Pool threads(num_workers);
+    Threads threads(num_workers);
 
     resource::Manager resources(threads);
 

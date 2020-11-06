@@ -3,7 +3,7 @@
 
 namespace resource {
 
-Manager::Manager(thread::Pool& threads) : threads_(threads) {}
+Manager::Manager(Threads& threads) : threads_(threads) {}
 
 Manager::~Manager() {
     for (auto const& c : caches_) {
@@ -15,7 +15,7 @@ file::System& Manager::filesystem() {
     return filesystem_;
 }
 
-thread::Pool& Manager::threads() {
+Threads& Manager::threads() {
     return threads_;
 }
 

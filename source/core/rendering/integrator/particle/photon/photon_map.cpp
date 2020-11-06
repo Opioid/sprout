@@ -43,7 +43,7 @@ void Map::insert(Photon const& photon, uint32_t index) {
     photons_[index] = photon;
 }
 
-uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths, thread::Pool& threads) {
+uint32_t Map::compile_iteration(uint32_t num_photons, uint64_t num_paths, Threads& threads) {
     AABB const aabb = calculate_aabb(num_photons, threads);
 
     grid_.resize(aabb);
@@ -74,16 +74,16 @@ void Map::compile_finalize() {
     grid_.set_num_paths(num_paths_);
 }
 
-float3 Map::li(Intersection const& intersection, Material_sample const& sample,
+float3 Map::li(Intersection const& isec, Material_sample const& sample,
                scene::Worker const& worker) const {
-    return grid_.li(intersection, sample, worker);
+    return grid_.li(isec, sample, worker);
 }
 
 bool Map::caustics_only() const {
     return caustic_only_;
 }
 
-AABB Map::calculate_aabb(uint32_t num_photons, thread::Pool& threads) const {
+AABB Map::calculate_aabb(uint32_t num_photons, Threads& threads) const {
     threads.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {
             AABB aabb = AABB::empty();

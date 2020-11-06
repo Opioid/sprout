@@ -2,8 +2,8 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_MESH_HPP
 
 #include "base/math/distribution/distribution_1d.hpp"
+#include "bvh/triangle_bvh_tree.hpp"
 #include "scene/shape/shape.hpp"
-#include "triangle_mesh_bvh.hpp"
 
 namespace scene::shape::triangle {
 
@@ -13,7 +13,7 @@ class alignas(64) Mesh final : public Shape {
 
     ~Mesh() final;
 
-    Tree& tree();
+    bvh::Tree& tree();
 
     void allocate_parts(uint32_t num_parts);
 
@@ -25,57 +25,56 @@ class alignas(64) Mesh final : public Shape {
 
     AABB transformed_aabb(float4x4 const& m) const final;
 
+    AABB transformed_part_aabb(uint32_t part, float4x4 const& m) const final;
+
     uint32_t num_parts() const final;
 
     uint32_t num_materials() const final;
 
     uint32_t part_id_to_material_id(uint32_t part) const final;
 
-    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                   shape::Intersection& intersection) const final;
+    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
+                   shape::Intersection& isec) const final;
 
-    bool intersect_nsf(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
-                       shape::Intersection& intersection) const final;
+    bool intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& nodes,
+                       shape::Intersection& isec) const final;
 
-    bool intersect(Ray& ray, Transformation const& transformation, Node_stack& node_stack,
+    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                    Normals& normals) const final;
 
-    bool intersect_p(Ray const& ray, Transformation const& transformation,
-                     Node_stack& node_stack) const final;
+    bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 
-    float visibility(Ray const& ray, Transformation const& transformation, uint32_t entity,
-                     Filter filter, Worker& worker) const final;
+    float visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                     Worker& worker) const final;
 
-    bool thin_absorption(Ray const& ray, Transformation const& transformation, uint32_t entity,
+    bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 
-    bool sample(uint32_t part, float3 const& p, Transformation const& transformation, float area,
-                bool two_sided, Sampler& sampler, uint32_t sampler_dimension,
+    bool sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
+                bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                 Sample_to& sample) const final;
 
-    bool sample(uint32_t part, Transformation const& transformation, float area, bool two_sided,
-                Sampler& sampler, uint32_t sampler_dimension, float2 importance_uv,
+    bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
+                Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, shape::Intersection const& intersection,
-              Transformation const& transformation, float area, bool two_sided,
-              bool total_sphere) const final;
+    float pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
+              float area, bool two_sided, bool total_sphere) const final;
 
-    float pdf_volume(Ray const& ray, shape::Intersection const& intersection,
-                     Transformation const& transformation, float volume) const final;
+    float pdf_volume(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
+                     float volume) const final;
 
-    bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& transformation,
-                float area, bool two_sided, Sample_to& sample) const final;
+    bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& trafo, float area,
+                bool two_sided, Sample_to& sample) const final;
 
-    bool sample(uint32_t part, float3 const& p, float3 const& uvw,
-                Transformation const& transformation, float volume, Sample_to& sample) const final;
+    bool sample(uint32_t part, float3 const& p, float3 const& uvw, Transformation const& trafo,
+                float volume, Sample_to& sample) const final;
 
-    bool sample(uint32_t part, float2 uv, Transformation const& transformation, float area,
-                bool two_sided, float2 importance_uv, AABB const& bounds,
-                Sample_from& sample) const final;
+    bool sample(uint32_t part, float2 uv, Transformation const& trafo, float area, bool two_sided,
+                float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf_uv(Ray const& ray, shape::Intersection const& intersection,
-                 Transformation const& transformation, float area, bool two_sided) const final;
+    float pdf_uv(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
+                 float area, bool two_sided) const final;
 
     float uv_weight(float2 uv) const final;
 
@@ -87,34 +86,36 @@ class alignas(64) Mesh final : public Shape {
 
     void prepare_sampling(uint32_t part) final;
 
-    float3 center(uint32_t part) const final;
+    float4 cone(uint32_t part) const final;
 
   private:
-    Tree tree_;
+    bvh::Tree tree_;
 
-    struct Distribution {
-        using Distribution_1D = math::Distribution_implicit_pdf_lut_lin_1D;
+    struct Part {
+        using Distribution_1D = math::Distribution_1D;
 
-        ~Distribution();
+        ~Part();
 
-        void init(uint32_t part, const Tree& tree);
+        void init(uint32_t part, bvh::Tree const& tree);
 
         bool empty() const;
 
         Distribution_1D::Discrete sample(float r) const;
 
-        uint32_t num_triangles = 0;
+        uint32_t material;
+
+        uint32_t num_triangles = 0xFFFFFFFF;
 
         uint32_t* triangle_mapping = nullptr;
 
         Distribution_1D distribution;
 
-        float3 center;
+        AABB aabb;
+
+        float4 cone;
     };
 
-    Distribution* distributions_;
-
-    uint32_t* part_materials_;
+    Part* parts_;
 };
 
 }  // namespace scene::shape::triangle

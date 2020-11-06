@@ -9,14 +9,13 @@ class Material_base : public material::Material {
   public:
     Material_base(Sampler_settings const& sampler_settings, bool two_sided);
 
-    void commit(thread::Pool& threads, Scene const& scene) override;
+    void commit(Threads& threads, Scene const& scene) override;
 
     float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
                              Worker const& worker) const override;
 
     float3 average_radiance(float area) const final;
 
-    void set_color_map(Texture_adapter const& color_map);
     void set_normal_map(Texture_adapter const& normal_map);
     void set_surface_map(Texture_adapter const& surface_map);
     void set_emission_map(Texture_adapter const& emission_map);
@@ -34,7 +33,6 @@ class Material_base : public material::Material {
     void set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
                     Texture_sampler_2D const& sampler, Worker const& worker, Sample& sample) const;
 
-    Texture_adapter color_map_;
     Texture_adapter normal_map_;
     Texture_adapter surface_map_;
     Texture_adapter emission_map_;

@@ -1,0 +1,4 @@
+#ifndef SU_CORE_RENDERING_SENSOR_AOV_PROPERTY_INL
+#define SU_CORE_RENDERING_SENSOR_AOV_PROPERTY_INL
+
+namespace rendering::sensor::aov {}

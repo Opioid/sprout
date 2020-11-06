@@ -84,7 +84,7 @@ Provider::Properties::Properties(Variants const& options) : dimensions(1024, 102
 }
 
 Provider::Flake Provider::random_flake(uint32_t index, uint32_t seed, Properties const& props,
-                                       rnd::Generator& rng) {
+                                       RNG& rng) {
     float2 const s0 = math::thing(index, props.num_flakes, seed);
 
     float2 const s1 = float2(rng.random_float(), rng.random_float());

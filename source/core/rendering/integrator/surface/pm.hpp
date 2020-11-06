@@ -15,16 +15,16 @@ class alignas(64) PM final : public Integrator {
         bool photons_not_only_through_specular;
     };
 
-    PM(rnd::Generator& rng, Settings const& settings, bool progressive);
+    PM(Settings const& settings, bool progressive);
 
     ~PM() final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(RNG& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) final;
+    float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV* aov) final;
 
   private:
     sampler::Sampler& material_sampler(uint32_t bounce);
@@ -45,7 +45,7 @@ class PM_pool final : public Typed_pool<PM> {
     PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces, uint32_t max_bounces,
             bool photons_only_through_specular);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     PM::Settings settings_;

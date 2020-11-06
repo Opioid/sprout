@@ -8,6 +8,8 @@ namespace rnd {
 class Generator;
 }
 
+using RNG = rnd::Generator;
+
 namespace memory {
 class Variant_map;
 }
@@ -42,8 +44,7 @@ class Provider {
         float3 normal;
     };
 
-    static Flake random_flake(uint32_t index, uint32_t seed, Properties const& props,
-                              rnd::Generator& rng);
+    static Flake random_flake(uint32_t index, uint32_t seed, Properties const& props, RNG& rng);
 };
 
 }  // namespace procedural::flakes

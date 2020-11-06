@@ -1,14 +1,13 @@
 #include "rendering_driver.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/array.inl"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
 #include "progress/progress_sink.hpp"
-#include "rendering/rendering_camera_worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/scene.inl"
@@ -18,11 +17,11 @@ namespace rendering {
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
 
-Driver::Driver(thread::Pool& threads, progress::Sink& progressor)
+Driver::Driver(Threads& threads, progress::Sink& progressor)
     : threads_(threads),
       scene_(nullptr),
       view_(nullptr),
-      workers_(memory::construct_aligned<Camera_worker>(threads.num_threads())),
+      workers_(new Worker[threads.num_threads()]),
       frame_(0),
       frame_view_(0),
       frame_iteration_(0),
@@ -32,7 +31,7 @@ Driver::Driver(thread::Pool& threads, progress::Sink& progressor)
 Driver::~Driver() {
     delete[] photon_infos_;
 
-    memory::destroy_aligned(workers_, threads_.num_threads());
+    delete[] workers_;
 }
 
 void Driver::init(take::View& view, Scene& scene, bool progressive) {
@@ -46,7 +45,7 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
 
     int2 const d = camera.sensor_dimensions();
 
-    camera.sensor().resize(d, progressive && view.lighttracers ? 2 : 1);
+    camera.sensor().resize(d, progressive && view.lighttracers ? 2 : 1, view.aovs);
 
     target_.resize(d);
 
@@ -88,20 +87,9 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
     for (uint32_t i = 0, len = threads_.num_threads(); i < len; ++i) {
         workers_[i].init(i, scene, camera, view.num_samples_per_pixel, view.surface_integrators,
                          *view.volume_integrators, *view.samplers, photon_map, view.photon_settings,
-                         view.lighttracers, Num_particles_per_chunk, &particle_importance_);
+                         view.lighttracers, Num_particles_per_chunk, view.aovs,
+                         &particle_importance_);
     }
-}
-
-scene::camera::Camera& Driver::camera() {
-    return *view_->camera;
-}
-
-scene::Scene const& Driver::scene() const {
-    return *scene_;
-}
-
-scene::Scene& Driver::scene() {
-    return *scene_;
 }
 
 image::Float4 const& Driver::target() const {
@@ -190,17 +178,27 @@ void Driver::postprocess() {
     }
 }
 
-void Driver::export_frame(uint32_t frame, Exporters& exporters) const {
+void Driver::export_frame(uint32_t frame, Exporters& exporters) {
+    using namespace sensor;
+
     auto const export_start = std::chrono::high_resolution_clock::now();
 
     for (auto& e : exporters) {
-        e->write(target_, frame, threads_);
+        e->write(target_, aov::Property::Unknown, frame, threads_);
+    }
+
+    for (uint32_t i = 0, len = view_->aovs.num_slots(); i < len; ++i) {
+        view_->camera->sensor().resolve(i, view_->num_samples_per_pixel, threads_, target_);
+
+        for (auto& e : exporters) {
+            e->write(target_, view_->aovs.property(i), frame, threads_);
+        }
     }
 
     auto const export_duration = chrono::seconds_since(export_start);
     logging::info("Export time %f s", export_duration);
 
-    view_->camera->sensor().export_variance();
+    view_->camera->sensor().export_variance(threads_);
 }
 
 void Driver::render_frame_backward(uint32_t frame) {

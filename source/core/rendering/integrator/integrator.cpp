@@ -2,7 +2,7 @@
 
 namespace rendering::integrator {
 
-Integrator::Integrator(rnd::Generator& rng) : rng_(rng) {}
+Integrator::Integrator() = default;
 
 Integrator::~Integrator() = default;
 

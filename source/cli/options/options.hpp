@@ -17,6 +17,7 @@ struct Options {
     uint32_t start_frame = 0xFFFFFFFF;
 
     bool no_textures    = false;
+    bool no_tex_dwim    = false;
     bool debug_material = false;
     bool quit           = false;
 };

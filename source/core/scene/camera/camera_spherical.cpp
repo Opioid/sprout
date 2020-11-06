@@ -49,16 +49,17 @@ bool Spherical::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*vi
     uint64_t const time = absolute_time(frame, sample.time);
 
     Transformation temp;
-    auto&          transformation = scene.prop_transformation_at(entity_, time, temp);
+    auto&          trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    ray = create_ray(transformation.position, transform_vector(transformation.rotation, dir), time);
+    ray = create_ray(trafo.position, transform_vector(trafo.rotation, dir), time);
 
     return true;
 }
 
 bool Spherical::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
-                       float3 const& /*p*/, Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-                       Scene const& /*scene*/, Sample_to& /*sample*/) const {
+                       float3 const& /*p*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
+                       uint32_t /*sampler_d*/, Scene const& /*scene*/,
+                       Sample_to& /*sample*/) const {
     return false;
 }
 

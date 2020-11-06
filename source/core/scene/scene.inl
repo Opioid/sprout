@@ -17,16 +17,16 @@ inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
 
-inline bool Scene::intersect(Ray& ray, Worker& worker, Intersection& intersection) const {
-    return prop_bvh_.intersect(ray, worker, intersection);
+inline bool Scene::intersect(Ray& ray, Worker& worker, Intersection& isec) const {
+    return prop_bvh_.intersect(ray, worker, isec);
 }
 
 inline bool Scene::intersect(Ray& ray, Worker& worker, shape::Normals& normals) const {
     return prop_bvh_.intersect(ray, worker, normals);
 }
 
-inline bool Scene::intersect_volume(Ray& ray, Worker& worker, Intersection& intersection) const {
-    return volume_bvh_.intersect_nsf(ray, worker, intersection);
+inline bool Scene::intersect_volume(Ray& ray, Worker& worker, Intersection& isec) const {
+    return volume_bvh_.intersect_nsf(ray, worker, isec);
 }
 
 inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker& worker) const {
@@ -68,37 +68,38 @@ inline void Scene::prop_set_transformation(uint32_t entity, math::Transformation
 
     entity::Keyframe& local_frame = keyframes_[f + num_interpolation_frames_];
 
-    local_frame.transformation = t;
+    local_frame.trafo = t;
 }
 
 inline void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) {
     prop_world_transformations_[entity].set(t);
 }
 
-inline Scene::Transformation const& Scene::prop_transformation_at(
-    uint32_t entity, uint64_t time, Transformation& transformation) const {
+inline Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint64_t time,
+                                                                  Transformation& trafo) const {
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
         return prop_world_transformation(entity);
     }
 
-    return prop_animated_transformation_at(f, time, transformation);
+    return prop_animated_transformation_at(f, time, trafo);
 }
 
-inline Scene::Transformation const& Scene::prop_transformation_at(
-    uint32_t entity, uint64_t time, bool is_static, Transformation& transformation) const {
+inline Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint64_t time,
+                                                                  bool            is_static,
+                                                                  Transformation& trafo) const {
     if (is_static) {
         return prop_world_transformation(entity);
     }
 
-    return prop_animated_transformation_at(prop_frames_[entity], time, transformation);
+    return prop_animated_transformation_at(prop_frames_[entity], time, trafo);
 }
 
 inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const {
     entity::Keyframe const* frames = &keyframes_[prop_frames_[entity]];
 
-    return frames[num_interpolation_frames_].transformation;
+    return frames[num_interpolation_frames_].trafo;
 }
 
 inline AABB const& Scene::prop_aabb(uint32_t entity) const {
@@ -116,6 +117,11 @@ inline shape::Shape* Scene::prop_shape(uint32_t entity) const {
 inline material::Material const* Scene::prop_material(uint32_t entity, uint32_t part) const {
     uint32_t const p = prop_parts_[entity] + part;
     return material_resources_[materials_[p]];
+}
+
+inline uint32_t Scene::prop_material_id(uint32_t entity, uint32_t part) const {
+    uint32_t const p = prop_parts_[entity] + part;
+    return materials_[p];
 }
 
 inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const {
@@ -143,8 +149,16 @@ inline float Scene::light_area(uint32_t entity, uint32_t part) const {
     return lights_[light_id].area();
 }
 
-inline float3 Scene::light_center(uint32_t light) const {
-    return light_centers_[light];
+inline float Scene::light_power(uint32_t light) const {
+    return light_powers_[light];
+}
+
+inline AABB Scene::light_aabb(uint32_t light) const {
+    return light_aabbs_[light];
+}
+
+inline float4 Scene::light_cone(uint32_t light) const {
+    return light_cones_[light];
 }
 
 inline uint32_t Scene::num_props() const {

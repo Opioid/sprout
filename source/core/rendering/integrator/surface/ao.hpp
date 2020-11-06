@@ -16,16 +16,16 @@ class alignas(64) AO final : public Integrator {
         float    radius;
     };
 
-    AO(rnd::Generator& rng, Settings const& settings, bool progressive);
+    AO(Settings const& settings, bool progressive);
 
     ~AO() final;
 
     void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
 
-    void start_pixel() final;
+    void start_pixel(RNG& rng) final;
 
-    float4 li(Ray& ray, Intersection& intersection, Worker& worker,
-              Interface_stack const& initial_stack) final;
+    float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
+              AOV* aov) final;
 
   private:
     Settings const settings_;
@@ -37,7 +37,7 @@ class AO_pool final : public Typed_pool<AO> {
   public:
     AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius);
 
-    Integrator* get(uint32_t id, rnd::Generator& rng) const final;
+    Integrator* get(uint32_t id) const final;
 
   private:
     AO::Settings settings_;

@@ -58,13 +58,13 @@ class Worker {
 
     void init_rng(uint64_t sequence);
 
-    bool intersect(Ray& ray, Intersection& intersection);
+    bool intersect(Ray& ray, Intersection& isec);
 
     bool intersect(Ray& ray, shape::Normals& normals);
 
-    bool resolve_mask(Ray& ray, Intersection& intersection, Filter filter);
+    bool resolve_mask(Ray& ray, Intersection& isec, Filter filter);
 
-    bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection, Filter filter);
+    bool intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter);
 
     Result1 visibility(Ray const& ray, Filter filter);
 
@@ -89,36 +89,36 @@ class Worker {
 
     Interface_stack& interface_stack();
 
-    rnd::Generator& rng();
+    RNG& rng();
 
     void reset_interface_stack(Interface_stack const& stack);
 
-    float ior_outside(float3 const& wo, Intersection const& intersection) const;
+    float ior_outside(float3 const& wo, Intersection const& isec) const;
 
-    void interface_change(float3 const& dir, Intersection const& intersection);
+    void interface_change(float3 const& dir, Intersection const& isec);
 
-    material::IoR interface_change_ior(float3 const& dir, Intersection const& intersection);
+    material::IoR interface_change_ior(float3 const& dir, Intersection const& isec);
 
     Material_sample const& sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
-                                           Intersection const& intersection, Filter filter,
+                                           Intersection const& isec, Filter filter, float alpha,
                                            bool avoid_caustics, bool straight_border,
                                            Sampler& sampler);
 
     float4 screenspace_differential(Renderstate const& rs, uint64_t time) const;
 
   protected:
+    Scene const* scene_;
+
+    Camera const* camera_;
+
     rnd::Generator rng_;
-
-    shape::Node_stack node_stack_;
-
-    material::Sample_cache sample_cache_;
 
     Interface_stack interface_stack_;
     Interface_stack interface_stack_temp_;
 
-    Scene const* scene_;
+    shape::Node_stack node_stack_;
 
-    Camera const* camera_;
+    material::Sample_cache sample_cache_;
 };
 
 }  // namespace scene

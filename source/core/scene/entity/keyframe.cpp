@@ -24,26 +24,23 @@ void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restri
 
 void Keyframe::interpolate(Keyframe& __restrict result, Keyframe const& __restrict other,
                            float t) const {
-    result.transformation = lerp(transformation, other.transformation, t);
+    result.trafo = lerp(trafo, other.trafo, t);
 }
 
 void Keyframe::transform(Keyframe& result, Transformation const& from) const {
-    result.transformation.position = from.object_to_world_point(transformation.position);
+    result.trafo.position = from.object_to_world_point(trafo.position);
 
-    result.transformation.scale = transformation.scale;
+    result.trafo.scale = trafo.scale;
 
-    result.transformation.rotation = quaternion::mul(quaternion::create(from.rotation),
-                                                     transformation.rotation);
+    result.trafo.rotation = quaternion::mul(quaternion::create(from.rotation), trafo.rotation);
 }
 
 void Keyframe::transform(Keyframe& __restrict result, Keyframe const& __restrict from) const {
-    result.transformation.position = transform_point(float4x4(from.transformation),
-                                                     transformation.position);
+    result.trafo.position = transform_point(float4x4(from.trafo), trafo.position);
 
-    result.transformation.scale = transformation.scale;
+    result.trafo.scale = trafo.scale;
 
-    result.transformation.rotation = quaternion::mul(from.transformation.rotation,
-                                                     transformation.rotation);
+    result.trafo.rotation = quaternion::mul(from.trafo.rotation, trafo.rotation);
 }
 
 }  // namespace scene::entity

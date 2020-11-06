@@ -34,11 +34,11 @@ class BVH_wrapper {
 
     void set_props(std::vector<uint32_t> const& infinite_props, std::vector<Prop> const& props);
 
-    AABB const& aabb() const;
+    AABB aabb() const;
 
-    bool intersect(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect(Ray& ray, Worker& worker, Intersection& isec) const;
 
-    bool intersect_nsf(Ray& ray, Worker& worker, Intersection& intersection) const;
+    bool intersect_nsf(Ray& ray, Worker& worker, Intersection& isec) const;
 
     bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
 

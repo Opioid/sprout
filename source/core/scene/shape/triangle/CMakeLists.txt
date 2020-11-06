@@ -12,8 +12,6 @@ target_sources(core
     "triangle_mesh_provider.hpp"
     "triangle_mesh.cpp"
     "triangle_mesh.hpp"
-    "triangle_mesh_bvh.cpp"
-    "triangle_mesh_bvh.hpp"
     "triangle_morph_target_collection.cpp"
     "triangle_morph_target_collection.hpp"
     "triangle_morphable_mesh.cpp"
@@ -21,8 +19,6 @@ target_sources(core
     "triangle_primitive_mt.hpp"
     "triangle_primitive_mt.inl"
     "triangle_primitive.hpp"
-    "vertex_encoding.hpp"
-    "vertex_encoding.inl"
     "vertex_layout_description.cpp"
     "vertex_layout_description.hpp"
     )

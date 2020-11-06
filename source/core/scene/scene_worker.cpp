@@ -2,15 +2,15 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
-#include "material/material_sample.hpp"
+#include "material/material.inl"
+#include "material/material_helper.hpp"
+#include "material/material_sample.inl"
+#include "material/null/null_sample.hpp"
 #include "material/sampler_cache.hpp"
 #include "prop/interface_stack.inl"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.inl"
 #include "scene.hpp"
-#include "scene/material/material_helper.hpp"
-#include "scene/material/material_sample.inl"
-#include "scene/material/null/null_sample.hpp"
 #include "scene_constants.hpp"
 #include "scene_ray.inl"
 #include "shape/node_stack.inl"
@@ -20,6 +20,7 @@ namespace scene {
 
 static material::Sampler_cache const Sampler_cache;
 
+using Transformation     = entity::Composed_transformation;
 using Material_sample    = scene::material::Sample;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 using Texture_sampler_3D = image::texture::Sampler_3D;
@@ -37,10 +38,10 @@ void Worker::init_rng(uint64_t sequence) {
     rng_.start(0, sequence);
 }
 
-bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) {
+bool Worker::resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
     float const start_min_t = ray.min_t();
 
-    float opacity = intersection.opacity(ray.time, filter, *this);
+    float opacity = isec.opacity(ray.time, filter, *this);
 
     while (opacity < 1.f) {
         if (opacity > 0.f && opacity > rng_.random_float()) {
@@ -51,12 +52,12 @@ bool Worker::resolve_mask(Ray& ray, Intersection& intersection, Filter filter) {
         // Slide along ray until opaque surface is found
         ray.min_t() = offset_f(ray.max_t());
         ray.max_t() = scene::Ray_max_t;
-        if (!intersect(ray, intersection)) {
+        if (!intersect(ray, isec)) {
             ray.min_t() = start_min_t;
             return false;
         }
 
-        opacity = intersection.opacity(ray.time, filter, *this);
+        opacity = isec.opacity(ray.time, filter, *this);
     }
 
     ray.min_t() = start_min_t;
@@ -75,29 +76,29 @@ void Worker::reset_interface_stack(Interface_stack const& stack) {
     interface_stack_ = stack;
 }
 
-float Worker::ior_outside(float3 const& wo, Intersection const& intersection) const {
-    if (intersection.same_hemisphere(wo)) {
+float Worker::ior_outside(float3 const& wo, Intersection const& isec) const {
+    if (isec.same_hemisphere(wo)) {
         return interface_stack_.top_ior(*this);
     }
 
-    return interface_stack_.peek_ior(intersection, *this);
+    return interface_stack_.peek_ior(isec, *this);
 }
 
-void Worker::interface_change(float3 const& dir, Intersection const& intersection) {
-    if (bool const leave = intersection.same_hemisphere(dir); leave) {
-        interface_stack_.remove(intersection);
-    } else if (interface_stack_.straight(*this) | (intersection.material(*this)->ior() > 1.f)) {
-        interface_stack_.push(intersection);
+void Worker::interface_change(float3 const& dir, Intersection const& isec) {
+    if (bool const leave = isec.same_hemisphere(dir); leave) {
+        interface_stack_.remove(isec);
+    } else if (interface_stack_.straight(*this) | (isec.material(*this)->ior() > 1.f)) {
+        interface_stack_.push(isec);
     }
 }
 
-material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const& intersection) {
-    float const inter_ior = intersection.material(*this)->ior();
+material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const& isec) {
+    float const inter_ior = isec.material(*this)->ior();
 
-    if (bool const leave = intersection.same_hemisphere(dir); leave) {
-        auto const ior = material::IoR{interface_stack_.peek_ior(intersection, *this), inter_ior};
+    if (bool const leave = isec.same_hemisphere(dir); leave) {
+        auto const ior = material::IoR{interface_stack_.peek_ior(isec, *this), inter_ior};
 
-        interface_stack_.remove(intersection);
+        interface_stack_.remove(isec);
 
         return ior;
     }
@@ -105,44 +106,44 @@ material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const
     auto const ior = material::IoR{inter_ior, interface_stack_.top_ior(*this)};
 
     if (interface_stack_.straight(*this) | (inter_ior > 1.f)) {
-        interface_stack_.push(intersection);
+        interface_stack_.push(isec);
     }
 
     return ior;
 }
 
 Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
-                                               Intersection const& intersection, Filter filter,
+                                               Intersection const& isec, Filter filter, float alpha,
                                                bool avoid_caustics, bool straight_border,
                                                Sampler& sampler) {
-    auto material = intersection.material(*this);
+    auto material = isec.material(*this);
 
     float3 const wi = ray.direction;
 
-    if (((!intersection.subsurface) & straight_border & (material->ior() > 1.f)) &&
-        intersection.same_hemisphere(wi)) {
+    if (((!isec.subsurface) & straight_border & (material->ior() > 1.f)) &&
+        isec.same_hemisphere(wi)) {
         auto& sample = Worker::sample<material::null::Sample>();
 
-        float3 const geo_n = intersection.geo.geo_n;
-        float3 const n     = intersection.geo.n;
+        float3 const geo_n = isec.geo.geo_n;
+        float3 const n     = isec.geo.n;
 
         float const vbh = material->border(wi, n);
         float const nsc = material::non_symmetry_compensation(wi, wo1, geo_n, n);
 
-        sample.set_basis(geo_n, n, wo);
+        sample.set_common(geo_n, n, wo, alpha);
         sample.factor_ = nsc * vbh;
 
         return sample;
     }
 
-    return intersection.sample(wo, ray, filter, avoid_caustics, sampler, *this);
+    return isec.sample(wo, ray, filter, alpha, avoid_caustics, sampler, *this);
 }
 
 // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
 static float4 calculate_screenspace_differential(float3 const& p, float3 const& n,
                                                  Ray_differential const& rd, float3 const& dpdu,
                                                  float3 const& dpdv) {
-    // Compute offset-ray intersection points with tangent plane
+    // Compute offset-ray isec points with tangent plane
     float const d = dot(n, p);
 
     float const tx = -(dot(n, rd.x_origin) - d) / dot(n, rd.x_direction);
@@ -151,7 +152,7 @@ static float4 calculate_screenspace_differential(float3 const& p, float3 const& 
     float3 const px = rd.x_origin + tx * rd.x_direction;
     float3 const py = rd.y_origin + ty * rd.y_direction;
 
-    // Compute uv offsets at offset-ray intersection points
+    // Compute uv offsets at offset-ray isec points
     // Choose two dimensions to use for ray offset computations
     int2 dim;
     if (std::abs(n[0]) > std::abs(n[1]) && std::abs(n[0]) > std::abs(n[2])) {
@@ -186,13 +187,13 @@ static float4 calculate_screenspace_differential(float3 const& p, float3 const& 
 float4 Worker::screenspace_differential(Renderstate const& rs, uint64_t time) const {
     Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
 
-    entity::Composed_transformation temp;
-    auto const& transformation = scene_->prop_transformation_at(rs.prop, time, temp);
+    Transformation temp;
+    auto const&    trafo = scene_->prop_transformation_at(rs.prop, time, temp);
 
     auto const ds = scene_->prop_shape(rs.prop)->differential_surface(rs.primitive);
 
-    float3 const dpdu_w = transformation.object_to_world_vector(ds.dpdu);
-    float3 const dpdv_w = transformation.object_to_world_vector(ds.dpdv);
+    float3 const dpdu_w = trafo.object_to_world_vector(ds.dpdu);
+    float3 const dpdv_w = trafo.object_to_world_vector(ds.dpdv);
 
     return calculate_screenspace_differential(rs.p, rs.geo_n, rd, dpdu_w, dpdv_w);
 }
