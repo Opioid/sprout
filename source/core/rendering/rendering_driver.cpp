@@ -343,10 +343,8 @@ void Driver::render_frame_forward(uint32_t frame) {
         threads_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
-            uint32_t const num_samples = view_->num_samples_per_pixel;
-
             for (int4 tile; tiles_.pop(tile);) {
-                worker.render_a(frame_, frame_view_, 0, tile, num_samples);
+                worker.render_a(frame_, frame_view_, 0, tile);
 
                 progressor_.tick();
             }

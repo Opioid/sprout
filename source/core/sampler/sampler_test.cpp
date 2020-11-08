@@ -173,7 +173,7 @@ void render_disk(std::string const& name, Sampler& sampler, RNG& rng, Renderer& 
 
     float const n = 1.f / float(segment_len);
 
-    sampler.start_pixel(rng);
+    sampler.start_pixel(rng, num_samples);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
@@ -239,7 +239,7 @@ void render_triangle(std::string const& name, Sampler& sampler, RNG& rng, Render
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel(rng);
+    sampler.start_pixel(rng, num_samples);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
@@ -293,7 +293,7 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, RNG& rng, 
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel(rng);
+    sampler.start_pixel(rng, num_samples);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
@@ -347,7 +347,7 @@ void render_triangle_one(std::string const& name, Sampler& sampler, RNG& rng, Re
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel(rng);
+    sampler.start_pixel(rng, num_samples);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
 
@@ -401,7 +401,7 @@ void render_quad(std::string const& name, Sampler& sampler, RNG& rng, Renderer& 
 
     uint32_t const segment_len = num_samples / 4;
 
-    sampler.start_pixel(rng);
+    sampler.start_pixel(rng, num_samples);
 
     renderer.set_brush(float3(1.f, 0.f, 0.f));
     for (uint32_t i = 0; i < segment_len; ++i) {
@@ -443,7 +443,7 @@ void render_quad(std::string const& name, Sampler& sampler, RNG& rng, float2 cen
 
     uint32_t const num_samples = sampler.num_samples();
 
-    sampler.start_pixel(rng);
+    sampler.start_pixel(rng, num_samples);
 
     renderer.set_brush(float3(0.8f, 0.8f, 0.8f));
     for (uint32_t i = 0; i < num_samples; ++i) {

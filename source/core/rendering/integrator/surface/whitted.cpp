@@ -18,13 +18,13 @@ namespace rendering::integrator::surface {
 
 Whitted::Whitted() {}
 
-void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
+void Whitted::prepare(Scene const& scene, uint32_t max_samples_per_pixel) {
     uint32_t const num_lights = scene.num_lights();
-    sampler_.resize(num_samples_per_pixel, 1, num_lights, num_lights);
+    sampler_.resize(max_samples_per_pixel, 1, num_lights, num_lights);
 }
 
-void Whitted::start_pixel(RNG& rng) {
-    sampler_.start_pixel(rng);
+void Whitted::start_pixel(RNG& rng, uint32_t num_samples) {
+    sampler_.start_pixel(rng, num_samples);
 }
 
 float4 Whitted::li(Ray& ray, Intersection& isec, Worker& worker,

@@ -36,7 +36,7 @@ void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) {
     sampler_.resize(1, 1, 1, 1);
 }
 
-void Mapper::start_pixel(rnd::Generator& /*rng*/) {}
+void Mapper::start_pixel(rnd::Generator& /*rng*/, uint32_t /*num_samples*/) {}
 
 uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t /*iteration*/,
                       Worker& worker) {

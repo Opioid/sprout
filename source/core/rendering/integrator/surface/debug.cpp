@@ -21,11 +21,13 @@ Debug::Debug(Settings const& settings) : settings_(settings) {
     lights_.reserve(Settings::Value::Splitting == settings.value ? light::Tree::Max_lights : 0);
 }
 
-void Debug::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+void Debug::prepare(Scene const& /*scene*/, uint32_t max_samples_per_pixel) {
+    sampler_.resize(max_samples_per_pixel, 1, 1, 1);
 }
 
-void Debug::start_pixel(rnd::Generator& /*rng*/) {}
+void Debug::start_pixel(rnd::Generator& rng, uint32_t num_samples) {
+    sampler_.start_pixel(rng, num_samples);
+}
 
 float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
                  AOV* aov) {

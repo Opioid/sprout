@@ -44,7 +44,7 @@ class Mapper : public Integrator {
 
     void prepare(Scene const& scene, uint32_t num_photons) final;
 
-    void start_pixel(RNG& rng) final;
+    void start_pixel(RNG& rng, uint32_t num_samples) final;
 
     uint32_t bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint32_t iteration,
                   Worker& worker);

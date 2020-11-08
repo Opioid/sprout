@@ -89,12 +89,8 @@ class alignas(64) Worker : public scene::Worker {
     void render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                 uint32_t num_samples);
 
-    void render_ex(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
-                uint32_t num_samples);
 
-
-    void render_a(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
-                uint32_t num_samples);
+    void render_a(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile);
 
     void render_b(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
                 uint32_t num_samples);

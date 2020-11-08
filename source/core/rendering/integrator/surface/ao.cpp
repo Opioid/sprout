@@ -33,8 +33,8 @@ void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
     sampler_->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 
-void AO::start_pixel(RNG& rng) {
-    sampler_->start_pixel(rng);
+void AO::start_pixel(RNG& rng, uint32_t num_samples) {
+    sampler_->start_pixel(rng, num_samples);
 }
 
 float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,

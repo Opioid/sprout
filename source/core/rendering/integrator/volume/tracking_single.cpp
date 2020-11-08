@@ -69,15 +69,15 @@ void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_p
     }
 }
 
-void Tracking_single::start_pixel(RNG& rng) {
-    sampler_.start_pixel(rng);
+void Tracking_single::start_pixel(RNG& rng, uint32_t num_samples) {
+    sampler_.start_pixel(rng, num_samples);
 
     for (auto s : material_samplers_) {
-        s->start_pixel(rng);
+        s->start_pixel(rng, num_samples);
     }
 
     for (auto s : light_samplers_) {
-        s->start_pixel(rng);
+        s->start_pixel(rng, num_samples);
     }
 }
 /*

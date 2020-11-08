@@ -22,7 +22,7 @@ class Sampler {
     void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
                 uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
 
-    void start_pixel(RNG& rng);
+    void start_pixel(RNG& rng, uint32_t num_samples);
 
     uint32_t num_samples() const;
 
@@ -38,7 +38,7 @@ class Sampler {
     virtual void on_start_pixel(RNG& rng) = 0;
 
     uint32_t num_samples_;
-    uint32_t capacity_;
+    uint32_t num_samples_per_iteration_;
 
     uint32_t num_dimensions_2D_;
     uint32_t num_dimensions_1D_;

@@ -54,11 +54,11 @@ void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel)
     }
 }
 
-void Pathtracer::start_pixel(RNG& rng) {
-    sampler_.start_pixel(rng);
+void Pathtracer::start_pixel(RNG& rng, uint32_t num_samples) {
+    sampler_.start_pixel(rng, num_samples);
 
     for (auto& s : material_samplers_) {
-        s->start_pixel(rng);
+        s->start_pixel(rng, num_samples);
     }
 }
 

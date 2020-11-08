@@ -51,11 +51,11 @@ Pathtracer_DL::~Pathtracer_DL() {
     delete sampler_pool_;
 }
 
-void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+void Pathtracer_DL::prepare(Scene const& scene, uint32_t max_samples_per_pixel) {
+    sampler_.resize(max_samples_per_pixel, 1, 1, 1);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 1, 1, 1);
+        s->resize(max_samples_per_pixel, 1, 1, 1);
     }
 
     uint32_t const num_lights = scene.num_lights();
@@ -69,21 +69,21 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
     uint32_t const nd1 = all ? num_lights : max_lights + 1;
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, 1, nd2, nd1);
+        s->resize(max_samples_per_pixel, 1, nd2, nd1);
     }
 
     lights_.reserve(max_lights);
 }
 
-void Pathtracer_DL::start_pixel(RNG& rng) {
-    sampler_.start_pixel(rng);
+void Pathtracer_DL::start_pixel(RNG& rng, uint32_t num_samples) {
+    sampler_.start_pixel(rng, num_samples);
 
     for (auto s : material_samplers_) {
-        s->start_pixel(rng);
+        s->start_pixel(rng, num_samples);
     }
 
     for (auto s : light_samplers_) {
-        s->start_pixel(rng);
+        s->start_pixel(rng, num_samples);
     }
 }
 

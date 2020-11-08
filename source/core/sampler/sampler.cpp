@@ -5,7 +5,7 @@
 namespace sampler {
 
 Sampler::Sampler()
-    : num_samples_(0), capacity_(0), num_dimensions_2D_(0), num_dimensions_1D_(0), current_sample_(nullptr) {}
+    : num_samples_(0), num_samples_per_iteration_(0), num_dimensions_2D_(0), num_dimensions_1D_(0), current_sample_(nullptr) {}
 
 Sampler::~Sampler() {
     delete[] current_sample_;
@@ -15,26 +15,26 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
                      uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) {
     uint32_t const num_samples = num_iterations * num_samples_per_iteration;
 
-    uint32_t const demand = num_samples * 2 * num_dimensions_2D + num_samples * num_dimensions_1D;
+    num_samples_per_iteration_ = num_samples_per_iteration;
 
-
-    num_samples_ = num_samples;
-
-    num_dimensions_2D_ = num_dimensions_2D;
-    num_dimensions_1D_ = num_dimensions_1D;
-
-    if (demand > capacity_) {
+    if (num_samples != num_samples_ || num_dimensions_2D != num_dimensions_2D_ ||
+        num_dimensions_1D != num_dimensions_1D_) {
         delete[] current_sample_;
+
+        num_samples_ = num_samples;
+
+        num_dimensions_2D_ = num_dimensions_2D;
+        num_dimensions_1D_ = num_dimensions_1D;
 
         current_sample_ = new uint32_t[num_dimensions_2D + num_dimensions_1D];
 
         on_resize();
-
-        capacity_ = demand;
     }
 }
 
-void Sampler::start_pixel(RNG& rng) {
+void Sampler::start_pixel(RNG& rng, uint32_t num_samples) {
+    num_samples_ = num_samples * num_samples_per_iteration_;
+
     for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
         current_sample_[i] = 0;
     }

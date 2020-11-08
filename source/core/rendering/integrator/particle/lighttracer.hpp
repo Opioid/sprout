@@ -53,9 +53,9 @@ class alignas(64) Lighttracer final : public Integrator {
 
     ~Lighttracer() final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
+    void prepare(Scene const& scene, uint32_t max_samples_per_pixel) final;
 
-    void start_pixel(RNG& rng) final;
+    void start_pixel(RNG& rng, uint32_t num_samples) final;
 
     void li(uint32_t frame, Worker& worker, Interface_stack const& initial_stack);
 
