@@ -13,6 +13,8 @@
 #include "scene/scene.inl"
 #include "take/take.hpp"
 
+#include <iostream>
+
 namespace rendering {
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
@@ -197,8 +199,6 @@ void Driver::export_frame(uint32_t frame, Exporters& exporters) {
 
     auto const export_duration = chrono::seconds_since(export_start);
     logging::info("Export time %f s", export_duration);
-
-    view_->camera->sensor().export_variance(threads_);
 }
 
 void Driver::render_frame_backward(uint32_t frame) {
@@ -319,13 +319,13 @@ void Driver::render_frame_forward(uint32_t frame) {
 
     frame_ = frame;
 
-    progressor_.start(tiles_.size() * camera.num_views());
+    progressor_.start(tiles_.size() * camera.num_views() * 2);
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
         frame_view_ = v;
 
         tiles_.restart();
-
+/*
         threads_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
@@ -337,6 +337,37 @@ void Driver::render_frame_forward(uint32_t frame) {
                 progressor_.tick();
             }
         });
+*/
+
+
+        threads_.run_parallel([this](uint32_t index) noexcept {
+            auto& worker = workers_[index];
+
+            uint32_t const num_samples = view_->num_samples_per_pixel;
+
+            for (int4 tile; tiles_.pop(tile);) {
+                worker.render_a(frame_, frame_view_, 0, tile, num_samples);
+
+                progressor_.tick();
+            }
+        });
+
+        camera.sensor().estimate_variances(threads_);
+
+        tiles_.restart();
+
+        threads_.run_parallel([this](uint32_t index) noexcept {
+            auto& worker = workers_[index];
+
+            uint32_t const num_samples = view_->num_samples_per_pixel;
+
+            for (int4 tile; tiles_.pop(tile);) {
+                worker.render_b(frame_, frame_view_, 1, tile, num_samples);
+
+                progressor_.tick();
+            }
+        });
+
     }
 
     auto const duration = chrono::seconds_since(start);

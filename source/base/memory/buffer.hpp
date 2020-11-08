@@ -12,6 +12,12 @@ class Buffer {
 
     Buffer(size_t size) : data_(new T[size]) {}
 
+    Buffer(size_t size, T const& def) : data_(new T[size]) {
+        for (size_t i = 0; i < size; ++i) {
+            data_[i] = def;
+        }
+    }
+
     Buffer(Buffer&& other) noexcept : data_(other.data_) {
         other.data_ = nullptr;
     }

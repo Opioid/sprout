@@ -40,7 +40,9 @@ class Sensor {
 
     void set_variance(int2 pixel, float variance);
 
-    void export_variance(Threads& threads) const;
+    void estimate_variances(Threads& threads) const;
+
+    float variance(int2 pixel) const;
 
     int32_t filter_radius_int() const;
 
