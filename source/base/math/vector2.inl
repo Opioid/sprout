@@ -191,6 +191,12 @@ static constexpr Vector2<T> max(Vector2<T> a, Vector2<T> b) {
 }
 
 template <typename T>
+static constexpr Vector2<T> clamp(Vector2<T> v, T mi, Vector2<T> ma) {
+    return Vector2<T>(std::min(std::max(v[0], mi), ma[0]), std::min(std::max(v[1], mi), ma[1]));
+}
+
+
+template <typename T>
 static T constexpr max_component(Vector2<T> v) {
     return std::max(v[0], v[1]);
 }

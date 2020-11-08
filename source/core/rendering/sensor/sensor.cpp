@@ -150,7 +150,9 @@ void Sensor::estimate_variances(Threads& threads) const {
 }
 
 float Sensor::variance(int2 pixel) const {
-     int32_t const i = dimensions_[0] * pixel[1] + pixel[0];
+    pixel = clamp(pixel, 0, dimensions_);
+
+    int32_t const i = dimensions_[0] * pixel[1] + pixel[0];
 
     return variance_[i];
 }
