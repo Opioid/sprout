@@ -9,7 +9,8 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius, bool adaptive)
+Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius,
+                                   bool adaptive)
     : Base(filter_radius, adaptive), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
@@ -300,7 +301,8 @@ void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius, bool adaptive)
+Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius,
+                                           bool adaptive)
     : Filtered_base(clamp, std::move(filter), int32_t(std::ceil(filter_radius)), adaptive),
       filter_radius_(filter_radius) {}
 

@@ -333,7 +333,7 @@ void Driver::render_frame_forward(uint32_t frame) {
                 auto& worker = workers_[index];
 
                 for (int4 tile; tiles_.pop(tile);) {
-                    worker.render_a(frame_, frame_view_, 0, tile);
+                    worker.render_track_variance(frame_, frame_view_, tile);
 
                     progressor_.tick();
                 }
@@ -349,24 +349,23 @@ void Driver::render_frame_forward(uint32_t frame) {
                 uint32_t const num_samples = view_->num_samples_per_pixel;
 
                 for (int4 tile; tiles_.pop(tile);) {
-                    worker.render_b(frame_, frame_view_, 1, tile, num_samples);
+                    worker.render_use_variance(frame_, frame_view_, tile, num_samples);
 
                     progressor_.tick();
                 }
             });
         } else {
+            threads_.run_parallel([this](uint32_t index) noexcept {
+                auto& worker = workers_[index];
 
-        threads_.run_parallel([this](uint32_t index) noexcept {
-            auto& worker = workers_[index];
+                uint32_t const num_samples = view_->num_samples_per_pixel;
 
-            uint32_t const num_samples = view_->num_samples_per_pixel;
+                for (int4 tile; tiles_.pop(tile);) {
+                    worker.render(frame_, frame_view_, 0, tile, num_samples);
 
-            for (int4 tile; tiles_.pop(tile);) {
-                worker.render(frame_, frame_view_, 0, tile, num_samples);
-
-                progressor_.tick();
-            }
-        });
+                    progressor_.tick();
+                }
+            });
         }
     }
 

@@ -5,7 +5,8 @@
 
 namespace rendering::sensor {
 
-Opaque::Opaque(int32_t filter_radius, bool adaptive) : Sensor(filter_radius, adaptive), layers_(nullptr), pixels_(nullptr) {}
+Opaque::Opaque(int32_t filter_radius, bool adaptive)
+    : Sensor(filter_radius, adaptive), layers_(nullptr), pixels_(nullptr) {}
 
 Opaque::~Opaque() {
     delete[] layers_;

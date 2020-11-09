@@ -9,7 +9,11 @@
 namespace rendering::sensor {
 
 Sensor::Sensor(int32_t filter_radius, bool adaptive)
-    : dimensions_(0), filter_radius_(filter_radius), adaptive_(adaptive), num_layers_(0), variance_(nullptr) {}
+    : dimensions_(0),
+      filter_radius_(filter_radius),
+      adaptive_(adaptive),
+      num_layers_(0),
+      variance_(nullptr) {}
 
 Sensor::~Sensor() {
     delete[] variance_;
@@ -43,14 +47,18 @@ void Sensor::resolve(uint32_t slot, uint32_t num_samples, Threads& threads,
 }
 
 void Sensor::resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs) {
-    if (adaptive_ && dimensions_[0] * dimensions_[1] != dimensions[0] * dimensions[1]) {
-        delete variance_;
+    if (adaptive_) {
+        if (dimensions_[0] * dimensions_[1] != dimensions[0] * dimensions[1] || !variance_) {
+            delete[] variance_;
 
-        int32_t const m = filter_radius_int() > 0 ? 2 : 1;
+            int32_t const m = filter_radius_int() > 0 ? 2 : 1;
 
-        variance_ = new float[m * dimensions[0] * dimensions[1]];
+            variance_ = new float[m * dimensions[0] * dimensions[1]];
+        }
+    } else if (variance_) {
+        delete[] variance_;
     }
-    
+
     on_resize(dimensions, num_layers);
 
     aov_.resize(dimensions, aovs);
@@ -83,82 +91,98 @@ void Sensor::set_variance(int2 pixel, float variance) {
 }
 
 void Sensor::estimate_variances(Threads& threads) const {
-    image::encoding::png::Writer::write_heatmap("variance_a.png", variance_, dimensions_, threads);
-
     int32_t const r = filter_radius_int();
 
-    if (r > 0) {
-        int2 const d = dimensions_;
+    int2 const d = dimensions_;
 
-        int32_t const area = d[0] * d[1];
+    int32_t const area = d[0] * d[1];
 
-        float max_variance = 0.f;
+    float max_variance = 0.f;
 
-        {
+    memory::Buffer<float> max_variances(threads.num_threads(), 0.f);
 
-        float const*  source = variance_;
+    bool const filtered = r > 0;
 
-        float*  destination = variance_ + area;
+    if (filtered) {
+        float const* source = variance_;
 
-
-        memory::Buffer<float> max_variances(threads.num_threads(), 0.f);
+        float* destination = variance_ + area;
 
         threads.run_range(
-            [source, destination, d, r, &max_variances](uint32_t id, int32_t begin, int32_t end) noexcept {
+            [source, destination, d, r, &max_variances](uint32_t id, int32_t begin,
+                                                        int32_t end) noexcept {
                 float max_variance = 0.f;
 
+                for (int32_t y = begin; y < end; ++y) {
+                    for (int32_t x = 0; x < d[0]; ++x) {
+                        float variance = 0.f;
+                        for (int32_t fy = -r; fy <= r; ++fy) {
+                            for (int32_t fx = -r; fx <= r; ++fx) {
+                                int32_t const lx = x + fx;
+                                int32_t const ly = y + fy;
 
-                    for (int32_t y = begin; y < end; ++y) {
-                        for (int32_t x = 0; x < d[0]; ++x) {
-                            float variance = 0.f;
-                            for (int32_t fy = -r; fy <= r; ++fy) {
-                                for (int32_t fx = -r; fx <= r; ++fx) {
-                                    int32_t const lx = x + fx;
-                                    int32_t const ly = y + fy;
-
-                                    if (lx < 0 || lx >= d[0] || ly < 0 || ly >= d[1]) {
-                                        continue;
-                                    }
-
-                                    int32_t const i = d[0] * ly + lx;
-
-                                    variance = std::max(variance, source[i]);
+                                if (lx < 0 || lx >= d[0] || ly < 0 || ly >= d[1]) {
+                                    continue;
                                 }
+
+                                int32_t const i = d[0] * ly + lx;
+
+                                variance = std::max(variance, source[i]);
                             }
-
-                            int32_t const i = d[0] * y + x;
-
-                            destination[i] = variance;
-
-                            max_variance = std::max(max_variance, variance);
                         }
-                    }
 
+                        int32_t const i = d[0] * y + x;
+
+                        destination[i] = variance;
+
+                        max_variance = std::max(max_variance, variance);
+                    }
+                }
 
                 max_variances[id] = max_variance;
             },
             0, d[1]);
 
-
-        for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
-            max_variance = std::max(max_variance, max_variances[i]);
-        }
-        }
-
-        float const* source = variance_ + area;
-
-        float*  destination = variance_;
+    } else {
+        float const* source = variance_;
 
         threads.run_range(
-            [source, destination, max_variance](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-                for (int32_t i = begin; i < end; ++i) {
-                    destination[i] = source[i] / max_variance;
+            [source, d, &max_variances](uint32_t id, int32_t begin, int32_t end) noexcept {
+                float max_variance = 0.f;
+
+                for (int32_t y = begin; y < end; ++y) {
+                    for (int32_t x = 0; x < d[0]; ++x) {
+                        int32_t const i = d[0] * y + x;
+
+                        float const variance = source[i];
+
+                        max_variance = std::max(max_variance, variance);
+                    }
                 }
+
+                max_variances[id] = max_variance;
             },
-            0, area);
+            0, d[1]);
     }
 
-    image::encoding::png::Writer::write_heatmap("variance_b.png", variance_, dimensions_, threads);
+    for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
+        max_variance = std::max(max_variance, max_variances[i]);
+    }
+
+    float const* source = variance_ + (filtered ? area : 0);
+
+    float* destination = variance_;
+
+    threads.run_range(
+        [source, destination, max_variance](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t i = begin; i < end; ++i) {
+                float const nv = source[i] / max_variance;
+                destination[i] = nv;
+            }
+        },
+        0, area);
+
+    image::encoding::png::Writer::write_heatmap("variance.png", variance_, dimensions_, threads);
 }
 
 int32_t Sensor::filter_radius_int() const {

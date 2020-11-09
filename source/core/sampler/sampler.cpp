@@ -5,7 +5,11 @@
 namespace sampler {
 
 Sampler::Sampler()
-    : num_samples_(0), num_samples_per_iteration_(0), num_dimensions_2D_(0), num_dimensions_1D_(0), current_sample_(nullptr) {}
+    : num_samples_(0),
+      num_samples_per_iteration_(0),
+      num_dimensions_2D_(0),
+      num_dimensions_1D_(0),
+      current_sample_(nullptr) {}
 
 Sampler::~Sampler() {
     delete[] current_sample_;

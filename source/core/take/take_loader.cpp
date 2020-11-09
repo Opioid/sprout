@@ -380,7 +380,8 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value,
 }
 
 template <typename Base, typename Filter>
-static Sensor* make_filtered_sensor(float3 const& clamp_max, bool adaptive, json::Value const& filter_value) {
+static Sensor* make_filtered_sensor(float3 const& clamp_max, bool adaptive,
+                                    json::Value const& filter_value) {
     using namespace rendering::sensor;
 
     bool const clamp = !any_negative(clamp_max);
@@ -404,13 +405,13 @@ static Sensor* make_filtered_sensor(float3 const& clamp_max, bool adaptive, json
     }
 
     if (radius <= 1.f) {
-        return new Filtered_1p0<Base, clamp::Identity, Filter>(clamp::Identity(),
-                                                               std::move(filter), adaptive);
+        return new Filtered_1p0<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter),
+                                                               adaptive);
     }
 
     if (radius <= 2.f) {
-        return new Filtered_2p0<Base, clamp::Identity, Filter>(clamp::Identity(),
-                                                               std::move(filter), adaptive);
+        return new Filtered_2p0<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter),
+                                                               adaptive);
     }
 
     return new Filtered_inf<Base, clamp::Identity, Filter>(clamp::Identity(), std::move(filter),
@@ -442,7 +443,7 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
     using namespace rendering::sensor::filter;
 
     bool alpha_transparency = false;
-    bool adaptive = false;
+    bool adaptive           = false;
 
     float3 clamp_max(-1.f);
 
@@ -466,7 +467,8 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
     if (filter_value && Sensor_filter_type::Undefined != filter_type) {
         if (alpha_transparency) {
             if (Sensor_filter_type::Gaussian == filter_type) {
-                return make_filtered_sensor<Transparent, Gaussian>(clamp_max, adaptive, *filter_value);
+                return make_filtered_sensor<Transparent, Gaussian>(clamp_max, adaptive,
+                                                                   *filter_value);
             }
 
             return make_filtered_sensor<Transparent, Mitchell>(clamp_max, adaptive, *filter_value);
