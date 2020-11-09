@@ -319,53 +319,55 @@ void Driver::render_frame_forward(uint32_t frame) {
 
     frame_ = frame;
 
-    progressor_.start(tiles_.size() * camera.num_views() * 2);
+    bool const adaptive = camera.sensor().adaptive();
+
+    progressor_.start(tiles_.size() * camera.num_views() * (adaptive ? 2 : 1));
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
         frame_view_ = v;
 
         tiles_.restart();
-/*
+
+        if (adaptive) {
+            threads_.run_parallel([this](uint32_t index) noexcept {
+                auto& worker = workers_[index];
+
+                for (int4 tile; tiles_.pop(tile);) {
+                    worker.render_a(frame_, frame_view_, 0, tile);
+
+                    progressor_.tick();
+                }
+            });
+
+            camera.sensor().estimate_variances(threads_);
+
+            tiles_.restart();
+
+            threads_.run_parallel([this](uint32_t index) noexcept {
+                auto& worker = workers_[index];
+
+                uint32_t const num_samples = view_->num_samples_per_pixel;
+
+                for (int4 tile; tiles_.pop(tile);) {
+                    worker.render_b(frame_, frame_view_, 1, tile, num_samples);
+
+                    progressor_.tick();
+                }
+            });
+        } else {
+
         threads_.run_parallel([this](uint32_t index) noexcept {
             auto& worker = workers_[index];
 
             uint32_t const num_samples = view_->num_samples_per_pixel;
 
             for (int4 tile; tiles_.pop(tile);) {
-                worker.render_ex(frame_, frame_view_, 0, tile, num_samples);
+                worker.render(frame_, frame_view_, 0, tile, num_samples);
 
                 progressor_.tick();
             }
         });
-*/
-
-
-        threads_.run_parallel([this](uint32_t index) noexcept {
-            auto& worker = workers_[index];
-
-            for (int4 tile; tiles_.pop(tile);) {
-                worker.render_a(frame_, frame_view_, 0, tile);
-
-                progressor_.tick();
-            }
-        });
-
-        camera.sensor().estimate_variances(threads_);
-
-        tiles_.restart();
-
-        threads_.run_parallel([this](uint32_t index) noexcept {
-            auto& worker = workers_[index];
-
-            uint32_t const num_samples = view_->num_samples_per_pixel;
-
-            for (int4 tile; tiles_.pop(tile);) {
-                worker.render_b(frame_, frame_view_, 1, tile, num_samples);
-
-                progressor_.tick();
-            }
-        });
-
+        }
     }
 
     auto const duration = chrono::seconds_since(start);

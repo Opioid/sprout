@@ -255,10 +255,6 @@ void Worker::render_b(uint32_t frame, uint32_t view, uint32_t iteration, int4 co
 
     AOV* aov = aov_;
 
-
-    uint32_t const max_samples = num_samples - 16;
-
-
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
         uint64_t const o1 = uint64_t((y + fr) * r[0]) + o0;
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
@@ -268,7 +264,8 @@ void Worker::render_b(uint32_t frame, uint32_t view, uint32_t iteration, int4 co
 
             float const variance = sensor.variance(pixel);
 
-            uint32_t const num_actual_samples = std::max(uint32_t(variance * float(max_samples)), 1u);
+            uint32_t const num_actual_samples = std::min(uint32_t(std::ceil(variance * float(num_samples))), num_samples);
+
 
             rng_.start(0, o1 + uint64_t(x + fr));
 

@@ -23,7 +23,7 @@ class Sensor {
     using Camera_sample    = sampler::Camera_sample;
     using Camera_sample_to = sampler::Camera_sample_to;
 
-    Sensor(int32_t filter_radius);
+    Sensor(int32_t filter_radius, bool adaptive);
 
     virtual ~Sensor();
 
@@ -38,11 +38,13 @@ class Sensor {
 
     void resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs);
 
+    bool adaptive() const;
+
+    float variance(int2 pixel) const;
+
     void set_variance(int2 pixel, float variance);
 
     void estimate_variances(Threads& threads) const;
-
-    float variance(int2 pixel) const;
 
     int32_t filter_radius_int() const;
 
@@ -89,6 +91,8 @@ class Sensor {
     int2 dimensions_;
 
     int32_t const filter_radius_;
+
+    bool const adaptive_;
 
     int32_t num_layers_;
 

@@ -8,8 +8,8 @@
 
 namespace rendering::sensor {
 
-Sensor::Sensor(int32_t filter_radius)
-    : dimensions_(0), filter_radius_(filter_radius), num_layers_(0), variance_(nullptr) {}
+Sensor::Sensor(int32_t filter_radius, bool adaptive)
+    : dimensions_(0), filter_radius_(filter_radius), adaptive_(adaptive), num_layers_(0), variance_(nullptr) {}
 
 Sensor::~Sensor() {
     delete[] variance_;
@@ -43,7 +43,7 @@ void Sensor::resolve(uint32_t slot, uint32_t num_samples, Threads& threads,
 }
 
 void Sensor::resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs) {
-    if (dimensions_[0] * dimensions_[1] != dimensions[0] * dimensions[1]) {
+    if (adaptive_ && dimensions_[0] * dimensions_[1] != dimensions[0] * dimensions[1]) {
         delete variance_;
 
         int32_t const m = filter_radius_int() > 0 ? 2 : 1;
@@ -58,6 +58,18 @@ void Sensor::resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& 
     dimensions_ = dimensions;
 
     num_layers_ = num_layers;
+}
+
+bool Sensor::adaptive() const {
+    return adaptive_;
+}
+
+float Sensor::variance(int2 pixel) const {
+    pixel = clamp(pixel, 0, dimensions_ - 1);
+
+    int32_t const i = dimensions_[0] * pixel[1] + pixel[0];
+
+    return variance_[i];
 }
 
 void Sensor::set_variance(int2 pixel, float variance) {
@@ -147,14 +159,6 @@ void Sensor::estimate_variances(Threads& threads) const {
     }
 
     image::encoding::png::Writer::write_heatmap("variance_b.png", variance_, dimensions_, threads);
-}
-
-float Sensor::variance(int2 pixel) const {
-    pixel = clamp(pixel, 0, dimensions_ - 1);
-
-    int32_t const i = dimensions_[0] * pixel[1] + pixel[0];
-
-    return variance_[i];
 }
 
 int32_t Sensor::filter_radius_int() const {

@@ -9,8 +9,8 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius)
-    : Base(filter_radius), clamp_(clamp), filter_(std::move(filter)) {}
+Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius, bool adaptive)
+    : Base(filter_radius, adaptive), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
 Filtered<Base, Clamp, F>::~Filtered() = default;
@@ -86,8 +86,8 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 }
 
 template <class Base, class Clamp, class F>
-Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp const& clamp, F&& filter)
-    : Filtered_base(clamp, std::move(filter), 1) {}
+Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp const& clamp, F&& filter, bool adaptive)
+    : Filtered_base(clamp, std::move(filter), 1, adaptive) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
@@ -169,8 +169,8 @@ void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp const& clamp, F&& filter)
-    : Filtered_base(clamp, std::move(filter), 2) {}
+Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp const& clamp, F&& filter, bool adaptive)
+    : Filtered_base(clamp, std::move(filter), 2, adaptive) {}
 
 template <class Base, class Clamp, class F>
 void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
@@ -300,8 +300,8 @@ void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4 
 }
 
 template <class Base, class Clamp, class F>
-Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius)
-    : Filtered_base(clamp, std::move(filter), int32_t(std::ceil(filter_radius))),
+Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius, bool adaptive)
+    : Filtered_base(clamp, std::move(filter), int32_t(std::ceil(filter_radius)), adaptive),
       filter_radius_(filter_radius) {}
 
 template <class Base, class Clamp, class F>

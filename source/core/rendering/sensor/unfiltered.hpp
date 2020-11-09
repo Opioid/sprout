@@ -20,7 +20,7 @@ class Unfiltered final : public Base {
     using Sample    = sampler::Camera_sample;
     using Sample_to = sampler::Camera_sample_to;
 
-    Unfiltered(Clamp const& clamp);
+    Unfiltered(Clamp const& clamp, bool adaptive);
 
     void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
                     int4 const& isolated, int2 offset, int4 const& bounds) final;

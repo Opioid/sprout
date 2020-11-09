@@ -5,8 +5,8 @@
 
 namespace rendering::sensor {
 
-Transparent::Transparent(int32_t filter_radius)
-    : Sensor(filter_radius),
+Transparent::Transparent(int32_t filter_radius, bool adaptive)
+    : Sensor(filter_radius, adaptive),
       layer_weights_(nullptr),
       pixel_weights_(nullptr),
       layers_(nullptr),
