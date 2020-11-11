@@ -332,8 +332,13 @@ void Driver::render_frame_forward(uint32_t frame) {
             threads_.run_parallel([this](uint32_t index) noexcept {
                 auto& worker = workers_[index];
 
+                uint32_t const max_samples = view_->num_samples_per_pixel;
+
+                uint32_t num_samples = std::max(uint32_t(std::ceil(0.1f * float(max_samples))),
+                                                16u);
+
                 for (int4 tile; tiles_.pop(tile);) {
-                    worker.render_track_variance(frame_, frame_view_, tile);
+                    worker.render_track_variance(frame_, frame_view_, tile, num_samples);
 
                     progressor_.tick();
                 }

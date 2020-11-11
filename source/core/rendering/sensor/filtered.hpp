@@ -55,8 +55,8 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_1p0(Clamp const& clamp, F&& filter, bool adapative);
 
-    void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
-                    int4 const& isolated, int2 offset, int4 const& bounds) final;
+    float4 add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
+                      int4 const& isolated, int2 offset, int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;
@@ -72,8 +72,8 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_2p0(Clamp const& clamp, F&& filter, bool adaptive);
 
-    void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
-                    int4 const& isolated, int2 offset, int4 const& bounds) final;
+    float4 add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
+                      int4 const& isolated, int2 offset, int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;
@@ -89,8 +89,8 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
 
     Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius, bool adapative);
 
-    void add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
-                    int4 const& isolated, int2 offset, int4 const& bounds) final;
+    float4 add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
+                      int4 const& isolated, int2 offset, int4 const& bounds) final;
 
     void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
                       int4 const& bounds) final;

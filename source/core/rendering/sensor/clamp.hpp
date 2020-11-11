@@ -1,8 +1,8 @@
 #ifndef SU_CORE_RENDERING_SENSOR_CLAMP_HPP
 #define SU_CORE_RENDERING_SENSOR_CLAMP_HPP
 
+#include "base/math/vector.hpp"
 #include "base/math/vector3.hpp"
-#include "base/math/vector4.hpp"
 
 namespace rendering::sensor::clamp {
 

@@ -58,8 +58,9 @@ class Sensor {
 
     virtual void fix_zero_weights() = 0;
 
-    virtual void add_sample(Camera_sample const& sample, float4 const& color, aov::Value const* aov,
-                            int4 const& isolated, int2 offset, int4 const& bounds) = 0;
+    virtual float4 add_sample(Camera_sample const& sample, float4 const& color,
+                              aov::Value const* aov, int4 const& isolated, int2 offset,
+                              int4 const& bounds) = 0;
 
     virtual void splat_sample(Camera_sample_to const& sample, float4 const& color, int2 offset,
                               int4 const& bounds) = 0;

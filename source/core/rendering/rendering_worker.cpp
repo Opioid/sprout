@@ -135,7 +135,8 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 cons
     }
 }
 
-void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& tile) {
+void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& tile,
+                                   uint32_t num_samples) {
     Camera const& camera = *camera_;
 
     int2 const offset = camera.view_offset(view);
@@ -160,20 +161,16 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
 
     AOV* aov = aov_;
 
-    uint32_t constexpr Num_samples = 16;
-
     for (int32_t y = tile[1], y_back = tile[3]; y <= y_back; ++y) {
         uint64_t const o1 = uint64_t((y + fr) * r[0]);
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
             rng_.start(0, o1 + uint64_t(x + fr));
 
-            sampler_->start_pixel(rng(), Num_samples);
-            surface_integrator_->start_pixel(rng(), Num_samples);
-            volume_integrator_->start_pixel(rng(), Num_samples);
+            sampler_->start_pixel(rng(), num_samples);
+            surface_integrator_->start_pixel(rng(), num_samples);
+            volume_integrator_->start_pixel(rng(), num_samples);
 
             int2 const pixel(x, y);
-
-            uint32_t n = 1;
 
             float old_m;
             float new_m;
@@ -181,7 +178,7 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
             float new_s;
             float total = 0.f;
 
-            for (uint32_t i = Num_samples; i > 0; --i, ++n) {
+            for (uint32_t i = num_samples, n = 1; i > 0; --i, ++n) {
                 if (aov) {
                     aov->clear();
                 }
@@ -191,10 +188,11 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
                 float value = 0.f;
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {
-                    float4 const color = li(ray, camera.interface_stack(), aov);
-                    sensor.add_sample(sample, color, aov, isolated_bounds, offset, crop);
+                    float4 const color   = li(ray, camera.interface_stack(), aov);
+                    float4 const clamped = sensor.add_sample(sample, color, aov, isolated_bounds,
+                                                             offset, crop);
 
-                    value = max_component(color.xyz());
+                    value = max_component(clamped.xyz());
                 } else {
                     sensor.add_sample(sample, float4(0.f), aov, isolated_bounds, offset, crop);
                 }
@@ -215,10 +213,11 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
                 total += value;
             }
 
-            float const average  = total / float(Num_samples);
-            float const variance = new_s / float(Num_samples - 1);
+            float const average  = total / float(num_samples);
+            float const variance = new_s / float(num_samples - 1);
 
-            sensor.set_variance(pixel, average > 0.f ? std::sqrt(variance) / average : 0.f);
+            sensor.set_variance(
+                pixel, average > 0.f ? std::sqrt(variance) / std::max(average, 0.02f) : 0.f);
         }
     }
 }

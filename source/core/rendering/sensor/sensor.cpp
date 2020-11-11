@@ -177,7 +177,7 @@ void Sensor::estimate_variances(Threads& threads) const {
         [source, destination, max_variance](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t i = begin; i < end; ++i) {
                 float const nv = source[i] / max_variance;
-                destination[i] = nv;
+                destination[i] = nv * nv;
             }
         },
         0, area);

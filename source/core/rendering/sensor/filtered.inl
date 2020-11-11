@@ -91,9 +91,9 @@ Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp const& clamp, F&& filter, bool 
     : Filtered_base(clamp, std::move(filter), 1, adaptive) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              aov::Value const* aov, int4 const& isolated,
-                                              int2 offset, int4 const& bounds) {
+float4 Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
+                                                aov::Value const* aov, int4 const& isolated,
+                                                int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = offset[0] + sample.pixel[0];
@@ -132,6 +132,8 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
             Filtered_base::add_weighted(int2(x, y), i, 1.f, v, isolated, bounds);
         }
     }
+
+    return clamped;
 }
 
 template <class Base, class Clamp, class F>
@@ -174,9 +176,9 @@ Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp const& clamp, F&& filter, bool 
     : Filtered_base(clamp, std::move(filter), 2, adaptive) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              aov::Value const* aov, int4 const& isolated,
-                                              int2 offset, int4 const& bounds) {
+float4 Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
+                                                aov::Value const* aov, int4 const& isolated,
+                                                int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const x = offset[0] + sample.pixel[0];
@@ -239,6 +241,8 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
             Filtered_base::add_weighted(int2(x, y), i, 1.f, v, isolated, bounds);
         }
     }
+
+    return clamped;
 }
 
 template <class Base, class Clamp, class F>
@@ -307,9 +311,9 @@ Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float
       filter_radius_(filter_radius) {}
 
 template <class Base, class Clamp, class F>
-void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
-                                              aov::Value const* aov, int4 const& isolated,
-                                              int2 offset, int4 const& bounds) {
+float4 Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const& color,
+                                                aov::Value const* aov, int4 const& isolated,
+                                                int2 offset, int4 const& bounds) {
     float4 const clamped = Filtered_base::clamp_.clamp(color);
 
     int32_t const px = offset[0] + sample.pixel[0];
@@ -337,6 +341,8 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
             Filtered_base::add_weighted(int2(px, py), i, 1.f, v, isolated, bounds);
         }
     }
+
+    return clamped;
 }
 
 template <class Base, class Clamp, class F>
