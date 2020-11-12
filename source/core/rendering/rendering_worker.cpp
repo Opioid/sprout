@@ -223,7 +223,7 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
 }
 
 void Worker::render_use_variance(uint32_t frame, uint32_t view, int4 const& tile,
-                                 uint32_t num_samples) {
+                                 uint32_t max_samples) {
     Camera const& camera = *camera_;
 
     int2 const offset = camera.view_offset(view);
@@ -255,18 +255,15 @@ void Worker::render_use_variance(uint32_t frame, uint32_t view, int4 const& tile
         for (int32_t x = tile[0], x_back = tile[2]; x <= x_back; ++x) {
             int2 const pixel(x, y);
 
-            float const variance = sensor.variance(pixel);
-
-            uint32_t const num_actual_samples = std::min(
-                uint32_t(std::ceil(variance * float(num_samples))), num_samples);
+            uint32_t const num_samples = sensor.num_samples_by_estimate(pixel, max_samples);
 
             rng_.start(0, o1 + uint64_t(x + fr));
 
-            sampler_->start_pixel(rng(), num_actual_samples);
-            surface_integrator_->start_pixel(rng(), num_actual_samples);
-            volume_integrator_->start_pixel(rng(), num_actual_samples);
+            sampler_->start_pixel(rng(), num_samples);
+            surface_integrator_->start_pixel(rng(), num_samples);
+            volume_integrator_->start_pixel(rng(), num_samples);
 
-            for (uint32_t i = num_actual_samples; i > 0; --i) {
+            for (uint32_t i = num_samples; i > 0; --i) {
                 auto const sample = sampler_->camera_sample(rng(), pixel);
 
                 if (Ray ray; camera.generate_ray(sample, frame, view, *scene_, ray)) {

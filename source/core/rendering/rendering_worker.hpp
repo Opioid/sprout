@@ -90,7 +90,7 @@ class alignas(64) Worker : public scene::Worker {
                 uint32_t num_samples);
 
     void render_track_variance(uint32_t frame, uint32_t view, int4 const& tile,
-                               uint32_t num_samples);
+                               uint32_t max_samples);
 
     void render_use_variance(uint32_t frame, uint32_t view, int4 const& tile, uint32_t num_samples);
 

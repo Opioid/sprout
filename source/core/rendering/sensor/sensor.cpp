@@ -72,12 +72,24 @@ bool Sensor::adaptive() const {
     return adaptive_;
 }
 
-float Sensor::variance(int2 pixel) const {
+uint32_t Sensor::num_samples_to_estimate(uint32_t max_samples) {
+    return std::max(uint32_t(std::ceil(0.1f * float(max_samples))), 16u);
+}
+
+uint32_t Sensor::num_samples_by_estimate(int2 pixel, uint32_t max_samples) const {
     pixel = clamp(pixel, 0, dimensions_ - 1);
 
-    int32_t const i = dimensions_[0] * pixel[1] + pixel[0];
+    return num_samples_by_estimate(dimensions_[0] * pixel[1] + pixel[0], max_samples);
+}
 
-    return variance_[i];
+uint32_t Sensor::num_samples_by_estimate(int32_t id, uint32_t max_samples) const {
+    int32_t const i = variance_start_ + id;
+
+    float const nv = variance_[i] / max_variance_;
+
+    float const f = nv * nv;
+
+    return std::min(uint32_t(std::ceil(f * float(max_samples))), max_samples);
 }
 
 void Sensor::set_variance(int2 pixel, float variance) {
@@ -90,7 +102,7 @@ void Sensor::set_variance(int2 pixel, float variance) {
     variance_[i] = variance;
 }
 
-void Sensor::estimate_variances(Threads& threads) const {
+void Sensor::estimate_variances(Threads& threads) {
     int32_t const r = filter_radius_int();
 
     int2 const d = dimensions_;
@@ -168,6 +180,9 @@ void Sensor::estimate_variances(Threads& threads) const {
     for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
         max_variance = std::max(max_variance, max_variances[i]);
     }
+
+    variance_start_ = filtered ? area : 0;
+    max_variance_   = max_variance;
 
     float const* source = variance_ + (filtered ? area : 0);
 
