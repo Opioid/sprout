@@ -21,14 +21,11 @@ void Aces::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
 
 #ifdef SU_ACESCG
         float3 const rrt = spectrum::AP1_to_RRT_SAT(scaled);
-        // float3 const odt  = spectrum::ToneTF2(rrt);
+#else
+        float3 const rrt = spectrum::sRGB_to_RRT_SAT(scaled);
+#endif
         float3 const odt  = spectrum::RRT_and_ODT(rrt);
         float3 const srgb = spectrum::ODT_SAT_to_sRGB(odt);
-#else
-        float3 const rrt  = spectrum::sRGB_to_RRT_SAT(scaled);
-        float3 const odt  = spectrum::ToneTF2(rrt);
-        float3 const srgb = spectrum::ODT_SAT_to_sRGB(odt);
-#endif
 
         destination.store(i, float4(srgb, color[3]));
     }
