@@ -12,13 +12,13 @@ namespace spectrum {
 
 // sRGB => XYZ => D65_2_D60 => AP1
 static inline float3 constexpr sRGB_to_AP1(float3 const& srgb) {
-    return float3(0.613097f * srgb[0] + 0.339523f * srgb[1] + 0.047379f * srgb[2],
-                  0.070194f * srgb[0] + 0.916354f * srgb[1] + 0.013452f * srgb[2],
-                  0.020616f * srgb[0] + 0.109570f * srgb[1] + 0.869815f * srgb[2]);
+    return float3(0.61309732f * srgb[0] + 0.33952285f * srgb[1] + 0.04737928f * srgb[2],
+                  0.07019422f * srgb[0] + 0.91635557f * srgb[1] + 0.01345259f * srgb[2],
+                  0.02061560f * srgb[0] + 0.10956983f * srgb[1] + 0.86981512f * srgb[2]);
 }
 
 static inline float3 constexpr AP1_to_sRGB(float3 const& srgb) {
-    return float3(+1.70505155f * srgb[0] - 0.62179068f * srgb[1] - 0.0832584f * srgb[2],
+    return float3(+1.70505155f * srgb[0] - 0.62179068f * srgb[1] - 0.08325840f * srgb[2],
                   -0.13025714f * srgb[0] + 1.14080289f * srgb[1] - 0.01054853f * srgb[2],
                   -0.02400328f * srgb[0] - 0.12896877f * srgb[1] + 1.15297171f * srgb[2]);
 }
@@ -49,20 +49,6 @@ static inline float3 constexpr RRT_and_ODT(float3 const& x) {
     float3 const b = x * (0.983729f * x + 0.4329510f) + 0.238081f;
     return a / b;
 }
-
-static inline float3 constexpr ToneTF2(float3 const& x) {
-    float3 const a = x * (x + 0.0822192f);
-    float3 const b = x * (0.983521f * x + 0.5001330f) + 0.274064f;
-
-    return a / b;
-}
-
-// ZYZ => D65_2_D60 => AP1
-// static inline float3 XYZ_to_AP1(float3 const& xyz) {
-//    return float3(1.6410233797f * xyz[0] + -0.3248032942f * xyz[1] + -0.2364246952f * xyz[2],
-//                  -0.6636628587f * xyz[0] + 1.6153315917f * xyz[1] + 0.0167563477f * xyz[2],
-//                  0.0117218943f * xyz[0] + -0.0082844420f * xyz[1] + 0.9883948585f * xyz[2]);
-//}
 
 // XYZ => D65_2_D60 => AP1
 static inline float3 XYZ_to_AP1(float3 const& xyz) {
