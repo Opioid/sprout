@@ -13,8 +13,6 @@
 #include "scene/scene.inl"
 #include "take/take.hpp"
 
-#include <iostream>
-
 namespace rendering {
 
 static uint32_t constexpr Num_particles_per_chunk = 1024;
@@ -237,7 +235,6 @@ void Driver::render_frame_backward(uint32_t frame) {
     });
 
 #ifdef PARTICLE_GUIDING
-
     particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
 
@@ -252,7 +249,6 @@ void Driver::render_frame_backward(uint32_t frame) {
             progressor_.tick();
         }
     });
-
 #endif
 
     // If there will be a forward pass later...
@@ -343,7 +339,7 @@ void Driver::render_frame_forward(uint32_t frame) {
                 }
             });
 
-            camera.sensor().estimate_variances(threads_);
+            camera.sensor().normalize_variance_estimate(threads_);
 
             tiles_.restart();
 

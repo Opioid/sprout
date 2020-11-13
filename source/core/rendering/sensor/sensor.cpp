@@ -92,7 +92,7 @@ uint32_t Sensor::num_samples_by_estimate(int32_t id, uint32_t max_samples) const
     return std::min(uint32_t(std::ceil(f * float(max_samples))), max_samples);
 }
 
-void Sensor::set_variance(int2 pixel, float variance) {
+void Sensor::set_variance_estimate(int2 pixel, float variance) {
     if (pixel[0] < 0 || pixel[0] >= dimensions_[0] || pixel[1] < 0 || pixel[1] >= dimensions_[1]) {
         return;
     }
@@ -102,7 +102,7 @@ void Sensor::set_variance(int2 pixel, float variance) {
     variance_[i] = variance;
 }
 
-void Sensor::estimate_variances(Threads& threads) {
+void Sensor::normalize_variance_estimate(Threads& threads) {
     int32_t const r = filter_radius_int();
 
     int2 const d = dimensions_;

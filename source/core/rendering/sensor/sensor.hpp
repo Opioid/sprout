@@ -45,9 +45,9 @@ class Sensor {
     uint32_t num_samples_by_estimate(int2 pixel, uint32_t max_samples) const;
     uint32_t num_samples_by_estimate(int32_t id, uint32_t max_samples) const;
 
-    void set_variance(int2 pixel, float variance);
+    void set_variance_estimate(int2 pixel, float variance);
 
-    void estimate_variances(Threads& threads);
+    void normalize_variance_estimate(Threads& threads);
 
     int32_t filter_radius_int() const;
 

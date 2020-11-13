@@ -27,8 +27,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace rendering {
 
 Worker::Worker() = default;
@@ -192,7 +190,8 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
                     float4 const clamped = sensor.add_sample(sample, color, aov, isolated_bounds,
                                                              offset, crop);
 
-                    value = max_component(clamped.xyz());
+                    float const v = max_component(clamped.xyz());
+                    value         = v;  // * v;
                 } else {
                     sensor.add_sample(sample, float4(0.f), aov, isolated_bounds, offset, crop);
                 }
@@ -200,7 +199,7 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
                 // https://www.johndcook.com/blog/standard_deviation/
                 if (1 == n) {
                     old_m = new_m = value;
-                    old_s         = 0.0;
+                    old_s         = 0.f;
                 } else {
                     new_m = old_m + (value - old_m) / n;
                     new_s = old_s + (value - old_m) * (value - new_m);
@@ -215,9 +214,9 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
 
             float const average  = total / float(num_samples);
             float const variance = new_s / float(num_samples - 1);
+            float const coeff    = std::min(std::sqrt(variance) / std::max(average, 0.025f), 8.f);
 
-            sensor.set_variance(
-                pixel, average > 0.f ? std::sqrt(variance) / std::max(average, 0.02f) : 0.f);
+            sensor.set_variance_estimate(pixel, average > 0.f ? coeff : 0.f);
         }
     }
 }
