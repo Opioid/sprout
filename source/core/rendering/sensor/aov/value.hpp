@@ -36,6 +36,8 @@ class Value {
 
     float3 value(uint32_t id) const;
 
+    bool accumulating(uint32_t id) const;
+
   private:
     Mapping mapping_;
 
@@ -43,6 +45,7 @@ class Value {
 
     struct alignas(16) Slot {
         float v[3];
+        bool  accumulating;
     };
 
     Slot* slots_;

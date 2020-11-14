@@ -16,6 +16,8 @@ enum class Property {
 
 image::Encoding encoding(Property property);
 
+bool accumulating(Property property);
+
 }  // namespace rendering::sensor::aov
 
 #endif

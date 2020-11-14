@@ -54,6 +54,15 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4 con
 }
 
 template <class Base, class Clamp, class F>
+void Filtered<Base, Clamp, F>::overwrite(int2 pixel, uint32_t slot, float3 const& value,
+                                         int4 const& bounds) {
+    if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
+        (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
+        Base::overwrite_AOV(pixel, slot, value);
+    }
+}
+
+template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset,
                                               float4 const& color, int4 const& isolated,
                                               int4 const& bounds) {
@@ -73,8 +82,9 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 }
 
 template <class Base, class Clamp, class F>
-void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, uint32_t slot, float2 relative_offset, float3 const& value,
-                                              int4 const& isolated, int4 const& bounds) {
+void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, uint32_t slot, float2 relative_offset,
+                                              float3 const& value, int4 const& isolated,
+                                              int4 const& bounds) {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
@@ -146,20 +156,24 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            // 1. row
-            Filtered_base::add_weighted(int2(x - 1, y - 1), i, wx0 * wy0, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y - 1), i, wx1 * wy0, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y - 1), i, wx2 * wy0, v, isolated, bounds);
+            if (aov->accumulating(i)) {
+                // 1. row
+                Filtered_base::add_weighted(int2(x - 1, y - 1), i, wx0 * wy0, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y - 1), i, wx1 * wy0, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y - 1), i, wx2 * wy0, v, isolated, bounds);
 
-            // 2. row
-            Filtered_base::add_weighted(int2(x - 1, y), i, wx0 * wy1, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y), i, wx1 * wy1, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y), i, wx2 * wy1, v, isolated, bounds);
+                // 2. row
+                Filtered_base::add_weighted(int2(x - 1, y), i, wx0 * wy1, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y), i, wx1 * wy1, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y), i, wx2 * wy1, v, isolated, bounds);
 
-            // 3. row
-            Filtered_base::add_weighted(int2(x - 1, y + 1), i, wx0 * wy2, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y + 1), i, wx1 * wy2, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y + 1), i, wx2 * wy2, v, isolated, bounds);
+                // 3. row
+                Filtered_base::add_weighted(int2(x - 1, y + 1), i, wx0 * wy2, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y + 1), i, wx1 * wy2, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y + 1), i, wx2 * wy2, v, isolated, bounds);
+            } else {
+                Filtered_base::overwrite(int2(x, y), i, v, bounds);
+            }
         }
     }
 }
@@ -266,40 +280,44 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            // 1. row
-            Filtered_base::add_weighted(int2(x - 2, y - 2), i, wx0 * wy0, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x - 1, y - 2), i, wx1 * wy0, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y - 2), i, wx2 * wy0, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y - 2), i, wx3 * wy0, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 2, y - 2), i, wx4 * wy0, v, isolated, bounds);
+            if (aov->accumulating(i)) {
+                // 1. row
+                Filtered_base::add_weighted(int2(x - 2, y - 2), i, wx0 * wy0, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x - 1, y - 2), i, wx1 * wy0, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y - 2), i, wx2 * wy0, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y - 2), i, wx3 * wy0, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 2, y - 2), i, wx4 * wy0, v, isolated, bounds);
 
-            // 2. row
-            Filtered_base::add_weighted(int2(x - 2, y - 1), i, wx0 * wy1, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x - 1, y - 1), i, wx1 * wy1, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y - 1), i, wx2 * wy1, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y - 1), i, wx3 * wy1, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 2, y - 1), i, wx4 * wy1, v, isolated, bounds);
+                // 2. row
+                Filtered_base::add_weighted(int2(x - 2, y - 1), i, wx0 * wy1, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x - 1, y - 1), i, wx1 * wy1, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y - 1), i, wx2 * wy1, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y - 1), i, wx3 * wy1, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 2, y - 1), i, wx4 * wy1, v, isolated, bounds);
 
-            // 3. row
-            Filtered_base::add_weighted(int2(x - 2, y), i, wx0 * wy2, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x - 1, y), i, wx1 * wy2, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y), i, wx2 * wy2, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y), i, wx3 * wy2, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 2, y), i, wx4 * wy2, v, isolated, bounds);
+                // 3. row
+                Filtered_base::add_weighted(int2(x - 2, y), i, wx0 * wy2, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x - 1, y), i, wx1 * wy2, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y), i, wx2 * wy2, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y), i, wx3 * wy2, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 2, y), i, wx4 * wy2, v, isolated, bounds);
 
-            // 4. row
-            Filtered_base::add_weighted(int2(x - 2, y + 1), i, wx0 * wy3, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x - 1, y + 1), i, wx1 * wy3, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y + 1), i, wx2 * wy3, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y + 1), i, wx3 * wy3, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 2, y + 1), i, wx4 * wy3, v, isolated, bounds);
+                // 4. row
+                Filtered_base::add_weighted(int2(x - 2, y + 1), i, wx0 * wy3, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x - 1, y + 1), i, wx1 * wy3, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y + 1), i, wx2 * wy3, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y + 1), i, wx3 * wy3, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 2, y + 1), i, wx4 * wy3, v, isolated, bounds);
 
-            // 5. row
-            Filtered_base::add_weighted(int2(x - 2, y + 2), i, wx0 * wy4, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x - 1, y + 2), i, wx1 * wy4, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x, y + 2), i, wx2 * wy4, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 1, y + 2), i, wx3 * wy4, v, isolated, bounds);
-            Filtered_base::add_weighted(int2(x + 2, y + 2), i, wx4 * wy4, v, isolated, bounds);
+                // 5. row
+                Filtered_base::add_weighted(int2(x - 2, y + 2), i, wx0 * wy4, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x - 1, y + 2), i, wx1 * wy4, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x, y + 2), i, wx2 * wy4, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 1, y + 2), i, wx3 * wy4, v, isolated, bounds);
+                Filtered_base::add_weighted(int2(x + 2, y + 2), i, wx4 * wy4, v, isolated, bounds);
+            } else {
+                Filtered_base::overwrite(int2(x, y), i, v, bounds);
+            }
         }
     }
 }
@@ -396,16 +414,20 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 const
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            for (int32_t ky = -r; ky <= r; ++ky) {
-                for (int32_t kx = -r; kx <= r; ++kx) {
-                    int2 const pixel(px + kx, py + ky);
+            if (aov->accumulating(i)) {
+                for (int32_t ky = -r; ky <= r; ++ky) {
+                    for (int32_t kx = -r; kx <= r; ++kx) {
+                        int2 const pixel(px + kx, py + ky);
 
-                    float2 const ro = sample.pixel_uv - 0.5f - float2(kx, ky);
+                        float2 const ro = sample.pixel_uv - 0.5f - float2(kx, ky);
 
-                    if ((ro[0] < rf) & (ro[1] < rf)) {
-                        Filtered_base::weight_and_add(pixel, i, ro, v, isolated, bounds);
+                        if ((ro[0] < rf) & (ro[1] < rf)) {
+                            Filtered_base::weight_and_add(pixel, i, ro, v, isolated, bounds);
+                        }
                     }
                 }
+            } else {
+                Filtered_base::overwrite(int2(px, py), i, v, bounds);
             }
         }
     }

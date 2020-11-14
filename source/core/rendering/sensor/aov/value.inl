@@ -23,15 +23,23 @@ inline void Value::insert(float3 const& v, Property aov) {
         return;
     }
 
-    slots_[id].v[0] = v[0];
-    slots_[id].v[1] = v[1];
-    slots_[id].v[2] = v[2];
+    Slot& slot = slots_[id];
+
+    slot.v[0] = v[0];
+    slot.v[1] = v[1];
+    slot.v[2] = v[2];
+
+    slot.accumulating = aov::accumulating(aov);
 }
 
 inline float3 Value::value(uint32_t id) const {
     Slot const& slot = slots_[id];
 
     return float3(slot.v);
+}
+
+inline bool Value::accumulating(uint32_t id) const {
+    return slots_[id].accumulating;
 }
 
 }  // namespace rendering::sensor::aov
