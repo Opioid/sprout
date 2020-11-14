@@ -237,7 +237,6 @@ void Driver::render_frame_backward(uint32_t frame) {
     });
 
 #ifdef PARTICLE_GUIDING
-
     particle_importance_.prepare_sampling(threads_);
     particle_importance_.set_training(false);
 
@@ -252,7 +251,6 @@ void Driver::render_frame_backward(uint32_t frame) {
             progressor_.tick();
         }
     });
-
 #endif
 
     // If there will be a forward pass later...
