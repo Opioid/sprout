@@ -20,6 +20,8 @@ class Buffer {
 
     void add_pixel_atomic(int32_t id, uint32_t slot, float3 const& value, float weight);
 
+    void overwrite_pixel(int32_t id, uint32_t slot, float3 const& value);
+
     float3 value(int32_t id, uint32_t slot) const;
 
   private:

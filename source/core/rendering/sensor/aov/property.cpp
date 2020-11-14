@@ -19,4 +19,8 @@ image::Encoding encoding(Property property) {
     }
 }
 
+bool accumulating(Property property) {
+    return property != Property::Material_id;
+}
+
 }  // namespace rendering::sensor::aov

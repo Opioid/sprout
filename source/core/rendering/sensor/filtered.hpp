@@ -34,6 +34,8 @@ class alignas(64) Filtered : public Base {
 
     void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& bounds);
 
+    void overwrite(int2 pixel, uint32_t slot, float3 const& value, int4 const& bounds);
+
     void weight_and_add(int2 pixel, float2 relative_offset, float4 const& color,
                         int4 const& isolated, int4 const& bounds);
 

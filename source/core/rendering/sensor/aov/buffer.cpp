@@ -69,6 +69,10 @@ void Buffer::add_pixel_atomic(int32_t id, uint32_t slot, float3 const& value, fl
     atomic::add_assign(target[2], weight * value[2]);
 }
 
+void Buffer::overwrite_pixel(int32_t id, uint32_t slot, float3 const& value) {
+    buffers_[slot][id] = value;
+}
+
 float3 Buffer::value(int32_t id, uint32_t slot) const {
     return buffers_[slot][id];
 }

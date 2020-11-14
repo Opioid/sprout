@@ -29,7 +29,7 @@ class Transparent : public Sensor {
 
     void resolve(int32_t begin, int32_t end, image::Float4& target) const final;
 
-    void resolve(int32_t begin, int32_t end, uint32_t slot,
+    void resolve(int32_t begin, int32_t end, uint32_t slot, AOV property,
                  image::Float4& target) const final;
 
     void resolve_accumulate(int32_t begin, int32_t end, image::Float4& target) const final;
