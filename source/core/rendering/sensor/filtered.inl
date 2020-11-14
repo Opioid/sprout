@@ -74,6 +74,24 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 }
 
 template <class Base, class Clamp, class F>
+void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, uint32_t slot, float2 relative_offset, float3 const& value,
+                                              int4 const& isolated, int4 const& bounds) {
+    // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
+
+    if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
+        (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
+        float const weight = filter_.evaluate(relative_offset);
+
+        if ((uint32_t(pixel[0] - isolated[0]) <= uint32_t(isolated[2])) &
+            (uint32_t(pixel[1] - isolated[1]) <= uint32_t(isolated[3]))) {
+            Base::add_AOV(pixel, slot, value, weight);
+        } else {
+            Base::add_AOV_atomic(pixel, slot, value, weight);
+        }
+    }
+}
+
+template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset,
                                               float4 const& color, int4 const& bounds) {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
@@ -129,7 +147,20 @@ float4 Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 con
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            Filtered_base::add_weighted(int2(x, y), i, 1.f, v, isolated, bounds);
+            // 1. row
+            Filtered_base::add_weighted(int2(x - 1, y - 1), i, wx0 * wy0, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y - 1), i, wx1 * wy0, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y - 1), i, wx2 * wy0, v, isolated, bounds);
+
+            // 2. row
+            Filtered_base::add_weighted(int2(x - 1, y), i, wx0 * wy1, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y), i, wx1 * wy1, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y), i, wx2 * wy1, v, isolated, bounds);
+
+            // 3. row
+            Filtered_base::add_weighted(int2(x - 1, y + 1), i, wx0 * wy2, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y + 1), i, wx1 * wy2, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y + 1), i, wx2 * wy2, v, isolated, bounds);
         }
     }
 
@@ -238,7 +269,40 @@ float4 Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4 con
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            Filtered_base::add_weighted(int2(x, y), i, 1.f, v, isolated, bounds);
+            // 1. row
+            Filtered_base::add_weighted(int2(x - 2, y - 2), i, wx0 * wy0, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x - 1, y - 2), i, wx1 * wy0, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y - 2), i, wx2 * wy0, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y - 2), i, wx3 * wy0, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 2, y - 2), i, wx4 * wy0, v, isolated, bounds);
+
+            // 2. row
+            Filtered_base::add_weighted(int2(x - 2, y - 1), i, wx0 * wy1, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x - 1, y - 1), i, wx1 * wy1, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y - 1), i, wx2 * wy1, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y - 1), i, wx3 * wy1, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 2, y - 1), i, wx4 * wy1, v, isolated, bounds);
+
+            // 3. row
+            Filtered_base::add_weighted(int2(x - 2, y), i, wx0 * wy2, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x - 1, y), i, wx1 * wy2, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y), i, wx2 * wy2, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y), i, wx3 * wy2, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 2, y), i, wx4 * wy2, v, isolated, bounds);
+
+            // 4. row
+            Filtered_base::add_weighted(int2(x - 2, y + 1), i, wx0 * wy3, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x - 1, y + 1), i, wx1 * wy3, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y + 1), i, wx2 * wy3, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y + 1), i, wx3 * wy3, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 2, y + 1), i, wx4 * wy3, v, isolated, bounds);
+
+            // 5. row
+            Filtered_base::add_weighted(int2(x - 2, y + 2), i, wx0 * wy4, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x - 1, y + 2), i, wx1 * wy4, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x, y + 2), i, wx2 * wy4, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 1, y + 2), i, wx3 * wy4, v, isolated, bounds);
+            Filtered_base::add_weighted(int2(x + 2, y + 2), i, wx4 * wy4, v, isolated, bounds);
         }
     }
 
@@ -338,7 +402,17 @@ float4 Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4 con
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            Filtered_base::add_weighted(int2(px, py), i, 1.f, v, isolated, bounds);
+            for (int32_t ky = -r; ky <= r; ++ky) {
+                for (int32_t kx = -r; kx <= r; ++kx) {
+                    int2 const pixel(px + kx, py + ky);
+
+                    float2 const ro = sample.pixel_uv - 0.5f - float2(kx, ky);
+
+                    if ((ro[0] < rf) & (ro[1] < rf)) {
+                        Filtered_base::weight_and_add(pixel, i, ro, v, isolated, bounds);
+                    }
+                }
+            }
         }
     }
 
