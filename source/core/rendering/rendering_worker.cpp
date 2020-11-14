@@ -214,7 +214,7 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
 
             float const average  = total / float(num_samples);
             float const variance = new_s / float(num_samples - 1);
-            float const coeff    = std::min(std::sqrt(variance) / std::max(average, 0.025f), 8.f);
+            float const coeff    = std::sqrt(variance) / std::max(average, 0.025f);
 
             sensor.set_variance_estimate(pixel, average > 0.f ? coeff : 0.f);
         }
