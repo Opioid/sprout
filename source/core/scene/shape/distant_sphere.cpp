@@ -14,11 +14,11 @@ namespace scene::shape {
 
 Distant_sphere::Distant_sphere() : Shape(Properties(Property::Analytical)) {}
 
-float3 Distant_sphere::object_to_texture_point(float3 const& p) const {
+float3 Distant_sphere::object_to_texture_point(float3_p p) const {
     return p;
 }
 
-float3 Distant_sphere::object_to_texture_vector(float3 const& v) const {
+float3 Distant_sphere::object_to_texture_vector(float3_p v) const {
     return v;
 }
 
@@ -154,7 +154,7 @@ bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /
     return true;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& trafo,
+bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo,
                             float area, bool /*two_sided*/, Sampler& sampler, RNG& rng,
                             uint32_t sampler_d, Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
@@ -220,13 +220,13 @@ float Distant_sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*
     return 0.f;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
+bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/,
                             Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                             Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
                             Transformation const& /*trafo*/, float /*volume*/,
                             Sample_to& /*sample*/) const {
     return false;
@@ -248,12 +248,12 @@ float Distant_sphere::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Distant_sphere::area(uint32_t /*part*/, float3 const& scale) const {
+float Distant_sphere::area(uint32_t /*part*/, float3_p scale) const {
     float const radius = scale[0];
     return Pi * (radius * radius);
 }
 
-float Distant_sphere::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Distant_sphere::volume(uint32_t /*part*/, float3_p /*scale*/) const {
     return 0.f;
 }
 

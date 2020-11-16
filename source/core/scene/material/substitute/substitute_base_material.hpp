@@ -11,7 +11,7 @@ class Material_base : public material::Material {
 
     void commit(Threads& threads, Scene const& scene) override;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const override;
 
     float3 average_radiance(float area) const final;
@@ -20,7 +20,7 @@ class Material_base : public material::Material {
     void set_surface_map(Texture_adapter const& surface_map);
     void set_emission_map(Texture_adapter const& emission_map);
 
-    void set_color(float3 const& color);
+    void set_color(float3_p color);
 
     void set_roughness(float roughness);
     void set_metallic(float metallic);
@@ -30,7 +30,7 @@ class Material_base : public material::Material {
     using Texture_sampler_2D = image::texture::Sampler_2D;
 
     template <typename Sample>
-    void set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
+    void set_sample(float3_p wo, Renderstate const& rs, float ior_outside,
                     Texture_sampler_2D const& sampler, Worker const& worker, Sample& sample) const;
 
     Texture_adapter normal_map_;

@@ -55,21 +55,21 @@ class Tree {
     ~Tree();
 
     struct Node {
-        float weight(float3 const& p, float3 const& n, bool total_sphere) const;
+        float weight(float3_p p, float3_p n, bool total_sphere) const;
 
-        float weight(float3 const& p0, float3 const& p1, float3 const& dir) const;
+        float weight(float3_p p0, float3_p p1, float3_p dir) const;
 
-        bool split(float3 const& p) const;
+        bool split(float3_p p) const;
 
-        bool split(float3 const& p0, float3 const& dir) const;
+        bool split(float3_p p0, float3_p dir) const;
 
-        Light_pick random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
+        Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
                                 uint32_t const* const light_mapping, Scene const& scene) const;
 
-        Light_pick random_light(float3 const& p0, float3 const& p1, float3 const& dir, float random,
+        Light_pick random_light(float3_p p0, float3_p p1, float3_p dir, float random,
                                 uint32_t const* const light_mapping, Scene const& scene) const;
 
-        float pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
+        float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
                   uint32_t const* const light_mapping, Scene const& scene) const;
 
         float4 center;
@@ -83,13 +83,13 @@ class Tree {
         uint32_t num_lights;
     };
 
-    void random_light(float3 const& p, float3 const& n, bool total_sphere, float random, bool split,
+    void random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,
                       Scene const& scene, Lights& lights) const;
 
-    void random_light(float3 const& p0, float3 const& p1, float random, bool split,
-                      Scene const& scene, Lights& lights) const;
+    void random_light(float3_p p0, float3_p p1, float random, bool split, Scene const& scene,
+                      Lights& lights) const;
 
-    float pdf(float3 const& p, float3 const& n, bool total_sphere, bool split, uint32_t id,
+    float pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t id,
               Scene const& scene) const;
 
     void allocate_light_mapping(uint32_t num_lights);

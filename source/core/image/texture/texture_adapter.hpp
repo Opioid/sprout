@@ -47,15 +47,15 @@ class Adapter {
 
     float2 address(Sampler_2D const& sampler, float2 uv) const;
 
-    float sample_1(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
+    float sample_1(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
 
-    float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
+    float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
 
-    float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
+    float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
 
-    float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3 const& uvw) const;
+    float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
 
-    float3 address(Sampler_3D const& sampler, float3 const& uvw) const;
+    float3 address(Sampler_3D const& sampler, float3_p uvw) const;
 
   private:
     uint32_t texture_;

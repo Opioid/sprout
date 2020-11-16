@@ -4,7 +4,7 @@
 
 namespace light {
 
-void Emittance::set_luminous_flux(float3 const& color, float value) {
+void Emittance::set_luminous_flux(float3_p color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / (Pi * luminance)) * color;
@@ -12,7 +12,7 @@ void Emittance::set_luminous_flux(float3 const& color, float value) {
     quantity_ = Quantity::Intensity;
 }
 
-void Emittance::set_luminous_intensity(float3 const& color, float value) {
+void Emittance::set_luminous_intensity(float3_p color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / luminance) * color;
@@ -20,7 +20,7 @@ void Emittance::set_luminous_intensity(float3 const& color, float value) {
     quantity_ = Quantity::Intensity;
 }
 
-void Emittance::set_luminous_exitance(float3 const& color, float value) {
+void Emittance::set_luminous_exitance(float3_p color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / (Pi * luminance)) * color;
@@ -28,7 +28,7 @@ void Emittance::set_luminous_exitance(float3 const& color, float value) {
     quantity_ = Quantity::Radiance;
 }
 
-void Emittance::set_luminance(float3 const& color, float value) {
+void Emittance::set_luminance(float3_p color, float value) {
     float const luminance = spectrum::luminance(color);
 
     value_ = (value / luminance) * color;
@@ -36,13 +36,13 @@ void Emittance::set_luminance(float3 const& color, float value) {
     quantity_ = Quantity::Radiance;
 }
 
-void Emittance::set_intensity(float3 const& intensity) {
+void Emittance::set_intensity(float3_p intensity) {
     value_ = intensity;
 
     quantity_ = Quantity::Intensity;
 }
 
-void Emittance::set_radiance(float3 const& radiance) {
+void Emittance::set_radiance(float3_p radiance) {
     value_ = radiance;
 
     quantity_ = Quantity::Radiance;

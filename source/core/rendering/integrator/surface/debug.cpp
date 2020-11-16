@@ -68,7 +68,7 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
         case Settings::Value::UV:
             return float4(frac(isec.geo.uv[0]), frac(isec.geo.uv[1]), 0.f, 1.f);
         case Settings::Value::Splitting: {
-            float3 const& n = mat_sample.interpolated_normal();
+            float3_p n = mat_sample.interpolated_normal();
 
             bool const translucent = mat_sample.is_translucent();
 

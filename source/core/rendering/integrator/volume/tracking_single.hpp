@@ -22,7 +22,7 @@ class alignas(64) Tracking_single final : public Integrator {
                     float3& tr) final;
 
   private:
-    float3 direct_light(Light const& light, float light_pdf, Ray const& ray, float3 const& position,
+    float3 direct_light(Light const& light, float light_pdf, Ray const& ray, float3_p position,
                         uint32_t sampler_d, Intersection const& isec, Worker& worker);
 
     float3 one_bounce(Ray const& ray, Intersection const& isec, Material const& material,

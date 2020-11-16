@@ -40,7 +40,7 @@ class Sensor {
 
     int32_t filter_radius_int() const;
 
-    int4 isolated_tile(int4 const& tile) const;
+    int4 isolated_tile(int4_p tile) const;
 
     virtual void set_layer(int32_t layer) = 0;
 
@@ -50,26 +50,26 @@ class Sensor {
 
     virtual void fix_zero_weights() = 0;
 
-    virtual void add_sample(Camera_sample const& sample, float4 const& color, aov::Value const* aov,
-                            int4 const& isolated, int2 offset, int4 const& bounds) = 0;
+    virtual void add_sample(Camera_sample const& sample, float4_p color, aov::Value const* aov,
+                            int4_p isolated, int2 offset, int4_p bounds) = 0;
 
-    virtual void splat_sample(Camera_sample_to const& sample, float4 const& color, int2 offset,
-                              int4 const& bounds) = 0;
+    virtual void splat_sample(Camera_sample_to const& sample, float4_p color, int2 offset,
+                              int4_p bounds) = 0;
 
     virtual bool has_alpha_transparency() const = 0;
 
   protected:
-    virtual void add_pixel(int2 pixel, float4 const& color, float weight) = 0;
+    virtual void add_pixel(int2 pixel, float4_p color, float weight) = 0;
 
-    virtual void add_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
+    virtual void add_pixel_atomic(int2 pixel, float4_p color, float weight) = 0;
 
-    void add_AOV(int2 pixel, uint32_t slot, float3 const& value, float weight);
+    void add_AOV(int2 pixel, uint32_t slot, float3_p value, float weight);
 
-    void add_AOV_atomic(int2 pixel, uint32_t slot, float3 const& value, float weight);
+    void add_AOV_atomic(int2 pixel, uint32_t slot, float3_p value, float weight);
 
-    void overwrite_AOV(int2 pixel, uint32_t slot, float3 const& value);
+    void overwrite_AOV(int2 pixel, uint32_t slot, float3_p value);
 
-    virtual void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) = 0;
+    virtual void splat_pixel_atomic(int2 pixel, float4_p color, float weight) = 0;
 
     virtual void resolve(int32_t begin, int32_t end, image::Float4& target) const = 0;
 

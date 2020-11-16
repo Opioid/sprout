@@ -26,7 +26,7 @@ void Generic::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t e
     float const factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
-        float4 const& color = source.at(i);
+        float4_p color = source.at(i);
 
         destination.store(i, float4(tonemap(factor * color[0]), tonemap(factor * color[1]),
                                     tonemap(factor * color[2]), color[3]));

@@ -35,14 +35,14 @@ bool Opaque::has_alpha_transparency() const {
     return false;
 }
 
-void Opaque::add_pixel(int2 pixel, float4 const& color, float weight) {
+void Opaque::add_pixel(int2 pixel, float4_p color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
     value += float4(weight * color.xyz(), weight);
 }
 
-void Opaque::add_pixel_atomic(int2 pixel, float4 const& color, float weight) {
+void Opaque::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -52,7 +52,7 @@ void Opaque::add_pixel_atomic(int2 pixel, float4 const& color, float weight) {
     atomic::add_assign(value[3], weight);
 }
 
-void Opaque::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) {
+void Opaque::splat_pixel_atomic(int2 pixel, float4_p color, float weight) {
     auto const d = dimensions();
 
     auto& value = pixels_[d[0] * pixel[1] + pixel[0]];

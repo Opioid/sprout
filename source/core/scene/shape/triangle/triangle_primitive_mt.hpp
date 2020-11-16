@@ -42,7 +42,7 @@ struct Triangle_MT {
     float3 normal() const;
 
     float area() const;
-    float area(float3 const& scale) const;
+    float area(float3_p scale) const;
 };
 
 struct Shading_vertex_MT {
@@ -55,14 +55,14 @@ struct Shading_vertex_MT {
 struct Shading_vertex_MTC {
     Shading_vertex_MTC();
 
-    Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv);
+    Shading_vertex_MTC(float3_p n, float3_p t, float2 uv);
 
     float4 n_u;
     float4 t_v;
 };
 
 struct Vertex_MTC {
-    Vertex_MTC(packed_float3 const& p, packed_float3 const& n, packed_float3 const& t, float2 uv);
+    Vertex_MTC(packed_float3_p p, packed_float3_p n, packed_float3_p t, float2 uv);
 
     float3 p;
     float4 n_u;

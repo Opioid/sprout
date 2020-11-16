@@ -14,9 +14,9 @@ namespace scene::material::display {
 Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_sided)
     : light::Emissionmap(sampler_settings, two_sided) {}
 
-material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*ray*/,
-                                            Renderstate const& rs, Filter filter,
-                                            Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Emissionmap::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
+                                            Filter  filter, Sampler& /*sampler*/,
+                                            Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

@@ -15,7 +15,7 @@ Glass::Glass(Sampler_settings const& sampler_settings) : Material(sampler_settin
     properties_.set(Property::Caustic);
 }
 
-material::Sample const& Glass::sample(float3 const& wo, Ray const& /*ray*/, Renderstate const& rs,
+material::Sample const& Glass::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
                                       Filter filter, Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
@@ -38,7 +38,7 @@ void Glass::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Glass::set_refraction_color(float3 const& color) {
+void Glass::set_refraction_color(float3_p color) {
     refraction_color_ = color;
 }
 

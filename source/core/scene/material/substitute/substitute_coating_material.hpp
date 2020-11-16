@@ -18,9 +18,8 @@ class Material_coating : public Material_base {
 
   protected:
     template <typename Sample>
-    void set_coating_basis(float3 const& wo, Renderstate const& rs,
-                           Texture_sampler_2D const& sampler, Worker const& worker,
-                           Sample& sample) const;
+    void set_coating_basis(float3_p wo, Renderstate const& rs, Texture_sampler_2D const& sampler,
+                           Worker const& worker, Sample& sample) const;
 
     Texture_adapter coating_thickness_map_;
     Texture_adapter coating_normal_map_;
@@ -40,13 +39,13 @@ class Material_clearcoat : public Material_coating<Clearcoat_data> {
   public:
     Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided);
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const override;
 
-    void set_coating_attenuation(float3 const& absorption_color, float distance);
+    void set_coating_attenuation(float3_p absorption_color, float distance);
 
     void set_coating_ior(float ior);
 
@@ -65,7 +64,7 @@ class Material_thinfilm : public Material_coating<Thinfilm_data> {
   public:
     Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
     void set_thinfilm(float ior, float roughness, float thickness);

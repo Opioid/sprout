@@ -16,10 +16,10 @@ class Emissionmap_animated : public Emissionmap {
     void simulate(uint64_t start, uint64_t end, uint64_t frame_length, Threads& threads,
                   Scene const& scene) final;
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const override;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const final;
 
     void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,

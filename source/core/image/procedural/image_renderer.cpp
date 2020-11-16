@@ -19,11 +19,11 @@ Renderer::~Renderer() {
     delete[] samples_;
 }
 
-void Renderer::set_brush(float3 const& color) {
+void Renderer::set_brush(float3_p color) {
     brush_ = float4(color, 1.f);
 }
 
-void Renderer::set_brush(float4 const& color) {
+void Renderer::set_brush(float4_p color) {
     brush_ = color;
 }
 
@@ -89,7 +89,7 @@ void Renderer::draw_bounding_square(float2 pos, float radius) {
     }
 }
 
-void Renderer::draw_disk(float2 pos, float3 const& normal, float radius) {
+void Renderer::draw_disk(float2 pos, float3_p normal, float radius) {
     int2 const start((pos - radius) * dimensions_f_);
     int2 const end((pos + radius) * dimensions_f_);
 
@@ -104,7 +104,7 @@ void Renderer::draw_disk(float2 pos, float3 const& normal, float radius) {
     }
 }
 
-void Renderer::draw_disk(float2 pos, float3 const& normal, float radius, int32_t border) {
+void Renderer::draw_disk(float2 pos, float3_p normal, float radius, int32_t border) {
     int2 const start((pos - radius) * dimensions_f_ - 1.f);
     int2 const end((pos + radius) * dimensions_f_ + 1.5f);
 
@@ -244,20 +244,20 @@ void Renderer::resolve(Byte1& image) const {
     }
 }
 
-void Renderer::set_sample(int32_t x, int32_t y, float4 const& color) {
+void Renderer::set_sample(int32_t x, int32_t y, float4_p color) {
     x = math::mod(x, dimensions_[0]);
     y = math::mod(y, dimensions_[1]);
 
     samples_[dimensions_[0] * y + x] = color;
 }
 
-void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, float4 const& color) {
+void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, float4_p color) {
     for (int32_t x = start_x; x < end_x; ++x) {
         set_sample(x, y, color);
     }
 }
 
-bool Renderer::intersect_disk(float2 pos, float3 const& normal, float radius, float2 sample) {
+bool Renderer::intersect_disk(float2 pos, float3_p normal, float radius, float2 sample) {
     float2 const n2 = normal.xy();
 
     float const d     = dot(n2, pos);

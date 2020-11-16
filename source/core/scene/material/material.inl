@@ -25,7 +25,7 @@ inline float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter,
     return 1.f;
 }
 
-inline float Material::border(float3 const& wi, float3 const& n) const {
+inline float Material::border(float3_p wi, float3_p n) const {
     float const f0 = fresnel::schlick_f0(ior_, 1.f);
 
     float const n_dot_wi = std::max(dot(n, wi), 0.f);
@@ -97,7 +97,7 @@ inline float Material::ior() const {
 inline Material::Radiance_sample::Radiance_sample(float2 uv, float pdf)
     : uvw{uv[0], uv[1], 0.f, pdf} {}
 
-inline Material::Radiance_sample::Radiance_sample(float3 const& uvw, float pdf)
+inline Material::Radiance_sample::Radiance_sample(float3_p uvw, float pdf)
     : uvw{uvw[0], uvw[1], uvw[2], pdf} {}
 
 inline float Material::Radiance_sample::pdf() const {

@@ -10,11 +10,11 @@ namespace scene::material::substitute {
 
 using Clearcoat_no_lambert = Sample_coating<coating::Clearcoat_layer, disney::Isotropic_no_lambert>;
 
-bxdf::Result Sample_coating_subsurface::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample_coating_subsurface::evaluate_f(float3_p wi) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_coating_subsurface::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample_coating_subsurface::evaluate_b(float3_p wi) const {
     return evaluate<false>(wi);
 }
 
@@ -119,7 +119,7 @@ void Sample_coating_subsurface::set_volumetric(float ior, float ior_outside) {
 }
 
 template <bool Forward>
-bxdf::Result Sample_coating_subsurface::evaluate(float3 const& wi) const {
+bxdf::Result Sample_coating_subsurface::evaluate(float3_p wi) const {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }

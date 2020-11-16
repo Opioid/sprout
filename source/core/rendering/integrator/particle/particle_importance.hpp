@@ -56,7 +56,7 @@ class Importance_cache {
 
     void init(scene::Scene const& scene);
 
-    void set_eye_position(float3 const& eye);
+    void set_eye_position(float3_p eye);
 
     void set_training(bool training);
 
@@ -64,7 +64,7 @@ class Importance_cache {
 
     void increment(uint32_t light_id, float2 uv);
 
-    void increment(uint32_t light_id, float2 uv, float3 const& p);
+    void increment(uint32_t light_id, float2 uv, float3_p p);
 
     Importance const& importance(uint32_t light_id) const;
 

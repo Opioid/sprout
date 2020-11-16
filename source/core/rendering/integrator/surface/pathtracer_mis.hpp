@@ -47,8 +47,8 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     float3 sample_lights(Ray const& ray, Intersection& isec, Material_sample const& mat_sample,
                          Filter filter, Worker& worker);
 
-    float3 evaluate_light(Light const& light, float light_weight, Ray const& history,
-                          float3 const& p, uint32_t sampler_d, Intersection const& isec,
+    float3 evaluate_light(Light const& light, float light_weight, Ray const& history, float3_p p,
+                          uint32_t sampler_d, Intersection const& isec,
                           Material_sample const& mat_sample, Filter filter, Worker& worker);
 
     enum class State {
@@ -62,11 +62,11 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     using Path_state = flags::Flags<State>;
 
-    float3 connect_light(Ray const& ray, float3 const& geo_n, Intersection const& isec,
+    float3 connect_light(Ray const& ray, float3_p geo_n, Intersection const& isec,
                          Bxdf_sample sample_result, Path_state state, Filter filter, Worker& worker,
                          bool& pure_emissive);
 
-    float connect_light_volume(Ray const& ray, float3 const& geo_n, Intersection const& isec,
+    float connect_light_volume(Ray const& ray, float3_p geo_n, Intersection const& isec,
                                float bxdf_pdf, Path_state state, Worker& worker) const;
 
     sampler::Sampler& material_sampler(uint32_t bounce);

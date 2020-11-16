@@ -61,9 +61,9 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         float2 const sample = sampler_->sample_2D(worker.rng());
 
-        float3 const& t = mat_sample.shading_tangent();
-        float3 const& b = mat_sample.shading_bitangent();
-        float3 const& n = mat_sample.shading_normal();
+        float3_p t = mat_sample.shading_tangent();
+        float3_p b = mat_sample.shading_bitangent();
+        float3_p n = mat_sample.shading_normal();
 
         float3 const ws = sample_oriented_hemisphere_cosine(sample, t, b, n);
 

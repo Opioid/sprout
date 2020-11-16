@@ -63,7 +63,7 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
     on_update(time, worker);
 }
 
-Ray_differential Camera::calculate_ray_differential(float3 const& /*p*/, uint64_t /*time*/,
+Ray_differential Camera::calculate_ray_differential(float3_p /*p*/, uint64_t /*time*/,
                                                     Scene const& /*scene*/) const {
     return Ray_differential();
 }
@@ -99,11 +99,11 @@ int2 Camera::resolution() const {
     return resolution_;
 }
 
-int4 const& Camera::crop() const {
+int4_p Camera::crop() const {
     return crop_;
 }
 
-void Camera::set_resolution(int2 resolution, int4 const& crop) {
+void Camera::set_resolution(int2 resolution, int4_p crop) {
     resolution_ = resolution;
 
     crop_[0] = std::max(0, crop[0]);
@@ -145,7 +145,7 @@ uint64_t Camera::absolute_time(uint32_t frame, float frame_delta) const {
     return uint64_t(frame) * frame_step_ + fdi;
 }
 
-Ray Camera::create_ray(float3 const& origin, float3 const& direction, uint64_t time) {
+Ray Camera::create_ray(float3_p origin, float3_p direction, uint64_t time) {
     return Ray(origin, direction, 0.f, Ray_max_t, 0, 0.f, time);
 }
 

@@ -28,11 +28,11 @@ namespace scene::shape {
 
 Sphere::Sphere() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
-float3 Sphere::object_to_texture_point(float3 const& p) const {
+float3 Sphere::object_to_texture_point(float3_p p) const {
     return (p - float3(-1.f)) * (1.f / float3(2.f));
 }
 
-float3 Sphere::object_to_texture_vector(float3 const& v) const {
+float3 Sphere::object_to_texture_vector(float3_p v) const {
     return v * (1.f / float3(2.f));
 }
 
@@ -338,7 +338,7 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32
     return true;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3 const& p, Transformation const& trafo, float /*area*/,
+bool Sphere::sample(uint32_t /*part*/, float3_p p, Transformation const& trafo, float /*area*/,
                     bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                     Sample_to& sample) const {
     float3 const v = trafo.position - p;
@@ -410,7 +410,7 @@ float Sphere::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
     return 0.f;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv, Transformation const& trafo,
+bool Sphere::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation const& trafo,
                     float area, bool /*two_sided*/, Sample_to& sample) const {
     float phi   = (uv[0] + 0.75f) * (2.f * Pi);
     float theta = uv[1] * Pi;
@@ -442,7 +442,7 @@ bool Sphere::sample(uint32_t /*part*/, float3 const& p, float2 uv, Transformatio
     return true;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Sphere::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
                     Transformation const& /*trafo*/, float /*volume*/,
                     Sample_to& /*sample*/) const {
     return false;
@@ -481,11 +481,11 @@ float Sphere::uv_weight(float2 uv) const {
     return 1.f / sin_theta;
 }
 
-float Sphere::area(uint32_t /*part*/, float3 const& scale) const {
+float Sphere::area(uint32_t /*part*/, float3_p scale) const {
     return (4.f * Pi) * (scale[0] * scale[0]);
 }
 
-float Sphere::volume(uint32_t /*part*/, float3 const& scale) const {
+float Sphere::volume(uint32_t /*part*/, float3_p scale) const {
     return ((4.f / 3.f) * Pi) * (scale[0] * scale[0] * scale[0]);
 }
 

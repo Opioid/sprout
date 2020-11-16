@@ -76,7 +76,7 @@ void Worker::reset_interface_stack(Interface_stack const& stack) {
     interface_stack_ = stack;
 }
 
-float Worker::ior_outside(float3 const& wo, Intersection const& isec) const {
+float Worker::ior_outside(float3_p wo, Intersection const& isec) const {
     if (isec.same_hemisphere(wo)) {
         return interface_stack_.top_ior(*this);
     }
@@ -84,7 +84,7 @@ float Worker::ior_outside(float3 const& wo, Intersection const& isec) const {
     return interface_stack_.peek_ior(isec, *this);
 }
 
-void Worker::interface_change(float3 const& dir, Intersection const& isec) {
+void Worker::interface_change(float3_p dir, Intersection const& isec) {
     if (bool const leave = isec.same_hemisphere(dir); leave) {
         interface_stack_.remove(isec);
     } else if (interface_stack_.straight(*this) | (isec.material(*this)->ior() > 1.f)) {
@@ -92,7 +92,7 @@ void Worker::interface_change(float3 const& dir, Intersection const& isec) {
     }
 }
 
-material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const& isec) {
+material::IoR Worker::interface_change_ior(float3_p dir, Intersection const& isec) {
     float const inter_ior = isec.material(*this)->ior();
 
     if (bool const leave = isec.same_hemisphere(dir); leave) {
@@ -112,7 +112,7 @@ material::IoR Worker::interface_change_ior(float3 const& dir, Intersection const
     return ior;
 }
 
-Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
+Material_sample const& Worker::sample_material(Ray const& ray, float3_p wo, float3_p wo1,
                                                Intersection const& isec, Filter filter, float alpha,
                                                bool avoid_caustics, bool straight_border,
                                                Sampler& sampler) {
@@ -140,9 +140,8 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3 const& wo,
 }
 
 // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
-static float4 calculate_screenspace_differential(float3 const& p, float3 const& n,
-                                                 Ray_differential const& rd, float3 const& dpdu,
-                                                 float3 const& dpdv) {
+static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_differential const& rd,
+                                                 float3_p dpdu, float3_p dpdv) {
     // Compute offset-ray isec points with tangent plane
     float const d = dot(n, p);
 

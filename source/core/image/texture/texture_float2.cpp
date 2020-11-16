@@ -26,7 +26,7 @@ float4 Float2::at_4(int32_t x, int32_t y) const {
     return float4(image_.at(x, y), 0.f, 1.f);
 }
 
-void Float2::gather_1(int4 const& xy_xy1, float c[4]) const {
+void Float2::gather_1(int4_p xy_xy1, float c[4]) const {
     float2 v[4];
     image_.gather(xy_xy1, v);
 
@@ -36,11 +36,11 @@ void Float2::gather_1(int4 const& xy_xy1, float c[4]) const {
     c[3] = v[3][0];
 }
 
-void Float2::gather_2(int4 const& xy_xy1, float2 c[4]) const {
+void Float2::gather_2(int4_p xy_xy1, float2 c[4]) const {
     image_.gather(xy_xy1, c);
 }
 
-void Float2::gather_3(int4 const& xy_xy1, float3 c[4]) const {
+void Float2::gather_3(int4_p xy_xy1, float3 c[4]) const {
     float2 v[4];
     image_.gather(xy_xy1, v);
 
@@ -78,7 +78,7 @@ float4 Float2::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(image_.at(x, y, z), 0.f, 1.f);
 }
 
-void Float2::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+void Float2::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
     float2 v[8];
     image_.gather(xyz, xyz1, v);
 
@@ -92,7 +92,7 @@ void Float2::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
     c[7] = v[7][0];
 }
 
-void Float2::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+void Float2::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
     image_.gather(xyz, xyz1, c);
 }
 

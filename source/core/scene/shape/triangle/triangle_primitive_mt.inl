@@ -127,15 +127,14 @@ inline float Triangle_MT::area() const {
     return 0.5f * length(cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(float3 const& scale) const {
+inline float Triangle_MT::area(float3_p scale) const {
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;
     return 0.5f * length(cross(sb - sa, sc - sa));
 }
 
-static inline bool intersect(float3 const& a, float3 const& b, float3 const& c, ray& ray,
-                             float2& uv) {
+static inline bool intersect(float3_p a, float3_p b, float3_p c, ray& ray, float2& uv) {
     float3 e1 = b - a;
     float3 e2 = c - a;
 
@@ -261,7 +260,7 @@ static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scal
     return false;
 }
 
-static inline bool intersect_p(float3 const& a, float3 const& b, float3 const& c, ray const& ray) {
+static inline bool intersect_p(float3_p a, float3_p b, float3_p c, ray const& ray) {
     // Implementation A
     /*	float3 e1 = b.p - a.p;
             float3 e2 = c.p - a.p;
@@ -362,18 +361,17 @@ static inline Simd3f interpolate_p(Simd3f const& a, Simd3f const& b, Simd3f cons
     return w * a + u * b + v * c;
 }
 
-static inline void interpolate_p(float3 const& a, float3 const& b, float3 const& c, float2 uv,
-                                 float3& p) {
+static inline void interpolate_p(float3_p a, float3_p b, float3_p c, float2 uv, float3& p) {
     float const w = 1.f - uv[0] - uv[1];
 
     p = w * a + uv[0] * b + uv[1] * c;
 }
 
-static inline float area(float3 const& a, float3 const& b, float3 const& c) {
+static inline float area(float3_p a, float3_p b, float3_p c) {
     return 0.5f * length(cross(b - a, c - a));
 }
 
-static inline float area(float3 const& a, float3 const& b, float3 const& c, float3 const& scale) {
+static inline float area(float3_p a, float3_p b, float3_p c, float3_p scale) {
     float3 const sa = scale * a;
     float3 const sb = scale * b;
     float3 const sc = scale * c;
@@ -399,7 +397,7 @@ static inline void interpolate_data(const Shading_vertex_MT& a, const Shading_ve
 
 inline Shading_vertex_MTC::Shading_vertex_MTC() = default;
 
-inline Shading_vertex_MTC::Shading_vertex_MTC(float3 const& n, float3 const& t, float2 uv)
+inline Shading_vertex_MTC::Shading_vertex_MTC(float3_p n, float3_p t, float2 uv)
     : n_u(n, uv[0]), t_v(t, uv[1]) {
     // Not too happy about handling degenerate tangents here (only one very special case even)
     if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
@@ -498,8 +496,7 @@ static inline Simd3f interpolate_normal(Simd3f const& u, Simd3f const& v,
     return normalize(v0);
 }
 
-inline Vertex_MTC::Vertex_MTC(packed_float3 const& p, packed_float3 const& n,
-                              packed_float3 const& t, float2 uv)
+inline Vertex_MTC::Vertex_MTC(packed_float3_p p, packed_float3_p n, packed_float3_p t, float2 uv)
     : p(p), n_u(n, uv[0]), t_v(t, uv[1]) {
     // Not too happy about handling degenerate tangents here (only one very special case even)
     if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
@@ -601,8 +598,7 @@ inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c)
     return 0.5f * length(cross(b.p - a.p, c.p - a.p));
 }
 
-inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c,
-                  float3 const& scale) {
+inline float area(const Vertex_MTC& a, const Vertex_MTC& b, const Vertex_MTC& c, float3_p scale) {
     float3 sa = scale * a.p;
     float3 sb = scale * b.p;
     float3 sc = scale * c.p;

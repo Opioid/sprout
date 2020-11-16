@@ -29,7 +29,7 @@ class Integrator : public integrator::Integrator {
                       Interface_stack const& initial_stack, AOV* aov) = 0;
 
   protected:
-    void common_AOVs(float3 const& throughput, Ray const& ray, Intersection const& isec,
+    void common_AOVs(float3_p throughput, Ray const& ray, Intersection const& isec,
                      Material_sample const& mat_sample, bool primary_ray, Worker& worker, AOV& aov);
 };
 

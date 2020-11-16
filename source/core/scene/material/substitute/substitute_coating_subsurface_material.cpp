@@ -37,7 +37,7 @@ void Material_coating_subsurface::commit(Threads& threads, Scene const& scene) {
     properties_.set(Property::Heterogeneous_volume, density_map_.is_valid());
 }
 
-material::Sample const& Material_coating_subsurface::sample(float3 const& wo, Ray const& /*ray*/,
+material::Sample const& Material_coating_subsurface::sample(float3_p wo, Ray const& /*ray*/,
                                                             Renderstate const& rs, Filter filter,
                                                             Sampler& /*sampler*/,
                                                             Worker& worker) const {
@@ -89,7 +89,7 @@ void Material_coating_subsurface::set_density_map(Texture_adapter const& density
     density_map_ = density_map;
 }
 
-CC Material_coating_subsurface::collision_coefficients(float3 const& p, Filter filter,
+CC Material_coating_subsurface::collision_coefficients(float3_p p, Filter filter,
                                                        Worker const& worker) const {
     SOFT_ASSERT(density_map_.is_valid());
 
@@ -119,8 +119,7 @@ size_t Material_coating_subsurface::sample_size() {
     return sizeof(Sample_coating_subsurface);
 }
 
-float Material_coating_subsurface::density(float3 const& p, Filter filter,
-                                           Worker const& worker) const {
+float Material_coating_subsurface::density(float3_p p, Filter filter, Worker const& worker) const {
     // p is in object space already
 
     float3 const p_g = 0.5f * (float3(1.f) + p);
@@ -130,7 +129,7 @@ float Material_coating_subsurface::density(float3 const& p, Filter filter,
     return density_map_.sample_1(worker, sampler, p_g);
 }
 
-float3 Material_coating_subsurface::color(float3 const& p, Filter /*filter*/,
+float3 Material_coating_subsurface::color(float3_p p, Filter /*filter*/,
                                           Worker const& /*worker*/) const {
     float3 const p_g = 0.5f * (float3(1.f) + p);
 

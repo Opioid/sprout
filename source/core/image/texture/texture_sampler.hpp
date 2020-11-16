@@ -64,40 +64,40 @@ class Sampler_3D {
   public:
     virtual ~Sampler_3D();
 
-    virtual float  sample_1(Texture const& texture, float3 const& uvw) const = 0;
-    virtual float2 sample_2(Texture const& texture, float3 const& uvw) const = 0;
-    virtual float3 sample_3(Texture const& texture, float3 const& uvw) const = 0;
-    virtual float4 sample_4(Texture const& texture, float3 const& uvw) const = 0;
+    virtual float  sample_1(Texture const& texture, float3_p uvw) const = 0;
+    virtual float2 sample_2(Texture const& texture, float3_p uvw) const = 0;
+    virtual float3 sample_3(Texture const& texture, float3_p uvw) const = 0;
+    virtual float4 sample_4(Texture const& texture, float3_p uvw) const = 0;
 
-    virtual float3 address(float3 const& uvw) const = 0;
+    virtual float3 address(float3_p uvw) const = 0;
 };
 
 template <typename Address_mode>
 class Nearest_3D : public Sampler_3D {
   public:
-    float  sample_1(Texture const& texture, float3 const& uvw) const final;
-    float2 sample_2(Texture const& texture, float3 const& uvw) const final;
-    float3 sample_3(Texture const& texture, float3 const& uvw) const final;
-    float4 sample_4(Texture const& texture, float3 const& uvw) const final;
+    float  sample_1(Texture const& texture, float3_p uvw) const final;
+    float2 sample_2(Texture const& texture, float3_p uvw) const final;
+    float3 sample_3(Texture const& texture, float3_p uvw) const final;
+    float4 sample_4(Texture const& texture, float3_p uvw) const final;
 
-    float3 address(float3 const& uvw) const final;
+    float3 address(float3_p uvw) const final;
 
   private:
-    static int3 map(Texture const& texture, float3 const& uvw);
+    static int3 map(Texture const& texture, float3_p uvw);
 };
 
 template <typename Address_mode>
 class Linear_3D : public Sampler_3D {
   public:
-    float  sample_1(Texture const& texture, float3 const& uvw) const final;
-    float2 sample_2(Texture const& texture, float3 const& uvw) const final;
-    float3 sample_3(Texture const& texture, float3 const& uvw) const final;
-    float4 sample_4(Texture const& texture, float3 const& uvw) const final;
+    float  sample_1(Texture const& texture, float3_p uvw) const final;
+    float2 sample_2(Texture const& texture, float3_p uvw) const final;
+    float3 sample_3(Texture const& texture, float3_p uvw) const final;
+    float4 sample_4(Texture const& texture, float3_p uvw) const final;
 
-    float3 address(float3 const& uvw) const final;
+    float3 address(float3_p uvw) const final;
 
   private:
-    static float3 map(Texture const& texture, float3 const& uvw, int3& xyz, int3& xyz1);
+    static float3 map(Texture const& texture, float3_p uvw, int3& xyz, int3& xyz1);
 };
 
 struct Address_mode_clamp;

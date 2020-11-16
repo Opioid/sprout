@@ -27,7 +27,7 @@ class Value {
 
     void clear();
 
-    void insert(float3 const& v, Property aov);
+    void insert(float3_p v, Property aov);
 
     struct Result {
         float3   v;

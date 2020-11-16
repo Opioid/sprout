@@ -82,9 +82,9 @@ void Tracking_single::start_pixel(RNG& rng) {
 }
 /*
 static inline void max_probabilities(float mt,
-                                                                         float3 const& mu_a,
-                                                                         float3 const& mu_s,
-                                                                         float3 const& mu_n,
+                                                                         float3_p mu_a,
+                                                                         float3_p mu_s,
+                                                                         float3_p mu_n,
                                                                          float& pa, float& ps,
 float& pn, float3& wa, float3& ws, float3& wn) { float const ma = max_component(mu_a); float
 const ms = max_component(mu_s); float const mn = max_component(mu_n); float const c
@@ -101,7 +101,7 @@ const ms = max_component(mu_s); float const mn = max_component(mu_n); float cons
 
 static inline void max_history_probabilities(float mt,
                                                                                          float3
-const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pa, float& ps, float&
+const& mu_a, float3_p mu_s, float3_p mu_n, float3_p w, float& pa, float& ps, float&
 pn, float3& wa, float3& ws, float3& wn) { float const ma = max_component(mu_a * w); float
 const ms = max_component(mu_s * w); float const mn = max_component(mu_n * w); float
 const c = 1.f / (ma + ms + mn);
@@ -117,7 +117,7 @@ const c = 1.f / (ma + ms + mn);
 
 static inline void max_history_probabilities(float mt,
                                                                                          float3
-const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pn, float3& wn) { float
+const& mu_a, float3_p mu_s, float3_p mu_n, float3_p w, float& pn, float3& wn) { float
 const ma = max_component(mu_a * w); float const ms = max_component(mu_s * w); float
 const mn = max_component(mu_n * w); float const c = 1.f / (ma + ms + mn);
 
@@ -127,9 +127,9 @@ const mn = max_component(mu_n * w); float const c = 1.f / (ma + ms + mn);
 }
 
 static inline void avg_probabilities(float mt,
-                                                                         float3 const& mu_a,
-                                                                         float3 const& mu_s,
-                                                                         float3 const& mu_n,
+                                                                         float3_p mu_a,
+                                                                         float3_p mu_s,
+                                                                         float3_p mu_n,
                                                                          float& pa, float& ps,
 float& pn, float3& wa, float3& ws, float3& wn) { float const ma = average(mu_a); float const
 ms = average(mu_s); float const mn = average(mu_n); float const c = 1.f / (ma + ms +
@@ -146,7 +146,7 @@ mn);
 
 static inline void avg_history_probabilities(float mt,
                                                                                          float3
-const& mu_a, float3 const& mu_s, float3 const& mu_n, float3 const& w, float& pa, float& ps, float&
+const& mu_a, float3_p mu_s, float3_p mu_n, float3_p w, float& pa, float& ps, float&
 pn, float3& wa, float3& ws, float3& wn) { float const ma = 0.f;//average(mu_a * w); float
 const ms = average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f /
 (ma + ms + mn);
@@ -160,9 +160,8 @@ const ms = average(mu_s * w); float const mn = average(mu_n * w); float const c 
         wn = (mu_n / (mt * pn));
 }
 */
-static inline void avg_history_probabilities(float mt, float3 const& mu_s, float3 const& mu_n,
-                                             float3 const& w, float& ps, float& pn, float3& ws,
-                                             float3& wn) {
+static inline void avg_history_probabilities(float mt, float3_p mu_s, float3_p mu_n, float3_p w,
+                                             float& ps, float& pn, float3& ws, float3& wn) {
     float const ms = average(mu_s * w);
     float const mn = average(mu_n * w);
     float const c  = 1.f / (ms + mn);
@@ -176,7 +175,7 @@ static inline void avg_history_probabilities(float mt, float3 const& mu_s, float
 /*
 static inline void avg_history_probabilities(float mt,
                                                                                          float3
-const& mu_s, float3 const& mu_n, float3 const& w, float& pn, float3& wn) { float const ms =
+const& mu_s, float3_p mu_n, float3_p w, float& pn, float3& wn) { float const ms =
 average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f / (ms + mn);
 
         pn = mn * c;
@@ -362,7 +361,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 }
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
-                                     float3 const& position, uint32_t sampler_d,
+                                     float3_p position, uint32_t sampler_d,
                                      Intersection const& isec, Worker& worker) {
     shape::Sample_to light_sample;
     if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_d, worker,

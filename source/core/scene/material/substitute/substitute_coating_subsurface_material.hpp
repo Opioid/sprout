@@ -12,21 +12,21 @@ class Material_coating_subsurface final : public Material_clearcoat {
 
     void commit(Threads& threads, Scene const& scene) final;
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
     void set_density_map(Texture_adapter const& density_map);
 
-    CC collision_coefficients(float3 const& p, Filter filter, Worker const& worker) const final;
+    CC collision_coefficients(float3_p p, Filter filter, Worker const& worker) const final;
 
     volumetric::Gridtree const* volume_tree() const final;
 
     static size_t sample_size();
 
   private:
-    float density(float3 const& p, Filter filter, Worker const& worker) const;
+    float density(float3_p p, Filter filter, Worker const& worker) const;
 
-    float3 color(float3 const& p, Filter filter, Worker const& worker) const;
+    float3 color(float3_p p, Filter filter, Worker const& worker) const;
 
     Texture_adapter density_map_;
 

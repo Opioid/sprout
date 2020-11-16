@@ -26,21 +26,20 @@ Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& dens
 
 Grid::~Grid() = default;
 
-float3 Grid::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
-                               Filter filter, Worker const& worker) const {
+float3 Grid::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/, Filter filter,
+                               Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 
     return d * cc_.a * emission_;
 }
 
-CC Grid::collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const {
+CC Grid::collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 
     return {d * cc_.a, d * cc_.s};
 }
 
-CCE Grid::collision_coefficients_emission(float3 const& uvw, Filter filter,
-                                          Worker const& worker) const {
+CCE Grid::collision_coefficients_emission(float3_p uvw, Filter filter, Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 
     return {{d * cc_.a, d * cc_.s}, emission_};
@@ -66,7 +65,7 @@ Material::Boxi Grid::volume_texture_space_bounds(Scene const& scene) const {
     return {texture.offset(), texture.dimensions()};
 }
 
-float Grid::density(float3 const& uvw, Filter filter, Worker const& worker) const {
+float Grid::density(float3_p uvw, Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     return density_.sample_1(worker, sampler, uvw);
@@ -83,7 +82,7 @@ float3 Grid_emission::average_radiance(float /*volume*/) const {
     return average_emission_;
 }
 
-float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
+float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/,
                                         Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
@@ -102,13 +101,13 @@ float3 Grid_emission::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
     }
 }
 
-Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3 const& r3) const {
+Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3_p r3) const {
     auto const result = distribution_.sample_continuous(r3);
 
     return {result.xyz(), result[3] * pdf_factor_};
 }
 
-float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
+float Grid_emission::emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_3D(sampler_key(), filter);
 
     float const pdf = distribution_.pdf(sampler.address(uvw)) * pdf_factor_;
@@ -116,7 +115,7 @@ float Grid_emission::emission_pdf(float3 const& uvw, Filter filter, Worker const
     return pdf;
 }
 
-CCE Grid_emission::collision_coefficients_emission(float3 const& uvw, Filter filter,
+CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,
                                                    Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
@@ -370,8 +369,8 @@ void Grid_color::set_color(Texture_adapter const& color) {
     color_ = color;
 }
 
-float3 Grid_color::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*volume*/,
-                                     Filter filter, Worker const& worker) const {
+float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/, Filter filter,
+                                     Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
     CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
@@ -379,14 +378,13 @@ float3 Grid_color::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, fl
     return cc.a * emission_;
 }
 
-CC Grid_color::collision_coefficients(float3 const& uvw, Filter filter,
-                                      Worker const& worker) const {
+CC Grid_color::collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
     return c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
 }
 
-CCE Grid_color::collision_coefficients_emission(float3 const& uvw, Filter filter,
+CCE Grid_color::collision_coefficients_emission(float3_p uvw, Filter filter,
                                                 Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
@@ -413,7 +411,7 @@ Gridtree const* Grid_color::volume_tree() const {
     return &tree_;
 }
 
-float4 Grid_color::color(float3 const& uvw, Filter filter, Worker const& worker) const {
+float4 Grid_color::color(float3_p uvw, Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     return color_.sample_4(worker, sampler, uvw);

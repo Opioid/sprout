@@ -12,7 +12,7 @@ void Linear::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t en
     float const factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {
-        float4 const& color = source.at(i);
+        float4_p color = source.at(i);
 
 #ifdef SU_ACESCG
         float3 const scaled = factor * color.xyz();

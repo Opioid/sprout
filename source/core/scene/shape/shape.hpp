@@ -60,9 +60,9 @@ class Shape {
 
     virtual ~Shape();
 
-    virtual float3 object_to_texture_point(float3 const& p) const = 0;
+    virtual float3 object_to_texture_point(float3_p p) const = 0;
 
-    virtual float3 object_to_texture_vector(float3 const& v) const = 0;
+    virtual float3 object_to_texture_vector(float3_p v) const = 0;
 
     virtual AABB transformed_aabb(float4x4 const& m) const = 0;
 
@@ -92,16 +92,16 @@ class Shape {
     virtual bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                                  Filter filter, Worker& worker, float3& ta) const = 0;
 
-    virtual bool sample(uint32_t part, float3 const& p, float3 const& n,
-                        Transformation const& trafo, float area, bool two_sided, Sampler& sampler,
-                        RNG& rng, uint32_t sampler_d, Sample_to& sample) const;
+    virtual bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo,
+                        float area, bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                        Sample_to& sample) const;
 
-    virtual bool sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
+    virtual bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
                         bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                         Sample_to& sample) const = 0;
 
-    virtual bool sample_volume(uint32_t part, float3 const& p, Transformation const& trafo,
-                               float volume, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+    virtual bool sample_volume(uint32_t part, float3_p p, Transformation const& trafo, float volume,
+                               Sampler& sampler, RNG& rng, uint32_t sampler_d,
                                Sample_to& sample) const;
 
     virtual bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
@@ -118,11 +118,11 @@ class Shape {
 
     // The following functions are used for textured lights
     // and should have the uv weight baked in!
-    virtual bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& trafo,
+    virtual bool sample(uint32_t part, float3_p p, float2 uv, Transformation const& trafo,
                         float area, bool two_sided, Sample_to& sample) const = 0;
 
-    virtual bool sample(uint32_t part, float3 const& p, float3 const& uvw,
-                        Transformation const& trafo, float volume, Sample_to& sample) const = 0;
+    virtual bool sample(uint32_t part, float3_p p, float3_p uvw, Transformation const& trafo,
+                        float volume, Sample_to& sample) const = 0;
 
     virtual bool sample(uint32_t part, float2 uv, Transformation const& trafo, float area,
                         bool two_sided, float2 importance_uv, AABB const& bounds,
@@ -134,9 +134,9 @@ class Shape {
     virtual float uv_weight(float2 uv) const = 0;
     // ---
 
-    virtual float area(uint32_t part, float3 const& scale) const = 0;
+    virtual float area(uint32_t part, float3_p scale) const = 0;
 
-    virtual float volume(uint32_t part, float3 const& scale) const = 0;
+    virtual float volume(uint32_t part, float3_p scale) const = 0;
 
     struct Differential_surface {
         float3 dpdu;

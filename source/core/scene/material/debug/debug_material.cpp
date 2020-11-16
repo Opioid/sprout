@@ -13,9 +13,9 @@ inline float3 constexpr Color_back(0.9f, 0.1f, 0.4f);
 Material::Material(Sampler_settings const& sampler_settings)
     : material::Material(sampler_settings, true) {}
 
-material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
-                                         Renderstate const& rs, Filter /*filter*/,
-                                         Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
+                                         Filter /*filter*/, Sampler& /*sampler*/,
+                                         Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     float3 const n = cross(rs.t, rs.b);

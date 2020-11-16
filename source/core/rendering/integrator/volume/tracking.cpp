@@ -23,7 +23,7 @@
 namespace rendering::integrator::volume {
 
 #ifdef SU_DEBUG
-bool check(float3 const& majorant_mt, float mt);
+bool check(float3_p majorant_mt, float mt);
 #endif
 
 // Code for hetereogeneous transmittance inspired by:
@@ -536,7 +536,7 @@ Event Tracking::tracking(ray const& ray, CCE const& cce, RNG& rng, float& t_out,
 }
 
 #ifdef SU_DEBUG
-bool check(float3 const& majorant_mt, float mt) {
+bool check(float3_p majorant_mt, float mt) {
     if (mt < max_component(majorant_mt)) {
         std::cout << "mu_t: " << majorant_mt << " mt: " << mt << std::endl;
         return false;

@@ -380,7 +380,7 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value,
 }
 
 template <typename Base, typename Filter>
-static Sensor* make_filtered_sensor(float3 const& clamp_max, json::Value const& filter_value) {
+static Sensor* make_filtered_sensor(float3_p clamp_max, json::Value const& filter_value) {
     using namespace rendering::sensor;
 
     bool const clamp = !any_negative(clamp_max);

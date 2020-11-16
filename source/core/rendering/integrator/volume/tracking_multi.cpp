@@ -24,7 +24,7 @@ namespace rendering::integrator::volume {
 
 using namespace scene::prop;
 
-static inline void set_scattering(Intersection& isec, Interface const* interface, float3 const& p) {
+static inline void set_scattering(Intersection& isec, Interface const* interface, float3_p p) {
     isec.prop       = interface->prop;
     isec.geo.p      = p;
     isec.geo.uv     = interface->uv;

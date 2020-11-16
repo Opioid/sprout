@@ -9,12 +9,12 @@ class Glass : public Material {
   public:
     Glass(Sampler_settings const& sampler_settings);
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const override;
 
     void set_normal_map(Texture_adapter const& normal_map);
 
-    void set_refraction_color(float3 const& color);
+    void set_refraction_color(float3_p color);
 
     static size_t sample_size();
 

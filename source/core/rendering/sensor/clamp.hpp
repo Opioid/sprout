@@ -8,14 +8,14 @@ namespace rendering::sensor::clamp {
 
 class Identity {
   public:
-    float4 clamp(float4 const& color) const;
+    float4 clamp(float4_p color) const;
 };
 
 class Clamp {
   public:
-    Clamp(float3 const& max);
+    Clamp(float3_p max);
 
-    float4 clamp(float4 const& color) const;
+    float4 clamp(float4_p color) const;
 
   private:
     float3 max_;

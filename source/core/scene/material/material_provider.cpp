@@ -1248,7 +1248,7 @@ static float3 read_hex_RGB(std::string const& text) {
                   float(elements[2]) / 255.f);
 }
 
-static inline float3 map_color(float3 const& color) {
+static inline float3 map_color(float3_p color) {
 #ifdef SU_ACESCG
     return spectrum::sRGB_to_AP1(color);
 #else

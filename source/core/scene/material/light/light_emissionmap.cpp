@@ -26,9 +26,9 @@ Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_side
 
 Emissionmap::~Emissionmap() = default;
 
-material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*ray*/,
-                                            Renderstate const& rs, Filter filter,
-                                            Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Emissionmap::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
+                                            Filter  filter, Sampler& /*sampler*/,
+                                            Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -43,7 +43,7 @@ material::Sample const& Emissionmap::sample(float3 const&      wo, Ray const& /*
     return sample;
 }
 
-float3 Emissionmap::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*extent*/,
+float3 Emissionmap::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
                                       Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -54,13 +54,13 @@ float3 Emissionmap::average_radiance(float /*area*/) const {
     return average_emission_;
 }
 
-Material::Radiance_sample Emissionmap::radiance_sample(float3 const& r3) const {
+Material::Radiance_sample Emissionmap::radiance_sample(float3_p r3) const {
     auto const result = distribution_.sample_continuous(r3.xy());
 
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Emissionmap::emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const {
+float Emissionmap::emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;

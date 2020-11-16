@@ -87,10 +87,9 @@ void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
     }
 }
 
-static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
-                               float3 const& n, Transformation const& trafo, bool total_sphere,
-                               Sampler& sampler, uint32_t sampler_d, Worker& worker,
-                               Sample_to& result) {
+static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3_p p, float3_p n,
+                               Transformation const& trafo, bool total_sphere, Sampler& sampler,
+                               uint32_t sampler_d, Worker& worker, Sample_to& result) {
     shape::Shape const* shape = worker.scene().prop_shape(prop);
 
     auto const material = worker.scene().prop_material(prop, part);
@@ -118,10 +117,10 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3 
     return true;
 }
 
-static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, float3 const& p,
-                                     float3 const& n, Transformation const& trafo,
-                                     bool total_sphere, Sampler& sampler, uint32_t sampler_d,
-                                     Worker& worker, Sample_to& result) {
+static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, float3_p p,
+                                     float3_p n, Transformation const& trafo, bool total_sphere,
+                                     Sampler& sampler, uint32_t sampler_d, Worker& worker,
+                                     Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float2 const s2d = sampler.sample_2D(worker.rng(), sampler_d);
@@ -147,10 +146,9 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
     return false;
 }
 
-static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
-                                 float3 const& n, Transformation const& trafo, bool total_sphere,
-                                 Sampler& sampler, uint32_t sampler_d, Worker& worker,
-                                 Sample_to& result) {
+static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, float3_p p, float3_p n,
+                                 Transformation const& trafo, bool total_sphere, Sampler& sampler,
+                                 uint32_t sampler_d, Worker& worker, Sample_to& result) {
     if (!worker.scene().prop_shape(prop)->sample_volume(part, p, trafo, volume, sampler,
                                                         worker.rng(), sampler_d, result)) {
         return false;
@@ -163,10 +161,10 @@ static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, flo
     return false;
 }
 
-static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volume, float3 const& p,
-                                       float3 const& n, Transformation const& trafo,
-                                       bool total_sphere, Sampler& sampler, uint32_t sampler_d,
-                                       Worker& worker, Sample_to& result) {
+static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volume, float3_p p,
+                                       float3_p n, Transformation const& trafo, bool total_sphere,
+                                       Sampler& sampler, uint32_t sampler_d, Worker& worker,
+                                       Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     auto& rng = worker.rng();
@@ -191,7 +189,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
     return false;
 }
 
-bool Light::sample(float3 const& p, float3 const& n, Transformation const& trafo, bool total_sphere,
+bool Light::sample(float3_p p, float3_p n, Transformation const& trafo, bool total_sphere,
                    Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const {
     switch (type_) {
         case Type::Null:
@@ -388,16 +386,16 @@ float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& w
                                        worker);
 }
 
-bool Light::sample(float3 const& p, float3 const& n, uint64_t time, bool total_sphere,
-                   Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const {
+bool Light::sample(float3_p p, float3_p n, uint64_t time, bool total_sphere, Sampler& sampler,
+                   uint32_t sampler_d, Worker& worker, Sample_to& result) const {
     Transformation temp;
     auto const&    trafo = transformation_at(time, temp, worker.scene());
 
     return sample(p, n, trafo, total_sphere, sampler, sampler_d, worker, result);
 }
 
-bool Light::sample(float3 const& p, uint64_t time, Sampler& sampler, uint32_t sampler_d,
-                   Worker& worker, Sample_to& result) const {
+bool Light::sample(float3_p p, uint64_t time, Sampler& sampler, uint32_t sampler_d, Worker& worker,
+                   Sample_to& result) const {
     Transformation temp;
     auto const&    trafo = transformation_at(time, temp, worker.scene());
 

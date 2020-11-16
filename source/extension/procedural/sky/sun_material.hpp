@@ -10,11 +10,11 @@ class Sun_material : public Material {
   public:
     Sun_material(Sky& sky);
 
-    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
     float3 average_radiance(float area) const final;
@@ -28,11 +28,11 @@ class Sun_baked_material : public Material {
   public:
     Sun_baked_material(Sky& sky);
 
-    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
     float3 average_radiance(float area) const final;

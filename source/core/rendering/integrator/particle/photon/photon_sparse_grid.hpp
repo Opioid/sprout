@@ -58,18 +58,18 @@ class Sparse_grid {
 
     uint32_t reduce(float merge_radius, int32_t begin, int32_t end);
 
-    int32_t map1(float3 const& v) const;
+    int32_t map1(float3_p v) const;
 
-    int3 map3(float3 const& v) const;
+    int3 map3(float3_p v) const;
 
-    int3 map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const;
+    int3 map3(float3_p v, float2 cell_bound, uint8_t& adjacents) const;
 
     struct Adjacency {
         uint32_t num_cells;
         int2     cells[4];
     };
 
-    void adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const;
+    void adjacent_cells(float3_p v, float2 cell_bound, Adjacency& adjacency) const;
 
     static int32_t constexpr Log2_cell_dim = 5;
     static int32_t constexpr Cell_dim      = 1 << Log2_cell_dim;

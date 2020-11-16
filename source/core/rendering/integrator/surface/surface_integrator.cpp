@@ -10,7 +10,7 @@ Integrator::Integrator() = default;
 
 Integrator::~Integrator() = default;
 
-void Integrator::common_AOVs(float3 const& throughput, Ray const& ray, Intersection const& isec,
+void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection const& isec,
                              Material_sample const& mat_sample, bool primary_ray, Worker& worker,
                              AOV& aov) {
     using Property = sensor::aov::Property;

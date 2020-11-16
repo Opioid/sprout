@@ -9,7 +9,7 @@
 
 namespace scene::material::metallic_paint {
 
-bxdf::Result Sample::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample::evaluate_f(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -32,7 +32,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     return {coating.reflection + coating.attenuation * bottom, pdf};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample::evaluate_b(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -107,14 +107,14 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     }
 }
 
-void Sample::Base_layer::set(float3 const& color_a, float3 const& color_b, float alpha) {
+void Sample::Base_layer::set(float3_p color_a, float3_p color_b, float alpha) {
     color_a_ = color_a;
     color_b_ = color_b;
     alpha_   = alpha;
 }
 
 template <bool Forward>
-bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
+bxdf::Result Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float3_p h,
                                           float wo_dot_h) const {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
@@ -137,7 +137,7 @@ bxdf::Result Sample::Base_layer::evaluate(float3 const& wi, float3 const& wo, fl
     }
 }
 
-void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
+void Sample::Base_layer::sample(float3_p wo, Sampler& sampler, RNG& rng,
                                 bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -154,8 +154,7 @@ void Sample::Base_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
     result.reflection *= n_dot_wi;
 }
 
-void Sample::Flakes_layer::set(float3 const& ior, float3 const& absorption, float alpha,
-                               float weight) {
+void Sample::Flakes_layer::set(float3_p ior, float3_p absorption, float alpha, float weight) {
     ior_        = ior;
     absorption_ = absorption;
     alpha_      = alpha;
@@ -163,8 +162,8 @@ void Sample::Flakes_layer::set(float3 const& ior, float3 const& absorption, floa
 }
 
 template <bool Forward>
-bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                                            float wo_dot_h, float3& fresnel_result) const {
+bxdf::Result Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
+                                            float3& fresnel_result) const {
     float const n_dot_wi = clamp_n_dot(wi);
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
@@ -184,8 +183,8 @@ bxdf::Result Sample::Flakes_layer::evaluate(float3 const& wi, float3 const& wo, 
     }
 }
 
-void Sample::Flakes_layer::sample(float3 const& wo, Sampler& sampler, RNG& rng,
-                                  float3& fresnel_result, bxdf::Sample& result) const {
+void Sample::Flakes_layer::sample(float3_p wo, Sampler& sampler, RNG& rng, float3& fresnel_result,
+                                  bxdf::Sample& result) const {
     float const n_dot_wo = clamp_abs_n_dot(wo);
 
     fresnel::Conductor const conductor(ior_, absorption_);

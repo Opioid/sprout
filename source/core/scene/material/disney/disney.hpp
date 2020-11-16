@@ -18,27 +18,27 @@ namespace disney {
 class Isotropic {
   public:
     static bxdf::Result reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
-                                   float3 const& color);
+                                   float3_p color);
 
-    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         float3 const& color, float2 xi, bxdf::Sample& result);
+    static float reflect(float3_p wo, float n_dot_wo, Layer const& layer, float alpha,
+                         float3_p color, float2 xi, bxdf::Sample& result);
 
   private:
     static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
-                           float3 const& color);
+                           float3_p color);
 };
 
 class Isotropic_no_lambert {
   public:
     static bxdf::Result reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
-                                   float3 const& color);
+                                   float3_p color);
 
-    static float reflect(float3 const& wo, float n_dot_wo, Layer const& layer, float alpha,
-                         float3 const& color, float2 xi, bxdf::Sample& result);
+    static float reflect(float3_p wo, float n_dot_wo, Layer const& layer, float alpha,
+                         float3_p color, float2 xi, bxdf::Sample& result);
 
   private:
     static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
-                           float3 const& color);
+                           float3_p color);
 };
 
 }  // namespace disney

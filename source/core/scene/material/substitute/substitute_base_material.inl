@@ -14,16 +14,16 @@
 
 namespace scene::material::substitute {
 
-static inline float3 f0_to_a(float3 const& f0) {
+static inline float3 f0_to_a(float3_p f0) {
     return 5.f * sqrt(max(0.95f - f0, 0.0001f));
 }
 
-static inline float3 f0_to_a_b(float3 const& f0) {
+static inline float3 f0_to_a_b(float3_p f0) {
     return 6.f * (1.f - f0);
 }
 
 template <typename Sample>
-void Material_base::set_sample(float3 const& wo, Renderstate const& rs, float ior_outside,
+void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_outside,
                                Texture_sampler_2D const& sampler, Worker const& worker,
                                Sample& sample) const {
     if (normal_map_.is_valid()) {

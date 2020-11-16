@@ -9,11 +9,11 @@ namespace image {
 struct Description {
     Description();
     Description(int2 dimensions, int32_t num_elements = 1);
-    Description(int3 const& dimensions, int32_t num_elements, int3 const& offset);
+    Description(int3_p dimensions, int32_t num_elements, int3_p offset);
 
     uint64_t num_pixels() const;
 
-    int3 const& dimensions() const;
+    int3_p dimensions() const;
 
     int32_t area() const;
 
@@ -21,7 +21,7 @@ struct Description {
 
     int32_t num_elements() const;
 
-    int3 const& offset() const;
+    int3 offset() const;
 
     int3 dimensions_;
 
@@ -65,9 +65,9 @@ class alignas(16) Typed_image {
 
     T at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
-    void gather(int4 const& xy_xy1, T c[4]) const;
+    void gather(int4_p xy_xy1, T c[4]) const;
 
-    void gather(int3 const& xyz, int3 const& xyz1, T c[8]) const;
+    void gather(int3 const& xyz, int3_p xyz1, T c[8]) const;
 
     void square_transpose();
 
@@ -110,9 +110,9 @@ class Typed_sparse_image {
 
     T at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
-    void gather(int4 const& xy_xy1, T c[4]) const;
+    void gather(int4_p xy_xy1, T c[4]) const;
 
-    void gather(int3 const& xyz, int3 const& xyz1, T c[8]) const;
+    void gather(int3 const& xyz, int3_p xyz1, T c[8]) const;
 
   private:
     int3 coordinates_3(int64_t index) const;

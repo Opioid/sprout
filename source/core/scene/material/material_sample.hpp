@@ -30,22 +30,22 @@ struct Layer {
     Layer swapped() const;
     Layer swapped(bool same_side) const;
 
-    void set_tangent_frame(float3 const& t, float3 const& b, float3 const& n);
-    void set_tangent_frame(float3 const& n);
+    void set_tangent_frame(float3_p t, float3_p b, float3_p n);
+    void set_tangent_frame(float3_p n);
 
-    float n_dot(float3 const& v) const;
+    float n_dot(float3_p v) const;
 
-    float abs_n_dot(float3 const& v) const;
+    float abs_n_dot(float3_p v) const;
 
-    float clamp_n_dot(float3 const& v) const;
+    float clamp_n_dot(float3_p v) const;
 
-    float clamp_abs_n_dot(float3 const& v) const;
+    float clamp_abs_n_dot(float3_p v) const;
 
-    float3 const& shading_normal() const;
+    float3 shading_normal() const;
 
-    float3 tangent_to_world(float3 const& v) const;
+    float3 tangent_to_world(float3_p v) const;
 
-    float3 world_to_tangent(float3 const& v) const;
+    float3 world_to_tangent(float3_p v) const;
 
     float3 t_;
     float3 b_;
@@ -60,9 +60,9 @@ class Sample {
 
     virtual ~Sample();
 
-    virtual bxdf::Result evaluate_f(float3 const& wi) const = 0;
+    virtual bxdf::Result evaluate_f(float3_p wi) const = 0;
 
-    virtual bxdf::Result evaluate_b(float3 const& wi) const = 0;
+    virtual bxdf::Result evaluate_b(float3_p wi) const = 0;
 
     virtual void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const = 0;
 
@@ -74,32 +74,32 @@ class Sample {
 
     bool avoid_caustics() const;
 
-    float3 offset_p(float3 const& p, bool subsurface, bool translucent) const;
-    float3 offset_p(float3 const& p, float3 const& wi, bool subsurface) const;
+    float3 offset_p(float3_p p, bool subsurface, bool translucent) const;
+    float3 offset_p(float3_p p, float3_p wi, bool subsurface) const;
 
-    float3 const& geometric_normal() const;
-    float3 const& interpolated_normal() const;
-    float3 const& shading_normal() const;
-    float3 const& shading_tangent() const;
-    float3 const& shading_bitangent() const;
+    float3 geometric_normal() const;
+    float3 interpolated_normal() const;
+    float3 shading_normal() const;
+    float3 shading_tangent() const;
+    float3 shading_bitangent() const;
 
-    float3 const& wo() const;
+    float3 wo() const;
 
-    float3 const& albedo() const;
-    float3 const& radiance() const;
+    float3 albedo() const;
+    float3 radiance() const;
 
     float alpha() const;
 
-    float clamp_geo_n_dot(float3 const& v) const;
+    float clamp_geo_n_dot(float3_p v) const;
 
-    bool same_hemisphere(float3 const& v) const;
+    bool same_hemisphere(float3_p v) const;
 
-    void set_common(Renderstate const& rs, float3 const& wo, float3 const& albedo,
-                    float3 const& radiance, float alpha);
+    void set_common(Renderstate const& rs, float3_p wo, float3_p albedo, float3_p radiance,
+                    float alpha);
 
-    void set_common(float3 const& geo_n, float3 const& n, float3 const& wo, float alpha);
+    void set_common(float3_p geo_n, float3_p n, float3_p wo, float alpha);
 
-    void set_radiance(float3 const& radiance);
+    void set_radiance(float3_p radiance);
 
     Layer layer_;
 

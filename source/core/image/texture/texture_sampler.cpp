@@ -197,40 +197,40 @@ float2 Linear_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv, i
 Sampler_3D::~Sampler_3D() = default;
 
 template <typename Address_mode>
-float Nearest_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uvw) const {
+float Nearest_3D<Address_mode>::sample_1(Texture const& texture, float3_p uvw) const {
     int3 const xyz = map(texture, uvw);
 
     return texture.at_1(xyz[0], xyz[1], xyz[2]);
 }
 
 template <typename Address_mode>
-float2 Nearest_3D<Address_mode>::sample_2(Texture const& texture, float3 const& uvw) const {
+float2 Nearest_3D<Address_mode>::sample_2(Texture const& texture, float3_p uvw) const {
     int3 const xyz = map(texture, uvw);
 
     return texture.at_2(xyz[0], xyz[1], xyz[2]);
 }
 
 template <typename Address_mode>
-float3 Nearest_3D<Address_mode>::sample_3(Texture const& texture, float3 const& uvw) const {
+float3 Nearest_3D<Address_mode>::sample_3(Texture const& texture, float3_p uvw) const {
     int3 const xyz = map(texture, uvw);
 
     return texture.at_3(xyz[0], xyz[1], xyz[2]);
 }
 
 template <typename Address_mode>
-float4 Nearest_3D<Address_mode>::sample_4(Texture const& texture, float3 const& uvw) const {
+float4 Nearest_3D<Address_mode>::sample_4(Texture const& texture, float3_p uvw) const {
     int3 const xyz = map(texture, uvw);
 
     return texture.at_4(xyz[0], xyz[1], xyz[2]);
 }
 
 template <typename Address_mode>
-float3 Nearest_3D<Address_mode>::address(float3 const& uvw) const {
+float3 Nearest_3D<Address_mode>::address(float3_p uvw) const {
     return float3(Address_mode::f(uvw[0]), Address_mode::f(uvw[1]), Address_mode::f(uvw[2]));
 }
 
 template <typename Address_mode>
-int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) {
+int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3_p uvw) {
     int3 const d = texture.dimensions();
 
     float3 const df = float3(d);
@@ -246,7 +246,7 @@ int3 Nearest_3D<Address_mode>::map(Texture const& texture, float3 const& uvw) {
 }
 
 template <typename Address_mode>
-float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uvw) const {
+float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3_p uvw) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
@@ -261,7 +261,7 @@ float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3 const& uv
 }
 
 template <typename Address_mode>
-float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3 const& uvw) const {
+float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3_p uvw) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
@@ -276,7 +276,7 @@ float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3 const& u
 }
 
 template <typename Address_mode>
-float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3 const& uvw) const {
+float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3_p uvw) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
@@ -297,7 +297,7 @@ float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3 const& u
 }
 
 template <typename Address_mode>
-float4 Linear_3D<Address_mode>::sample_4(Texture const& texture, float3 const& uvw) const {
+float4 Linear_3D<Address_mode>::sample_4(Texture const& texture, float3_p uvw) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture, uvw, xyz, xyz1);
@@ -318,13 +318,12 @@ float4 Linear_3D<Address_mode>::sample_4(Texture const& texture, float3 const& u
 }
 
 template <typename Address_mode>
-float3 Linear_3D<Address_mode>::address(float3 const& uvw) const {
+float3 Linear_3D<Address_mode>::address(float3_p uvw) const {
     return float3(Address_mode::f(uvw[0]), Address_mode::f(uvw[1]), Address_mode::f(uvw[2]));
 }
 
 template <typename Address_mode>
-float3 Linear_3D<Address_mode>::map(Texture const& texture, float3 const& uvw, int3& xyz0,
-                                    int3& xyz1) {
+float3 Linear_3D<Address_mode>::map(Texture const& texture, float3_p uvw, int3& xyz0, int3& xyz1) {
     int3 const d = texture.dimensions();
 
     float3 const df = float3(d);

@@ -7,11 +7,11 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample::evaluate_f(float3_p wi) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample::evaluate_b(float3_p wi) const {
     return evaluate<false>(wi);
 }
 
@@ -37,7 +37,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
 }
 
 template <bool Forward>
-bxdf::Result Sample::evaluate(float3 const& wi) const {
+bxdf::Result Sample::evaluate(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }

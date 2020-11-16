@@ -229,7 +229,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     return true;
 }
 
-bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ray const& history,
+bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray const& history,
                                 Intersection const& isec, Material_sample const& mat_sample,
                                 Filter filter, Worker& worker) {
     if (!isec.visible_in_camera(worker)) {
@@ -267,9 +267,9 @@ bool Lighttracer::direct_camera(Camera const& camera, float3 const& radiance, Ra
 
         auto const bxdf = mat_sample.evaluate_f(wi);
 
-        float3 const& wo = mat_sample.wo();
+        float3_p wo = mat_sample.wo();
 
-        float3 const& n = mat_sample.interpolated_normal();
+        float3_p n = mat_sample.interpolated_normal();
 
         float nsc = material::non_symmetry_compensation(wo, wi, isec.geo.geo_n, n);
 

@@ -18,11 +18,11 @@ namespace scene::shape {
 
 Rectangle::Rectangle() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
-float3 Rectangle::object_to_texture_point(float3 const& p) const {
+float3 Rectangle::object_to_texture_point(float3_p p) const {
     return (p - float3(-1.f)) * (1.f / float3(2.f, 2.f, 0.2f));
 }
 
-float3 Rectangle::object_to_texture_vector(float3 const& v) const {
+float3 Rectangle::object_to_texture_vector(float3_p v) const {
     return v * (1.f / float3(2.f, 2.f, 0.2f));
 }
 
@@ -32,7 +32,7 @@ AABB Rectangle::transformed_aabb(float4x4 const& m) const {
 
 bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                           Intersection& isec) const {
-    float3 const& normal = trafo.rotation.r[2];
+    float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
     float const denom = -dot(normal, ray.direction);
@@ -76,7 +76,7 @@ bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*n
 
 bool Rectangle::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                               Intersection& isec) const {
-    float3 const& normal = trafo.rotation.r[2];
+    float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
     float const denom = -dot(normal, ray.direction);
@@ -117,7 +117,7 @@ bool Rectangle::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack&
 
 bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                           Normals& normals) const {
-    float3 const& normal = trafo.rotation.r[2];
+    float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
     float const denom = -dot(normal, ray.direction);
@@ -155,7 +155,7 @@ bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*n
 
 bool Rectangle::intersect_p(Ray const& ray, Transformation const& trafo,
                             Node_stack& /*nodes*/) const {
-    float3 const& normal = trafo.rotation.r[2];
+    float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
     float const denom = -dot(normal, ray.direction);
@@ -185,7 +185,7 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& trafo,
 
 float Rectangle::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
                             Filter filter, Worker& worker) const {
-    float3 const& normal = trafo.rotation.r[2];
+    float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
     float const denom = -dot(normal, ray.direction);
@@ -219,7 +219,7 @@ float Rectangle::visibility(Ray const& ray, Transformation const& trafo, uint32_
 
 bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                                 Filter filter, Worker& worker, float3& ta) const {
-    float3 const& normal = trafo.rotation.r[2];
+    float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
     float const denom = -dot(normal, ray.direction);
@@ -256,7 +256,7 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
     return true;
 }
 
-bool Rectangle::sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
+bool Rectangle::sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
                        bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                        Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
@@ -284,7 +284,7 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& trafo, float are
 
 float Rectangle::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& trafo,
                      float area, bool two_sided, bool /*total_sphere*/) const {
-    float3 const& normal = trafo.rotation.r[2];
+    float3_p normal = trafo.rotation.r[2];
 
     float c = -dot(normal, ray.direction);
 
@@ -301,7 +301,7 @@ float Rectangle::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
     return 0.f;
 }
 
-bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv, Transformation const& trafo,
+bool Rectangle::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation const& trafo,
                        float area, bool two_sided, Sample_to& sample) const {
     float3 const ls(-2.f * uv + 1.f, 0.f);
     float3 const ws = trafo.object_to_world_point(ls);
@@ -329,7 +329,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3 const& p, float2 uv, Transforma
     return true;
 }
 
-bool Rectangle::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Rectangle::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
                        Transformation const& /*trafo*/, float /*volume*/,
                        Sample_to& /*sample*/) const {
     return false;
@@ -350,11 +350,11 @@ float Rectangle::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Rectangle::area(uint32_t /*part*/, float3 const& scale) const {
+float Rectangle::area(uint32_t /*part*/, float3_p scale) const {
     return 4.f * scale[0] * scale[1];
 }
 
-float Rectangle::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Rectangle::volume(uint32_t /*part*/, float3_p /*scale*/) const {
     return 0.f;
 }
 

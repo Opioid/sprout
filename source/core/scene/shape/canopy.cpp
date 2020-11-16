@@ -20,11 +20,11 @@ static float constexpr Canopy_eps = -0.0005f;
 
 Canopy::Canopy() : Shape(Properties(Property::Analytical)) {}
 
-float3 Canopy::object_to_texture_point(float3 const& p) const {
+float3 Canopy::object_to_texture_point(float3_p p) const {
     return p;
 }
 
-float3 Canopy::object_to_texture_vector(float3 const& v) const {
+float3 Canopy::object_to_texture_vector(float3_p v) const {
     return v;
 }
 
@@ -138,9 +138,9 @@ bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& trafo,
-                    float /*area*/, bool /*two_sided*/, Sampler& sampler, RNG& rng,
-                    uint32_t sampler_d, Sample_to& sample) const {
+bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo, float /*area*/,
+                    bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                    Sample_to& sample) const {
     float2 const uv  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = sample_oriented_hemisphere_uniform(uv, trafo.rotation);
 
@@ -172,7 +172,7 @@ float Canopy::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
     return 0.f;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv, Transformation const& trafo,
+bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float2 uv, Transformation const& trafo,
                     float /*area*/, bool /*two_sided*/, Sample_to& sample) const {
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
@@ -189,7 +189,7 @@ bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float2 uv, Transform
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
                     Transformation const& /*trafo*/, float /*volume*/,
                     Sample_to& /*sample*/) const {
     return false;
@@ -243,11 +243,11 @@ float Canopy::uv_weight(float2 uv) const {
     return 1.f;
 }
 
-float Canopy::area(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Canopy::area(uint32_t /*part*/, float3_p /*scale*/) const {
     return 2.f * Pi;
 }
 
-float Canopy::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Canopy::volume(uint32_t /*part*/, float3_p /*scale*/) const {
     return 0.f;
 }
 

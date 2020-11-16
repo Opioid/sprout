@@ -16,7 +16,7 @@ inline bool Value::active(Property aov) const {
     return id != 255;
 }
 
-inline void Value::insert(float3 const& v, Property aov) {
+inline void Value::insert(float3_p v, Property aov) {
     uint32_t const id = mapping_.m[uint32_t(aov)];
 
     if (255 == id) {

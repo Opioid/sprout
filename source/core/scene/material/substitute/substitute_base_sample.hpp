@@ -28,34 +28,34 @@ template <typename Diffuse>
 struct Base_closure {
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& color, float f0, float metallic);
+    void set(float3_p color, float f0, float metallic);
 
     template <bool Forward>
-    bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+    bxdf::Result base_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                                material::Sample const& sample) const;
 
     template <bool Forward>
-    bxdf::Result base_evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+    bxdf::Result base_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                                material::Sample const& sample, float diffuse_factor) const;
 
     template <bool Forward>
-    bxdf::Result pure_gloss_evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                                     float wo_dot_h, material::Sample const& sample) const;
+    bxdf::Result pure_gloss_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
+                                     material::Sample const& sample) const;
 
-    void diffuse_sample(float3 const& wo, material::Sample const& sample, Sampler& sampler,
-                        RNG& rng, bxdf::Sample& result) const;
+    void diffuse_sample(float3_p wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
+                        bxdf::Sample& result) const;
 
-    void diffuse_sample(float3 const& wo, material::Sample const& sample, float diffuse_factor,
+    void diffuse_sample(float3_p wo, material::Sample const& sample, float diffuse_factor,
                         Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
-    void gloss_sample(float3 const& wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
+    void gloss_sample(float3_p wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
                       bxdf::Sample& result) const;
 
-    void gloss_sample(float3 const& wo, material::Sample const& sample, float diffuse_factor,
+    void gloss_sample(float3_p wo, material::Sample const& sample, float diffuse_factor,
                       Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
-    void pure_gloss_sample(float3 const& wo, material::Sample const& sample, Sampler& sampler,
-                           RNG& rng, bxdf::Sample& result) const;
+    void pure_gloss_sample(float3_p wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
+                           bxdf::Sample& result) const;
 
     float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const;
 

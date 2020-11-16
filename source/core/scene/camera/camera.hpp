@@ -72,11 +72,11 @@ class Camera {
     virtual bool generate_ray(Sample const& sample, uint32_t frame, uint32_t view,
                               Scene const& scene, Ray& ray) const = 0;
 
-    virtual bool sample(uint32_t view, int4 const& bounds, uint64_t time, float3 const& p,
-                        Sampler& sampler, RNG& rng, uint32_t sampler_d, Scene const& scene,
+    virtual bool sample(uint32_t view, int4_p bounds, uint64_t time, float3_p p, Sampler& sampler,
+                        RNG& rng, uint32_t sampler_d, Scene const& scene,
                         Sample_to& sample) const = 0;
 
-    virtual Ray_differential calculate_ray_differential(float3 const& p, uint64_t time,
+    virtual Ray_differential calculate_ray_differential(float3_p p, uint64_t time,
                                                         Scene const& scene) const;
 
     virtual Frustum frustum() const;
@@ -85,9 +85,9 @@ class Camera {
 
     int2 resolution() const;
 
-    int4 const& crop() const;
+    int4_p crop() const;
 
-    void set_resolution(int2 resolution, int4 const& crop);
+    void set_resolution(int2 resolution, int4_p crop);
 
     Sensor& sensor() const;
 
@@ -108,7 +108,7 @@ class Camera {
 
     virtual void set_parameter(std::string_view name, json::Value const& value) = 0;
 
-    static Ray create_ray(float3 const& origin, float3 const& direction, uint64_t time);
+    static Ray create_ray(float3_p origin, float3_p direction, uint64_t time);
 
     uint32_t entity_ = 0xFFFFFFFF;
 

@@ -14,11 +14,11 @@ namespace scene::shape {
 
 Plane::Plane() : Shape(Properties(Property::Analytical)) {}
 
-float3 Plane::object_to_texture_point(float3 const& p) const {
+float3 Plane::object_to_texture_point(float3_p p) const {
     return p;
 }
 
-float3 Plane::object_to_texture_vector(float3 const& v) const {
+float3 Plane::object_to_texture_vector(float3_p v) const {
     return v;
 }
 
@@ -146,7 +146,7 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_
     return true;
 }
 
-bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*trafo*/,
+bool Plane::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& /*trafo*/,
                    float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
                    rnd::Generator& /*rng*/, uint32_t /*sampler_d*/, Sample_to& /*sample*/) const {
     return false;
@@ -169,13 +169,13 @@ float Plane::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
     return 0.f;
 }
 
-bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
+bool Plane::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/,
                    Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                    Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Plane::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Plane::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
                    Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
     return false;
 }
@@ -195,11 +195,11 @@ float Plane::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Plane::area(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Plane::area(uint32_t /*part*/, float3_p /*scale*/) const {
     return 1.f;
 }
 
-float Plane::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Plane::volume(uint32_t /*part*/, float3_p /*scale*/) const {
     return 0.f;
 }
 

@@ -10,15 +10,15 @@ namespace scene::material::substitute {
 template <typename Coating_layer, typename Diffuse>
 class Sample_coating : public material::Sample {
   public:
-    bxdf::Result evaluate_f(float3 const& wi) const override;
+    bxdf::Result evaluate_f(float3_p wi) const override;
 
-    bxdf::Result evaluate_b(float3 const& wi) const override;
+    bxdf::Result evaluate_b(float3_p wi) const override;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const override;
 
   protected:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi) const;
+    bxdf::Result evaluate(float3_p wi) const;
 
     void coating_sample_and_base(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 

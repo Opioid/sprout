@@ -7,9 +7,9 @@ namespace scene::material::display {
 
 class Sample : public material::Sample {
   public:
-    bxdf::Result evaluate_f(float3 const& wi) const final;
+    bxdf::Result evaluate_f(float3_p wi) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi) const final;
+    bxdf::Result evaluate_b(float3_p wi) const final;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 

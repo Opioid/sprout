@@ -39,7 +39,7 @@ inline float constexpr Origin      = 1.f / 32.f;
 inline float constexpr Float_scale = 1.f / 65536.f;
 inline float constexpr Int_scale   = 256.f;
 
-static inline float3 offset_ray(float3 const& p, float3 const& n) {
+static inline float3 offset_ray(float3_p p, float3_p n) {
     int3 const of_i(Int_scale * n);
 
     float3 const p_i(int_as_float(float_as_int(p[0]) + ((p[0] < 0.f) ? -of_i[0] : of_i[0])),

@@ -113,7 +113,7 @@ int2 calculate_dimensions(std::vector<Item> const& items, uint32_t num_per_row) 
     return dimensions;
 }
 
-static inline float4 clip(float4 const& v, float2 clip) {
+static inline float4 clip(float4_p v, float2 clip) {
     return float4((v[0] < clip[0] || v[0] > clip[1]) ? 0.f : v[0],
                   (v[1] < clip[0] || v[1] > clip[1]) ? 0.f : v[1],
                   (v[2] < clip[0] || v[2] > clip[1]) ? 0.f : v[2], v[3]);

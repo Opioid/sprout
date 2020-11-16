@@ -31,7 +31,7 @@ void Material_coating<Coating>::set_coating_thickness(float thickness) {
 
 template <typename Coating>
 template <typename Sample>
-void Material_coating<Coating>::set_coating_basis(float3 const& wo, Renderstate const& rs,
+void Material_coating<Coating>::set_coating_basis(float3_p wo, Renderstate const& rs,
                                                   Texture_sampler_2D const& sampler,
                                                   Worker const& worker, Sample& sample) const {
     if (Material_base::normal_map_ == coating_normal_map_) {

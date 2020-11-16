@@ -18,9 +18,9 @@ Glass_thin::Glass_thin(Sampler_settings const& sampler_settings)
     properties_.set(Property::Tinted_shadow);
 }
 
-material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*ray*/,
-                                           Renderstate const& rs, Filter filter,
-                                           Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Glass_thin::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
+                                           Filter  filter, Sampler& /*sampler*/,
+                                           Worker& worker) const {
     auto& sample = worker.sample<Sample_thin>();
 
     if (normal_map_.is_valid()) {
@@ -37,8 +37,8 @@ material::Sample const& Glass_thin::sample(float3 const&      wo, Ray const& /*r
     return sample;
 }
 
-float3 Glass_thin::thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
-                                   Filter filter, Worker const& worker) const {
+float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, uint64_t time, Filter filter,
+                                   Worker const& worker) const {
     float const eta_i = 1.f;
     float const eta_t = ior_;
 
@@ -71,7 +71,7 @@ void Glass_thin::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Glass_thin::set_refraction_color(float3 const& color) {
+void Glass_thin::set_refraction_color(float3_p color) {
     refraction_color_ = color;
 }
 

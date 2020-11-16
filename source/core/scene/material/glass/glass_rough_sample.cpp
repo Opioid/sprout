@@ -13,11 +13,11 @@
 
 namespace scene::material::glass {
 
-bxdf::Result Sample_rough::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample_rough::evaluate_f(float3_p wi) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_rough::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample_rough::evaluate_b(float3_p wi) const {
     return evaluate<false>(wi);
 }
 
@@ -101,7 +101,7 @@ void Sample_rough::set(float ior, float ior_outside) {
 }
 
 template <bool Forward>
-bxdf::Result Sample_rough::evaluate(float3 const& wi) const {
+bxdf::Result Sample_rough::evaluate(float3_p wi) const {
     if (ior_.eta_i == ior_.eta_t) {
         return {float3(0.f), 0.f};
     }

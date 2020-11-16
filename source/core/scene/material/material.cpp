@@ -33,7 +33,7 @@ void Material::set_color_map(Texture_adapter const& color_map) {
     color_map_ = color_map;
 }
 
-void Material::set_emission(float3 const& emission) {
+void Material::set_emission(float3_p emission) {
     emission_ = emission;
 }
 
@@ -41,7 +41,7 @@ void Material::set_ior(float ior) {
     ior_ = ior;
 }
 
-void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+void Material::set_attenuation(float3_p absorption_color, float3_p scattering_color,
                                float distance) {
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);
@@ -65,26 +65,25 @@ float3 Material::average_radiance(float /*extent*/) const {
     return float3(0.f);
 }
 
-float3 Material::evaluate_radiance(float3 const& /*wi*/, float3 const& /*uvw*/, float /*extent*/,
+float3 Material::evaluate_radiance(float3_p /*wi*/, float3_p /*uvw*/, float /*extent*/,
                                    Filter /*filter*/, Worker const& /*worker*/) const {
     return float3(0.f);
 }
 
-Material::Radiance_sample Material::radiance_sample(float3 const& r3) const {
+Material::Radiance_sample Material::radiance_sample(float3_p r3) const {
     return {r3, 1.f};
 }
 
-float Material::emission_pdf(float3 const& /*uvw*/, Filter /*filter*/,
-                             Worker const& /*worker*/) const {
+float Material::emission_pdf(float3_p /*uvw*/, Filter /*filter*/, Worker const& /*worker*/) const {
     return 1.f;
 }
 
-float3 Material::thin_absorption(float3 const& /*wi*/, float3 const& /*n*/, float2 uv,
-                                 uint64_t time, Filter filter, Worker const& worker) const {
+float3 Material::thin_absorption(float3_p /*wi*/, float3_p /*n*/, float2 uv, uint64_t time,
+                                 Filter filter, Worker const& worker) const {
     return float3(1.f - opacity(uv, time, filter, worker));
 }
 
-CC Material::collision_coefficients(float3 const& /*uvw*/, Filter /*filter*/,
+CC Material::collision_coefficients(float3_p /*uvw*/, Filter /*filter*/,
                                     Worker const& /*worker*/) const {
     return cc_;
 }
@@ -93,7 +92,7 @@ CCE Material::collision_coefficients_emission() const {
     return {cc_, emission_};
 }
 
-CCE Material::collision_coefficients_emission(float3 const& /*uvw*/, Filter /*filter*/,
+CCE Material::collision_coefficients_emission(float3_p /*uvw*/, Filter /*filter*/,
                                               Worker const& /*worker*/) const {
     return {cc_, emission_};
 }

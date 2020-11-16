@@ -93,13 +93,13 @@ class Worker {
 
     void reset_interface_stack(Interface_stack const& stack);
 
-    float ior_outside(float3 const& wo, Intersection const& isec) const;
+    float ior_outside(float3_p wo, Intersection const& isec) const;
 
-    void interface_change(float3 const& dir, Intersection const& isec);
+    void interface_change(float3_p dir, Intersection const& isec);
 
-    material::IoR interface_change_ior(float3 const& dir, Intersection const& isec);
+    material::IoR interface_change_ior(float3_p dir, Intersection const& isec);
 
-    Material_sample const& sample_material(Ray const& ray, float3 const& wo, float3 const& wo1,
+    Material_sample const& sample_material(Ray const& ray, float3_p wo, float3_p wo1,
                                            Intersection const& isec, Filter filter, float alpha,
                                            bool avoid_caustics, bool straight_border,
                                            Sampler& sampler);

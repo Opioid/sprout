@@ -17,13 +17,13 @@ Sample::Sample() {
     properties_.set(Property::Translucent);
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample::evaluate_f(float3_p wi) const {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample::evaluate_b(float3_p wi) const {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};
@@ -45,14 +45,14 @@ void Sample::set(float anisotropy) {
     anisotropy_ = anisotropy;
 }
 
-float Sample::phase(float3 const& wo, float3 const& wi) const {
+float Sample::phase(float3_p wo, float3_p wi) const {
     float const g = anisotropy_;
     return phase_hg(dot(wo, wi), g);
     //	float const k = 1.55f * g - (0.55f * g) * (g * g);
     //	return phase_schlick(dot(wo, wi), k);
 }
 
-float4 Sample::sample(float3 const& wo, float2 r2) const {
+float4 Sample::sample(float3_p wo, float2 r2) const {
     float const g = anisotropy_;
 
     float cos_theta;

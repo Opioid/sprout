@@ -16,11 +16,11 @@ class Buffer {
 
     void clear();
 
-    void add_pixel(int32_t id, uint32_t slot, float3 const& value, float weight);
+    void add_pixel(int32_t id, uint32_t slot, float3_p value, float weight);
 
-    void add_pixel_atomic(int32_t id, uint32_t slot, float3 const& value, float weight);
+    void add_pixel_atomic(int32_t id, uint32_t slot, float3_p value, float weight);
 
-    void overwrite_pixel(int32_t id, uint32_t slot, float3 const& value);
+    void overwrite_pixel(int32_t id, uint32_t slot, float3_p value);
 
     float3 value(int32_t id, uint32_t slot) const;
 

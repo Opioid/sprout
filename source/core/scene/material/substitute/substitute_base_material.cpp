@@ -22,7 +22,7 @@ void Material_base::commit(Threads& /*threads*/, Scene const& scene) {
     }
 }
 
-float3 Material_base::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw, float /*extent*/,
+float3 Material_base::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
                                         Filter filter, Worker const& worker) const {
     if (emission_map_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -54,7 +54,7 @@ void Material_base::set_emission_map(Texture_adapter const& emission_map) {
     properties_.set(Property::Emission_map, emission_map.is_valid());
 }
 
-void Material_base::set_color(float3 const& color) {
+void Material_base::set_color(float3_p color) {
     color_ = color;
 }
 

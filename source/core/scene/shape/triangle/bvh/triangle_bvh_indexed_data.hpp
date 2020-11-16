@@ -56,7 +56,7 @@ class Indexed_data {
 
     float area(uint32_t index) const;
 
-    float area(uint32_t index, float3 const& scale) const;
+    float area(uint32_t index, float3_p scale) const;
 
     float3 center(uint32_t index) const;
 

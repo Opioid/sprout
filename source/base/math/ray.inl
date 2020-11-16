@@ -8,12 +8,12 @@ namespace math {
 
 inline ray::ray() = default;
 
-inline ray::ray(float3 const& origin, float3 const& direction, float min_t, float max_t)
+inline ray::ray(float3_p origin, float3_p direction, float min_t, float max_t)
     : origin(origin[0], origin[1], origin[2], min_t),
       direction(direction[0], direction[1], direction[2], max_t),
       inv_direction(reciprocal(direction)) {}
 
-inline void ray::set_direction(float3 const& v) {
+inline void ray::set_direction(float3_p v) {
     direction     = float3(v[0], v[1], v[2], direction[3]);
     inv_direction = reciprocal(v);
 }

@@ -18,9 +18,9 @@ class Distribution_3D {
 
     float integral() const;
 
-    float4 sample_continuous(float3 const& r3) const;
+    float4 sample_continuous(float3_p r3) const;
 
-    float pdf(float3 const& uvw) const;
+    float pdf(float3_p uvw) const;
 
   private:
     Distribution_1D marginal_;

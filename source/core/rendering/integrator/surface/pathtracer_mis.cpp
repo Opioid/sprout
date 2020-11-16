@@ -359,7 +359,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 }
 
 float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ray const& history,
-                                      float3 const& p, uint32_t sampler_d, Intersection const& isec,
+                                      float3_p p, uint32_t sampler_d, Intersection const& isec,
                                       Material_sample const& mat_sample, Filter filter,
                                       Worker& worker) {
     // Light source importance sample
@@ -389,7 +389,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
     return weight * (tr * radiance * bxdf.reflection);
 }
 
-float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n, Intersection const& isec,
+float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersection const& isec,
                                      Bxdf_sample sample_result, Path_state state, Filter filter,
                                      Worker& worker, bool& pure_emissive) {
     uint32_t const light_id = isec.light_id(worker);
@@ -435,9 +435,8 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3 const& geo_n, Inters
     return radiance;
 }
 
-float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3 const& geo_n,
-                                           Intersection const& isec, float bxdf_pdf,
-                                           Path_state state, Worker& worker) const {
+float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Intersection const& isec,
+                                           float bxdf_pdf, Path_state state, Worker& worker) const {
     uint32_t const light_id = isec.light_id(worker);
     if (!Light::is_light(light_id)) {
         return 0.f;

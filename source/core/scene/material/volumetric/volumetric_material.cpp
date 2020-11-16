@@ -17,7 +17,7 @@ Material::Material(Sampler_settings const& sampler_settings)
 
 Material::~Material() = default;
 
-material::Sample const& Material::sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+material::Sample const& Material::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                          Filter /*filter*/, Sampler& /*sampler*/,
                                          Worker& worker) const {
     if (rs.subsurface) {
@@ -43,7 +43,7 @@ float3 Material::average_radiance(float /*volume*/) const {
     return cc_.a * emission_;
 }
 
-void Material::set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
+void Material::set_attenuation(float3_p absorption_color, float3_p scattering_color,
                                float distance) {
     if (any_greater_zero(scattering_color)) {
         cc_ = attenuation(absorption_color, scattering_color, distance);

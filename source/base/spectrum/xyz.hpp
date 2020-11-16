@@ -10,7 +10,7 @@
 
 namespace spectrum {
 
-static inline float3 constexpr XYZ_to_linear_RGB(float3 const& xyz) {
+static inline float3 constexpr XYZ_to_linear_RGB(float3_p xyz) {
     return float3(2.3706743f * xyz[0] - 0.9000405f * xyz[1] - 0.4706338f * xyz[2],
                   -0.5138850f * xyz[0] + 1.4253036f * xyz[1] + 0.0885814f * xyz[2],
                   0.0052982f * xyz[0] - 0.0146949f * xyz[1] + 1.0093968f * xyz[2]);
@@ -19,7 +19,7 @@ static inline float3 constexpr XYZ_to_linear_RGB(float3 const& xyz) {
 // http://terathon.com/blog/rgb-xyz-conversion-matrix-accuracy/
 // This function uses sRGB with illuminant D65
 
-static inline float3 constexpr XYZ_to_sRGB(float3 const& xyz) {
+static inline float3 constexpr XYZ_to_sRGB(float3_p xyz) {
     return float3(3.240970f * xyz[0] - 1.537383f * xyz[1] - 0.498611f * xyz[2],
                   -0.969244f * xyz[0] + 1.875968f * xyz[1] + 0.041555f * xyz[2],
                   0.055630f * xyz[0] - 0.203977f * xyz[1] + 1.056972f * xyz[2]);

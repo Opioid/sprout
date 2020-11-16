@@ -5,7 +5,7 @@ namespace rendering {
 
 Tile_queue::~Tile_queue() = default;
 
-void Tile_queue::init(int4 const& crop, int32_t tile_dimensions, int32_t filter_radius) {
+void Tile_queue::init(int4_p crop, int32_t tile_dimensions, int32_t filter_radius) {
     crop_            = crop;
     tile_dimensions_ = tile_dimensions;
     filter_radius_   = filter_radius;

@@ -18,7 +18,7 @@ namespace scene::shape::testing {
 
 void print(Intersection const& isec);
 
-void print_vector(float3 const& v);
+void print_vector(float3_p v);
 
 bool check(Intersection const& isec, entity::Composed_transformation const& trafo,
            Ray const& /*ray*/) {
@@ -105,7 +105,7 @@ void print(Intersection const& isec) {
     print_vector(isec.geo_n);
 }
 
-void print_vector(float3 const& v) {
+void print_vector(float3_p v) {
     std::cout << v << " |" << length(v) << "|" << std::endl;
 }
 

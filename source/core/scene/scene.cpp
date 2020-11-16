@@ -132,8 +132,8 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
     return {id, pdf};
 }
 
-Scene::Light Scene::light(uint32_t id, float3 const& p, float3 const& n, bool total_sphere,
-                          bool split, bool calculate_pdf) const {
+Scene::Light Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split,
+                          bool calculate_pdf) const {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
@@ -153,8 +153,8 @@ Scene::Light Scene::random_light(float random) const {
     return {l.offset, l.pdf};
 }
 
-void Scene::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
-                         bool split, Lights& lights) const {
+void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,
+                         Lights& lights) const {
     light_tree_.random_light(p, n, total_sphere, random, split, *this, lights);
 
 #ifdef SU_DEBUG
@@ -168,8 +168,7 @@ void Scene::random_light(float3 const& p, float3 const& n, bool total_sphere, fl
 #endif
 }
 
-void Scene::random_light(float3 const& p0, float3 const& p1, float random, bool split,
-                         Lights& lights) const {
+void Scene::random_light(float3_p p0, float3_p p1, float random, bool split, Lights& lights) const {
     light_tree_.random_light(p0, p1, random, split, *this, lights);
 }
 

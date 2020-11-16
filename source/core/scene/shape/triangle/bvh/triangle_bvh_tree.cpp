@@ -366,7 +366,7 @@ float Tree::triangle_area(uint32_t index) const {
     return data_.area(index);
 }
 
-float Tree::triangle_area(uint32_t index, float3 const& scale) const {
+float Tree::triangle_area(uint32_t index, float3_p scale) const {
     return data_.area(index, scale);
 }
 

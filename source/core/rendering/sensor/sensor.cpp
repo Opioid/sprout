@@ -50,7 +50,7 @@ int32_t Sensor::filter_radius_int() const {
     return filter_radius_;
 }
 
-int4 Sensor::isolated_tile(int4 const& tile) const {
+int4 Sensor::isolated_tile(int4_p tile) const {
     int32_t const r = filter_radius_;
     return tile + int4(r, r, -r, -r);
 }
@@ -61,7 +61,7 @@ void Sensor::clear(float weight) {
     aov_.clear();
 }
 
-void Sensor::add_AOV(int2 pixel, uint32_t slot, float3 const& value, float weight) {
+void Sensor::add_AOV(int2 pixel, uint32_t slot, float3_p value, float weight) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
@@ -69,7 +69,7 @@ void Sensor::add_AOV(int2 pixel, uint32_t slot, float3 const& value, float weigh
     aov_.add_pixel(id, slot, value, weight);
 }
 
-void Sensor::add_AOV_atomic(int2 pixel, uint32_t slot, float3 const& value, float weight) {
+void Sensor::add_AOV_atomic(int2 pixel, uint32_t slot, float3_p value, float weight) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
@@ -77,7 +77,7 @@ void Sensor::add_AOV_atomic(int2 pixel, uint32_t slot, float3 const& value, floa
     aov_.add_pixel_atomic(id, slot, value, weight);
 }
 
-void Sensor::overwrite_AOV(int2 pixel, uint32_t slot, float3 const& value) {
+void Sensor::overwrite_AOV(int2 pixel, uint32_t slot, float3_p value) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];

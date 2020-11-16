@@ -9,15 +9,15 @@ class Glass_thin : public Material {
   public:
     Glass_thin(Sampler_settings const& sampler_settings);
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
-                           Filter filter, Worker const& worker) const final;
+    float3 thin_absorption(float3_p wi, float3_p n, float2 uv, uint64_t time, Filter filter,
+                           Worker const& worker) const final;
 
     void set_normal_map(Texture_adapter const& normal_map);
 
-    void set_refraction_color(float3 const& color);
+    void set_refraction_color(float3_p color);
 
     void set_thickness(float thickness);
 

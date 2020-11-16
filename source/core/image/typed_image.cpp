@@ -10,7 +10,7 @@ Description::Description() : dimensions_(0), num_elements_(0), offset_() {}
 Description::Description(int2 dimensions, int32_t num_elements)
     : dimensions_(dimensions, 1), num_elements_(num_elements), offset_(0) {}
 
-Description::Description(int3 const& dimensions, int32_t num_elements, int3 const& offset)
+Description::Description(int3_p dimensions, int32_t num_elements, int3_p offset)
     : dimensions_(dimensions), num_elements_(num_elements), offset_(offset) {}
 
 uint64_t Description::num_pixels() const {
@@ -18,7 +18,7 @@ uint64_t Description::num_pixels() const {
            uint64_t(num_elements_);
 }
 
-int3 const& Description::dimensions() const {
+int3 Description::dimensions() const {
     return dimensions_;
 }
 
@@ -34,7 +34,7 @@ int32_t Description::num_elements() const {
     return num_elements_;
 }
 
-int3 const& Description::offset() const {
+int3 Description::offset() const {
     return offset_;
 }
 
@@ -139,7 +139,7 @@ T Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) c
 }
 
 template <typename T>
-void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const {
+void Typed_image<T>::gather(int4_p xy_xy1, T c[4]) const {
     int32_t const width = description_.dimensions_[0];
 
     int32_t const y0 = width * xy_xy1[1];
@@ -154,7 +154,7 @@ void Typed_image<T>::gather(int4 const& xy_xy1, T c[4]) const {
 }
 
 template <typename T>
-void Typed_image<T>::gather(int3 const& xyz, int3 const& xyz1, T c[8]) const {
+void Typed_image<T>::gather(int3 const& xyz, int3_p xyz1, T c[8]) const {
     int64_t const w = int64_t(description_.dimensions_[0]);
     int64_t const h = int64_t(description_.dimensions_[1]);
 
@@ -392,7 +392,7 @@ T Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t /*z*/,
 }
 
 template <typename T>
-void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const {
+void Typed_sparse_image<T>::gather(int4_p /*xy_xy1*/, T c[4]) const {
     //    int32_t const width = description_.dimensions[0];
 
     //    int32_t const y0 = width * xy_xy1[1];
@@ -412,7 +412,7 @@ void Typed_sparse_image<T>::gather(int4 const& /*xy_xy1*/, T c[4]) const {
 }
 
 template <typename T>
-void Typed_sparse_image<T>::gather(int3 const& xyz, int3 const& xyz1, T c[8]) const {
+void Typed_sparse_image<T>::gather(int3 const& xyz, int3_p xyz1, T c[8]) const {
     int3 const cc0 = xyz >> Log2_cell_dim;
     int3 const cc1 = xyz1 >> Log2_cell_dim;
 

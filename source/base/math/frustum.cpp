@@ -68,7 +68,7 @@ void Frustum::set_from_matrix(float4x4 const& combo_matrix) {
     planes_[5] = plane::normalize(planes_[5]);
 }
 
-bool Frustum::intersect(float3 const& p, float radius) const {
+bool Frustum::intersect(float3_p p, float radius) const {
     for (uint32_t i = 0; i < 4; ++i) {
         if (plane::dot(planes_[i], p) < -radius) {
             return false;

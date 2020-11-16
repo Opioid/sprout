@@ -7,11 +7,11 @@
 
 namespace scene::material::metal {
 
-bxdf::Result Sample_isotropic::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample_isotropic::evaluate_f(float3_p wi) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_isotropic::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample_isotropic::evaluate_b(float3_p wi) const {
     return evaluate<false>(wi);
 }
 
@@ -34,13 +34,13 @@ void Sample_isotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) 
     result.wavelength = 0.f;
 }
 
-void Sample_isotropic::set(float3 const& ior, float3 const& absorption) {
+void Sample_isotropic::set(float3_p ior, float3_p absorption) {
     ior_        = ior;
     absorption_ = absorption;
 }
 
 template <bool Forward>
-bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
+bxdf::Result Sample_isotropic::evaluate(float3_p wi) const {
     if (!same_hemisphere(wo_) || (avoid_caustics() && alpha_ <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
@@ -66,11 +66,11 @@ bxdf::Result Sample_isotropic::evaluate(float3 const& wi) const {
     }
 }
 
-bxdf::Result Sample_anisotropic::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample_anisotropic::evaluate_f(float3_p wi) const {
     return evaluate<true>(wi);
 }
 
-bxdf::Result Sample_anisotropic::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample_anisotropic::evaluate_b(float3_p wi) const {
     return evaluate<false>(wi);
 }
 
@@ -94,7 +94,7 @@ void Sample_anisotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
 }
 
 template <bool Forward>
-bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
+bxdf::Result Sample_anisotropic::evaluate(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -118,7 +118,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3 const& wi) const {
     }
 }
 
-void Sample_anisotropic::set(float3 const& ior, float3 const& absorption, float2 alpha) {
+void Sample_anisotropic::set(float3_p ior, float3_p absorption, float2 alpha) {
     ior_        = ior;
     absorption_ = absorption;
     alpha_      = alpha;

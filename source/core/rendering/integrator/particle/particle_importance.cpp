@@ -135,7 +135,7 @@ void Importance_cache::init(scene::Scene const& scene) {
     importances_.resize(scene.num_lights());
 }
 
-void Importance_cache::set_eye_position(float3 const& eye) {
+void Importance_cache::set_eye_position(float3_p eye) {
     eye_ = eye;
 }
 
@@ -161,7 +161,7 @@ void Importance_cache::increment(uint32_t light_id, float2 uv) {
     }
 }
 
-void Importance_cache::increment(uint32_t light_id, float2 uv, float3 const& p) {
+void Importance_cache::increment(uint32_t light_id, float2 uv, float3_p p) {
     if (training_) {
         float const d = std::max(squared_distance(p, eye_), 1.f);
 

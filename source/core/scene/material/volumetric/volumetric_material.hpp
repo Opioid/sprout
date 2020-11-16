@@ -11,13 +11,12 @@ class Material : public material::Material {
 
     ~Material() override;
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
     float3 average_radiance(float volume) const override;
 
-    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                         float distance);
+    void set_attenuation(float3_p absorption_color, float3_p scattering_color, float distance);
 
     static size_t sample_size();
 

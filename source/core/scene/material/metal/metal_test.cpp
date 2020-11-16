@@ -13,7 +13,7 @@
 namespace scene::material::metal::testing {
 
 struct Setup {
-    void test(float3 const& wi, float3 const& wo, float3 const& t, float3 const& b, float3 const& n,
+    void test(float3_p wi, float3_p wo, float3_p t, float3_p b, float3_p n,
               sampler::Sampler& sampler, RNG& rng);
 
     float3 ior;
@@ -103,8 +103,8 @@ void test() {
     */
 }
 
-void Setup::test(float3 const& wi, float3 const& /*wo*/, float3 const& t, float3 const& b,
-                 float3 const& n, sampler::Sampler& sampler, RNG& rng) {
+void Setup::test(float3_p wi, float3_p /*wo*/, float3_p t, float3_p b, float3_p n,
+                 sampler::Sampler& sampler, RNG& rng) {
     Sample_isotropic sample;
 
     sample.set(ior, absorption);

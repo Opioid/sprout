@@ -12,13 +12,12 @@ class Interpolated_function_3D {
 
     Interpolated_function_3D(Interpolated_function_3D&& other) noexcept;
 
-    Interpolated_function_3D(float3 const& range_begin, float3 const& range_end,
-                             uint3 const& num_samples, T const t[]);
+    Interpolated_function_3D(float3_p range_begin, float3_p range_end, uint3_p num_samples,
+                             T const t[]);
 
     ~Interpolated_function_3D();
 
-    void from_array(float3 const& range_begin, float3 const& range_end, uint3 const& num_samples,
-                    T const t[]);
+    void from_array(float3_p range_begin, float3_p range_end, uint3_p num_samples, T const t[]);
 
     void scale(T s);
 

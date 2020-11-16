@@ -81,7 +81,7 @@ bool Perspective::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*
     return true;
 }
 
-bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, float3 const& p,
+bool Perspective::sample(uint32_t /*view*/, int4_p bounds, uint64_t time, float3_p p,
                          Sampler& sampler, RNG& rng, uint32_t sampler_d, Scene const& scene,
                          Sample_to& sample) const {
     Transformation temp;
@@ -152,7 +152,7 @@ bool Perspective::sample(uint32_t /*view*/, int4 const& bounds, uint64_t time, f
     return true;
 }
 
-Ray_differential Perspective::calculate_ray_differential(float3 const& p, uint64_t time,
+Ray_differential Perspective::calculate_ray_differential(float3_p p, uint64_t time,
                                                          Scene const& scene) const {
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);

@@ -90,11 +90,11 @@ inline int32_t Texture::volume() const {
     return 0;
 }
 
-inline int3 const& Texture::dimensions() const {
+inline int3 Texture::dimensions() const {
     return dimensions_;
 }
 
-inline int3 const& Texture::offset() const {
+inline int3 Texture::offset() const {
     TEXTURE_DELEGATE(image().description().offset)
 
     return byte1_unorm_.image().description().offset();
@@ -124,15 +124,15 @@ inline float4 Texture::at_4(int32_t x, int32_t y) const {
     return float4(0.f);
 }
 
-inline void Texture::gather_1(int4 const& xy_xy1, float c[4]) const {
+inline void Texture::gather_1(int4_p xy_xy1, float c[4]) const {
     TEXTURE_DELEGATE(gather_1, xy_xy1, c)
 }
 
-inline void Texture::gather_2(int4 const& xy_xy1, float2 c[4]) const {
+inline void Texture::gather_2(int4_p xy_xy1, float2 c[4]) const {
     TEXTURE_DELEGATE(gather_2, xy_xy1, c)
 }
 
-inline void Texture::gather_3(int4 const& xy_xy1, float3 c[4]) const {
+inline void Texture::gather_3(int4_p xy_xy1, float3 c[4]) const {
     TEXTURE_DELEGATE(gather_3, xy_xy1, c)
 }
 
@@ -178,11 +178,11 @@ inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(0.f);
 }
 
-inline void Texture::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+inline void Texture::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
     TEXTURE_DELEGATE(gather_1, xyz, xyz1, c);
 }
 
-inline void Texture::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+inline void Texture::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
     TEXTURE_DELEGATE(gather_2, xyz, xyz1, c);
 }
 

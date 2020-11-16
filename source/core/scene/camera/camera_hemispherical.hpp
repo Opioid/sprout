@@ -18,8 +18,8 @@ class Hemispherical final : public Camera {
     bool generate_ray(Sample const& sample, uint32_t frame, uint32_t view, Scene const& scene,
                       Ray& ray) const final;
 
-    bool sample(uint32_t view, int4 const& bounds, uint64_t time, float3 const& p, Sampler& sampler,
-                RNG& rng, uint32_t sampler_d, Scene const& scene, Sample_to& sample) const final;
+    bool sample(uint32_t view, int4_p bounds, uint64_t time, float3_p p, Sampler& sampler, RNG& rng,
+                uint32_t sampler_d, Scene const& scene, Sample_to& sample) const final;
 
   private:
     void on_update(uint64_t time, Worker& worker) final;

@@ -17,7 +17,7 @@ namespace scene::material {
 using Texture_adapter    = image::texture::Adapter;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 
-static inline float3 sample_normal(float3 const& wo, Renderstate const& rs, float2 const uv,
+static inline float3 sample_normal(float3_p wo, Renderstate const& rs, float2 const uv,
                                    Texture_adapter const& map, Texture_sampler_2D const& sampler,
                                    scene::Worker const& worker) {
     float3 const nm = map.sample_3(worker, sampler, uv);
@@ -36,14 +36,13 @@ static inline float3 sample_normal(float3 const& wo, Renderstate const& rs, floa
     return n;
 }
 
-static inline float3 sample_normal(float3 const& wo, Renderstate const& rs,
-                                   Texture_adapter const& map, Texture_sampler_2D const& sampler,
-                                   scene::Worker const& worker) {
+static inline float3 sample_normal(float3_p wo, Renderstate const& rs, Texture_adapter const& map,
+                                   Texture_sampler_2D const& sampler, scene::Worker const& worker) {
     return sample_normal(wo, rs, rs.uv, map, sampler, worker);
 }
 
-static inline float non_symmetry_compensation(float3 const& wi, float3 const& wo,
-                                              float3 const& geo_n, float3 const& n) {
+static inline float non_symmetry_compensation(float3_p wi, float3_p wo, float3_p geo_n,
+                                              float3_p n) {
     // Veach's compensation for "Non-symmetry due to shading normals".
     // See e.g. CorrectShadingNormal() at:
     // https://github.com/mmp/pbrt-v3/blob/master/src/integrators/bdpt.cpp#L55

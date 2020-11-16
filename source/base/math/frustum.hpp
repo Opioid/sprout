@@ -18,7 +18,7 @@ class Frustum {
 
     void set_from_matrix(float4x4 const& combo_matrix);
 
-    bool intersect(float3 const& p, float radius) const;
+    bool intersect(float3_p p, float radius) const;
 
     AABB calculate_aabb() const;
 

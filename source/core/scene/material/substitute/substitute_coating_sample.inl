@@ -10,7 +10,7 @@
 namespace scene::material::substitute {
 
 template <typename Coating, typename Diffuse>
-bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -19,7 +19,7 @@ bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_f(float3 const& wi) cons
 }
 
 template <typename Coating, typename Diffuse>
-bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate_b(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -54,7 +54,7 @@ void Sample_coating<Coating, Diffuse>::sample(Sampler& sampler, RNG& rng,
 
 template <typename Coating, typename Diffuse>
 template <bool Forward>
-bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3 const& wi) const {
+bxdf::Result Sample_coating<Coating, Diffuse>::evaluate(float3_p wi) const {
     float3 const h = normalize(wo_ + wi);
 
     float const wo_dot_h = clamp_dot(wo_, h);

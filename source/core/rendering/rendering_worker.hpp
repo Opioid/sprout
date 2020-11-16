@@ -86,15 +86,14 @@ class alignas(64) Worker : public scene::Worker {
               uint32_t num_particles_per_chunk, AOV_pool const& aovs,
               Particle_importance* particle_importance);
 
-    void render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
+    void render(uint32_t frame, uint32_t view, uint32_t iteration, int4_p tile,
                 uint32_t num_samples);
 
     void particles(uint32_t frame, uint64_t offset, ulong2 const& range);
 
     Event volume(Ray& ray, Intersection& isec, Filter filter, float3& li, float3& tr);
 
-    bool transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
-                     float3& tr);
+    bool transmitted(Ray& ray, float3_p wo, Intersection const& isec, Filter filter, float3& tr);
 
     uint32_t bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration);
 
@@ -107,7 +106,7 @@ class alignas(64) Worker : public scene::Worker {
 
     bool transmittance(Ray const& ray, float3& transmittance);
 
-    bool tinted_visibility(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+    bool tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
                            float3& tv);
 
     integrator::surface::Integrator* surface_integrator_ = nullptr;
