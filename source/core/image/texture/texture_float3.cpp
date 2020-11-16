@@ -86,7 +86,7 @@ float4 Float3::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(image_.at(x, y, z), 1.f);
 }
 
-void Float3::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
+void Float3::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
     packed_float3 v[8];
     image_.gather(xyz, xyz1, v);
 
@@ -100,7 +100,7 @@ void Float3::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
     c[7] = v[7][0];
 }
 
-void Float3::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
+void Float3::gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const {
     packed_float3 v[8];
     image_.gather(xyz, xyz1, v);
 

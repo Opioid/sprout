@@ -8,7 +8,7 @@ namespace scene::material::light {
 
 class alignas(64) Emissionmap : public Material {
   public:
-    Emissionmap(Sampler_settings const& sampler_settings, bool two_sided);
+    Emissionmap(Sampler_settings sampler_settings, bool two_sided);
 
     ~Emissionmap() override;
 

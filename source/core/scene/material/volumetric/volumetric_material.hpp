@@ -7,7 +7,7 @@ namespace scene::material::volumetric {
 
 class Material : public material::Material {
   public:
-    Material(Sampler_settings const& sampler_settings);
+    Material(Sampler_settings sampler_settings);
 
     ~Material() override;
 

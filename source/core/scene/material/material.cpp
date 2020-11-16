@@ -13,7 +13,7 @@ char const* Material::identifier() {
     return "Material";
 }
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
+Material::Material(Sampler_settings sampler_settings, bool two_sided)
     : sampler_key_(sampler_settings.key()),
       properties_(two_sided ? Property::Two_sided : Property::None),
       cc_{float3(0.f), float3(0.f)},

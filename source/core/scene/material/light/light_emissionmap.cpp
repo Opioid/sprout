@@ -21,7 +21,7 @@
 
 namespace scene::material::light {
 
-Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_sided)
+Emissionmap::Emissionmap(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided), average_emission_(float3(-1.f)) {}
 
 Emissionmap::~Emissionmap() = default;

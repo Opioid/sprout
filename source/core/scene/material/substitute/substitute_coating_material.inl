@@ -10,8 +10,7 @@
 namespace scene::material::substitute {
 
 template <typename Coating>
-Material_coating<Coating>::Material_coating(Sampler_settings const& sampler_settings,
-                                            bool                    two_sided)
+Material_coating<Coating>::Material_coating(Sampler_settings sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 template <typename Coating>

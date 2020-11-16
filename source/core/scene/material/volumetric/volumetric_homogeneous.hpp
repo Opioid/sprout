@@ -7,7 +7,7 @@ namespace scene::material::volumetric {
 
 class Homogeneous : public Material {
   public:
-    Homogeneous(Sampler_settings const& sampler_settings);
+    Homogeneous(Sampler_settings sampler_settings);
 
     void commit(Threads& threads, Scene const& scene) final;
 

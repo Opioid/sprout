@@ -7,7 +7,7 @@ namespace scene::material::display {
 
 class Emissionmap : public light::Emissionmap {
   public:
-    Emissionmap(Sampler_settings const& sampler_settings, bool two_sided);
+    Emissionmap(Sampler_settings sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;

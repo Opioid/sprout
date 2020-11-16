@@ -10,7 +10,7 @@
 
 namespace scene::material::light {
 
-Constant::Constant(Sampler_settings const& sampler_settings, bool two_sided)
+Constant::Constant(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
 material::Sample const& Constant::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,

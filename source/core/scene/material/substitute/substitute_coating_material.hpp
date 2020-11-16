@@ -8,7 +8,7 @@ namespace scene::material::substitute {
 template <typename Coating>
 class Material_coating : public Material_base {
   public:
-    Material_coating(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_coating(Sampler_settings sampler_settings, bool two_sided);
 
     void set_coating_thickness_map(Texture_adapter const& thickness_map);
 
@@ -37,7 +37,7 @@ struct Clearcoat_data {
 
 class Material_clearcoat : public Material_coating<Clearcoat_data> {
   public:
-    Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_clearcoat(Sampler_settings sampler_settings, bool two_sided);
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
@@ -62,7 +62,7 @@ struct Thinfilm_data {
 
 class Material_thinfilm : public Material_coating<Thinfilm_data> {
   public:
-    Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_thinfilm(Sampler_settings sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;

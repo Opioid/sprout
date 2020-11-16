@@ -64,7 +64,7 @@ class alignas(64) Gridtree {
 
     CM* allocate_data(uint32_t num_data);
 
-    void set_dimensions(int3 const& dimensions, int3_p num_cells);
+    void set_dimensions(int3_p dimensions, int3_p num_cells);
 
     bool is_valid() const;
 

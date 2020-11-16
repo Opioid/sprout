@@ -95,12 +95,12 @@ float4 Float1_t<T>::at_4(int32_t x, int32_t y, int32_t z) const {
 }
 
 template <typename T>
-void Float1_t<T>::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
+void Float1_t<T>::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
     image_.gather(xyz, xyz1, c);
 }
 
 template <typename T>
-void Float1_t<T>::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
+void Float1_t<T>::gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const {
     float v[8];
     image_.gather(xyz, xyz1, v);
 

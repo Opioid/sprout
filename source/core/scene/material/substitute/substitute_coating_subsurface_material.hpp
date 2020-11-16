@@ -8,7 +8,7 @@ namespace scene::material::substitute {
 
 class Material_coating_subsurface final : public Material_clearcoat {
   public:
-    Material_coating_subsurface(Sampler_settings const& sampler_settings);
+    Material_coating_subsurface(Sampler_settings sampler_settings);
 
     void commit(Threads& threads, Scene const& scene) final;
 

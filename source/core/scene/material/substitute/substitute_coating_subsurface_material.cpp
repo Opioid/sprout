@@ -19,7 +19,7 @@
 
 namespace scene::material::substitute {
 
-Material_coating_subsurface::Material_coating_subsurface(Sampler_settings const& sampler_settings)
+Material_coating_subsurface::Material_coating_subsurface(Sampler_settings sampler_settings)
     : Material_clearcoat(sampler_settings, false) {
     properties_.set(Property::Caustic);
 }

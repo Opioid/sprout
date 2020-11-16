@@ -111,7 +111,7 @@ float4 Byte2_unorm::at_4(int32_t x, int32_t y, int32_t z) const {
                   encoding::cached_unorm_to_float(value[1]), 0.f, 1.f);
 }
 
-void Byte2_unorm::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
+void Byte2_unorm::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
     byte2 v[8];
     image_.gather(xyz, xyz1, v);
 
@@ -125,7 +125,7 @@ void Byte2_unorm::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
     c[7] = encoding::cached_unorm_to_float(v[7][0]);
 }
 
-void Byte2_unorm::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
+void Byte2_unorm::gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const {
     byte2 v[8];
     image_.gather(xyz, xyz1, v);
 

@@ -10,7 +10,7 @@
 
 namespace scene::material::light {
 
-Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided)
+Emissionmap_animated::Emissionmap_animated(Sampler_settings sampler_settings, bool two_sided)
     : Emissionmap(sampler_settings, two_sided) {
     properties_.set(Property::Animated);
 }

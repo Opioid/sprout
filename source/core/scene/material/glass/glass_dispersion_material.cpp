@@ -11,8 +11,7 @@
 
 namespace scene::material::glass {
 
-Glass_dispersion::Glass_dispersion(Sampler_settings const& sampler_settings)
-    : Glass(sampler_settings) {}
+Glass_dispersion::Glass_dispersion(Sampler_settings sampler_settings) : Glass(sampler_settings) {}
 
 material::Sample const& Glass_dispersion::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                                  Filter  filter, Sampler& /*sampler*/,

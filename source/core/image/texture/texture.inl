@@ -178,11 +178,11 @@ inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const {
     return float4(0.f);
 }
 
-inline void Texture::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
+inline void Texture::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
     TEXTURE_DELEGATE(gather_1, xyz, xyz1, c);
 }
 
-inline void Texture::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
+inline void Texture::gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const {
     TEXTURE_DELEGATE(gather_2, xyz, xyz1, c);
 }
 

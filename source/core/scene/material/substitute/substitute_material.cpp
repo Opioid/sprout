@@ -13,7 +13,7 @@
 
 namespace scene::material::substitute {
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
+Material::Material(Sampler_settings sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
@@ -34,7 +34,7 @@ size_t Material::sample_size() {
     return sizeof(Sample);
 }
 
-Checkers::Checkers(Sampler_settings const& sampler_settings, bool two_sided)
+Checkers::Checkers(Sampler_settings sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 // https://www.iquilezles.org/www/articles/checkerfiltering/checkerfiltering.htm

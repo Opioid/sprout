@@ -11,7 +11,7 @@
 
 namespace scene::material::glass {
 
-Glass::Glass(Sampler_settings const& sampler_settings) : Material(sampler_settings, false) {
+Glass::Glass(Sampler_settings sampler_settings) : Material(sampler_settings, false) {
     properties_.set(Property::Caustic);
 }
 

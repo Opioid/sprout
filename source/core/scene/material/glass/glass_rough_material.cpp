@@ -12,8 +12,7 @@
 
 namespace scene::material::glass {
 
-Glass_rough::Glass_rough(Sampler_settings const& sampler_settings)
-    : Material(sampler_settings, false) {
+Glass_rough::Glass_rough(Sampler_settings sampler_settings) : Material(sampler_settings, false) {
     properties_.set(Property::Caustic);
 }
 

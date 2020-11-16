@@ -7,7 +7,7 @@ namespace scene::material::glass {
 
 class Glass_thin : public Material {
   public:
-    Glass_thin(Sampler_settings const& sampler_settings);
+    Glass_thin(Sampler_settings sampler_settings);
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;

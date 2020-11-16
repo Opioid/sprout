@@ -9,8 +9,7 @@
 
 namespace scene::material::volumetric {
 
-Material::Material(Sampler_settings const& sampler_settings)
-    : material::Material(sampler_settings, true) {
+Material::Material(Sampler_settings sampler_settings) : material::Material(sampler_settings, true) {
     ior_ = 1.f;
     properties_.set(Property::Scattering_volume);
 }
