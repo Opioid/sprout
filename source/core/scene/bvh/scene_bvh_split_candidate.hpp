@@ -29,7 +29,7 @@ using References = memory::Array<Reference>;
 
 class Split_candidate {
   public:
-    Split_candidate(uint8_t split_axis, float3 const& p, bool spatial);
+    Split_candidate(uint8_t split_axis, float3_p p, bool spatial);
 
     void evaluate(References const& references, float aabb_surface_area);
 

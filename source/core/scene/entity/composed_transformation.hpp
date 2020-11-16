@@ -24,12 +24,12 @@ struct alignas(64) Composed_transformation {
 
     float3 scale() const;
 
-    float3 world_to_object_point(float3 const& p) const;
-    float3 world_to_object_vector(float3 const& v) const;
+    float3 world_to_object_point(float3_p p) const;
+    float3 world_to_object_vector(float3_p v) const;
 
-    float3 object_to_world_point(float3 const& v) const;
-    float3 object_to_world_vector(float3 const& v) const;
-    float3 object_to_world_normal(float3 const& v) const;
+    float3 object_to_world_point(float3_p v) const;
+    float3 object_to_world_vector(float3_p v) const;
+    float3 object_to_world_normal(float3_p v) const;
 
     float4x4 world_to_object;
     float3x3 rotation;

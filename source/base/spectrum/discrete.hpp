@@ -15,7 +15,7 @@ class Discrete_spectral_power_distribution {
 
     Discrete_spectral_power_distribution(Interpolated const& interpolated);
 
-    Discrete_spectral_power_distribution(float3 const& rgb);
+    Discrete_spectral_power_distribution(float3_p rgb);
 
     float constexpr value(int32_t bin) const;
 

@@ -12,9 +12,8 @@ namespace scene::material::substitute {
 Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_coating<Clearcoat_data>(sampler_settings, two_sided) {}
 
-float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float3 const& uvw,
-                                             float /*extent*/, Filter            filter,
-                                             Worker const& worker) const {
+float3 Material_clearcoat::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
+                                             Filter filter, Worker const& worker) const {
     if (emission_map_.is_valid()) {
         float2 const uv = uvw.xy();
 
@@ -40,7 +39,7 @@ float3 Material_clearcoat::evaluate_radiance(float3 const& /*wi*/, float3 const&
     return float3(0.f);
 }
 
-material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Material_clearcoat::sample(float3_p           wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_clearcoat>();
@@ -75,7 +74,7 @@ material::Sample const& Material_clearcoat::sample(float3 const&      wo, Ray co
     return sample;
 }
 
-void Material_clearcoat::set_coating_attenuation(float3 const& absorption_color, float distance) {
+void Material_clearcoat::set_coating_attenuation(float3_p absorption_color, float distance) {
     coating_.absorption_coef = attenuation_coefficient(absorption_color, distance);
 }
 
@@ -96,7 +95,7 @@ size_t Material_clearcoat::sample_size() {
 Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided)
     : Material_coating<Thinfilm_data>(sampler_settings, two_sided) {}
 
-material::Sample const& Material_thinfilm::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Material_thinfilm::sample(float3_p           wo, Ray const& /*ray*/,
                                                   Renderstate const& rs, Filter filter,
                                                   Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_thinfilm>();

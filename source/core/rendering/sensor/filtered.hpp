@@ -26,24 +26,22 @@ class alignas(64) Filtered : public Base {
     ~Filtered() override;
 
   protected:
-    void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& isolated,
-                      int4 const& bounds);
+    void add_weighted(int2 pixel, float weight, float4_p color, int4_p isolated, int4_p bounds);
 
-    void add_weighted(int2 pixel, uint32_t slot, float weight, float3 const& value,
-                      int4 const& isolated, int4 const& bounds);
+    void add_weighted(int2 pixel, uint32_t slot, float weight, float3_p value, int4_p isolated,
+                      int4_p bounds);
 
-    void add_weighted(int2 pixel, float weight, float4 const& color, int4 const& bounds);
+    void add_weighted(int2 pixel, float weight, float4_p color, int4_p bounds);
 
-    void overwrite(int2 pixel, uint32_t slot, float3 const& value, int4 const& bounds);
+    void overwrite(int2 pixel, uint32_t slot, float3_p value, int4_p bounds);
 
-    void weight_and_add(int2 pixel, float2 relative_offset, float4 const& color,
-                        int4 const& isolated, int4 const& bounds);
+    void weight_and_add(int2 pixel, float2 relative_offset, float4_p color, int4_p isolated,
+                        int4_p bounds);
 
-    void weight_and_add(int2 pixel, uint32_t slot, float2 relative_offset, float3 const& value,
-                        int4 const& isolated, int4 const& bounds);
+    void weight_and_add(int2 pixel, uint32_t slot, float2 relative_offset, float3_p value,
+                        int4_p isolated, int4_p bounds);
 
-    void weight_and_add(int2 pixel, float2 relative_offset, float4 const& color,
-                        int4 const& bounds);
+    void weight_and_add(int2 pixel, float2 relative_offset, float4_p color, int4_p bounds);
 
     Clamp clamp_;
 
@@ -60,11 +58,10 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_1p0(Clamp const& clamp, F&& filter, bool adapative);
 
-    float4 add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
-                      int4 const& isolated, int2 offset, int4 const& bounds) final;
+    float4 add_sample(Sample const& sample, float4_p color, aov::Value const* aov, int4_p isolated,
+                      int2 offset, int4_p bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
-                      int4 const& bounds) final;
+    void splat_sample(Sample_to const& sample, float4_p color, int2 offset, int4_p bounds) final;
 };
 
 template <class Base, class Clamp, class F>
@@ -77,11 +74,10 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
 
     Filtered_2p0(Clamp const& clamp, F&& filter, bool adaptive);
 
-    float4 add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
-                      int4 const& isolated, int2 offset, int4 const& bounds) final;
+    float4 add_sample(Sample const& sample, float4_p color, aov::Value const* aov, int4_p isolated,
+                      int2 offset, int4_p bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
-                      int4 const& bounds) final;
+    void splat_sample(Sample_to const& sample, float4_p color, int2 offset, int4_p bounds) final;
 };
 
 template <class Base, class Clamp, class F>
@@ -94,11 +90,10 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
 
     Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius, bool adapative);
 
-    float4 add_sample(Sample const& sample, float4 const& color, aov::Value const* aov,
-                      int4 const& isolated, int2 offset, int4 const& bounds) final;
+    float4 add_sample(Sample const& sample, float4_p color, aov::Value const* aov, int4_p isolated,
+                      int2 offset, int4_p bounds) final;
 
-    void splat_sample(Sample_to const& sample, float4 const& color, int2 offset,
-                      int4 const& bounds) final;
+    void splat_sample(Sample_to const& sample, float4_p color, int2 offset, int4_p bounds) final;
 
   private:
     float filter_radius_;

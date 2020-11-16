@@ -8,9 +8,9 @@ namespace math {
 struct ray {
     ray();
 
-    ray(float3 const& origin, float3 const& direction, float min_t, float max_t);
+    ray(float3_p origin, float3_p direction, float min_t, float max_t);
 
-    void set_direction(float3 const& v);
+    void set_direction(float3_p v);
 
     float  min_t() const;
     float& min_t();

@@ -11,7 +11,7 @@
 
 namespace op {
 
-float luminance_gamma_sRGB(float3 const& linear);
+float luminance_gamma_sRGB(float3_p linear);
 
 struct Luminance {
     float avg;
@@ -273,7 +273,7 @@ static inline float linear_to_gamma_sRGB_unbounded(float c) {
     return std::pow(c, 0.41666f);
 }
 
-float luminance_gamma_sRGB(float3 const& linear) {
+float luminance_gamma_sRGB(float3_p linear) {
     return /*linear_to_gamma_sRGB_unbounded*/ (spectrum::luminance(linear));
 }
 

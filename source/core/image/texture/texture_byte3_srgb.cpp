@@ -40,7 +40,7 @@ float4 Byte3_sRGB::at_4(int32_t x, int32_t y) const {
 #endif
 }
 
-void Byte3_sRGB::gather_1(int4 const& xy_xy1, float c[4]) const {
+void Byte3_sRGB::gather_1(int4_p xy_xy1, float c[4]) const {
     byte3 v[4];
     image_.gather(xy_xy1, v);
 
@@ -57,7 +57,7 @@ void Byte3_sRGB::gather_1(int4 const& xy_xy1, float c[4]) const {
 #endif
 }
 
-void Byte3_sRGB::gather_2(int4 const& xy_xy1, float2 c[4]) const {
+void Byte3_sRGB::gather_2(int4_p xy_xy1, float2 c[4]) const {
     byte3 v[4];
     image_.gather(xy_xy1, v);
 
@@ -74,7 +74,7 @@ void Byte3_sRGB::gather_2(int4 const& xy_xy1, float2 c[4]) const {
 #endif
 }
 
-void Byte3_sRGB::gather_3(int4 const& xy_xy1, float3 c[4]) const {
+void Byte3_sRGB::gather_3(int4_p xy_xy1, float3 c[4]) const {
     byte3 v[4];
     image_.gather(xy_xy1, v);
 
@@ -140,7 +140,7 @@ float4 Byte3_sRGB::at_4(int32_t x, int32_t y, int32_t z) const {
 #endif
 }
 
-void Byte3_sRGB::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+void Byte3_sRGB::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
     byte3 v[8];
     image_.gather(xyz, xyz1, v);
 
@@ -165,7 +165,7 @@ void Byte3_sRGB::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
 #endif
 }
 
-void Byte3_sRGB::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+void Byte3_sRGB::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
     byte3 v[8];
     image_.gather(xyz, xyz1, v);
 

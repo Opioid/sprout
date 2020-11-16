@@ -18,7 +18,7 @@ static void write_pixels_rle(std::ostream& stream, Float4 const& image);
 
 static void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_bytes);
 
-static byte4 float_to_rgbe(float4 const& c);
+static byte4 float_to_rgbe(float4_p c);
 
 std::string Writer::file_extension() const {
     return "hdr";
@@ -160,7 +160,7 @@ void write_bytes_rle(std::ostream& stream, uint8_t const* data, uint32_t num_byt
     }
 }
 
-byte4 float_to_rgbe(float4 const& c) {
+byte4 float_to_rgbe(float4_p c) {
     float v = c[0];
 
     if (c[1] > v) {

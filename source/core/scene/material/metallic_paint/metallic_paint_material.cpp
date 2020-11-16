@@ -17,8 +17,8 @@ namespace scene::material::metallic_paint {
 Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray*/,
-                                         Renderstate const& rs, Filter filter, Sampler& /*sampler*/,
+material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
+                                         Filter  filter, Sampler& /*sampler*/,
                                          Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
@@ -59,7 +59,7 @@ material::Sample const& Material::sample(float3 const&      wo, Ray const& /*ray
     return sample;
 }
 
-void Material::set_color(float3 const& a, float3 const& b) {
+void Material::set_color(float3_p a, float3_p b) {
     color_a_ = a;
     color_b_ = b;
 }
@@ -78,11 +78,11 @@ void Material::set_flakes_normal_map(Texture_adapter const& normal_map) {
     flakes_normal_map_ = normal_map;
 }
 
-void Material::set_flakes_ior(float3 const& ior) {
+void Material::set_flakes_ior(float3_p ior) {
     flakes_ior_ = ior;
 }
 
-void Material::set_flakes_absorption(float3 const& absorption) {
+void Material::set_flakes_absorption(float3_p absorption) {
     flakes_absorption_ = absorption;
 }
 
@@ -96,7 +96,7 @@ void Material::set_coating_thickness(float thickness) {
     coating_.thickness = thickness;
 }
 
-void Material::set_coating_attenuation(float3 const& absorption_color, float distance) {
+void Material::set_coating_attenuation(float3_p absorption_color, float distance) {
     coating_.absorption_coef = attenuation_coefficient(absorption_color, distance);
 }
 

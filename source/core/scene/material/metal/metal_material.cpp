@@ -18,7 +18,7 @@ void Material_isotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 }
 
-material::Sample const& Material_isotropic::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Material_isotropic::sample(float3_p           wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter filter,
                                                    Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_isotropic>();
@@ -41,12 +41,12 @@ void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Material_isotropic::set_ior(float3 const& ior) {
+void Material_isotropic::set_ior(float3_p ior) {
     ior_  = ior[0];
     ior3_ = ior;
 }
 
-void Material_isotropic::set_absorption(float3 const& absorption) {
+void Material_isotropic::set_absorption(float3_p absorption) {
     absorption_ = absorption;
 }
 
@@ -67,7 +67,7 @@ void Material_anisotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) 
     properties_.set(Property::Caustic, alpha_[0] <= ggx::Min_alpha || alpha_[1] <= ggx::Min_alpha);
 }
 
-material::Sample const& Material_anisotropic::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Material_anisotropic::sample(float3_p           wo, Ray const& /*ray*/,
                                                      Renderstate const& rs, Filter filter,
                                                      Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
@@ -102,12 +102,12 @@ void Material_anisotropic::set_direction_map(Texture_adapter const& direction_ma
     direction_map_ = direction_map;
 }
 
-void Material_anisotropic::set_ior(float3 const& ior) {
+void Material_anisotropic::set_ior(float3_p ior) {
     ior_  = ior[0];
     ior3_ = ior;
 }
 
-void Material_anisotropic::set_absorption(float3 const& absorption) {
+void Material_anisotropic::set_absorption(float3_p absorption) {
     absorption_ = absorption;
 }
 

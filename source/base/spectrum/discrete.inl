@@ -26,7 +26,7 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
 }
 
 template <int32_t N>
-Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float3 const& rgb)
+Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(float3_p rgb)
     : Discrete_spectral_power_distribution(0.f) {
     float const r = rgb[0];
     float const g = rgb[1];

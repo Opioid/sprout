@@ -13,9 +13,9 @@ Unfiltered<Base, Clamp>::Unfiltered(Clamp const& clamp, bool adaptive)
     : Base(0, adaptive), clamp_(clamp) {}
 
 template <class Base, class Clamp>
-float4 Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4 const& color,
-                                           aov::Value const* aov, int4 const& /*isolated*/,
-                                           int2              offset, int4 const& /*bounds*/) {
+float4 Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4_p color,
+                                           aov::Value const* aov, int4_p /*isolated*/, int2 offset,
+                                           int4_p /*bounds*/) {
     int2 const pixel = offset + sample.pixel;
 
     float4 const clamped = clamp_.clamp(color);
@@ -38,8 +38,8 @@ float4 Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4 const& c
 }
 
 template <class Base, class Clamp>
-void Unfiltered<Base, Clamp>::splat_sample(Sample_to const& sample, float4 const& color,
-                                           int2 offset, int4 const& /*bounds*/) {
+void Unfiltered<Base, Clamp>::splat_sample(Sample_to const& sample, float4_p color, int2 offset,
+                                           int4_p /*bounds*/) {
     Base::splat_pixel_atomic(offset + sample.pixel, clamp_.clamp(color), 1.f);
 }
 

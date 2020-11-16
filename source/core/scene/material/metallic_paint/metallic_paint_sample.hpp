@@ -7,20 +7,19 @@ namespace scene::material::metallic_paint {
 
 class Sample : public material::Sample {
   public:
-    bxdf::Result evaluate_f(float3 const& wi) const final;
+    bxdf::Result evaluate_f(float3_p wi) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi) const final;
+    bxdf::Result evaluate_b(float3_p wi) const final;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
     struct Base_layer : material::Layer {
-        void set(float3 const& color_a, float3 const& color_b, float alpha);
+        void set(float3_p color_a, float3_p color_b, float alpha);
 
         template <bool Forward>
-        bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h,
-                              float wo_dot_h) const;
+        bxdf::Result evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h) const;
 
-        void sample(float3 const& wo, Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
+        void sample(float3_p wo, Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
         float3 color_a_;
         float3 color_b_;
@@ -29,13 +28,13 @@ class Sample : public material::Sample {
     };
 
     struct Flakes_layer : material::Layer {
-        void set(float3 const& ior, float3 const& absorption, float alpha, float weight);
+        void set(float3_p ior, float3_p absorption, float alpha, float weight);
 
         template <bool Forward>
-        bxdf::Result evaluate(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+        bxdf::Result evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                               float3& fresnel_result) const;
 
-        void sample(float3 const& wo, Sampler& sampler, RNG& rng, float3& fresnel_result,
+        void sample(float3_p wo, Sampler& sampler, RNG& rng, float3& fresnel_result,
                     bxdf::Sample& result) const;
 
         float3 ior_;

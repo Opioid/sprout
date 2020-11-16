@@ -9,13 +9,13 @@ class Sample_thin : public material::Sample {
   public:
     Sample_thin();
 
-    bxdf::Result evaluate_f(float3 const& wi) const final;
+    bxdf::Result evaluate_f(float3_p wi) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi) const final;
+    bxdf::Result evaluate_b(float3_p wi) const final;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    void set(float3 const& absorption_coef, float ior, float ior_outside, float thickness);
+    void set(float3_p absorption_coef, float ior, float ior_outside, float thickness);
 
     float3 absorption_coef_;
 

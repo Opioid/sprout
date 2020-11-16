@@ -29,11 +29,11 @@ Morphable_mesh::~Morphable_mesh() {
     delete collection_;
 }
 
-float3 Morphable_mesh::object_to_texture_point(float3 const& p) const {
+float3 Morphable_mesh::object_to_texture_point(float3_p p) const {
     return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
 }
 
-float3 Morphable_mesh::object_to_texture_vector(float3 const& v) const {
+float3 Morphable_mesh::object_to_texture_vector(float3_p v) const {
     return v / tree_.aabb().extent();
 }
 
@@ -200,7 +200,7 @@ bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& trafo
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, Transformation const& /*trafo*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& /*trafo*/,
                             float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
                             rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
                             Sample_to& /*sample*/) const {
@@ -226,13 +226,13 @@ float Morphable_mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& 
     return 0.f;
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/,
                             Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                             Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
                             Transformation const& /*trafo*/, float /*volume*/,
                             Sample_to& /*sample*/) const {
     return false;
@@ -254,11 +254,11 @@ float Morphable_mesh::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Morphable_mesh::area(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Morphable_mesh::area(uint32_t /*part*/, float3_p /*scale*/) const {
     return 1.f;
 }
 
-float Morphable_mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Morphable_mesh::volume(uint32_t /*part*/, float3_p /*scale*/) const {
     return 1.f;
 }
 

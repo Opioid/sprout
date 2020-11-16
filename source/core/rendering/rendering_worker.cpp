@@ -76,7 +76,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     particle_importance_ = particle_importance;
 }
 
-void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4 const& tile,
+void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4_p tile,
                     uint32_t num_samples) {
     Camera const& camera = *camera_;
 
@@ -292,7 +292,7 @@ void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     }
 }
 
-bool Worker::transmitted(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+bool Worker::transmitted(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
                          float3& tr) {
     if (float3 a; tinted_visibility(ray, wo, isec, filter, a)) {
         if (float3 b; transmittance(ray, b)) {
@@ -418,7 +418,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
     return true;
 }
 
-bool Worker::tinted_visibility(Ray& ray, float3 const& wo, Intersection const& isec, Filter filter,
+bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
                                float3& tv) {
     using namespace scene::material;
 

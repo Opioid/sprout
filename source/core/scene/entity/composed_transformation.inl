@@ -49,15 +49,15 @@ inline float4x4 Composed_transformation::object_to_world() const {
     return compose(rotation, s, position);
 }
 
-inline float3 Composed_transformation::world_to_object_point(float3 const& p) const {
+inline float3 Composed_transformation::world_to_object_point(float3_p p) const {
     return transform_point(world_to_object, p);
 }
 
-inline float3 Composed_transformation::world_to_object_vector(float3 const& v) const {
+inline float3 Composed_transformation::world_to_object_vector(float3_p v) const {
     return transform_vector(world_to_object, v);
 }
 
-inline float3 Composed_transformation::object_to_world_point(float3 const& v) const {
+inline float3 Composed_transformation::object_to_world_point(float3_p v) const {
     float3 const s(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
 
     float3 const a = s[0] * rotation.r[0];
@@ -69,7 +69,7 @@ inline float3 Composed_transformation::object_to_world_point(float3 const& v) co
                       (v[0] * a[2] + v[1] * b[2] + v[2] * c[2]) + position[2]);
 }
 
-inline float3 Composed_transformation::object_to_world_vector(float3 const& v) const {
+inline float3 Composed_transformation::object_to_world_vector(float3_p v) const {
     float3 const s(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
 
     float3 const a = s[0] * rotation.r[0];
@@ -81,7 +81,7 @@ inline float3 Composed_transformation::object_to_world_vector(float3 const& v) c
                       (v[0] * a[2] + v[1] * b[2] + v[2] * c[2]));
 }
 
-inline float3 Composed_transformation::object_to_world_normal(float3 const& v) const {
+inline float3 Composed_transformation::object_to_world_normal(float3_p v) const {
     return transform_vector(rotation, v);
 }
 

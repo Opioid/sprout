@@ -9,18 +9,18 @@ class Sample : public material::Sample {
   public:
     Sample();
 
-    bxdf::Result evaluate_f(float3 const& wi) const override;
+    bxdf::Result evaluate_f(float3_p wi) const override;
 
-    bxdf::Result evaluate_b(float3 const& wi) const override;
+    bxdf::Result evaluate_b(float3_p wi) const override;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
     void set(float anisotropy);
 
   private:
-    float phase(float3 const& wo, float3 const& wi) const;
+    float phase(float3_p wo, float3_p wi) const;
 
-    float4 sample(float3 const& wo, float2 r2) const;
+    float4 sample(float3_p wo, float2 r2) const;
 
     float anisotropy_;
 };

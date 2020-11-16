@@ -56,11 +56,11 @@ void Buffer::clear() {
     }
 }
 
-void Buffer::add_pixel(int32_t id, uint32_t slot, float3 const& value, float weight) {
+void Buffer::add_pixel(int32_t id, uint32_t slot, float3_p value, float weight) {
     buffers_[slot][id] += weight * value;
 }
 
-void Buffer::add_pixel_atomic(int32_t id, uint32_t slot, float3 const& value, float weight) {
+void Buffer::add_pixel_atomic(int32_t id, uint32_t slot, float3_p value, float weight) {
     float3* buffer = buffers_[slot];
 
     auto& target = buffer[id];
@@ -69,7 +69,7 @@ void Buffer::add_pixel_atomic(int32_t id, uint32_t slot, float3 const& value, fl
     atomic::add_assign(target[2], weight * value[2]);
 }
 
-void Buffer::overwrite_pixel(int32_t id, uint32_t slot, float3 const& value) {
+void Buffer::overwrite_pixel(int32_t id, uint32_t slot, float3_p value) {
     buffers_[slot][id] = value;
 }
 

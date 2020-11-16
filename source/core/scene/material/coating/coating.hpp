@@ -15,7 +15,7 @@ class Clearcoat {
   public:
     using Sampler = sampler::Sampler;
 
-    void set(float3 const& absorption_coef, float thickness, float ior, float f0, float alpha,
+    void set(float3_p absorption_coef, float thickness, float ior, float f0, float alpha,
              float weight);
 
     float3 attenuation(float n_dot_wo) const;
@@ -23,14 +23,14 @@ class Clearcoat {
     float3 attenuation(float n_dot_wi, float n_dot_wo) const;
 
   protected:
-    Result evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                      Layer const& layer, bool avoid_caustics) const;
+    Result evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                      bool avoid_caustics) const;
 
-    Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                      Layer const& layer, bool avoid_caustics) const;
+    Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                      bool avoid_caustics) const;
 
-    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
-                float3& attenuation, bxdf::Sample& result) const;
+    void sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& rng, float3& attenuation,
+                bxdf::Sample& result) const;
 
   public:
     float3 absorption_coef_;
@@ -51,14 +51,14 @@ class Thinfilm {
     float3 attenuation(float n_dot_wo) const;
 
   protected:
-    Result evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                      Layer const& layer, bool avoid_caustics) const;
+    Result evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                      bool avoid_caustics) const;
 
-    Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
-                      Layer const& layer, bool avoid_caustics) const;
+    Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                      bool avoid_caustics) const;
 
-    void sample(float3 const& wo, Layer const& layer, Sampler& sampler, RNG& rng,
-                float3& attenuation, bxdf::Sample& result) const;
+    void sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& rng, float3& attenuation,
+                bxdf::Sample& result) const;
 
   public:
     float ior_;
@@ -72,13 +72,13 @@ class Coating_layer : public Layer, public Coating {
   public:
     using Sampler = sampler::Sampler;
 
-    Result evaluate_f(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+    Result evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                       bool avoid_caustics) const;
 
-    Result evaluate_b(float3 const& wi, float3 const& wo, float3 const& h, float wo_dot_h,
+    Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                       bool avoid_caustics) const;
 
-    void sample(float3 const& wo, Sampler& sampler, RNG& rng, float3& attenuation,
+    void sample(float3_p wo, Sampler& sampler, RNG& rng, float3& attenuation,
                 bxdf::Sample& result) const;
 };
 

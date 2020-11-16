@@ -7,7 +7,7 @@
 
 namespace scene::material::display {
 
-bxdf::Result Sample::evaluate_f(float3 const& wi) const {
+bxdf::Result Sample::evaluate_f(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }
@@ -29,7 +29,7 @@ bxdf::Result Sample::evaluate_f(float3 const& wi) const {
     return {n_dot_wi * ggx.reflection, ggx.pdf()};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& wi) const {
+bxdf::Result Sample::evaluate_b(float3_p wi) const {
     if (!same_hemisphere(wo_)) {
         return {float3(0.f), 0.f};
     }

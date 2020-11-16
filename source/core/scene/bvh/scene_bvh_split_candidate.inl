@@ -39,7 +39,7 @@ inline Reference Reference::clipped_max(float d, uint8_t axis) const {
     return {{bounds[0], bounds1}};
 }
 
-inline Split_candidate::Split_candidate(uint8_t split_axis, float3 const& p, bool spatial)
+inline Split_candidate::Split_candidate(uint8_t split_axis, float3_p p, bool spatial)
     : aabb_0_(AABB::empty()),
       aabb_1_(AABB::empty()),
       d_(p.v[split_axis]),

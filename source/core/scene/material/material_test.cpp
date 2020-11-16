@@ -7,8 +7,8 @@
 
 namespace scene::material::testing {
 
-bool check(float3 const& result, float3 const& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-           float pdf, const Layer& layer) {
+bool check(float3_p result, float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h, float pdf,
+           const Layer& layer) {
     if (!std::isfinite(pdf) || !all_finite_and_positive(result)) {
         std::cout << "h: ";
         print_vector(h);
@@ -29,7 +29,7 @@ bool check(float3 const& result, float3 const& h, float n_dot_wi, float n_dot_wo
     return true;
 }
 
-bool check(float3 const& result, float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+bool check(float3_p result, float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
            float pdf, const Layer& layer) {
     if (!std::isfinite(pdf) || !all_finite_and_positive(result)) {
         std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
@@ -50,7 +50,7 @@ bool check(float3 const& result, float n_dot_wi, float n_dot_wo, float wo_dot_h,
     return true;
 }
 
-bool check(float3 const& result, float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+bool check(float3_p result, float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
            float pdf) {
     if (!std::isfinite(pdf) || !all_finite_and_positive(result)) {
         std::cout << "n_dot_wi: " << n_dot_wi << std::endl;
@@ -65,7 +65,7 @@ bool check(float3 const& result, float n_dot_wi, float n_dot_wo, float wo_dot_h,
     return true;
 }
 
-bool check(const bxdf::Sample& result, float3 const& wo, const Layer& layer) {
+bool check(const bxdf::Sample& result, float3_p wo, const Layer& layer) {
     if (!std::isfinite(result.pdf) || !all_finite(result.wi) || !all_finite(result.reflection)) {
         std::cout << "wi: ";
         print_vector(result.wi);
@@ -90,8 +90,8 @@ bool check(const bxdf::Sample& result, float3 const& wo, const Layer& layer) {
     return true;
 }
 
-bool check(const bxdf::Sample& result, float3 const& wo, float n_dot_wi, float n_dot_wo,
-           float wo_dot_h, const Layer& layer) {
+bool check(const bxdf::Sample& result, float3_p wo, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+           const Layer& layer) {
     if (!std::isfinite(result.pdf) || !all_finite(result.wi) || !all_finite(result.reflection)) {
         std::cout << "wi: ";
         print_vector(result.wi);
@@ -116,7 +116,7 @@ bool check(const bxdf::Sample& result, float3 const& wo, float n_dot_wi, float n
     return true;
 }
 
-bool check_normal_map(float3 const& n, float3 const& tangent_space_n, float2 uv) {
+bool check_normal_map(float3_p n, float3_p tangent_space_n, float2 uv) {
     if (!all_finite(n)) {
         std::cout << "n: ";
         print_vector(n);
@@ -129,7 +129,7 @@ bool check_normal_map(float3 const& n, float3 const& tangent_space_n, float2 uv)
     return true;
 }
 
-void print_vector(float3 const& v) {
+void print_vector(float3_p v) {
     std::cout << v << " |" << length(v) << "|" << std::endl;
 }
 

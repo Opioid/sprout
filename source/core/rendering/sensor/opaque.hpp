@@ -20,11 +20,11 @@ class Opaque : public Sensor {
     bool has_alpha_transparency() const final;
 
   protected:
-    void add_pixel(int2 pixel, float4 const& color, float weight) final;
+    void add_pixel(int2 pixel, float4_p color, float weight) final;
 
-    void add_pixel_atomic(int2 pixel, float4 const& color, float weight) final;
+    void add_pixel_atomic(int2 pixel, float4_p color, float weight) final;
 
-    void splat_pixel_atomic(int2 pixel, float4 const& color, float weight) final;
+    void splat_pixel_atomic(int2 pixel, float4_p color, float weight) final;
 
     void resolve(int32_t begin, int32_t end, image::Float4& target) const final;
 

@@ -9,9 +9,9 @@ namespace scene::material::substitute {
 
 class Sample : public material::Sample {
   public:
-    bxdf::Result evaluate_f(float3 const& wi) const final;
+    bxdf::Result evaluate_f(float3_p wi) const final;
 
-    bxdf::Result evaluate_b(float3 const& wi) const final;
+    bxdf::Result evaluate_b(float3_p wi) const final;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
@@ -19,7 +19,7 @@ class Sample : public material::Sample {
 
   private:
     template <bool Forward>
-    bxdf::Result evaluate(float3 const& wi) const;
+    bxdf::Result evaluate(float3_p wi) const;
 };
 
 }  // namespace scene::material::substitute

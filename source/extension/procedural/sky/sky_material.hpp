@@ -13,11 +13,11 @@ class Sky_material : public Material {
   public:
     Sky_material(Sky& sky);
 
-    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
     float3 average_radiance(float area) const final;
@@ -33,18 +33,18 @@ class Sky_baked_material : public Material {
 
     ~Sky_baked_material() override;
 
-    scene::material::Sample const& sample(float3 const& wo, scene::Ray const& ray,
+    scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
     float3 average_radiance(float area) const final;
 
-    Radiance_sample radiance_sample(float3 const& r3) const final;
+    Radiance_sample radiance_sample(float3_p r3) const final;
 
-    float emission_pdf(float3 const& uvw, Filter filter, scene::Worker const& worker) const final;
+    float emission_pdf(float3_p uvw, Filter filter, scene::Worker const& worker) const final;
 
     void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
                           Transformation const& trafo, float area, bool importance_sampling,

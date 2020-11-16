@@ -42,7 +42,7 @@ float Distribution_3D::integral() const {
     return marginal_.integral();
 }
 
-float4 Distribution_3D::sample_continuous(float3 const& r3) const {
+float4 Distribution_3D::sample_continuous(float3_p r3) const {
     auto const w = marginal_.sample_continuous(r3[2]);
 
     uint32_t const i = uint32_t(w.offset * conditional_sizef_);
@@ -53,7 +53,7 @@ float4 Distribution_3D::sample_continuous(float3 const& r3) const {
     return float4(uv.uv, w.offset, uv.pdf * w.pdf);
 }
 
-float Distribution_3D::pdf(float3 const& uvw) const {
+float Distribution_3D::pdf(float3_p uvw) const {
     float const w_pdf = marginal_.pdf(uvw[2]);
 
     uint32_t const i = uint32_t(uvw[2] * conditional_sizef_);

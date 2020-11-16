@@ -120,8 +120,7 @@ float3 read_float3(rapidjson::Value const& value) {
     return float3(value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat());
 }
 
-float3 read_float3(rapidjson::Value const& value, std::string_view name,
-                   float3 const& default_value) {
+float3 read_float3(rapidjson::Value const& value, std::string_view name, float3_p default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return read_float3(node->value);
     }
@@ -214,7 +213,7 @@ int4 read_int4(json::Value const& value, std::string_view name, int4 default_val
     return default_value;
 }
 
-float3x3 create_rotation_matrix(float3 const& xyz) {
+float3x3 create_rotation_matrix(float3_p xyz) {
     float3x3 rot_x;
     set_rotation_x(rot_x, degrees_to_radians(xyz[0]));
 

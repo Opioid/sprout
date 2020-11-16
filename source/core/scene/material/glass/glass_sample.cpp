@@ -12,20 +12,20 @@
 
 namespace scene::material::glass {
 
-static void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result);
+static void reflect(float3_p wo, float3_p n, float n_dot_wo, bxdf::Sample& result);
 
-static void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo,
-                    float n_dot_t, float eta, bxdf::Sample& result);
+static void refract(float3_p wo, float3_p n, float3_p color, float n_dot_wo, float n_dot_t,
+                    float eta, bxdf::Sample& result);
 
 Sample::Sample() {
     properties_.unset(Property::Can_evaluate);
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& /*wi*/) const {
+bxdf::Result Sample::evaluate_f(float3_p /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& /*wi*/) const {
+bxdf::Result Sample::evaluate_b(float3_p /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
@@ -77,7 +77,7 @@ void Sample::sample(float ior, float p, bxdf::Sample& result) const {
     }
 }
 
-void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& result) {
+void reflect(float3_p wo, float3_p n, float n_dot_wo, bxdf::Sample& result) {
     result.reflection = float3(1.f);
     result.wi         = normalize(2.f * n_dot_wo * n - wo);
     result.pdf        = 1.f;
@@ -86,8 +86,8 @@ void reflect(float3 const& wo, float3 const& n, float n_dot_wo, bxdf::Sample& re
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 }
 
-void refract(float3 const& wo, float3 const& n, float3 const& color, float n_dot_wo, float n_dot_t,
-             float eta, bxdf::Sample& result) {
+void refract(float3_p wo, float3_p n, float3_p color, float n_dot_wo, float n_dot_t, float eta,
+             bxdf::Sample& result) {
     result.reflection = color;
     result.wi         = normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;

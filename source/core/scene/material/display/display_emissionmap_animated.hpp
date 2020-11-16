@@ -10,7 +10,7 @@ class Emissionmap_animated : public light::Emissionmap_animated {
   public:
     Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided);
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
     void set_roughness(float roughness);

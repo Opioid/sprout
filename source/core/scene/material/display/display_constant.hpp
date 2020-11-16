@@ -8,10 +8,10 @@ class Constant : public Material {
   public:
     Constant(Sampler_settings const& sampler_settings, bool two_sided);
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const final;
 
     float3 average_radiance(float area) const final;

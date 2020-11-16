@@ -17,9 +17,9 @@ Glass_rough::Glass_rough(Sampler_settings const& sampler_settings)
     properties_.set(Property::Caustic);
 }
 
-material::Sample const& Glass_rough::sample(float3 const&      wo, Ray const& /*ray*/,
-                                            Renderstate const& rs, Filter filter,
-                                            Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Glass_rough::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
+                                            Filter  filter, Sampler& /*sampler*/,
+                                            Worker& worker) const {
     auto& sample = worker.sample<Sample_rough>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -54,7 +54,7 @@ void Glass_rough::set_roughness_map(Texture_adapter const& roughness_map) {
     roughness_map_ = roughness_map;
 }
 
-void Glass_rough::set_refraction_color(float3 const& color) {
+void Glass_rough::set_refraction_color(float3_p color) {
     refraction_color_ = color;
 }
 

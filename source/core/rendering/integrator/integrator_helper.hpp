@@ -14,12 +14,11 @@ static inline float attenuation(float distance, float c) {
     return ::exp(-distance * c);
 }
 
-static inline float3 attenuation(float distance, float3 const& c) {
+static inline float3 attenuation(float distance, float3_p c) {
     return exp(-distance * c);
 }
 
-static inline float4 compose_alpha(float3 const& radiance, float3 const& throughput,
-                                   bool transparent) {
+static inline float4 compose_alpha(float3_p radiance, float3_p throughput, bool transparent) {
     if (transparent) {
         float const alpha = std::max(1.f - average(throughput), 0.f);
 

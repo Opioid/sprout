@@ -23,9 +23,9 @@ using namespace scene;
 
 Sun_material::Sun_material(Sky& sky) : Material(sky) {}
 
-material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /*ray*/,
-                                             Renderstate const& rs, Filter /*filter*/,
-                                             Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Sun_material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
+                                             Filter /*filter*/, Sampler& /*sampler*/,
+                                             Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     float3 const radiance = sky_.model().evaluate_sky_and_sun(-wo);
@@ -35,7 +35,7 @@ material::Sample const& Sun_material::sample(float3 const&      wo, Ray const& /
     return sample;
 }
 
-float3 Sun_material::evaluate_radiance(float3 const& wi, float3 const& /*uvw*/, float /*extent*/,
+float3 Sun_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, float /*extent*/,
                                        Filter /*filter*/, const Worker& /*worker*/) const {
     return sky_.model().evaluate_sky_and_sun(wi);
 }
@@ -51,7 +51,7 @@ void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, u
 
 Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
 
-material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray const& /*ray*/,
+material::Sample const& Sun_baked_material::sample(float3_p           wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter /*filter*/,
                                                    Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
@@ -65,9 +65,8 @@ material::Sample const& Sun_baked_material::sample(float3 const&      wo, Ray co
     return sample;
 }
 
-float3 Sun_baked_material::evaluate_radiance(float3 const& wi, float3 const& /*uvw*/,
-                                             float /*extent*/, Filter /*filter*/,
-                                             const Worker& /*worker*/) const {
+float3 Sun_baked_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, float /*extent*/,
+                                             Filter /*filter*/, const Worker& /*worker*/) const {
     float3 const radiance = emission_(sky_.sun_v(wi));
 
     SOFT_ASSERT(all_finite_and_positive(radiance));

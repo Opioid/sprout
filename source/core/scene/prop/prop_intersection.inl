@@ -28,12 +28,12 @@ inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& w
     return material(worker)->opacity(geo.uv, time, filter, worker);
 }
 
-inline float3 Intersection::thin_absorption(float3 const& wo, uint64_t time, Filter filter,
+inline float3 Intersection::thin_absorption(float3_p wo, uint64_t time, Filter filter,
                                             Worker const& worker) const {
     return material(worker)->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
 }
 
-inline material::Sample const& Intersection::sample(float3 const& wo, Ray const& ray, Filter filter,
+inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray, Filter filter,
                                                     float alpha, bool avoid_caustics,
                                                     Sampler& sampler, Worker& worker) const {
     material::Material const* material = Intersection::material(worker);
@@ -66,7 +66,7 @@ inline material::Sample const& Intersection::sample(float3 const& wo, Ray const&
     return material->sample(wo, ray, rs, filter, sampler, worker);
 }
 
-inline bool Intersection::same_hemisphere(float3 const& v) const {
+inline bool Intersection::same_hemisphere(float3_p v) const {
     return dot(geo.geo_n, v) >= 0.f;
 }
 

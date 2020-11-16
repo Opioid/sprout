@@ -19,15 +19,15 @@ class Model {
 
     float3 sun_direction() const;
 
-    void set_sun_direction(float3 const& direction);
+    void set_sun_direction(float3_p direction);
 
-    void set_ground_albedo(float3 const& albedo);
+    void set_ground_albedo(float3_p albedo);
 
     void set_turbidity(float turbidity);
 
-    float3 evaluate_sky(float3 const& wi) const;
+    float3 evaluate_sky(float3_p wi) const;
 
-    float3 evaluate_sky_and_sun(float3 const& wi) const;
+    float3 evaluate_sky_and_sun(float3_p wi) const;
 
     static float constexpr angular_radius() {
         // 0.5 * 0.51 degrees should match hosek

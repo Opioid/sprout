@@ -43,12 +43,12 @@ void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
     parts_[part].material = material;
 }
 
-float3 Mesh::object_to_texture_point(float3 const& p) const {
+float3 Mesh::object_to_texture_point(float3_p p) const {
     AABB const aabb = tree_.aabb();
     return (p - aabb.bounds[0]) / aabb.extent();
 }
 
-float3 Mesh::object_to_texture_vector(float3 const& v) const {
+float3 Mesh::object_to_texture_vector(float3_p v) const {
     return v / tree_.aabb().extent();
 }
 
@@ -243,7 +243,7 @@ bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Mesh::sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
+bool Mesh::sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
                   bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
     float const  r  = sampler.sample_1D(rng, sampler_d);
@@ -323,13 +323,12 @@ float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
     return 0.f;
 }
 
-bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                  Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
-                  Sample_to& /*sample*/) const {
+bool Mesh::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/, Transformation const& /*trafo*/,
+                  float /*area*/, bool /*two_sided*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Mesh::sample(uint32_t /*part*/, float3 const& /*p*/, float3 const& /*uvw*/,
+bool Mesh::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
                   Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
     return false;
 }
@@ -349,12 +348,12 @@ float Mesh::uv_weight(float2 /*uv*/) const {
     return 1.f;
 }
 
-float Mesh::area(uint32_t part, float3 const& scale) const {
+float Mesh::area(uint32_t part, float3_p scale) const {
     // HACK: This only really works for uniform scales!
     return parts_[part].distribution.integral() * (scale[0] * scale[1]);
 }
 
-float Mesh::volume(uint32_t /*part*/, float3 const& /*scale*/) const {
+float Mesh::volume(uint32_t /*part*/, float3_p /*scale*/) const {
     // HACK: This only really works for uniform scales!
     return 1.f;
 }

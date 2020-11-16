@@ -8,8 +8,8 @@ namespace scene {
 
 inline Ray::Ray() = default;
 
-inline Ray::Ray(float3 const& origin, float3 const& direction, float min_t, float max_t,
-                uint32_t depth, float wavelength, uint64_t time)
+inline Ray::Ray(float3_p origin, float3_p direction, float min_t, float max_t, uint32_t depth,
+                float wavelength, uint64_t time)
     : ray(origin, direction, min_t, max_t), depth(depth), wavelength(wavelength), time(time) {}
 }  // namespace scene
 

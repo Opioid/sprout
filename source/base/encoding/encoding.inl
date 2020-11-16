@@ -27,21 +27,21 @@ static inline uint8_t constexpr float_to_unorm(float x, float dither) {
     return uint8_t(x * 255.f + dither);
 }
 
-static inline byte3 constexpr float_to_unorm(float3 const& c) {
+static inline byte3 constexpr float_to_unorm(float3_p c) {
     return byte3(float_to_unorm(c[0]), float_to_unorm(c[1]), float_to_unorm(c[2]));
 }
 
-static inline byte3 constexpr float_to_unorm(float3 const& c, float dither) {
+static inline byte3 constexpr float_to_unorm(float3_p c, float dither) {
     return byte3(float_to_unorm(c[0], dither), float_to_unorm(c[1], dither),
                  float_to_unorm(c[2], dither));
 }
 
-static inline byte3 constexpr float_to_unorm(float3 const& c, float3 const& dither) {
+static inline byte3 constexpr float_to_unorm(float3_p c, float3_p dither) {
     return byte3(float_to_unorm(c[0], dither[0]), float_to_unorm(c[1], dither[1]),
                  float_to_unorm(c[2], dither[2]));
 }
 
-static inline constexpr byte4 float_to_unorm(float4 const& c) {
+static inline constexpr byte4 float_to_unorm(float4_p c) {
     return byte4(float_to_unorm(c[0]), float_to_unorm(c[1]), float_to_unorm(c[2]),
                  float_to_unorm(c[3]));
 }
@@ -55,7 +55,7 @@ static inline uint8_t constexpr float_to_snorm(float x) {
     return uint8_t((x + 1.f) * (x > 0.f ? 127.5f : 128.f));
 }
 
-static inline byte3 constexpr float_to_snorm(float3 const& c) {
+static inline byte3 constexpr float_to_snorm(float3_p c) {
     return byte3(float_to_snorm(c[0]), float_to_snorm(c[1]), float_to_snorm(c[2]));
 }
 

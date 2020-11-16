@@ -13,7 +13,7 @@
 namespace scene::material::substitute {
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::set(float3 const& color, float f0, float metallic) {
+void Base_closure<Diffuse>::set(float3_p color, float f0, float metallic) {
     albedo_ = (1.f - metallic) * color;
 
     f0_ = lerp(float3(f0), color, metallic);
@@ -23,8 +23,8 @@ void Base_closure<Diffuse>::set(float3 const& color, float f0, float metallic) {
 
 template <typename Diffuse>
 template <bool Forward>
-bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const& wo,
-                                                  float3 const& h, float wo_dot_h,
+bxdf::Result Base_closure<Diffuse>::base_evaluate(float3_p wi, float3_p wo, float3_p h,
+                                                  float                   wo_dot_h,
                                                   material::Sample const& sample) const {
     Layer const& layer = sample.layer_;
 
@@ -66,10 +66,9 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
 
 template <typename Diffuse>
 template <bool Forward>
-bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const& wo,
-                                                  float3 const& h, float wo_dot_h,
-                                                  material::Sample const& sample,
-                                                  float                   diffuse_factor) const {
+bxdf::Result Base_closure<Diffuse>::base_evaluate(float3_p wi, float3_p wo, float3_p h,
+                                                  float wo_dot_h, material::Sample const& sample,
+                                                  float diffuse_factor) const {
     Layer const& layer = sample.layer_;
 
     float const alpha = sample.alpha_;
@@ -111,8 +110,8 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3 const& wi, float3 const
 
 template <typename Diffuse>
 template <bool Forward>
-bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3 const& wo,
-                                                        float3 const& h, float wo_dot_h,
+bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3_p wi, float3_p wo, float3_p h,
+                                                        float                   wo_dot_h,
                                                         material::Sample const& sample) const {
     Layer const& layer = sample.layer_;
 
@@ -145,7 +144,7 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3 const& wi, float3
 }
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample const& sample,
+void Base_closure<Diffuse>::diffuse_sample(float3_p wo, material::Sample const& sample,
                                            Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
@@ -177,7 +176,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample co
 }
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample const& sample,
+void Base_closure<Diffuse>::diffuse_sample(float3_p wo, material::Sample const& sample,
                                            float diffuse_factor, Sampler& sampler, RNG& rng,
                                            bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
@@ -211,7 +210,7 @@ void Base_closure<Diffuse>::diffuse_sample(float3 const& wo, material::Sample co
 }
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::gloss_sample(float3 const& wo, material::Sample const& sample,
+void Base_closure<Diffuse>::gloss_sample(float3_p wo, material::Sample const& sample,
                                          Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
@@ -235,7 +234,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, material::Sample cons
 }
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::gloss_sample(float3 const& wo, material::Sample const& sample,
+void Base_closure<Diffuse>::gloss_sample(float3_p wo, material::Sample const& sample,
                                          float diffuse_factor, Sampler& sampler, RNG& rng,
                                          bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
@@ -261,7 +260,7 @@ void Base_closure<Diffuse>::gloss_sample(float3 const& wo, material::Sample cons
 }
 
 template <typename Diffuse>
-void Base_closure<Diffuse>::pure_gloss_sample(float3 const& wo, material::Sample const& sample,
+void Base_closure<Diffuse>::pure_gloss_sample(float3_p wo, material::Sample const& sample,
                                               Sampler& sampler, RNG& rng,
                                               bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;

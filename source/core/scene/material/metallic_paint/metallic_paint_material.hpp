@@ -9,20 +9,20 @@ class Material : public material::Material {
   public:
     Material(Sampler_settings const& sampler_settings, bool two_sided);
 
-    material::Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
+    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_color(float3 const& a, float3 const& b);
+    void set_color(float3_p a, float3_p b);
     void set_roughness(float roughness);
 
     void set_flakes_mask(Texture_adapter const& mask);
     void set_flakes_normal_map(Texture_adapter const& normal_map);
-    void set_flakes_ior(float3 const& ior);
-    void set_flakes_absorption(float3 const& absorption);
+    void set_flakes_ior(float3_p ior);
+    void set_flakes_absorption(float3_p absorption);
     void set_flakes_roughness(float roughness);
 
     void set_coating_thickness(float thickness);
-    void set_coating_attenuation(float3 const& absorption_color, float distance);
+    void set_coating_attenuation(float3_p absorption_color, float distance);
     void set_coating_ior(float ior);
     void set_coating_roughness(float roughness);
 

@@ -21,9 +21,8 @@ Interpolated_function_3D<T>::Interpolated_function_3D(Interpolated_function_3D&&
 }
 
 template <typename T>
-Interpolated_function_3D<T>::Interpolated_function_3D(float3 const& range_begin,
-                                                      float3 const& range_end,
-                                                      uint3 const& num_samples, T const t[]) {
+Interpolated_function_3D<T>::Interpolated_function_3D(float3_p range_begin, float3_p range_end,
+                                                      uint3_p num_samples, T const t[]) {
     from_array(range_begin, range_end, num_samples, t);
 }
 
@@ -33,8 +32,8 @@ Interpolated_function_3D<T>::~Interpolated_function_3D() {
 }
 
 template <typename T>
-void Interpolated_function_3D<T>::from_array(float3 const& range_begin, float3 const& range_end,
-                                             uint3 const& num_samples, T const t[]) {
+void Interpolated_function_3D<T>::from_array(float3_p range_begin, float3_p range_end,
+                                             uint3_p num_samples, T const t[]) {
     uint32_t const volume = num_samples[0] * num_samples[1] * num_samples[2];
 
     if (num_samples_[0] * num_samples_[1] * num_samples_[2] != volume) {

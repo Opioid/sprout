@@ -36,23 +36,25 @@ using uint2   = math::Vector2<uint32_t>;
 using ulong2  = math::Vector2<uint64_t>;
 
 using byte3 = math::Vector3<uint8_t>;
-
 // using float3 = math::Vector3<float>;
-using float3 = math::Vector3f_a;
-
-using ushort3 = math::Vector3_a<uint16_t>;
-
+using float3        = math::Vector3f_a;
+using ushort3       = math::Vector3_a<uint16_t>;
 using int3          = math::Vector3<int32_t>;
 using uint3         = math::Vector3<uint32_t>;
 using packed_float3 = math::Vector3<float>;
 
 using byte4   = math::Vector4<uint8_t>;
 using ushort4 = math::Vector4<uint16_t>;
-
 // using float4 = math::Vector4<float>;
 using float4 = math::Vector4f_a;
+using int4   = math::Vector4i_a;
 
-using int4 = math::Vector4i_a;
+using float3_p        = float3;         // const&;
+using packed_float3_p = packed_float3;  // const&;
+using int3_p          = int3;           // const&;
+using uint3_p         = uint3;          // const&;
+using float4_p        = float4;         // const&;
+using int4_p          = int4;           // const&;
 
 using namespace math;
 

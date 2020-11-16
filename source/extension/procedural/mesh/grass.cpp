@@ -84,7 +84,7 @@ Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/, Resources
     return Shape_ptr::Null();
 }
 
-void Grass::add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,
+void Grass::add_blade(float3_p offset, float rotation_y, float lean_factor, float width,
                       float height, uint32_t vertex_offset, std::vector<Index_triangle>& triangles,
                       std::vector<Vertex>& vertices) const {
     scene::shape::triangle::Index_triangle tri;

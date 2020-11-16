@@ -34,7 +34,7 @@ float4 Byte2_snorm::at_4(int32_t x, int32_t y) const {
                   encoding::cached_snorm_to_float(value[1]), 0.f, 1.f);
 }
 
-void Byte2_snorm::gather_1(int4 const& xy_xy1, float c[4]) const {
+void Byte2_snorm::gather_1(int4_p xy_xy1, float c[4]) const {
     byte2 v[4];
     image_.gather(xy_xy1, v);
 
@@ -44,7 +44,7 @@ void Byte2_snorm::gather_1(int4 const& xy_xy1, float c[4]) const {
     c[3] = encoding::cached_snorm_to_float(v[3][0]);
 }
 
-void Byte2_snorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
+void Byte2_snorm::gather_2(int4_p xy_xy1, float2 c[4]) const {
     byte2 v[4];
     image_.gather(xy_xy1, v);
 
@@ -61,7 +61,7 @@ void Byte2_snorm::gather_2(int4 const& xy_xy1, float2 c[4]) const {
                   encoding::cached_snorm_to_float(v[2][1]));
 }
 
-void Byte2_snorm::gather_3(int4 const& xy_xy1, float3 c[4]) const {
+void Byte2_snorm::gather_3(int4_p xy_xy1, float3 c[4]) const {
     byte2 v[4];
     image_.gather(xy_xy1, v);
 
@@ -118,7 +118,7 @@ float4 Byte2_snorm::at_4(int32_t x, int32_t y, int32_t z) const {
                   encoding::cached_snorm_to_float(value[1]), 0.f, 1.f);
 }
 
-void Byte2_snorm::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const {
+void Byte2_snorm::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
     byte2 v[8];
     image_.gather(xyz, xyz1, v);
 
@@ -132,7 +132,7 @@ void Byte2_snorm::gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const 
     c[7] = encoding::cached_snorm_to_float(v[7][0]);
 }
 
-void Byte2_snorm::gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const {
+void Byte2_snorm::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
     byte2 v[8];
     image_.gather(xyz, xyz1, v);
 

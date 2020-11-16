@@ -9,11 +9,11 @@ Sample::Sample() {
     properties_.set(Property::Can_evaluate, false);
 }
 
-bxdf::Result Sample::evaluate_f(float3 const& /*wi*/) const {
+bxdf::Result Sample::evaluate_f(float3_p /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 
-bxdf::Result Sample::evaluate_b(float3 const& /*wi*/) const {
+bxdf::Result Sample::evaluate_b(float3_p /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 

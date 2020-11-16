@@ -39,18 +39,18 @@ class Texture {
 
     int32_t volume() const;
 
-    int3 const& dimensions() const;
+    int3_p dimensions() const;
 
-    int3 const& offset() const;
+    int3_p offset() const;
 
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
     float3 at_3(int32_t x, int32_t y) const;
     float4 at_4(int32_t x, int32_t y) const;
 
-    void gather_1(int4 const& xy_xy1, float c[4]) const;
-    void gather_2(int4 const& xy_xy1, float2 c[4]) const;
-    void gather_3(int4 const& xy_xy1, float3 c[4]) const;
+    void gather_1(int4_p xy_xy1, float c[4]) const;
+    void gather_2(int4_p xy_xy1, float2 c[4]) const;
+    void gather_3(int4_p xy_xy1, float3 c[4]) const;
 
     float  at_element_1(int32_t x, int32_t y, int32_t element) const;
     float2 at_element_2(int32_t x, int32_t y, int32_t element) const;
@@ -61,8 +61,8 @@ class Texture {
     float3 at_3(int32_t x, int32_t y, int32_t z) const;
     float4 at_4(int32_t x, int32_t y, int32_t z) const;
 
-    void gather_1(int3 const& xyz, int3 const& xyz1, float c[8]) const;
-    void gather_2(int3 const& xyz, int3 const& xyz1, float2 c[8]) const;
+    void gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const;
+    void gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const;
 
     float average_1() const;
 

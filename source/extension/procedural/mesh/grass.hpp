@@ -25,8 +25,8 @@ class Grass : public scene::shape::triangle::Generator {
     Shape_ptr create_mesh(json::Value const& mesh_value, Resources& resources) final;
 
   private:
-    void add_blade(float3 const& offset, float rotation_y, float lean_factor, float width,
-                   float height, uint32_t vertex_offset,
+    void add_blade(float3_p offset, float rotation_y, float lean_factor, float width, float height,
+                   uint32_t                                             vertex_offset,
                    std::vector<scene::shape::triangle::Index_triangle>& triangles,
                    std::vector<scene::shape::Vertex>&                   vertices) const;
 

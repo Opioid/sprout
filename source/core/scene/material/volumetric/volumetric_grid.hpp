@@ -15,12 +15,12 @@ class Grid : public Material {
 
     ~Grid() override;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const override;
 
-    CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const final;
+    CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const final;
 
-    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+    CCE collision_coefficients_emission(float3_p uvw, Filter filter,
                                         Worker const& worker) const override;
 
     void commit(Threads& threads, Scene const& scene) override;
@@ -30,7 +30,7 @@ class Grid : public Material {
     Boxi volume_texture_space_bounds(Scene const& scene) const final;
 
   protected:
-    float density(float3 const& uvw, Filter filter, Worker const& worker) const;
+    float density(float3_p uvw, Filter filter, Worker const& worker) const;
 
     Texture_adapter density_;
 
@@ -45,14 +45,14 @@ class Grid_emission : public Grid {
 
     float3 average_radiance(float volume) const final;
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
-    Radiance_sample radiance_sample(float3 const& r3) const final;
+    Radiance_sample radiance_sample(float3_p r3) const final;
 
-    float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const final;
+    float emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const final;
 
-    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+    CCE collision_coefficients_emission(float3_p uvw, Filter filter,
                                         Worker const& worker) const final;
 
     void commit(Threads& threads, Scene const& scene) final;
@@ -85,12 +85,12 @@ class Grid_color : public Material {
 
     void set_color(Texture_adapter const& color);
 
-    float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
-    CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const final;
+    CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const final;
 
-    CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+    CCE collision_coefficients_emission(float3_p uvw, Filter filter,
                                         Worker const& worker) const final;
 
     void set_attenuation(float scattering_factor, float distance);
@@ -100,7 +100,7 @@ class Grid_color : public Material {
     Gridtree const* volume_tree() const final;
 
   protected:
-    float4 color(float3 const& uvw, Filter filter, Worker const& worker) const;
+    float4 color(float3_p uvw, Filter filter, Worker const& worker) const;
 
     Texture_adapter color_;
 

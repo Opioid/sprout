@@ -502,13 +502,13 @@ uint32_t Grid::reduce(float merge_radius, int32_t begin, int32_t end) {
     return num_reduced;
 }
 
-int32_t Grid::map1(float3 const& v) const {
+int32_t Grid::map1(float3_p v) const {
     int3 const c = int3((v - aabb_.min()) * local_to_texture_) + 1;
 
     return (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 }
 
-int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const {
+int3 Grid::map3(float3_p v, float2 cell_bound, uint8_t& adjacents) const {
     float3 const r = (v - aabb_.min()) * local_to_texture_;
 
     int3 const c = int3(r);
@@ -522,7 +522,7 @@ int3 Grid::map3(float3 const& v, float2 cell_bound, uint8_t& adjacents) const {
     return c + 1;
 }
 
-void Grid::adjacent_cells(float3 const& v, float2 cell_bound, Adjacency& adjacency) const {
+void Grid::adjacent_cells(float3_p v, float2 cell_bound, Adjacency& adjacency) const {
     uint8_t    adjacents;
     int3 const c = map3(v, cell_bound, adjacents);
 

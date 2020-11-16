@@ -43,7 +43,7 @@ bool Transparent::has_alpha_transparency() const {
     return true;
 }
 
-void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) {
+void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
     auto const d = dimensions();
 
     int32_t const i = d[0] * pixel[1] + pixel[0];
@@ -53,7 +53,7 @@ void Transparent::add_pixel(int2 pixel, float4 const& color, float weight) {
     pixels_[i] += weight * color;
 }
 
-void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight) {
+void Transparent::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
     auto const d = dimensions();
 
     int32_t const i = d[0] * pixel[1] + pixel[0];
@@ -67,7 +67,7 @@ void Transparent::add_pixel_atomic(int2 pixel, float4 const& color, float weight
     atomic::add_assign(value[3], weight * color[3]);
 }
 
-void Transparent::splat_pixel_atomic(int2 pixel, float4 const& color, float weight) {
+void Transparent::splat_pixel_atomic(int2 pixel, float4_p color, float weight) {
     auto const d = dimensions();
 
     float4& value = pixels_[d[0] * pixel[1] + pixel[0]];

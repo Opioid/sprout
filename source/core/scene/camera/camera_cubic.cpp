@@ -99,9 +99,9 @@ bool Cubic::generate_ray(Sample const& sample, uint32_t frame, uint32_t view, Sc
     return true;
 }
 
-bool Cubic::sample(uint32_t /*view*/, int4 const& /*bounds*/, uint64_t /*time*/,
-                   float3 const& /*p*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                   uint32_t /*sampler_d*/, Scene const& /*scene*/, Sample_to& /*sample*/) const {
+bool Cubic::sample(uint32_t /*view*/, int4_p /*bounds*/, uint64_t /*time*/, float3_p /*p*/,
+                   Sampler& /*sampler*/, rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
+                   Scene const& /*scene*/, Sample_to& /*sample*/) const {
     return false;
 }
 

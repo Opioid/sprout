@@ -21,11 +21,11 @@ namespace scene::shape {
 
 Cube::Cube() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
-float3 Cube::object_to_texture_point(float3 const& p) const {
+float3 Cube::object_to_texture_point(float3_p p) const {
     return (p - float3(-1.f)) * (1.f / float3(2.f));
 }
 
-float3 Cube::object_to_texture_vector(float3 const& v) const {
+float3 Cube::object_to_texture_vector(float3_p v) const {
     return v * (1.f / float3(2.f));
 }
 
@@ -189,7 +189,7 @@ bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, 
     return true;
 }
 
-bool Cube::sample(uint32_t /*part*/, float3 const& p, Transformation const& trafo, float /*area*/,
+bool Cube::sample(uint32_t /*part*/, float3_p p, Transformation const& trafo, float /*area*/,
                   bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
     float3 const axis                = trafo.position - p;
@@ -222,9 +222,8 @@ bool Cube::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*ar
     return false;
 }
 
-bool Cube::sample_volume(uint32_t /*part*/, float3 const& p, Transformation const& trafo,
-                         float volume, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                         Sample_to& sample) const {
+bool Cube::sample_volume(uint32_t /*part*/, float3_p p, Transformation const& trafo, float volume,
+                         Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
     float const  r1 = sampler.sample_1D(rng, sampler_d);
 
@@ -260,14 +259,13 @@ float Cube::pdf_volume(Ray const& ray, Intersection const& /*isec*/,
     return sl / (volume);
 }
 
-bool Cube::sample(uint32_t /*part*/, float3 const& /*p*/, float2 /*uv*/,
-                  Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
-                  Sample_to& /*sample*/) const {
+bool Cube::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/, Transformation const& /*trafo*/,
+                  float /*area*/, bool /*two_sided*/, Sample_to& /*sample*/) const {
     return false;
 }
 
-bool Cube::sample(uint32_t /*part*/, float3 const& p, float3 const& uvw,
-                  Transformation const& trafo, float volume, Sample_to& sample) const {
+bool Cube::sample(uint32_t /*part*/, float3_p p, float3_p uvw, Transformation const& trafo,
+                  float volume, Sample_to& sample) const {
     float3 const xyz  = 2.f * (uvw - 0.5f);
     float3 const wp   = trafo.object_to_world_point(xyz);
     float3 const axis = wp - p;
@@ -313,12 +311,12 @@ float Cube::uv_weight(float2 uv) const {
     return 1.f / sin_theta;
 }
 
-float Cube::area(uint32_t /*part*/, float3 const& scale) const {
+float Cube::area(uint32_t /*part*/, float3_p scale) const {
     float3 const d = 2.f * scale;
     return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);
 }
 
-float Cube::volume(uint32_t /*part*/, float3 const& scale) const {
+float Cube::volume(uint32_t /*part*/, float3_p scale) const {
     float3 const d = 2.f * scale;
     return d[0] * d[1] * d[2];
 }

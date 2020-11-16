@@ -19,13 +19,13 @@ static inline float linear_to_gamma_sRGB(float c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-static inline float3 linear_to_gamma_sRGB(float3 const& c) {
+static inline float3 linear_to_gamma_sRGB(float3_p c) {
     return float3(linear_to_gamma_sRGB(c[0]), linear_to_gamma_sRGB(c[1]),
                   linear_to_gamma_sRGB(c[2]));
 }
 
 // convert sRGB linear color to sRGB gamma color
-static inline float4 linear_to_gamma_sRGB(float4 const& c) {
+static inline float4 linear_to_gamma_sRGB(float4_p c) {
     return float4(linear_to_gamma_sRGB(c[0]), linear_to_gamma_sRGB(c[1]),
                   linear_to_gamma_sRGB(c[2]), c[3]);
 }
@@ -51,7 +51,7 @@ static inline float3 gamma_to_linear_sRGB(byte3 c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-static inline float3 gamma_to_linear_sRGB(float3 const& c) {
+static inline float3 gamma_to_linear_sRGB(float3_p c) {
     return float3(gamma_to_linear_sRGB(c[0]), gamma_to_linear_sRGB(c[1]),
                   gamma_to_linear_sRGB(c[1]));
 }
@@ -63,18 +63,18 @@ static inline float4 gamma_to_linear_sRGB(byte4 c) {
 }
 
 // convert linear color to gamma color
-static inline float3 linear_to_gamma(float3 const& c, float gamma) {
+static inline float3 linear_to_gamma(float3_p c, float gamma) {
     float const p = 1.f / gamma;
 
     return float3(std::pow(c[0], p), std::pow(c[1], p), std::pow(c[2], p));
 }
 
 // convert gamma color to linear color
-static inline float3 gamma_to_linear(float3 const& c, float gamma) {
+static inline float3 gamma_to_linear(float3_p c, float gamma) {
     return float3(std::pow(c[0], gamma), std::pow(c[1], gamma), std::pow(c[2], gamma));
 }
 
-static inline float constexpr luminance(float3 const& c) {
+static inline float constexpr luminance(float3_p c) {
 #ifdef SU_ACESCG
     // https://github.com/ampas/aces-dev/blob/master/transforms/ctl/README-MATRIX.md
     return 0.2722287168f * c[0] + 0.6740817658f * c[1] + 0.0536895174f * c[2];
@@ -86,7 +86,7 @@ static inline float constexpr luminance(float3 const& c) {
 
 inline float constexpr CIE_constant = 683.002f;
 
-static inline float constexpr watt_to_lumen(float3 const& c) {
+static inline float constexpr watt_to_lumen(float3_p c) {
     return CIE_constant * luminance(c);
 }
 

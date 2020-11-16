@@ -18,7 +18,7 @@ class Schlick1 {
 class Schlick {
   public:
     Schlick(float f0);
-    Schlick(float3 const& f0);
+    Schlick(float3_p f0);
 
     float3 operator()(float wo_dot_h) const;
 
@@ -29,7 +29,7 @@ class Schlick {
 class Lazanyi_schlick {
   public:
     Lazanyi_schlick(float f0, float a);
-    Lazanyi_schlick(float3 const& f0, float3 const& a);
+    Lazanyi_schlick(float3_p f0, float3_p a);
 
     float3 operator()(float wo_dot_h) const;
 
@@ -64,7 +64,7 @@ class Dielectric {
 
 class Conductor {
   public:
-    Conductor(float3 const& eta, float3 const& k);
+    Conductor(float3_p eta, float3_p k);
 
     float3 operator()(float wo_dot_h) const;
 
@@ -76,7 +76,7 @@ class Conductor {
 class Constant {
   public:
     Constant(float f);
-    Constant(float3 const& f);
+    Constant(float3_p f);
 
     float3 operator()(float wo_dot_h) const;
 

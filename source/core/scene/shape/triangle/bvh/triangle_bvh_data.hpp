@@ -35,7 +35,7 @@ class Data {
     float3 normal(uint32_t index) const;
 
     float area(uint32_t index) const;
-    float area(uint32_t index, float3 const& scale) const;
+    float area(uint32_t index, float3_p scale) const;
 
     //	void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const;
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;

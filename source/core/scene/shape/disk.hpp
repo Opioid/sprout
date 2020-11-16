@@ -9,9 +9,9 @@ class Disk final : public Shape {
   public:
     Disk();
 
-    float3 object_to_texture_point(float3 const& p) const final;
+    float3 object_to_texture_point(float3_p p) const final;
 
-    float3 object_to_texture_vector(float3 const& v) const final;
+    float3 object_to_texture_vector(float3_p v) const final;
 
     AABB transformed_aabb(float4x4 const& m) const final;
 
@@ -32,9 +32,8 @@ class Disk final : public Shape {
     bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 
-    bool sample(uint32_t part, float3 const& p, Transformation const& trafo, float area,
-                bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                Sample_to& sample) const final;
+    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool two_sided,
+                Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
 
     bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
@@ -46,11 +45,11 @@ class Disk final : public Shape {
     float pdf_volume(Ray const& ray, Intersection const& isec, Transformation const& trafo,
                      float volume) const final;
 
-    bool sample(uint32_t part, float3 const& p, float2 uv, Transformation const& trafo, float area,
+    bool sample(uint32_t part, float3_p p, float2 uv, Transformation const& trafo, float area,
                 bool two_sided, Sample_to& sample) const final;
 
-    bool sample(uint32_t part, float3 const& p, float3 const& uvw, Transformation const& trafo,
-                float volume, Sample_to& sample) const final;
+    bool sample(uint32_t part, float3_p p, float3_p uvw, Transformation const& trafo, float volume,
+                Sample_to& sample) const final;
 
     bool sample(uint32_t part, float2 uv, Transformation const& trafo, float area, bool two_sided,
                 float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;
@@ -60,9 +59,9 @@ class Disk final : public Shape {
 
     float uv_weight(float2 uv) const final;
 
-    float area(uint32_t part, float3 const& scale) const final;
+    float area(uint32_t part, float3_p scale) const final;
 
-    float volume(uint32_t part, float3 const& scale) const final;
+    float volume(uint32_t part, float3_p scale) const final;
 
     Differential_surface differential_surface(uint32_t primitive) const final;
 

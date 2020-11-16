@@ -133,8 +133,8 @@ static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float
     return (cos_a > cos_b) ? 0.f : angle;
 }
 
-static inline float importance(float3 const& center, float3 const& p, float3 const& n,
-                               float4 const& cone, float radius, float power, bool total_sphere) {
+static inline float importance(float3_p center, float3_p p, float3_p n, float4_p cone, float radius,
+                               float power, bool total_sphere) {
     float3 const axis = center - p;
 
     float const l = std::max(length(axis), 0.0001f);
@@ -169,8 +169,8 @@ static inline float importance(float3 const& center, float3 const& p, float3 con
     return std::max(d2 * angle * base, 0.001f);
 }
 
-static inline float importance(float3 const& center, float3 const& p0, float3 const& p1,
-                               float3 const& dir, float4 const& cone, float radius, float power) {
+static inline float importance(float3_p center, float3_p p0, float3_p p1, float3_p dir,
+                               float4_p cone, float radius, float power) {
     float3 const axis = p0 - center;
 
     float3 const v0 = normalize(axis);
@@ -230,7 +230,7 @@ static inline float importance(float3 const& center, float3 const& p0, float3 co
     return std::max((d2 * power) / l, 0.001f);
 }
 
-static float light_weight(float3 const& p, float3 const& n, bool total_sphere, uint32_t light,
+static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t light,
                           Scene const& scene) {
     float3 const center = scene.light_aabb(light).position();
     float4 const cone   = scene.light_cone(light);
@@ -241,7 +241,7 @@ static float light_weight(float3 const& p, float3 const& n, bool total_sphere, u
     return importance(center, p, n, cone, radius, power, total_sphere);
 }
 
-static float light_weight(float3 const& p0, float3 const& p1, float3 const& dir, uint32_t light,
+static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light,
                           Scene const& scene) {
     float3 const center = scene.light_aabb(light).position();
     float4 const cone   = scene.light_cone(light);
@@ -252,19 +252,19 @@ static float light_weight(float3 const& p0, float3 const& p1, float3 const& dir,
     return importance(center, p0, p1, dir, cone, radius, power);
 }
 
-float Tree::Node::weight(float3 const& p, float3 const& n, bool total_sphere) const {
+float Tree::Node::weight(float3_p p, float3_p n, bool total_sphere) const {
     float const r = center[3];
 
     return importance(center.xyz(), p, n, cone, r, power, total_sphere);
 }
 
-float Tree::Node::weight(float3 const& p0, float3 const& p1, float3 const& dir) const {
+float Tree::Node::weight(float3_p p0, float3_p p1, float3_p dir) const {
     float const r = center[3];
 
     return importance(center.xyz(), p0, p1, dir, cone, r, power);
 }
 
-bool Tree::Node::split(float3 const& p) const {
+bool Tree::Node::split(float3_p p) const {
     float const r = center[3];
     float const d = distance(p, center.xyz());
 
@@ -291,7 +291,7 @@ bool Tree::Node::split(float3 const& p) const {
     return ns < Tree::splitting_threshold_;
 }
 
-bool Tree::Node::split(float3 const& p0, float3 const& dir) const {
+bool Tree::Node::split(float3_p p0, float3_p dir) const {
     float3 const axis = p0 - center.xyz();
 
     float const delta = -dot(axis, dir);
@@ -301,9 +301,8 @@ bool Tree::Node::split(float3 const& p0, float3 const& dir) const {
     return split(closest_point);
 }
 
-Light_pick Tree::Node::random_light(float3 const& p, float3 const& n, bool total_sphere,
-                                    float random, uint32_t const* const light_mapping,
-                                    Scene const& scene) const {
+Light_pick Tree::Node::random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                                    uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return {light_mapping[children_or_light], 1.f};
     }
@@ -319,9 +318,8 @@ Light_pick Tree::Node::random_light(float3 const& p, float3 const& n, bool total
     return {light_mapping[children_or_light + l.offset], l.pdf};
 }
 
-Light_pick Tree::Node::random_light(float3 const& p0, float3 const& p1, float3 const& dir,
-                                    float random, uint32_t const* const light_mapping,
-                                    Scene const& scene) const {
+Light_pick Tree::Node::random_light(float3_p p0, float3_p p1, float3_p dir, float random,
+                                    uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return {light_mapping[children_or_light], 1.f};
     }
@@ -337,7 +335,7 @@ Light_pick Tree::Node::random_light(float3 const& p0, float3 const& p1, float3 c
     return {light_mapping[children_or_light + l.offset], l.pdf};
 }
 
-float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint32_t id,
+float Tree::Node::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
                       uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return 1.f;
@@ -352,8 +350,8 @@ float Tree::Node::pdf(float3 const& p, float3 const& n, bool total_sphere, uint3
     return distribution_pdf<4>(weights, id - children_or_light);
 }
 
-void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, float random,
-                        bool split, Scene const& scene, Lights& lights) const {
+void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,
+                        Scene const& scene, Lights& lights) const {
     lights.clear();
 
     float ip = 0.f;
@@ -453,8 +451,8 @@ void Tree::random_light(float3 const& p, float3 const& n, bool total_sphere, flo
     }
 }
 
-void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool split,
-                        Scene const& scene, Lights& lights) const {
+void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scene const& scene,
+                        Lights& lights) const {
     lights.clear();
 
     float ip = 0.f;
@@ -556,7 +554,7 @@ void Tree::random_light(float3 const& p0, float3 const& p1, float random, bool s
     }
 }
 
-float Tree::pdf(float3 const& p, float3 const& n, bool total_sphere, bool split, uint32_t id,
+float Tree::pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t id,
                 Scene const& scene) const {
     uint32_t const lo = light_orders_[id];
 

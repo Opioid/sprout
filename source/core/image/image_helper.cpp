@@ -15,7 +15,7 @@ float3 average_and_max_3(Float4 const& image, float3& max) {
     max = float3(0.f);
 
     for (int32_t i = 0; i < len; ++i) {
-        float4 const& pixel = image.at(i);
+        float4_p pixel = image.at(i);
 
         float3 pixel3 = pixel.xyz();
 

@@ -47,7 +47,7 @@ inline void CM::add(CC const& cc) {
     majorant_mu_s = std::max(majorant_mu_s, max_component(cc.s));
 }
 
-static inline float3 attenuation_coefficient(float3 const& color, float distance) {
+static inline float3 attenuation_coefficient(float3_p color, float distance) {
     float3 const ca = clamp(color, 0.001f, 0.99f);
 
     float3 const a = log(ca);
@@ -55,7 +55,7 @@ static inline float3 attenuation_coefficient(float3 const& color, float distance
     return -a / distance;
 }
 
-static inline CC scattering(float3 const& mu_t, float3 const& ssc) {
+static inline CC scattering(float3_p mu_t, float3_p ssc) {
     float3 const root = sqrt(9.59217f + 41.6808f * ssc + 17.7126f * ssc * ssc);
 
     float3 const factor = 4.09712f + 4.20863f * ssc - root;
@@ -67,7 +67,7 @@ static inline CC scattering(float3 const& mu_t, float3 const& ssc) {
     return {mu_a, mu_t - mu_a};
 }
 
-static inline CC attenuation(float3 const& ac, float3 const& ssc, float distance) {
+static inline CC attenuation(float3_p ac, float3_p ssc, float distance) {
     float3 const mu_t = attenuation_coefficient(ac, distance);
 
     return scattering(mu_t, ssc);

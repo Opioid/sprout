@@ -67,12 +67,11 @@ class Material {
 
     void set_color_map(Texture_adapter const& color_map);
 
-    void set_emission(float3 const& emission);
+    void set_emission(float3_p emission);
 
     void set_ior(float ior);
 
-    void set_attenuation(float3 const& absorption_color, float3 const& scattering_color,
-                         float distance);
+    void set_attenuation(float3_p absorption_color, float3_p scattering_color, float distance);
 
     void set_volumetric_anisotropy(float anisotropy);
 
@@ -81,43 +80,43 @@ class Material {
     virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length, Threads& threads,
                           Scene const& scene);
 
-    virtual Sample const& sample(float3 const& wo, Ray const& ray, Renderstate const& rs,
-                                 Filter filter, Sampler& sampler, Worker& worker) const = 0;
+    virtual Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs, Filter filter,
+                                 Sampler& sampler, Worker& worker) const = 0;
 
     virtual float3 average_radiance(float extent) const;
 
-    virtual float3 evaluate_radiance(float3 const& wi, float3 const& uvw, float extent,
-                                     Filter filter, Worker const& worker) const;
+    virtual float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
+                                     Worker const& worker) const;
 
     struct Radiance_sample {
         Radiance_sample(float2 uv, float pdf);
 
-        Radiance_sample(float3 const& uvw, float pdf);
+        Radiance_sample(float3_p uvw, float pdf);
 
         float pdf() const;
 
         float3 uvw;
     };
-    virtual Radiance_sample radiance_sample(float3 const& r3) const;
+    virtual Radiance_sample radiance_sample(float3_p r3) const;
 
-    virtual float emission_pdf(float3 const& uvw, Filter filter, Worker const& worker) const;
+    virtual float emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const;
 
     float opacity(float2 uv, uint64_t time, Filter filter, Worker const& worker) const;
 
-    virtual float3 thin_absorption(float3 const& wi, float3 const& n, float2 uv, uint64_t time,
-                                   Filter filter, Worker const& worker) const;
+    virtual float3 thin_absorption(float3_p wi, float3_p n, float2 uv, uint64_t time, Filter filter,
+                                   Worker const& worker) const;
 
-    float border(float3 const& wi, float3 const& n) const;
+    float border(float3_p wi, float3_p n) const;
 
     CC collision_coefficients() const;
 
     CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const;
 
-    virtual CC collision_coefficients(float3 const& uvw, Filter filter, Worker const& worker) const;
+    virtual CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const;
 
     CCE collision_coefficients_emission() const;
 
-    virtual CCE collision_coefficients_emission(float3 const& uvw, Filter filter,
+    virtual CCE collision_coefficients_emission(float3_p uvw, Filter filter,
                                                 Worker const& worker) const;
 
     virtual volumetric::Gridtree const* volume_tree() const;
