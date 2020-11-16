@@ -11,7 +11,7 @@
 
 namespace scene::material::metal {
 
-Material_isotropic::Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided)
+Material_isotropic::Material_isotropic(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
 void Material_isotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
@@ -60,7 +60,7 @@ size_t Material_isotropic::sample_size() {
     return sizeof(Sample_isotropic);
 }
 
-Material_anisotropic::Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided)
+Material_anisotropic::Material_anisotropic(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {}
 
 void Material_anisotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {

@@ -11,7 +11,7 @@
 
 namespace scene::material::substitute {
 
-Material_base::Material_base(Sampler_settings const& sampler_settings, bool two_sided)
+Material_base::Material_base(Sampler_settings sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 void Material_base::commit(Threads& /*threads*/, Scene const& scene) {

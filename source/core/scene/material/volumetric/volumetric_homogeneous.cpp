@@ -4,7 +4,7 @@
 
 namespace scene::material::volumetric {
 
-Homogeneous::Homogeneous(Sampler_settings const& sampler_settings) : Material(sampler_settings) {}
+Homogeneous::Homogeneous(Sampler_settings sampler_settings) : Material(sampler_settings) {}
 
 void Homogeneous::commit(Threads& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Scattering_volume,

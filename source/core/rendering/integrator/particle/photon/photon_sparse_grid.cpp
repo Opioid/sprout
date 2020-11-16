@@ -441,7 +441,7 @@ void Sparse_grid::release() {
     memory::free_aligned(cells_);
 }
 
-void Sparse_grid::set(int3 const& c, int32_t value) {
+void Sparse_grid::set(int3_p c, int32_t value) {
     int3 const cc = c >> Log2_cell_dim;
 
     int32_t const cell_index = (cc[2] * num_cells_[1] + cc[1]) * num_cells_[0] + cc[0];

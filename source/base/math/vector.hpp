@@ -24,6 +24,9 @@ struct Vector4;
 struct alignas(16) Vector4f_a;
 struct alignas(16) Vector4i_a;
 
+using Vector3f_a_p = Vector3f_a;
+using Vector4f_a_p = Vector4f_a;
+
 }  // namespace math
 
 using scalar = math::Simd1f;
@@ -49,6 +52,7 @@ using ushort4 = math::Vector4<uint16_t>;
 using float4 = math::Vector4f_a;
 using int4   = math::Vector4i_a;
 
+using scalar_p        = scalar;
 using float3_p        = float3;         // const&;
 using packed_float3_p = packed_float3;  // const&;
 using int3_p          = int3;           // const&;

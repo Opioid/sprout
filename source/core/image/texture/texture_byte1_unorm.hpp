@@ -29,8 +29,8 @@ class Byte1_unorm {
     float3 at_3(int32_t x, int32_t y, int32_t z) const;
     float4 at_4(int32_t x, int32_t y, int32_t z) const;
 
-    void gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const;
-    void gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const;
+    void gather_1(int3_p xyz, int3_p xyz1, float c[8]) const;
+    void gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const;
 
   private:
     Byte1 const& image_;

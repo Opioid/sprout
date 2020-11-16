@@ -185,9 +185,9 @@ static inline bool intersect(float3_p a, float3_p b, float3_p c, ray& ray, float
     return false;
 }
 
-static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                             scalar& max_t, float const* a, float const* b, float const* c,
-                             scalar& u_out, scalar& v_out) {
+static inline bool intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar& max_t,
+                             float const* a, float const* b, float const* c, scalar& u_out,
+                             scalar& v_out) {
     Simd3f ap(a);
     Simd3f bp(b);
     Simd3f cp(c);
@@ -224,8 +224,8 @@ static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scal
     return false;
 }
 
-static inline bool intersect(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                             scalar& max_t, float const* a, float const* b, float const* c) {
+static inline bool intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar& max_t,
+                             float const* a, float const* b, float const* c) {
     Simd3f ap(a);
     Simd3f bp(b);
     Simd3f cp(c);
@@ -320,9 +320,8 @@ static inline bool intersect_p(float3_p a, float3_p b, float3_p c, ray const& ra
     return 0 != (ca & cb & cc & cd & ce & cf);
 }
 
-static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, scalar const& min_t,
-                               scalar const& max_t, float const* a, float const* b,
-                               float const* c) {
+static inline bool intersect_p(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar_p max_t,
+                               float const* a, float const* b, float const* c) {
     // Implementation C
 
     Simd3f ap(a);
@@ -354,8 +353,7 @@ static inline bool intersect_p(Simd3f const& origin, Simd3f const& direction, sc
                  _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v));
 }
 
-static inline Simd3f interpolate_p(Simd3f const& a, Simd3f const& b, Simd3f const& c,
-                                   Simd3f const& u, Simd3f const& v) {
+static inline Simd3f interpolate_p(Simd3f_p a, Simd3f_p b, Simd3f_p c, Simd3f_p u, Simd3f_p v) {
     Simd3f const w = simd::One - u - v;
 
     return w * a + u * b + v * c;
@@ -413,7 +411,7 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_v
                   w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
 }
 
-static inline float2 interpolate_uv(Simd3f const& u, Simd3f const& v, const Shading_vertex_MTC& a,
+static inline float2 interpolate_uv(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
     Simd3f const w = simd::One - u - v;
 
@@ -447,7 +445,7 @@ static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_v
     tc = float2(n_u[3], t_v[3]);
 }
 
-static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shading_vertex_MTC& a,
+static inline void interpolate_data(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c,
                                     Simd3f& n, Simd3f& t, float2& tc) {
     Simd3f const w = simd::One - u - v;
@@ -480,9 +478,8 @@ static inline void interpolate_data(Simd3f const& u, Simd3f const& v, const Shad
     //    tc[1] = v1.w();
 }
 
-static inline Simd3f interpolate_normal(Simd3f const& u, Simd3f const& v,
-                                        const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
-                                        const Shading_vertex_MTC& c) {
+static inline Simd3f interpolate_normal(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,
+                                        const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
     Simd3f const w = simd::One - u - v;
 
     Simd3f va = w * Simd3f(a.n_u.v);

@@ -13,8 +13,7 @@
 
 namespace scene::material::glass {
 
-Glass_thin::Glass_thin(Sampler_settings const& sampler_settings)
-    : Material(sampler_settings, true) {
+Glass_thin::Glass_thin(Sampler_settings sampler_settings) : Material(sampler_settings, true) {
     properties_.set(Property::Tinted_shadow);
 }
 

@@ -11,7 +11,7 @@
 
 namespace scene::material::display {
 
-Emissionmap_animated::Emissionmap_animated(Sampler_settings const& sampler_settings, bool two_sided)
+Emissionmap_animated::Emissionmap_animated(Sampler_settings sampler_settings, bool two_sided)
     : light::Emissionmap_animated(sampler_settings, two_sided) {}
 
 material::Sample const& Emissionmap_animated::sample(float3_p           wo, Ray const& /*ray*/,

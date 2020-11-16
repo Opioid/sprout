@@ -154,7 +154,7 @@ void Typed_image<T>::gather(int4_p xy_xy1, T c[4]) const {
 }
 
 template <typename T>
-void Typed_image<T>::gather(int3 const& xyz, int3_p xyz1, T c[8]) const {
+void Typed_image<T>::gather(int3_p xyz, int3_p xyz1, T c[8]) const {
     int64_t const w = int64_t(description_.dimensions_[0]);
     int64_t const h = int64_t(description_.dimensions_[1]);
 
@@ -193,18 +193,6 @@ void Typed_image<T>::gather(int3 const& xyz, int3_p xyz1, T c[8]) const {
 
     int64_t const c7 = (d1 + y1) * w + x1;
     c[7]             = data_[c7];
-}
-
-template <typename T>
-void Typed_image<T>::square_transpose() {
-    int32_t const n = description_.dimensions_[0];
-    for (int32_t y = 0, height = n - 2; y < height; ++y) {
-        for (int32_t x = y + 1, width = n - 1; x < width; ++x) {
-            int32_t const a = y * n + x;
-            int32_t const b = x * n + y;
-            std::swap(data_[a], data_[b]);
-        }
-    }
 }
 
 template <typename T>
@@ -412,7 +400,7 @@ void Typed_sparse_image<T>::gather(int4_p /*xy_xy1*/, T c[4]) const {
 }
 
 template <typename T>
-void Typed_sparse_image<T>::gather(int3 const& xyz, int3_p xyz1, T c[8]) const {
+void Typed_sparse_image<T>::gather(int3_p xyz, int3_p xyz1, T c[8]) const {
     int3 const cc0 = xyz >> Log2_cell_dim;
     int3 const cc1 = xyz1 >> Log2_cell_dim;
 

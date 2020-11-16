@@ -19,7 +19,7 @@
 
 namespace scene::material::volumetric {
 
-Grid::Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density)
+Grid::Grid(Sampler_settings sampler_settings, Texture_adapter const& density)
     : Material(sampler_settings), density_(density) {
     properties_.set(Property::Heterogeneous_volume);
 }
@@ -71,7 +71,7 @@ float Grid::density(float3_p uvw, Filter filter, Worker const& worker) const {
     return density_.sample_1(worker, sampler, uvw);
 }
 
-Grid_emission::Grid_emission(Sampler_settings const& sampler_settings, Texture_adapter const& grid)
+Grid_emission::Grid_emission(Sampler_settings sampler_settings, Texture_adapter const& grid)
     : Grid(sampler_settings, grid), average_emission_(float3(-1.f)) {
     properties_.set(Property::Emission_map);
 }
@@ -358,7 +358,7 @@ void Grid_emission::set_temperature_map(Texture_adapter const& temperature_map) 
     temperature_ = temperature_map;
 }
 
-Grid_color::Grid_color(Sampler_settings const& sampler_settings) : Material(sampler_settings) {
+Grid_color::Grid_color(Sampler_settings sampler_settings) : Material(sampler_settings) {
     properties_.set(Property::Heterogeneous_volume);
     cc_ = CC{float3(0.5f), float3(0.5f)};
 }

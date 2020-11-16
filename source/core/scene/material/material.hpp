@@ -59,7 +59,7 @@ class Material {
 
     static char const* identifier();
 
-    Material(Sampler_settings const& sampler_settings, bool two_sided);
+    Material(Sampler_settings sampler_settings, bool two_sided);
 
     virtual ~Material();
 

@@ -10,7 +10,7 @@
 
 namespace scene::material::substitute {
 
-Material_translucent::Material_translucent(Sampler_settings const& sampler_settings)
+Material_translucent::Material_translucent(Sampler_settings sampler_settings)
     : Material_base(sampler_settings, true) {}
 
 material::Sample const& Material_translucent::sample(float3_p           wo, Ray const& /*ray*/,

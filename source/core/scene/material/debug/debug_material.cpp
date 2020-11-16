@@ -10,7 +10,7 @@ namespace scene::material::debug {
 inline float3 constexpr Color_front(0.4f, 0.9f, 0.1f);
 inline float3 constexpr Color_back(0.9f, 0.1f, 0.4f);
 
-Material::Material(Sampler_settings const& sampler_settings)
+Material::Material(Sampler_settings sampler_settings)
     : material::Material(sampler_settings, true) {}
 
 material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,

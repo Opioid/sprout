@@ -7,7 +7,7 @@ namespace scene::material::debug {
 
 class alignas(16) Material : public material::Material {
   public:
-    Material(Sampler_settings const& sampler_settings);
+    Material(Sampler_settings sampler_settings);
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;

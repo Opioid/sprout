@@ -54,7 +54,7 @@ class Sparse_grid {
   private:
     void release();
 
-    void set(int3 const& c, int32_t value);
+    void set(int3_p c, int32_t value);
 
     uint32_t reduce(float merge_radius, int32_t begin, int32_t end);
 

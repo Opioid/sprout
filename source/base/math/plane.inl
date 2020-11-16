@@ -7,25 +7,25 @@
 
 namespace math::plane {
 
-static inline Plane create(Vector3f_a const& normal, float d) {
+static inline Plane create(Vector3f_a_p normal, float d) {
     return Plane(normal, d);
 }
 
-static inline Plane create(Vector3f_a const& normal, Vector3f_a const& point) {
+static inline Plane create(Vector3f_a_p normal, Vector3f_a_p point) {
     return Plane(normal[0], normal[1], normal[2], -dot(normal, point));
 }
 
-static inline Plane create(Vector3f_a const& v0, Vector3f_a const& v1, Vector3f_a const& v2) {
+static inline Plane create(Vector3f_a_p v0, Vector3f_a_p v1, Vector3f_a_p v2) {
     Vector3f_a const n = normalize(cross(v2 - v1, v0 - v1));
 
     return create(n, v0);
 }
 
-static inline float dot(Plane const& p, Vector3f_a const& v) {
+static inline float dot(Plane const& p, Vector3f_a_p v) {
     return (p[0] * v[0] + p[1] * v[1]) + (p[2] * v[2] + p[3]);
 }
 
-static inline bool behind(Plane const& p, Vector3f_a const& point) {
+static inline bool behind(Plane const& p, Vector3f_a_p point) {
     return dot(p, point) < 0.f;
 }
 

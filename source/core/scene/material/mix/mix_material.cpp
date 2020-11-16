@@ -7,7 +7,7 @@
 
 namespace scene::material::mix {
 
-Material::Material(Sampler_settings const& sampler_settings, bool two_sided)
+Material::Material(Sampler_settings sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3_p wo, Ray const& ray, Renderstate const& rs,

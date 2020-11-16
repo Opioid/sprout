@@ -13,7 +13,7 @@ struct AABB {
 
     constexpr AABB(float3_p min, float3_p max);
 
-    AABB(Simd3f const& min, Simd3f const& max);
+    AABB(Simd3f_p min, Simd3f_p max);
 
     float3 min() const;
     float3 max() const;
@@ -39,7 +39,7 @@ struct AABB {
     float3 normal(float3_p p) const;
 
     void set_min_max(float3_p min, float3_p max);
-    void set_min_max(Simd3f const& min, Simd3f const& max);
+    void set_min_max(Simd3f_p min, Simd3f_p max);
 
     void insert(float3_p p);
 
@@ -73,11 +73,11 @@ struct Simd_AABB {
     Simd_AABB();
     Simd_AABB(AABB const& box);
     Simd_AABB(float const* min, float const* max);
-    Simd_AABB(Simd3f const& min, Simd3f const& max);
+    Simd_AABB(Simd3f_p min, Simd3f_p max);
 
     void merge_assign(Simd_AABB const& other);
 
-    void merge_assign(Simd3f const& other_min, Simd3f const& other_max);
+    void merge_assign(Simd3f_p other_min, Simd3f_p other_max);
 
     Simd3f min;
     Simd3f max;

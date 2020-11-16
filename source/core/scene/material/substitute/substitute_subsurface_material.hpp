@@ -8,7 +8,7 @@ namespace scene::material::substitute {
 
 class Material_subsurface final : public Material_base {
   public:
-    Material_subsurface(Sampler_settings const& sampler_settings);
+    Material_subsurface(Sampler_settings sampler_settings);
 
     void commit(Threads& threads, Scene const& scene) final;
 

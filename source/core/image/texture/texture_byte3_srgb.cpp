@@ -140,7 +140,7 @@ float4 Byte3_sRGB::at_4(int32_t x, int32_t y, int32_t z) const {
 #endif
 }
 
-void Byte3_sRGB::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
+void Byte3_sRGB::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
     byte3 v[8];
     image_.gather(xyz, xyz1, v);
 
@@ -165,7 +165,7 @@ void Byte3_sRGB::gather_1(int3 const& xyz, int3_p xyz1, float c[8]) const {
 #endif
 }
 
-void Byte3_sRGB::gather_2(int3 const& xyz, int3_p xyz1, float2 c[8]) const {
+void Byte3_sRGB::gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const {
     byte3 v[8];
     image_.gather(xyz, xyz1, v);
 

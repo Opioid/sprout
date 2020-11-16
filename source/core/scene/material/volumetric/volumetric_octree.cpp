@@ -38,7 +38,7 @@ CM* Gridtree::allocate_data(uint32_t num_data) {
     return data_;
 }
 
-void Gridtree::set_dimensions(int3 const& dimensions, int3_p num_cells) {
+void Gridtree::set_dimensions(int3_p dimensions, int3_p num_cells) {
     dimensions_ = dimensions;
 
     num_cells_ = uint3(num_cells);

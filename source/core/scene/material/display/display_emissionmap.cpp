@@ -11,7 +11,7 @@
 
 namespace scene::material::display {
 
-Emissionmap::Emissionmap(Sampler_settings const& sampler_settings, bool two_sided)
+Emissionmap::Emissionmap(Sampler_settings sampler_settings, bool two_sided)
     : light::Emissionmap(sampler_settings, two_sided) {}
 
 material::Sample const& Emissionmap::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,

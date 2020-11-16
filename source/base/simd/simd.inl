@@ -1,7 +1,6 @@
 #ifndef SU_BASE_SIMD_SIMD_INL
 #define SU_BASE_SIMD_SIMD_INL
 
-#include "math/vector3.hpp"
 #include "simd.hpp"
 #include "simd_const.hpp"
 

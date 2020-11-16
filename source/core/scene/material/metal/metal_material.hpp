@@ -7,7 +7,7 @@ namespace scene::material::metal {
 
 class Material_isotropic : public Material {
   public:
-    Material_isotropic(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_isotropic(Sampler_settings sampler_settings, bool two_sided);
 
     void commit(Threads& threads, Scene const& scene) final;
 
@@ -33,7 +33,7 @@ class Material_isotropic : public Material {
 
 class Material_anisotropic : public Material {
   public:
-    Material_anisotropic(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_anisotropic(Sampler_settings sampler_settings, bool two_sided);
 
     void commit(Threads& threads, Scene const& scene) final;
 

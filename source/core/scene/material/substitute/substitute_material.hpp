@@ -7,7 +7,7 @@ namespace scene::material::substitute {
 
 class Material : public Material_base {
   public:
-    Material(Sampler_settings const& sampler_settings, bool two_sided);
+    Material(Sampler_settings sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
@@ -17,7 +17,7 @@ class Material : public Material_base {
 
 class Checkers : public Material_base {
   public:
-    Checkers(Sampler_settings const& sampler_settings, bool two_sided);
+    Checkers(Sampler_settings sampler_settings, bool two_sided);
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;

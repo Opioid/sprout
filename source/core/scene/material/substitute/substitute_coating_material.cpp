@@ -9,7 +9,7 @@
 
 namespace scene::material::substitute {
 
-Material_clearcoat::Material_clearcoat(Sampler_settings const& sampler_settings, bool two_sided)
+Material_clearcoat::Material_clearcoat(Sampler_settings sampler_settings, bool two_sided)
     : Material_coating<Clearcoat_data>(sampler_settings, two_sided) {}
 
 float3 Material_clearcoat::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
@@ -92,7 +92,7 @@ size_t Material_clearcoat::sample_size() {
     return sizeof(Sample_clearcoat);
 }
 
-Material_thinfilm::Material_thinfilm(Sampler_settings const& sampler_settings, bool two_sided)
+Material_thinfilm::Material_thinfilm(Sampler_settings sampler_settings, bool two_sided)
     : Material_coating<Thinfilm_data>(sampler_settings, two_sided) {}
 
 material::Sample const& Material_thinfilm::sample(float3_p           wo, Ray const& /*ray*/,

@@ -11,7 +11,7 @@ namespace scene::material::volumetric {
 
 class Grid : public Material {
   public:
-    Grid(Sampler_settings const& sampler_settings, Texture_adapter const& density);
+    Grid(Sampler_settings sampler_settings, Texture_adapter const& density);
 
     ~Grid() override;
 
@@ -39,7 +39,7 @@ class Grid : public Material {
 
 class Grid_emission : public Grid {
   public:
-    Grid_emission(Sampler_settings const& sampler_settings, Texture_adapter const& grid);
+    Grid_emission(Sampler_settings sampler_settings, Texture_adapter const& grid);
 
     ~Grid_emission() override;
 
@@ -79,7 +79,7 @@ class Grid_emission : public Grid {
 
 class Grid_color : public Material {
   public:
-    Grid_color(Sampler_settings const& sampler_settings);
+    Grid_color(Sampler_settings sampler_settings);
 
     ~Grid_color() override;
 

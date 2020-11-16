@@ -7,7 +7,7 @@ namespace scene::material::substitute {
 
 class Material_base : public material::Material {
   public:
-    Material_base(Sampler_settings const& sampler_settings, bool two_sided);
+    Material_base(Sampler_settings sampler_settings, bool two_sided);
 
     void commit(Threads& threads, Scene const& scene) override;
 

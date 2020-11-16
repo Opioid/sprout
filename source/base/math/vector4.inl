@@ -23,7 +23,7 @@ template <typename T>
 constexpr Vector4<T>::Vector4(Vector3<T> const& xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
 
 template <typename T>
-constexpr Vector4<T>::Vector4(Vector4f_a const& a) : v{T(a[0]), T(a[1]), T(a[2]), T(a[3])} {}
+constexpr Vector4<T>::Vector4(Vector4f_a_p a) : v{T(a[0]), T(a[1]), T(a[2]), T(a[3])} {}
 
 template <typename T>
 constexpr Vector2<T> Vector4<T>::xy() const {
@@ -110,8 +110,7 @@ inline constexpr Vector4f_a::Vector4f_a(float s) : v{s, s, s, s} {}
 inline constexpr Vector4f_a::Vector4f_a(Vector2<float> const xy, float z, float w)
     : v{xy[0], xy[1], z, w} {}
 
-inline constexpr Vector4f_a::Vector4f_a(Vector3f_a const& xyz, float w)
-    : v{xyz[0], xyz[1], xyz[2], w} {}
+inline constexpr Vector4f_a::Vector4f_a(Vector3f_a_p xyz, float w) : v{xyz[0], xyz[1], xyz[2], w} {}
 
 inline constexpr Vector4f_a::Vector4f_a(Vector3<float> const& xyz, float w)
     : v{xyz[0], xyz[1], xyz[2], w} {}
@@ -142,32 +141,32 @@ inline float constexpr& Vector4f_a::operator[](uint32_t i) {
     return v[i];
 }
 
-static inline Vector4f_a constexpr operator+(Vector4f_a const& a, float s) {
+static inline Vector4f_a constexpr operator+(Vector4f_a_p a, float s) {
     return Vector4f_a(a[0] + s, a[1] + s, a[2] + s, a[3] + s);
 }
 
-static inline constexpr Vector4f_a operator+(Vector4f_a const& a, Vector4f_a const& b) {
+static inline constexpr Vector4f_a operator+(Vector4f_a_p a, Vector4f_a_p b) {
     return Vector4f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
-static inline constexpr Vector4f_a operator-(Vector4f_a const& a, Vector4f_a const& b) {
+static inline constexpr Vector4f_a operator-(Vector4f_a_p a, Vector4f_a_p b) {
     return Vector4f_a(a[0] - b[0], a[1] - b[1], a[2] - b[2], a[3] - b[3]);
 }
 
-static inline constexpr Vector4f_a operator*(Vector4f_a const& a, Vector4f_a const& b) {
+static inline constexpr Vector4f_a operator*(Vector4f_a_p a, Vector4f_a_p b) {
     return Vector4f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]);
 }
 
-static inline constexpr Vector4f_a operator/(Vector4f_a const& a, float s) {
+static inline constexpr Vector4f_a operator/(Vector4f_a_p a, float s) {
     float const is = 1.f / s;
     return Vector4f_a(is * a[0], is * a[1], is * a[2], is * a[3]);
 }
 
-static inline Vector4f_a constexpr operator-(Vector4f_a const& v) {
+static inline Vector4f_a constexpr operator-(Vector4f_a_p v) {
     return Vector4f_a(-v[0], -v[1], -v[2], -v[3]);
 }
 
-static inline constexpr Vector4f_a& operator+=(Vector4f_a& a, Vector4f_a const& b) {
+static inline constexpr Vector4f_a& operator+=(Vector4f_a& a, Vector4f_a_p b) {
     a[0] += b[0];
     a[1] += b[1];
     a[2] += b[2];
@@ -175,7 +174,7 @@ static inline constexpr Vector4f_a& operator+=(Vector4f_a& a, Vector4f_a const& 
     return a;
 }
 
-static inline constexpr Vector4f_a& operator-=(Vector4f_a& a, Vector4f_a const& b) {
+static inline constexpr Vector4f_a& operator-=(Vector4f_a& a, Vector4f_a_p b) {
     a[0] -= b[0];
     a[1] -= b[1];
     a[2] -= b[2];
@@ -183,45 +182,45 @@ static inline constexpr Vector4f_a& operator-=(Vector4f_a& a, Vector4f_a const& 
     return a;
 }
 
-static inline constexpr bool operator==(Vector4f_a const& a, Vector4f_a const& b) {
+static inline constexpr bool operator==(Vector4f_a_p a, Vector4f_a_p b) {
     return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
 }
 
-static inline constexpr bool operator!=(Vector4f_a const& a, Vector4f_a const& b) {
+static inline constexpr bool operator!=(Vector4f_a_p a, Vector4f_a_p b) {
     return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
-static inline constexpr Vector4f_a operator*(float s, Vector4f_a const& a) {
+static inline constexpr Vector4f_a operator*(float s, Vector4f_a_p a) {
     return Vector4f_a(s * a[0], s * a[1], s * a[2], s * a[3]);
 }
 
-static inline float constexpr dot(Vector4f_a const& a, Vector4f_a const& b) {
+static inline float constexpr dot(Vector4f_a_p a, Vector4f_a_p b) {
     return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 
-static inline Vector4f_a constexpr lerp(Vector4f_a const& a, Vector4f_a const& b, float t) {
+static inline Vector4f_a constexpr lerp(Vector4f_a_p a, Vector4f_a_p b, float t) {
     float const u = 1.f - t;
     return u * a + t * b;
 }
 
-static inline Vector4f_a constexpr min(Vector4f_a const& a, float s) {
+static inline Vector4f_a constexpr min(Vector4f_a_p a, float s) {
     return Vector4f_a(std::min(a[0], s), std::min(a[1], s), std::min(a[2], s), std::min(a[3], s));
 }
 
-static inline Vector4f_a constexpr min(Vector4f_a const& a, Vector4f_a const& b) {
+static inline Vector4f_a constexpr min(Vector4f_a_p a, Vector4f_a_p b) {
     return Vector4f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]),
                       std::min(a[3], b[3]));
 }
 
-static inline float constexpr average(Vector4f_a const& c) {
+static inline float constexpr average(Vector4f_a_p c) {
     return (c[0] + c[1] + c[2] + c[3]) / 4.f;
 }
 
-static inline bool all_finite(Vector4f_a const& v) {
+static inline bool all_finite(Vector4f_a_p v) {
     return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]) && std::isfinite(v[3]);
 }
 
-static inline bool all_finite_and_positive(Vector4f_a const& v) {
+static inline bool all_finite_and_positive(Vector4f_a_p v) {
     return std::isfinite(v[0]) && v[0] >= 0.f && std::isfinite(v[1]) && v[1] >= 0.f &&
            std::isfinite(v[2]) && v[2] >= 0.f && std::isfinite(v[2]) && v[3] >= 0.f;
 }

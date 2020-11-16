@@ -18,7 +18,7 @@
 
 namespace scene::material::substitute {
 
-Material_subsurface::Material_subsurface(Sampler_settings const& sampler_settings)
+Material_subsurface::Material_subsurface(Sampler_settings sampler_settings)
     : Material_base(sampler_settings, false) {
     properties_.set(Property::Caustic);
 }

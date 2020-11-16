@@ -440,8 +440,8 @@ inline Matrix4x4f_a::Matrix4x4f_a(float const* a)
 inline Matrix4x4f_a::Matrix4x4f_a(Matrix3x3f_a const& m)
     : r{Vector4f_a(m.r[0]), Vector4f_a(m.r[1]), Vector4f_a(m.r[2]), {0.f, 0.f, 0.f, 1.f}} {}
 
-static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a const& scale,
-                                   Vector3f_a const& origin) {
+static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a_p scale,
+                                   Vector3f_a_p origin) {
     return Matrix4x4f_a(basis.r[0][0] * scale[0], basis.r[0][1] * scale[0],
                         basis.r[0][2] * scale[0], 0.f, basis.r[1][0] * scale[1],
                         basis.r[1][1] * scale[1], basis.r[1][2] * scale[1], 0.f,
@@ -449,8 +449,8 @@ static inline Matrix4x4f_a compose(Matrix3x3f_a const& basis, Vector3f_a const& 
                         basis.r[2][2] * scale[2], 0.f, origin[0], origin[1], origin[2], 1.f);
 }
 
-static inline Matrix4x4f_a compose(Matrix4x4f_a const& basis, Vector3f_a const& scale,
-                                   Vector3f_a const& origin) {
+static inline Matrix4x4f_a compose(Matrix4x4f_a const& basis, Vector3f_a_p scale,
+                                   Vector3f_a_p origin) {
     return Matrix4x4f_a(basis.r[0][0] * scale[0], basis.r[0][1] * scale[0],
                         basis.r[0][2] * scale[0], 0.f, basis.r[1][0] * scale[1],
                         basis.r[1][1] * scale[1], basis.r[1][2] * scale[1], 0.f,
@@ -524,19 +524,19 @@ static inline Matrix4x4f_a operator*(Matrix4x4f_a const& a, Matrix4x4f_a const& 
                             (a.r[3][2] * b.r[2][3] + a.r[3][3] * b.r[3][3]));
 }
 
-static inline Vector3f_a transform_vector(Matrix4x4f_a const& m, Vector3f_a const& v) {
+static inline Vector3f_a transform_vector(Matrix4x4f_a const& m, Vector3f_a_p v) {
     return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
                       v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
                       v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector_transposed(Matrix4x4f_a const& m, Vector3f_a const& v) {
+static inline Vector3f_a transform_vector_transposed(Matrix4x4f_a const& m, Vector3f_a_p v) {
     return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
                       v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
                       v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_point(Matrix4x4f_a const& m, Vector3f_a const& v) {
+static inline Vector3f_a transform_point(Matrix4x4f_a const& m, Vector3f_a_p v) {
     return Vector3f_a((v[0] * m.r[0][0] + v[1] * m.r[1][0]) + (v[2] * m.r[2][0] + m.r[3][0]),
                       (v[0] * m.r[0][1] + v[1] * m.r[1][1]) + (v[2] * m.r[2][1] + m.r[3][1]),
                       (v[0] * m.r[0][2] + v[1] * m.r[1][2]) + (v[2] * m.r[2][2] + m.r[3][2]));
@@ -608,7 +608,7 @@ static inline Matrix4x4f_a affine_inverted(Matrix4x4f_a const& m) {
     return o;
 }
 
-static inline void set_translation(Matrix4x4f_a& m, Vector3f_a const& v) {
+static inline void set_translation(Matrix4x4f_a& m, Vector3f_a_p v) {
     m.r[0][0] = 1.f;
     m.r[0][1] = 0.f;
     m.r[0][2] = 0.f;
@@ -671,7 +671,7 @@ static inline void set_rotation_y(Matrix4x4f_a& m, float a) {
     m.r[3][3] = 1.f;
 }
 
-static inline void set_view(Matrix4x4f_a& m, Matrix3x3f_a const& basis, Vector3f_a const& eye) {
+static inline void set_view(Matrix4x4f_a& m, Matrix3x3f_a const& basis, Vector3f_a_p eye) {
     m.r[0][0] = basis.r[0][0];
     m.r[0][1] = basis.r[1][0];
     m.r[0][2] = basis.r[2][0];
@@ -733,7 +733,7 @@ inline Simd4x4f::Simd4x4f(Matrix4x4f_a const& source)
     : r{Simd3f(source.r[0].v), Simd3f(source.r[1].v), Simd3f(source.r[2].v),
         Simd3f(source.r[3].v)} {}
 
-static inline Simd3f transform_vector(Simd4x4f const& m, Simd3f const& v) {
+static inline Simd3f transform_vector(Simd4x4f const& m, Simd3f_p v) {
     __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
     result        = _mm_mul_ps(result, m.r[0].v);
     __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
@@ -745,7 +745,7 @@ static inline Simd3f transform_vector(Simd4x4f const& m, Simd3f const& v) {
     return result;
 }
 
-static inline Simd3f transform_point(Simd4x4f const& m, Simd3f const& v) {
+static inline Simd3f transform_point(Simd4x4f const& m, Simd3f_p v) {
     __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
     result        = _mm_mul_ps(result, m.r[0].v);
     __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));

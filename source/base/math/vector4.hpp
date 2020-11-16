@@ -3,12 +3,7 @@
 
 #include "vector.hpp"
 
-#include <cstdint>
-
 namespace math {
-
-struct Vector4f_a;
-struct Vector4i_a;
 
 //==============================================================================
 // Generic 4D vector
@@ -28,7 +23,7 @@ struct Vector4 {
 
     explicit constexpr Vector4(Vector3<T> const& xyz, T w = T(1));
 
-    explicit constexpr Vector4(Vector4f_a const& a);
+    explicit constexpr Vector4(Vector4f_a_p a);
 
     constexpr Vector2<T> xy() const;
     constexpr Vector3<T> xyz() const;
@@ -62,7 +57,7 @@ struct alignas(16) Vector4f_a {
 
     explicit constexpr Vector4f_a(Vector2<float> const xy, float z, float w = 1.f);
 
-    explicit constexpr Vector4f_a(Vector3f_a const& xyz, float w = 1.f);
+    explicit constexpr Vector4f_a(Vector3f_a_p xyz, float w = 1.f);
 
     explicit constexpr Vector4f_a(Vector3<float> const& xyz, float w = 1.f);
 
