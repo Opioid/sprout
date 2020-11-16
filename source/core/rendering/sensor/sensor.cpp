@@ -4,7 +4,7 @@
 #include "image/typed_image.hpp"
 #include "memory/buffer.hpp"
 
-#include "image/encoding/png/png_writer.hpp"
+// #include "image/encoding/png/png_writer.hpp"
 
 namespace rendering::sensor {
 
@@ -181,20 +181,20 @@ void Sensor::normalize_variance_estimate(Threads& threads) {
     variance_start_ = filtered ? area : 0;
     max_variance_   = max_variance;
 
-    float const* source = variance_ + (filtered ? area : 0);
+//    float const* source = variance_ + (filtered ? area : 0);
 
-    float* destination = variance_;
+//    float* destination = variance_;
 
-    threads.run_range(
-        [source, destination, max_variance](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-            for (int32_t i = begin; i < end; ++i) {
-                float const nv = source[i] / max_variance;
-                destination[i] = nv * nv;
-            }
-        },
-        0, area);
+//    threads.run_range(
+//        [source, destination, max_variance](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+//            for (int32_t i = begin; i < end; ++i) {
+//                float const nv = source[i] / max_variance;
+//                destination[i] = nv * nv;
+//            }
+//        },
+//        0, area);
 
-    image::encoding::png::Writer::write_heatmap("variance.png", variance_, dimensions_, threads);
+//    image::encoding::png::Writer::write_heatmap("variance.png", variance_, dimensions_, threads);
 }
 
 int32_t Sensor::filter_radius_int() const {
