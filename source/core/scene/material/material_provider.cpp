@@ -39,8 +39,6 @@
 #include "volumetric/volumetric_grid.hpp"
 #include "volumetric/volumetric_homogeneous.hpp"
 
-// #define FROZEN 1
-
 namespace scene::material {
 
 using Texture             = image::texture::Texture;
@@ -957,52 +955,6 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
 
         return material;
     }
-
-#ifdef FROZEN
-    if (!emission_map.is_valid()) {
-        Texture_description texture_description;
-        texture_description.scale = 1.f;
-
-        //        memory::Variant_map options;
-        //        options.set("usage", Texture_usage::Normal);
-
-        //        texture_description.filename = "textures/snow_noise.png";
-        //        options.set("usage", Texture_usage::Normal);
-        //        Texture_adapter snow_normal_map = create_texture(texture_description, options,
-        //        resources);
-
-        memory::Variant_map options;
-        options.set("size", 0.01f);
-        options.set("density", 0.001f);
-
-        texture_description.filename = "proc:flakes";
-        options.set("usage", Texture_usage::Normal);
-        Texture_adapter snow_normal_map = create_texture(texture_description, options, resources);
-
-        texture_description.filename = "proc:flakes_mask";
-        options.set("usage", Texture_usage::Mask);
-        Texture_adapter snow_mask = create_texture(texture_description, options, resources);
-
-        auto material = new substitute::Frozen(sampler_settings, two_sided);
-
-        material->set_mask(mask);
-        material->set_color_map(color_map);
-        material->set_normal_map(normal_map);
-        material->set_surface_map(surface_map);
-        material->set_emission_map(emission_map);
-
-        material->set_color(color);
-        material->set_ior(ior);
-        material->set_roughness(roughness);
-        material->set_metallic(metallic);
-        material->set_emission_factor(emission_factor);
-
-        material->set_snow_normal_map(snow_normal_map);
-        material->set_snow_mask(snow_mask);
-
-        return material;
-    }
-#endif
 
     if (checkers_scale > 0.f) {
         auto material = new substitute::Checkers(sampler_settings, two_sided);
