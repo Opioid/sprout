@@ -78,10 +78,8 @@ uint32_t Sensor::num_samples_to_estimate(uint32_t max_samples) {
 uint32_t Sensor::num_samples_by_estimate(int2 pixel, uint32_t max_samples) const {
     pixel = clamp(pixel, 0, dimensions_ - 1);
 
-    return num_samples_by_estimate(dimensions_[0] * pixel[1] + pixel[0], max_samples);
-}
+    int32_t const id = dimensions_[0] * pixel[1] + pixel[0];
 
-uint32_t Sensor::num_samples_by_estimate(int32_t id, uint32_t max_samples) const {
     int32_t const i = variance_start_ + id;
 
     float const nv = variance_[i] / max_variance_;
