@@ -4,15 +4,7 @@
 #include "matrix3x3.inl"
 #include "quaternion.hpp"
 
-namespace math {
-
-/****************************************************************************
- *
- * Aligned quaternion functions
- *
- ****************************************************************************/
-
-namespace quaternion {
+namespace math::quaternion {
 
 // Converting a Rotation Matrix to a Quaternion
 // https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
@@ -44,7 +36,7 @@ static inline Quaternion create(float3x3 const& m) {
 
 // https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
-static inline float3x3 create_matrix3x3(Quaternion const& q) {
+static inline float3x3 create_matrix3x3(Quaternion_p q) {
     float const x  = q[0];
     float const y  = q[1];
     float const z  = q[2];
@@ -81,14 +73,14 @@ static inline Quaternion create_rotation_z(float a) {
     return Quaternion(0.f, 0.f, std::sin(a * 0.5f), std::cos(a * 0.5f));
 }
 
-static inline Quaternion mul(Quaternion const& a, Quaternion const& b) {
+static inline Quaternion mul(Quaternion_p a, Quaternion_p b) {
     return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
                       (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
                       (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
                       (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
-static inline Quaternion slerp(Quaternion const& a, Quaternion const& b, float t) {
+static inline Quaternion slerp(Quaternion_p a, Quaternion_p b, float t) {
     // calc cosine theta
     float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 
@@ -112,8 +104,9 @@ static inline Quaternion slerp(Quaternion const& a, Quaternion const& b, float t
         // Standard case (slerp)
         float const omega = std::acos(cosom);  // extract theta from dot product's cos theta
         float const sinom = std::sin(omega);
-        sclp              = std::sin((1.f - t) * omega) / sinom;
-        sclq              = std::sin(t * omega) / sinom;
+
+        sclp = std::sin((1.f - t) * omega) / sinom;
+        sclq = std::sin(t * omega) / sinom;
     } else {
         // Very close, do linear interpolation (because it's faster)
         sclp = 1.f - t;
@@ -128,7 +121,6 @@ static inline constexpr Quaternion identity() {
     return Quaternion(0.f, 0.f, 0.f, 1.f);
 }
 
-}  // namespace quaternion
-}  // namespace math
+}  // namespace math::quaternion
 
 #endif

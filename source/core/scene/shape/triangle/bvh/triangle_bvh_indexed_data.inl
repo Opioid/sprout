@@ -47,9 +47,8 @@ inline bool Indexed_data::intersect_p(uint32_t index, ray const& ray) const {
     return triangle::intersect_p(a, b, c, ray);
 }
 
-inline bool Indexed_data::intersect(Simd3f const& origin, Simd3f const& direction,
-                                    scalar const& min_t, scalar& max_t, uint32_t index, scalar& u,
-                                    scalar& v) const {
+inline bool Indexed_data::intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t,
+                                    scalar& max_t, uint32_t index, scalar& u, scalar& v) const {
     auto const tri = triangles_[index];
 
     float const* a = positions_[tri.a].v;
@@ -59,8 +58,8 @@ inline bool Indexed_data::intersect(Simd3f const& origin, Simd3f const& directio
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
 
-inline bool Indexed_data::intersect(Simd3f const& origin, Simd3f const& direction,
-                                    scalar const& min_t, scalar& max_t, uint32_t index) const {
+inline bool Indexed_data::intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t,
+                                    scalar& max_t, uint32_t index) const {
     auto const tri = triangles_[index];
 
     float const* a = positions_[tri.a].v;
@@ -70,9 +69,8 @@ inline bool Indexed_data::intersect(Simd3f const& origin, Simd3f const& directio
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
 }
 
-inline bool Indexed_data::intersect_p(Simd3f const& origin, Simd3f const& direction,
-                                      scalar const& min_t, scalar const& max_t,
-                                      uint32_t index) const {
+inline bool Indexed_data::intersect_p(Simd3f_p origin, Simd3f_p direction, scalar_p min_t,
+                                      scalar_p max_t, uint32_t index) const {
     auto const tri = triangles_[index];
 
     float const* a = positions_[tri.a].v;
@@ -94,7 +92,7 @@ inline float3 Indexed_data::interpolate_p(float2 uv, uint32_t index) const {
     return p;
 }
 
-inline Simd3f Indexed_data::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const {
+inline Simd3f Indexed_data::interpolate_p(Simd3f_p u, Simd3f_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
     Simd3f const ap(positions_[tri.a].v);
@@ -104,8 +102,8 @@ inline Simd3f Indexed_data::interpolate_p(Simd3f const& u, Simd3f const& v, uint
     return triangle::interpolate_p(ap, bp, cp, u, v);
 }
 
-inline void Indexed_data::interpolate_data(Simd3f const& u, Simd3f const& v, uint32_t index,
-                                           Simd3f& n, Simd3f& t, float2& tc) const {
+inline void Indexed_data::interpolate_data(Simd3f_p u, Simd3f_p v, uint32_t index, Simd3f& n,
+                                           Simd3f& t, float2& tc) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -115,7 +113,7 @@ inline void Indexed_data::interpolate_data(Simd3f const& u, Simd3f const& v, uin
     triangle::interpolate_data(u, v, a, b, c, n, t, tc);
 }
 
-inline Simd3f Indexed_data::interpolate_shading_normal(Simd3f const& u, Simd3f const& v,
+inline Simd3f Indexed_data::interpolate_shading_normal(Simd3f_p u, Simd3f_p v,
                                                        uint32_t index) const {
     auto const tri = triangles_[index];
 
@@ -136,7 +134,7 @@ inline float2 Indexed_data::interpolate_uv(uint32_t index, float2 uv) const {
     return triangle::interpolate_uv(a, b, c, uv);
 }
 
-inline float2 Indexed_data::interpolate_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const {
+inline float2 Indexed_data::interpolate_uv(Simd3f_p u, Simd3f_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];

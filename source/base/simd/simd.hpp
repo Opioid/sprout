@@ -7,12 +7,6 @@
 #include <x86intrin.h>
 #endif
 
-/****************************************************************************
- *
- * Conditional intrinsics
- *
- ****************************************************************************/
-
 #if defined(_SU_NO_MOVNT_)
 #define XM_STREAM_PS(p, a) _mm_store_ps(p, a)
 #else

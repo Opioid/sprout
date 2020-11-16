@@ -43,8 +43,7 @@ class alignas(32) Node {
 
     void offset(uint32_t offset);
 
-    bool intersect_p(Simd3f const& origin, Simd3f const& inv_direction, scalar const& min_t,
-                     scalar const& max_t) const;
+    bool intersect_p(Simd3f_p origin, Simd3f_p inv_direction, scalar_p min_t, scalar_p max_t) const;
 
   private:
     struct alignas(16) Min {

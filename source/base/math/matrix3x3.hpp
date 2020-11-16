@@ -106,7 +106,7 @@ struct alignas(16) Matrix3x3f_a {
     constexpr Matrix3x3f_a(float m00, float m01, float m02, float m10, float m11, float m12,
                            float m20, float m21, float m22);
 
-    explicit constexpr Matrix3x3f_a(Vector3f_a const& x, Vector3f_a const& y, Vector3f_a const& z);
+    explicit constexpr Matrix3x3f_a(Vector3f_a_p x, Vector3f_a_p y, Vector3f_a_p z);
 
     static Matrix3x3f_a constexpr identity();
 };

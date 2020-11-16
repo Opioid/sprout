@@ -12,7 +12,7 @@ inline AABB::AABB() = default;
 
 inline constexpr AABB::AABB(float3_p min, float3_p max) : bounds{min, max} {}
 
-inline AABB::AABB(Simd3f const& min, Simd3f const& max) : bounds{float3(min), float3(max)} {}
+inline AABB::AABB(Simd3f_p min, Simd3f_p max) : bounds{float3(min), float3(max)} {}
 
 inline float3 AABB::min() const {
     return bounds[0];
@@ -240,7 +240,7 @@ inline void AABB::set_min_max(float3_p min, float3_p max) {
     bounds[1] = max;
 }
 
-inline void AABB::set_min_max(Simd3f const& min, Simd3f const& max) {
+inline void AABB::set_min_max(Simd3f_p min, Simd3f_p max) {
     bounds[0] = float3(min);
     bounds[1] = float3(max);
 }
@@ -363,14 +363,14 @@ inline Simd_AABB::Simd_AABB(AABB const& box) : min(Simd3f(box.min().v)), max(Sim
 inline Simd_AABB::Simd_AABB(float const* min, float const* max)
     : min(Simd3f::create_from_3(min)), max(Simd3f::create_from_3(max)) {}
 
-inline Simd_AABB::Simd_AABB(Simd3f const& min, Simd3f const& max) : min(min), max(max) {}
+inline Simd_AABB::Simd_AABB(Simd3f_p min, Simd3f_p max) : min(min), max(max) {}
 
 inline void Simd_AABB::merge_assign(Simd_AABB const& other) {
     min = math::min(min, other.min);
     max = math::max(max, other.max);
 }
 
-inline void Simd_AABB::merge_assign(Simd3f const& other_min, Simd3f const& other_max) {
+inline void Simd_AABB::merge_assign(Simd3f_p other_min, Simd3f_p other_max) {
     min = math::min(min, other_min);
     max = math::max(max, other_max);
 }

@@ -4,11 +4,7 @@
 #include "simd/simd.hpp"
 #include "vector.hpp"
 
-#include <cstdint>
-
 namespace math {
-
-struct Vector3f_a;
 
 //==============================================================================
 // Generic 3D vector
@@ -28,7 +24,7 @@ struct Vector3 {
 
     explicit constexpr Vector3(T const* a);
 
-    explicit constexpr Vector3(Vector3f_a const& a);
+    explicit constexpr Vector3(Vector3f_a_p a);
 
     template <typename U>
     explicit constexpr Vector3(Vector3<U> const& a);
@@ -95,6 +91,7 @@ struct Vector3_a {
 };
 
 struct Simd3f;
+using Simd3f_p = Simd3f;
 
 struct alignas(16) Vector3f_a {
     float v[4];
@@ -114,7 +111,7 @@ struct alignas(16) Vector3f_a {
     template <typename T>
     explicit constexpr Vector3f_a(Vector3<T> const& a);
 
-    explicit Vector3f_a(Simd3f const& o);
+    explicit Vector3f_a(Simd3f_p o);
 
     constexpr Vector2<float> xy() const;
 
@@ -141,7 +138,7 @@ struct Simd3f {
 
     explicit Simd3f(float const* a);
 
-    explicit Simd3f(Vector3f_a const& o);
+    explicit Simd3f(Vector3f_a_p o);
 
     static Simd3f create_from_3(float const* f);
 

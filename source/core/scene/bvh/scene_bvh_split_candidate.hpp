@@ -12,7 +12,7 @@ namespace scene::bvh {
 struct Reference {
     uint32_t primitive() const;
 
-    void set(Simd3f const& min, Simd3f const& max, uint32_t primitive);
+    void set(Simd3f_p min, Simd3f_p max, uint32_t primitive);
 
     Reference clipped_min(float d, uint8_t axis) const;
     Reference clipped_max(float d, uint8_t axis) const;

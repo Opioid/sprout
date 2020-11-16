@@ -47,7 +47,7 @@ uint32_t Tree::num_triangles() const {
     return data_.num_triangles();
 }
 
-bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
+bool Tree::intersect(Simd3f_p ray_origin, Simd3f_p ray_direction, scalar_p ray_min_t,
                      scalar& ray_max_t, Node_stack& nodes, Intersection& isec) const {
     Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
@@ -101,7 +101,7 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
     return false;
 }
 
-bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scalar const& ray_min_t,
+bool Tree::intersect(Simd3f_p ray_origin, Simd3f_p ray_direction, scalar_p ray_min_t,
                      scalar& ray_max_t, Node_stack& nodes) const {
     Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
@@ -149,8 +149,8 @@ bool Tree::intersect(Simd3f const& ray_origin, Simd3f const& ray_direction, scal
     return false;
 }
 
-bool Tree::intersect_p(Simd3f const& ray_origin, Simd3f const& ray_direction,
-                       scalar const& ray_min_t, scalar const& ray_max_t, Node_stack& nodes) const {
+bool Tree::intersect_p(Simd3f_p ray_origin, Simd3f_p ray_direction, scalar_p ray_min_t,
+                       scalar_p ray_max_t, Node_stack& nodes) const {
     Simd3f const ray_inv_direction = reciprocal(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
@@ -329,20 +329,20 @@ float3 Tree::interpolate_p(float2 uv, uint32_t index) const {
     return data_.interpolate_p(uv, index);
 }
 
-Simd3f Tree::interpolate_p(Simd3f const& u, Simd3f const& v, uint32_t index) const {
+Simd3f Tree::interpolate_p(Simd3f_p u, Simd3f_p v, uint32_t index) const {
     return data_.interpolate_p(u, v, index);
 }
 
-void Tree::interpolate_triangle_data(Simd3f const& u, Simd3f const& v, uint32_t index, Simd3f& n,
-                                     Simd3f& t, float2& tc) const {
+void Tree::interpolate_triangle_data(Simd3f_p u, Simd3f_p v, uint32_t index, Simd3f& n, Simd3f& t,
+                                     float2& tc) const {
     data_.interpolate_data(u, v, index, n, t, tc);
 }
 
-Simd3f Tree::interpolate_shading_normal(Simd3f const& u, Simd3f const& v, uint32_t index) const {
+Simd3f Tree::interpolate_shading_normal(Simd3f_p u, Simd3f_p v, uint32_t index) const {
     return data_.interpolate_shading_normal(u, v, index);
 }
 
-float2 Tree::interpolate_triangle_uv(Simd3f const& u, Simd3f const& v, uint32_t index) const {
+float2 Tree::interpolate_triangle_uv(Simd3f_p u, Simd3f_p v, uint32_t index) const {
     return data_.interpolate_uv(u, v, index);
 }
 
