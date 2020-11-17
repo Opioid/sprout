@@ -148,24 +148,8 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& isec, Filter filter, Wor
         return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
     }
 
-    if (material.is_textured_volume()) {
-        auto const mu = material.collision_coefficients(interface->uv, filter, worker);
-
-        float3 w;
-        Event  event = Event::Pass;
-
-        if (float t; Tracking::tracking(ray, mu, rng, t, w)) {
-            set_scattering(isec, interface, ray.point(t));
-            event = Event::Scatter;
-        }
-
-        li = float3(0.f);
-        tr = w;
-        return event;
-    }
     float3 w;
-
-    Event event = Event::Pass;
+    Event  event = Event::Pass;
 
     if (material.is_emissive()) {
         auto const cce = material.collision_coefficients_emission();
@@ -186,7 +170,9 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& isec, Filter filter, Wor
         return any_greater_equal(w, Tracking::Abort_epsilon) ? event : Event::Abort;
     }
 
-    auto const mu = material.collision_coefficients();
+    auto const mu = material.is_textured_volume()
+                        ? material.collision_coefficients(interface->uv, filter, worker)
+                        : material.collision_coefficients();
 
     if (float t; Tracking::tracking(ray, mu, rng, t, w)) {
         set_scattering(isec, interface, ray.point(t));

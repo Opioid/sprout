@@ -24,11 +24,15 @@ class Sensor {
     using Camera_sample_to = sampler::Camera_sample_to;
     using AOV              = rendering::sensor::aov::Property;
 
-    Sensor(int32_t filter_radius);
+    Sensor(int32_t filter_radius, bool transparency);
 
     virtual ~Sensor();
 
     int2 dimensions() const;
+
+    int32_t filter_radius_int() const;
+
+    bool alpha_transparency() const;
 
     void resolve(Threads& threads, image::Float4& target) const;
 
@@ -37,8 +41,6 @@ class Sensor {
     void resolve(uint32_t slot, AOV property, Threads& threads, image::Float4& target) const;
 
     void resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs);
-
-    int32_t filter_radius_int() const;
 
     int4 isolated_tile(int4_p tile) const;
 
@@ -55,8 +57,6 @@ class Sensor {
 
     virtual void splat_sample(Camera_sample_to const& sample, float4_p color, int2 offset,
                               int4_p bounds) = 0;
-
-    virtual bool has_alpha_transparency() const = 0;
 
   protected:
     virtual void add_pixel(int2 pixel, float4_p color, float weight) = 0;
@@ -86,7 +86,9 @@ class Sensor {
 
     int32_t const filter_radius_;
 
-    int32_t num_layers_;
+    bool const transparency_;
+
+    int16_t num_layers_;
 
     aov::Buffer aov_;
 };

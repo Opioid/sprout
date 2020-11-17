@@ -5,7 +5,8 @@
 
 namespace rendering::sensor {
 
-Opaque::Opaque(int32_t filter_radius) : Sensor(filter_radius), layers_(nullptr), pixels_(nullptr) {}
+Opaque::Opaque(int32_t filter_radius)
+    : Sensor(filter_radius, false), layers_(nullptr), pixels_(nullptr) {}
 
 Opaque::~Opaque() {
     delete[] layers_;
@@ -29,10 +30,6 @@ void Opaque::fix_zero_weights() {
             pixels_[i][3] = 1.f;
         }
     }
-}
-
-bool Opaque::has_alpha_transparency() const {
-    return false;
 }
 
 void Opaque::add_pixel(int2 pixel, float4_p color, float weight) {

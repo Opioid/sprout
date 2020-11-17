@@ -12,6 +12,8 @@ namespace rnd {
 class Generator;
 }
 
+using RNG = rnd::Generator;
+
 namespace scene {
 
 namespace entity {

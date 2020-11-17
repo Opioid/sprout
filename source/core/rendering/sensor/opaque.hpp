@@ -17,8 +17,6 @@ class Opaque : public Sensor {
 
     void fix_zero_weights() final;
 
-    bool has_alpha_transparency() const final;
-
   protected:
     void add_pixel(int2 pixel, float4_p color, float weight) final;
 

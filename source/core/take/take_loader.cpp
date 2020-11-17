@@ -908,7 +908,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
             std::string const format = json::read_string(n.value, "format", "PNG");
 
-            bool const transparent_sensor = camera.sensor().has_alpha_transparency();
+            bool const transparent_sensor = camera.sensor().alpha_transparency();
 
             bool const alpha = view.pipeline.has_alpha_transparency(transparent_sensor);
 
