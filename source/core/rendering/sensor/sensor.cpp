@@ -8,9 +8,10 @@
 
 namespace rendering::sensor {
 
-Sensor::Sensor(int32_t filter_radius, bool adaptive)
+Sensor::Sensor(int32_t filter_radius, bool transparency, bool adaptive)
     : dimensions_(0),
       filter_radius_(filter_radius),
+      transparency_(transparency),
       adaptive_(adaptive),
       num_layers_(0),
       variance_(nullptr) {}
@@ -21,6 +22,18 @@ Sensor::~Sensor() {
 
 int2 Sensor::dimensions() const {
     return dimensions_;
+}
+
+int32_t Sensor::filter_radius_int() const {
+    return filter_radius_;
+}
+
+bool Sensor::alpha_transparency() const {
+    return transparency_;
+}
+
+bool Sensor::adaptive() const {
+    return adaptive_;
 }
 
 void Sensor::resolve(Threads& threads, image::Float4& target) const {
@@ -65,10 +78,6 @@ void Sensor::resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& 
     dimensions_ = dimensions;
 
     num_layers_ = num_layers;
-}
-
-bool Sensor::adaptive() const {
-    return adaptive_;
 }
 
 uint32_t Sensor::num_samples_to_estimate(uint32_t max_samples) {
@@ -181,24 +190,22 @@ void Sensor::normalize_variance_estimate(Threads& threads) {
     variance_start_ = filtered ? area : 0;
     max_variance_   = max_variance;
 
-//    float const* source = variance_ + (filtered ? area : 0);
+    //    float const* source = variance_ + (filtered ? area : 0);
 
-//    float* destination = variance_;
+    //    float* destination = variance_;
 
-//    threads.run_range(
-//        [source, destination, max_variance](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
-//            for (int32_t i = begin; i < end; ++i) {
-//                float const nv = source[i] / max_variance;
-//                destination[i] = nv * nv;
-//            }
-//        },
-//        0, area);
+    //    threads.run_range(
+    //        [source, destination, max_variance](uint32_t /*id*/, int32_t begin, int32_t end)
+    //        noexcept {
+    //            for (int32_t i = begin; i < end; ++i) {
+    //                float const nv = source[i] / max_variance;
+    //                destination[i] = nv * nv;
+    //            }
+    //        },
+    //        0, area);
 
-//    image::encoding::png::Writer::write_heatmap("variance.png", variance_, dimensions_, threads);
-}
-
-int32_t Sensor::filter_radius_int() const {
-    return filter_radius_;
+    //    image::encoding::png::Writer::write_heatmap("variance.png", variance_, dimensions_,
+    //    threads);
 }
 
 int4 Sensor::isolated_tile(int4_p tile) const {

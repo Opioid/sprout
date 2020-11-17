@@ -24,11 +24,17 @@ class Sensor {
     using Camera_sample_to = sampler::Camera_sample_to;
     using AOV              = rendering::sensor::aov::Property;
 
-    Sensor(int32_t filter_radius, bool adaptive);
+    Sensor(int32_t filter_radius, bool transparency, bool adaptive);
 
     virtual ~Sensor();
 
     int2 dimensions() const;
+
+    int32_t filter_radius_int() const;
+
+    bool alpha_transparency() const;
+
+    bool adaptive() const;
 
     void resolve(Threads& threads, image::Float4& target) const;
 
@@ -38,8 +44,6 @@ class Sensor {
 
     void resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs);
 
-    bool adaptive() const;
-
     static uint32_t num_samples_to_estimate(uint32_t max_samples);
 
     uint32_t num_samples_by_estimate(int2 pixel, uint32_t max_samples) const;
@@ -47,8 +51,6 @@ class Sensor {
     void set_variance_estimate(int2 pixel, float variance);
 
     void normalize_variance_estimate(Threads& threads);
-
-    int32_t filter_radius_int() const;
 
     int4 isolated_tile(int4_p tile) const;
 
@@ -65,8 +67,6 @@ class Sensor {
 
     virtual void splat_sample(Camera_sample_to const& sample, float4_p color, int2 offset,
                               int4_p bounds) = 0;
-
-    virtual bool has_alpha_transparency() const = 0;
 
   protected:
     virtual void add_pixel(int2 pixel, float4_p color, float weight) = 0;
@@ -96,6 +96,7 @@ class Sensor {
 
     int32_t const filter_radius_;
 
+    bool const transparency_;
     bool const adaptive_;
 
     int16_t num_layers_;

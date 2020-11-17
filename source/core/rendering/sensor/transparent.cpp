@@ -6,7 +6,7 @@
 namespace rendering::sensor {
 
 Transparent::Transparent(int32_t filter_radius, bool adaptive)
-    : Sensor(filter_radius, adaptive),
+    : Sensor(filter_radius, true, adaptive),
       layer_weights_(nullptr),
       pixel_weights_(nullptr),
       layers_(nullptr),
@@ -37,10 +37,6 @@ void Transparent::fix_zero_weights() {
             pixel_weights_[i] = 1.f;
         }
     }
-}
-
-bool Transparent::has_alpha_transparency() const {
-    return true;
 }
 
 void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
