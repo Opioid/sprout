@@ -133,7 +133,7 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4_p ti
     }
 }
 
-void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& tile,
+void Worker::render_track_variance(uint32_t frame, uint32_t view, int4_p tile,
                                    uint32_t num_samples) {
     Camera const& camera = *camera_;
 
@@ -216,12 +216,12 @@ void Worker::render_track_variance(uint32_t frame, uint32_t view, int4 const& ti
             float const variance = new_s / float(num_samples - 1);
             float const coeff    = std::sqrt(variance) / std::max(average, 0.025f);
 
-            sensor.set_variance_estimate(pixel, average > 0.f ? coeff : 0.f);
+            sensor.set_variance_estimate(pixel, average > 0.f ? 0.1f * std::ceil(10.f * coeff) : 0.f);
         }
     }
 }
 
-void Worker::render_use_variance(uint32_t frame, uint32_t view, int4 const& tile,
+void Worker::render_use_variance(uint32_t frame, uint32_t view, int4_p tile,
                                  uint32_t max_samples) {
     Camera const& camera = *camera_;
 

@@ -89,10 +89,9 @@ class alignas(64) Worker : public scene::Worker {
     void render(uint32_t frame, uint32_t view, uint32_t iteration, int4_p tile,
                 uint32_t num_samples);
 
-    void render_track_variance(uint32_t frame, uint32_t view, int4 const& tile,
-                               uint32_t max_samples);
+    void render_track_variance(uint32_t frame, uint32_t view, int4_p tile, uint32_t max_samples);
 
-    void render_use_variance(uint32_t frame, uint32_t view, int4 const& tile, uint32_t num_samples);
+    void render_use_variance(uint32_t frame, uint32_t view, int4_p tile, uint32_t num_samples);
 
     void particles(uint32_t frame, uint64_t offset, ulong2 const& range);
 
