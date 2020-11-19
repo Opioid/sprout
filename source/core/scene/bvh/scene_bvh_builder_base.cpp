@@ -268,7 +268,7 @@ Kernel::Task::~Task() {
 }
 
 Builder_base::Builder_base(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
-    : Kernel(num_slices, sweep_threshold, max_primitives) {}
+    : Kernel(num_slices, sweep_threshold, max_primitives, 0) {}
 
 Builder_base::~Builder_base() {}
 

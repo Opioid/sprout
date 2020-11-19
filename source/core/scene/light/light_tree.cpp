@@ -15,80 +15,6 @@
 
 namespace scene::light {
 
-void Build_node::count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits) {
-    if (0 == middle) {
-        if (depth < Tree::Max_split_depth) {
-            splits += num_lights;
-        } else {
-            ++splits;
-        }
-    } else {
-        if (depth == Tree::Max_split_depth - 1) {
-            splits += 2;
-        } else {
-            nodes[children_or_light].count_max_splits(depth + 1, nodes, splits);
-            nodes[children_or_light + 1].count_max_splits(depth + 1, nodes, splits);
-        }
-    }
-}
-
-class Traversal_stack {
-  public:
-    Traversal_stack() = default;
-
-    struct Node {
-        float pdf;
-        float random;
-
-        uint32_t node;
-        uint32_t depth;
-    };
-
-    bool empty() const {
-        return 0 == end_;
-    }
-
-    void push(Node const& value) {
-        SOFT_ASSERT(end_ < Stack_size);
-
-        stack_[end_++] = value;
-    }
-
-    Node pop() {
-        return stack_[--end_];
-    }
-
-  private:
-    static uint32_t constexpr Stack_size = (1 << (Tree::Max_split_depth - 1)) + 1;
-
-    uint32_t end_ = 0;
-
-    Node stack_[Stack_size];
-};
-
-// 0.08 ^ 4
-float Tree::splitting_threshold_ = 0.00004096f;
-
-void Tree::set_splitting_threshold(float st) {
-    splitting_threshold_ = pow4(st);
-}
-
-Tree::Tree()
-    : num_lights_(0),
-      num_infinite_lights_(0),
-      num_nodes_(0),
-      nodes_(nullptr),
-      light_orders_(nullptr),
-      light_mapping_(nullptr),
-      infinite_light_powers_(nullptr) {}
-
-Tree::~Tree() {
-    delete[] infinite_light_powers_;
-    delete[] light_mapping_;
-    delete[] light_orders_;
-    delete[] nodes_;
-}
-
 static inline float clamped_cos_sub(float cos_a, float cos_b, float sin_a, float sin_b) {
     float const angle = cos_a * cos_b + sin_a * sin_b;
     return (cos_a > cos_b) ? 1.f : angle;
@@ -218,19 +144,80 @@ static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light
     return importance(center, p0, p1, dir, cone, radius, power);
 }
 
-float Tree::Node::weight(float3_p p, float3_p n, bool total_sphere) const {
+struct Build_node {
+    void count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits) const;
+
+    AABB bounds;
+
+    float4 cone;
+
+    float power;
+    float variance;
+
+    uint32_t middle;
+    uint32_t children_or_light;
+    uint32_t num_lights;
+};
+
+void Build_node::count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits) const {
+    if (0 == middle) {
+        if (depth < Tree::Max_split_depth) {
+            splits += num_lights;
+        } else {
+            ++splits;
+        }
+    } else {
+        if (depth == Tree::Max_split_depth - 1) {
+            splits += 2;
+        } else {
+            nodes[children_or_light].count_max_splits(depth + 1, nodes, splits);
+            nodes[children_or_light + 1].count_max_splits(depth + 1, nodes, splits);
+        }
+    }
+}
+
+struct Node {
+    float weight(float3_p p, float3_p n, bool total_sphere) const;
+
+    float weight(float3_p p0, float3_p p1, float3_p dir) const;
+
+    bool split(float3_p p) const;
+
+    bool split(float3_p p0, float3_p dir) const;
+
+    Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                            uint32_t const* const light_mapping, Scene const& scene) const;
+
+    Light_pick random_light(float3_p p0, float3_p p1, float3_p dir, float random,
+                            uint32_t const* const light_mapping, Scene const& scene) const;
+
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
+              uint32_t const* const light_mapping, Scene const& scene) const;
+
+    float4 center;
+    float4 cone;
+
+    float power;
+    float variance;
+
+    uint32_t middle;
+    uint32_t children_or_light;
+    uint32_t num_lights;
+};
+
+float Node::weight(float3_p p, float3_p n, bool total_sphere) const {
     float const r = center[3];
 
     return importance(center.xyz(), p, n, cone, r, power, total_sphere);
 }
 
-float Tree::Node::weight(float3_p p0, float3_p p1, float3_p dir) const {
+float Node::weight(float3_p p0, float3_p p1, float3_p dir) const {
     float const r = center[3];
 
     return importance(center.xyz(), p0, p1, dir, cone, r, power);
 }
 
-bool Tree::Node::split(float3_p p) const {
+bool Node::split(float3_p p) const {
     float const r = center[3];
     float const d = distance(p, center.xyz());
 
@@ -257,7 +244,7 @@ bool Tree::Node::split(float3_p p) const {
     return ns < Tree::splitting_threshold_;
 }
 
-bool Tree::Node::split(float3_p p0, float3_p dir) const {
+bool Node::split(float3_p p0, float3_p dir) const {
     float3 const axis = p0 - center.xyz();
 
     float const delta = -dot(axis, dir);
@@ -267,8 +254,8 @@ bool Tree::Node::split(float3_p p0, float3_p dir) const {
     return split(closest_point);
 }
 
-Light_pick Tree::Node::random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                                    uint32_t const* const light_mapping, Scene const& scene) const {
+Light_pick Node::random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                              uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return {light_mapping[children_or_light], 1.f};
     }
@@ -284,8 +271,8 @@ Light_pick Tree::Node::random_light(float3_p p, float3_p n, bool total_sphere, f
     return {light_mapping[children_or_light + l.offset], l.pdf};
 }
 
-Light_pick Tree::Node::random_light(float3_p p0, float3_p p1, float3_p dir, float random,
-                                    uint32_t const* const light_mapping, Scene const& scene) const {
+Light_pick Node::random_light(float3_p p0, float3_p p1, float3_p dir, float random,
+                              uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return {light_mapping[children_or_light], 1.f};
     }
@@ -301,8 +288,8 @@ Light_pick Tree::Node::random_light(float3_p p0, float3_p p1, float3_p dir, floa
     return {light_mapping[children_or_light + l.offset], l.pdf};
 }
 
-float Tree::Node::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-                      uint32_t const* const light_mapping, Scene const& scene) const {
+float Node::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
+                uint32_t const* const light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return 1.f;
     }
@@ -314,6 +301,67 @@ float Tree::Node::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
     }
 
     return distribution_pdf<4>(weights, id - children_or_light);
+}
+
+class Traversal_stack {
+  public:
+    Traversal_stack() = default;
+
+    struct Node {
+        float pdf;
+        float random;
+
+        uint32_t node;
+        uint32_t depth;
+    };
+
+    bool empty() const {
+        return 0 == end_;
+    }
+
+    void push(Node const& value) {
+        SOFT_ASSERT(end_ < Stack_size);
+
+        stack_[end_++] = value;
+    }
+
+    Node pop() {
+        return stack_[--end_];
+    }
+
+  private:
+    static uint32_t constexpr Stack_size = (1 << (Tree::Max_split_depth - 1)) + 1;
+
+    uint32_t end_ = 0;
+
+    Node stack_[Stack_size];
+};
+
+// 0.08 ^ 4
+float Tree::splitting_threshold_ = 0.00004096f;
+
+uint32_t Tree::max_lights(uint32_t num_lights, bool split) {
+    return split ? std::min(Max_lights, num_lights) : 1;
+}
+
+void Tree::set_splitting_threshold(float st) {
+    splitting_threshold_ = pow4(st);
+}
+
+Tree::Tree()
+    : num_lights_(0),
+      num_infinite_lights_(0),
+      num_nodes_(0),
+      nodes_(nullptr),
+      light_orders_(nullptr),
+      light_mapping_(nullptr),
+      infinite_light_powers_(nullptr) {}
+
+Tree::~Tree() {
+    delete[] infinite_light_powers_;
+    delete[] light_mapping_;
+    delete[] light_orders_;
+    delete[] nodes_;
 }
 
 void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,
@@ -942,11 +990,11 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
               (surface_area * cone_weight));
 }
 
-void Tree_builder::serialize(Tree::Node* nodes) {
+void Tree_builder::serialize(Node* nodes) {
     for (uint32_t i = 0, len = current_node_; i < len; ++i) {
         Build_node const& source = build_nodes_[i];
 
-        Tree::Node& dest = nodes[i];
+        Node& dest = nodes[i];
 
         AABB const& bounds = source.bounds;
 

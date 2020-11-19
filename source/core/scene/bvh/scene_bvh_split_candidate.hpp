@@ -5,7 +5,6 @@
 #include "base/memory/array.hpp"
 
 #include <cstdint>
-#include <vector>
 
 namespace scene::bvh {
 
@@ -58,7 +57,6 @@ class Split_candidate {
     uint32_t num_side_1_;
 
     float d_;
-
     float cost_;
 
     uint8_t axis_;
