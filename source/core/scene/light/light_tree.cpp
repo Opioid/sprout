@@ -949,35 +949,27 @@ Tree_builder::Split_candidate::Split_candidate() = default;
 void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split,
                                          float surface_area, float cone_weight,
                                          uint32_t const* const lights, Scene const& scene) {
-    AABB a(AABB::empty());
-
+    AABB   box_a(AABB::empty());
     float4 cone_a(1.f);
-
-    float power_a = 0.f;
+    float  power_a(0.f);
 
     for (uint32_t i = begin; i < split; ++i) {
         uint32_t const l = lights[i];
-        a.merge_assign(scene.light_aabb(l));
-
+        box_a.merge_assign(scene.light_aabb(l));
         cone_a = cone::merge(cone_a, scene.light_cone(l));
-
         power_a += scene.light_power(l);
     }
 
     float const cone_weight_a = cone_importance(cone_a[3]);
 
-    AABB b(AABB::empty());
-
+    AABB   box_b(AABB::empty());
     float4 cone_b(1.f);
-
-    float power_b = 0.f;
+    float  power_b(0.f);
 
     for (uint32_t i = split; i < end; ++i) {
         uint32_t const l = lights[i];
-        b.merge_assign(scene.light_aabb(l));
-
+        box_b.merge_assign(scene.light_aabb(l));
         cone_b = cone::merge(cone_b, scene.light_cone(l));
-
         power_b += scene.light_power(l);
     }
 
@@ -985,8 +977,8 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     split_node = split;
 
-    weight = (((power_a * cone_weight_a * a.surface_area()) +
-               (power_b * cone_weight_b * b.surface_area())) /
+    weight = (((power_a * cone_weight_a * box_a.surface_area()) +
+               (power_b * cone_weight_b * box_b.surface_area())) /
               (surface_area * cone_weight));
 }
 
