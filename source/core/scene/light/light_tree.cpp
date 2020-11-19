@@ -145,6 +145,10 @@ static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light
 }
 
 struct Build_node {
+    bool has_children() const {
+        return middle > 0;
+    }
+
     void count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits) const {
         if (0 == middle) {
             if (depth < Tree::Max_split_depth) {
@@ -281,8 +285,8 @@ struct Node {
     float power;
     float variance;
 
-    uint32_t middle;
-    uint32_t children_or_light;
+    uint32_t has_children : 1;
+    uint32_t children_or_light : 31;
     uint32_t num_lights;
 };
 
@@ -336,6 +340,7 @@ Tree::Tree()
       num_infinite_lights_(0),
       num_nodes_(0),
       nodes_(nullptr),
+      node_middles_(nullptr),
       light_orders_(nullptr),
       light_mapping_(nullptr),
       infinite_light_powers_(nullptr) {}
@@ -344,6 +349,7 @@ Tree::~Tree() {
     delete[] infinite_light_powers_;
     delete[] light_mapping_;
     delete[] light_orders_;
+    delete[] node_middles_;
     delete[] nodes_;
 }
 
@@ -396,7 +402,7 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
 
         bool const do_split = split && t.depth < Max_split_depth && node.split(p);
 
-        if (node.middle > 0) {
+        if (1 == node.has_children) {
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
@@ -499,7 +505,7 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
 
         bool const do_split = split && t.depth < Max_split_depth && node.split(p0, dir);
 
-        if (node.middle > 0) {
+        if (1 == node.has_children) {
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
@@ -578,12 +584,14 @@ float Tree::pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t 
 
         bool const do_split = split && depth < Max_split_depth && node.split(p);
 
-        if (node.middle > 0) {
+        if (1 == node.has_children) {
             uint32_t const c0 = node.children_or_light;
             uint32_t const c1 = c0 + 1;
 
+            uint32_t const middle = node_middles_[nid];
+
             if (do_split) {
-                if (lo < node.middle) {
+                if (lo < middle) {
                     nid = c0;
                 } else {
                     nid = c1;
@@ -595,7 +603,7 @@ float Tree::pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t 
 
                 SOFT_ASSERT(pt > 0.f);
 
-                if (lo < node.middle) {
+                if (lo < middle) {
                     nid = c0;
                     pdf *= p0 / pt;
                 } else {
@@ -643,8 +651,10 @@ void Tree::allocate(uint32_t num_infinite_lights) {
 void Tree::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes_ != num_nodes) {
         delete[] nodes_;
+        delete[] node_middles_;
 
-        nodes_ = new Node[num_nodes];
+        nodes_        = new Node[num_nodes];
+        node_middles_ = new uint32_t[num_nodes];
 
         num_nodes_ = num_nodes;
     }
@@ -724,7 +734,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
         split(tree, 0, num_infinite_lights, num_total_lights, scene);
 
         tree.allocate_nodes(current_node_);
-        serialize(tree.nodes_);
+        serialize(tree.nodes_, tree.node_middles_);
 
         uint32_t max_splits = 0;
         build_nodes_[0].count_max_splits(0, build_nodes_, max_splits);
@@ -953,7 +963,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
               (surface_area * cone_weight));
 }
 
-void Tree_builder::serialize(Node* nodes) {
+void Tree_builder::serialize(Node* nodes, uint32_t* node_middles) {
     for (uint32_t i = 0, len = current_node_; i < len; ++i) {
         Build_node const& source = build_nodes_[i];
 
@@ -965,9 +975,11 @@ void Tree_builder::serialize(Node* nodes) {
         dest.cone              = source.cone;
         dest.power             = source.power;
         dest.variance          = source.variance;
-        dest.middle            = source.middle;
+        dest.has_children      = source.has_children() ? 1 : 0;
         dest.children_or_light = source.children_or_light;
         dest.num_lights        = source.num_lights;
+
+        node_middles[i] = source.middle;
     }
 }
 

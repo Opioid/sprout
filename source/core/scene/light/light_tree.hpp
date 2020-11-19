@@ -61,7 +61,8 @@ class Tree {
     uint32_t num_infinite_lights_;
     uint32_t num_nodes_;
 
-    Node* nodes_;
+    Node*     nodes_;
+    uint32_t* node_middles_;
 
     uint32_t* light_orders_;
     uint32_t* light_mapping_;
@@ -93,12 +94,11 @@ class Tree_builder {
   private:
     uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
 
-    void serialize(Node* nodes);
+    void serialize(Node* nodes, uint32_t* node_middles);
 
     Build_node* build_nodes_;
 
     uint32_t current_node_;
-
     uint32_t light_order_;
 
     Split_candidate* candidates_;
