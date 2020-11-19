@@ -202,13 +202,12 @@ void Scene::compile(uint64_t time, Threads& threads) {
         e->update(*this);
     }
 
-    uint32_t ei = 0;
-    for (auto& p : props_) {
-        prop_calculate_world_transformation(ei);
+    for (uint32_t i = 0; auto& p : props_) {
+        prop_calculate_world_transformation(i);
         has_masked_material_ = has_masked_material_ || p.has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p.has_tinted_shadow();
 
-        ++ei;
+        ++i;
     }
 
     for (auto v : volumes_) {
@@ -224,10 +223,11 @@ void Scene::compile(uint64_t time, Threads& threads) {
     volume_bvh_.set_props(infinite_volumes_, props_);
 
     // re-sort lights PDF
-    for (uint32_t i = 0, len = uint32_t(lights_.size()); i < len; ++i) {
-        auto& l = lights_[i];
+    for (uint32_t i = 0; auto& l : lights_) {
         l.prepare_sampling(i, time, *this, threads);
         light_temp_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
+
+        ++i;
     }
 
     light_distribution_.init(light_temp_powers_.data(), uint32_t(light_temp_powers_.size()));
