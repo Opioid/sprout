@@ -453,8 +453,10 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
                 aabb.merge_assign(shape->transformed_aabb(float4x4(interpolated)));
             }
 
-            prop_aabbs_[entity] = aabb.merge(shape->transformed_aabb(float4x4(b)));
+            aabb.merge_assign(shape->transformed_aabb(float4x4(b)));
         }
+
+        prop_aabbs_[entity] = aabb;
 
         for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
             prop_inherit_transformation(child, frames);
@@ -557,8 +559,7 @@ Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t    
     auto const& b = frames[i + 1];
 
     uint64_t const a_time = current_time_start_ + i * tick_duration_;
-
-    uint64_t const delta = time - a_time;
+    uint64_t const delta  = time - a_time;
 
     float const t = float(delta) / float(tick_duration_);
 
