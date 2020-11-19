@@ -145,7 +145,22 @@ static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light
 }
 
 struct Build_node {
-    void count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits) const;
+    void count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits) const {
+        if (0 == middle) {
+            if (depth < Tree::Max_split_depth) {
+                splits += num_lights;
+            } else {
+                ++splits;
+            }
+        } else {
+            if (depth == Tree::Max_split_depth - 1) {
+                splits += 2;
+            } else {
+                nodes[children_or_light].count_max_splits(depth + 1, nodes, splits);
+                nodes[children_or_light + 1].count_max_splits(depth + 1, nodes, splits);
+            }
+        }
+    }
 
     AABB bounds;
 
@@ -159,40 +174,106 @@ struct Build_node {
     uint32_t num_lights;
 };
 
-void Build_node::count_max_splits(uint32_t depth, Build_node* nodes, uint32_t& splits) const {
-    if (0 == middle) {
-        if (depth < Tree::Max_split_depth) {
-            splits += num_lights;
-        } else {
-            ++splits;
-        }
-    } else {
-        if (depth == Tree::Max_split_depth - 1) {
-            splits += 2;
-        } else {
-            nodes[children_or_light].count_max_splits(depth + 1, nodes, splits);
-            nodes[children_or_light + 1].count_max_splits(depth + 1, nodes, splits);
-        }
-    }
-}
-
 struct Node {
-    float weight(float3_p p, float3_p n, bool total_sphere) const;
+    float weight(float3_p p, float3_p n, bool total_sphere) const {
+        float const r = center[3];
 
-    float weight(float3_p p0, float3_p p1, float3_p dir) const;
+        return importance(center.xyz(), p, n, cone, r, power, total_sphere);
+    }
 
-    bool split(float3_p p) const;
+    float weight(float3_p p0, float3_p p1, float3_p dir) const {
+        float const r = center[3];
 
-    bool split(float3_p p0, float3_p dir) const;
+        return importance(center.xyz(), p0, p1, dir, cone, r, power);
+    }
+
+    bool split(float3_p p) const {
+        float const r = center[3];
+        float const d = distance(p, center.xyz());
+
+        float const a = std::max(d - r, 0.001f);
+        float const b = d + r;
+
+        float const eg  = 1.f / (a * b);
+        float const eg2 = eg * eg;
+
+        float const a3 = a * a * a;
+        float const b3 = b * b * b;
+
+        float const e2g = (b3 - a3) / (3.f * (b - a) * a3 * b3);
+
+        float const vg = e2g - eg2;
+
+        float const ve = variance;
+        float const ee = power / float(num_lights);
+
+        float const s2 = (ve * vg + ve * eg2 + ee * ee * vg);
+        float const ns = 1.f / (1.f + std::sqrt(s2));
+        // float const ns = std::pow(1.f / (1.f + std::sqrt(s2)), 1.f / 4.f);
+
+        return ns < Tree::splitting_threshold_;
+    }
+
+    bool split(float3_p p0, float3_p dir) const {
+        float3 const axis = p0 - center.xyz();
+
+        float const delta = -dot(axis, dir);
+
+        float3 const closest_point = p0 + delta * dir;
+
+        return split(closest_point);
+    }
 
     Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                            uint32_t const* const light_mapping, Scene const& scene) const;
+                            uint32_t const* const light_mapping, Scene const& scene) const {
+        if (1 == num_lights) {
+            return {light_mapping[children_or_light], 1.f};
+        }
+
+        float weights[4] = {0.f, 0.f, 0.f, 0.f};
+
+        for (uint32_t i = 0, len = num_lights; i < len; ++i) {
+            weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i],
+                                      scene);
+        }
+
+        auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
+
+        return {light_mapping[children_or_light + l.offset], l.pdf};
+    }
 
     Light_pick random_light(float3_p p0, float3_p p1, float3_p dir, float random,
-                            uint32_t const* const light_mapping, Scene const& scene) const;
+                            uint32_t const* const light_mapping, Scene const& scene) const {
+        if (1 == num_lights) {
+            return {light_mapping[children_or_light], 1.f};
+        }
+
+        float weights[4] = {0.f, 0.f, 0.f, 0.f};
+
+        for (uint32_t i = 0, len = num_lights; i < len; ++i) {
+            weights[i] = light_weight(p0, p1, dir, light_mapping[children_or_light + i], scene);
+        }
+
+        auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
+
+        return {light_mapping[children_or_light + l.offset], l.pdf};
+    }
 
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-              uint32_t const* const light_mapping, Scene const& scene) const;
+              uint32_t const* const light_mapping, Scene const& scene) const {
+        if (1 == num_lights) {
+            return 1.f;
+        }
+
+        float weights[4] = {0.f, 0.f, 0.f, 0.f};
+
+        for (uint32_t i = 0, len = num_lights; i < len; ++i) {
+            weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i],
+                                      scene);
+        }
+
+        return distribution_pdf<4>(weights, id - children_or_light);
+    }
 
     float4 center;
     float4 cone;
@@ -204,104 +285,6 @@ struct Node {
     uint32_t children_or_light;
     uint32_t num_lights;
 };
-
-float Node::weight(float3_p p, float3_p n, bool total_sphere) const {
-    float const r = center[3];
-
-    return importance(center.xyz(), p, n, cone, r, power, total_sphere);
-}
-
-float Node::weight(float3_p p0, float3_p p1, float3_p dir) const {
-    float const r = center[3];
-
-    return importance(center.xyz(), p0, p1, dir, cone, r, power);
-}
-
-bool Node::split(float3_p p) const {
-    float const r = center[3];
-    float const d = distance(p, center.xyz());
-
-    float const a = std::max(d - r, 0.001f);
-    float const b = d + r;
-
-    float const eg  = 1.f / (a * b);
-    float const eg2 = eg * eg;
-
-    float const a3 = a * a * a;
-    float const b3 = b * b * b;
-
-    float const e2g = (b3 - a3) / (3.f * (b - a) * a3 * b3);
-
-    float const vg = e2g - eg2;
-
-    float const ve = variance;
-    float const ee = power / float(num_lights);
-
-    float const s2 = (ve * vg + ve * eg2 + ee * ee * vg);
-    float const ns = 1.f / (1.f + std::sqrt(s2));
-    // float const ns = std::pow(1.f / (1.f + std::sqrt(s2)), 1.f / 4.f);
-
-    return ns < Tree::splitting_threshold_;
-}
-
-bool Node::split(float3_p p0, float3_p dir) const {
-    float3 const axis = p0 - center.xyz();
-
-    float const delta = -dot(axis, dir);
-
-    float3 const closest_point = p0 + delta * dir;
-
-    return split(closest_point);
-}
-
-Light_pick Node::random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                              uint32_t const* const light_mapping, Scene const& scene) const {
-    if (1 == num_lights) {
-        return {light_mapping[children_or_light], 1.f};
-    }
-
-    float weights[4] = {0.f, 0.f, 0.f, 0.f};
-
-    for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], scene);
-    }
-
-    auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
-
-    return {light_mapping[children_or_light + l.offset], l.pdf};
-}
-
-Light_pick Node::random_light(float3_p p0, float3_p p1, float3_p dir, float random,
-                              uint32_t const* const light_mapping, Scene const& scene) const {
-    if (1 == num_lights) {
-        return {light_mapping[children_or_light], 1.f};
-    }
-
-    float weights[4] = {0.f, 0.f, 0.f, 0.f};
-
-    for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p0, p1, dir, light_mapping[children_or_light + i], scene);
-    }
-
-    auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
-
-    return {light_mapping[children_or_light + l.offset], l.pdf};
-}
-
-float Node::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-                uint32_t const* const light_mapping, Scene const& scene) const {
-    if (1 == num_lights) {
-        return 1.f;
-    }
-
-    float weights[4] = {0.f, 0.f, 0.f, 0.f};
-
-    for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], scene);
-    }
-
-    return distribution_pdf<4>(weights, id - children_or_light);
-}
 
 class Traversal_stack {
   public:
