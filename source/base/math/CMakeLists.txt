@@ -5,6 +5,7 @@ target_sources(base
     PRIVATE
     "aabb.hpp"
     "aabb.inl"
+    "cone.inl"
     "exp.hpp"
     "frustum.cpp"
     "frustum.hpp"

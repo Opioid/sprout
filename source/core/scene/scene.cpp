@@ -1,6 +1,7 @@
 #include "scene.inl"
 #include "animation/animation.hpp"
 #include "base/math/aabb.inl"
+#include "base/math/cone.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
@@ -26,6 +27,10 @@
 namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
+
+static uint32_t constexpr Num_steps = 4;
+
+static float constexpr Interval = 1.f / float(Num_steps);
 
 Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
              std::vector<Material*> const& material_resources,
@@ -432,10 +437,6 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
             child = prop_topology(child).next;
         }
     } else {
-        static uint32_t constexpr Num_steps = 4;
-
-        static float constexpr Interval = 1.f / float(Num_steps);
-
         entity::Keyframe const* frames = &keyframes_[f];
 
         Shape const* shape = prop_shape(entity);
@@ -448,9 +449,9 @@ void Scene::prop_propagate_transformation(uint32_t entity) {
 
             float t = Interval;
             for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
-                math::Transformation const interpolated = lerp(a, b, t);
+                math::Transformation const inter = lerp(a, b, t);
 
-                aabb.merge_assign(shape->transformed_aabb(float4x4(interpolated)));
+                aabb.merge_assign(shape->transformed_aabb(float4x4(inter)));
             }
 
             aabb.merge_assign(shape->transformed_aabb(float4x4(b)));
@@ -527,11 +528,48 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     light_powers_[light] = max_component(lights_[light].power(aabb(), *this));
 
-    light_aabbs_[light] = shape->transformed_part_aabb(part, trafo.object_to_world());
+    uint32_t const f = prop_frames_[entity];
 
-    float4 const cone = shape->cone(part);
+    if (prop::Null == f) {
+        light_aabbs_[light] = shape->transformed_part_aabb(part, trafo.object_to_world());
 
-    light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()), cone[3]);
+        float4 const cone = shape->cone(part);
+
+        light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()), cone[3]);
+    } else {
+        entity::Keyframe const* frames = &keyframes_[f];
+
+        AABB aabb = shape->transformed_part_aabb(part, float4x4(frames[0].trafo));
+
+        float4 const part_cone = shape->cone(part);
+
+        float4 cone = float4(trafo.object_to_world_normal(part_cone.xyz()), part_cone[3]);
+
+        for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
+            auto const& a = frames[i].trafo;
+            auto const& b = frames[i + 1].trafo;
+
+            float t = Interval;
+            for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
+                math::Transformation const inter = lerp(a, b, t);
+
+                float3x3 const rotation = quaternion::create_matrix3x3(inter.rotation);
+                float4x4 const trafo    = compose(rotation, inter.scale, inter.position);
+
+                aabb.merge_assign(shape->transformed_part_aabb(part, trafo));
+                cone = cone::merge(cone, cone::transform(rotation, cone));
+            }
+
+            float3x3 const rotation = quaternion::create_matrix3x3(b.rotation);
+            float4x4 const trafo    = compose(rotation, b.scale, b.position);
+
+            aabb.merge_assign(shape->transformed_part_aabb(part, trafo));
+            cone = cone::merge(cone, cone::transform(rotation, cone));
+        }
+
+        light_aabbs_[light] = aabb;
+        light_cones_[light] = cone;
+    }
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) {

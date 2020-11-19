@@ -1,4 +1,5 @@
 #include "light_tree.hpp"
+#include "base/math/cone.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/memory/array.inl"
 #include "base/spectrum/rgb.hpp"
@@ -64,41 +65,6 @@ class Traversal_stack {
 
     Node stack_[Stack_size];
 };
-
-static float4 cone_union(float4 a, float4 b) {
-    if (float4(1.f) == a) {
-        return b;
-    }
-
-    float a_angle = std::acos(a[3]);
-    float b_angle = std::acos(b[3]);
-
-    if (b_angle > a_angle) {
-        std::swap(a, b);
-        std::swap(a_angle, b_angle);
-    }
-
-    float const d_angle = std::acos(dot(a.xyz(), b.xyz()));
-
-    if (std::min(d_angle + b_angle, Pi) <= a_angle) {
-        return a;
-    }
-
-    float const o_angle = (a_angle + d_angle + b_angle) / 2.f;
-
-    if (Pi <= o_angle) {
-        float4(a.xyz(), -1.f);
-    }
-
-    float const r_angle = o_angle - a_angle;
-
-    float3x3 rot;
-    set_rotation(rot, cross(a.xyz(), b.xyz()), r_angle);
-
-    float3 const axis = normalize(transform_vector(rot, a.xyz()));
-
-    return float4(axis, std::cos(o_angle));
-}
 
 // 0.08 ^ 4
 float Tree::splitting_threshold_ = 0.00004096f;
@@ -834,7 +800,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
             bounds.merge_assign(scene.light_aabb(l));
 
-            cone = cone_union(cone, scene.light_cone(l));
+            cone = cone::merge(cone, scene.light_cone(l));
 
             total_power += scene.light_power(l);
 
@@ -867,7 +833,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
         bounds.merge_assign(scene.light_aabb(l));
 
-        cone = cone_union(cone, scene.light_cone(l));
+        cone = cone::merge(cone, scene.light_cone(l));
 
         total_power += scene.light_power(l);
     }
@@ -945,7 +911,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
         uint32_t const l = lights[i];
         a.merge_assign(scene.light_aabb(l));
 
-        cone_a = cone_union(cone_a, scene.light_cone(l));
+        cone_a = cone::merge(cone_a, scene.light_cone(l));
 
         power_a += scene.light_power(l);
     }
@@ -962,7 +928,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
         uint32_t const l = lights[i];
         b.merge_assign(scene.light_aabb(l));
 
-        cone_b = cone_union(cone_b, scene.light_cone(l));
+        cone_b = cone::merge(cone_b, scene.light_cone(l));
 
         power_b += scene.light_power(l);
     }
