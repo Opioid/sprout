@@ -531,7 +531,10 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
-        light_aabbs_[light] = shape->transformed_part_aabb(part, trafo.object_to_world());
+        AABB aabb = shape->transformed_part_aabb(part, trafo.object_to_world());
+        aabb.cache_radius();
+
+        light_aabbs_[light] = aabb;
 
         float4 const cone = shape->cone(part);
 
@@ -566,6 +569,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
             aabb.merge_assign(shape->transformed_part_aabb(part, trafo));
             cone = cone::merge(cone, cone::transform(rotation, cone));
         }
+
+        aabb.cache_radius();
 
         light_aabbs_[light] = aabb;
         light_cones_[light] = cone;

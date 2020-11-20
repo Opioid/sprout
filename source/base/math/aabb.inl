@@ -44,6 +44,10 @@ inline float AABB::volume() const {
     return d[0] * d[1] * d[2];
 }
 
+inline float AABB::cached_radius() const {
+    return bounds[0][3];
+}
+
 inline bool AABB::intersect(float3_p p) const {
     if (p[0] >= bounds[0][0] && p[0] <= bounds[1][0] && p[1] >= bounds[0][1] &&
         p[1] <= bounds[1][1] && p[2] >= bounds[0][2] && p[2] <= bounds[1][2]) {
@@ -260,6 +264,10 @@ inline void AABB::add(float x) {
     float3 const v(x);
     bounds[0] -= v;
     bounds[1] += v;
+}
+
+inline void AABB::cache_radius() {
+    bounds[0][3] = 0.5f * length(extent());
 }
 
 inline AABB AABB::transform(float4x4 const& m) const {

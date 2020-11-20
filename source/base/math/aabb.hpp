@@ -28,6 +28,8 @@ struct AABB {
 
     float volume() const;
 
+    float cached_radius() const;
+
     bool intersect(float3_p p) const;
 
     bool intersect_p(ray const& ray) const;
@@ -46,6 +48,8 @@ struct AABB {
     void scale(float x);
 
     void add(float x);
+
+    void cache_radius();
 
     AABB transform(float4x4 const& m) const;
 

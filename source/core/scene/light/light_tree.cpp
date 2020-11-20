@@ -124,22 +124,22 @@ static inline float importance(float3_p center, float3_p p0, float3_p p1, float3
 
 static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t light,
                           Scene const& scene) {
-    float3 const center = scene.light_aabb(light).position();
+    AABB const   aabb   = scene.light_aabb(light);
+    float3 const center = aabb.position();
     float4 const cone   = scene.light_cone(light);
-
-    float const radius = 0.5f * length(scene.light_aabb(light).extent());
-    float const power  = scene.light_power(light);
+    float const  radius = aabb.cached_radius();
+    float const  power  = scene.light_power(light);
 
     return importance(center, p, n, cone, radius, power, total_sphere);
 }
 
 static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light,
                           Scene const& scene) {
-    float3 const center = scene.light_aabb(light).position();
+    AABB const   aabb   = scene.light_aabb(light);
+    float3 const center = aabb.position();
     float4 const cone   = scene.light_cone(light);
-
-    float const radius = 0.5f * length(scene.light_aabb(light).extent());
-    float const power  = scene.light_power(light);
+    float const  radius = aabb.cached_radius();
+    float const  power  = scene.light_power(light);
 
     return importance(center, p0, p1, dir, cone, radius, power);
 }
