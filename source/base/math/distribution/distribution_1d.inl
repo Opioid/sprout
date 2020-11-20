@@ -14,13 +14,7 @@ namespace math {
 // https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
 
 inline Distribution_1D::Distribution_1D()
-    : lut_size_(0),
-      cdf_size_(0),
-      lut_(nullptr),
-      cdf_(nullptr),
-      integral_(-1.f),
-      size_(0.f),
-      lut_range_(0.f) {}
+    : lut_size_(0), cdf_size_(0), lut_(nullptr), cdf_(nullptr), integral_(-1.f), lut_range_(0.f) {}
 
 inline Distribution_1D::~Distribution_1D() {
     delete[] cdf_;
@@ -84,7 +78,7 @@ inline Distribution_1D::Continuous Distribution_1D::sample_continuous(float r) c
 
     float const t = (c - r) / v;
 
-    float const result = (float(offset) + t) / size_;
+    float const result = (float(offset) + t) / float(cdf_size_ - 2);
 
     return {result, v};
 }
@@ -96,7 +90,7 @@ inline float Distribution_1D::pdf(uint32_t index) const {
 }
 
 inline float Distribution_1D::pdf(float u) const {
-    uint32_t const offset = uint32_t(u * size_);
+    uint32_t const offset = uint32_t(u * float(cdf_size_ - 2));
 
     SOFT_ASSERT(offset + 1 < cdf_size_);
 
@@ -130,7 +124,6 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, uint32_t l
         cdf_[2] = 1.f;
 
         integral_ = 0.f;
-        size_     = 1.f;
 
         return;
     }
@@ -153,8 +146,6 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, uint32_t l
     cdf_[len + 1] = 1.f;
 
     integral_ = integral;
-
-    size_ = float(len);
 }
 
 inline void Distribution_1D::init_lut(uint32_t lut_size) {

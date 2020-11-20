@@ -50,8 +50,6 @@ class Distribution_1D {
     float* cdf_;
 
     float integral_;
-    float size_;
-
     float lut_range_;
 };
 

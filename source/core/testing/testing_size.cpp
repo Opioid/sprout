@@ -98,7 +98,7 @@ void size() {
     print_size<scene::material::glass::Sample>("glass::Sample", 160);
 
     print_size<scene::material::light::Constant>("light::Constant", 128);
-    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 192);
+    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 176);
     print_size<scene::material::light::Sample>("light::Sample", 160);
 
     print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 160);
