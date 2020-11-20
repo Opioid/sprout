@@ -2,7 +2,7 @@
 #define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_3D_HPP
 
 #include "distribution_2d.hpp"
-#include "math/vector4.hpp"
+#include "math/vector.hpp"
 
 namespace math {
 
@@ -26,11 +26,9 @@ class Distribution_3D {
     Distribution_1D marginal_;
 
     uint32_t conditional_size_;
+    float    conditional_sizef_;
 
     Distribution_2D* conditional_;
-
-    float    conditional_sizef_;
-    uint32_t conditional_max_;
 };
 
 }  // namespace math

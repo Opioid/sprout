@@ -41,7 +41,6 @@ void Distribution_2D::init() {
     marginal_.init(integrals, num_conditional);
 
     conditional_sizef_ = float(num_conditional);
-    conditional_max_   = num_conditional - 1;
 
     delete[] integrals;
 }
@@ -54,7 +53,7 @@ typename Distribution_2D::Continuous Distribution_2D::sample_continuous(float2 r
     auto const v = marginal_.sample_continuous(r2[1]);
 
     uint32_t const i = uint32_t(v.offset * conditional_sizef_);
-    uint32_t const c = std::min(i, conditional_max_);
+    uint32_t const c = std::min(i, conditional_size_ - 1);
 
     auto const u = conditional_[c].sample_continuous(r2[0]);
 
@@ -65,7 +64,7 @@ float Distribution_2D::pdf(float2 uv) const {
     float const v_pdf = marginal_.pdf(uv[1]);
 
     uint32_t const i = uint32_t(uv[1] * conditional_sizef_);
-    uint32_t const c = std::min(i, conditional_max_);
+    uint32_t const c = std::min(i, conditional_size_ - 1);
 
     float const u_pdf = conditional_[c].pdf(uv[0]);
 
