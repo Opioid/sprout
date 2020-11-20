@@ -9,7 +9,7 @@ static inline float abs_dot(float3_p a, float3_p b) {
     return std::abs(dot(a, b));
 }
 
-static float constexpr Dot_min = 0.00001f;
+inline float constexpr Dot_min = 0.00001f;
 
 static inline float clamp(float x) {
     return std::clamp(x, Dot_min, 1.f);
