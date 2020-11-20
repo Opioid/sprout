@@ -412,50 +412,7 @@ void Mesh::prepare_sampling(uint32_t part) {
         }
     }
 
-    if (!p.empty()) {
-        return;
-    }
-
     p.init(part, tree_);
-
-    AABB bb(AABB::empty());
-
-    float3 dominant_axis(0.f);
-
-    float const a = 1.f / parts_[part].distribution.integral();
-
-    for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
-        uint32_t const t = p.triangle_mapping[i];
-
-        float3 va;
-        float3 vb;
-        float3 vc;
-        tree_.triangle(t, va, vb, vc);
-
-        bb.insert(va);
-        bb.insert(vb);
-        bb.insert(vc);
-
-        dominant_axis += a * tree_.triangle_area(t) * tree_.triangle_normal(t);
-    }
-
-    dominant_axis = normalize(dominant_axis);
-
-    float angle = 0.f;
-
-    for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
-        uint32_t const t = p.triangle_mapping[i];
-
-        float3 const n = tree_.triangle_normal(t);
-        float const  c = dot(dominant_axis, n);
-
-        SOFT_ASSERT(std::isfinite(c));
-
-        angle = std::max(angle, std::acos(c));
-    }
-
-    p.aabb = bb;
-    p.cone = float4(dominant_axis, std::cos(angle));
 }
 
 float4 Mesh::cone(uint32_t part) const {
@@ -467,6 +424,10 @@ Mesh::Part::~Part() {
 }
 
 void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
+    if (nullptr != triangle_mapping) {
+        return;
+    }
+
     uint32_t const num = num_triangles;
 
     memory::Buffer<float> areas(num);
@@ -484,10 +445,45 @@ void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
     }
 
     distribution.init(areas, num);
-}
 
-bool Mesh::Part::empty() const {
-    return nullptr == triangle_mapping;
+    AABB bb(AABB::empty());
+
+    float3 dominant_axis(0.f);
+
+    float const a = 1.f / distribution.integral();
+
+    for (uint32_t i = 0; i < num; ++i) {
+        uint32_t const t = triangle_mapping[i];
+
+        float3 va;
+        float3 vb;
+        float3 vc;
+        tree.triangle(t, va, vb, vc);
+
+        bb.insert(va);
+        bb.insert(vb);
+        bb.insert(vc);
+
+        dominant_axis += a * tree.triangle_area(t) * tree.triangle_normal(t);
+    }
+
+    dominant_axis = normalize(dominant_axis);
+
+    float angle = 0.f;
+
+    for (uint32_t i = 0; i < num; ++i) {
+        uint32_t const t = triangle_mapping[i];
+
+        float3 const n = tree.triangle_normal(t);
+        float const  c = dot(dominant_axis, n);
+
+        SOFT_ASSERT(std::isfinite(c));
+
+        angle = std::max(angle, std::acos(c));
+    }
+
+    aabb = bb;
+    cone = float4(dominant_axis, std::cos(angle));
 }
 
 Mesh::Part::Distribution_1D::Discrete Mesh::Part::sample(float r) const {

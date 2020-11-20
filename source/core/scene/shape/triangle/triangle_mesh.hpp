@@ -97,8 +97,6 @@ class alignas(64) Mesh final : public Shape {
 
         void init(uint32_t part, bvh::Tree const& tree);
 
-        bool empty() const;
-
         Distribution_1D::Discrete sample(float r) const;
 
         uint32_t material;
