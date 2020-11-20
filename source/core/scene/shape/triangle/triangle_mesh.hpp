@@ -4,6 +4,7 @@
 #include "base/math/distribution/distribution_1d.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
 #include "scene/shape/shape.hpp"
+#include "scene/light/light_tree.hpp"
 
 namespace scene::shape::triangle {
 
@@ -105,7 +106,13 @@ class alignas(64) Mesh final : public Shape {
 
         uint32_t* triangle_mapping = nullptr;
 
+        AABB* aabbs = nullptr;
+
+        float4* cones = nullptr;
+
         Distribution_1D distribution;
+
+        light::Primitive_tree light_tree;
 
         AABB aabb;
 

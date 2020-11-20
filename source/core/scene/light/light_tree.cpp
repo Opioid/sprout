@@ -229,7 +229,7 @@ struct Node {
     }
 
     Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                            uint32_t const* const light_mapping, Scene const& scene) const {
+                            UInts light_mapping, Scene const& scene) const {
         if (1 == num_lights) {
             return {light_mapping[children_or_light], 1.f};
         }
@@ -247,7 +247,7 @@ struct Node {
     }
 
     Light_pick random_light(float3_p p0, float3_p p1, float3_p dir, float random,
-                            uint32_t const* const light_mapping, Scene const& scene) const {
+                            UInts light_mapping, Scene const& scene) const {
         if (1 == num_lights) {
             return {light_mapping[children_or_light], 1.f};
         }
@@ -763,6 +763,10 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
     tree.infinite_guard_ = 0 == num_finite_lights ? 1.1f : infinite_weight;
 }
 
+void Tree_builder::build(Primitive_tree& tree, uint32_t num_primitives, AABBs aabbs, Cones cones) {
+
+}
+
 static void sort_lights(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t axis,
                         Scene const& scene) {
     std::sort(lights + begin, lights + end, [&scene, axis](uint32_t a, uint32_t b) noexcept {
@@ -927,7 +931,7 @@ Tree_builder::Split_candidate::Split_candidate() = default;
 
 void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split,
                                          float surface_area, float cone_weight,
-                                         uint32_t const* const lights, Scene const& scene) {
+                                         UInts lights, Scene const& scene) {
     AABB   box_a(AABB::empty());
     float4 cone_a(1.f);
     float  power_a(0.f);

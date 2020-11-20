@@ -420,6 +420,8 @@ float4 Mesh::cone(uint32_t part) const {
 }
 
 Mesh::Part::~Part() {
+    delete[] cones;
+    delete[] aabbs;
     delete[] triangle_mapping;
 }
 
@@ -446,6 +448,10 @@ void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
 
     distribution.init(areas, num);
 
+    aabbs = new AABB[num];
+
+    cones = new float4[num];
+
     AABB bb(AABB::empty());
 
     float3 dominant_axis(0.f);
@@ -460,11 +466,27 @@ void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
         float3 vc;
         tree.triangle(t, va, vb, vc);
 
-        bb.insert(va);
-        bb.insert(vb);
-        bb.insert(vc);
+        AABB box;
 
-        dominant_axis += a * tree.triangle_area(t) * tree.triangle_normal(t);
+        box.insert(va);
+        box.insert(vb);
+        box.insert(vc);
+
+        bb.merge_assign(box);
+
+        box.cache_radius();
+
+        float const area = tree.triangle_area(t);
+
+        box.bounds[1][3] = area;
+
+        aabbs[i] = box;
+
+        float3 const n = tree.triangle_normal(t);
+
+        cones[i] = float4(n, 1.f);
+
+        dominant_axis += a * area * n;
     }
 
     dominant_axis = normalize(dominant_axis);
@@ -484,6 +506,9 @@ void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
 
     aabb = bb;
     cone = float4(dominant_axis, std::cos(angle));
+
+    light::Tree_builder builder;
+    builder.build(light_tree, num, aabbs, cones);
 }
 
 Mesh::Part::Distribution_1D::Discrete Mesh::Part::sample(float r) const {

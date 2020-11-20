@@ -5,6 +5,10 @@
 #include "base/math/vector.hpp"
 #include "base/memory/array.hpp"
 
+namespace math {
+struct AABB;
+}
+
 namespace scene {
 
 class Scene;
@@ -72,6 +76,14 @@ class Tree {
     Distribution_1D infinite_light_distribution_;
 };
 
+class Primitive_tree {
+
+};
+
+using UInts = uint32_t const* const;
+using AABBs = AABB const* const;
+using Cones = float4 const* const;
+
 class Tree_builder {
   public:
     Tree_builder();
@@ -80,11 +92,13 @@ class Tree_builder {
 
     void build(Tree& tree, Scene const& scene);
 
+    void build(Primitive_tree& tree, uint32_t num_primitives, AABBs aabbs, Cones cones);
+
     struct Split_candidate {
         Split_candidate();
 
         void init(uint32_t begin, uint32_t end, uint32_t split, float surface_area,
-                  float cone_weight, uint32_t const* const lights, Scene const& scene);
+                  float cone_weight, UInts lights, Scene const& scene);
 
         uint32_t split_node;
 
