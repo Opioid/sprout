@@ -412,50 +412,50 @@ void Mesh::prepare_sampling(uint32_t part) {
         }
     }
 
-    if (p.empty()) {
-        p.init(part, tree_);
-
-        AABB bb = AABB::empty();
-
-        float3 dominant_axis(0.f);
-
-        float const a = 1.f / parts_[part].distribution.integral();
-
-        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
-            uint32_t const t = p.triangle_mapping[i];
-
-            float3 va;
-            float3 vb;
-            float3 vc;
-            tree_.triangle(t, va, vb, vc);
-
-            bb.insert(va);
-            bb.insert(vb);
-            bb.insert(vc);
-
-            dominant_axis += a * tree_.triangle_area(t) * tree_.triangle_normal(t);
-        }
-
-        dominant_axis = normalize(dominant_axis);
-
-        float angle = 0.f;
-
-        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
-            uint32_t const t = p.triangle_mapping[i];
-
-            float3 const n = tree_.triangle_normal(t);
-
-            float const c = dot(dominant_axis, n);
-
-            SOFT_ASSERT(std::isfinite(c));
-
-            angle = std::max(angle, std::acos(c));
-        }
-
-        p.aabb = bb;
-
-        p.cone = float4(dominant_axis, std::cos(angle));
+    if (!p.empty()) {
+        return;
     }
+
+    p.init(part, tree_);
+
+    AABB bb(AABB::empty());
+
+    float3 dominant_axis(0.f);
+
+    float const a = 1.f / parts_[part].distribution.integral();
+
+    for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
+        uint32_t const t = p.triangle_mapping[i];
+
+        float3 va;
+        float3 vb;
+        float3 vc;
+        tree_.triangle(t, va, vb, vc);
+
+        bb.insert(va);
+        bb.insert(vb);
+        bb.insert(vc);
+
+        dominant_axis += a * tree_.triangle_area(t) * tree_.triangle_normal(t);
+    }
+
+    dominant_axis = normalize(dominant_axis);
+
+    float angle = 0.f;
+
+    for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
+        uint32_t const t = p.triangle_mapping[i];
+
+        float3 const n = tree_.triangle_normal(t);
+        float const  c = dot(dominant_axis, n);
+
+        SOFT_ASSERT(std::isfinite(c));
+
+        angle = std::max(angle, std::acos(c));
+    }
+
+    p.aabb = bb;
+    p.cone = float4(dominant_axis, std::cos(angle));
 }
 
 float4 Mesh::cone(uint32_t part) const {

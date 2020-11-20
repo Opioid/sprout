@@ -531,10 +531,10 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
-        AABB aabb = shape->transformed_part_aabb(part, trafo.object_to_world());
-        aabb.cache_radius();
+        AABB bb = shape->transformed_part_aabb(part, trafo.object_to_world());
+        bb.cache_radius();
 
-        light_aabbs_[light] = aabb;
+        light_aabbs_[light] = bb;
 
         float4 const cone = shape->cone(part);
 
@@ -542,7 +542,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     } else {
         entity::Keyframe const* frames = &keyframes_[f];
 
-        AABB aabb = shape->transformed_part_aabb(part, float4x4(frames[0].trafo));
+        AABB bb = shape->transformed_part_aabb(part, float4x4(frames[0].trafo));
 
         float4 const part_cone = shape->cone(part);
 
@@ -559,20 +559,20 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
                 float3x3 const rotation = quaternion::create_matrix3x3(inter.rotation);
                 float4x4 const trafo    = compose(rotation, inter.scale, inter.position);
 
-                aabb.merge_assign(shape->transformed_part_aabb(part, trafo));
+                bb.merge_assign(shape->transformed_part_aabb(part, trafo));
                 cone = cone::merge(cone, cone::transform(rotation, cone));
             }
 
             float3x3 const rotation = quaternion::create_matrix3x3(b.rotation);
             float4x4 const trafo    = compose(rotation, b.scale, b.position);
 
-            aabb.merge_assign(shape->transformed_part_aabb(part, trafo));
+            bb.merge_assign(shape->transformed_part_aabb(part, trafo));
             cone = cone::merge(cone, cone::transform(rotation, cone));
         }
 
-        aabb.cache_radius();
+        bb.cache_radius();
 
-        light_aabbs_[light] = aabb;
+        light_aabbs_[light] = bb;
         light_cones_[light] = cone;
     }
 }
