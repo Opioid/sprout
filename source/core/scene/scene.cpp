@@ -526,8 +526,6 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     lights_[light].set_extent(extent);
 
-    light_powers_[light] = max_component(lights_[light].power(aabb(), *this));
-
     uint32_t const f = prop_frames_[entity];
 
     if (prop::Null == f) {
@@ -575,6 +573,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
         light_aabbs_[light] = bb;
         light_cones_[light] = cone;
     }
+
+    light_aabbs_[light].bounds[1][3] = max_component(lights_[light].power(aabb(), *this));
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) {
@@ -629,7 +629,6 @@ Scene::Prop_ptr Scene::allocate_prop() {
 void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) {
     lights_.emplace_back(type, entity, part);
 
-    light_powers_.emplace_back(0.f);
     light_aabbs_.emplace_back(AABB(float3(0.f), float3(0.f)));
     light_cones_.emplace_back(float4(0.f, 0.f, 0.f, Pi));
 }

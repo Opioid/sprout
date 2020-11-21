@@ -287,7 +287,6 @@ class Scene {
     std::vector<AABB> prop_aabbs_;
 
     std::vector<light::Light> lights_;
-    std::vector<float>        light_powers_;
     std::vector<AABB>         light_aabbs_;
     std::vector<float4>       light_cones_;
 
