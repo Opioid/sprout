@@ -33,7 +33,7 @@ static inline float importance(float3_p center, float3_p p, float3_p n, float4_p
                                float power, bool total_sphere) {
     float3 const axis = center - p;
 
-    float const l = std::max(length(axis), 0.0001f);
+    float const l = std::max(length(axis), material::Dot_min);
 
     float const sin_cu = std::min(radius / l, 1.f);
     float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
@@ -55,14 +55,14 @@ static inline float importance(float3_p center, float3_p p, float3_p n, float4_p
     float const base  = power / (d_min * d_min);
 
     if (total_sphere) {
-        return std::max(d2 * base, 0.001f);
+        return std::max(d2 * base, material::Dot_min);
     }
 
     float const cos_n = saturate(dot(n, na));
     float const sin_n = std::sqrt(1.f - cos_n * cos_n);
     float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
-    return std::max(d2 * angle * base, 0.001f);
+    return std::max(d2 * angle * base, material::Dot_min);
 }
 
 static inline float importance(float3_p center, float3_p p0, float3_p p1, float3_p dir,
@@ -77,7 +77,7 @@ static inline float importance(float3_p center, float3_p p0, float3_p p1, float3
 
     float const uv2l = length(uv2);
 
-    if (uv2l < 0.00001f) {
+    if (uv2l < material::Dot_min) {
         return power;
     }
 
@@ -96,7 +96,7 @@ static inline float importance(float3_p center, float3_p p0, float3_p p1, float3
 
     float3 const closest_point = p0 + delta * dir;
 
-    float const l = std::max(distance(closest_point, center), 0.0001f);
+    float const l = std::max(distance(closest_point, center), material::Dot_min);
 
     float const sin_cu = std::min(radius / l, 1.f);
     float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
@@ -123,7 +123,7 @@ static inline float importance(float3_p center, float3_p p0, float3_p p1, float3
     float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
 
-    return std::max((d2 * power) / l, 0.001f);
+    return std::max((d2 * power) / l, material::Dot_min);
 }
 
 template<typename Set>
