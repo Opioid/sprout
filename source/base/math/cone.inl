@@ -19,7 +19,7 @@ static inline float4 merge(float4_p a, float4_p b) {
         std::swap(a_angle, b_angle);
     }
 
-    float const d_angle = std::acos(dot(a.xyz(), b.xyz()));
+    float const d_angle = std::acos(clamp(dot(a.xyz(), b.xyz()), -1.f, 1.f));
 
     if (std::min(d_angle + b_angle, Pi) <= a_angle) {
         return a;
