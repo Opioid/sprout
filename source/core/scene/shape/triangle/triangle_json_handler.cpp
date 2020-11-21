@@ -2,7 +2,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 
-namespace scene::shape::triangle {
+namespace scene::shape::triangle::serialize {
 
 Json_handler::Json_handler() {
     clear();

@@ -8,6 +8,43 @@
 
 namespace scene::shape::triangle {
 
+struct Part {
+    using Distribution_1D = math::Distribution_1D;
+
+    ~Part();
+
+    void init(uint32_t part, bvh::Tree const& tree);
+
+    light::Light_pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
+
+    Distribution_1D::Discrete sample(float r) const;
+
+    AABB const& light_aabb(uint32_t light) const;
+
+    float4_p light_cone(uint32_t light) const;
+
+    float light_power(uint32_t light) const;
+
+    uint32_t material;
+
+    uint32_t num_triangles = 0xFFFFFFFF;
+
+    uint32_t* triangle_mapping = nullptr;
+
+    AABB* aabbs = nullptr;
+
+    float4* cones = nullptr;
+
+    Distribution_1D distribution;
+
+    light::Primitive_tree light_tree;
+
+    AABB aabb;
+
+    float4 cone;
+};
+
+
 class alignas(64) Mesh final : public Shape {
   public:
     Mesh();
@@ -51,6 +88,10 @@ class alignas(64) Mesh final : public Shape {
     bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 
+    bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo,
+                        float area, bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                        Sample_to& sample) const final;
+
     bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool two_sided,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
 
@@ -90,34 +131,6 @@ class alignas(64) Mesh final : public Shape {
 
   private:
     bvh::Tree tree_;
-
-    struct Part {
-        using Distribution_1D = math::Distribution_1D;
-
-        ~Part();
-
-        void init(uint32_t part, bvh::Tree const& tree);
-
-        Distribution_1D::Discrete sample(float r) const;
-
-        uint32_t material;
-
-        uint32_t num_triangles = 0xFFFFFFFF;
-
-        uint32_t* triangle_mapping = nullptr;
-
-        AABB* aabbs = nullptr;
-
-        float4* cones = nullptr;
-
-        Distribution_1D distribution;
-
-        light::Primitive_tree light_tree;
-
-        AABB aabb;
-
-        float4 cone;
-    };
 
     Part* parts_;
 };

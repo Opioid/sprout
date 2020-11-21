@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace scene::shape::triangle {
+namespace scene::shape::triangle::serialize {
 
 class Json_handler;
 

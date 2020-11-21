@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace scene::shape::triangle {
+namespace scene::shape::triangle::serialize {
 
 struct Part {
     Part() = default;

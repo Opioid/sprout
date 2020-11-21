@@ -1,5 +1,4 @@
 #include "triangle_mesh_exporter.hpp"
-
 #include "base/math/vector3.inl"
 #include "base/string/string.hpp"
 #include "triangle_json_handler.hpp"
@@ -11,7 +10,7 @@
 #include <iostream>
 #include "base/math/print.hpp"
 
-namespace scene::shape::triangle {
+namespace scene::shape::triangle::serialize {
 
 static void newline(std::ostream& stream, uint32_t num_tabs) {
     stream << std::endl;

@@ -32,7 +32,7 @@ namespace scene::shape::triangle {
 #ifdef SU_DEBUG
 bool check(std::vector<Vertex> const& vertices, std::string const& filename);
 
-bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triangles,
+bool check_and_fix(std::vector<serialize::Part>& parts, std::vector<Index_triangle>& triangles,
                    std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
@@ -61,7 +61,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
 
-    Json_handler handler;
+    serialize::Json_handler handler;
 
     {
         static size_t constexpr Buffer_size = 8192;
@@ -266,7 +266,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
                                      Resources& resources) {
     auto collection = new Morph_target_collection;
 
-    Json_handler handler;
+    serialize::Json_handler handler;
 
     static size_t constexpr Buffer_size = 8192;
 
@@ -379,12 +379,12 @@ void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle cons
 }
 
 template <typename Index>
-void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index const* const indices,
+void fill_triangles_delta(uint32_t num_parts, serialize::Part const* const parts, Index const* const indices,
                           Index_triangle* const triangles) {
     int32_t previous_index(0);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
-        Part const& p = parts[i];
+        auto const& p = parts[i];
 
         uint32_t const triangles_start = p.start_index / 3;
         uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
@@ -412,10 +412,10 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
 }
 
 template <typename Index>
-void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* const indices,
+void fill_triangles(uint32_t num_parts, serialize::Part const* const parts, Index const* const indices,
                     Index_triangle* const triangles) {
     for (uint32_t i = 0; i < num_parts; ++i) {
-        Part const& p = parts[i];
+        auto const& p = parts[i];
 
         uint32_t const triangles_start = p.start_index / 3;
         uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
@@ -463,7 +463,7 @@ Shape* Provider::load_binary(std::istream& stream, Threads& threads) {
 
     uint32_t num_parts = 0;
 
-    memory::Buffer<Part> parts;
+    memory::Buffer<serialize::Part> parts;
 
     uint64_t vertices_offset = 0;
     uint64_t vertices_size   = 0;
@@ -492,7 +492,7 @@ Shape* Provider::load_binary(std::istream& stream, Threads& threads) {
             uint32_t i = 0;
 
             for (auto const& pn : n.value.GetArray()) {
-                Part& p = parts[i];
+                auto& p = parts[i];
 
                 p.start_index    = json::read_uint(pn, "start_index");
                 p.num_indices    = json::read_uint(pn, "num_indices");
@@ -713,7 +713,7 @@ bool check(std::vector<Vertex> const& vertices, std::string const& filename) {
     return true;
 }
 
-bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triangles,
+bool check_and_fix(std::vector<serialize::Part>& parts, std::vector<Index_triangle>& triangles,
                    std::vector<Vertex>& vertices, std::string const& /*filename*/) {
     bool success = true;
 

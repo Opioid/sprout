@@ -13,6 +13,10 @@ namespace scene {
 
 class Scene;
 
+namespace shape::triangle {
+struct Part;
+}
+
 namespace light {
 
 class Light;
@@ -52,9 +56,9 @@ class Tree {
 
     void allocate_light_mapping(uint32_t num_lights);
 
-    void allocate(uint32_t num_infinite_lights);
-
     void allocate_nodes(uint32_t num_nodes);
+
+    void allocate(uint32_t num_infinite_lights);
 
     float infinite_weight_;
     float infinite_guard_;
@@ -77,28 +81,52 @@ class Tree {
 };
 
 class Primitive_tree {
+public:
 
+    using Part = shape::triangle::Part;
+
+    Primitive_tree();
+
+    ~Primitive_tree();
+
+    Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                      Part const& part) const;
+
+    void allocate_light_mapping(uint32_t num_lights);
+
+    void allocate_nodes(uint32_t num_nodes);
+
+
+    uint32_t num_lights_;
+    uint32_t num_nodes_;
+
+    Node*     nodes_;
+    uint32_t* node_middles_;
+
+    uint32_t* light_orders_;
+    uint32_t* light_mapping_;
 };
 
 using UInts = uint32_t const* const;
-using AABBs = AABB const* const;
-using Cones = float4 const* const;
 
 class Tree_builder {
   public:
+    using Part = shape::triangle::Part;
+
     Tree_builder();
 
     ~Tree_builder();
 
     void build(Tree& tree, Scene const& scene);
 
-    void build(Primitive_tree& tree, uint32_t num_primitives, AABBs aabbs, Cones cones);
+    void build(Primitive_tree& tree, Part const& part);
 
     struct Split_candidate {
         Split_candidate();
 
+        template <typename Set>
         void init(uint32_t begin, uint32_t end, uint32_t split, float surface_area,
-                  float cone_weight, UInts lights, Scene const& scene);
+                  float cone_weight, UInts lights, Set const& set);
 
         uint32_t split_node;
 
@@ -107,6 +135,8 @@ class Tree_builder {
 
   private:
     uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
+
+    uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Part const& part);
 
     void serialize(Node* nodes, uint32_t* node_middles);
 
