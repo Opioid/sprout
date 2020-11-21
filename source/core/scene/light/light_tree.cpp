@@ -901,12 +901,9 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part) {
 template <typename Set>
 static void sort_lights(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t axis,
                         Set const& set) {
-    SOFT_ASSERT(begin < end);
-    SOFT_ASSERT(axis < 3);
-
     std::sort(lights + begin, lights + end, [&set, axis](uint32_t a, uint32_t b) noexcept {
-        float3 const ac = set.light_aabb(0).position();
-        float3 const bc = set.light_aabb(1).position();
+        float3 const ac = set.light_aabb(a).position();
+        float3 const bc = set.light_aabb(b).position();
 
         return ac[axis] < bc[axis];
     });

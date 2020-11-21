@@ -72,8 +72,7 @@ void Part::init(uint32_t part, bvh::Tree const& tree) {
         float3 vc;
         tree.triangle(t, va, vb, vc);
 
-        AABB box;
-
+        AABB box(AABB::empty());
         box.insert(va);
         box.insert(vb);
         box.insert(vc);
