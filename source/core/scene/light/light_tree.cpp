@@ -929,7 +929,7 @@ static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end
 
 static float cone_importance(float cos) {
     float const o = std::acos(cos);
-    float const w = std::min(o, Pi);
+    float const w = std::min(o + (Pi / 2.f), Pi);
 
     float const sin = std::sin(o);
 
