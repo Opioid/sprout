@@ -92,6 +92,9 @@ public:
     Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
                       Part const& part) const;
 
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
+              Part const& part) const;
+
     void allocate_light_mapping(uint32_t num_lights);
 
     void allocate_nodes(uint32_t num_nodes);

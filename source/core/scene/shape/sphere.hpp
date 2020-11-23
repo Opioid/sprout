@@ -39,7 +39,7 @@ class Sphere final : public Shape {
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, Intersection const& isec, Transformation const& trafo, float area,
+    float pdf(Ray const& ray, float3_p n, Intersection const& isec, Transformation const& trafo, float area,
               bool two_sided, bool total_sphere) const final;
 
     float pdf_volume(Ray const& ray, Intersection const& isec, Transformation const& trafo,

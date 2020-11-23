@@ -282,7 +282,7 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& trafo, float are
     return true;
 }
 
-float Rectangle::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& trafo,
+float Rectangle::pdf(Ray const& ray, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& trafo,
                      float area, bool two_sided, bool /*total_sphere*/) const {
     float3_p normal = trafo.rotation.r[2];
 
@@ -343,7 +343,7 @@ bool Rectangle::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /
 
 float Rectangle::pdf_uv(Ray const& ray, Intersection const& isec, Transformation const& trafo,
                         float area, bool two_sided) const {
-    return pdf(ray, isec, trafo, area, two_sided, false);
+    return pdf(ray, float3(0.f), isec, trafo, area, two_sided, false);
 }
 
 float Rectangle::uv_weight(float2 /*uv*/) const {

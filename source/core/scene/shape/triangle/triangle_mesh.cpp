@@ -124,6 +124,14 @@ light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float 
     return {triangle_mapping[pick.id], pick.pdf / relative_primitive_area};
 }
 
+float Part::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
+    float const pdf = light_tree.pdf(p, n, total_sphere, id, *this);
+
+    float const relative_primitive_area = distribution.pdf(id);
+
+    return pdf / relative_primitive_area;
+}
+
 math::Distribution_1D::Discrete Part::sample(float r) const {
     auto const result = distribution.sample_discrete(r);
     return {triangle_mapping[result.offset], result.pdf};
@@ -147,9 +155,10 @@ float Part::light_power(uint32_t light) const {
     return aabbs[light].bounds[1][3];
 }
 
-Mesh::Mesh() : Shape(Properties(Property::Complex, Property::Finite)), parts_(nullptr) {}
+Mesh::Mesh() : Shape(Properties(Property::Complex, Property::Finite)), parts_(nullptr), primitive_mapping_(nullptr) {}
 
 Mesh::~Mesh() {
+    delete[] primitive_mapping_;
     delete[] parts_;
 }
 
@@ -403,6 +412,16 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 
     sample = Sample_to(dir, float3(tc), pdf * s.pdf, offset_b(d));
 
+#ifdef SU_DEBUG
+    uint32_t const pm = primitive_mapping_[s.id];
+
+        float const guessed_pdf = parts_[part].pdf(op, n, two_sided, pm);
+
+        float const diff = std::abs(guessed_pdf - s.pdf);
+
+        SOFT_ASSERT(diff < 1e-8f);
+#endif
+
     return true;
 }
 
@@ -469,8 +488,8 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
     return true;
 }
 
-float Mesh::pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& /*trafo*/,
-                float area, bool two_sided, bool /*total_sphere*/) const {
+float Mesh::pdf(Ray const& ray, float3_p n, shape::Intersection const& isec, Transformation const& trafo,
+                float area, bool two_sided, bool total_sphere) const {
     float c = -dot(isec.geo_n, ray.direction);
 
     if (two_sided) {
@@ -478,7 +497,15 @@ float Mesh::pdf(Ray const& ray, shape::Intersection const& isec, Transformation 
     }
 
     float const sl = ray.max_t() * ray.max_t();
-    return sl / (c * area);
+    float const pdf = sl / (c * area);
+
+    float3 const op = trafo.world_to_object_point(ray.origin);
+
+    uint32_t const pm = primitive_mapping_[isec.primitive];
+
+    float const tri_pdf = parts_[isec.part].pdf(op, n, total_sphere, pm);
+
+    return pdf * tri_pdf;
 }
 
 float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
@@ -565,13 +592,17 @@ void Mesh::prepare_sampling(uint32_t part) {
     auto& p = parts_[part];
 
     // This counts the triangles for _every_ part as an optimization
-    if (0xFFFFFFFF == p.num_triangles) {
+    if (!primitive_mapping_) {
+        primitive_mapping_ = new uint32_t[tree_.num_triangles()];
+
         for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
             parts_[i].num_triangles = 0;
         }
 
         for (uint32_t i = 0, len = tree_.num_triangles(); i < len; ++i) {
-            ++parts_[tree_.triangle_part(i)].num_triangles;
+            uint32_t const pm = parts_[tree_.triangle_part(i)].num_triangles++;
+
+            primitive_mapping_[i] = pm;
         }
     }
 

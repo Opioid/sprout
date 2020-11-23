@@ -240,7 +240,7 @@ bool Cube::sample_volume(uint32_t /*part*/, float3_p p, Transformation const& tr
     return true;
 }
 
-float Cube::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& trafo,
+float Cube::pdf(Ray const& ray, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& trafo,
                 float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
     float3 const axis                = trafo.position - ray.origin;
     float const  axis_squared_length = squared_length(axis);

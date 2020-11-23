@@ -73,7 +73,7 @@ bool Null::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*ar
     return false;
 }
 
-float Null::pdf(Ray const& /*ray*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
+float Null::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
                 float /*area*/, bool /*two_sided*/, bool /*total_Null*/) const {
     return 0.f;
 }

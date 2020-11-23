@@ -215,7 +215,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*trafo*/, 
     return false;
 }
 
-float Morphable_mesh::pdf(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
+float Morphable_mesh::pdf(Ray const& /*ray*/, float3_p /*n*/, shape::Intersection const& /*isec*/,
                           Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                           bool /*total_sphere*/) const {
     return 0.f;

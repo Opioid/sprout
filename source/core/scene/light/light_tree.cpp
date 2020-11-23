@@ -269,8 +269,9 @@ struct Node {
         return {light_mapping[children_or_light + l.offset], l.pdf};
     }
 
+    template<typename Set>
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-              uint32_t const* const light_mapping, Scene const& scene) const {
+              uint32_t const* const light_mapping, Set const& set) const {
         if (1 == num_lights) {
             return 1.f;
         }
@@ -279,7 +280,7 @@ struct Node {
 
         for (uint32_t i = 0, len = num_lights; i < len; ++i) {
             weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i],
-                                      scene);
+                                      set);
         }
 
         return distribution_pdf<4>(weights, id - children_or_light);
@@ -699,10 +700,6 @@ Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_spher
 
                 SOFT_ASSERT(pt > 0.f);
 
-                if (p0 <= 0.f ||  p1 <= 0.f) {
-                    std::cout << p0 << "  " << p1  << std::endl;
-                }
-
                 p0 /= pt;
                 p1 /= pt;
 
@@ -725,6 +722,44 @@ Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_spher
                 SOFT_ASSERT(std::isfinite(pick.pdf));
 
                 return {pick.id, pick.pdf * pdf};
+            }
+        }
+}
+
+float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
+                          Part const& part) const {
+    uint32_t const lo = light_orders_[id];
+
+        float pdf = 1.f;
+
+        for (uint32_t nid = 0;;) {
+            Node const& node = nodes_[nid];
+
+            uint32_t const middle = node_middles_[nid];
+
+            if (middle > 0) {
+                uint32_t const c0 = node.children_or_light;
+                uint32_t const c1 = c0 + 1;
+
+                float const p0 = nodes_[c0].weight(p, n, total_sphere);
+                float const p1 = nodes_[c1].weight(p, n, total_sphere);
+
+                float const pt = p0 + p1;
+
+                SOFT_ASSERT(pt > 0.f);
+
+                if (lo < middle) {
+                    nid = c0;
+                    pdf *= p0 / pt;
+                } else {
+                    nid = c1;
+                    pdf *= p1 / pt;
+                }
+            } else {
+                SOFT_ASSERT(std::isfinite(pdf));
+                SOFT_ASSERT(pdf > 0.f);
+
+                return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, part);
             }
         }
 }

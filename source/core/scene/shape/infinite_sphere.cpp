@@ -170,7 +170,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*trafo*/,
     return false;
 }
 
-float Infinite_sphere::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
+float Infinite_sphere::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                            bool total_sphere) const {
     if (total_sphere) {

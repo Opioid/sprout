@@ -286,7 +286,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& trafo, float area, bo
     return true;
 }
 
-float Disk::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& trafo,
+float Disk::pdf(Ray const& ray, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& trafo,
                 float area, bool two_sided, bool /*total_sphere*/) const {
     float3 const normal = trafo.rotation.r[2];
 

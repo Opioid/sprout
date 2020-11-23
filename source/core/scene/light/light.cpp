@@ -419,12 +419,12 @@ bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
     return sample(trafo, sampler, sampler_d, importance, bounds, worker, result);
 }
 
-static inline float prop_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
+static inline float prop_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray, float3_p n,
                              shape::Intersection const& isec, Transformation const& trafo,
                              bool total_sphere, Worker const& worker) {
     bool const two_sided = worker.scene().prop_material(prop, part)->is_two_sided();
 
-    return worker.scene().prop_shape(prop)->pdf(ray, isec, trafo, area, two_sided, total_sphere);
+    return worker.scene().prop_shape(prop)->pdf(ray, n, isec, trafo, area, two_sided, total_sphere);
 }
 
 static inline float prop_image_pdf(uint32_t prop, uint32_t part, float area, Ray const& ray,
@@ -461,7 +461,7 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume,
     return shape_pdf * material_pdf;
 }
 
-float Light::pdf(Ray const& ray, Intersection const& isec, bool total_sphere, Filter filter,
+float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere, Filter filter,
                  Worker const& worker) const {
     Transformation temp;
     auto const&    trafo = transformation_at(ray.time, temp, worker.scene());
@@ -470,7 +470,7 @@ float Light::pdf(Ray const& ray, Intersection const& isec, bool total_sphere, Fi
         case Type::Null:
             return 0.f;
         case Type::Prop:
-            return prop_pdf(prop_, part_, extent_, ray, isec, trafo, total_sphere, worker);
+            return prop_pdf(prop_, part_, extent_, ray, n, isec, trafo, total_sphere, worker);
         case Type::Prop_image:
             return prop_image_pdf(prop_, part_, extent_, ray, isec, trafo, filter, worker);
         case Type::Volume:

@@ -110,7 +110,7 @@ class Shape {
 
     // All pdf functions implicitely assume that the passed
     // ray/isec/trafo combination actually lead to a hit.
-    virtual float pdf(Ray const& ray, Intersection const& isec, Transformation const& trafo,
+    virtual float pdf(Ray const& ray, float3_p n, Intersection const& isec, Transformation const& trafo,
                       float area, bool two_sided, bool total_sphere) const = 0;
 
     virtual float pdf_volume(Ray const& ray, Intersection const& isec, Transformation const& trafo,

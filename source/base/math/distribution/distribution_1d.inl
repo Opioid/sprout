@@ -182,8 +182,7 @@ inline void Distribution_1D::init_lut(uint32_t lut_size) {
 }
 
 static inline uint32_t mini_search(float const* buffer, uint32_t end, float key) {
-    uint32_t i = 0;
-    for (; i < end; ++i) {
+    for (uint32_t i = 0; i < end; ++i) {
         if (buffer[i] >= key) {
             return i;
         }

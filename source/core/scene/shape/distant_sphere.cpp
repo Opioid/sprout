@@ -209,7 +209,7 @@ bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& trafo, floa
     return true;
 }
 
-float Distant_sphere::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
+float Distant_sphere::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
                           Transformation const& /*trafo*/, float area, bool /*two_sided*/,
                           bool /*total_sphere*/) const {
     return 1.f / area;

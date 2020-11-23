@@ -159,7 +159,7 @@ bool Plane::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*a
     return false;
 }
 
-float Plane::pdf(Ray const& /*ray*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
+float Plane::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
                  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
     return 0.f;
 }

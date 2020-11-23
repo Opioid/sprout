@@ -17,6 +17,8 @@ struct Part {
 
     light::Light_pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
 
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const;
+
     Distribution_1D::Discrete sample(float r) const;
 
     AABB const& light_aabb(uint32_t light) const;
@@ -27,7 +29,7 @@ struct Part {
 
     uint32_t material;
 
-    uint32_t num_triangles = 0xFFFFFFFF;
+    uint32_t num_triangles;
 
     uint32_t* triangle_mapping = nullptr;
 
@@ -99,7 +101,7 @@ class alignas(64) Mesh final : public Shape {
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
+    float pdf(Ray const& ray, float3_p n, shape::Intersection const& isec, Transformation const& trafo,
               float area, bool two_sided, bool total_sphere) const final;
 
     float pdf_volume(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
@@ -133,6 +135,8 @@ class alignas(64) Mesh final : public Shape {
     bvh::Tree tree_;
 
     Part* parts_;
+
+    uint32_t* primitive_mapping_;
 };
 
 }  // namespace scene::shape::triangle
