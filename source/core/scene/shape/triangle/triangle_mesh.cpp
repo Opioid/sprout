@@ -118,7 +118,10 @@ void Part::init(uint32_t part, bvh::Tree const& tree) {
 
 light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float r) const {
     auto const pick = light_tree.random_light(p, n, total_sphere, r, *this);
-    return {triangle_mapping[pick.id], pick.pdf};
+
+    float const relative_primitive_area = distribution.pdf(pick.id);
+
+    return {triangle_mapping[pick.id], pick.pdf / relative_primitive_area};
 }
 
 math::Distribution_1D::Discrete Part::sample(float r) const {
@@ -396,7 +399,9 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
         return false;
     }
 
-    sample = Sample_to(dir, float3(tc), /*(sl / (c * area))*/sl / (c / s.pdf), offset_b(d));
+    float const pdf = sl / (c * area);
+
+    sample = Sample_to(dir, float3(tc), pdf * s.pdf, offset_b(d));
 
     return true;
 }
