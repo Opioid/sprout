@@ -270,8 +270,9 @@ struct Node {
         return {light_mapping[children_or_light + l.offset], l.pdf};
     }
 
+    template <typename Set>
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-              uint32_t const* const light_mapping, Scene const& scene) const {
+              uint32_t const* const light_mapping, Set const& set) const {
         if (1 == num_lights) {
             return 1.f;
         }
@@ -280,7 +281,7 @@ struct Node {
 
         for (uint32_t i = 0, len = num_lights; i < len; ++i) {
             weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i],
-                                      scene);
+                                      set);
         }
 
         return distribution_pdf<4>(weights, id - children_or_light);
@@ -718,20 +719,16 @@ Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_spher
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            //                Light_pick const pick = node.random_light(p, n, total_sphere, random,
-            //                light_mapping_,
-            //                                                        part);
+//            if (node.num_lights <= 4) {
+//                Light_pick const pick = node.random_light(p, n, total_sphere, random,
+//                                                          light_mapping_, part);
 
-            //   return {light_mapping[children_or_light + l.offset], l.pdf};
+//                return {pick.id, pick.pdf * pdf};
+//            } else {
+                auto const pick = distributions_[nid].sample_discrete(random);
 
-            auto const pick = distributions_[nid].sample_discrete(random);
-
-            SOFT_ASSERT(std::isfinite(pick.pdf));
-            SOFT_ASSERT(pick.pdf > 0.f);
-
-            return {light_mapping_[node.children_or_light + pick.offset], pick.pdf * pdf};
-
-            //      return {pick.id, pick.pdf * pdf};
+                return {light_mapping_[node.children_or_light + pick.offset], pick.pdf * pdf};
+//            }
         }
     }
 }
@@ -769,9 +766,11 @@ float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            return pdf * distributions_[nid].pdf(lo - node.children_or_light);
-
-            //    return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, part);
+//            if (node.num_lights <= 4) {
+//                return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, part);
+//            } else {
+                return pdf * distributions_[nid].pdf(lo - node.children_or_light);
+//            }
         }
     }
 }
@@ -934,7 +933,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part) {
 
     current_node_ = 1;
 
-    split(tree, 0, 0, num_finite_lights, 4 /*std::max(num_finite_lights / 8, 8u)*/, part);
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part);
 
     tree.allocate_nodes(current_node_);
     //    serialize(tree.nodes_, tree.node_middles_);
@@ -953,8 +952,9 @@ static void sort_lights(uint32_t* const lights, uint32_t begin, uint32_t end, ui
 }
 
 template <typename Set>
-static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t stride, uint32_t axis,
-                            Tree_builder::Split_candidate* candidates, Set const& set) {
+static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t stride,
+                            uint32_t axis, Tree_builder::Split_candidate* candidates,
+                            Set const& set) {
     sort_lights(lights, begin, end, axis, set);
 
     uint32_t j = 0;
@@ -1141,7 +1141,11 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
         node.middle            = 0;
         node.children_or_light = begin;
         node.num_lights        = len;
-      //  std::cout << len << std::endl;
+
+        if (len <= 4) {
+            std::cout << len << std::endl;
+        }
+
         return begin + len;
     }
 
