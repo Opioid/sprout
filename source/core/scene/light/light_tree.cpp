@@ -934,7 +934,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part) {
 
     current_node_ = 1;
 
-    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part);
+    split(tree, 0, 0, num_finite_lights, 4 /*std::max(num_finite_lights / 8, 8u)*/, part);
 
     tree.allocate_nodes(current_node_);
     //    serialize(tree.nodes_, tree.node_middles_);
@@ -954,12 +954,12 @@ static void sort_lights(uint32_t* const lights, uint32_t begin, uint32_t end, ui
 
 template <typename Set>
 static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t axis,
-                            float aabb_surface_area, float cone_weight,
+
                             Tree_builder::Split_candidate* candidates, Set const& set) {
     sort_lights(lights, begin, end, axis, set);
 
     for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-        candidates[j].init(begin, end, i, aabb_surface_area, cone_weight, lights, set);
+        candidates[j].init(begin, end, i, lights, set);
     }
 
     uint32_t const len = end - begin;
@@ -1058,29 +1058,29 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     uint3  split_nodes;
 
     {
-        evaluate_splits(lights, begin, end, 0, surface_area, cone_weight, candidates_, scene);
+        evaluate_splits(lights, begin, end, 0, candidates_, scene);
 
         float const reg = max_axis / extent[0];
 
-        weights[0]     = reg * candidates_[0].weight;
+        weights[0]     = reg * candidates_[0].weight / (surface_area * cone_weight);
         split_nodes[0] = candidates_[0].split_node;
     }
 
     {
-        evaluate_splits(lights, begin, end, 1, surface_area, cone_weight, candidates_, scene);
+        evaluate_splits(lights, begin, end, 1, candidates_, scene);
 
         float const reg = max_axis / extent[1];
 
-        weights[1]     = reg * candidates_[0].weight;
+        weights[1]     = reg * candidates_[0].weight / (surface_area * cone_weight);
         split_nodes[1] = candidates_[0].split_node;
     }
 
     {
-        evaluate_splits(lights, begin, end, 2, surface_area, cone_weight, candidates_, scene);
+        evaluate_splits(lights, begin, end, 2, candidates_, scene);
 
         float const reg = max_axis / extent[2];
 
-        weights[2]     = reg * candidates_[0].weight;
+        weights[2]     = reg * candidates_[0].weight / (surface_area * cone_weight);
         split_nodes[2] = candidates_[0].split_node;
     }
 
@@ -1155,29 +1155,29 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     uint3  split_nodes;
 
     {
-        evaluate_splits(lights, begin, end, 0, surface_area, cone_weight, candidates_, part);
+        evaluate_splits(lights, begin, end, 0, candidates_, part);
 
         float const reg = max_axis / extent[0];
 
-        weights[0]     = reg * candidates_[0].weight;
+        weights[0]     = reg * candidates_[0].weight / (surface_area * cone_weight);
         split_nodes[0] = candidates_[0].split_node;
     }
 
     {
-        evaluate_splits(lights, begin, end, 1, surface_area, cone_weight, candidates_, part);
+        evaluate_splits(lights, begin, end, 1, candidates_, part);
 
         float const reg = max_axis / extent[1];
 
-        weights[1]     = reg * candidates_[0].weight;
+        weights[1]     = reg * candidates_[0].weight / (surface_area * cone_weight);
         split_nodes[1] = candidates_[0].split_node;
     }
 
     {
-        evaluate_splits(lights, begin, end, 2, surface_area, cone_weight, candidates_, part);
+        evaluate_splits(lights, begin, end, 2, candidates_, part);
 
         float const reg = max_axis / extent[2];
 
-        weights[2]     = reg * candidates_[0].weight;
+        weights[2]     = reg * candidates_[0].weight / (surface_area * cone_weight);
         split_nodes[2] = candidates_[0].split_node;
     }
 
@@ -1204,8 +1204,7 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
 Tree_builder::Split_candidate::Split_candidate() = default;
 
 template <typename Set>
-void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split,
-                                         float surface_area, float cone_weight, UInts lights,
+void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, UInts lights,
                                          Set const& set) {
     AABB   box_a(AABB::empty());
     float4 cone_a(1.f);
@@ -1237,9 +1236,8 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     split_node = split;
 
-    weight = (((power_a * cone_weight_a * box_a.surface_area()) +
-               (power_b * cone_weight_b * box_b.surface_area())) /
-              (surface_area * cone_weight));
+    weight = (power_a * cone_weight_a * box_a.surface_area()) +
+             (power_b * cone_weight_b * box_b.surface_area());
 }
 
 void Tree_builder::serialize(Node* nodes, uint32_t* node_middles) {

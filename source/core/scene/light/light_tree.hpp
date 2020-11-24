@@ -127,8 +127,7 @@ class Tree_builder {
         Split_candidate();
 
         template <typename Set>
-        void init(uint32_t begin, uint32_t end, uint32_t split, float surface_area,
-                  float cone_weight, UInts lights, Set const& set);
+        void init(uint32_t begin, uint32_t end, uint32_t split, UInts lights, Set const& set);
 
         uint32_t split_node;
 
