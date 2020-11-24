@@ -379,8 +379,8 @@ void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle cons
 }
 
 template <typename Index>
-void fill_triangles_delta(uint32_t num_parts, serialize::Part const* const parts, Index const* const indices,
-                          Index_triangle* const triangles) {
+void fill_triangles_delta(uint32_t num_parts, serialize::Part const* const parts,
+                          Index const* const indices, Index_triangle* const triangles) {
     int32_t previous_index(0);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
@@ -412,8 +412,8 @@ void fill_triangles_delta(uint32_t num_parts, serialize::Part const* const parts
 }
 
 template <typename Index>
-void fill_triangles(uint32_t num_parts, serialize::Part const* const parts, Index const* const indices,
-                    Index_triangle* const triangles) {
+void fill_triangles(uint32_t num_parts, serialize::Part const* const parts,
+                    Index const* const indices, Index_triangle* const triangles) {
     for (uint32_t i = 0; i < num_parts; ++i) {
         auto const& p = parts[i];
 

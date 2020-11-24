@@ -674,4 +674,4 @@ void Exporter::write_json(std::string const& filename, Json_handler& handler) {
     stream << "}";
 }
 
-}  // namespace scene::shape::triangle
+}  // namespace scene::shape::triangle::serialize

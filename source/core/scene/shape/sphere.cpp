@@ -338,9 +338,9 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32
     return true;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3_p p, Transformation const& trafo, float /*area*/,
-                    bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                    Sample_to& sample) const {
+bool Sphere::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation const& trafo,
+                    float /*area*/, bool /*two_sided*/, bool /*total_sphere*/, Sampler&  sampler,
+                    RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
     float3 const v = trafo.position - p;
 
     float const axis_length   = length(v);
@@ -393,8 +393,9 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& trafo, float area, 
     return true;
 }
 
-float Sphere::pdf(Ray const& ray, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& trafo,
-                  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+float Sphere::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+                  Transformation const& trafo, float /*area*/, bool /*two_sided*/,
+                  bool /*total_sphere*/) const {
     float3 const axis = trafo.position - ray.origin;
 
     float const axis_length   = length(axis);

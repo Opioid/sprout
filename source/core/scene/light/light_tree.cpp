@@ -2,6 +2,7 @@
 #include "base/math/cone.inl"
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/memory/array.inl"
+#include "base/memory/buffer.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "scene/material/material_sample_helper.hpp"
 #include "scene/scene.inl"
@@ -126,7 +127,7 @@ static inline float importance(float3_p center, float3_p p0, float3_p p1, float3
     return std::max((d2 * power) / l, material::Dot_min);
 }
 
-template<typename Set>
+template <typename Set>
 static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t light,
                           Set const& set) {
     AABB const   aabb   = set.light_aabb(light);
@@ -233,7 +234,7 @@ struct Node {
         return split(closest_point);
     }
 
-    template<typename Set>
+    template <typename Set>
     Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
                             UInts light_mapping, Set const& set) const {
         if (1 == num_lights) {
@@ -269,9 +270,8 @@ struct Node {
         return {light_mapping[children_or_light + l.offset], l.pdf};
     }
 
-    template<typename Set>
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-              uint32_t const* const light_mapping, Set const& set) const {
+              uint32_t const* const light_mapping, Scene const& scene) const {
         if (1 == num_lights) {
             return 1.f;
         }
@@ -280,7 +280,7 @@ struct Node {
 
         for (uint32_t i = 0, len = num_lights; i < len; ++i) {
             weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i],
-                                      set);
+                                      scene);
         }
 
         return distribution_pdf<4>(weights, id - children_or_light);
@@ -672,96 +672,108 @@ Primitive_tree::Primitive_tree()
       num_nodes_(0),
       nodes_(nullptr),
       node_middles_(nullptr),
+      distributions_(nullptr),
       light_orders_(nullptr),
       light_mapping_(nullptr) {}
 
 Primitive_tree::~Primitive_tree() {
     delete[] light_mapping_;
     delete[] light_orders_;
+    delete[] distributions_;
     delete[] node_middles_;
     delete[] nodes_;
 }
 
 Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                        Part const& part) const {
+                                        Part const& part) const {
     float pdf = 1.f;
 
-        for (uint32_t nid = 0;;) {
-            Node const& node = nodes_[nid];
+    for (uint32_t nid = 0;;) {
+        Node const& node = nodes_[nid];
 
-            if (1 == node.has_children) {
-                uint32_t const c0 = node.children_or_light;
-                uint32_t const c1 = c0 + 1;
+        if (1 == node.has_children) {
+            uint32_t const c0 = node.children_or_light;
+            uint32_t const c1 = c0 + 1;
 
-                float p0 = nodes_[c0].weight(p, n, total_sphere);
-                float p1 = nodes_[c1].weight(p, n, total_sphere);
+            float p0 = nodes_[c0].weight(p, n, total_sphere);
+            float p1 = nodes_[c1].weight(p, n, total_sphere);
 
-                float const pt = p0 + p1;
+            float const pt = p0 + p1;
 
-                SOFT_ASSERT(pt > 0.f);
+            SOFT_ASSERT(pt > 0.f);
 
-                p0 /= pt;
-                p1 /= pt;
+            p0 /= pt;
+            p1 /= pt;
 
-                if (random < p0) {
-                    nid = c0;
-                    pdf *= p0;
-                    random /= p0;
-                } else {
-                    nid = c1;
-                    pdf *= p1;
-                    random = (random - p0) / p1;
-                }
+            if (random < p0) {
+                nid = c0;
+                pdf *= p0;
+                random /= p0;
             } else {
-                SOFT_ASSERT(std::isfinite(pdf));
-                SOFT_ASSERT(pdf > 0.f);
-
-                Light_pick const pick = node.random_light(p, n, total_sphere, random, light_mapping_,
-                                                        part);
-
-                SOFT_ASSERT(std::isfinite(pick.pdf));
-
-                return {pick.id, pick.pdf * pdf};
+                nid = c1;
+                pdf *= p1;
+                random = (random - p0) / p1;
             }
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
+
+            //                Light_pick const pick = node.random_light(p, n, total_sphere, random,
+            //                light_mapping_,
+            //                                                        part);
+
+            //   return {light_mapping[children_or_light + l.offset], l.pdf};
+
+            auto const pick = distributions_[nid].sample_discrete(random);
+
+            SOFT_ASSERT(std::isfinite(pick.pdf));
+            SOFT_ASSERT(pick.pdf > 0.f);
+
+            return {light_mapping_[node.children_or_light + pick.offset], pick.pdf * pdf};
+
+            //      return {pick.id, pick.pdf * pdf};
         }
+    }
 }
 
 float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
                           Part const& part) const {
     uint32_t const lo = light_orders_[id];
 
-        float pdf = 1.f;
+    float pdf = 1.f;
 
-        for (uint32_t nid = 0;;) {
-            Node const& node = nodes_[nid];
+    for (uint32_t nid = 0;;) {
+        Node const& node = nodes_[nid];
 
-            uint32_t const middle = node_middles_[nid];
+        uint32_t const middle = node_middles_[nid];
 
-            if (middle > 0) {
-                uint32_t const c0 = node.children_or_light;
-                uint32_t const c1 = c0 + 1;
+        if (middle > 0) {
+            uint32_t const c0 = node.children_or_light;
+            uint32_t const c1 = c0 + 1;
 
-                float const p0 = nodes_[c0].weight(p, n, total_sphere);
-                float const p1 = nodes_[c1].weight(p, n, total_sphere);
+            float const p0 = nodes_[c0].weight(p, n, total_sphere);
+            float const p1 = nodes_[c1].weight(p, n, total_sphere);
 
-                float const pt = p0 + p1;
+            float const pt = p0 + p1;
 
-                SOFT_ASSERT(pt > 0.f);
+            SOFT_ASSERT(pt > 0.f);
 
-                if (lo < middle) {
-                    nid = c0;
-                    pdf *= p0 / pt;
-                } else {
-                    nid = c1;
-                    pdf *= p1 / pt;
-                }
+            if (lo < middle) {
+                nid = c0;
+                pdf *= p0 / pt;
             } else {
-                SOFT_ASSERT(std::isfinite(pdf));
-                SOFT_ASSERT(pdf > 0.f);
-
-                return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, part);
+                nid = c1;
+                pdf *= p1 / pt;
             }
+        } else {
+            SOFT_ASSERT(std::isfinite(pdf));
+            SOFT_ASSERT(pdf > 0.f);
+
+            return pdf * distributions_[nid].pdf(lo - node.children_or_light);
+
+            //    return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, part);
         }
+    }
 }
 
 void Primitive_tree::allocate_light_mapping(uint32_t num_lights) {
@@ -778,11 +790,13 @@ void Primitive_tree::allocate_light_mapping(uint32_t num_lights) {
 
 void Primitive_tree::allocate_nodes(uint32_t num_nodes) {
     if (num_nodes_ != num_nodes) {
+        delete[] distributions_;
         delete[] nodes_;
         delete[] node_middles_;
 
-        nodes_        = new Node[num_nodes];
-        node_middles_ = new uint32_t[num_nodes];
+        nodes_         = new Node[num_nodes];
+        node_middles_  = new uint32_t[num_nodes];
+        distributions_ = new Distribution_1D[num_nodes];
 
         num_nodes_ = num_nodes;
     }
@@ -892,45 +906,39 @@ void Tree_builder::build(Tree& tree, Scene const& scene) {
 }
 
 void Tree_builder::build(Primitive_tree& tree, Part const& part) {
-
     uint32_t const num_finite_lights = part.num_triangles;
 
     tree.allocate_light_mapping(num_finite_lights);
 
-        light_order_ = 0;
+    light_order_ = 0;
 
-        uint32_t lm = 0;
+    uint32_t lm = 0;
 
-        for (uint32_t l = 0, len = part.num_triangles; l < len; ++l) {
+    for (uint32_t l = 0, len = part.num_triangles; l < len; ++l) {
+        tree.light_mapping_[lm++] = l;
+    }
 
-                tree.light_mapping_[lm++] = l;
+    delete[] build_nodes_;
 
-        }
+    uint32_t const num_nodes = 2 * num_finite_lights - 1;
 
-            delete[] build_nodes_;
+    build_nodes_ = new Build_node[num_nodes];
 
-            uint32_t const num_nodes = 2 * num_finite_lights - 1;
+    delete[] candidates_;
 
-            build_nodes_ = new Build_node[num_nodes];
+    if (num_finite_lights >= 2) {
+        candidates_ = new Split_candidate[num_finite_lights - 1];
+    } else {
+        candidates_ = nullptr;
+    }
 
-            delete[] candidates_;
+    current_node_ = 1;
 
-            if (num_finite_lights >= 2) {
-                candidates_ = new Split_candidate[num_finite_lights - 1];
-            } else {
-                candidates_ = nullptr;
-            }
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part);
 
-            current_node_ = 1;
-
-
-            split(tree, 0, 0, num_finite_lights, part);
-
-            tree.allocate_nodes(current_node_);
-            serialize(tree.nodes_, tree.node_middles_);
-
-
-
+    tree.allocate_nodes(current_node_);
+    //    serialize(tree.nodes_, tree.node_middles_);
+    serialize(tree, part);
 }
 
 template <typename Set>
@@ -1096,116 +1104,109 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     return c1_end;
 }
 
-uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Part const& part) {
+uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
+                             uint32_t max_primitives, Part const& part) {
     uint32_t* const lights = tree.light_mapping_;
 
-        Build_node& node = build_nodes_[node_id];
+    Build_node& node = build_nodes_[node_id];
 
-        uint32_t const len = end - begin;
+    uint32_t const len = end - begin;
 
-        if (len <= 4) {
-            AABB   bounds(AABB::empty());
-            float4 cone(1.f);
-            float  total_power(0.f);
+    AABB   bounds(AABB::empty());
+    float4 cone(1.f);
+    float  total_power(0.f);
 
-            for (uint32_t i = begin; i < end; ++i) {
-                uint32_t const l = lights[i];
+    for (uint32_t i = begin; i < end; ++i) {
+        uint32_t const l = lights[i];
 
-                bounds.merge_assign(part.light_aabb(l));
-                cone = cone::merge(cone, part.light_cone(l));
-                total_power += part.light_power(l);
+        bounds.merge_assign(part.light_aabb(l));
+        cone = cone::merge(cone, part.light_cone(l));
+        total_power += part.light_power(l);
+    }
 
-                tree.light_orders_[l] = light_order_++;
-            }
-
-            node.bounds            = bounds;
-            node.cone              = cone;
-            node.power             = total_power;
-            node.variance          = variance(lights, begin, end, part);
-            node.middle            = 0;
-            node.children_or_light = begin;
-            node.num_lights        = len;
-
-            return begin + len;
-        }
-
-        uint32_t const child0 = current_node_;
-
-        current_node_ += 2;
-
-        AABB   bounds(AABB::empty());
-        float4 cone(1.f);
-        float  total_power(0.f);
-
+    if (len <= max_primitives || cone[3] > 0.5f) {
         for (uint32_t i = begin; i < end; ++i) {
             uint32_t const l = lights[i];
 
-            bounds.merge_assign(part.light_aabb(l));
-            cone = cone::merge(cone, part.light_cone(l));
-            total_power += part.light_power(l);
+            tree.light_orders_[l] = light_order_++;
         }
-
-        float const  surface_area = bounds.surface_area();
-        float const  cone_weight  = cone_importance(cone[3]);
-        float3 const extent       = bounds.extent();
-        float const  max_axis     = max_component(extent);
-
-        float3 weights;
-        uint3  split_nodes;
-
-        {
-            evaluate_splits(lights, begin, end, 0, surface_area, cone_weight, candidates_, part);
-
-            float const reg = max_axis / extent[0];
-
-            weights[0]     = reg * candidates_[0].weight;
-            split_nodes[0] = candidates_[0].split_node;
-        }
-
-        {
-            evaluate_splits(lights, begin, end, 1, surface_area, cone_weight, candidates_, part);
-
-            float const reg = max_axis / extent[1];
-
-            weights[1]     = reg * candidates_[0].weight;
-            split_nodes[1] = candidates_[0].split_node;
-        }
-
-        {
-            evaluate_splits(lights, begin, end, 2, surface_area, cone_weight, candidates_, part);
-
-            float const reg = max_axis / extent[2];
-
-            weights[2]     = reg * candidates_[0].weight;
-            split_nodes[2] = candidates_[0].split_node;
-        }
-
-        uint32_t const axis = index_min_component(weights);
-
-        sort_lights(lights, begin, end, axis, part);
-
-        uint32_t const split_node = split_nodes[axis];
-
-        uint32_t const c0_end = split(tree, child0, begin, split_node, part);
-        uint32_t const c1_end = split(tree, child0 + 1, split_node, end, part);
 
         node.bounds            = bounds;
         node.cone              = cone;
         node.power             = total_power;
         node.variance          = variance(lights, begin, end, part);
-        node.middle            = c0_end;
-        node.children_or_light = child0;
+        node.middle            = 0;
+        node.children_or_light = begin;
         node.num_lights        = len;
+        std::cout << len << std::endl;
+        return begin + len;
+    }
 
-        return c1_end;
+    uint32_t const child0 = current_node_;
+
+    current_node_ += 2;
+
+    float const  surface_area = bounds.surface_area();
+    float const  cone_weight  = cone_importance(cone[3]);
+    float3 const extent       = bounds.extent();
+    float const  max_axis     = max_component(extent);
+
+    float3 weights;
+    uint3  split_nodes;
+
+    {
+        evaluate_splits(lights, begin, end, 0, surface_area, cone_weight, candidates_, part);
+
+        float const reg = max_axis / extent[0];
+
+        weights[0]     = reg * candidates_[0].weight;
+        split_nodes[0] = candidates_[0].split_node;
+    }
+
+    {
+        evaluate_splits(lights, begin, end, 1, surface_area, cone_weight, candidates_, part);
+
+        float const reg = max_axis / extent[1];
+
+        weights[1]     = reg * candidates_[0].weight;
+        split_nodes[1] = candidates_[0].split_node;
+    }
+
+    {
+        evaluate_splits(lights, begin, end, 2, surface_area, cone_weight, candidates_, part);
+
+        float const reg = max_axis / extent[2];
+
+        weights[2]     = reg * candidates_[0].weight;
+        split_nodes[2] = candidates_[0].split_node;
+    }
+
+    uint32_t const axis = index_min_component(weights);
+
+    sort_lights(lights, begin, end, axis, part);
+
+    uint32_t const split_node = split_nodes[axis];
+
+    uint32_t const c0_end = split(tree, child0, begin, split_node, max_primitives, part);
+    uint32_t const c1_end = split(tree, child0 + 1, split_node, end, max_primitives, part);
+
+    node.bounds            = bounds;
+    node.cone              = cone;
+    node.power             = total_power;
+    node.variance          = variance(lights, begin, end, part);
+    node.middle            = c0_end;
+    node.children_or_light = child0;
+    node.num_lights        = len;
+
+    return c1_end;
 }
 
 Tree_builder::Split_candidate::Split_candidate() = default;
 
-template<typename Set>
+template <typename Set>
 void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split,
-                                         float surface_area, float cone_weight,
-                                         UInts lights, Set const& set) {
+                                         float surface_area, float cone_weight, UInts lights,
+                                         Set const& set) {
     AABB   box_a(AABB::empty());
     float4 cone_a(1.f);
     float  power_a(0.f);
@@ -1258,6 +1259,39 @@ void Tree_builder::serialize(Node* nodes, uint32_t* node_middles) {
         dest.num_lights        = source.num_lights;
 
         node_middles[i] = source.middle;
+    }
+}
+
+void Tree_builder::serialize(Primitive_tree& tree, Part const& part) {
+    for (uint32_t i = 0, len = current_node_; i < len; ++i) {
+        Build_node const& source = build_nodes_[i];
+
+        Node& dest = tree.nodes_[i];
+
+        AABB const& bounds = source.bounds;
+
+        dest.center            = float4(bounds.position(), 0.5f * length(bounds.extent()));
+        dest.cone              = source.cone;
+        dest.power             = source.power;
+        dest.variance          = source.variance;
+        dest.has_children      = source.has_children() ? 1 : 0;
+        dest.children_or_light = source.children_or_light;
+        dest.num_lights        = source.num_lights;
+
+        tree.node_middles_[i] = source.middle;
+
+        if (!source.has_children()) {
+            uint32_t const first = source.children_or_light;
+            uint32_t const num   = source.num_lights;
+
+            memory::Buffer<float> powers(num);
+
+            for (uint32_t t = 0; t < num; ++t) {
+                powers[t] = part.light_power(tree.light_mapping_[t + first]);
+            }
+
+            tree.distributions_[i].init(powers, num);
+        }
     }
 }
 

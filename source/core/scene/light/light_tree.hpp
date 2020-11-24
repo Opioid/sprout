@@ -81,8 +81,7 @@ class Tree {
 };
 
 class Primitive_tree {
-public:
-
+  public:
     using Part = shape::triangle::Part;
 
     Primitive_tree();
@@ -90,21 +89,21 @@ public:
     ~Primitive_tree();
 
     Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                      Part const& part) const;
+                            Part const& part) const;
 
-    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-              Part const& part) const;
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, Part const& part) const;
 
     void allocate_light_mapping(uint32_t num_lights);
 
     void allocate_nodes(uint32_t num_nodes);
-
 
     uint32_t num_lights_;
     uint32_t num_nodes_;
 
     Node*     nodes_;
     uint32_t* node_middles_;
+
+    Distribution_1D* distributions_;
 
     uint32_t* light_orders_;
     uint32_t* light_mapping_;
@@ -139,9 +138,11 @@ class Tree_builder {
   private:
     uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
 
-    uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Part const& part);
+    uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
+                   uint32_t max_primitives, Part const& part);
 
     void serialize(Node* nodes, uint32_t* node_middles);
+    void serialize(Primitive_tree& tree, Part const& part);
 
     Build_node* build_nodes_;
 

@@ -60,9 +60,10 @@ bool Null::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, 
     return true;
 }
 
-bool Null::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& /*trafo*/,
-                  float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                  uint32_t /*sampler_d*/, Sample_to& /*sample*/) const {
+bool Null::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+                  Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                  bool /*total_sphere*/, Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
+                  Sample_to& /*sample*/) const {
     return false;
 }
 
@@ -73,8 +74,9 @@ bool Null::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*ar
     return false;
 }
 
-float Null::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
-                float /*area*/, bool /*two_sided*/, bool /*total_Null*/) const {
+float Null::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
+                Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                bool /*total_Null*/) const {
     return 0.f;
 }
 

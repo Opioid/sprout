@@ -154,9 +154,10 @@ bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /
     return true;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo,
-                            float area, bool /*two_sided*/, Sampler& sampler, RNG& rng,
-                            uint32_t sampler_d, Sample_to& sample) const {
+bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+                            Transformation const& trafo, float area, bool /*two_sided*/,
+                            bool /*total_sphere*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                            Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r2);
 

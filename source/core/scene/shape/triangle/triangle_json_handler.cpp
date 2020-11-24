@@ -411,4 +411,4 @@ void Json_handler::increment_vertex_element(uint32_t num_elements) {
     }
 }
 
-}  // namespace scene::shape::triangle
+}  // namespace scene::shape::triangle::serialize

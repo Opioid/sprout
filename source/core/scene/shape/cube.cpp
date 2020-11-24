@@ -189,9 +189,9 @@ bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, 
     return true;
 }
 
-bool Cube::sample(uint32_t /*part*/, float3_p p, Transformation const& trafo, float /*area*/,
-                  bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                  Sample_to& sample) const {
+bool Cube::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation const& trafo,
+                  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/, Sampler&  sampler,
+                  RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
     float3 const axis                = trafo.position - p;
     float const  axis_squared_length = squared_length(axis);
     float const  radius              = trafo.scale_x();
@@ -240,8 +240,9 @@ bool Cube::sample_volume(uint32_t /*part*/, float3_p p, Transformation const& tr
     return true;
 }
 
-float Cube::pdf(Ray const& ray, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& trafo,
-                float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+float Cube::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+                Transformation const& trafo, float /*area*/, bool /*two_sided*/,
+                bool /*total_sphere*/) const {
     float3 const axis                = trafo.position - ray.origin;
     float const  axis_squared_length = squared_length(axis);
     float const  radius              = trafo.scale_x();

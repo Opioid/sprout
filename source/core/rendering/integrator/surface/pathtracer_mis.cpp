@@ -409,7 +409,8 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
         auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, split, use_pdf);
         auto const& light_ref = scene.light(light.id);
 
-        float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, translucent, Filter::Nearest, worker);
+        float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, translucent, Filter::Nearest,
+                                           worker);
 
         light_pdf = ls_pdf * light.pdf;
     }

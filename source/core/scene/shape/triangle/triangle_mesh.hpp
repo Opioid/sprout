@@ -3,8 +3,8 @@
 
 #include "base/math/distribution/distribution_1d.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
-#include "scene/shape/shape.hpp"
 #include "scene/light/light_tree.hpp"
+#include "scene/shape/shape.hpp"
 
 namespace scene::shape::triangle {
 
@@ -45,7 +45,6 @@ struct Part {
 
     float4 cone;
 };
-
 
 class alignas(64) Mesh final : public Shape {
   public:
@@ -90,19 +89,22 @@ class alignas(64) Mesh final : public Shape {
     bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 
-    bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo,
-                        float area, bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                        Sample_to& sample) const final;
+    bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo, float area,
+                bool two_sided, bool total_sphere, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                Sample_to& sample) const final;
 
-    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool two_sided,
-                Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
+    //    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool
+    //    two_sided,
+    //                Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const
+    //                final;
 
     bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, float3_p n, shape::Intersection const& isec, Transformation const& trafo,
-              float area, bool two_sided, bool total_sphere) const final;
+    float pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
+              Transformation const& trafo, float area, bool two_sided,
+              bool total_sphere) const final;
 
     float pdf_volume(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
                      float volume) const final;

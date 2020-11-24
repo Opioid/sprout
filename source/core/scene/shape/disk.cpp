@@ -234,9 +234,9 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
     return true;
 }
 
-bool Disk::sample(uint32_t /*part*/, float3_p p, Transformation const& trafo, float area,
-                  bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                  Sample_to& sample) const {
+bool Disk::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation const& trafo,
+                  float area, bool two_sided, bool /*total_sphere*/, Sampler& sampler, RNG& rng,
+                  uint32_t sampler_d, Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r2);
 
@@ -286,8 +286,9 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& trafo, float area, bo
     return true;
 }
 
-float Disk::pdf(Ray const& ray, float3_p /*n*/, Intersection const& /*isec*/, Transformation const& trafo,
-                float area, bool two_sided, bool /*total_sphere*/) const {
+float Disk::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+                Transformation const& trafo, float area, bool two_sided,
+                bool /*total_sphere*/) const {
     float3 const normal = trafo.rotation.r[2];
 
     float c = -dot(normal, ray.direction);

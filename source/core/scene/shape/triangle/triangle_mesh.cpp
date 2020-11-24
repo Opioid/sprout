@@ -8,11 +8,11 @@
 #include "base/memory/buffer.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
+#include "scene/light/light.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
-#include "scene/light/light.hpp"
 #include "triangle_intersection.hpp"
 #ifdef SU_DEBUG
 #include "scene/shape/shape_test.hpp"
@@ -23,7 +23,6 @@
 #include "base/math/print.hpp"
 
 namespace scene::shape::triangle {
-
 
 Part::~Part() {
     delete[] cones;
@@ -155,7 +154,10 @@ float Part::light_power(uint32_t light) const {
     return aabbs[light].bounds[1][3];
 }
 
-Mesh::Mesh() : Shape(Properties(Property::Complex, Property::Finite)), parts_(nullptr), primitive_mapping_(nullptr) {}
+Mesh::Mesh()
+    : Shape(Properties(Property::Complex, Property::Finite)),
+      parts_(nullptr),
+      primitive_mapping_(nullptr) {}
 
 Mesh::~Mesh() {
     delete[] primitive_mapping_;
@@ -376,14 +378,14 @@ bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo,
-                    float area, bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-            Sample_to& sample) const {
+bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo, float area,
+                  bool two_sided, bool total_sphere, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                  Sample_to& sample) const {
     float const  r  = sampler.sample_1D(rng, sampler_d);
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
 
     float3 const op = trafo.world_to_object_point(p);
-    auto const   s  = parts_[part].sample(op, n, two_sided, r);
+    auto const   s  = parts_[part].sample(op, n, total_sphere, r);
 
     float3 sv;
     float2 tc;
@@ -415,16 +417,21 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 #ifdef SU_DEBUG
     uint32_t const pm = primitive_mapping_[s.id];
 
-        float const guessed_pdf = parts_[part].pdf(op, n, two_sided, pm);
+    float const guessed_pdf = parts_[part].pdf(op, n, two_sided, pm);
 
-        float const diff = std::abs(guessed_pdf - s.pdf);
+    float const diff = std::abs(guessed_pdf - s.pdf);
 
-        SOFT_ASSERT(diff < 1e-8f);
+    SOFT_ASSERT(diff < 1e-8f);
+
+    if (diff > 1e-8f) {
+        std::cout << "problem " << s.pdf << "  " << guessed_pdf << std::endl;
+    }
 #endif
 
     return true;
 }
 
+/*
 bool Mesh::sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
                   bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
@@ -458,7 +465,7 @@ bool Mesh::sample(uint32_t part, float3_p p, Transformation const& trafo, float 
     sample = Sample_to(dir, float3(tc), sl / (c * area), offset_b(d));
 
     return true;
-}
+}*/
 
 bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /*two_sided*/,
                   Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
@@ -488,15 +495,15 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
     return true;
 }
 
-float Mesh::pdf(Ray const& ray, float3_p n, shape::Intersection const& isec, Transformation const& trafo,
-                float area, bool two_sided, bool total_sphere) const {
+float Mesh::pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
+                Transformation const& trafo, float area, bool two_sided, bool total_sphere) const {
     float c = -dot(isec.geo_n, ray.direction);
 
     if (two_sided) {
         c = std::abs(c);
     }
 
-    float const sl = ray.max_t() * ray.max_t();
+    float const sl  = ray.max_t() * ray.max_t();
     float const pdf = sl / (c * area);
 
     float3 const op = trafo.world_to_object_point(ray.origin);

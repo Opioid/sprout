@@ -200,8 +200,9 @@ bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& trafo
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& /*trafo*/,
-                            float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                            bool /*total_sphere*/, sampler::Sampler& /*sampler*/,
                             rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
                             Sample_to& /*sample*/) const {
     return false;

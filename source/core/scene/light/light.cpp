@@ -96,20 +96,13 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3_
 
     bool const two_sided = material->is_two_sided();
 
-    if (total_sphere) {
-        if (!shape->sample(part, p, trafo, area, two_sided, sampler, worker.rng(), sampler_d,
-                           result)) {
-            return false;
-        }
-    } else {
-        if (!shape->sample(part, p, n, trafo, area, two_sided, sampler, worker.rng(), sampler_d,
-                           result)) {
-            return false;
-        }
+    if (!shape->sample(part, p, n, trafo, area, two_sided, total_sphere, sampler, worker.rng(),
+                       sampler_d, result)) {
+        return false;
+    }
 
-        if (dot(result.wi, n) <= 0.f) {
-            return false;
-        }
+    if (!total_sphere && dot(result.wi, n) <= 0.f) {
+        return false;
     }
 
     SOFT_ASSERT(result.pdf() > 0.f);
@@ -461,8 +454,8 @@ static inline float volume_image_pdf(uint32_t prop, uint32_t part, float volume,
     return shape_pdf * material_pdf;
 }
 
-float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere, Filter filter,
-                 Worker const& worker) const {
+float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere,
+                 Filter filter, Worker const& worker) const {
     Transformation temp;
     auto const&    trafo = transformation_at(ray.time, temp, worker.scene());
 
