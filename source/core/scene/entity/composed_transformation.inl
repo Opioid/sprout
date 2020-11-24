@@ -57,6 +57,10 @@ inline float3 Composed_transformation::world_to_object_vector(float3_p v) const 
     return transform_vector(world_to_object, v);
 }
 
+inline float3 Composed_transformation::world_to_object_normal(float3_p v) const {
+    return transform_vector_transposed(rotation, v);
+}
+
 inline float3 Composed_transformation::object_to_world_point(float3_p v) const {
     float3 const s(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
 

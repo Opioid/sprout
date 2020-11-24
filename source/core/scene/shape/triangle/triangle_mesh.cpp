@@ -385,7 +385,8 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
 
     float3 const op = trafo.world_to_object_point(p);
-    auto const   s  = parts_[part].sample(op, n, total_sphere, r);
+    float3 const on = trafo.world_to_object_normal(n);
+    auto const   s  = parts_[part].sample(op, on, total_sphere, r);
 
     float3 sv;
     float2 tc;
@@ -417,7 +418,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 #ifdef SU_DEBUG
     uint32_t const pm = primitive_mapping_[s.id];
 
-    float const guessed_pdf = parts_[part].pdf(op, n, two_sided, pm);
+    float const guessed_pdf = parts_[part].pdf(op, on, two_sided, pm);
 
     float const diff = std::abs(guessed_pdf - s.pdf);
 
@@ -507,10 +508,11 @@ float Mesh::pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
     float const pdf = sl / (c * area);
 
     float3 const op = trafo.world_to_object_point(ray.origin);
+    float3 const on = trafo.world_to_object_normal(n);
 
     uint32_t const pm = primitive_mapping_[isec.primitive];
 
-    float const tri_pdf = parts_[isec.part].pdf(op, n, total_sphere, pm);
+    float const tri_pdf = parts_[isec.part].pdf(op, on, total_sphere, pm);
 
     return pdf * tri_pdf;
 }
