@@ -42,15 +42,15 @@ class Distribution_1D {
 
     void init_lut(uint32_t lut_size);
 
+    uint32_t size_;
     uint32_t lut_size_;
-    uint32_t cdf_size_;
-
-    uint32_t* lut_;
-
-    float* cdf_;
 
     float integral_;
     float lut_range_;
+
+    float* cdf_;
+
+    uint32_t* lut_;
 };
 
 }  // namespace math
