@@ -68,10 +68,6 @@ struct AABB {
 
     bool operator==(AABB const& other) const;
 
-    static constexpr AABB empty();
-
-    static constexpr AABB infinite();
-
     float3 bounds[2];
 };
 

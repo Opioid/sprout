@@ -356,15 +356,11 @@ inline bool AABB::operator==(AABB const& other) const {
     return bounds[0] == other.bounds[0] && bounds[1] == other.bounds[1];
 }
 
-inline constexpr AABB AABB::empty() {
-    float constexpr max = std::numeric_limits<float>::max();
-    return AABB(float3(max), float3(-max));
-}
+inline AABB constexpr Empty_AABB(float3(std::numeric_limits<float>::max()),
+                                 float3(-std::numeric_limits<float>::max()));
 
-inline constexpr AABB AABB::infinite() {
-    float constexpr max = std::numeric_limits<float>::max();
-    return AABB(float3(-max), float3(max));
-}
+inline AABB constexpr Infinite_AABB(float3(-std::numeric_limits<float>::max()),
+                                    float3(std::numeric_limits<float>::max()));
 
 inline Simd_AABB::Simd_AABB() = default;
 

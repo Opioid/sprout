@@ -35,7 +35,7 @@ AABB Tree::aabb() const {
     if (nodes_) {
         return AABB(float3(nodes_[0].min()), float3(nodes_[0].max()));
     } else {
-        return AABB::empty();
+        return Empty_AABB;
     }
 }
 

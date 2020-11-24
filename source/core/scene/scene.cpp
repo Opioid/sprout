@@ -110,7 +110,7 @@ AABB Scene::aabb() const {
 }
 
 AABB Scene::caustic_aabb() const {
-    AABB aabb = AABB::empty();
+    AABB aabb = Empty_AABB;
 
     for (auto const i : finite_props_) {
         if (prop_has_caustic_material(i)) {

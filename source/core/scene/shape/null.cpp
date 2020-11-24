@@ -18,7 +18,7 @@ float3 Null::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Null::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 uint32_t Null::num_parts() const {

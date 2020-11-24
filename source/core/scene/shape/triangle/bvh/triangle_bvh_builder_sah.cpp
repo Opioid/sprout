@@ -24,12 +24,12 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
     {
         References references(num_triangles);
 
-        memory::Array<Simd_AABB> aabbs(threads.num_threads() /*, AABB::empty()*/);
+        memory::Array<Simd_AABB> aabbs(threads.num_threads() /*, Empty_AABB*/);
 
         threads.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin,
                                                          int32_t end) noexcept {
-                Simd_AABB aabb(AABB::empty());
+                Simd_AABB aabb(Empty_AABB);
 
                 for (int32_t i = begin; i < end; ++i) {
                     auto const a = Simd3f(vertices.p(triangles[i].i[0]));
@@ -50,7 +50,7 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
             },
             0, int32_t(num_triangles));
 
-        Simd_AABB aabb(AABB::empty());
+        Simd_AABB aabb(Empty_AABB);
         for (auto const& b : aabbs) {
             aabb.merge_assign(b);
         }

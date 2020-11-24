@@ -27,7 +27,7 @@ float3 Infinite_sphere::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Infinite_sphere::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,

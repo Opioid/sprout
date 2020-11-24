@@ -23,7 +23,7 @@ float3 Distant_sphere::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Distant_sphere::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,

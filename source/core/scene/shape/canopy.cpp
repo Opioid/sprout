@@ -29,7 +29,7 @@ float3 Canopy::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,

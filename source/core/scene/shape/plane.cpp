@@ -23,7 +23,7 @@ float3 Plane::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Plane::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,

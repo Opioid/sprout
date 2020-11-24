@@ -1008,7 +1008,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     uint32_t const len = end - begin;
 
     if (len <= 4) {
-        AABB   bounds(AABB::empty());
+        AABB   bounds(Empty_AABB);
         float4 cone(1.f);
         float  total_power(0.f);
 
@@ -1037,7 +1037,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
     current_node_ += 2;
 
-    AABB   bounds(AABB::empty());
+    AABB   bounds(Empty_AABB);
     float4 cone(1.f);
     float  total_power(0.f);
 
@@ -1112,9 +1112,9 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
 
     uint32_t const len = end - begin;
 
-    Simd_AABB   tbounds(AABB::empty());
-    float4 cone(1.f);
-    float  total_power(0.f);
+    Simd_AABB tbounds(Empty_AABB);
+    float4    cone(1.f);
+    float     total_power(0.f);
 
     for (uint32_t i = begin; i < end; ++i) {
         uint32_t const l = lights[i];
@@ -1208,9 +1208,9 @@ Tree_builder::Split_candidate::Split_candidate() = default;
 template <typename Set>
 void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, UInts lights,
                                          Set const& set) {
-    Simd_AABB   box_a(AABB::empty());
-    float4 cone_a(1.f);
-    float  power_a(0.f);
+    Simd_AABB box_a(Empty_AABB);
+    float4    cone_a(1.f);
+    float     power_a(0.f);
 
     for (uint32_t i = begin; i < split; ++i) {
         uint32_t const l = lights[i];
@@ -1222,9 +1222,9 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     float const cone_weight_a = cone_importance(cone_a[3]);
 
-    Simd_AABB   box_b(AABB::empty());
-    float4 cone_b(1.f);
-    float  power_b(0.f);
+    Simd_AABB box_b(Empty_AABB);
+    float4    cone_b(1.f);
+    float     power_b(0.f);
 
     for (uint32_t i = split; i < end; ++i) {
         uint32_t const l = lights[i];

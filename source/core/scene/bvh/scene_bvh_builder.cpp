@@ -32,12 +32,12 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
     {
         References references(num_primitives);
 
-        memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, AABB::empty()*/);
+        memory::Array<Simd_AABB> taabbs(threads.num_threads() /*, Empty_AABB*/);
 
         threads.run_range(
             [&indices, &aabbs, &references, &taabbs](uint32_t id, int32_t begin,
                                                      int32_t end) noexcept {
-                Simd_AABB aabb(AABB::empty());
+                Simd_AABB aabb(Empty_AABB);
 
                 for (int32_t i = begin; i < end; ++i) {
                     uint32_t const prop = indices[uint32_t(i)];
@@ -54,7 +54,7 @@ void Builder::build(Tree& tree, std::vector<uint32_t>& indices, std::vector<AABB
             },
             0, int32_t(indices.size()));
 
-        Simd_AABB aabb(AABB::empty());
+        Simd_AABB aabb(Empty_AABB);
         for (auto const& b : taabbs) {
             aabb.merge_assign(b);
         }

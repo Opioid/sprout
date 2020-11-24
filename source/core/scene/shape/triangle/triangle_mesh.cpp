@@ -57,7 +57,7 @@ void Part::init(uint32_t part, bvh::Tree const& tree) {
 
     cones = new float4[num];
 
-    AABB bb(AABB::empty());
+    AABB bb(Empty_AABB);
 
     float3 dominant_axis(0.f);
 
@@ -71,7 +71,7 @@ void Part::init(uint32_t part, bvh::Tree const& tree) {
         float3 vc;
         tree.triangle(t, va, vb, vc);
 
-        AABB box(AABB::empty());
+        AABB box(Empty_AABB);
         box.insert(va);
         box.insert(vb);
         box.insert(vc);
