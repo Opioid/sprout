@@ -55,7 +55,7 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
             aabb.merge_assign(b);
         }
 
-        split(references, AABB(aabb.min, aabb.max), threads);
+        split(references, AABB(aabb), threads);
     }
 
     tree.allocate_triangles(uint32_t(reference_ids_.size()), vertices);

@@ -1112,17 +1112,19 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
 
     uint32_t const len = end - begin;
 
-    AABB   bounds(AABB::empty());
+    Simd_AABB   tbounds(AABB::empty());
     float4 cone(1.f);
     float  total_power(0.f);
 
     for (uint32_t i = begin; i < end; ++i) {
         uint32_t const l = lights[i];
 
-        bounds.merge_assign(part.light_aabb(l));
+        tbounds.merge_assign(part.light_aabb(l));
         cone = cone::merge(cone, part.light_cone(l));
         total_power += part.light_power(l);
     }
+
+    AABB const bounds(tbounds);
 
     if (len <= max_primitives || cone[3] > 0.5f) {
         for (uint32_t i = begin; i < end; ++i) {
@@ -1206,7 +1208,7 @@ Tree_builder::Split_candidate::Split_candidate() = default;
 template <typename Set>
 void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t split, UInts lights,
                                          Set const& set) {
-    AABB   box_a(AABB::empty());
+    Simd_AABB   box_a(AABB::empty());
     float4 cone_a(1.f);
     float  power_a(0.f);
 
@@ -1220,7 +1222,7 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     float const cone_weight_a = cone_importance(cone_a[3]);
 
-    AABB   box_b(AABB::empty());
+    Simd_AABB   box_b(AABB::empty());
     float4 cone_b(1.f);
     float  power_b(0.f);
 
@@ -1236,8 +1238,8 @@ void Tree_builder::Split_candidate::init(uint32_t begin, uint32_t end, uint32_t 
 
     split_node = split;
 
-    weight = (power_a * cone_weight_a * box_a.surface_area()) +
-             (power_b * cone_weight_b * box_b.surface_area());
+    weight = (power_a * cone_weight_a * AABB(box_a).surface_area()) +
+             (power_b * cone_weight_b * AABB(box_b).surface_area());
 }
 
 void Tree_builder::serialize(Node* nodes, uint32_t* node_middles) {

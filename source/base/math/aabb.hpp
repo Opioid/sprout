@@ -7,12 +7,14 @@
 namespace math {
 
 struct ray;
+struct Simd_AABB;
 
 struct AABB {
     AABB();
 
     constexpr AABB(float3_p min, float3_p max);
 
+    explicit AABB(Simd_AABB const& box);
     AABB(Simd3f_p min, Simd3f_p max);
 
     float3 min() const;

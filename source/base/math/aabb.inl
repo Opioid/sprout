@@ -12,6 +12,8 @@ inline AABB::AABB() = default;
 
 inline constexpr AABB::AABB(float3_p min, float3_p max) : bounds{min, max} {}
 
+inline AABB::AABB(Simd_AABB const& box) : bounds{float3(box.min), float3(box.max)} {}
+
 inline AABB::AABB(Simd3f_p min, Simd3f_p max) : bounds{float3(min), float3(max)} {}
 
 inline float3 AABB::min() const {
