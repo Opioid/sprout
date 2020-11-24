@@ -238,7 +238,7 @@ void Scene::compile(uint64_t time, Threads& threads) {
     light_distribution_.init(light_temp_powers_.data(), uint32_t(light_temp_powers_.size()));
 
     light::Tree_builder light_tree_builder;
-    light_tree_builder.build(light_tree_, *this);
+    light_tree_builder.build(light_tree_, *this, threads);
 
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }

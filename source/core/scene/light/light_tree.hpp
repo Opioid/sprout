@@ -125,17 +125,14 @@ class Tree_builder {
 
     ~Tree_builder();
 
-    void build(Tree& tree, Scene const& scene);
+    void build(Tree& tree, Scene const& scene, Threads& threads);
 
     void build(Primitive_tree& tree, Part const& part, Threads& threads);
 
     struct Split_candidate {
         Split_candidate();
 
-        template <typename Set>
-        void init(uint32_t begin, uint32_t end, uint32_t split, UInts lights, Set const& set);
-
-        void mini_init(uint32_t begin, uint32_t end, uint32_t split);
+        void init(uint32_t begin, uint32_t end, uint32_t split);
 
         template <typename Set>
         void evaluate(UInts lights, Set const& set);
@@ -149,7 +146,8 @@ class Tree_builder {
     };
 
   private:
-    uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
+    uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene,
+                   Threads& threads);
 
     uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
                    uint32_t max_primitives, Part const& part, Threads& threads);
