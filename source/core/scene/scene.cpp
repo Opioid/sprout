@@ -507,7 +507,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
                                   Threads& threads) {
     auto shape = prop_shape(entity);
 
-    shape->prepare_sampling(part);
+    shape->prepare_sampling(part, threads);
 
     Transformation temp;
     auto const&    trafo = prop_transformation_at(entity, time, temp);

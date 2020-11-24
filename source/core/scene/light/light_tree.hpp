@@ -9,6 +9,12 @@ namespace math {
 struct AABB;
 }
 
+namespace thread {
+class Pool;
+}
+
+using Threads = thread::Pool;
+
 namespace scene {
 
 class Scene;
@@ -121,13 +127,21 @@ class Tree_builder {
 
     void build(Tree& tree, Scene const& scene);
 
-    void build(Primitive_tree& tree, Part const& part);
+    void build(Primitive_tree& tree, Part const& part, Threads& threads);
 
     struct Split_candidate {
         Split_candidate();
 
         template <typename Set>
         void init(uint32_t begin, uint32_t end, uint32_t split, UInts lights, Set const& set);
+
+        void mini_init(uint32_t begin, uint32_t end, uint32_t split);
+
+        template <typename Set>
+        void evaluate(UInts lights, Set const& set);
+
+        uint32_t begin_;
+        uint32_t end_;
 
         uint32_t split_node;
 
@@ -138,7 +152,7 @@ class Tree_builder {
     uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene);
 
     uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
-                   uint32_t max_primitives, Part const& part);
+                   uint32_t max_primitives, Part const& part, Threads& threads);
 
     void serialize(Node* nodes, uint32_t* node_middles);
     void serialize(Primitive_tree& tree, Part const& part);

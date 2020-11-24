@@ -267,8 +267,6 @@ Shape::Differential_surface Morphable_mesh::differential_surface(uint32_t /*prim
     return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
 }
 
-void Morphable_mesh::prepare_sampling(uint32_t /*part*/) {}
-
 Morphable* Morphable_mesh::morphable_shape() {
     return this;
 }

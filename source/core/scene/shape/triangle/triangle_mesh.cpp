@@ -30,7 +30,7 @@ Part::~Part() {
     delete[] triangle_mapping;
 }
 
-void Part::init(uint32_t part, bvh::Tree const& tree) {
+void Part::init(uint32_t part, bvh::Tree const& tree, Threads& threads) {
     if (nullptr != triangle_mapping) {
         return;
     }
@@ -112,7 +112,7 @@ void Part::init(uint32_t part, bvh::Tree const& tree) {
     cone = float4(dominant_axis, std::cos(angle));
 
     light::Tree_builder builder;
-    builder.build(light_tree, *this);
+    builder.build(light_tree, *this, threads);
 }
 
 light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float r) const {
@@ -597,7 +597,7 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     return {dpdu, dpdv};
 }
 
-void Mesh::prepare_sampling(uint32_t part) {
+void Mesh::prepare_sampling(uint32_t part, Threads& threads) {
     auto& p = parts_[part];
 
     // This counts the triangles for _every_ part as an optimization
@@ -615,7 +615,7 @@ void Mesh::prepare_sampling(uint32_t part) {
         }
     }
 
-    p.init(part, tree_);
+    p.init(part, tree_, threads);
 }
 
 float4 Mesh::cone(uint32_t part) const {
