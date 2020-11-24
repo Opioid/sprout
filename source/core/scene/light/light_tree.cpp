@@ -953,20 +953,19 @@ static void sort_lights(uint32_t* const lights, uint32_t begin, uint32_t end, ui
 }
 
 template <typename Set>
-static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t axis,
-
+static void evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end, uint32_t stride, uint32_t axis,
                             Tree_builder::Split_candidate* candidates, Set const& set) {
     sort_lights(lights, begin, end, axis, set);
 
-    for (uint32_t i = begin + 1, j = 0; i < end; ++i, ++j) {
-        candidates[j].init(begin, end, i, lights, set);
-    }
+    uint32_t j = 0;
 
-    uint32_t const len = end - begin;
+    for (uint32_t i = begin + stride; i < end; i += stride, ++j) {
+        candidates[j].init(begin, end, std::min(i, end - 1), lights, set);
+    }
 
     using SC = Tree_builder::Split_candidate;
 
-    std::nth_element(candidates, candidates, candidates + len - 1,
+    std::nth_element(candidates, candidates, candidates + j,
                      [](SC const& a, SC const& b) noexcept { return a.weight < b.weight; });
 }
 
@@ -1057,8 +1056,10 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     float3 weights;
     uint3  split_nodes;
 
+    static uint32_t constexpr Stride = 1;
+
     {
-        evaluate_splits(lights, begin, end, 0, candidates_, scene);
+        evaluate_splits(lights, begin, end, Stride, 0, candidates_, scene);
 
         float const reg = max_axis / extent[0];
 
@@ -1067,7 +1068,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     }
 
     {
-        evaluate_splits(lights, begin, end, 1, candidates_, scene);
+        evaluate_splits(lights, begin, end, Stride, 1, candidates_, scene);
 
         float const reg = max_axis / extent[1];
 
@@ -1076,7 +1077,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     }
 
     {
-        evaluate_splits(lights, begin, end, 2, candidates_, scene);
+        evaluate_splits(lights, begin, end, Stride, 2, candidates_, scene);
 
         float const reg = max_axis / extent[2];
 
@@ -1140,7 +1141,7 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
         node.middle            = 0;
         node.children_or_light = begin;
         node.num_lights        = len;
-        std::cout << len << std::endl;
+      //  std::cout << len << std::endl;
         return begin + len;
     }
 
@@ -1156,8 +1157,10 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     float3 weights;
     uint3  split_nodes;
 
+    uint32_t const stride = len < 64 ? 1 : len / 16;
+
     {
-        evaluate_splits(lights, begin, end, 0, candidates_, part);
+        evaluate_splits(lights, begin, end, stride, 0, candidates_, part);
 
         float const reg = max_axis / extent[0];
 
@@ -1166,7 +1169,7 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     }
 
     {
-        evaluate_splits(lights, begin, end, 1, candidates_, part);
+        evaluate_splits(lights, begin, end, stride, 1, candidates_, part);
 
         float const reg = max_axis / extent[1];
 
@@ -1175,7 +1178,7 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     }
 
     {
-        evaluate_splits(lights, begin, end, 2, candidates_, part);
+        evaluate_splits(lights, begin, end, stride, 2, candidates_, part);
 
         float const reg = max_axis / extent[2];
 
