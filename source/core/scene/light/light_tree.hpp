@@ -115,7 +115,7 @@ class Primitive_tree {
     uint32_t* light_mapping_;
 };
 
-using UInts = uint32_t const* const;
+struct Split_candidate;
 
 class Tree_builder {
   public:
@@ -128,22 +128,6 @@ class Tree_builder {
     void build(Tree& tree, Scene const& scene, Threads& threads);
 
     void build(Primitive_tree& tree, Part const& part, Threads& threads);
-
-    struct Split_candidate {
-        Split_candidate();
-
-        void init(uint32_t begin, uint32_t end, uint32_t split);
-
-        template <typename Set>
-        void evaluate(UInts lights, Set const& set);
-
-        uint32_t begin_;
-        uint32_t end_;
-
-        uint32_t split_node;
-
-        float weight;
-    };
 
   private:
     uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene,
