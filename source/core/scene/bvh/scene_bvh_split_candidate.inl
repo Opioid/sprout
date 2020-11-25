@@ -78,8 +78,8 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
             }
         }
 
-        aabb_0_.set_min_max(box_0.min, box_0.max);
-        aabb_1_.set_min_max(box_1.min, box_1.max);
+        aabb_0_ = AABB(box_0);
+        aabb_1_ = AABB(box_1);
 
         if (used_spatial) {
             aabb_0_.clip_max(d_, axis_);
@@ -102,8 +102,8 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
             }
         }
 
-        aabb_0_.set_min_max(box_0.min, box_0.max);
-        aabb_1_.set_min_max(box_1.min, box_1.max);
+        aabb_0_ = AABB(box_0);
+        aabb_1_ = AABB(box_1);
     }
 
     if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {

@@ -7,12 +7,14 @@
 namespace math {
 
 struct ray;
+struct Simd_AABB;
 
 struct AABB {
     AABB();
 
     constexpr AABB(float3_p min, float3_p max);
 
+    explicit AABB(Simd_AABB const& box);
     AABB(Simd3f_p min, Simd3f_p max);
 
     float3 min() const;
@@ -39,9 +41,6 @@ struct AABB {
     bool intersect_inside(ray const& ray, float& hit_t) const;
 
     float3 normal(float3_p p) const;
-
-    void set_min_max(float3_p min, float3_p max);
-    void set_min_max(Simd3f_p min, Simd3f_p max);
 
     void insert(float3_p p);
 
