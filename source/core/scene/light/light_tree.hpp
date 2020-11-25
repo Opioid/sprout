@@ -3,6 +3,7 @@
 
 #include "base/math/distribution/distribution_1d.hpp"
 #include "base/math/vector.hpp"
+#include "base/math/vector4.hpp"
 #include "base/memory/array.hpp"
 
 namespace math {
@@ -28,8 +29,38 @@ namespace light {
 class Light;
 struct Light_pick;
 
-struct Build_node;
-struct Node;
+using UInts = uint32_t const* const;
+
+struct Node {
+    float weight(float3_p p, float3_p n, bool total_sphere) const;
+
+    float weight(float3_p p0, float3_p p1, float3_p dir) const;
+
+    bool split(float3_p p) const;
+
+    bool split(float3_p p0, float3_p dir) const;
+
+    template <typename Set>
+    Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                            UInts light_mapping, Set const& set) const;
+
+    Light_pick random_light(float3_p p0, float3_p p1, float3_p dir, float random,
+                            UInts light_mapping, Scene const& scene) const;
+
+    template <typename Set>
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
+              uint32_t const* const light_mapping, Set const& set) const;
+
+    float4 center;
+    float4 cone;
+
+    float power;
+    float variance;
+
+    uint32_t has_children : 1;
+    uint32_t children_or_light : 31;
+    uint32_t num_lights;
+};
 
 class Tree {
   public:
@@ -113,38 +144,6 @@ class Primitive_tree {
 
     uint32_t* light_orders_;
     uint32_t* light_mapping_;
-};
-
-struct Split_candidate;
-
-class Tree_builder {
-  public:
-    using Part = shape::triangle::Part;
-
-    Tree_builder();
-
-    ~Tree_builder();
-
-    void build(Tree& tree, Scene const& scene, Threads& threads);
-
-    void build(Primitive_tree& tree, Part const& part, Threads& threads);
-
-  private:
-    uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene,
-                   Threads& threads);
-
-    uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
-                   uint32_t max_primitives, Part const& part, Threads& threads);
-
-    void serialize(Node* nodes, uint32_t* node_middles);
-    void serialize(Primitive_tree& tree, Part const& part);
-
-    Build_node* build_nodes_;
-
-    uint32_t current_node_;
-    uint32_t light_order_;
-
-    Split_candidate* candidates_;
 };
 
 }  // namespace light

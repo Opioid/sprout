@@ -9,6 +9,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/light/light.hpp"
+#include "scene/light/light_tree_builder.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
@@ -18,9 +19,6 @@
 #include "scene/shape/shape_test.hpp"
 #endif
 #include "base/debug/assert.hpp"
-
-#include <iostream>
-#include "base/math/print.hpp"
 
 namespace scene::shape::triangle {
 
