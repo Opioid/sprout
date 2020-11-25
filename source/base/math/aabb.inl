@@ -227,28 +227,16 @@ inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const {
 }
 
 inline float3 AABB::normal(float3_p p) const {
-    float3 const local_point = p - position();
-
+    float3 const lp   = p - position();
     float3 const size = halfsize();
+    float3 const dist = abs(size - abs(lp));
 
-    float3 const distance = math::abs(size - math::abs(local_point));
-
-    uint32_t const i = math::index_min_component(distance);
+    uint32_t const i = index_min_component(dist);
 
     float3 normal(0.f);
-    normal[i] = math::copysign1(local_point[i]);
+    normal[i] = copysign1(lp[i]);
 
     return normal;
-}
-
-inline void AABB::set_min_max(float3_p min, float3_p max) {
-    bounds[0] = min;
-    bounds[1] = max;
-}
-
-inline void AABB::set_min_max(Simd3f_p min, Simd3f_p max) {
-    bounds[0] = float3(min);
-    bounds[1] = float3(max);
 }
 
 inline void AABB::insert(float3_p p) {

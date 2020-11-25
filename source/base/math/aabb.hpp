@@ -42,9 +42,6 @@ struct AABB {
 
     float3 normal(float3_p p) const;
 
-    void set_min_max(float3_p min, float3_p max);
-    void set_min_max(Simd3f_p min, Simd3f_p max);
-
     void insert(float3_p p);
 
     void scale(float x);
