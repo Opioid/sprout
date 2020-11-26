@@ -193,26 +193,50 @@ static uint32_t evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t
     static uint32_t constexpr Y = 1;
     static uint32_t constexpr Z = 2;
 
-    static uint32_t const Sweep_threshold = 64;
+    static uint32_t const Sweep_threshold = 128;
+    static uint32_t const Num_slices      = 16;
 
     uint32_t const len = end - begin;
 
     uint32_t num_candidates = 0;
 
-    //   if (len < Sweep_threshold) {
-    for (uint32_t i = begin, back = end - 1; i < back; ++i, num_candidates += 3) {
-        uint32_t const l = lights[i];
+    if (len < Sweep_threshold) {
+        for (uint32_t i = begin, back = end - 1; i < back; ++i) {
+            uint32_t const l = lights[i];
 
-        float3 const max = set.light_aabb(l).max();
+            float3 const max = set.light_aabb(l).max();
 
-        candidates[num_candidates + 0].init(max, X);
-        candidates[num_candidates + 1].init(max, Y);
-        candidates[num_candidates + 2].init(max, Z);
+            candidates[num_candidates++].init(max, X);
+            candidates[num_candidates++].init(max, Y);
+            candidates[num_candidates++].init(max, Z);
+        }
+
+    } else {
+        float3 const position = bounds.position();
+        float3 const extent   = bounds.extent();
+        float3 const min      = bounds.min();
+
+        uint32_t const la = index_max_component(extent);
+
+        float const step = (extent[la]) / float(Num_slices);
+
+        for (uint32_t a = 0; a < 3; ++a) {
+            float const extent_a = extent[a];
+
+            uint32_t const num_steps = uint32_t(std::ceil(extent_a / step));
+
+            float const step_a = extent_a / float(num_steps);
+
+            for (uint32_t i = 1; i < num_steps; ++i) {
+                float const fi = float(i);
+
+                float3 slice = position;
+                slice[a]     = min[a] + fi * step_a;
+
+                candidates[num_candidates++].init(slice, a);
+            }
+        }
     }
-
-    //    } else {
-
-    //   }
 
     if (len * num_candidates > 1024) {
         threads.run_range(
@@ -355,7 +379,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
 
     current_node_ = 1;
 
-    split(tree, 0, 0, num_finite_lights, /*std::max(num_finite_lights / 32, 8u)*/ 4, part, threads);
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part, threads);
 
     tree.allocate_nodes(current_node_);
     //    serialize(tree.nodes_, tree.node_middles_);

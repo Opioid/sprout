@@ -109,9 +109,8 @@ Split_candidate Kernel::splitting_plane(References const& references, AABB const
             split_candidates_.emplace_back(Z, max, false);
         }
     } else {
-        float3 const extent = 2.f * aabb.halfsize();
-
-        float3 const min = aabb.min();
+        float3 const extent = aabb.extent();
+        float3 const min    = aabb.min();
 
         uint32_t const la = index_max_component(extent);
 
