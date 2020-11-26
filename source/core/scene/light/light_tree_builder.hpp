@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_LIGHT_TREE_BUILDER_HPP
 #define SU_CORE_SCENE_LIGHT_TREE_BUILDER_HPP
 
-#include "cstdint"
+#include "base/math/vector.hpp"
 
 namespace math {
 struct AABB;
@@ -54,6 +54,9 @@ class Tree_builder {
 
     uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
                    uint32_t max_primitives, Part const& part, Threads& threads);
+
+    uint32_t assign(Build_node& node, Primitive_tree& tree, uint32_t begin, uint32_t end,
+                    AABB const& bounds, float4_p cone, float total_power, Part const& part);
 
     void serialize(Node* nodes, uint32_t* node_middles);
     void serialize(Primitive_tree& tree, Part const& part);
