@@ -6,9 +6,21 @@
 
 namespace math::cone {
 
+// static inline float angle_between(float3_p a, float3_p b) {
+//    if (dot(a, b) < 0.f) {
+//        return Pi - 2.f * std::asin(length(a + b) / 2.f);
+//    } else {
+//        return 2.f * std::asin(length(a - b) / 2.f);
+//    }
+//}
+
 static inline float4 merge(float4_p a, float4_p b) {
     if (float4(1.f) == a) {
         return b;
+    }
+
+    if (a == b) {
+        return a;
     }
 
     float a_angle = std::acos(a[3]);
@@ -27,14 +39,22 @@ static inline float4 merge(float4_p a, float4_p b) {
 
     float const o_angle = (a_angle + d_angle + b_angle) / 2.f;
 
-    if (Pi <= o_angle) {
+    if (o_angle >= Pi) {
         float4(a.xyz(), -1.f);
     }
 
     float const r_angle = o_angle - a_angle;
 
+    //    float3 const wr = cross(a.xyz(), b.xyz());
+
+    //    float const wrl = length(wr);
+
+    //    if (wrl < 0.0001f) {
+    //        return a;
+    //    }
+
     float3x3 rot;
-    set_rotation(rot, cross(a.xyz(), b.xyz()), r_angle);
+    set_rotation(rot, normalize(cross(a.xyz(), b.xyz())), r_angle);
 
     float3 const axis = normalize(transform_vector(rot, a.xyz()));
 
