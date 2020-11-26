@@ -238,8 +238,7 @@ void Scene::compile(uint64_t time, Threads& threads) {
 
     light_distribution_.init(light_temp_powers_.data(), uint32_t(light_temp_powers_.size()));
 
-    light::Tree_builder light_tree_builder;
-    light_tree_builder.build(light_tree_, *this, threads);
+    light_tree_builder_.build(light_tree_, *this, threads);
 
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
 }
@@ -508,7 +507,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
                                   Threads& threads) {
     auto shape = prop_shape(entity);
 
-    shape->prepare_sampling(part, threads);
+    shape->prepare_sampling(part, light_tree_builder_, threads);
 
     Transformation temp;
     auto const&    trafo = prop_transformation_at(entity, time, temp);

@@ -204,7 +204,11 @@ static uint32_t evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t
     //    return sc;
 }
 
-Tree_builder::Tree_builder() : build_nodes_(nullptr), candidates_(nullptr) {}
+Tree_builder::Tree_builder()
+    : build_nodes_capacity_(0),
+      candidates_capacity_(0),
+      build_nodes_(nullptr),
+      candidates_(nullptr) {}
 
 Tree_builder::~Tree_builder() {
     delete[] candidates_;
@@ -257,19 +261,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
     uint32_t infinite_depth_bias = 0;
 
     if (num_finite_lights > 0) {
-        delete[] build_nodes_;
-
-        uint32_t const num_nodes = 2 * num_finite_lights - 1;
-
-        build_nodes_ = new Build_node[num_nodes];
-
-        delete[] candidates_;
-
-        if (num_finite_lights >= 2) {
-            candidates_ = new Split_candidate[num_finite_lights - 1];
-        } else {
-            candidates_ = nullptr;
-        }
+        allocate(num_finite_lights);
 
         current_node_ = 1;
 
@@ -320,19 +312,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
         tree.light_mapping_[lm++] = l;
     }
 
-    delete[] build_nodes_;
-
-    uint32_t const num_nodes = 2 * num_finite_lights - 1;
-
-    build_nodes_ = new Build_node[num_nodes];
-
-    delete[] candidates_;
-
-    if (num_finite_lights >= 2) {
-        candidates_ = new Split_candidate[num_finite_lights - 1];
-    } else {
-        candidates_ = nullptr;
-    }
+    allocate(num_finite_lights);
 
     current_node_ = 1;
 
@@ -341,6 +321,28 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
     tree.allocate_nodes(current_node_);
     //    serialize(tree.nodes_, tree.node_middles_);
     serialize(tree, part);
+}
+
+void Tree_builder::allocate(uint32_t num_lights) {
+    uint32_t const num_nodes = 2 * num_lights - 1;
+
+    if (num_nodes > build_nodes_capacity_) {
+        delete[] build_nodes_;
+
+        build_nodes_ = new Build_node[num_nodes];
+
+        build_nodes_capacity_ = num_nodes;
+    }
+
+    uint32_t const num_candidates = num_lights >= 2 ? num_lights - 1 : 0;
+
+    if (num_candidates > candidates_capacity_) {
+        delete[] candidates_;
+
+        candidates_ = new Split_candidate[num_candidates];
+
+        candidates_capacity_ = num_candidates;
+    }
 }
 
 uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,

@@ -47,6 +47,8 @@ class Tree_builder {
     void build(Primitive_tree& tree, Part const& part, Threads& threads);
 
   private:
+    void allocate(uint32_t num_lights);
+
     uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene,
                    Threads& threads);
 
@@ -56,12 +58,15 @@ class Tree_builder {
     void serialize(Node* nodes, uint32_t* node_middles);
     void serialize(Primitive_tree& tree, Part const& part);
 
+    uint32_t build_nodes_capacity_;
+    uint32_t candidates_capacity_;
+
     Build_node* build_nodes_;
+
+    Split_candidate* candidates_;
 
     uint32_t current_node_;
     uint32_t light_order_;
-
-    Split_candidate* candidates_;
 };
 
 }  // namespace light

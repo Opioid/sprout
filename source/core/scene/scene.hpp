@@ -6,6 +6,7 @@
 #include "bvh/scene_bvh_builder.hpp"
 #include "light/light.hpp"
 #include "light/light_tree.hpp"
+#include "light/light_tree_builder.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
 #include "resource/resource.hpp"
@@ -267,6 +268,8 @@ class Scene {
     uint64_t current_time_start_;
 
     bvh::Builder bvh_builder_;
+
+    light::Tree_builder light_tree_builder_;
 
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
