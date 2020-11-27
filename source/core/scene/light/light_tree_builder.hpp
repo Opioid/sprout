@@ -47,7 +47,7 @@ class Tree_builder {
     void build(Primitive_tree& tree, Part const& part, Threads& threads);
 
   private:
-    void allocate(uint32_t num_lights);
+    void allocate(uint32_t num_lights, uint32_t sweep_threshold);
 
     uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, AABB const& bounds,
                    float4_p cone, float total_power, Scene const& scene, Threads& threads);

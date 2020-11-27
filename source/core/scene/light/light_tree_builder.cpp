@@ -17,6 +17,10 @@
 
 namespace scene::light {
 
+static uint32_t constexpr Scene_sweep_threshold = 128;
+static uint32_t constexpr Part_sweep_threshold  = 32;
+static uint32_t constexpr Num_slices            = 16;
+
 using UInts = uint32_t const* const;
 
 struct Build_node {
@@ -317,8 +321,6 @@ static Split_candidate evaluate_splits(uint32_t* const lights, uint32_t begin, u
     static uint32_t constexpr Y = 1;
     static uint32_t constexpr Z = 2;
 
-    static uint32_t const Num_slices = 16;
-
     uint32_t const len = end - begin;
 
     uint32_t num_candidates = 0;
@@ -446,7 +448,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
     uint32_t infinite_depth_bias = 0;
 
     if (num_finite_lights > 0) {
-        allocate(num_finite_lights);
+        allocate(num_finite_lights, Scene_sweep_threshold);
 
         current_node_ = 1;
 
@@ -512,7 +514,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
         tree.light_mapping_[lm++] = l;
     }
 
-    allocate(num_finite_lights);
+    allocate(num_finite_lights, Part_sweep_threshold);
 
     current_node_ = 1;
 
@@ -527,7 +529,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
     serialize(tree, part);
 }
 
-void Tree_builder::allocate(uint32_t num_lights) {
+void Tree_builder::allocate(uint32_t num_lights, uint32_t sweep_threshold) {
     uint32_t const num_nodes = 2 * num_lights - 1;
 
     if (num_nodes > build_nodes_capacity_) {
@@ -538,7 +540,9 @@ void Tree_builder::allocate(uint32_t num_lights) {
         build_nodes_capacity_ = num_nodes;
     }
 
-    uint32_t const num_candidates = num_lights >= 2 ? (num_lights - 1) * 3 : 0;
+    uint32_t const num_slices = std::min(num_lights, sweep_threshold);
+
+    uint32_t const num_candidates = num_slices >= 2 ? num_slices * 3 : 0;
 
     if (num_candidates > candidates_capacity_) {
         delete[] candidates_;
@@ -582,8 +586,8 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
     float const cone_weight = cone_cost(cone[3]);
 
-    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, 128,
-                                               candidates_, scene, threads);
+    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight,
+                                               Scene_sweep_threshold, candidates_, scene, threads);
 
     SOFT_ASSERT(!sc.exhausted_);
 
@@ -627,8 +631,8 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
 
     float const cone_weight = cone_cost(cone[3]);
 
-    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, 32,
-                                               candidates_, part, threads);
+    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight,
+                                               Part_sweep_threshold, candidates_, part, threads);
 
     if (sc.exhausted_) {
         return assign(node, tree, begin, end, bounds, cone, total_power, part);
