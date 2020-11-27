@@ -114,7 +114,7 @@ void Part::init(uint32_t part, bvh::Tree const& tree, light::Tree_builder& build
 }
 
 light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float r) const {
-    auto const pick = light_tree.random_light(p, n, total_sphere, r, *this);
+    auto const pick = light_tree.random_light(p, n, total_sphere, r);
 
     float const relative_primitive_area = distribution.pdf(pick.id);
 
@@ -122,7 +122,7 @@ light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float 
 }
 
 float Part::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
-    float const pdf = light_tree.pdf(p, n, total_sphere, id, *this);
+    float const pdf = light_tree.pdf(p, n, total_sphere, id);
 
     float const relative_primitive_area = distribution.pdf(id);
 

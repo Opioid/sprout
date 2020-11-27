@@ -666,8 +666,8 @@ Primitive_tree::~Primitive_tree() {
     delete[] nodes_;
 }
 
-Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                                        Part const& part) const {
+Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere,
+                                        float random) const {
     float pdf = 1.f;
 
     for (uint32_t nid = 0;;) {
@@ -700,22 +700,14 @@ Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_spher
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            //            if (node.num_lights <= 4) {
-            //                Light_pick const pick = node.random_light(p, n, total_sphere, random,
-            //                                                          light_mapping_, part);
-
-            //                return {pick.id, pick.pdf * pdf};
-            //            } else {
             auto const pick = distributions_[nid].sample_discrete(random);
 
             return {light_mapping_[node.children_or_light + pick.offset], pick.pdf * pdf};
-            //            }
         }
     }
 }
 
-float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-                          Part const& part) const {
+float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
     uint32_t const lo = light_orders_[id];
 
     float pdf = 1.f;
@@ -747,11 +739,7 @@ float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
-            //            if (node.num_lights <= 4) {
-            //                return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, part);
-            //            } else {
             return pdf * distributions_[nid].pdf(lo - node.children_or_light);
-            //            }
         }
     }
 }
