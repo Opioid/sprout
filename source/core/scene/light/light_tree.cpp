@@ -30,32 +30,33 @@ static inline float importance(float3_p center, float3_p p, float3_p n, float4_p
 
     float const l = std::max(length(axis), material::Dot_min);
 
-    float const sin_cu = std::min(radius / l, 1.f);
-    float const cos_cu = std::sqrt(1.f - sin_cu * sin_cu);
-
     float3 const na = axis / l;
     float3 const da = cone.xyz();
 
+    float const sin_cu   = std::min(radius / l, 1.f);
     float const cos_cone = cone[3];
-    float const sin_cone = std::sqrt(1.f - cos_cone * cos_cone);
+    float const cos_a    = -dot(da, na);
+    float const cos_n    = saturate(dot(n, na));
 
-    float const cos_a = -dot(da, na);
-    float const sin_a = std::sqrt(std::max(1.f - cos_a * cos_a, 0.f));
+    Simd3f const sa(float3(sin_cu, cos_cone, cos_a, cos_n));
+    Simd3f const sb = max(simd::One - sa * sa, simd::Min_normal.v);
+    Simd3f const sr = sqrt(sb);
+    float3 const out(sr);
+
+    float const cos_cu   = out[0];
+    float const sin_cone = out[1];
+    float const sin_a    = out[2];
+    float const sin_n    = out[3];
 
     float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
     float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
+    float const dn = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
     float const d_min = std::max(0.5f * radius, l);
     float const base  = power / (d_min * d_min);
 
-    if (total_sphere) {
-        return std::max(d2 * base, material::Dot_min);
-    }
-
-    float const cos_n = saturate(dot(n, na));
-    float const sin_n = std::sqrt(1.f - cos_n * cos_n);
-    float const angle = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
+    float const angle = total_sphere ? 1.f : dn;
 
     return std::max(d2 * angle * base, material::Dot_min);
 }
