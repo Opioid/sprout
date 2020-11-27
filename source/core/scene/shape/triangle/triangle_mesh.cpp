@@ -416,7 +416,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 #ifdef SU_DEBUG
     uint32_t const pm = primitive_mapping_[s.id];
 
-    float const guessed_pdf = parts_[part].pdf(op, on, two_sided, pm);
+    float const guessed_pdf = parts_[part].pdf(op, on, total_sphere, pm);
 
     float const diff = std::abs(guessed_pdf - s.pdf);
 
