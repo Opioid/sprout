@@ -64,7 +64,7 @@ static void sort_lights(uint32_t* const lights, uint32_t begin, uint32_t end, ui
     });
 }
 
-static float cone_importance(float cos) {
+static float cone_cost(float cos) {
     float const o = std::acos(cos);
     float const w = std::min(o + (Pi / 2.f), Pi);
 
@@ -189,8 +189,8 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         exhausted_ = true;
     } else {
-        float const cone_weight_a = cone_importance(cone_0[3]);
-        float const cone_weight_b = cone_importance(cone_1[3]);
+        float const cone_weight_a = cone_cost(cone_0[3]);
+        float const cone_weight_b = cone_cost(cone_1[3]);
 
         float const surface_area_a = AABB(box_0).surface_area();
         float const surface_area_b = AABB(box_1).surface_area();
@@ -487,7 +487,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
     current_node_ += 2;
 
-    float const cone_weight = cone_importance(cone[3]);
+    float const cone_weight = cone_cost(cone[3]);
 
     Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_,
                                                scene, threads);
@@ -526,13 +526,13 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
 
     uint32_t const len = end - begin;
 
-    if (len <= max_primitives || cone[3] > 0.5f) {
+    if (len <= max_primitives || cone[3] > 0.9f) {
         return assign(node, tree, begin, end, bounds, cone, total_power, part);
     }
 
     uint32_t const child0 = current_node_;
 
-    float const cone_weight = cone_importance(cone[3]);
+    float const cone_weight = cone_cost(cone[3]);
 
     Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_,
                                                part, threads);
