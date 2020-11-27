@@ -94,13 +94,17 @@ static float variance(uint32_t* const lights, uint32_t begin, uint32_t end, Set 
 }
 
 struct Split_candidate {
+    using Part = shape::triangle::Part;
+
     Split_candidate();
 
     void init(float3_p p, uint32_t axis);
 
-    template <typename Set>
     void evaluate(uint32_t begin, uint32_t end, UInts lights, AABB const& bounds, float cone_weight,
-                  Set const& set);
+                  Scene const& scene);
+
+    void evaluate(uint32_t begin, uint32_t end, UInts lights, AABB const& bounds, float cone_weight,
+                  Part const& part);
 
     bool behind(float const* point) const {
         return point[axis_] < d_;
@@ -131,9 +135,8 @@ void Split_candidate::init(float3_p p, uint32_t axis) {
     axis_ = axis;
 }
 
-template <typename Set>
 void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB const& bounds,
-                               float cone_weight, Set const& set) {
+                               float cone_weight, Scene const& scene) {
     uint32_t num_side_0 = 0;
     uint32_t num_side_1 = 0;
 
@@ -149,11 +152,11 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     for (uint32_t i = begin; i < end; ++i) {
         uint32_t const l = lights[i];
 
-        AABB const box(set.light_aabb(l));
+        AABB const box(scene.light_aabb(l));
 
-        float4 const cone = set.light_cone(l);
+        float4 const cone = scene.light_cone(l);
 
-        float const power = set.light_power(l);
+        float const power = scene.light_power(l);
 
         if (behind(box.max().v)) {
             ++num_side_0;
@@ -169,6 +172,108 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
             power_1 += power;
         }
     }
+
+    float3 const extent = bounds.extent();
+
+    float const reg          = max_component(extent) / extent[axis_];
+    float const surface_area = bounds.surface_area();
+
+    aabb_0_ = AABB(box_0);
+    aabb_1_ = AABB(box_1);
+
+    cone_0_ = cone_0;
+    cone_1_ = cone_1;
+
+    power_0_ = power_0;
+    power_1_ = power_1;
+
+    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
+        cost_ = 2.f * reg * (power_0 + power_1) * (4.f * Pi) * surface_area * float(end - begin);
+
+        exhausted_ = true;
+    } else {
+        float const cone_weight_a = cone_cost(cone_0[3]);
+        float const cone_weight_b = cone_cost(cone_1[3]);
+
+        float const surface_area_a = AABB(box_0).surface_area();
+        float const surface_area_b = AABB(box_1).surface_area();
+
+        cost_ = reg * (((power_0 * cone_weight_a * surface_area_a) +
+                        (power_1 * cone_weight_b * surface_area_b)) /
+                       (surface_area * cone_weight));
+
+        exhausted_ = false;
+    }
+}
+
+void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB const& bounds,
+                               float cone_weight, Part const& part) {
+    uint32_t num_side_0 = 0;
+    uint32_t num_side_1 = 0;
+
+    Simd_AABB box_0(Empty_AABB);
+    Simd_AABB box_1(Empty_AABB);
+
+    float power_0(0.f);
+    float power_1(0.f);
+
+    float3 dominant_axis_0(0.f);
+    float3 dominant_axis_1(0.f);
+
+    float const a = 1.f / part.distribution.integral();
+
+    for (uint32_t i = begin; i < end; ++i) {
+        uint32_t const l = lights[i];
+
+        AABB const box(part.light_aabb(l));
+
+        float3 const n = part.light_cone(l).xyz();
+
+        float const power = part.light_power(l);
+
+        if (behind(box.max().v)) {
+            ++num_side_0;
+
+            box_0.merge_assign(box);
+            power_0 += power;
+
+            dominant_axis_0 += a * power * n;
+        } else {
+            ++num_side_1;
+
+            box_1.merge_assign(box);
+            power_1 += power;
+
+            dominant_axis_1 += a * power * n;
+        }
+    }
+
+    dominant_axis_0 = normalize(dominant_axis_0);
+    dominant_axis_1 = normalize(dominant_axis_1);
+
+    float angle_0 = 0.f;
+    float angle_1 = 0.f;
+
+    for (uint32_t i = begin; i < end; ++i) {
+        uint32_t const l = lights[i];
+
+        AABB const box(part.light_aabb(l));
+
+        float3 const n = part.light_cone(l).xyz();
+
+        if (behind(box.max().v)) {
+            float const c = dot(dominant_axis_0, n);
+
+            angle_0 = std::max(angle_0, std::acos(c));
+        } else {
+            float const c = dot(dominant_axis_1, n);
+
+            angle_1 = std::max(angle_1, std::acos(c));
+        }
+    }
+
+    float4 const cone_0 = float4(dominant_axis_0, std::cos(angle_0));
+    float4 const cone_1 = float4(dominant_axis_1, std::cos(angle_1));
 
     float3 const extent = bounds.extent();
 
@@ -415,11 +520,11 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
     // In this case the surface area of the shape part
     float const total_power = part.distribution.integral();
 
-    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part.aabb, part.cone,
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 64, 8u), part.aabb, part.cone,
           total_power, part, threads);
 
     tree.allocate_nodes(current_node_);
-    //    serialize(tree.nodes_, tree.node_middles_);
+
     serialize(tree, part);
 }
 
