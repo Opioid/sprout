@@ -210,7 +210,6 @@ static uint32_t evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t
             candidates[num_candidates++].init(max, Y);
             candidates[num_candidates++].init(max, Z);
         }
-
     } else {
         float3 const position = bounds.position();
         float3 const extent   = bounds.extent();

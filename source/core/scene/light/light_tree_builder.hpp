@@ -64,12 +64,12 @@ class Tree_builder {
     uint32_t build_nodes_capacity_;
     uint32_t candidates_capacity_;
 
+    uint32_t current_node_;
+    uint32_t light_order_;
+
     Build_node* build_nodes_;
 
     Split_candidate* candidates_;
-
-    uint32_t current_node_;
-    uint32_t light_order_;
 };
 
 }  // namespace light
