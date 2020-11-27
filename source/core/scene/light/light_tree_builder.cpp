@@ -412,21 +412,10 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
 
     current_node_ = 1;
 
-    Simd_AABB tbounds(Empty_AABB);
-    float4    cone(1.f);
-    float     total_power(0.f);
+    // In this case the surface area of the shape part
+    float const total_power = part.distribution.integral();
 
-    for (uint32_t i = 0; i < num_finite_lights; ++i) {
-        uint32_t const l = tree.light_mapping_[i];
-
-        tbounds.merge_assign(part.light_aabb(l));
-        cone = cone::merge(cone, part.light_cone(l));
-        total_power += part.light_power(l);
-    }
-
-    AABB const bounds(tbounds);
-
-    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), bounds, cone,
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part.aabb, part.cone,
           total_power, part, threads);
 
     tree.allocate_nodes(current_node_);
