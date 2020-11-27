@@ -101,13 +101,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3_
         return false;
     }
 
-    if (!total_sphere && dot(result.wi, n) <= 0.f) {
-        return false;
-    }
-
-    SOFT_ASSERT(result.pdf() > 0.f);
-
-    return true;
+    return (dot(result.wi, n) > 0.f) | total_sphere;
 }
 
 static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, float3_p p,
@@ -131,12 +125,9 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
         return false;
     }
 
-    if (dot(result.wi, n) > 0.f || total_sphere) {
-        result.pdf() *= rs.pdf();
-        return true;
-    }
+    result.pdf() *= rs.pdf();
 
-    return false;
+    return (dot(result.wi, n) > 0.f) | total_sphere;
 }
 
 static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, float3_p p, float3_p n,
@@ -147,11 +138,7 @@ static inline bool volume_sample(uint32_t prop, uint32_t part, float volume, flo
         return false;
     }
 
-    if (dot(result.wi, n) > 0.f || total_sphere) {
-        return true;
-    }
-
-    return false;
+    return (dot(result.wi, n) > 0.f) | total_sphere;
 }
 
 static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volume, float3_p p,
@@ -174,12 +161,9 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
         return false;
     }
 
-    if (dot(result.wi, n) > 0.f || total_sphere) {
-        result.pdf() *= rs.pdf();
-        return true;
-    }
+    result.pdf() *= rs.pdf();
 
-    return false;
+    return (dot(result.wi, n) > 0.f) | total_sphere;
 }
 
 bool Light::sample(float3_p p, float3_p n, Transformation const& trafo, bool total_sphere,

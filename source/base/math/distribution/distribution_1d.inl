@@ -51,7 +51,7 @@ inline uint32_t Distribution_1D::sample(float r) const {
     uint32_t const begin  = lut_[bucket];
     uint32_t const it     = search(cdf_, begin, size_, r);
 
-    return (0 != it) ? it - 1 : 0;
+    return (0 == it) ? 0 : it - 1;
 }
 
 inline Distribution_1D::Discrete Distribution_1D::sample_discrete(float r) const {

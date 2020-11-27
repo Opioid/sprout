@@ -145,9 +145,7 @@ inline float2 Indexed_data::interpolate_uv(Simd3f_p u, Simd3f_p v, uint32_t inde
 }
 
 inline float Indexed_data::bitangent_sign(uint32_t index) const {
-    static float constexpr signs[2] = {1.f, -1.f};
-
-    return signs[triangles_[index].bts];
+    return 0 == triangles_[index].bts ? 1.f : -1.f;
 }
 
 inline uint32_t Indexed_data::part(uint32_t index) const {
