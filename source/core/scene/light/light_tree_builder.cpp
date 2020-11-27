@@ -106,6 +106,15 @@ struct Split_candidate {
         return point[axis_] < d_;
     }
 
+    AABB aabb_0_;
+    AABB aabb_1_;
+
+    float4 cone_0_;
+    float4 cone_1_;
+
+    float power_0_;
+    float power_1_;
+
     float d_;
     float cost_;
 
@@ -125,17 +134,17 @@ void Split_candidate::init(float3_p p, uint32_t axis) {
 template <typename Set>
 void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB const& bounds,
                                float cone_weight, Set const& set) {
-    uint32_t num_side_a = 0;
-    uint32_t num_side_b = 0;
+    uint32_t num_side_0 = 0;
+    uint32_t num_side_1 = 0;
 
-    Simd_AABB box_a(Empty_AABB);
-    Simd_AABB box_b(Empty_AABB);
+    Simd_AABB box_0(Empty_AABB);
+    Simd_AABB box_1(Empty_AABB);
 
-    float4 cone_a(1.f);
-    float4 cone_b(1.f);
+    float4 cone_0(1.f);
+    float4 cone_1(1.f);
 
-    float power_a(0.f);
-    float power_b(0.f);
+    float power_0(0.f);
+    float power_1(0.f);
 
     for (uint32_t i = begin; i < end; ++i) {
         uint32_t const l = lights[i];
@@ -147,17 +156,17 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
         float const power = set.light_power(l);
 
         if (behind(box.max().v)) {
-            ++num_side_a;
+            ++num_side_0;
 
-            box_a.merge_assign(box);
-            cone_a = cone::merge(cone_a, cone);
-            power_a += power;
+            box_0.merge_assign(box);
+            cone_0 = cone::merge(cone_0, cone);
+            power_0 += power;
         } else {
-            ++num_side_b;
+            ++num_side_1;
 
-            box_b.merge_assign(box);
-            cone_b = cone::merge(cone_b, cone);
-            power_b += power;
+            box_1.merge_assign(box);
+            cone_1 = cone::merge(cone_1, cone);
+            power_1 += power;
         }
     }
 
@@ -166,19 +175,28 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     float const reg          = max_component(extent) / extent[axis_];
     float const surface_area = bounds.surface_area();
 
-    if (bool const empty_side = 0 == num_side_a || 0 == num_side_b; empty_side) {
-        cost_ = 2.f * reg * (power_a + power_b) * (4.f * Pi) * surface_area * float(end - begin);
+    aabb_0_ = AABB(box_0);
+    aabb_1_ = AABB(box_1);
+
+    cone_0_ = cone_0;
+    cone_1_ = cone_1;
+
+    power_0_ = power_0;
+    power_1_ = power_1;
+
+    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
+        cost_ = 2.f * reg * (power_0 + power_1) * (4.f * Pi) * surface_area * float(end - begin);
 
         exhausted_ = true;
     } else {
-        float const cone_weight_a = cone_importance(cone_a[3]);
-        float const cone_weight_b = cone_importance(cone_b[3]);
+        float const cone_weight_a = cone_importance(cone_0[3]);
+        float const cone_weight_b = cone_importance(cone_1[3]);
 
-        float const surface_area_a = AABB(box_a).surface_area();
-        float const surface_area_b = AABB(box_b).surface_area();
+        float const surface_area_a = AABB(box_0).surface_area();
+        float const surface_area_b = AABB(box_1).surface_area();
 
-        cost_ = reg * (((power_a * cone_weight_a * surface_area_a) +
-                        (power_b * cone_weight_b * surface_area_b)) /
+        cost_ = reg * (((power_0 * cone_weight_a * surface_area_a) +
+                        (power_1 * cone_weight_b * surface_area_b)) /
                        (surface_area * cone_weight));
 
         exhausted_ = false;
@@ -186,9 +204,10 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 }
 
 template <typename Set>
-static uint32_t evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end,
-                                AABB const& bounds, float cone_weight, Split_candidate* candidates,
-                                Set const& set, Threads& threads) {
+static Split_candidate evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end,
+                                       AABB const& bounds, float cone_weight,
+                                       Split_candidate* candidates, Set const& set,
+                                       Threads& threads) {
     static uint32_t constexpr X = 0;
     static uint32_t constexpr Y = 1;
     static uint32_t constexpr Z = 2;
@@ -263,7 +282,7 @@ static uint32_t evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t
         }
     }
 
-    return sc;
+    return candidates[sc];
 }
 
 Tree_builder::Tree_builder()
@@ -329,7 +348,22 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
 
         uint32_t const num_total_lights = num_infinite_lights + num_finite_lights;
 
-        split(tree, 0, num_infinite_lights, num_total_lights, scene, threads);
+        Simd_AABB tbounds(Empty_AABB);
+        float4    cone(1.f);
+        float     total_power(0.f);
+
+        for (uint32_t i = 0; i < num_finite_lights; ++i) {
+            uint32_t const l = tree.light_mapping_[i];
+
+            tbounds.merge_assign(scene.light_aabb(l));
+            cone = cone::merge(cone, scene.light_cone(l));
+            total_power += scene.light_power(l);
+        }
+
+        AABB const bounds(tbounds);
+
+        split(tree, 0, num_infinite_lights, num_total_lights, bounds, cone, total_power, scene,
+              threads);
 
         tree.allocate_nodes(current_node_);
         serialize(tree.nodes_, tree.node_middles_);
@@ -378,7 +412,22 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
 
     current_node_ = 1;
 
-    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part, threads);
+    Simd_AABB tbounds(Empty_AABB);
+    float4    cone(1.f);
+    float     total_power(0.f);
+
+    for (uint32_t i = 0; i < num_finite_lights; ++i) {
+        uint32_t const l = tree.light_mapping_[i];
+
+        tbounds.merge_assign(part.light_aabb(l));
+        cone = cone::merge(cone, part.light_cone(l));
+        total_power += part.light_power(l);
+    }
+
+    AABB const bounds(tbounds);
+
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), bounds, cone,
+          total_power, part, threads);
 
     tree.allocate_nodes(current_node_);
     //    serialize(tree.nodes_, tree.node_middles_);
@@ -408,6 +457,7 @@ void Tree_builder::allocate(uint32_t num_lights) {
 }
 
 uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
+                             AABB const& bounds, float4_p cone, float total_power,
                              Scene const& scene, Threads& threads) {
     uint32_t* const lights = tree.light_mapping_;
 
@@ -416,16 +466,8 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     uint32_t const len = end - begin;
 
     if (len <= 4) {
-        AABB   bounds(Empty_AABB);
-        float4 cone(1.f);
-        float  total_power(0.f);
-
         for (uint32_t i = begin; i < end; ++i) {
             uint32_t const l = lights[i];
-
-            bounds.merge_assign(scene.light_aabb(l));
-            cone = cone::merge(cone, scene.light_cone(l));
-            total_power += scene.light_power(l);
 
             tree.light_orders_[l] = light_order_++;
         }
@@ -445,37 +487,24 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
     current_node_ += 2;
 
-    AABB   bounds(Empty_AABB);
-    float4 cone(1.f);
-    float  total_power(0.f);
-
-    for (uint32_t i = begin; i < end; ++i) {
-        uint32_t const l = lights[i];
-
-        bounds.merge_assign(scene.light_aabb(l));
-        cone = cone::merge(cone, scene.light_cone(l));
-        total_power += scene.light_power(l);
-    }
-
     float const cone_weight = cone_importance(cone[3]);
 
-    uint32_t const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_, scene,
-                                        threads);
+    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_,
+                                               scene, threads);
 
-    Split_candidate const& candidate = candidates_[sc];
-
-    SOFT_ASSERT(!candidate.exhausted_);
+    SOFT_ASSERT(!sc.exhausted_);
 
     uint32_t const split_node = std::partition(lights + begin, lights + end,
-                                               [&candidate, &scene](uint32_t l) {
+                                               [&sc, &scene](uint32_t l) {
                                                    float3 const max = scene.light_aabb(l).max();
-
-                                                   return candidate.behind(max.v);
+                                                   return sc.behind(max.v);
                                                }) -
                                 lights;
 
-    uint32_t const c0_end = split(tree, child0, begin, split_node, scene, threads);
-    uint32_t const c1_end = split(tree, child0 + 1, split_node, end, scene, threads);
+    uint32_t const c0_end = split(tree, child0, begin, split_node, sc.aabb_0_, sc.cone_0_,
+                                  sc.power_0_, scene, threads);
+    uint32_t const c1_end = split(tree, child0 + 1, split_node, end, sc.aabb_1_, sc.cone_1_,
+                                  sc.power_1_, scene, threads);
 
     node.bounds            = bounds;
     node.cone              = cone;
@@ -489,26 +518,13 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 }
 
 uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
-                             uint32_t max_primitives, Part const& part, Threads& threads) {
+                             uint32_t max_primitives, AABB const& bounds, float4_p cone,
+                             float total_power, Part const& part, Threads& threads) {
     uint32_t* const lights = tree.light_mapping_;
 
     Build_node& node = build_nodes_[node_id];
 
     uint32_t const len = end - begin;
-
-    Simd_AABB tbounds(Empty_AABB);
-    float4    cone(1.f);
-    float     total_power(0.f);
-
-    for (uint32_t i = begin; i < end; ++i) {
-        uint32_t const l = lights[i];
-
-        tbounds.merge_assign(part.light_aabb(l));
-        cone = cone::merge(cone, part.light_cone(l));
-        total_power += part.light_power(l);
-    }
-
-    AABB const bounds(tbounds);
 
     if (len <= max_primitives || cone[3] > 0.5f) {
         return assign(node, tree, begin, end, bounds, cone, total_power, part);
@@ -518,27 +534,26 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
 
     float const cone_weight = cone_importance(cone[3]);
 
-    uint32_t const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_, part,
-                                        threads);
+    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_,
+                                               part, threads);
 
-    Split_candidate const& candidate = candidates_[sc];
-
-    if (candidate.exhausted_) {
+    if (sc.exhausted_) {
         return assign(node, tree, begin, end, bounds, cone, total_power, part);
     }
 
     uint32_t const split_node = std::partition(lights + begin, lights + end,
-                                               [&candidate, &part](uint32_t l) {
+                                               [&sc, &part](uint32_t l) {
                                                    float3 const max = part.light_aabb(l).max();
-
-                                                   return candidate.behind(max.v);
+                                                   return sc.behind(max.v);
                                                }) -
                                 lights;
 
     current_node_ += 2;
 
-    uint32_t const c0_end = split(tree, child0, begin, split_node, max_primitives, part, threads);
-    uint32_t const c1_end = split(tree, child0 + 1, split_node, end, max_primitives, part, threads);
+    uint32_t const c0_end = split(tree, child0, begin, split_node, max_primitives, sc.aabb_0_,
+                                  sc.cone_0_, sc.power_0_, part, threads);
+    uint32_t const c1_end = split(tree, child0 + 1, split_node, end, max_primitives, sc.aabb_1_,
+                                  sc.cone_1_, sc.power_1_, part, threads);
 
     node.bounds            = bounds;
     node.cone              = cone;

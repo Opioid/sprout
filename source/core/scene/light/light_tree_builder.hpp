@@ -49,11 +49,12 @@ class Tree_builder {
   private:
     void allocate(uint32_t num_lights);
 
-    uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, Scene const& scene,
-                   Threads& threads);
+    uint32_t split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end, AABB const& bounds,
+                   float4_p cone, float total_power, Scene const& scene, Threads& threads);
 
     uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
-                   uint32_t max_primitives, Part const& part, Threads& threads);
+                   uint32_t max_primitives, AABB const& bounds, float4_p cone, float total_power,
+                   Part const& part, Threads& threads);
 
     uint32_t assign(Build_node& node, Primitive_tree& tree, uint32_t begin, uint32_t end,
                     AABB const& bounds, float4_p cone, float total_power, Part const& part);
