@@ -311,20 +311,19 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 template <typename Set>
 static Split_candidate evaluate_splits(uint32_t* const lights, uint32_t begin, uint32_t end,
                                        AABB const& bounds, float cone_weight,
-                                       Split_candidate* candidates, Set const& set,
-                                       Threads& threads) {
+                                       uint32_t sweep_threshold, Split_candidate* candidates,
+                                       Set const& set, Threads& threads) {
     static uint32_t constexpr X = 0;
     static uint32_t constexpr Y = 1;
     static uint32_t constexpr Z = 2;
 
-    static uint32_t const Sweep_threshold = 128;
-    static uint32_t const Num_slices      = 16;
+    static uint32_t const Num_slices = 16;
 
     uint32_t const len = end - begin;
 
     uint32_t num_candidates = 0;
 
-    if (len < Sweep_threshold) {
+    if (len < sweep_threshold) {
         for (uint32_t i = begin, back = end - 1; i < back; ++i) {
             uint32_t const l = lights[i];
 
@@ -583,8 +582,8 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
     float const cone_weight = cone_cost(cone[3]);
 
-    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_,
-                                               scene, threads);
+    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, 128,
+                                               candidates_, scene, threads);
 
     SOFT_ASSERT(!sc.exhausted_);
 
@@ -628,8 +627,8 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
 
     float const cone_weight = cone_cost(cone[3]);
 
-    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, candidates_,
-                                               part, threads);
+    Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight, 32,
+                                               candidates_, part, threads);
 
     if (sc.exhausted_) {
         return assign(node, tree, begin, end, bounds, cone, total_power, part);
