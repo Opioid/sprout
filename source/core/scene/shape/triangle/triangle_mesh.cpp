@@ -405,7 +405,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
         c = std::abs(c);
     }
 
-    if (c <= Dot_min) {
+    if (c < Dot_min) {
         return false;
     }
 
@@ -457,7 +457,7 @@ bool Mesh::sample(uint32_t part, float3_p p, Transformation const& trafo, float 
         c = std::abs(c);
     }
 
-    if (c <= Dot_min) {
+    if (c < Dot_min) {
         return false;
     }
 

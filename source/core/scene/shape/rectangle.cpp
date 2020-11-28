@@ -321,7 +321,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation 
         c = std::abs(c);
     }
 
-    if (c <= Dot_min) {
+    if (c < Dot_min) {
         return false;
     }
 
