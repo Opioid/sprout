@@ -382,14 +382,14 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
 
     Traversal_stack stack;
 
-    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, depth_bias};
+    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, split ? depth_bias : Max_split_depth};
 
     stack.push(t);
 
     while (!stack.empty()) {
         Node const& node = nodes_[t.node];
 
-        bool const do_split = split && t.depth < Max_split_depth && node.split(p);
+        bool const do_split = t.depth < Max_split_depth && node.split(p);
 
         if (1 == node.has_children) {
             uint32_t const c0 = node.children_or_light;
@@ -419,7 +419,7 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
                     t.random = (t.random - p0) / p1;
                 }
 
-                split = false;
+                t.depth = Max_split_depth;
             }
         } else {
             if (do_split) {
@@ -437,8 +437,6 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
             }
 
             t = stack.pop();
-
-            split = true;
         }
     }
 }
@@ -485,14 +483,14 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
 
     Traversal_stack stack;
 
-    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, depth_bias};
+    Traversal_stack::Node t{pdf, (random - ip) / pdf, 0, split ? depth_bias : Max_split_depth};
 
     stack.push(t);
 
     while (!stack.empty()) {
         Node const& node = nodes_[t.node];
 
-        bool const do_split = split && t.depth < Max_split_depth && node.split(p0, dir);
+        bool const do_split = t.depth < Max_split_depth && node.split(p0, dir);
 
         if (1 == node.has_children) {
             uint32_t const c0 = node.children_or_light;
@@ -522,7 +520,7 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
                     t.random = (t.random - pr0) / pr1;
                 }
 
-                split = false;
+                t.depth = Max_split_depth;
             }
         } else {
             if (do_split) {
@@ -540,8 +538,6 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
             }
 
             t = stack.pop();
-
-            split = true;
         }
     }
 }
@@ -568,10 +564,10 @@ float Tree::pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t 
 
     SOFT_ASSERT(pdf > 0.f);
 
-    for (uint32_t nid = 0, depth = infinite_depth_bias_;; ++depth) {
+    for (uint32_t nid = 0, depth = split ? infinite_depth_bias_ : Max_split_depth;; ++depth) {
         Node const& node = nodes_[nid];
 
-        bool const do_split = split && depth < Max_split_depth && node.split(p);
+        bool const do_split = depth < Max_split_depth && node.split(p);
 
         if (1 == node.has_children) {
             uint32_t const c0 = node.children_or_light;
@@ -600,7 +596,7 @@ float Tree::pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t 
                     pdf *= p1 / pt;
                 }
 
-                split = false;
+                depth = Max_split_depth;
             }
         } else {
             if (do_split) {
