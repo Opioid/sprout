@@ -326,7 +326,7 @@ static Split_candidate evaluate_splits(uint32_t* const lights, uint32_t begin, u
     uint32_t num_candidates = 0;
 
     if (len < sweep_threshold) {
-        for (uint32_t i = begin, back = end - 1; i < back; ++i) {
+        for (uint32_t i = begin, back = end; i < back; ++i) {
             uint32_t const l = lights[i];
 
             float3 const max = set.light_aabb(l).max();
