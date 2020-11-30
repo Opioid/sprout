@@ -255,14 +255,6 @@ uint32_t Scene::create_entity() {
     return prop.id;
 }
 
-uint32_t Scene::create_entity(std::string const& name) {
-    uint32_t const dummy = create_entity();
-
-    add_named_prop(dummy, name);
-
-    return dummy;
-}
-
 uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) {
     auto const prop = allocate_prop();
 
@@ -304,15 +296,6 @@ uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) {
     return prop.id;
 }
 
-uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials,
-                            std::string const& name) {
-    uint32_t const prop = create_prop(shape, materials);
-
-    add_named_prop(prop, name);
-
-    return prop;
-}
-
 void Scene::create_prop_light(uint32_t prop, uint32_t part) {
     allocate_light(light::Light::Type::Prop, prop, part);
 }
@@ -333,16 +316,6 @@ uint32_t Scene::create_extension(Extension* extension) {
     extensions_.push_back(extension);
 
     uint32_t const dummy = create_entity();
-
-    extension->init(dummy);
-
-    return dummy;
-}
-
-uint32_t Scene::create_extension(Extension* extension, std::string const& name) {
-    extensions_.push_back(extension);
-
-    uint32_t const dummy = create_entity(name);
 
     extension->init(dummy);
 
@@ -664,18 +637,6 @@ bool Scene::prop_has_caustic_material(uint32_t entity) const {
     }
 
     return false;
-}
-
-void Scene::add_named_prop(uint32_t prop, std::string const& name) {
-    if (!prop || name.empty()) {
-        return;
-    }
-
-    if (named_props_.find(name) != named_props_.end()) {
-        return;
-    }
-
-    named_props_.insert_or_assign(name, prop);
 }
 
 static inline bool matching(uint64_t a, uint64_t b) {

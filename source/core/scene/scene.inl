@@ -177,15 +177,6 @@ inline prop::Prop* Scene::prop(uint32_t index) {
     return &props_[index];
 }
 
-inline prop::Prop* Scene::prop(std::string_view name) {
-    auto e = named_props_.find(name);
-    if (named_props_.end() == e) {
-        return nullptr;
-    }
-
-    return &props_[e->second];
-}
-
 inline uint32_t Scene::num_lights() const {
     return uint32_t(lights_.size());
 }

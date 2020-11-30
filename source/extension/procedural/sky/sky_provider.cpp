@@ -37,11 +37,11 @@ void Provider::set_material_provider(material::Provider& material_provider) {
     material_provider_ = &material_provider;
 }
 
-uint32_t Provider::create_extension(json::Value const& extension_value, std::string const& name,
-                                    Scene& scene, Resources& resources) {
+uint32_t Provider::create_extension(json::Value const& extension_value, Scene& scene,
+                                    Resources& resources) {
     Sky* sky = new Sky;
 
-    uint32_t const sky_entity = scene.create_extension(sky, name);
+    uint32_t const sky_entity = scene.create_extension(sky);
 
     static bool constexpr bake = true;
 

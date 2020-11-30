@@ -13,8 +13,6 @@
 #include "scene_constants.hpp"
 #include "shape/null.hpp"
 
-#include <map>
-#include <string_view>
 #include <vector>
 
 namespace resource {
@@ -124,8 +122,6 @@ class Scene {
 
     Prop* prop(uint32_t index);
 
-    Prop* prop(std::string_view name);
-
     uint32_t num_lights() const;
 
     light::Light const& light(uint32_t id) const;
@@ -152,11 +148,7 @@ class Scene {
 
     uint32_t create_entity();
 
-    uint32_t create_entity(std::string const& name);
-
     uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials);
-
-    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials, std::string const& name);
 
     void create_prop_light(uint32_t prop, uint32_t part);
 
@@ -167,8 +159,6 @@ class Scene {
     void create_prop_volume_image_light(uint32_t prop, uint32_t part);
 
     uint32_t create_extension(Extension* extension);
-
-    uint32_t create_extension(Extension* extension, std::string const& name);
 
     void prop_serialize_child(uint32_t parent_id, uint32_t child_id);
 
@@ -257,8 +247,6 @@ class Scene {
 
     bool prop_has_caustic_material(uint32_t entity) const;
 
-    void add_named_prop(uint32_t prop, std::string const& name);
-
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
 
     uint64_t const tick_duration_ = Units_per_second / 60;
@@ -300,8 +288,6 @@ class Scene {
     std::vector<animation::Animation*> animations_;
 
     std::vector<animation::Stage> animation_stages_;
-
-    std::map<std::string, uint32_t, std::less<>> named_props_;
 
     memory::Array<float> light_temp_powers_;
 

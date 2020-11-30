@@ -114,11 +114,11 @@ class Loader {
 
     static void set_visibility(uint32_t prop, json::Value const& visibility_value, Scene& scene);
 
-    uint32_t load_prop(json::Value const& prop_value, std::string const& name,
-                       Local_materials const& local_materials, Scene& scene);
+    uint32_t load_prop(json::Value const& prop_value, Local_materials const& local_materials,
+                       Scene& scene);
 
     uint32_t load_extension(std::string const& type, json::Value const& extension_value,
-                            std::string const& name, Scene& scene);
+                            Scene& scene);
 
     Shape_ptr load_shape(json::Value const& shape_value);
 
