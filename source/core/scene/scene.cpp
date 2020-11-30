@@ -33,7 +33,7 @@ static uint32_t constexpr Num_steps = 4;
 
 static float constexpr Interval = 1.f / float(Num_steps);
 
-Scene::Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
+Scene::Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
              std::vector<Material*> const& material_resources,
              std::vector<Texture*> const&  texture_resources)
     : null_shape_(null_shape),
@@ -250,17 +250,19 @@ void Scene::calculate_num_interpolation_frames(uint64_t frame_step, uint64_t fra
 uint32_t Scene::create_entity() {
     auto const prop = allocate_prop();
 
-    prop.ptr->configure(null_shape_, nullptr);
+    prop.ptr->configure(null_shape_, nullptr, *this);
 
     return prop.id;
 }
 
-uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) {
+uint32_t Scene::create_prop(uint32_t shape, Material_ptr const* materials) {
     auto const prop = allocate_prop();
 
-    prop.ptr->configure(shape, materials);
+    prop.ptr->configure(shape, materials, *this);
 
-    uint32_t const num_parts = shape.ptr->num_parts();
+    Shape const* shape_ptr = Scene::shape(shape);
+
+    uint32_t const num_parts = shape_ptr->num_parts();
 
     // This calls a very simple test to check whether the prop added just before this one
     // has the same shape, same materials, and is not a light.
@@ -272,13 +274,13 @@ uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) {
         prop_parts_[prop.id] = parts_start;
 
         for (uint32_t i = 0; i < num_parts; ++i) {
-            materials_.emplace_back(materials[shape.ptr->part_id_to_material_id(i)].id);
+            materials_.emplace_back(materials[shape_ptr->part_id_to_material_id(i)].id);
 
             light_ids_.emplace_back(light::Null);
         }
     }
 
-    if (shape.ptr->is_finite()) {
+    if (shape_ptr->is_finite()) {
         finite_props_.push_back(prop.id);
     } else {
         infinite_props_.push_back(prop.id);
@@ -286,7 +288,7 @@ uint32_t Scene::create_prop(Shape_ptr shape, Material_ptr const* materials) {
 
     // Shape has no surface
     if (1 == num_parts && 1.f == materials[0].ptr->ior()) {
-        if (shape.ptr->is_finite()) {
+        if (shape_ptr->is_finite()) {
             volumes_.push_back(prop.id);
         } else {
             infinite_volumes_.push_back(prop.id);
@@ -351,7 +353,7 @@ void Scene::prop_allocate_frames(uint32_t entity, bool local_animation) {
         keyframes_.emplace_back();
     }
 
-    props_[entity].configure_animated(entity, local_animation, *this);
+    props_[entity].configure_animated(local_animation, *this);
 }
 
 bool Scene::prop_has_animated_frames(uint32_t entity) const {
@@ -606,15 +608,17 @@ void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t pa
     light_cones_.emplace_back(float4(0.f, 0.f, 0.f, Pi));
 }
 
-bool Scene::prop_is_instance(Shape_ptr shape, Material_ptr const* materials,
+bool Scene::prop_is_instance(uint32_t shape, Material_ptr const* materials,
                              uint32_t num_parts) const {
-    if (props_.size() < 2 || props_[props_.size() - 2].shape() != shape.id) {
+    if (props_.size() < 2 || props_[props_.size() - 2].shape() != shape) {
         return false;
     }
 
+    Shape const* shape_ptr = shape_resources_[shape];
+
     uint32_t const p = prop_parts_[props_.size() - 2];
     for (uint32_t i = 0; i < num_parts; ++i) {
-        auto const m = materials[shape.ptr->part_id_to_material_id(i)];
+        auto const m = materials[shape_ptr->part_id_to_material_id(i)];
 
         if (m.id != materials_[p + i]) {
             return false;

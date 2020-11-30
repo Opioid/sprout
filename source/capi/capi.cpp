@@ -457,7 +457,7 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials, uint32_t const* 
         }
     }
 
-    return engine->scene.create_prop(shape_ptr, materials_buffer.data());
+    return engine->scene.create_prop(shape, materials_buffer.data());
 }
 
 int32_t su_create_light(uint32_t entity) {

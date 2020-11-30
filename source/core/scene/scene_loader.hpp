@@ -84,10 +84,10 @@ class Loader {
 
     void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
 
-    Shape_ptr canopy();
-    Shape_ptr distant_sphere();
-    Shape_ptr cube();
-    Shape_ptr null_shape();
+    uint32_t canopy() const;
+    uint32_t distant_sphere() const;
+    uint32_t cube() const;
+    uint32_t null_shape() const;
 
     void create_light(uint32_t prop_id, Scene& scene);
 

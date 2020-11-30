@@ -177,6 +177,12 @@ inline prop::Prop* Scene::prop(uint32_t index) {
     return &props_[index];
 }
 
+inline shape::Shape const* Scene::shape(uint32_t index) const {
+    SOFT_ASSERT(index < shape_resources_.size());
+
+    return shape_resources_[index];
+}
+
 inline uint32_t Scene::num_lights() const {
     return uint32_t(lights_.size());
 }

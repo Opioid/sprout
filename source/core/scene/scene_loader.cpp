@@ -84,20 +84,20 @@ void Loader::register_mesh_generator(std::string const&          name,
     mesh_generators_[name] = generator;
 }
 
-Loader::Shape_ptr Loader::canopy() {
-    return canopy_;
+uint32_t Loader::canopy() const {
+    return canopy_.id;
 }
 
-Loader::Shape_ptr Loader::distant_sphere() {
-    return distant_sphere_;
+uint32_t Loader::distant_sphere() const {
+    return distant_sphere_.id;
 }
 
-Loader::Shape_ptr Loader::cube() {
-    return cube_;
+uint32_t Loader::cube() const {
+    return cube_.id;
 }
 
-Loader::Shape_ptr Loader::null_shape() {
-    return null_shape_;
+uint32_t Loader::null_shape() const {
+    return null_shape_.id;
 }
 
 void Loader::create_light(uint32_t prop_id, Scene& scene) {
@@ -386,7 +386,7 @@ uint32_t Loader::load_prop(json::Value const& prop_value, Local_materials const&
         }
     }
 
-    uint32_t const prop = scene.create_prop(shape, materials_.data());
+    uint32_t const prop = scene.create_prop(shape.id, materials_.data());
 
     // It is a annoying that this is done again in load_entities(),
     // but visibility information is already used when creating lights.

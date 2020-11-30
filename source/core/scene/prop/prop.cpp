@@ -34,8 +34,8 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
     properties_.set(Property::Visible_in_shadow, in_shadow);
 }
 
-void Prop::configure(Shape_ptr shape, Material_ptr const* materials) {
-    shape_ = shape.id;
+void Prop::configure(uint32_t shape, Material_ptr const* materials, Scene const& scene) {
+    shape_ = shape;
 
     properties_.clear();
 
@@ -43,11 +43,13 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) {
     properties_.set(Property::Visible_in_reflection);
     properties_.set(Property::Visible_in_shadow);
 
-    properties_.set(Property::Test_AABB, shape.ptr->is_finite() && shape.ptr->is_complex());
+    shape::Shape const* shape_ptr = scene.shape(shape);
+
+    properties_.set(Property::Test_AABB, shape_ptr->is_finite() && shape_ptr->is_complex());
 
     properties_.set(Property::Static, true);
 
-    for (uint32_t i = 0, len = shape.ptr->num_materials(); i < len; ++i) {
+    for (uint32_t i = 0, len = shape_ptr->num_materials(); i < len; ++i) {
         auto const m = materials[i].ptr;
 
         if (m->is_masked()) {
@@ -60,10 +62,10 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) {
     }
 }
 
-void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& scene) {
-    Shape const* shape = scene.prop_shape(self);
+void Prop::configure_animated(bool local_animation, Scene const& scene) {
+    shape::Shape const* shape_ptr = scene.shape(shape_);
 
-    properties_.set(Property::Test_AABB, shape->is_finite());
+    properties_.set(Property::Test_AABB, shape_ptr->is_finite());
     properties_.set(Property::Static, false);
     properties_.set(Property::Local_animation, local_animation);
 }

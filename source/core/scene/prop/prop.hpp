@@ -40,7 +40,6 @@ class Prop {
     using Material     = material::Material;
     using Material_ptr = resource::Resource_ptr<Material>;
     using Shape        = shape::Shape;
-    using Shape_ptr    = resource::Resource_ptr<Shape>;
 
     Prop();
 
@@ -48,9 +47,9 @@ class Prop {
 
     uint32_t shape() const;
 
-    void configure(Shape_ptr shape, Material_ptr const* materials);
+    void configure(uint32_t shape, Material_ptr const* materials, Scene const& scene);
 
-    void configure_animated(uint32_t self, bool local_animation, Scene const& scene);
+    void configure_animated(bool local_animation, Scene const& scene);
 
     bool has_local_animation() const;
 

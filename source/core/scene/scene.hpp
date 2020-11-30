@@ -88,7 +88,7 @@ class Scene {
     using Material_ptr   = resource::Resource_ptr<Material>;
     using Texture        = image::texture::Texture;
 
-    Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
+    Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
           std::vector<Material*> const& material_resources,
           std::vector<Texture*> const&  texture_resources);
 
@@ -122,6 +122,8 @@ class Scene {
 
     Prop* prop(uint32_t index);
 
+    Shape const* shape(uint32_t index) const;
+
     uint32_t num_lights() const;
 
     light::Light const& light(uint32_t id) const;
@@ -148,7 +150,7 @@ class Scene {
 
     uint32_t create_entity();
 
-    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials);
+    uint32_t create_prop(uint32_t shape, Material_ptr const* materials);
 
     void create_prop_light(uint32_t prop, uint32_t part);
 
@@ -243,7 +245,7 @@ class Scene {
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part);
 
-    bool prop_is_instance(Shape_ptr shape, Material_ptr const* materials, uint32_t num_parts) const;
+    bool prop_is_instance(uint32_t shape, Material_ptr const* materials, uint32_t num_parts) const;
 
     bool prop_has_caustic_material(uint32_t entity) const;
 
@@ -262,7 +264,7 @@ class Scene {
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
 
-    Shape_ptr null_shape_;
+    uint32_t null_shape_;
 
     bool has_masked_material_;
     bool has_tinted_shadow_;
