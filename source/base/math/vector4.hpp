@@ -21,7 +21,7 @@ struct Vector4 {
 
     explicit constexpr Vector4(Vector2<T> xy, T z, T w = T(1));
 
-    explicit constexpr Vector4(Vector3<T> const& xyz, T w = T(1));
+    explicit constexpr Vector4(Vector3<T> xyz, T w = T(1));
 
     explicit constexpr Vector4(Vector4f_a_p a);
 

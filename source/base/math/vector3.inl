@@ -32,7 +32,7 @@ constexpr Vector3<T>::Vector3(Vector3f_a_p a) : v{T(a[0]), T(a[1]), T(a[2])} {}
 
 template <typename T>
 template <typename U>
-constexpr Vector3<T>::Vector3(Vector3<U> const& a) : v{T(a[0]), T(a[1]), T(a[2])} {}
+constexpr Vector3<T>::Vector3(Vector3<U> a) : v{T(a[0]), T(a[1]), T(a[2])} {}
 
 template <typename T>
 constexpr Vector2<T> Vector3<T>::xy() const {
@@ -55,7 +55,7 @@ Vector3<T> Vector3<T>::operator+(T s) const {
 }
 
 template <typename T>
-Vector3<T> Vector3<T>::operator+(Vector3 const& a) const {
+Vector3<T> Vector3<T>::operator+(Vector3 a) const {
     return Vector3(v[0] + a[0], v[1] + a[1], v[2] + a[2]);
 }
 
@@ -65,12 +65,12 @@ Vector3<T> Vector3<T>::operator-(T s) const {
 }
 
 template <typename T>
-Vector3<T> Vector3<T>::operator-(Vector3 const& a) const {
+Vector3<T> Vector3<T>::operator-(Vector3 a) const {
     return Vector3(v[0] - a[0], v[1] - a[1], v[2] - a[2]);
 }
 
 template <typename T>
-Vector3<T> Vector3<T>::operator*(Vector3 const& a) const {
+Vector3<T> Vector3<T>::operator*(Vector3 a) const {
     return Vector3(v[0] * a[0], v[1] * a[1], v[2] * a[2]);
 }
 
@@ -86,7 +86,7 @@ Vector3<T> Vector3<T>::operator/(T s) const {
 }
 
 template <typename T>
-Vector3<T> Vector3<T>::operator/(Vector3 const& a) const {
+Vector3<T> Vector3<T>::operator/(Vector3 a) const {
     return Vector3(v[0] / a[0], v[1] / a[1], v[2] / a[2]);
 }
 
@@ -106,7 +106,7 @@ Vector3<T> Vector3<T>::operator-() const {
 }
 
 template <typename T>
-Vector3<T>& Vector3<T>::operator+=(Vector3 const& a) {
+Vector3<T>& Vector3<T>::operator+=(Vector3 a) {
     v[0] += a[0];
     v[1] += a[1];
     v[2] += a[2];
@@ -114,7 +114,7 @@ Vector3<T>& Vector3<T>::operator+=(Vector3 const& a) {
 }
 
 template <typename T>
-Vector3<T>& Vector3<T>::operator-=(Vector3 const& a) {
+Vector3<T>& Vector3<T>::operator-=(Vector3 a) {
     v[0] -= a[0];
     v[1] -= a[1];
     v[2] -= a[2];
@@ -122,7 +122,7 @@ Vector3<T>& Vector3<T>::operator-=(Vector3 const& a) {
 }
 
 template <typename T>
-Vector3<T>& Vector3<T>::operator*=(Vector3 const& a) {
+Vector3<T>& Vector3<T>::operator*=(Vector3 a) {
     v[0] *= a[0];
     v[1] *= a[1];
     v[2] *= a[2];
@@ -147,175 +147,141 @@ Vector3<T>& Vector3<T>::operator/=(T s) {
 }
 
 template <typename T>
-bool Vector3<T>::operator==(Vector3 const& a) const {
+bool Vector3<T>::operator==(Vector3 a) const {
     return v[0] == a[0] && v[1] == a[1] && v[2] == a[2];
 }
 
 template <typename T>
-bool Vector3<T>::operator!=(Vector3 const& a) const {
+bool Vector3<T>::operator!=(Vector3 a) const {
     return v[0] != a[0] || v[1] != a[1] || v[2] != a[2];
 }
 
 template <typename T>
-static Vector3<T> operator*(T s, Vector3<T> const& v) {
+static Vector3<T> operator*(T s, Vector3<T> v) {
     return Vector3<T>(s * v[0], s * v[1], s * v[2]);
 }
 
 template <typename T>
-static T dot(Vector3<T> const& a, Vector3<T> const& b) {
+static T dot(Vector3<T> a, Vector3<T> b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 template <typename T>
-static T length(Vector3<T> const& v) {
+static T length(Vector3<T> v) {
     return std::sqrt(dot(v, v));
 }
 
 template <typename T>
-static T squared_length(Vector3<T> const& v) {
+static T squared_length(Vector3<T> v) {
     return dot(v, v);
 }
 
 template <typename T>
-static Vector3<T> normalize(Vector3<T> const& v) {
+static Vector3<T> normalize(Vector3<T> v) {
     return v / length(v);
 }
 
 template <typename T>
-static Vector3<T> reciprocal(Vector3<T> const& v) {
+static Vector3<T> reciprocal(Vector3<T> v) {
     return Vector3<T>(T(1) / v[0], T(1) / v[1], T(1) / v[2]);
 }
 
 template <typename T>
-static Vector3<T> cross(Vector3<T> const& a, Vector3<T> const& b) {
+static Vector3<T> cross(Vector3<T> a, Vector3<T> b) {
     return Vector3<T>(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
                       a[0] * b[1] - a[1] * b[0]);
 }
 
 template <typename T>
-static Vector3<T> project(Vector3<T> const& a, Vector3<T> const& b) {
+static Vector3<T> project(Vector3<T> a, Vector3<T> b) {
     return dot(b, a) * b;
 }
 
 template <typename T>
-static T distance(Vector3<T> const& a, Vector3<T> const& b) {
+static T distance(Vector3<T> a, Vector3<T> b) {
     return length(a - b);
 }
 
 template <typename T>
-static T squared_distance(Vector3<T> const& a, Vector3<T> const& b) {
+static T squared_distance(Vector3<T> a, Vector3<T> b) {
     return squared_length(a - b);
 }
 
 template <typename T>
-Vector3<T> saturate(Vector3<T> const& v) {
+Vector3<T> saturate(Vector3<T> v) {
     return Vector3<T>(std::min(std::max(v[0], T(0)), T(1)), std::min(std::max(v[1], T(0)), T(1)),
                       std::min(std::max(v[2], T(0)), T(1)));
 }
 
 template <typename T>
-static Vector3<T> exp(Vector3<T> const& v) {
+static Vector3<T> exp(Vector3<T> v) {
     return Vector3<T>(std::exp(v[0]), std::exp(v[1]), std::exp(v[2]));
 }
 
 template <typename T>
-static Vector3<T> lerp(Vector3<T> const& a, Vector3<T> const& b, T t) {
+static Vector3<T> lerp(Vector3<T> a, Vector3<T> b, T t) {
     T u = T(1) - t;
     return u * a + t * b;
 }
 
 template <typename T>
-static Vector3<T> reflect(Vector3<T> const& normal, Vector3<T> const& v) {
+static Vector3<T> reflect(Vector3<T> normal, Vector3<T> v) {
     return T(2) * dot(v, normal) * normal - v;
 }
 
 template <typename T>
-static void orthonormal_basis(Vector3<T> const& n, Vector3<T>& t, Vector3<T>& b) {
-    T const sign = std::copysign(1.f, n[2]);
-    T const c    = -T(1) / (sign + n[2]);
-    T const d    = n[0] * n[1] * c;
-
-    t = Vector3<T>(T(1) + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
-    b = Vector3<T>(d, sign + n[1] * n[1] * c, -n[1]);
-}
-
-template <typename T>
-static inline Vector3<T> tangent(Vector3<T> const& n) {
-    T const sign = std::copysign(1.f, n[2]);
-    T const c    = -T(1) / (sign + n[2]);
-    T const d    = n[0] * n[1] * c;
-
-    return Vector3<T>(T(1) + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
-}
-
-template <typename T>
-static Vector3<T> min(Vector3<T> const& v, T s) {
+static Vector3<T> min(Vector3<T> v, T s) {
     return Vector3<T>(std::min(v[0], s), std::min(v[1], s), std::min(v[2], s));
 }
 
 template <typename T>
-static Vector3<T> min(Vector3<T> const& a, Vector3<T> const& b) {
+static Vector3<T> min(Vector3<T> a, Vector3<T> b) {
     return Vector3<T>(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]));
 }
 
 template <typename T>
-static Vector3<T> max(Vector3<T> const& v, T s) {
+static Vector3<T> max(Vector3<T> v, T s) {
     return Vector3<T>(std::max(v[0], s), std::max(v[1], s), std::max(v[2], s));
 }
 
 template <typename T>
-static Vector3<T> max(Vector3<T> const& a, Vector3<T> const& b) {
+static Vector3<T> max(Vector3<T> a, Vector3<T> b) {
     return Vector3<T>(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
 template <typename T>
-static Vector3<T> abs(Vector3<T> const& v) {
+static Vector3<T> abs(Vector3<T> v) {
     return Vector3<T>(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]));
 }
 
 template <typename T>
-static bool any_negative(Vector3<T> const& v) {
+static bool any_negative(Vector3<T> v) {
     return v[0] < T(0) || v[1] < T(0) || v[2] < T(0);
 }
 
 template <typename T>
-static bool any_greater_one(Vector3<T> const& v) {
+static bool any_greater_one(Vector3<T> v) {
     return v[0] > T(1) || v[1] > T(1) || v[2] > T(1);
 }
 
 template <typename T>
-static constexpr bool any_greater_equal(Vector3<T> const& a, Vector3<T> const& b) {
+static constexpr bool any_greater_equal(Vector3<T> a, Vector3<T> b) {
     return (a[0] >= b[0]) | (a[1] >= b[1]) | (a[2] >= b[2]);
 }
 
 template <typename T>
-static constexpr bool any_less(Vector3<T> const& a, T s) {
+static constexpr bool any_less(Vector3<T> a, T s) {
     return a[0] < s || a[1] < s || a[2] < s;
 }
 
 template <typename T>
-static constexpr bool all_less(Vector3<T> const& a, T s) {
+static constexpr bool all_less(Vector3<T> a, T s) {
     return a[0] < s && a[1] < s && a[2] < s;
 }
 
 template <typename T>
-static constexpr bool any_less(Vector3<T> const& a, Vector3<T> const& b) {
+static constexpr bool any_less(Vector3<T> a, Vector3<T> b) {
     return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
-}
-
-template <typename T>
-static bool any_nan(Vector3<T> const& v) {
-    return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]);
-}
-
-template <typename T>
-static bool any_inf(Vector3<T> const& v) {
-    return std::isinf(v[0]) || std::isinf(v[1]) || std::isinf(v[2]);
-}
-
-template <typename T>
-static bool all_finite(Vector3<T> const& v) {
-    return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
 }
 
 //==============================================================================
@@ -345,8 +311,7 @@ inline constexpr Vector3f_a::Vector3f_a(Vector2<float> const xy, float z)
     : v{xy[0], xy[1], z, 0.f} {}
 
 template <typename T>
-constexpr Vector3f_a::Vector3f_a(Vector3<T> const& a)
-    : v{float(a[0]), float(a[1]), float(a[2]), 0.f} {}
+constexpr Vector3f_a::Vector3f_a(Vector3<T> a) : v{float(a[0]), float(a[1]), float(a[2]), 0.f} {}
 
 inline Vector3f_a::Vector3f_a(Simd3f_p o) {
     _mm_store_ps(v, o.v);
@@ -764,7 +729,7 @@ inline Simd3f::Simd3f(__m128 m) : v(m) {}
 
 inline Simd3f::Simd3f(float s) : v(_mm_set1_ps(s)) {}
 
-inline Simd3f::Simd3f(Simd1f const& s) : v(SU_PERMUTE_PS(s.v, _MM_SHUFFLE(0, 0, 0, 0))) {}
+inline Simd3f::Simd3f(Simd1f_p s) : v(SU_PERMUTE_PS(s.v, _MM_SHUFFLE(0, 0, 0, 0))) {}
 
 inline Simd3f::Simd3f(float sx, float sy) {
     __m128 x = _mm_load_ss(&sx);

@@ -1,19 +1,19 @@
 #include "print.hpp"
 
-std::ostream& operator<<(std::ostream& stream, const math::Vector3<uint8_t>& v) {
+std::ostream& operator<<(std::ostream& stream, math::Vector3<uint8_t> v) {
     return stream << "[" << uint32_t(v[0]) << ", " << uint32_t(v[1]) << ", " << uint32_t(v[2])
                   << "]";
 }
 
-std::ostream& operator<<(std::ostream& stream, const math::Vector3f_a& v) {
+std::ostream& operator<<(std::ostream& stream, math::Vector3f_a_p v) {
     return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << "]";
 }
 
-std::ostream& operator<<(std::ostream& stream, const math::Vector4f_a& v) {
+std::ostream& operator<<(std::ostream& stream, math::Vector4f_a_p v) {
     return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << "]";
 }
 
-std::ostream& operator<<(std::ostream& stream, const math::Vector4i_a& v) {
+std::ostream& operator<<(std::ostream& stream, math::Vector4i_a v) {
     return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << "]";
 }
 

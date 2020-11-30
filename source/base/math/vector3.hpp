@@ -27,7 +27,7 @@ struct Vector3 {
     explicit constexpr Vector3(Vector3f_a_p a);
 
     template <typename U>
-    explicit constexpr Vector3(Vector3<U> const& a);
+    explicit constexpr Vector3(Vector3<U> a);
 
     template <typename U>
     explicit constexpr Vector3(U x, U y, U z) : v{T(x), T(y), T(z)} {}
@@ -39,17 +39,17 @@ struct Vector3 {
 
     Vector3 operator+(T s) const;
 
-    Vector3 operator+(Vector3 const& a) const;
+    Vector3 operator+(Vector3 a) const;
 
     Vector3 operator-(T s) const;
 
-    Vector3 operator-(Vector3 const& v) const;
+    Vector3 operator-(Vector3 v) const;
 
-    Vector3 operator*(Vector3 const& a) const;
+    Vector3 operator*(Vector3 a) const;
 
     Vector3 operator/(T s) const;
 
-    Vector3 operator/(Vector3 const& v) const;
+    Vector3 operator/(Vector3 v) const;
 
     constexpr Vector3 operator<<(uint32_t c) const;
 
@@ -57,19 +57,19 @@ struct Vector3 {
 
     Vector3 operator-() const;
 
-    Vector3& operator+=(Vector3 const& a);
+    Vector3& operator+=(Vector3 a);
 
-    Vector3& operator-=(Vector3 const& a);
+    Vector3& operator-=(Vector3 a);
 
-    Vector3& operator*=(Vector3 const& a);
+    Vector3& operator*=(Vector3 a);
 
     Vector3& operator*=(T s);
 
     Vector3& operator/=(T s);
 
-    bool operator==(Vector3 const& a) const;
+    bool operator==(Vector3 a) const;
 
-    bool operator!=(Vector3 const& a) const;
+    bool operator!=(Vector3 a) const;
 };
 
 //==============================================================================
@@ -90,9 +90,6 @@ struct Vector3_a {
     constexpr T& operator[](uint32_t i);
 };
 
-struct Simd3f;
-using Simd3f_p = Simd3f;
-
 struct alignas(16) Vector3f_a {
     float v[4];
 
@@ -109,7 +106,7 @@ struct alignas(16) Vector3f_a {
     explicit constexpr Vector3f_a(Vector2<float> const xy, float z = 0.f);
 
     template <typename T>
-    explicit constexpr Vector3f_a(Vector3<T> const& a);
+    explicit constexpr Vector3f_a(Vector3<T> a);
 
     explicit Vector3f_a(Simd3f_p o);
 
@@ -130,7 +127,7 @@ struct Simd3f {
 
     explicit Simd3f(float s);
 
-    explicit Simd3f(Simd1f const& s);
+    explicit Simd3f(Simd1f_p s);
 
     Simd3f(float sx, float sy);
 

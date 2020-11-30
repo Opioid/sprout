@@ -20,7 +20,7 @@ template <typename T>
 constexpr Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : v{xy[0], xy[1], z, w} {}
 
 template <typename T>
-constexpr Vector4<T>::Vector4(Vector3<T> const& xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
+constexpr Vector4<T>::Vector4(Vector3<T> xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
 
 template <typename T>
 constexpr Vector4<T>::Vector4(Vector4f_a_p a) : v{T(a[0]), T(a[1]), T(a[2]), T(a[3])} {}

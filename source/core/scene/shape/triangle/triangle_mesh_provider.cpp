@@ -121,7 +121,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     if (!handler.has_tangents()) {
         // If no tangents were loaded, compute some tangent space manually
         for (auto& v : handler.vertices()) {
-            v.t = tangent(v.n);
+            v.t = packed_float3(tangent(float3(v.n)));
 
             v.bitangent_sign = 0;
         }
@@ -242,7 +242,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
             packed_float3 const* normals = reinterpret_cast<packed_float3 const*>(desc.normals);
 
             for (uint32_t i = 0, len = desc.num_vertices; i < len; ++i) {
-                tangents[i] = tangent(normals[i]);
+                tangents[i] = packed_float3(tangent(float3(normals[i])));
             }
         }
 
@@ -303,8 +303,8 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
         if (!handler.has_tangents()) {
             // If no tangents were loaded, compute the tangent space manually
             for (auto& v : handler.vertices()) {
-                packed_float3 b;
-                orthonormal_basis(v.n, v.t, b);
+                v.t = packed_float3(tangent(float3(v.n)));
+
                 v.bitangent_sign = 0;
             }
         }
