@@ -284,6 +284,11 @@ static constexpr bool any_less(Vector3<T> a, Vector3<T> b) {
     return a[0] < b[0] || a[1] < b[1] || a[2] < b[2];
 }
 
+template <typename T>
+static inline bool all_finite(Vector3<T> v) {
+    return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
+}
+
 //==============================================================================
 // Aligned 3D float vector
 //==============================================================================

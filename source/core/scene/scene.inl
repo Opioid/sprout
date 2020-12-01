@@ -184,7 +184,7 @@ inline shape::Shape const* Scene::shape(uint32_t index) const {
 }
 
 inline material::Material const* Scene::material(uint32_t index) const {
-    SOFT_ASSERT(index < material_indices_.size());
+    SOFT_ASSERT(index < material_resources_.size());
 
     return material_resources_[index];
 }
