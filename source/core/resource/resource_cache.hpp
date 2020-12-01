@@ -54,11 +54,11 @@ class Typed_cache final : public Cache {
 
     Resource_ptr<T> get(std::string const& filename, Variants const& options);
 
-    Resource_ptr<T> get(uint32_t id) const;
+    T* get(uint32_t id) const;
 
-    Resource_ptr<T> store(T* resource);
+    uint32_t store(T* resource);
 
-    Resource_ptr<T> store(std::string const& name, Variants const& options, T* resource);
+    uint32_t store(std::string const& name, Variants const& options, T* resource);
 
   private:
     struct Entry {

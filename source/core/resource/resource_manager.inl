@@ -86,44 +86,44 @@ Resource_ptr<T> Manager::get(std::string const& filename, Variants const& option
 }
 
 template <typename T>
-Resource_ptr<T> Manager::get(uint32_t id) const {
+T* Manager::get(uint32_t id) const {
     Typed_cache<T> const* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return Resource_ptr<T>::Null();
+        return nullptr;
     }
 
     return cache->get(id);
 }
 
 template <typename T>
-Resource_ptr<T> Manager::store(T* resource) {
+uint32_t Manager::store(T* resource) {
     if (!resource) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     return cache->store(resource);
 }
 
 template <typename T>
-Resource_ptr<T> Manager::store(std::string const& name, T* resource, Variants const& options) {
+uint32_t Manager::store(std::string const& name, T* resource, Variants const& options) {
     if (name.empty() || !resource) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     return cache->store(name, options, resource);

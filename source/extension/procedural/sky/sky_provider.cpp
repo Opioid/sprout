@@ -56,8 +56,8 @@ uint32_t Provider::create_extension(json::Value const& extension_value, Scene& s
         sun_material = new Sun_material(*sky);
     }
 
-    uint32_t const sky_material_id = resources.store<material::Material>(sky_material).id;
-    uint32_t const sun_material_id = resources.store<material::Material>(sun_material).id;
+    uint32_t const sky_material_id = resources.store<material::Material>(sky_material);
+    uint32_t const sun_material_id = resources.store<material::Material>(sun_material);
 
     uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), &sky_material_id);
     uint32_t const sun_prop = scene.create_prop(scene_loader_->distant_sphere(), &sun_material_id);

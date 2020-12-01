@@ -38,16 +38,16 @@ namespace scene {
 
 Loader::Loader(Resources& resources, Material* fallback_material)
     : resource_manager_(resources),
-      canopy_(resources.store<Shape>(new shape::Canopy()).id),
-      cube_(resources.store<Shape>(new shape::Cube()).id),
-      disk_(resources.store<Shape>(new shape::Disk()).id),
-      distant_sphere_(resources.store<Shape>(new shape::Distant_sphere()).id),
-      infinite_sphere_(resources.store<Shape>(new shape::Infinite_sphere()).id),
-      plane_(resources.store<Shape>(new shape::Plane()).id),
-      rectangle_(resources.store<Shape>(new shape::Rectangle()).id),
-      sphere_(resources.store<Shape>(new shape::Sphere()).id),
-      null_shape_(resources.store<Shape>(new shape::Null()).id),
-      fallback_material_(resources.store<Material>(fallback_material).id) {}
+      canopy_(resources.store<Shape>(new shape::Canopy())),
+      cube_(resources.store<Shape>(new shape::Cube())),
+      disk_(resources.store<Shape>(new shape::Disk())),
+      distant_sphere_(resources.store<Shape>(new shape::Distant_sphere())),
+      infinite_sphere_(resources.store<Shape>(new shape::Infinite_sphere())),
+      plane_(resources.store<Shape>(new shape::Plane())),
+      rectangle_(resources.store<Shape>(new shape::Rectangle())),
+      sphere_(resources.store<Shape>(new shape::Sphere())),
+      null_shape_(resources.store<Shape>(new shape::Null())),
+      fallback_material_(resources.store<Material>(fallback_material)) {}
 
 Loader::~Loader() = default;
 

@@ -61,14 +61,13 @@ class Manager {
     Resource_ptr<T> get(std::string const& filename, Variants const& options = Variants());
 
     template <typename T>
-    Resource_ptr<T> get(uint32_t id) const;
+    T* get(uint32_t id) const;
 
     template <typename T>
-    Resource_ptr<T> store(T* resource);
+    uint32_t store(T* resource);
 
     template <typename T>
-    Resource_ptr<T> store(std::string const& name, T* resource,
-                          Variants const& options = Variants());
+    uint32_t store(std::string const& name, T* resource, Variants const& options = Variants());
 
   private:
     template <typename T>
