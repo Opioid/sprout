@@ -32,7 +32,7 @@ std::vector<T*> const& Typed_cache<T>::resources() const {
 }
 
 template <typename T>
-uint32_t Typed_cache<T>::load(std::string const& filename, Variants const& options,
+Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
                                      Manager& manager) {
     std::string resolved_name;
 
@@ -40,7 +40,7 @@ uint32_t Typed_cache<T>::load(std::string const& filename, Variants const& optio
 }
 
 template <typename T>
-uint32_t Typed_cache<T>::load(std::string const& filename, Variants const& options,
+Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
                                      Manager& resources, std::string& resolved_name) {
     auto const key = std::make_pair(filename, options);
 
@@ -48,13 +48,14 @@ uint32_t Typed_cache<T>::load(std::string const& filename, Variants const& optio
         auto& entry = cached->second;
 
         if (check_up_to_date(entry)) {
-            return entry.id;
+            uint32_t const id = entry.id;
+            return {resources_[id], id};
         }
     }
 
     auto resource = provider_.load(filename, options, resources, resolved_name);
     if (!resource) {
-        return resource::Null;
+        return Resource_ptr<T>::Null();
     }
 
     std::error_code ec;
@@ -72,16 +73,16 @@ uint32_t Typed_cache<T>::load(std::string const& filename, Variants const& optio
     LOGGING_VERBOSE(stream.str());
 #endif
 
-    return id;
+    return {resource, id};
 }
 
 template <typename T>
-uint32_t Typed_cache<T>::load(std::string const& name, void const* data,
+Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
                                      std::string const& source_name, Variants const& options,
                                      Manager& resources) {
     auto resource = provider_.load(data, source_name, options, resources);
     if (!resource) {
-        return resource::Null;
+        return Resource_ptr<T>::Null();
     }
 
     resources_.push_back(resource);
@@ -96,22 +97,25 @@ uint32_t Typed_cache<T>::load(std::string const& name, void const* data,
         entries_.insert_or_assign(key, Entry{id, generation_, source_name, last_write});
     }
 
-    return id;
+    return {resource, id};
 }
 
 template <typename T>
-uint32_t Typed_cache<T>::get(std::string const& filename, Variants const& options) {
+Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const& options) {
     auto const key = std::make_pair(filename, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
         auto& entry = cached->second;
 
         if (check_up_to_date(entry)) {
-            return entry.id;
+            uint32_t const id = entry.id;
+            return {resources_[id], id};
         }
+
+        return Resource_ptr<T>::Null();
     }
 
-    return resource::Null;
+    return Resource_ptr<T>::Null();
 }
 
 template <typename T>

@@ -549,10 +549,6 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     light_aabbs_[light].bounds[1][3] = max_component(lights_[light].power(aabb(), *this));
 }
 
-void Scene::material_commit(uint32_t material, Threads& threads) const {
-    material_resources_[material]->commit(threads, *this);
-}
-
 animation::Animation* Scene::create_animation(uint32_t count) {
     animation::Animation* animation = new animation::Animation(count, num_interpolation_frames_);
 

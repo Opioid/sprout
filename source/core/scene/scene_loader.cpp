@@ -413,7 +413,7 @@ uint32_t Loader::load_shape(json::Value const& shape_value) {
     }
 
     if (std::string const file = json::read_string(shape_value, "file"); !file.empty()) {
-        return resource_manager_.load<shape::Shape>(file);
+        return resource_manager_.load<shape::Shape>(file).id;
     }
 
     logging::error("Cannot create Shape: Neither shape nor type.");
@@ -448,12 +448,12 @@ uint32_t Loader::shape(std::string const& type, json::Value const& shape_value) 
     }
 
     if (auto g = mesh_generators_.find(type); mesh_generators_.end() != g) {
-        uint32_t const shape = g->second->create_mesh(shape_value, resource_manager_);
-        if (resource::Null == shape) {
+        auto shape = g->second->create_mesh(shape_value, resource_manager_);
+        if (resource::Null == shape.id) {
             logging::error("Cannot create shape of type \"" + type + "\".");
         }
 
-        return shape;
+        return shape.id;
     }
 
     logging::error("Cannot create shape of type \"" + type + "\": Undefined type.");
@@ -480,8 +480,8 @@ void Loader::load_materials(json::Value const&     materials_value,
 uint32_t Loader::load_material(std::string const& name, Local_materials const& local_materials,
                                Scene& scene) const {
     // First, check if we maybe already have cached the material.
-    if (uint32_t material = resource_manager_.get<Material>(name); resource::Null != material) {
-        return material;
+    if (auto material = resource_manager_.get<Material>(name); material.ptr) {
+        return material.id;
     }
 
     // Otherwise, see if it is among the locally defined materials.
@@ -489,18 +489,18 @@ uint32_t Loader::load_material(std::string const& name, Local_materials const& l
         local_materials.materials.end() != material_node) {
         void const* data = reinterpret_cast<void const*>(material_node->second);
 
-        if (uint32_t material = resource_manager_.load<Material>(name, data,
+        if (auto material = resource_manager_.load<Material>(name, data,
                                                              local_materials.source_name);
-            resource::Null != material) {
-            scene.material_commit(material, resource_manager_.threads());
-            return material;
+            material.ptr) {
+            material.ptr->commit(resource_manager_.threads(), scene);
+            return material.id;
         }
     }
 
     // Lastly, try loading the material from the filesystem.
-    if (uint32_t material = resource_manager_.load<Material>(name); resource::Null != material) {
-        scene.material_commit(material, resource_manager_.threads());
-        return material;
+    if (auto material = resource_manager_.load<Material>(name); material.ptr) {
+        material.ptr->commit(resource_manager_.threads(), scene);
+        return material.id;
     }
 
     logging::error("Using fallback for material %S: ", name);

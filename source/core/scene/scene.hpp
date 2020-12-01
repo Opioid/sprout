@@ -208,8 +208,6 @@ class Scene {
 
     prop::Prop_topology const& prop_topology(uint32_t entity) const;
 
-    void material_commit(uint32_t material, Threads& threads) const;
-
     Texture const* texture(uint32_t id) const;
 
     uint32_t prop_light_id(uint32_t entity, uint32_t part) const;

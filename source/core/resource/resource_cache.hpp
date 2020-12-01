@@ -18,6 +18,9 @@ class Manager;
 template <typename T>
 class Provider;
 
+template <typename T>
+struct Resource_ptr;
+
 class Cache {
   public:
     Cache();
@@ -41,15 +44,15 @@ class Typed_cache final : public Cache {
 
     std::vector<T*> const& resources() const;
 
-    uint32_t load(std::string const& filename, Variants const& options, Manager& resources);
+    Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources);
 
-    uint32_t load(std::string const& filename, Variants const& options, Manager& resources,
+    Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources,
                          std::string& resolved_name);
 
-    uint32_t load(std::string const& name, void const* data, std::string const& source_name,
+    Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
                          Variants const& options, Manager& resources);
 
-    uint32_t get(std::string const& filename, Variants const& options);
+    Resource_ptr<T> get(std::string const& filename, Variants const& options);
 
     T* get(uint32_t id) const;
 

@@ -647,7 +647,7 @@ Material* Provider::load_mix(json::Value const& mix_value, Resources& resources)
 
     bool two_sided = false;
 
-    memory::Array<uint32_t> materials;
+    memory::Array<material::Material*> materials;
     materials.reserve(2);
 
     for (auto const& n : mix_value.GetObject()) {
@@ -660,9 +660,9 @@ Material* Provider::load_mix(json::Value const& mix_value, Resources& resources)
                 std::string const filename = json::read_string(m, "file");
 
                 if (!filename.empty()) {
-                    materials.push_back(resources.load<Material>(filename));
+                    materials.push_back(resources.load<Material>(filename).ptr);
                 } else {
-                    materials.push_back(resources.load<Material>("", &m));
+                    materials.push_back(load(m, "", resources));
                 }
             }
         } else if ("textures" == n.name) {
@@ -1179,7 +1179,7 @@ Texture_adapter create_texture(Provider::Texture_description const& description,
         options.set("swizzle", description.swizzle);
     }
 
-    return Texture_adapter(resources.load<Texture>(description.filename, options),
+    return Texture_adapter(resources.load<Texture>(description.filename, options).id,
                            description.scale);
 }
 

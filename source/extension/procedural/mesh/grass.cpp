@@ -17,7 +17,7 @@ namespace procedural::mesh {
 using namespace scene::shape;
 using namespace scene::shape::triangle;
 
-uint32_t Grass::create_mesh(json::Value const& /*mesh_value*/, Resources& resources) {
+Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/, Resources& resources) {
     std::vector<Index_triangle> triangles;
     std::vector<Vertex>         vertices;
 
@@ -81,7 +81,7 @@ uint32_t Grass::create_mesh(json::Value const& /*mesh_value*/, Resources& resour
     //                                               resources.threads());
 
     //   return resources.store<Shape>(mesh);
-    return resource::Null;
+    return Shape_ptr::Null();
 }
 
 void Grass::add_blade(float3_p offset, float rotation_y, float lean_factor, float width,

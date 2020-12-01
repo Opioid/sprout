@@ -5,7 +5,10 @@
 
 namespace resource {
 class Manager;
-}
+
+template <typename T>
+struct Resource_ptr;
+}  // namespace resource
 
 namespace scene::shape {
 
@@ -21,7 +24,9 @@ class Generator {
 
     virtual ~Generator() {}
 
-    virtual uint32_t create_mesh(json::Value const& mesh_value, Resources& resources) = 0;
+    using Shape_ptr = resource::Resource_ptr<Shape>;
+
+    virtual Shape_ptr create_mesh(json::Value const& mesh_value, Resources& resources) = 0;
 };
 
 }  // namespace triangle
