@@ -347,7 +347,7 @@ uint32_t su_create_image(uint32_t pixel_type, uint32_t num_channels, uint32_t wi
 
     void const* desc_data = reinterpret_cast<void const*>(&desc);
 
-    return engine->resources.load<image::Image>("", desc_data).id;
+    return engine->resources.load<image::Image>("", desc_data);
 }
 
 uint32_t su_create_material(char const* string) {
@@ -357,29 +357,29 @@ uint32_t su_create_material(char const* string) {
 
     void const* data = reinterpret_cast<void const*>(&root);
 
-    auto const material = engine->resources.load<material::Material>("", data);
+    uint32_t const material = engine->resources.load<material::Material>("", data);
 
-    if (!material) {
+    if (resource::Null == material) {
         logging::error(string);
         return resource::Null;
     }
 
-    material.ptr->commit(engine->threads, engine->scene);
+    engine->scene.material_commit(material, engine->threads);
 
-    return material.id;
+    return material;
 }
 
 uint32_t su_create_material_from_file(char const* filename) {
     ASSERT_ENGINE(resource::Null)
 
-    auto const material = engine->resources.load<material::Material>(filename);
+    uint32_t const material = engine->resources.load<material::Material>(filename);
 
-    if (!material) {
+    if (resource::Null == material) {
         logging::error("");
         return resource::Null;
     }
 
-    return material.id;
+    return material;
 }
 
 uint32_t su_create_triangle_mesh_async(uint32_t num_triangles, uint32_t num_vertices,
@@ -409,20 +409,20 @@ uint32_t su_create_triangle_mesh_async(uint32_t num_triangles, uint32_t num_vert
 
     void const* desc_data = reinterpret_cast<void const*>(&desc);
 
-    return engine->resources.load<shape::Shape>("", desc_data).id;
+    return engine->resources.load<shape::Shape>("", desc_data);
 }
 
 uint32_t su_create_triangle_mesh_from_file(char const* filename) {
     ASSERT_ENGINE(resource::Null)
 
-    auto const mesh = engine->resources.load<shape::Shape>(filename);
+    uint32_t const mesh = engine->resources.load<shape::Shape>(filename);
 
-    if (!mesh) {
+    if (resource::Null == mesh) {
         logging::error("");
         return resource::Null;
     }
 
-    return mesh.id;
+    return mesh;
 }
 
 uint32_t su_create_prop(uint32_t shape, uint32_t num_materials, uint32_t const* materials) {

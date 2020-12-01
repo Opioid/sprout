@@ -811,12 +811,12 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto const backplate_res = resources.load<image::texture::Texture>(name);
-            if (!backplate_res.ptr) {
+            auto const backplate = resources.load<image::texture::Texture>(name);
+            if (resource::Null == backplate) {
                 continue;
             }
 
-            pipeline.add(new Backplate(backplate_res.ptr));
+            pipeline.add(new Backplate(resources.get<image::texture::Texture>(backplate)));
         } else if ("Bloom" == n->name) {
             float const angle     = json::read_float(n->value, "angle", 0.00002f);
             float const alpha     = json::read_float(n->value, "alpha", 0.005f);

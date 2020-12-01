@@ -11,11 +11,11 @@ class Material : public material::Material {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_materials(material::Material const* a, material::Material const* const b);
+    void set_materials(uint32_t a, uint32_t const b);
 
   private:
-    material::Material const* material_a_;
-    material::Material const* material_b_;
+    uint32_t material_a_;
+    uint32_t material_b_;
 };
 
 }  // namespace scene::material::mix

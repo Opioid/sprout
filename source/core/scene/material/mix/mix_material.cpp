@@ -17,17 +17,17 @@ material::Sample const& Material::sample(float3_p wo, Ray const& ray, Renderstat
     float const mask = mask_.sample_1(worker, texture_sampler, rs.uv);
 
     if (mask > sampler.sample_1D(worker.rng(), 1)) {
-        return material_a_->sample(wo, ray, rs, filter, sampler, worker);
+        return worker.scene().material(material_a_)->sample(wo, ray, rs, filter, sampler, worker);
     }
 
-    return material_b_->sample(wo, ray, rs, filter, sampler, worker);
+    return worker.scene().material(material_a_)->sample(wo, ray, rs, filter, sampler, worker);
 }
 
-void Material::set_materials(material::Material const* a, material::Material const* b) {
+void Material::set_materials(uint32_t a, uint32_t b) {
     material_a_ = a;
     material_b_ = b;
 
-    ior_ = a->ior();
+    ior_ = 1.5f;
 }
 
 }  // namespace scene::material::mix

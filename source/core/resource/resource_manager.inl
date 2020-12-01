@@ -24,62 +24,62 @@ std::vector<T*> const& Manager::register_provider(Provider<T>& provider) {
 }
 
 template <typename T>
-Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options) {
+uint32_t Manager::load(std::string const& filename, Variants const& options) {
     if (filename.empty()) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     return cache->load(filename, options, *this);
 }
 
 template <typename T>
-Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options,
+uint32_t Manager::load(std::string const& filename, Variants const& options,
                               std::string& resolved_name) {
     if (filename.empty()) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     return cache->load(filename, options, *this, resolved_name);
 }
 
 template <typename T>
-Resource_ptr<T> Manager::load(std::string const& name, void const* data,
+uint32_t Manager::load(std::string const& name, void const* data,
                               std::string const& source_name, Variants const& options) {
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     return cache->load(name, data, source_name, options, *this);
 }
 
 template <typename T>
-Resource_ptr<T> Manager::get(std::string const& filename, Variants const& options) {
+uint32_t Manager::get(std::string const& filename, Variants const& options) {
     if (filename.empty()) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     Typed_cache<T>* cache = typed_cache<T>();
 
     // a provider for this resource type was never registered
     if (!cache) {
-        return Resource_ptr<T>::Null();
+        return resource::Null;
     }
 
     return cache->get(filename, options);

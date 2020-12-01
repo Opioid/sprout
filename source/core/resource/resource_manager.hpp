@@ -47,18 +47,18 @@ class Manager {
     std::vector<T*> const& register_provider(Provider<T>& provider);
 
     template <typename T>
-    Resource_ptr<T> load(std::string const& filename, Variants const& options = Variants());
+    uint32_t load(std::string const& filename, Variants const& options = Variants());
 
     template <typename T>
-    Resource_ptr<T> load(std::string const& filename, Variants const& options,
+    uint32_t load(std::string const& filename, Variants const& options,
                          std::string& resolved_name);
 
     template <typename T>
-    Resource_ptr<T> load(std::string const& name, void const* data,
+    uint32_t load(std::string const& name, void const* data,
                          std::string const& source_name = "", Variants const& options = Variants());
 
     template <typename T>
-    Resource_ptr<T> get(std::string const& filename, Variants const& options = Variants());
+    uint32_t get(std::string const& filename, Variants const& options = Variants());
 
     template <typename T>
     T* get(uint32_t id) const;

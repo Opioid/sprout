@@ -92,10 +92,10 @@ int main(int argc, char* argv[]) {
 
     uint32_t slot = Options::Operator::Diff == args.op ? 0xFFFFFFFF : 0;
     for (auto& i : args.images) {
-        if (Texture const* image = resources.load<Texture>(i, options).ptr; image) {
+        if (uint32_t image = resources.load<Texture>(i, options); resource::Null != image) {
             std::string const name_out = slot < args.outputs.size() ? args.outputs[slot] : "";
 
-            items.emplace_back(Item{i, name_out, image});
+            items.emplace_back(Item{i, name_out, resources.get<Texture>(image)});
         }
 
         ++slot;
