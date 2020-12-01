@@ -36,10 +36,7 @@ inline uint32_t constexpr Null = 0xFFFFFFFF;
 
 class Prop {
   public:
-    using Filter       = material::Sampler_settings::Filter;
-    using Material     = material::Material;
-    using Material_ptr = resource::Resource_ptr<Material>;
-    using Shape        = shape::Shape;
+    using Filter = material::Sampler_settings::Filter;
 
     Prop();
 
@@ -47,7 +44,7 @@ class Prop {
 
     uint32_t shape() const;
 
-    void configure(uint32_t shape, Material_ptr const* materials, Scene const& scene);
+    void configure(uint32_t shape, uint32_t const* materials, Scene const& scene);
 
     void configure_animated(bool local_animation, Scene const& scene);
 
@@ -62,6 +59,10 @@ class Prop {
     bool visible_in_reflection() const;
 
     bool visible_in_shadow() const;
+
+    bool has_masked_material() const;
+
+    bool has_tinted_shadow() const;
 
     void set_visible_in_shadow(bool value);
 
@@ -81,10 +82,6 @@ class Prop {
 
     bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker& worker,
                          float3& ta) const;
-
-    bool has_masked_material() const;
-
-    bool has_tinted_shadow() const;
 
   private:
     bool visible(uint32_t ray_depth) const;

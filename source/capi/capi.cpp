@@ -447,10 +447,10 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials, uint32_t const* 
             continue;
         }
 
-        materials_buffer.push_back(material_ptr);
+        materials_buffer.push_back(material_ptr.id);
     }
 
-    if (1 == materials_buffer.size() && 1.f == materials_buffer[0].ptr->ior()) {
+    if (1 == materials_buffer.size() && 1.f == engine->scene.material(materials_buffer[0])->ior()) {
     } else {
         while (materials_buffer.size() < num_expected_materials) {
             materials_buffer.push_back(engine->scene_loader.fallback_material());

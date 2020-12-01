@@ -11,13 +11,10 @@
 #include "bvh/scene_bvh_tree.inl"
 #include "entity/composed_transformation.inl"
 #include "extension.hpp"
-#include "image/texture/texture.hpp"
 #include "light/light.inl"
 #include "light/light_tree_builder.hpp"
 #include "material/material.inl"
 #include "prop/prop.inl"
-#include "prop/prop_intersection.hpp"
-#include "resource/resource.hpp"
 #include "scene_constants.hpp"
 #include "scene_ray.hpp"
 #include "scene_worker.hpp"
@@ -255,7 +252,7 @@ uint32_t Scene::create_entity() {
     return prop.id;
 }
 
-uint32_t Scene::create_prop(uint32_t shape, Material_ptr const* materials) {
+uint32_t Scene::create_prop(uint32_t shape, uint32_t const* materials) {
     auto const prop = allocate_prop();
 
     prop.ptr->configure(shape, materials, *this);
@@ -274,7 +271,7 @@ uint32_t Scene::create_prop(uint32_t shape, Material_ptr const* materials) {
         prop_parts_[prop.id] = parts_start;
 
         for (uint32_t i = 0; i < num_parts; ++i) {
-            materials_.emplace_back(materials[shape_ptr->part_id_to_material_id(i)].id);
+            materials_.emplace_back(materials[shape_ptr->part_id_to_material_id(i)]);
 
             light_ids_.emplace_back(light::Null);
         }
@@ -287,7 +284,7 @@ uint32_t Scene::create_prop(uint32_t shape, Material_ptr const* materials) {
     }
 
     // Shape has no surface
-    if (1 == num_parts && 1.f == materials[0].ptr->ior()) {
+    if (1 == num_parts && 1.f == material(materials[0])->ior()) {
         if (shape_ptr->is_finite()) {
             volumes_.push_back(prop.id);
         } else {
@@ -608,8 +605,7 @@ void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t pa
     light_cones_.emplace_back(float4(0.f, 0.f, 0.f, Pi));
 }
 
-bool Scene::prop_is_instance(uint32_t shape, Material_ptr const* materials,
-                             uint32_t num_parts) const {
+bool Scene::prop_is_instance(uint32_t shape, uint32_t const* materials, uint32_t num_parts) const {
     if (props_.size() < 2 || props_[props_.size() - 2].shape() != shape) {
         return false;
     }
@@ -618,13 +614,13 @@ bool Scene::prop_is_instance(uint32_t shape, Material_ptr const* materials,
 
     uint32_t const p = prop_parts_[props_.size() - 2];
     for (uint32_t i = 0; i < num_parts; ++i) {
-        auto const m = materials[shape_ptr->part_id_to_material_id(i)];
+        uint32_t const m = materials[shape_ptr->part_id_to_material_id(i)];
 
-        if (m.id != materials_[p + i]) {
+        if (m != materials_[p + i]) {
             return false;
         }
 
-        if (m.ptr->is_emissive()) {
+        if (material_resources_[m]->is_emissive()) {
             return false;
         }
     }

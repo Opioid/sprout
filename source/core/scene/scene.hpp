@@ -9,18 +9,10 @@
 #include "light/light_tree_builder.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
-#include "resource/resource.hpp"
 #include "scene_constants.hpp"
 #include "shape/null.hpp"
 
 #include <vector>
-
-namespace resource {
-
-template <typename T>
-struct Resource_ptr;
-
-}
 
 namespace thread {
 class Pool;
@@ -84,8 +76,6 @@ class Scene {
     using Prop_topology  = prop::Prop_topology;
     using Material       = material::Material;
     using Shape          = shape::Shape;
-    using Shape_ptr      = resource::Resource_ptr<Shape>;
-    using Material_ptr   = resource::Resource_ptr<Material>;
     using Texture        = image::texture::Texture;
 
     Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
@@ -124,6 +114,8 @@ class Scene {
 
     Shape const* shape(uint32_t index) const;
 
+    Material const* material(uint32_t index) const;
+
     uint32_t num_lights() const;
 
     light::Light const& light(uint32_t id) const;
@@ -150,7 +142,7 @@ class Scene {
 
     uint32_t create_entity();
 
-    uint32_t create_prop(uint32_t shape, Material_ptr const* materials);
+    uint32_t create_prop(uint32_t shape, uint32_t const* materials);
 
     void create_prop_light(uint32_t prop, uint32_t part);
 
@@ -245,7 +237,7 @@ class Scene {
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part);
 
-    bool prop_is_instance(uint32_t shape, Material_ptr const* materials, uint32_t num_parts) const;
+    bool prop_is_instance(uint32_t shape, uint32_t const* materials, uint32_t num_parts) const;
 
     bool prop_has_caustic_material(uint32_t entity) const;
 

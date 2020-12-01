@@ -183,6 +183,12 @@ inline shape::Shape const* Scene::shape(uint32_t index) const {
     return shape_resources_[index];
 }
 
+inline material::Material const* Scene::material(uint32_t index) const {
+    SOFT_ASSERT(index < material_indices_.size());
+
+    return material_resources_[index];
+}
+
 inline uint32_t Scene::num_lights() const {
     return uint32_t(lights_.size());
 }
