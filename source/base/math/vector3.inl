@@ -441,6 +441,10 @@ static inline float length(Vector3f_a_p v) {
     return std::sqrt(dot(v, v));
 }
 
+static inline float rlength(Vector3f_a_p v) {
+    return rsqrt(dot(v, v));
+}
+
 static inline float constexpr squared_length(Vector3f_a_p v) {
     return dot(v, v);
 }

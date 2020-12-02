@@ -28,8 +28,7 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
                                float power, bool total_sphere) {
     float3 const axis = center - p;
 
-    float const l  = length(axis);
-    float const il = 1.f / l;
+    float const il = rlength(axis);
 
     float3 const na = il * axis;
     float3 const da = cone.xyz();
@@ -54,10 +53,10 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
     float const tc = clamped_cos_sub(ta, cos_cu, tb, sin_cu);
     float const tn = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
-    float const ra    = total_sphere ? 1.f : tn;
-    float const rb    = std::max(tc, 0.f);
-    float const d_min = std::max(0.5f * radius, l);
-    float const base  = power / (d_min * d_min);
+    float const ra     = total_sphere ? 1.f : tn;
+    float const rb     = std::max(tc, 0.f);
+    float const id_min = std::min(2.f / radius, il);
+    float const base   = power * (id_min * id_min);
 
     return std::max(ra * rb * base, material::Dot_min);
 }
