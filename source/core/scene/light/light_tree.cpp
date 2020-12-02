@@ -28,12 +28,13 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
                                float power, bool total_sphere) {
     float3 const axis = center - p;
 
-    float const l = std::max(length(axis), material::Dot_min);
+    float const l  = std::max(length(axis), material::Dot_min);
+    float const il = 1.f / l;
 
-    float3 const na = axis / l;
+    float3 const na = il * axis;
     float3 const da = cone.xyz();
 
-    float const sin_cu   = std::min(radius / l, 1.f);
+    float const sin_cu   = std::min(il * radius, 1.f);
     float const cos_cone = cone[3];
     float const cos_a    = -dot(da, na);
     float const cos_n    = dot(n, na);
@@ -48,17 +49,17 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
     float const sin_a    = out[2];
     float const sin_n    = out[3];
 
-    float const d0 = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
-    float const d1 = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
-    float const d2 = std::max(clamped_cos_sub(d0, cos_cu, d1, sin_cu), 0.f);
-    float const dn = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
+    float const ta = clamped_cos_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const tb = clamped_sin_sub(cos_a, cos_cone, sin_a, sin_cone);
+    float const tc = clamped_cos_sub(ta, cos_cu, tb, sin_cu);
+    float const tn = clamped_cos_sub(cos_n, cos_cu, sin_n, sin_cu);
 
+    float const ra    = total_sphere ? 1.f : tn;
+    float const rb    = std::max(tc, 0.f);
     float const d_min = std::max(0.5f * radius, l);
     float const base  = power / (d_min * d_min);
 
-    float const angle = total_sphere ? 1.f : dn;
-
-    return std::max(d2 * angle * base, material::Dot_min);
+    return std::max(ra * rb * base, material::Dot_min);
 }
 
 static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p center,
@@ -82,8 +83,8 @@ static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p 
 
     float3 const da = cone.xyz();
 
-    float const cos_a0 = scene::material::clamp_dot(o0, da);
-    float const cos_a1 = scene::material::clamp_dot(o1, da);
+    float const cos_a0 = material::clamp_dot(o0, da);
+    float const cos_a1 = material::clamp_dot(o1, da);
 
     float const cos_phi = cos_a0 / std::sqrt(cos_a0 * cos_a0 + cos_a1 * cos_a1);
     float const sin_phi = std::sqrt(std::max(1.f - cos_phi * cos_phi, 0.f));
