@@ -28,7 +28,7 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
                                float power, bool total_sphere) {
     float3 const axis = center - p;
 
-    float const l  = std::max(length(axis), material::Dot_min);
+    float const l  = length(axis);
     float const il = 1.f / l;
 
     float3 const na = il * axis;
