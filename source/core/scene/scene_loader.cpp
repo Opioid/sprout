@@ -65,7 +65,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
     uint32_t const parent_id = prop::Null;
 
     math::Transformation const parent_transformation{float3(0.f), float3(1.f),
-                                                     quaternion::identity()};
+                                                     quaternion::Identity};
 
     bool const success = load(filename, take_mount_folder, parent_id, parent_transformation, scene,
                               false);
@@ -262,7 +262,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             continue;
         }
 
-        math::Transformation trafo{float3(0.f), float3(1.f), quaternion::identity()};
+        math::Transformation trafo{float3(0.f), float3(1.f), quaternion::Identity};
 
         json::Value const* animation_value = nullptr;
         json::Value const* children        = nullptr;

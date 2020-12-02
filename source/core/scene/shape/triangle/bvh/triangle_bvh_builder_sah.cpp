@@ -9,6 +9,7 @@
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "triangle_bvh_helper.hpp"
+#include "triangle_bvh_tree.inl"
 
 namespace scene::shape::triangle::bvh {
 

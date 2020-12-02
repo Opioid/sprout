@@ -5,6 +5,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "bvh/triangle_bvh_builder_sah.hpp"
+#include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene_ray.inl"

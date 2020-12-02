@@ -52,7 +52,7 @@ void test() {
     math::Transformation trafo;
     trafo.position = float3(0.f);
     trafo.scale    = float3(1.f);
-    trafo.rotation = math::quaternion::identity();
+    trafo.rotation = math::quaternion::Identity;
 
     entity::Composed_transformation composed_transformation;
     composed_transformation.set(trafo);

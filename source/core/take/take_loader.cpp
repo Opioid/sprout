@@ -229,7 +229,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         return nullptr;
     }
 
-    math::Transformation trafo{float3(0.f), float3(1.f), quaternion::identity()};
+    math::Transformation trafo{float3(0.f), float3(1.f), quaternion::Identity};
 
     json::Value const* parameters_value = nullptr;
     json::Value const* animation_value  = nullptr;

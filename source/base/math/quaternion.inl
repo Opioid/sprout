@@ -117,9 +117,7 @@ static inline Quaternion slerp(Quaternion_p a, Quaternion_p b, float t) {
                       sclp * a[2] + sclq * end[2], sclp * a[3] + sclq * end[3]);
 }
 
-static inline constexpr Quaternion identity() {
-    return Quaternion(0.f, 0.f, 0.f, 1.f);
-}
+inline Quaternion constexpr Identity = {0.f, 0.f, 0.f, 1.f};
 
 }  // namespace math::quaternion
 
