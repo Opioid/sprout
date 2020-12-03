@@ -345,7 +345,7 @@ Filter load_filter(json::Value const& /*filter_value*/, float& radius);
 
 template <>
 rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value, float& radius) {
-    radius      = 1.f;
+    radius      = 2.f;
     float alpha = 1.8f;
 
     for (auto& n : filter_value.GetObject()) {
