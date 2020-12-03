@@ -9,7 +9,7 @@ namespace math {
 
 struct Transformation;
 
-struct alignas(16) Matrix4x4f_a {
+struct Matrix4x4f_a {
     Vector4f_a r[4];
 
     Matrix4x4f_a();
@@ -30,7 +30,7 @@ struct alignas(16) Matrix4x4f_a {
     Vector3f_a w() const;
 };
 
-struct alignas(16) Simd4x4f {
+struct Simd4x4f {
     Simd3f r[4];
 
     Simd4x4f(Matrix4x4f_a const& source);

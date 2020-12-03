@@ -29,6 +29,7 @@ target_sources(base
     "plane.inl"
     "print.cpp"
     "print.hpp"
+    "print.inl"
     "quaternion.hpp"
     "quaternion.inl"
     "ray.hpp"

@@ -1,4 +1,8 @@
 #include "print.hpp"
+#include "matrix4x4.inl"
+#include "vector4.inl"
+
+#include <iostream>
 
 std::ostream& operator<<(std::ostream& stream, math::Vector3<uint8_t> v) {
     return stream << "[" << uint32_t(v[0]) << ", " << uint32_t(v[1]) << ", " << uint32_t(v[2])

@@ -1,4 +1,5 @@
 #include "exporting_sink_statistics.hpp"
+#include "base/math/print.hpp"
 #include "base/math/vector4.inl"
 #include "base/string/string.hpp"
 #include "image/image_helper.hpp"

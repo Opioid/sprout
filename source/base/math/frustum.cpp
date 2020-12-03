@@ -6,7 +6,7 @@ namespace math {
 
 Frustum::Frustum() = default;
 
-Frustum::Frustum(Plane const& left, Plane const& right, Plane const& top, Plane const& bottom) {
+Frustum::Frustum(Plane_p left, Plane_p right, Plane_p top, Plane_p bottom) {
     planes_[0] = left;
     planes_[1] = right;
     planes_[2] = top;
