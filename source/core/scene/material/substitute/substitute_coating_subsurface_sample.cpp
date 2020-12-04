@@ -65,7 +65,7 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
         float2 const xi = sampler.sample_2D(rng);
 
         float        n_dot_h;
-        float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
+        float3 const h = ggx::Isotropic::sample(wo_, alpha_, xi, layer, n_dot_h);
 
         float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
@@ -91,14 +91,14 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
 
         if (p < f) {
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, layer, alpha_, result);
+                                                           wo_dot_h, alpha_, layer, result);
 
             result.reflection *= n_dot_wi;
         } else {
             float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
             float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                           r_wo_dot_h, layer, alpha_, ior, result);
+                                                           r_wo_dot_h, alpha_, ior, layer, result);
 
             float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);
 
@@ -176,7 +176,7 @@ void Sample_coating_subsurface::refract(Sampler& sampler, RNG& rng, bxdf::Sample
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, alpha_, ior_, schlick, xi,
+    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, alpha_, ior_, schlick, xi, layer_,
                                                    result);
 
     float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);

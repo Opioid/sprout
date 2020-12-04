@@ -149,7 +149,7 @@ void Sample::Base_layer::sample(float3_p wo, Sampler& sampler, RNG& rng,
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, fresnel, xi,
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha_, fresnel, xi, *this,
                                                    result);
     result.reflection *= n_dot_wi;
 }
@@ -191,7 +191,7 @@ void Sample::Flakes_layer::sample(float3_p wo, Sampler& sampler, RNG& rng, float
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, alpha_, conductor, xi,
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha_, conductor, xi, *this,
                                                    fresnel_result, result);
 
     fresnel_result *= weight_;

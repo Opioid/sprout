@@ -223,7 +223,7 @@ void Base_closure<Diffuse>::gloss_sample(float3_p wo, material::Sample const& sa
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha, schlick, xi, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
 
     result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha);
 
@@ -248,7 +248,7 @@ void Base_closure<Diffuse>::gloss_sample(float3_p wo, material::Sample const& sa
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha, schlick, xi, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
 
     result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha);
 
@@ -274,7 +274,7 @@ void Base_closure<Diffuse>::pure_gloss_sample(float3_p wo, material::Sample cons
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha, schlick, xi, result);
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
 
     result.reflection *= n_dot_wi * ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha);
 }
