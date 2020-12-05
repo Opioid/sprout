@@ -118,18 +118,24 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             f = fresnel::schlick(cos_x, base_.f0_[0]);
         }
 
-        if (p < f) {
+        if (p <= f) {
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                            wo_dot_h, alpha_, layer, result);
 
-            result.reflection *= n_dot_wi;
+            result.reflection *= f * n_dot_wi;
+            result.pdf *= f;
+        //  result.type.set(bxdf::Type::Caustic);
         } else {
             float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
             float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
                                                            r_wo_dot_h, alpha_, ior, layer, result);
 
-            result.reflection *= n_dot_wi;
+            float const omf = 1.f - f;
+
+            result.reflection *= omf * n_dot_wi;
+            result.pdf *= omf;
+        //  result.type.set(bxdf::Type::Caustic);
         }
 
         result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
