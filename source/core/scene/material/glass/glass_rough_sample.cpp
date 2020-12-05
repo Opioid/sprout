@@ -43,11 +43,9 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
     float3 const h = ggx::Isotropic::sample(wo_, alpha_, xi, layer, n_dot_h);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    float const eta = ior.eta_i / ior.eta_t;
-
+    float const eta   = ior.eta_i / ior.eta_t;
     float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
     float f;
@@ -120,10 +118,9 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
             return {float3(0.f), 0.f};
         }
 
-        float const eta = ior.eta_i / ior.eta_t;
-
         float const wo_dot_h = dot(wo_, h);
 
+        float const eta   = ior.eta_i / ior.eta_t;
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
         if (sint2 >= 1.f) {

@@ -44,11 +44,9 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
     float3 const h = ggx::Isotropic::sample(wo_, alpha_, xi, layer, n_dot_h);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    float const eta = ior.eta_i / ior.eta_t;
-
+    float const eta   = ior.eta_i / ior.eta_t;
     float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
     float f;
@@ -81,8 +79,8 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
         } else {
             float const r_wo_dot_h = -wo_dot_h;
 
-            float const n_dot_wi = ggx::Isotropic::refract(
-                wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h, alpha_, ior_, layer_, result);
+            float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
+                                                           r_wo_dot_h, alpha_, ior, layer_, result);
 
             float const omf = 1.f - f;
 
@@ -99,7 +97,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             result.pdf *= f;
             //  result.type.set(bxdf::Type::Caustic);
         } else {
-            float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
+            float const r_wo_dot_h = wo_dot_h;
 
             float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
                                                            r_wo_dot_h, alpha_, ior, layer, result);
@@ -140,10 +138,9 @@ bxdf::Result Sample_subsurface::evaluate(float3_p wi) const {
             return {float3(0.f), 0.f};
         }
 
-        float const eta = ior.eta_i / ior.eta_t;
-
         float const wo_dot_h = dot(wo_, h);
 
+        float const eta   = ior.eta_i / ior.eta_t;
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
         if (sint2 >= 1.f) {
