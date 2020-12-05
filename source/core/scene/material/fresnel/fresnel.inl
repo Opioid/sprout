@@ -20,24 +20,6 @@ static inline float3 schlick(float wo_dot_h, float3_p f0) {
     return f0 + pow5(1.f - wo_dot_h) * (1.f - f0);
 }
 
-static inline float lazanyi_schlick_a(float f0, float f82) {
-    float constexpr cos_theta_max = 1.f / 7.f;
-
-    return (f0 + (1.f - f0) * pow5(1.f - cos_theta_max) - f82) /
-           (cos_theta_max * pow6(1.f - cos_theta_max));
-}
-
-static inline float3 lazanyi_schlick_a(float3_p f0, float3_p f82) {
-    float constexpr cos_theta_max = 1.f / 7.f;
-
-    return (f0 + pow5(1.f - cos_theta_max) * (1.f - f0) - f82) /
-           (cos_theta_max * pow6(1.f - cos_theta_max));
-}
-
-static inline float3 lazanyi_schlick(float wo_dot_h, float3_p f0, float3_p a) {
-    return schlick(wo_dot_h, f0) - wo_dot_h * pow6(1.f - wo_dot_h) * a;
-}
-
 static inline float3 conductor(float wo_dot_h, float3_p eta, float3_p k) {
     float3 const tmp_f = eta * eta + k * k;
 
@@ -160,14 +142,6 @@ inline float3 Schlick::operator()(float wo_dot_h) const {
     return schlick(wo_dot_h, f0_);
 }
 
-inline Lazanyi_schlick::Lazanyi_schlick(float f0, float a) : f0_(f0), a_(a) {}
-
-inline Lazanyi_schlick::Lazanyi_schlick(float3_p f0, float3_p a) : f0_(f0), a_(a) {}
-
-inline float3 Lazanyi_schlick::operator()(float wo_dot_h) const {
-    return lazanyi_schlick(wo_dot_h, f0_, a_);
-}
-
 inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior, float internal_ior,
                           float thickness)
     : external_ior_(external_ior),
@@ -189,14 +163,6 @@ inline Conductor::Conductor(float3_p eta, float3_p k) : eta_(eta), k_(k) {}
 
 inline float3 Conductor::operator()(float wo_dot_h) const {
     return conductor(wo_dot_h, eta_, k_);
-}
-
-inline Constant::Constant(float f) : f_(f) {}
-
-inline Constant::Constant(float3_p f) : f_(f) {}
-
-inline float3 Constant::operator()(float /*wo_dot_h*/) const {
-    return f_;
 }
 
 }  // namespace scene::material::fresnel

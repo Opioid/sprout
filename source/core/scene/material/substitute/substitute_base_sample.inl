@@ -46,7 +46,6 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3_p wi, float3_p wo, floa
     float const n_dot_h = saturate(layer.n_dot(h));
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
 
@@ -90,7 +89,6 @@ bxdf::Result Base_closure<Diffuse>::base_evaluate(float3_p wi, float3_p wo, floa
     float const n_dot_h = saturate(layer.n_dot(h));
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
 
@@ -127,7 +125,6 @@ bxdf::Result Base_closure<Diffuse>::pure_gloss_evaluate(float3_p wi, float3_p wo
     float const n_dot_h = saturate(layer.n_dot(h));
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
 
@@ -164,7 +161,6 @@ void Base_closure<Diffuse>::diffuse_sample(float3_p wo, material::Sample const& 
     float const n_dot_h = saturate(layer.n_dot(result.h));
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h, alpha,
                                           schlick);
@@ -198,7 +194,6 @@ void Base_closure<Diffuse>::diffuse_sample(float3_p wo, material::Sample const& 
     float const n_dot_h = saturate(layer.n_dot(result.h));
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h, alpha,
                                           schlick);
@@ -219,7 +214,6 @@ void Base_closure<Diffuse>::gloss_sample(float3_p wo, material::Sample const& sa
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     float2 const xi = sampler.sample_2D(rng);
 
@@ -244,7 +238,6 @@ void Base_closure<Diffuse>::gloss_sample(float3_p wo, material::Sample const& sa
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     float2 const xi = sampler.sample_2D(rng);
 
@@ -270,7 +263,6 @@ void Base_closure<Diffuse>::pure_gloss_sample(float3_p wo, material::Sample cons
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     fresnel::Schlick const schlick(f0_);
-    // fresnel::Lazanyi_schlick const ls(f0_, a_);
 
     float2 const xi = sampler.sample_2D(rng);
 

@@ -754,9 +754,6 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
             color = fresnel::conductor(1.f, eta, k);
 
             metallic = 1.f;
-
-            //            float3 const f82 = fresnel::conductor(1.f / 7.f, eta, k);
-            //            a                = fresnel::lazanyi_schlick_a(f0, f82);
         } else if ("absorption_color" == n.name) {
             absorption_color = read_color(n.value);
         } else if ("scattering_color" == n.name) {
