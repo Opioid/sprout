@@ -71,11 +71,9 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             auto const d = disney::Isotropic_no_lambert::reflection(result.h_dot_wi, n_dot_wi,
                                                                     n_dot_wo, alpha_, albedo_);
 
-            result.reflection = n_dot_wi * (f * result.reflection + d.reflection);
+            float3 const refl = n_dot_wi * (f * result.reflection + d.reflection);
+            result.reflection = refl * ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_);
             result.pdf        = f * result.pdf;
-
-            result.reflection *= ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_);
-
         } else {
             float const r_wo_dot_h = -wo_dot_h;
 
