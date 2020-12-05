@@ -23,8 +23,6 @@ class Sample_subsurface final : public material::Sample {
     template <bool Forward>
     bxdf::Result evaluate(float3_p wi) const;
 
-    void refract(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
-
     IoR ior_;
 };
 

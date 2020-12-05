@@ -22,7 +22,7 @@
 #include "base/debug/assert.hpp"
 #ifdef SU_DEBUG
 #include "base/chrono/chrono.hpp"
-#include "base/math/print.hpp"
+#include "base/math/print.inl"
 
 #include <iostream>
 #endif

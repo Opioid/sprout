@@ -25,7 +25,7 @@ enum class Type {
 };
 
 struct Result {
-    inline Result(float3 const reflection, float pdf)
+    inline Result(float3_p reflection, float pdf)
         : reflection(reflection[0], reflection[1], reflection[2], pdf) {}
 
     float3 reflection;

@@ -1,6 +1,6 @@
 #include "shape_test.hpp"
 #include "base/math/matrix4x4.inl"
-#include "base/math/print.hpp"
+#include "base/math/print.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 #include "infinite_sphere.hpp"
