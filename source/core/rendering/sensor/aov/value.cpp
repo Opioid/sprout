@@ -15,13 +15,23 @@ void Value::init(Mapping mapping, uint32_t num_slots) {
     num_slots_ = uint8_t(num_slots);
 
     slots_ = new Slot[num_slots];
+
+    for (uint32_t i = 0; i < Max_slots; ++i) {
+        uint8_t const slot = mapping.m[i];
+
+        if (slot != 255) {
+            slots_[slot].operation = aov::operation(Property(i));
+        }
+    }
 }
 
 void Value::clear() {
     for (uint32_t i = 0, len = uint32_t(num_slots_); i < len; ++i) {
-        slots_[i].v[0] = 0.f;
-        slots_[i].v[1] = 0.f;
-        slots_[i].v[2] = 0.f;
+        float const iv = initial_value(slots_[i].operation);
+
+        slots_[i].v[0] = iv;
+        slots_[i].v[1] = iv;
+        slots_[i].v[2] = iv;
     }
 }
 

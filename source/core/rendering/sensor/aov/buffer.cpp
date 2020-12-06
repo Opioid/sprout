@@ -47,11 +47,15 @@ void Buffer::resize(int2 dimensions, Value_pool const& aovs) {
     }
 }
 
-void Buffer::clear() {
+void Buffer::clear(Value_pool const& aovs) {
     for (uint32_t i = 0, len = buffers_len_; i < len; ++i) {
+        Operation const op = operation(aovs.property(i));
+
+        float const iv = initial_value(op);
+
         float3* buffer = buffers_[i];
         for (uint32_t j = 0, jlen = buffer_len_; j < jlen; ++j) {
-            buffer[j] = float3(0.f);
+            buffer[j] = float3(iv);
         }
     }
 }

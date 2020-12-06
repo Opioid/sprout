@@ -16,11 +16,20 @@ image::Encoding encoding(Property property) {
             return Encoding::UNorm;
         case Property::Material_id:
             return Encoding::UInt;
+        case Property::Depth:
+            return Encoding::UNorm;
     }
 }
 
-bool accumulating(Property property) {
-    return property != Property::Material_id;
+Operation operation(Property property) {
+    switch (property) {
+        case Property::Material_id:
+            return Operation::Overwrite;
+        case Property::Depth:
+            return Operation::Less;
+        default:
+            return Operation::Accumulate;
+    }
 }
 
 }  // namespace rendering::sensor::aov

@@ -41,6 +41,10 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
         aov.insert(float3(float(worker.scene().prop_material_id(isec.prop, isec.geo.part)) / 255.f),
                    Property::Material_id);
     }
+
+    if (aov.active(Property::Depth)) {
+        aov.insert(float3(ray.max_t()), Property::Depth);
+    }
 }
 
 Pool::Pool(uint32_t num_integrators) : num_integrators_(num_integrators) {}

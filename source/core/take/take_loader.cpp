@@ -1027,6 +1027,10 @@ void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aov
             if (json::read_bool(n.value)) {
                 properties.push_back(Property::Material_id);
             }
+        } else if ("Depth" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Depth);
+            }
         }
     }
 

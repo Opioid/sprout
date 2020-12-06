@@ -46,7 +46,7 @@ class Sensor {
 
     virtual void set_layer(int32_t layer) = 0;
 
-    void clear(float weight);
+    void clear(float weight, aov::Value_pool const& aovs);
 
     virtual void set_weights(float weight) = 0;
 
@@ -68,6 +68,8 @@ class Sensor {
     void add_AOV_atomic(int2 pixel, uint32_t slot, float3_p value, float weight);
 
     void overwrite_AOV(int2 pixel, uint32_t slot, float3_p value);
+
+    void less_AOV(int2 pixel, uint32_t slot, float3_p value);
 
     virtual void splat_pixel_atomic(int2 pixel, float4_p color, float weight) = 0;
 

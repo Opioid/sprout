@@ -3,6 +3,9 @@
 
 #include "image/channels.hpp"
 
+#include <cstdint>
+#include <limits>
+
 namespace rendering::sensor::aov {
 
 enum class Property {
@@ -11,12 +14,23 @@ enum class Property {
     Geometric_normal,
     Shading_normal,
     Material_id,
+    Depth,
     Unknown
 };
 
+enum class Operation : uint8_t { Accumulate = 0, Overwrite, Less };
+
 image::Encoding encoding(Property property);
 
-bool accumulating(Property property);
+Operation operation(Property property);
+
+inline float initial_value(Operation operation) {
+    if (Operation::Less == operation) {
+        return std::numeric_limits<float>::max();
+    }
+
+    return 0.f;
+}
 
 }  // namespace rendering::sensor::aov
 

@@ -83,7 +83,7 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) con
 
 void Transparent::resolve(int32_t begin, int32_t end, uint32_t slot, AOV property,
                           image::Float4& target) const {
-    if (aov::accumulating(property)) {
+    if (aov::Operation::Accumulate == aov::operation(property)) {
         for (int32_t i = begin; i < end; ++i) {
             float const weight = pixel_weights_[i];
 
