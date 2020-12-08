@@ -7,31 +7,33 @@
 
 namespace scene::material::substitute {
 
-template <typename Coating_layer, typename Diffuse>
+template <typename Coat, typename Diff>
 class Sample_coating : public material::Sample {
   public:
+    using Sample = bxdf::Sample;
+
     bxdf::Result evaluate_f(float3_p wi) const override;
 
     bxdf::Result evaluate_b(float3_p wi) const override;
 
-    void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const override;
+    void sample(Sampler& sampler, RNG& rng, Sample& result) const override;
 
   protected:
     template <bool Forward>
     bxdf::Result evaluate(float3_p wi) const;
 
-    void coating_sample_and_base(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
+    void coating_sample(Sampler& sampler, RNG& rng, Sample& result) const;
 
-    void diffuse_sample_and_coating(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
+    void diffuse_sample(Sampler& sampler, RNG& rng, Sample& result) const;
 
-    void gloss_sample_and_coating(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
+    void gloss_sample(Sampler& sampler, RNG& rng, Sample& result) const;
 
-    void pure_gloss_sample_and_coating(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
+    void pure_gloss_sample(Sampler& sampler, RNG& rng, Sample& result) const;
 
   public:
-    Base_closure<Diffuse> base_;
+    Base_closure<Diff> base_;
 
-    Coating_layer coating_;
+    Coat coating_;
 };
 
 using Sample_clearcoat = Sample_coating<coating::Clearcoat_layer, disney::Isotropic>;
