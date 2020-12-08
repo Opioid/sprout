@@ -16,6 +16,18 @@ inline bool Value::active(Property aov) const {
     return id != 255;
 }
 
+inline void Value::insert(float v, Property aov) {
+    uint32_t const id = mapping_.m[uint32_t(aov)];
+
+    if (255 == id) {
+        return;
+    }
+
+    Slot& slot = slots_[id];
+
+    slot.v[0] = v;
+}
+
 inline void Value::insert(float3_p v, Property aov) {
     uint32_t const id = mapping_.m[uint32_t(aov)];
 

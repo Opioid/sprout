@@ -61,7 +61,7 @@ void Filtered<Base, Clamp, F>::overwrite(int2 pixel, uint32_t slot, float3_p val
 }
 
 template <class Base, class Clamp, class F>
-void Filtered<Base, Clamp, F>::less(int2 pixel, uint32_t slot, float3_p value, int4_p bounds) {
+void Filtered<Base, Clamp, F>::less(int2 pixel, uint32_t slot, float value, int4_p bounds) {
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
         Base::less_AOV(pixel, slot, value);
@@ -180,7 +180,7 @@ void Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4_p col
             } else if (aov::Operation::Overwrite == op) {
                 Filtered_base::overwrite(int2(x, y), i, v, bounds);
             } else {
-                Filtered_base::less(int2(x, y), i, v, bounds);
+                Filtered_base::less(int2(x, y), i, v[0], bounds);
             }
         }
     }
@@ -328,7 +328,7 @@ void Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4_p col
             } else if (aov::Operation::Overwrite == op) {
                 Filtered_base::overwrite(int2(x, y), i, v, bounds);
             } else {
-                Filtered_base::less(int2(x, y), i, v, bounds);
+                Filtered_base::less(int2(x, y), i, v[0], bounds);
             }
         }
     }
@@ -443,7 +443,7 @@ void Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4_p col
             } else if (aov::Operation::Overwrite == op) {
                 Filtered_base::overwrite(int2(px, py), i, v, bounds);
             } else {
-                Filtered_base::less(int2(px, py), i, v, bounds);
+                Filtered_base::less(int2(px, py), i, v[0], bounds);
             }
         }
     }

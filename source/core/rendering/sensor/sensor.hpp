@@ -69,7 +69,7 @@ class Sensor {
 
     void overwrite_AOV(int2 pixel, uint32_t slot, float3_p value);
 
-    void less_AOV(int2 pixel, uint32_t slot, float3_p value);
+    void less_AOV(int2 pixel, uint32_t slot, float value);
 
     virtual void splat_pixel_atomic(int2 pixel, float4_p color, float weight) = 0;
 

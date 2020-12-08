@@ -43,7 +43,7 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
     }
 
     if (aov.active(Property::Depth)) {
-        aov.insert(float3(ray.max_t()), Property::Depth);
+        aov.insert(ray.max_t(), Property::Depth);
     }
 }
 

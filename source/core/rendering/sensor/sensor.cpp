@@ -119,14 +119,14 @@ void Sensor::overwrite_AOV(int2 pixel, uint32_t slot, float3_p value) {
     aov_.overwrite_pixel(id, slot, value);
 }
 
-void Sensor::less_AOV(int2 pixel, uint32_t slot, float3_p value) {
+void Sensor::less_AOV(int2 pixel, uint32_t slot, float value) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
 
-    float3 const current = aov_.value(id, slot);
+    float const current = aov_.value(id, slot)[0];
 
-    aov_.overwrite_pixel(id, slot, min(value, current));
+    aov_.overwrite_pixel(id, slot, float3(std::min(value, current)));
 }
 
 }  // namespace rendering::sensor

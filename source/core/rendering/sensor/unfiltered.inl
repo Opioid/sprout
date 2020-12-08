@@ -30,7 +30,7 @@ void Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4_p color,
             } else if (aov::Operation::Overwrite == op) {
                 Base::overwrite_AOV(pixel, i, v);
             } else {
-                Base::less_AOV(pixel, i, v);
+                Base::less_AOV(pixel, i, v[0]);
             }
         }
     }
