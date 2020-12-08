@@ -70,8 +70,8 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                            wo_dot_h, alpha_, layer_, result);
 
-            auto const d = disney::Isotropic_no_lambert::reflection(result.h_dot_wi, n_dot_wi,
-                                                                    n_dot_wo, alpha_, albedo_);
+            auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
+                                               albedo_);
 
             float3 const refl = n_dot_wi * (f * result.reflection + d.reflection);
             result.reflection = refl * ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_);
@@ -180,8 +180,7 @@ bxdf::Result Sample_subsurface::evaluate(float3_p wi) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    auto const d = disney::Isotropic_no_lambert::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha,
-                                                            albedo_);
+    auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, albedo_);
 
     if (avoid_caustics() && alpha <= ggx::Min_alpha) {
         if constexpr (Forward) {
