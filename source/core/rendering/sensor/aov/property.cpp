@@ -17,7 +17,7 @@ image::Encoding encoding(Property property) {
         case Property::Material_id:
             return Encoding::UInt;
         case Property::Depth:
-            return Encoding::UNorm;
+            return Encoding::Depth;
     }
 }
 

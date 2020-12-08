@@ -53,6 +53,8 @@ bool Writer::write(std::ostream& stream, Float4 const& image, Encoding encoding,
 
     resize(num_pixels);
 
+    uint32_t num_channels = 3;
+
     if (Encoding::Color == encoding) {
 #ifdef SU_ACESCG
         threads.run_range(
@@ -69,13 +71,15 @@ bool Writer::write(std::ostream& stream, Float4 const& image, Encoding encoding,
         threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
                                          int32_t end) noexcept { to_snorm(image, begin, end); },
                           0, d[1]);
-    } else /*if (Encoding::UNorm == encoding)*/ {
+    } else if (Encoding::UNorm == encoding) {
         threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
                                          int32_t end) noexcept { to_unorm(image, begin, end); },
                           0, d[1]);
-    }
+    } else if (Encoding::Depth == encoding) {
+        to_depth(image);
 
-    int32_t const num_channels = 3;
+        num_channels = 1;
+    }
 
     size_t buffer_len = 0;
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], num_channels,
@@ -187,6 +191,34 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     mz_free(png_buffer);
 
     return true;
+}
+
+void Writer::to_depth(Float4 const& image) {
+    float min = std::numeric_limits<float>::max();
+    float max = 0.f;
+
+    for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
+        float const depth = image.at(i)[0];
+
+        bool const valid = depth < std::numeric_limits<float>::max();
+
+        min = valid ? std::min(depth, min) : min;
+        max = valid ? std::max(depth, max) : max;
+    }
+
+    float const range = max - min;
+
+    uint8_t* byte = reinterpret_cast<uint8_t*>(buffer_);
+
+    for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
+        float const depth = image.at(i)[0];
+
+        bool const valid = depth < std::numeric_limits<float>::max();
+
+        float const norm = valid ? (1.f - std::max(depth - min, 0.f) / range) : 0.f;
+
+        byte[i] = ::encoding::float_to_unorm(norm);
+    }
 }
 
 }  // namespace image::encoding::png

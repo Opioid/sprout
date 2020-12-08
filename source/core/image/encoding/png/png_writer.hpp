@@ -26,6 +26,9 @@ class Writer : public image::Writer, Srgb {
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
                               float max_value, Threads& threads);
+
+  private:
+    void to_depth(Float4 const& image);
 };
 
 }  // namespace image::encoding::png
