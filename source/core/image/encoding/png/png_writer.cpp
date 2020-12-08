@@ -5,6 +5,7 @@
 #include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "image/channels.hpp"
 #include "image/typed_image.hpp"
 #include "miniz/miniz.h"
 
@@ -46,14 +47,14 @@ bool Writer::write(std::ostream& stream, Float4 const& image, Threads& threads) 
     return true;
 }
 
-bool Writer::write(std::ostream& stream, Float4 const& image, Encoding encoding, Threads& threads) {
+bool Writer::write(std::ostream& stream, Float4 const& image, Layout layout, Threads& threads) {
     auto const d = image.description().dimensions();
 
     uint32_t const num_pixels = uint32_t(d[0] * d[1]);
 
     resize(num_pixels);
 
-    uint32_t num_channels = 3;
+    Encoding const encoding = layout.encoding;
 
     if (Encoding::Color == encoding) {
 #ifdef SU_ACESCG
@@ -72,18 +73,17 @@ bool Writer::write(std::ostream& stream, Float4 const& image, Encoding encoding,
                                          int32_t end) noexcept { to_snorm(image, begin, end); },
                           0, d[1]);
     } else if (Encoding::UNorm == encoding) {
-        threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
-                                         int32_t end) noexcept { to_unorm(image, begin, end); },
+        threads.run_range([this, num_channels = layout.num_channels, &image](
+                              uint32_t /*id*/, int32_t begin,
+                              int32_t end) noexcept { to_unorm(image, num_channels, begin, end); },
                           0, d[1]);
     } else if (Encoding::Depth == encoding) {
         to_depth(image);
-
-        num_channels = 1;
     }
 
     size_t buffer_len = 0;
-    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1], num_channels,
-                                                               &buffer_len);
+    void*  png_buffer = tdefl_write_image_to_png_file_in_memory(buffer_, d[0], d[1],
+                                                               layout.num_channels, &buffer_len);
     if (!png_buffer) {
         return false;
     }

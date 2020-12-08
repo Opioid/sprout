@@ -20,7 +20,7 @@ enum class Property {
 
 enum class Operation : uint8_t { Accumulate = 0, Overwrite, Less };
 
-image::Encoding encoding(Property property);
+image::Layout layout(Property property);
 
 Operation operation(Property property);
 
