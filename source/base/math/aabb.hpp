@@ -7,12 +7,14 @@
 namespace math {
 
 struct ray;
+struct Simd_AABB;
 
 struct AABB {
     AABB();
 
     constexpr AABB(float3_p min, float3_p max);
 
+    explicit AABB(Simd_AABB const& box);
     AABB(Simd3f_p min, Simd3f_p max);
 
     float3 min() const;
@@ -28,6 +30,8 @@ struct AABB {
 
     float volume() const;
 
+    float cached_radius() const;
+
     bool intersect(float3_p p) const;
 
     bool intersect_p(ray const& ray) const;
@@ -38,14 +42,13 @@ struct AABB {
 
     float3 normal(float3_p p) const;
 
-    void set_min_max(float3_p min, float3_p max);
-    void set_min_max(Simd3f_p min, Simd3f_p max);
-
     void insert(float3_p p);
 
     void scale(float x);
 
     void add(float x);
+
+    void cache_radius();
 
     AABB transform(float4x4 const& m) const;
 
@@ -61,10 +64,6 @@ struct AABB {
     void clip_max(float d, uint8_t axis);
 
     bool operator==(AABB const& other) const;
-
-    static constexpr AABB empty();
-
-    static constexpr AABB infinite();
 
     float3 bounds[2];
 };

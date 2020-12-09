@@ -1,7 +1,7 @@
 #ifndef SU_BASE_MATH_FRUSTUM_HPP
 #define SU_BASE_MATH_FRUSTUM_HPP
 
-#include "matrix4x4.hpp"
+#include "matrix.hpp"
 #include "plane.hpp"
 
 namespace math {
@@ -12,7 +12,7 @@ class Frustum {
   public:
     Frustum();
 
-    Frustum(Plane const& left, Plane const& right, Plane const& top, Plane const& bottom);
+    Frustum(Plane_p left, Plane_p right, Plane_p top, Plane_p bottom);
 
     Frustum(float4x4 const& combo_matrix);
 

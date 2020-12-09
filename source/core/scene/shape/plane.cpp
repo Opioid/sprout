@@ -23,7 +23,7 @@ float3 Plane::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Plane::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
@@ -146,9 +146,10 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_
     return true;
 }
 
-bool Plane::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& /*trafo*/,
-                   float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/,
-                   rnd::Generator& /*rng*/, uint32_t /*sampler_d*/, Sample_to& /*sample*/) const {
+bool Plane::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+                   Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                   bool /*total_sphere*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
+                   uint32_t /*sampler_d*/, Sample_to& /*sample*/) const {
     return false;
 }
 
@@ -159,8 +160,9 @@ bool Plane::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*a
     return false;
 }
 
-float Plane::pdf(Ray const& /*ray*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
-                 float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+float Plane::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
+                 Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                 bool /*total_sphere*/) const {
     return 0.f;
 }
 

@@ -150,7 +150,7 @@ inline float Scene::light_area(uint32_t entity, uint32_t part) const {
 }
 
 inline float Scene::light_power(uint32_t light) const {
-    return light_powers_[light];
+    return light_aabbs_[light].bounds[1][3];
 }
 
 inline AABB Scene::light_aabb(uint32_t light) const {
@@ -177,13 +177,16 @@ inline prop::Prop* Scene::prop(uint32_t index) {
     return &props_[index];
 }
 
-inline prop::Prop* Scene::prop(std::string_view name) {
-    auto e = named_props_.find(name);
-    if (named_props_.end() == e) {
-        return nullptr;
-    }
+inline shape::Shape const* Scene::shape(uint32_t index) const {
+    SOFT_ASSERT(index < shape_resources_.size());
 
-    return &props_[e->second];
+    return shape_resources_[index];
+}
+
+inline material::Material const* Scene::material(uint32_t index) const {
+    SOFT_ASSERT(index < material_resources_.size());
+
+    return material_resources_[index];
 }
 
 inline uint32_t Scene::num_lights() const {

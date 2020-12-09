@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace scene::shape::triangle {
+namespace scene::shape::triangle::serialize {
 
 class Json_handler;
 
@@ -14,6 +14,6 @@ class Exporter {
     static void write_json(std::string const& filename, Json_handler& handler);
 };
 
-}  // namespace scene::shape::triangle
+}  // namespace scene::shape::triangle::serialize
 
 #endif

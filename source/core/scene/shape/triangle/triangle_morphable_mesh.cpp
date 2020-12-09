@@ -5,6 +5,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "bvh/triangle_bvh_builder_sah.hpp"
+#include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene_ray.inl"
@@ -200,8 +201,9 @@ bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& trafo
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& /*trafo*/,
-                            float /*area*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                            bool /*total_sphere*/, sampler::Sampler& /*sampler*/,
                             rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
                             Sample_to& /*sample*/) const {
     return false;
@@ -215,7 +217,7 @@ bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*trafo*/, 
     return false;
 }
 
-float Morphable_mesh::pdf(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
+float Morphable_mesh::pdf(Ray const& /*ray*/, float3_p /*n*/, shape::Intersection const& /*isec*/,
                           Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                           bool /*total_sphere*/) const {
     return 0.f;
@@ -265,8 +267,6 @@ float Morphable_mesh::volume(uint32_t /*part*/, float3_p /*scale*/) const {
 Shape::Differential_surface Morphable_mesh::differential_surface(uint32_t /*primitive*/) const {
     return {float3(1.f, 0.f, 0.f), float3(0.f, -1.f, 0.f)};
 }
-
-void Morphable_mesh::prepare_sampling(uint32_t /*part*/) {}
 
 Morphable* Morphable_mesh::morphable_shape() {
     return this;

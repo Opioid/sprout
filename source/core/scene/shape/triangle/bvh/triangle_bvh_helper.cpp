@@ -32,7 +32,7 @@ float triangle_area(float3_p a, float3_p b, float3_p c) {
     return 0.5f * length(cross(b - a, c - a));
 }
 
-uint32_t triangle_side(float3_p a, float3_p b, float3_p c, Plane const& p) {
+uint32_t triangle_side(float3_p a, float3_p b, float3_p c, Plane_p p) {
     uint32_t behind = 0;
 
     if (plane::behind(p, a)) {
@@ -58,7 +58,7 @@ uint32_t triangle_side(float3_p a, float3_p b, float3_p c, Plane const& p) {
     return 2;
 }
 
-bool triangle_completely_behind(float3_p a, float3_p b, float3_p c, Plane const& p) {
+bool triangle_completely_behind(float3_p a, float3_p b, float3_p c, Plane_p p) {
     return plane::behind(p, a) && plane::behind(p, b) && plane::behind(p, c);
 }
 

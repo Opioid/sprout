@@ -28,8 +28,9 @@ void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, Thread
     struct Args {
         Vertex const* va;
         Vertex const* vb;
-        Vertex*       vertices;
-        float         weight;
+
+        Vertex* vertices;
+        float   weight;
     };
 
     Args const args{morph_targets_[a].data(), morph_targets_[b].data(), vertices, weight};

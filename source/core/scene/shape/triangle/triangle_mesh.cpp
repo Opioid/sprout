@@ -6,8 +6,11 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/buffer.hpp"
+#include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
+#include "scene/light/light.hpp"
+#include "scene/light/light_tree_builder.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
@@ -18,14 +21,145 @@
 #endif
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace scene::shape::triangle {
 
-Mesh::Mesh() : Shape(Properties(Property::Complex, Property::Finite)), parts_(nullptr) {}
+Part::~Part() {
+    delete[] cones;
+    delete[] aabbs;
+    delete[] triangle_mapping;
+}
+
+void Part::init(uint32_t part, bvh::Tree const& tree, light::Tree_builder& builder,
+                Threads& threads) {
+    if (nullptr != triangle_mapping) {
+        return;
+    }
+
+    uint32_t const num = num_triangles;
+
+    memory::Buffer<float> areas(num);
+
+    triangle_mapping = new uint32_t[num];
+
+    for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
+        if (tree.triangle_part(t) == part) {
+            areas[mt] = tree.triangle_area(t);
+
+            triangle_mapping[mt] = t;
+
+            ++mt;
+        }
+    }
+
+    distribution.init(areas, num);
+
+    aabbs = new AABB[num];
+
+    cones = new float4[num];
+
+    AABB bb(Empty_AABB);
+
+    float3 dominant_axis(0.f);
+
+    float const a = 1.f / distribution.integral();
+
+    for (uint32_t i = 0; i < num; ++i) {
+        uint32_t const t = triangle_mapping[i];
+
+        float3 va;
+        float3 vb;
+        float3 vc;
+        tree.triangle(t, va, vb, vc);
+
+        AABB box(Empty_AABB);
+        box.insert(va);
+        box.insert(vb);
+        box.insert(vc);
+
+        bb.merge_assign(box);
+
+        box.cache_radius();
+
+        float const area = tree.triangle_area(t);
+
+        box.bounds[1][3] = area;
+
+        aabbs[i] = box;
+
+        float3 const n = tree.triangle_normal(t);
+
+        cones[i] = float4(n, 1.f);
+
+        dominant_axis += a * area * n;
+    }
+
+    dominant_axis = normalize(dominant_axis);
+
+    float angle = 0.f;
+
+    for (uint32_t i = 0; i < num; ++i) {
+        uint32_t const t = triangle_mapping[i];
+
+        float3 const n = tree.triangle_normal(t);
+        float const  c = dot(dominant_axis, n);
+
+        SOFT_ASSERT(std::isfinite(c));
+
+        angle = std::max(angle, std::acos(c));
+    }
+
+    aabb = bb;
+    cone = float4(dominant_axis, std::cos(angle));
+
+    builder.build(light_tree, *this, threads);
+}
+
+light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float r) const {
+    auto const pick = light_tree.random_light(p, n, total_sphere, r);
+
+    float const relative_primitive_area = distribution.pdf(pick.id);
+
+    return {triangle_mapping[pick.id], pick.pdf / relative_primitive_area};
+}
+
+float Part::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
+    float const pdf = light_tree.pdf(p, n, total_sphere, id);
+
+    float const relative_primitive_area = distribution.pdf(id);
+
+    return pdf / relative_primitive_area;
+}
+
+math::Distribution_1D::Discrete Part::sample(float r) const {
+    auto const result = distribution.sample_discrete(r);
+    return {triangle_mapping[result.offset], result.pdf};
+}
+
+AABB const& Part::light_aabb(uint32_t light) const {
+    SOFT_ASSERT(light < num_triangles);
+
+    return aabbs[light];
+}
+
+float4_p Part::light_cone(uint32_t light) const {
+    SOFT_ASSERT(light < num_triangles);
+
+    return cones[light];
+}
+
+float Part::light_power(uint32_t light) const {
+    SOFT_ASSERT(light < num_triangles);
+
+    return aabbs[light].bounds[1][3];
+}
+
+Mesh::Mesh()
+    : Shape(Properties(Property::Complex, Property::Finite)),
+      parts_(nullptr),
+      primitive_mapping_(nullptr) {}
 
 Mesh::~Mesh() {
+    delete[] primitive_mapping_;
     delete[] parts_;
 }
 
@@ -243,6 +377,61 @@ bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
     return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
 }
 
+bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo, float area,
+                  bool two_sided, bool total_sphere, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                  Sample_to& sample) const {
+    float const  r  = sampler.sample_1D(rng, sampler_d);
+    float2 const r2 = sampler.sample_2D(rng, sampler_d);
+
+    float3 const op = trafo.world_to_object_point(p);
+    float3 const on = trafo.world_to_object_normal(n);
+    auto const   s  = parts_[part].sample(op, on, total_sphere, r);
+
+    float3 sv;
+    float2 tc;
+    tree_.sample(s.id, r2, sv, tc);
+    float3 const v = trafo.object_to_world_point(sv);
+
+    float3 const sn = tree_.triangle_normal(s.id);
+    float3 const wn = transform_vector(trafo.rotation, sn);
+
+    float3 const axis = v - p;
+    float const  sl   = squared_length(axis);
+    float const  d    = std::sqrt(sl);
+    float3 const dir  = axis / d;
+
+    float c = -dot(wn, dir);
+
+    if (two_sided) {
+        c = std::abs(c);
+    }
+
+    if (c < Dot_min) {
+        return false;
+    }
+
+    float const pdf = sl / (c * area);
+
+    sample = Sample_to(dir, float3(tc), pdf * s.pdf, offset_b(d));
+
+#ifdef SU_DEBUG
+    uint32_t const pm = primitive_mapping_[s.id];
+
+    float const guessed_pdf = parts_[part].pdf(op, on, total_sphere, pm);
+
+    float const diff = std::abs(guessed_pdf - s.pdf);
+
+    SOFT_ASSERT(diff < 1e-8f);
+
+    if (diff > 1e-8f) {
+        std::cout << "problem " << s.pdf << "  " << guessed_pdf << std::endl;
+    }
+#endif
+
+    return true;
+}
+
+/*
 bool Mesh::sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
                   bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                   Sample_to& sample) const {
@@ -269,14 +458,14 @@ bool Mesh::sample(uint32_t part, float3_p p, Transformation const& trafo, float 
         c = std::abs(c);
     }
 
-    if (c <= Dot_min) {
+    if (c < Dot_min) {
         return false;
     }
 
     sample = Sample_to(dir, float3(tc), sl / (c * area), offset_b(d));
 
     return true;
-}
+}*/
 
 bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /*two_sided*/,
                   Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
@@ -306,16 +495,25 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
     return true;
 }
 
-float Mesh::pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& /*trafo*/,
-                float area, bool two_sided, bool /*total_sphere*/) const {
+float Mesh::pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
+                Transformation const& trafo, float area, bool two_sided, bool total_sphere) const {
     float c = -dot(isec.geo_n, ray.direction);
 
     if (two_sided) {
         c = std::abs(c);
     }
 
-    float const sl = ray.max_t() * ray.max_t();
-    return sl / (c * area);
+    float const sl  = ray.max_t() * ray.max_t();
+    float const pdf = sl / (c * area);
+
+    float3 const op = trafo.world_to_object_point(ray.origin);
+    float3 const on = trafo.world_to_object_normal(n);
+
+    uint32_t const pm = primitive_mapping_[isec.primitive];
+
+    float const tri_pdf = parts_[isec.part].pdf(op, on, total_sphere, pm);
+
+    return pdf * tri_pdf;
 }
 
 float Mesh::pdf_volume(Ray const& /*ray*/, shape::Intersection const& /*isec*/,
@@ -398,101 +596,29 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     return {dpdu, dpdv};
 }
 
-void Mesh::prepare_sampling(uint32_t part) {
+void Mesh::prepare_sampling(uint32_t part, light::Tree_builder& builder, Threads& threads) {
     auto& p = parts_[part];
 
     // This counts the triangles for _every_ part as an optimization
-    if (0xFFFFFFFF == p.num_triangles) {
+    if (!primitive_mapping_) {
+        primitive_mapping_ = new uint32_t[tree_.num_triangles()];
+
         for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
             parts_[i].num_triangles = 0;
         }
 
         for (uint32_t i = 0, len = tree_.num_triangles(); i < len; ++i) {
-            ++parts_[tree_.triangle_part(i)].num_triangles;
+            uint32_t const pm = parts_[tree_.triangle_part(i)].num_triangles++;
+
+            primitive_mapping_[i] = pm;
         }
     }
 
-    if (p.empty()) {
-        p.init(part, tree_);
-
-        AABB bb = AABB::empty();
-
-        float3 dominant_axis(0.f);
-
-        float const a = 1.f / parts_[part].distribution.integral();
-
-        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
-            uint32_t const t = p.triangle_mapping[i];
-
-            float3 va;
-            float3 vb;
-            float3 vc;
-            tree_.triangle(t, va, vb, vc);
-
-            bb.insert(va);
-            bb.insert(vb);
-            bb.insert(vc);
-
-            dominant_axis += a * tree_.triangle_area(t) * tree_.triangle_normal(t);
-        }
-
-        dominant_axis = normalize(dominant_axis);
-
-        float angle = 0.f;
-
-        for (uint32_t i = 0, len = p.num_triangles; i < len; ++i) {
-            uint32_t const t = p.triangle_mapping[i];
-
-            float3 const n = tree_.triangle_normal(t);
-
-            float const c = dot(dominant_axis, n);
-
-            SOFT_ASSERT(std::isfinite(c));
-
-            angle = std::max(angle, std::acos(c));
-        }
-
-        p.aabb = bb;
-
-        p.cone = float4(dominant_axis, std::cos(angle));
-    }
+    p.init(part, tree_, builder, threads);
 }
 
 float4 Mesh::cone(uint32_t part) const {
     return parts_[part].cone;
-}
-
-Mesh::Part::~Part() {
-    delete[] triangle_mapping;
-}
-
-void Mesh::Part::init(uint32_t part, bvh::Tree const& tree) {
-    uint32_t const num = num_triangles;
-
-    memory::Buffer<float> areas(num);
-
-    triangle_mapping = new uint32_t[num];
-
-    for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
-        if (tree.triangle_part(t) == part) {
-            areas[mt] = tree.triangle_area(t);
-
-            triangle_mapping[mt] = t;
-
-            ++mt;
-        }
-    }
-
-    distribution.init(areas, num);
-}
-
-bool Mesh::Part::empty() const {
-    return nullptr == triangle_mapping;
-}
-
-Mesh::Part::Distribution_1D::Discrete Mesh::Part::sample(float r) const {
-    auto const result = distribution.sample_discrete(r);
-    return {triangle_mapping[result.offset], result.pdf};
 }
 
 }  // namespace scene::shape::triangle

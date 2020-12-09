@@ -35,6 +35,8 @@ class alignas(64) Filtered : public Base {
 
     void overwrite(int2 pixel, uint32_t slot, float3_p value, int4_p bounds);
 
+    void less(int2 pixel, uint32_t slot, float value, int4_p bounds);
+
     void weight_and_add(int2 pixel, float2 relative_offset, float4_p color, int4_p isolated,
                         int4_p bounds);
 

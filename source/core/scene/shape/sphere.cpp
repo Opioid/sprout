@@ -338,17 +338,17 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32
     return true;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3_p p, Transformation const& trafo, float /*area*/,
-                    bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                    Sample_to& sample) const {
+bool Sphere::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation const& trafo,
+                    float /*area*/, bool /*two_sided*/, bool /*total_sphere*/, Sampler&  sampler,
+                    RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
     float3 const v = trafo.position - p;
 
-    float const axis_length   = length(v);
+    float const il            = rlength(v);
     float const radius        = trafo.scale_x();
-    float const sin_theta_max = std::min(radius / axis_length, 1.f);
+    float const sin_theta_max = std::min(il * radius, 1.f);
     float const cos_theta_max = std::sqrt(1.f - sin_theta_max * sin_theta_max);
 
-    float3 const z = v / axis_length;
+    float3 const z = il * v;
 
     auto const [x, y] = orthonormal_basis(z);
 
@@ -393,13 +393,14 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& trafo, float area, 
     return true;
 }
 
-float Sphere::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& trafo,
-                  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+float Sphere::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+                  Transformation const& trafo, float /*area*/, bool /*two_sided*/,
+                  bool /*total_sphere*/) const {
     float3 const axis = trafo.position - ray.origin;
 
-    float const axis_length   = length(axis);
+    float const il            = rlength(axis);
     float const radius        = trafo.scale_x();
-    float const sin_theta_max = std::min(radius / axis_length, 1.f);
+    float const sin_theta_max = std::min(il * radius, 1.f);
     float const cos_theta_max = std::sqrt(1.f - sin_theta_max * sin_theta_max);
 
     return cone_pdf_uniform(cos_theta_max);

@@ -25,8 +25,8 @@ class Provider final : public scene::Extension_provider {
 
     void set_material_provider(scene::material::Provider& provider);
 
-    uint32_t create_extension(json::Value const& extension_value, std::string const& name,
-                              scene::Scene& scene, Resources& resources) final;
+    uint32_t create_extension(json::Value const& extension_value, scene::Scene& scene,
+                              Resources& resources) final;
 
   private:
     scene::Loader* scene_loader_ = nullptr;

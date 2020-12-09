@@ -12,6 +12,8 @@ inline AABB::AABB() = default;
 
 inline constexpr AABB::AABB(float3_p min, float3_p max) : bounds{min, max} {}
 
+inline AABB::AABB(Simd_AABB const& box) : bounds{float3(box.min), float3(box.max)} {}
+
 inline AABB::AABB(Simd3f_p min, Simd3f_p max) : bounds{float3(min), float3(max)} {}
 
 inline float3 AABB::min() const {
@@ -42,6 +44,10 @@ inline float AABB::surface_area() const {
 inline float AABB::volume() const {
     float3 const d = bounds[1] - bounds[0];
     return d[0] * d[1] * d[2];
+}
+
+inline float AABB::cached_radius() const {
+    return bounds[0][3];
 }
 
 inline bool AABB::intersect(float3_p p) const {
@@ -221,28 +227,16 @@ inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const {
 }
 
 inline float3 AABB::normal(float3_p p) const {
-    float3 const local_point = p - position();
-
+    float3 const lp   = p - position();
     float3 const size = halfsize();
+    float3 const dist = abs(size - abs(lp));
 
-    float3 const distance = math::abs(size - math::abs(local_point));
-
-    uint32_t const i = math::index_min_component(distance);
+    uint32_t const i = index_min_component(dist);
 
     float3 normal(0.f);
-    normal[i] = math::copysign1(local_point[i]);
+    normal[i] = copysign1(lp[i]);
 
     return normal;
-}
-
-inline void AABB::set_min_max(float3_p min, float3_p max) {
-    bounds[0] = min;
-    bounds[1] = max;
-}
-
-inline void AABB::set_min_max(Simd3f_p min, Simd3f_p max) {
-    bounds[0] = float3(min);
-    bounds[1] = float3(max);
 }
 
 inline void AABB::insert(float3_p p) {
@@ -260,6 +254,10 @@ inline void AABB::add(float x) {
     float3 const v(x);
     bounds[0] -= v;
     bounds[1] += v;
+}
+
+inline void AABB::cache_radius() {
+    bounds[0][3] = 0.5f * length(extent());
 }
 
 inline AABB AABB::transform(float4x4 const& m) const {
@@ -346,15 +344,11 @@ inline bool AABB::operator==(AABB const& other) const {
     return bounds[0] == other.bounds[0] && bounds[1] == other.bounds[1];
 }
 
-inline constexpr AABB AABB::empty() {
-    float constexpr max = std::numeric_limits<float>::max();
-    return AABB(float3(max), float3(-max));
-}
+inline AABB constexpr Empty_AABB(float3(std::numeric_limits<float>::max()),
+                                 float3(-std::numeric_limits<float>::max()));
 
-inline constexpr AABB AABB::infinite() {
-    float constexpr max = std::numeric_limits<float>::max();
-    return AABB(float3(-max), float3(max));
-}
+inline AABB constexpr Infinite_AABB(float3(-std::numeric_limits<float>::max()),
+                                    float3(std::numeric_limits<float>::max()));
 
 inline Simd_AABB::Simd_AABB() = default;
 

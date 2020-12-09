@@ -229,7 +229,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         return nullptr;
     }
 
-    math::Transformation trafo{float3(0.f), float3(1.f), quaternion::identity()};
+    math::Transformation trafo{float3(0.f), float3(1.f), quaternion::Identity};
 
     json::Value const* parameters_value = nullptr;
     json::Value const* animation_value  = nullptr;
@@ -345,7 +345,7 @@ Filter load_filter(json::Value const& /*filter_value*/, float& radius);
 
 template <>
 rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value, float& radius) {
-    radius      = 1.f;
+    radius      = 2.f;
     float alpha = 1.8f;
 
     for (auto& n : filter_value.GetObject()) {
@@ -1031,6 +1031,10 @@ void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aov
         } else if ("Material_id" == n.name) {
             if (json::read_bool(n.value)) {
                 properties.push_back(Property::Material_id);
+            }
+        } else if ("Depth" == n.name) {
+            if (json::read_bool(n.value)) {
+                properties.push_back(Property::Depth);
             }
         }
     }

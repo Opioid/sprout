@@ -62,6 +62,14 @@ void Filtered<Base, Clamp, F>::overwrite(int2 pixel, uint32_t slot, float3_p val
 }
 
 template <class Base, class Clamp, class F>
+void Filtered<Base, Clamp, F>::less(int2 pixel, uint32_t slot, float value, int4_p bounds) {
+    if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
+        (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
+        Base::less_AOV(pixel, slot, value);
+    }
+}
+
+template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset, float4_p color,
                                               int4_p isolated, int4_p bounds) {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
@@ -154,7 +162,9 @@ float4 Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4_p c
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            if (aov->accumulating(i)) {
+            aov::Operation const op = aov->operation(i);
+
+            if (aov::Operation::Accumulate == op) {
                 // 1. row
                 Filtered_base::add_weighted(int2(x - 1, y - 1), i, wx0 * wy0, v, isolated, bounds);
                 Filtered_base::add_weighted(int2(x, y - 1), i, wx1 * wy0, v, isolated, bounds);
@@ -169,8 +179,10 @@ float4 Filtered_1p0<Base, Clamp, F>::add_sample(Sample const& sample, float4_p c
                 Filtered_base::add_weighted(int2(x - 1, y + 1), i, wx0 * wy2, v, isolated, bounds);
                 Filtered_base::add_weighted(int2(x, y + 1), i, wx1 * wy2, v, isolated, bounds);
                 Filtered_base::add_weighted(int2(x + 1, y + 1), i, wx2 * wy2, v, isolated, bounds);
-            } else {
+            } else if (aov::Operation::Overwrite == op) {
                 Filtered_base::overwrite(int2(x, y), i, v, bounds);
+            } else {
+                Filtered_base::less(int2(x, y), i, v[0], bounds);
             }
         }
     }
@@ -280,7 +292,9 @@ float4 Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4_p c
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            if (aov->accumulating(i)) {
+            aov::Operation const op = aov->operation(i);
+
+            if (aov::Operation::Accumulate == op) {
                 // 1. row
                 Filtered_base::add_weighted(int2(x - 2, y - 2), i, wx0 * wy0, v, isolated, bounds);
                 Filtered_base::add_weighted(int2(x - 1, y - 2), i, wx1 * wy0, v, isolated, bounds);
@@ -315,8 +329,10 @@ float4 Filtered_2p0<Base, Clamp, F>::add_sample(Sample const& sample, float4_p c
                 Filtered_base::add_weighted(int2(x, y + 2), i, wx2 * wy4, v, isolated, bounds);
                 Filtered_base::add_weighted(int2(x + 1, y + 2), i, wx3 * wy4, v, isolated, bounds);
                 Filtered_base::add_weighted(int2(x + 2, y + 2), i, wx4 * wy4, v, isolated, bounds);
-            } else {
+            } else if (aov::Operation::Overwrite == op) {
                 Filtered_base::overwrite(int2(x, y), i, v, bounds);
+            } else {
+                Filtered_base::less(int2(x, y), i, v[0], bounds);
             }
         }
     }
@@ -417,7 +433,9 @@ float4 Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4_p c
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            if (aov->accumulating(i)) {
+            aov::Operation const op = aov->operation(i);
+
+            if (aov::Operation::Accumulate == op) {
                 for (int32_t ky = -r; ky <= r; ++ky) {
                     for (int32_t kx = -r; kx <= r; ++kx) {
                         int2 const pixel(px + kx, py + ky);
@@ -429,8 +447,10 @@ float4 Filtered_inf<Base, Clamp, F>::add_sample(Sample const& sample, float4_p c
                         }
                     }
                 }
-            } else {
+            } else if (aov::Operation::Overwrite == op) {
                 Filtered_base::overwrite(int2(px, py), i, v, bounds);
+            } else {
+                Filtered_base::less(int2(px, py), i, v[0], bounds);
             }
         }
     }

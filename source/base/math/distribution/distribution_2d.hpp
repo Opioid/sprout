@@ -35,11 +35,9 @@ class Distribution_2D {
 
     uint32_t conditional_size_;
 
-    Distribution_1D* conditional_;
-
     float conditional_sizef_;
 
-    uint32_t conditional_max_;
+    Distribution_1D* conditional_;
 };
 
 }  // namespace math

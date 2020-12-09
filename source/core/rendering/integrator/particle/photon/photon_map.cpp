@@ -86,7 +86,7 @@ bool Map::caustics_only() const {
 AABB Map::calculate_aabb(uint32_t num_photons, Threads& threads) const {
     threads.run_range(
         [this](uint32_t id, int32_t begin, int32_t end) {
-            AABB aabb = AABB::empty();
+            AABB aabb(Empty_AABB);
 
             for (int32_t i = begin; i < end; ++i) {
                 aabb.insert(photons_[i].p);
@@ -96,7 +96,7 @@ AABB Map::calculate_aabb(uint32_t num_photons, Threads& threads) const {
         },
         0, int32_t(num_photons));
 
-    AABB aabb = AABB::empty();
+    AABB aabb(Empty_AABB);
 
     for (uint32_t i = 0, len = threads.num_threads(); i < len; ++i) {
         aabb.merge_assign(aabbs_[i]);

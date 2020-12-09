@@ -27,7 +27,7 @@ float3 Infinite_sphere::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Infinite_sphere::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
@@ -126,42 +126,55 @@ bool Infinite_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& 
 
 bool Infinite_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float3_p n,
                              Transformation const& trafo, float /*area*/, bool /*two_sided*/,
-                             Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                             bool total_sphere, Sampler& sampler, RNG& rng, uint32_t sampler_d,
                              Sample_to& sample) const {
-    auto const [x, y] = orthonormal_basis(n);
+    float2 const uv = sampler.sample_2D(rng, sampler_d);
 
-    float2 const uv  = sampler.sample_2D(rng, sampler_d);
-    float3 const dir = sample_oriented_hemisphere_uniform(uv, x, y, n);
+    float3 dir;
 
-    float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, dir));
+    float pdf;
 
-    sample = Sample_to(dir,
-                       float3(std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
-                              std::acos(xyz[1]) * Pi_inv, 0.f),
-                       1.f / (2.f * Pi), Ray_max_t);
+    if (total_sphere) {
+        dir = sample_sphere_uniform(uv);
 
-    SOFT_ASSERT(testing::check(sample));
+        pdf = 1.f / (4.f * Pi);
+    } else {
+        auto const [x, y] = orthonormal_basis(n);
 
-    return true;
-}
+        dir = sample_oriented_hemisphere_uniform(uv, x, y, n);
 
-bool Infinite_sphere::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo,
-                             float /*area*/, bool /*two_sided*/, Sampler& sampler, RNG& rng,
-                             uint32_t sampler_d, Sample_to& sample) const {
-    float2 const uv  = sampler.sample_2D(rng, sampler_d);
-    float3 const dir = sample_sphere_uniform(uv);
+        pdf = 1.f / (2.f * Pi);
+    }
 
     float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, dir));
 
     sample = Sample_to(dir,
                        float3(std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                               std::acos(xyz[1]) * Pi_inv, 0.f),
-                       1.f / (2.f * Pi), Ray_max_t);
+                       pdf, Ray_max_t);
 
     SOFT_ASSERT(testing::check(sample));
 
     return true;
 }
+
+// bool Infinite_sphere::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo,
+//                             float /*area*/, bool /*two_sided*/, Sampler& sampler, RNG& rng,
+//                             uint32_t sampler_d, Sample_to& sample) const {
+//    float2 const uv  = sampler.sample_2D(rng, sampler_d);
+//    float3 const dir = sample_sphere_uniform(uv);
+
+//    float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, dir));
+
+//    sample = Sample_to(dir,
+//                       float3(std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+//                              std::acos(xyz[1]) * Pi_inv, 0.f),
+//                       1.f / (2.f * Pi), Ray_max_t);
+
+//    SOFT_ASSERT(testing::check(sample));
+
+//    return true;
+//}
 
 bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
                              bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
@@ -170,7 +183,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*trafo*/,
     return false;
 }
 
-float Infinite_sphere::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
+float Infinite_sphere::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                            bool total_sphere) const {
     if (total_sphere) {

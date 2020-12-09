@@ -134,15 +134,25 @@ void Srgb::ACEScg_to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
 }
 #endif
 
-void Srgb::to_unorm(Float4 const& image, int32_t begin, int32_t end) {
+void Srgb::to_unorm(Float4 const& image, uint32_t num_channels, int32_t begin, int32_t end) {
     int2 const d = image.description().dimensions().xy();
 
-    byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+    if (1 == num_channels) {
+        uint8_t* byte = reinterpret_cast<uint8_t*>(buffer_);
 
-    for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
-        float3 const color = image.at(i).xyz();
+        for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+            float const v = image.at(i)[0];
 
-        rgb[i] = ::encoding::float_to_unorm(color);
+            byte[i] = ::encoding::float_to_unorm(v);
+        }
+    } else {
+        byte3* rgb = reinterpret_cast<byte3*>(buffer_);
+
+        for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+            float3 const color = image.at(i).xyz();
+
+            rgb[i] = ::encoding::float_to_unorm(color);
+        }
     }
 }
 

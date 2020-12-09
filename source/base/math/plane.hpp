@@ -6,6 +6,9 @@
 namespace math {
 
 using Plane = Vector4f_a;
-}
+
+using Plane_p = Vector4f_a_p;
+
+}  // namespace math
 
 #endif

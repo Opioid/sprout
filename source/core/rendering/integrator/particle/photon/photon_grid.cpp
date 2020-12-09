@@ -16,7 +16,7 @@
 #include <algorithm>
 
 #include <iostream>
-#include "base/math/print.hpp"
+#include "base/math/print.inl"
 
 namespace rendering::integrator::particle::photon {
 

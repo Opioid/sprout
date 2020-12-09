@@ -1,6 +1,6 @@
 #include "shape_test.hpp"
 #include "base/math/matrix4x4.inl"
-#include "base/math/print.hpp"
+#include "base/math/print.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 #include "infinite_sphere.hpp"
@@ -52,7 +52,7 @@ void test() {
     math::Transformation trafo;
     trafo.position = float3(0.f);
     trafo.scale    = float3(1.f);
-    trafo.rotation = math::quaternion::identity();
+    trafo.rotation = math::quaternion::Identity;
 
     entity::Composed_transformation composed_transformation;
     composed_transformation.set(trafo);

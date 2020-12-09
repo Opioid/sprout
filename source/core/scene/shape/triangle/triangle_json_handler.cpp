@@ -2,7 +2,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"
 
-namespace scene::shape::triangle {
+namespace scene::shape::triangle::serialize {
 
 Json_handler::Json_handler() {
     clear();
@@ -411,4 +411,4 @@ void Json_handler::increment_vertex_element(uint32_t num_elements) {
     }
 }
 
-}  // namespace scene::shape::triangle
+}  // namespace scene::shape::triangle::serialize

@@ -119,26 +119,25 @@ Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const&
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::get(uint32_t id) const {
+T* Typed_cache<T>::get(uint32_t id) const {
     if (id >= uint32_t(resources_.size())) {
-        return Resource_ptr<T>::Null();
+        return nullptr;
     }
 
-    return {resources_[id], id};
+    return resources_[id];
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::store(T* resource) {
+uint32_t Typed_cache<T>::store(T* resource) {
     resources_.push_back(resource);
 
     uint32_t const id = uint32_t(resources_.size()) - 1;
 
-    return {resource, id};
+    return id;
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::store(std::string const& name, Variants const& options,
-                                      T* resource) {
+uint32_t Typed_cache<T>::store(std::string const& name, Variants const& options, T* resource) {
     auto const key = std::make_pair(name, options);
 
     resources_.push_back(resource);
@@ -147,7 +146,7 @@ Resource_ptr<T> Typed_cache<T>::store(std::string const& name, Variants const& o
 
     entries_.insert_or_assign(key, Entry{id, generation_, "", std::filesystem::file_time_type()});
 
-    return {resource, id};
+    return id;
 }
 
 template <typename T>

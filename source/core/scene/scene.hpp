@@ -6,22 +6,13 @@
 #include "bvh/scene_bvh_builder.hpp"
 #include "light/light.hpp"
 #include "light/light_tree.hpp"
+#include "light/light_tree_builder.hpp"
 #include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
-#include "resource/resource.hpp"
 #include "scene_constants.hpp"
 #include "shape/null.hpp"
 
-#include <map>
-#include <string_view>
 #include <vector>
-
-namespace resource {
-
-template <typename T>
-struct Resource_ptr;
-
-}
 
 namespace thread {
 class Pool;
@@ -85,11 +76,9 @@ class Scene {
     using Prop_topology  = prop::Prop_topology;
     using Material       = material::Material;
     using Shape          = shape::Shape;
-    using Shape_ptr      = resource::Resource_ptr<Shape>;
-    using Material_ptr   = resource::Resource_ptr<Material>;
     using Texture        = image::texture::Texture;
 
-    Scene(Shape_ptr null_shape, std::vector<Shape*> const& shape_resources,
+    Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
           std::vector<Material*> const& material_resources,
           std::vector<Texture*> const&  texture_resources);
 
@@ -123,7 +112,9 @@ class Scene {
 
     Prop* prop(uint32_t index);
 
-    Prop* prop(std::string_view name);
+    Shape const* shape(uint32_t index) const;
+
+    Material const* material(uint32_t index) const;
 
     uint32_t num_lights() const;
 
@@ -151,11 +142,7 @@ class Scene {
 
     uint32_t create_entity();
 
-    uint32_t create_entity(std::string const& name);
-
-    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials);
-
-    uint32_t create_prop(Shape_ptr shape, Material_ptr const* materials, std::string const& name);
+    uint32_t create_prop(uint32_t shape, uint32_t const* materials);
 
     void create_prop_light(uint32_t prop, uint32_t part);
 
@@ -166,8 +153,6 @@ class Scene {
     void create_prop_volume_image_light(uint32_t prop, uint32_t part);
 
     uint32_t create_extension(Extension* extension);
-
-    uint32_t create_extension(Extension* extension, std::string const& name);
 
     void prop_serialize_child(uint32_t parent_id, uint32_t child_id);
 
@@ -252,11 +237,9 @@ class Scene {
 
     void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part);
 
-    bool prop_is_instance(Shape_ptr shape, Material_ptr const* materials, uint32_t num_parts) const;
+    bool prop_is_instance(uint32_t shape, uint32_t const* materials, uint32_t num_parts) const;
 
     bool prop_has_caustic_material(uint32_t entity) const;
-
-    void add_named_prop(uint32_t prop, std::string const& name);
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
 
@@ -268,10 +251,12 @@ class Scene {
 
     bvh::Builder bvh_builder_;
 
+    light::Tree_builder light_tree_builder_;
+
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
 
-    Shape_ptr null_shape_;
+    uint32_t null_shape_;
 
     bool has_masked_material_;
     bool has_tinted_shadow_;
@@ -287,7 +272,6 @@ class Scene {
     std::vector<AABB> prop_aabbs_;
 
     std::vector<light::Light> lights_;
-    std::vector<float>        light_powers_;
     std::vector<AABB>         light_aabbs_;
     std::vector<float4>       light_cones_;
 
@@ -298,8 +282,6 @@ class Scene {
     std::vector<animation::Animation*> animations_;
 
     std::vector<animation::Stage> animation_stages_;
-
-    std::map<std::string, uint32_t, std::less<>> named_props_;
 
     memory::Array<float> light_temp_powers_;
 

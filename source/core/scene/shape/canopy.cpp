@@ -29,7 +29,7 @@ float3 Canopy::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
@@ -138,9 +138,9 @@ bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo, float /*area*/,
-                    bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                    Sample_to& sample) const {
+bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/, Transformation const& trafo,
+                    float /*area*/, bool /*two_sided*/, bool /*total_sphere*/, Sampler& sampler,
+                    RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
     float2 const uv  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = sample_oriented_hemisphere_uniform(uv, trafo.rotation);
 
@@ -162,8 +162,9 @@ bool Canopy::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*
     return false;
 }
 
-float Canopy::pdf(Ray const& /*ray*/, Intersection const& /*isec*/, Transformation const& /*trafo*/,
-                  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+float Canopy::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
+                  Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                  bool /*total_sphere*/) const {
     return 1.f / (2.f * Pi);
 }
 

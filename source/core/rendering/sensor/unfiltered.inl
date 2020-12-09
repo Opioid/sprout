@@ -26,10 +26,14 @@ float4 Unfiltered<Base, Clamp>::add_sample(Sample const& sample, float4_p color,
         for (uint32_t i = 0, len = aov->num_slots(); i < len; ++i) {
             auto const v = aov->value(i);
 
-            if (aov->accumulating(i)) {
+            aov::Operation const op = aov->operation(i);
+
+            if (aov::Operation::Accumulate == op) {
                 Base::add_AOV(pixel, i, v, 1.f);
-            } else {
+            } else if (aov::Operation::Overwrite == op) {
                 Base::overwrite_AOV(pixel, i, v);
+            } else {
+                Base::less_AOV(pixel, i, v[0]);
             }
         }
     }

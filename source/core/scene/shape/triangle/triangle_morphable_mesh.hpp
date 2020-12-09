@@ -42,16 +42,17 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
     bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 
-    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool two_sided,
-                sampler::Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                Sample_to& sample) const final;
+    bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo, float area,
+                bool two_sided, bool total_sphere, sampler::Sampler& sampler, RNG& rng,
+                uint32_t sampler_d, Sample_to& sample) const final;
 
     bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
                 sampler::Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
-              float area, bool two_sided, bool total_sphere) const final;
+    float pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
+              Transformation const& trafo, float area, bool two_sided,
+              bool total_sphere) const final;
 
     float pdf_volume(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
                      float volume) const final;
@@ -75,8 +76,6 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
     float volume(uint32_t part, float3_p scale) const final;
 
     Differential_surface differential_surface(uint32_t primitive) const final;
-
-    void prepare_sampling(uint32_t part) final;
 
     Morphable* morphable_shape() final;
 

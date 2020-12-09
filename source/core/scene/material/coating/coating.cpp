@@ -95,7 +95,7 @@ void Clearcoat::sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& r
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, schlick, xi,
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha_, schlick, xi, layer,
                                                    result);
 
     attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
@@ -160,7 +160,7 @@ void Thinfilm::sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& rn
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha_, thinfilm, xi,
+    float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha_, thinfilm, xi, layer,
                                                    attenuation, result);
 
     attenuation = (1.f - attenuation);

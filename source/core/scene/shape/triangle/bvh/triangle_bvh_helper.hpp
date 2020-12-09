@@ -2,8 +2,7 @@
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_HPP
 
 #include "base/math/plane.hpp"
-#include "base/math/vector3.hpp"
-#include "base/simd/simd.hpp"
+#include "base/math/vector.hpp"
 
 namespace scene::shape::triangle::bvh {
 
@@ -21,9 +20,9 @@ float3 triangle_max(float3_p a, float3_p b, float3_p c, float3_p x);
 
 float triangle_area(float3_p a, float3_p b, float3_p c);
 
-uint32_t triangle_side(float3_p a, float3_p b, float3_p c, Plane const& p);
+uint32_t triangle_side(float3_p a, float3_p b, float3_p c, Plane_p p);
 
-bool triangle_completely_behind(float3_p a, float3_p b, float3_p c, Plane const& p);
+bool triangle_completely_behind(float3_p a, float3_p b, float3_p c, Plane_p p);
 
 }  // namespace scene::shape::triangle::bvh
 

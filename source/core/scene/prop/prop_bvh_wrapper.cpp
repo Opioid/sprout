@@ -23,6 +23,10 @@ void BVH_wrapper::set_props(std::vector<uint32_t> const& infinite_props,
 }
 
 AABB BVH_wrapper::aabb() const {
+    if (!tree_.nodes_) {
+        return Empty_AABB;
+    }
+
     return tree_.nodes_[0].aabb();
 }
 

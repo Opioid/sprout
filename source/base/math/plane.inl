@@ -21,21 +21,21 @@ static inline Plane create(Vector3f_a_p v0, Vector3f_a_p v1, Vector3f_a_p v2) {
     return create(n, v0);
 }
 
-static inline float dot(Plane const& p, Vector3f_a_p v) {
+static inline float dot(Plane_p p, Vector3f_a_p v) {
     return (p[0] * v[0] + p[1] * v[1]) + (p[2] * v[2] + p[3]);
 }
 
-static inline bool behind(Plane const& p, Vector3f_a_p point) {
+static inline bool behind(Plane_p p, Vector3f_a_p point) {
     return dot(p, point) < 0.f;
 }
 
-static inline Plane normalize(Plane const& p) {
-    float const t = 1.f / length(p.xyz());
+static inline Plane normalize(Plane_p p) {
+    float const t = rlength(p.xyz());
 
     return t * p;
 }
 
-static inline Vector3f_a intersection(Plane const& p0, Plane const& p1, Plane const& p2) {
+static inline Vector3f_a intersection(Plane_p p0, Plane_p p1, Plane_p p2) {
     Vector3f_a const n1(p0[0], p0[1], p0[2]);
 
     float const d1 = p0[3];

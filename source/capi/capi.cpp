@@ -434,30 +434,32 @@ uint32_t su_create_prop(uint32_t shape, uint32_t num_materials, uint32_t const* 
         return prop::Null;
     }
 
-    uint32_t const num_expected_materials = shape_ptr.ptr->num_materials();
+    uint32_t const num_expected_materials = shape_ptr->num_materials();
 
     auto& materials_buffer = engine->scene_loader.materials_buffer();
 
     materials_buffer.reserve(num_expected_materials);
 
     for (uint32_t i = 0, len = std::min(num_expected_materials, num_materials); i < len; ++i) {
-        auto const material_ptr = engine->resources.get<material::Material>(materials[i]);
+        uint32_t const m = materials[i];
+
+        auto const material_ptr = engine->resources.get<material::Material>(m);
 
         if (!material_ptr) {
             continue;
         }
 
-        materials_buffer.push_back(material_ptr);
+        materials_buffer.push_back(m);
     }
 
-    if (1 == materials_buffer.size() && 1.f == materials_buffer[0].ptr->ior()) {
+    if (1 == materials_buffer.size() && 1.f == engine->scene.material(materials_buffer[0])->ior()) {
     } else {
         while (materials_buffer.size() < num_expected_materials) {
             materials_buffer.push_back(engine->scene_loader.fallback_material());
         }
     }
 
-    return engine->scene.create_prop(shape_ptr, materials_buffer.data());
+    return engine->scene.create_prop(shape, materials_buffer.data());
 }
 
 int32_t su_create_light(uint32_t entity) {

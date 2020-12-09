@@ -256,9 +256,9 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
     return true;
 }
 
-bool Rectangle::sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
-                       bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                       Sample_to& sample) const {
+bool Rectangle::sample(uint32_t part, float3_p p, float3_p /*n*/, Transformation const& trafo,
+                       float area, bool two_sided, bool /*total_sphere*/, Sampler& sampler,
+                       RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
 
     return Rectangle::sample(part, p, r2, trafo, area, two_sided, sample);
@@ -282,8 +282,9 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& trafo, float are
     return true;
 }
 
-float Rectangle::pdf(Ray const& ray, Intersection const& /*isec*/, Transformation const& trafo,
-                     float area, bool two_sided, bool /*total_sphere*/) const {
+float Rectangle::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+                     Transformation const& trafo, float area, bool two_sided,
+                     bool /*total_sphere*/) const {
     float3_p normal = trafo.rotation.r[2];
 
     float c = -dot(normal, ray.direction);
@@ -320,7 +321,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation 
         c = std::abs(c);
     }
 
-    if (c <= Dot_min) {
+    if (c < Dot_min) {
         return false;
     }
 
@@ -343,7 +344,7 @@ bool Rectangle::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /
 
 float Rectangle::pdf_uv(Ray const& ray, Intersection const& isec, Transformation const& trafo,
                         float area, bool two_sided) const {
-    return pdf(ray, isec, trafo, area, two_sided, false);
+    return pdf(ray, float3(0.f), isec, trafo, area, two_sided, false);
 }
 
 float Rectangle::uv_weight(float2 /*uv*/) const {

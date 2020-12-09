@@ -3,8 +3,6 @@
 
 #include "base/json/json_types.hpp"
 #include "base/memory/array.hpp"
-#include "material/material.hpp"
-#include "resource/resource.hpp"
 
 #include <map>
 #include <string>
@@ -14,16 +12,9 @@ namespace math {
 struct Transformation;
 }
 
-namespace file {
-class System;
-}
-
 namespace resource {
 class Manager;
-
-template <typename T>
-struct Resource_ptr;
-}  // namespace resource
+}
 
 namespace take {
 struct Take;
@@ -31,22 +22,9 @@ struct Take;
 
 namespace scene {
 
-namespace surrounding {
-class Surrounding;
+namespace material {
+class Material;
 }
-
-namespace light {
-class Light;
-}
-
-namespace volume {
-class Volume;
-}
-
-namespace prop {
-class Prop;
-struct Prop_ptr;
-}  // namespace prop
 
 namespace shape {
 
@@ -66,12 +44,10 @@ class Scene;
 
 class Loader {
   public:
-    using Shape        = shape::Shape;
-    using Shape_ptr    = resource::Resource_ptr<Shape>;
-    using Material     = material::Material;
-    using Material_ptr = resource::Resource_ptr<Material>;
-    using Materials    = memory::Array<Material_ptr>;
-    using Resources    = resource::Manager;
+    using Shape     = shape::Shape;
+    using Material  = material::Material;
+    using Materials = memory::Array<uint32_t>;
+    using Resources = resource::Manager;
 
     Loader(Resources& resources, Material* fallback_material);
 
@@ -84,16 +60,16 @@ class Loader {
 
     void register_mesh_generator(std::string const& name, shape::triangle::Generator* generator);
 
-    Shape_ptr canopy();
-    Shape_ptr distant_sphere();
-    Shape_ptr cube();
-    Shape_ptr null_shape();
+    uint32_t canopy() const;
+    uint32_t distant_sphere() const;
+    uint32_t cube() const;
+    uint32_t null_shape() const;
 
     void create_light(uint32_t prop_id, Scene& scene);
 
     Materials& materials_buffer();
 
-    Material_ptr fallback_material() const;
+    uint32_t fallback_material() const;
 
   private:
     struct Local_materials {
@@ -114,35 +90,35 @@ class Loader {
 
     static void set_visibility(uint32_t prop, json::Value const& visibility_value, Scene& scene);
 
-    uint32_t load_prop(json::Value const& prop_value, std::string const& name,
-                       Local_materials const& local_materials, Scene& scene);
+    uint32_t load_prop(json::Value const& prop_value, Local_materials const& local_materials,
+                       Scene& scene);
 
     uint32_t load_extension(std::string const& type, json::Value const& extension_value,
-                            std::string const& name, Scene& scene);
+                            Scene& scene);
 
-    Shape_ptr load_shape(json::Value const& shape_value);
+    uint32_t load_shape(json::Value const& shape_value);
 
-    Shape_ptr shape(std::string const& type, json::Value const& shape_value) const;
+    uint32_t shape(std::string const& type, json::Value const& shape_value) const;
 
     void load_materials(json::Value const& materials_value, Local_materials const& local_materials,
                         Scene& scene, Materials& materials) const;
 
-    Material_ptr load_material(std::string const& name, Local_materials const& local_materials,
-                               Scene& scene) const;
+    uint32_t load_material(std::string const& name, Local_materials const& local_materials,
+                           Scene& scene) const;
 
     resource::Manager& resource_manager_;
 
-    Shape_ptr canopy_;
-    Shape_ptr cube_;
-    Shape_ptr disk_;
-    Shape_ptr distant_sphere_;
-    Shape_ptr infinite_sphere_;
-    Shape_ptr plane_;
-    Shape_ptr rectangle_;
-    Shape_ptr sphere_;
-    Shape_ptr null_shape_;
+    uint32_t canopy_;
+    uint32_t cube_;
+    uint32_t disk_;
+    uint32_t distant_sphere_;
+    uint32_t infinite_sphere_;
+    uint32_t plane_;
+    uint32_t rectangle_;
+    uint32_t sphere_;
+    uint32_t null_shape_;
 
-    Material_ptr fallback_material_;
+    uint32_t fallback_material_;
 
     std::map<std::string, Extension_provider*> extension_providers_;
 

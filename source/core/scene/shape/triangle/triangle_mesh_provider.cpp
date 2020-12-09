@@ -22,7 +22,7 @@
 #include "base/debug/assert.hpp"
 #ifdef SU_DEBUG
 #include "base/chrono/chrono.hpp"
-#include "base/math/print.hpp"
+#include "base/math/print.inl"
 
 #include <iostream>
 #endif
@@ -32,7 +32,7 @@ namespace scene::shape::triangle {
 #ifdef SU_DEBUG
 bool check(std::vector<Vertex> const& vertices, std::string const& filename);
 
-bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triangles,
+bool check_and_fix(std::vector<serialize::Part>& parts, std::vector<Index_triangle>& triangles,
                    std::vector<Vertex>& vertices, std::string const& filename);
 #endif
 
@@ -61,7 +61,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     auto const loading_start = std::chrono::high_resolution_clock::now();
 #endif
 
-    Json_handler handler;
+    serialize::Json_handler handler;
 
     {
         static size_t constexpr Buffer_size = 8192;
@@ -121,7 +121,7 @@ Shape* Provider::load(std::string const& filename, Variants const& /*options*/,
     if (!handler.has_tangents()) {
         // If no tangents were loaded, compute some tangent space manually
         for (auto& v : handler.vertices()) {
-            v.t = tangent(v.n);
+            v.t = packed_float3(tangent(float3(v.n)));
 
             v.bitangent_sign = 0;
         }
@@ -242,7 +242,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
             packed_float3 const* normals = reinterpret_cast<packed_float3 const*>(desc.normals);
 
             for (uint32_t i = 0, len = desc.num_vertices; i < len; ++i) {
-                tangents[i] = tangent(normals[i]);
+                tangents[i] = packed_float3(tangent(float3(normals[i])));
             }
         }
 
@@ -266,7 +266,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
                                      Resources& resources) {
     auto collection = new Morph_target_collection;
 
-    Json_handler handler;
+    serialize::Json_handler handler;
 
     static size_t constexpr Buffer_size = 8192;
 
@@ -303,8 +303,8 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
         if (!handler.has_tangents()) {
             // If no tangents were loaded, compute the tangent space manually
             for (auto& v : handler.vertices()) {
-                packed_float3 b;
-                orthonormal_basis(v.n, v.t, b);
+                v.t = packed_float3(tangent(float3(v.n)));
+
                 v.bitangent_sign = 0;
             }
         }
@@ -379,12 +379,12 @@ void Provider::build_bvh(Mesh& mesh, uint32_t num_triangles, Index_triangle cons
 }
 
 template <typename Index>
-void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index const* const indices,
-                          Index_triangle* const triangles) {
+void fill_triangles_delta(uint32_t num_parts, serialize::Part const* const parts,
+                          Index const* const indices, Index_triangle* const triangles) {
     int32_t previous_index(0);
 
     for (uint32_t i = 0; i < num_parts; ++i) {
-        Part const& p = parts[i];
+        auto const& p = parts[i];
 
         uint32_t const triangles_start = p.start_index / 3;
         uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
@@ -412,10 +412,10 @@ void fill_triangles_delta(uint32_t num_parts, Part const* const parts, Index con
 }
 
 template <typename Index>
-void fill_triangles(uint32_t num_parts, Part const* const parts, Index const* const indices,
-                    Index_triangle* const triangles) {
+void fill_triangles(uint32_t num_parts, serialize::Part const* const parts,
+                    Index const* const indices, Index_triangle* const triangles) {
     for (uint32_t i = 0; i < num_parts; ++i) {
-        Part const& p = parts[i];
+        auto const& p = parts[i];
 
         uint32_t const triangles_start = p.start_index / 3;
         uint32_t const triangles_end   = (p.start_index + p.num_indices) / 3;
@@ -463,7 +463,7 @@ Shape* Provider::load_binary(std::istream& stream, Threads& threads) {
 
     uint32_t num_parts = 0;
 
-    memory::Buffer<Part> parts;
+    memory::Buffer<serialize::Part> parts;
 
     uint64_t vertices_offset = 0;
     uint64_t vertices_size   = 0;
@@ -492,7 +492,7 @@ Shape* Provider::load_binary(std::istream& stream, Threads& threads) {
             uint32_t i = 0;
 
             for (auto const& pn : n.value.GetArray()) {
-                Part& p = parts[i];
+                auto& p = parts[i];
 
                 p.start_index    = json::read_uint(pn, "start_index");
                 p.num_indices    = json::read_uint(pn, "num_indices");
@@ -713,7 +713,7 @@ bool check(std::vector<Vertex> const& vertices, std::string const& filename) {
     return true;
 }
 
-bool check_and_fix(std::vector<Part>& parts, std::vector<Index_triangle>& triangles,
+bool check_and_fix(std::vector<serialize::Part>& parts, std::vector<Index_triangle>& triangles,
                    std::vector<Vertex>& vertices, std::string const& /*filename*/) {
     bool success = true;
 

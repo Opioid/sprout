@@ -34,64 +34,77 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
 
     bool const same_side = same_hemisphere(wo_);
 
-    float const p = sampler.sample_1D(rng);
+    Layer const layer = layer_.swapped(same_side);
 
-    if (same_side) {
-        if (p < 0.5f) {
-            refract(sampler, rng, result);
-        } else {
-            if (p < 0.75f) {
-                base_.diffuse_sample(wo_, *this, sampler, rng, result);
-            } else {
-                base_.gloss_sample(wo_, *this, sampler, rng, result);
-            }
-        }
+    IoR const ior = ior_.swapped(same_side);
 
-        result.pdf *= 0.5f;
+    float2 const xi = sampler.sample_2D(rng);
+
+    float        n_dot_h;
+    float3 const h = ggx::Isotropic::sample(wo_, alpha_, xi, layer, n_dot_h);
+
+    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
+    float const wo_dot_h = clamp_dot(wo_, h);
+
+    float const eta   = ior.eta_i / ior.eta_t;
+    float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
+
+    float f;
+    float wi_dot_h;
+
+    if (sint2 >= 1.f) {
+        f        = 1.f;
+        wi_dot_h = 0.f;
     } else {
-        Layer const layer = layer_.swapped();
+        wi_dot_h = std::sqrt(1.f - sint2);
 
-        IoR const ior = ior_.swapped();
+        float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
 
-        float2 const xi = sampler.sample_2D(rng);
+        f = fresnel::schlick(cos_x, base_.f0_[0]);
+    }
 
-        float        n_dot_h;
-        float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
-
-        float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
-        float const wo_dot_h = clamp_dot(wo_, h);
-
-        float const eta = ior.eta_i / ior.eta_t;
-
-        float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
-
-        float f;
-        float wi_dot_h;
-
-        if (sint2 >= 1.f) {
-            f        = 1.f;
-            wi_dot_h = 0.f;
-        } else {
-            wi_dot_h = std::sqrt(1.f - sint2);
-
-            float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
-
-            f = fresnel::schlick(cos_x, base_.f0_[0]);
-        }
-
-        if (p < f) {
+    if (float const p = sampler.sample_1D(rng); same_side) {
+        if (p <= f) {
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, layer, alpha_, result);
+                                                           wo_dot_h, alpha_, layer_, result);
 
-            result.reflection *= n_dot_wi;
+            auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
+                                               albedo_);
+
+            float3 const refl = n_dot_wi * (f * result.reflection + d.reflection);
+            result.reflection = refl * ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_);
+            result.pdf        = f * result.pdf;
         } else {
-            float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
+            float const r_wo_dot_h = -wo_dot_h;
 
             float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                           r_wo_dot_h, layer, alpha_, ior, result);
+                                                           r_wo_dot_h, alpha_, ior, layer_, result);
 
-            result.reflection *= n_dot_wi;
+            float const omf = 1.f - f;
+
+            result.reflection *= omf * n_dot_wi;
+            result.pdf *= omf;
+        }
+
+    } else {
+        if (p <= f) {
+            float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
+                                                           wo_dot_h, alpha_, layer, result);
+
+            result.reflection *= f * n_dot_wi;
+            result.pdf *= f;
+            //  result.type.set(bxdf::Type::Caustic);
+        } else {
+            float const r_wo_dot_h = wo_dot_h;
+
+            float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
+                                                           r_wo_dot_h, alpha_, ior, layer, result);
+
+            float const omf = 1.f - f;
+
+            result.reflection *= omf * n_dot_wi;
+            result.pdf *= omf;
+            //  result.type.set(bxdf::Type::Caustic);
         }
 
         result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
@@ -123,10 +136,9 @@ bxdf::Result Sample_subsurface::evaluate(float3_p wi) const {
             return {float3(0.f), 0.f};
         }
 
-        float const eta = ior.eta_i / ior.eta_t;
-
         float const wo_dot_h = dot(wo_, h);
 
+        float const eta   = ior.eta_i / ior.eta_t;
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
         if (sint2 >= 1.f) {
@@ -159,22 +171,41 @@ bxdf::Result Sample_subsurface::evaluate(float3_p wi) const {
         return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
     }
 
-    auto result = base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
-    result.pdf() *= 0.5f;
-    return result;
-}
+    Layer const& layer = layer_;
 
-void Sample_subsurface::refract(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+    float const alpha = alpha_;
 
-    fresnel::Schlick1 const schlick(base_.f0_[0]);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
+    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    float2 const xi = sampler.sample_2D(rng);
+    auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, albedo_);
 
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, layer_, alpha_, ior_, schlick, xi,
-                                                   result);
+    if (avoid_caustics() && alpha <= ggx::Min_alpha) {
+        if constexpr (Forward) {
+            return {n_dot_wi * d.reflection, d.pdf()};
+        } else {
+            return d;
+        }
+    }
 
-    result.reflection *= n_dot_wi;
+    float const n_dot_h = saturate(layer.n_dot(h));
+
+    fresnel::Schlick const schlick(base_.f0_);
+
+    float3 fresnel_result;
+
+    auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick,
+                                          fresnel_result);
+
+    ggx.reflection *= ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha);
+
+    float const pdf = fresnel_result[0] * ggx.pdf();
+
+    if constexpr (Forward) {
+        return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
+    } else {
+        return {d.reflection + ggx.reflection, pdf};
+    }
 }
 
 }  // namespace scene::material::substitute

@@ -10,6 +10,12 @@ namespace math {
 struct Transformation;
 }
 
+namespace thread {
+class Pool;
+}
+
+using Threads = thread::Pool;
+
 namespace sampler {
 class Sampler;
 }
@@ -21,6 +27,10 @@ class Generator;
 using RNG = rnd::Generator;
 
 namespace scene {
+
+namespace light {
+class Tree_builder;
+}
 
 namespace material {
 class Material;
@@ -93,12 +103,8 @@ class Shape {
                                  Filter filter, Worker& worker, float3& ta) const = 0;
 
     virtual bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo,
-                        float area, bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                        Sample_to& sample) const;
-
-    virtual bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
-                        bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                        Sample_to& sample) const = 0;
+                        float area, bool two_sided, bool total_sphere, Sampler& sampler, RNG& rng,
+                        uint32_t sampler_d, Sample_to& sample) const = 0;
 
     virtual bool sample_volume(uint32_t part, float3_p p, Transformation const& trafo, float volume,
                                Sampler& sampler, RNG& rng, uint32_t sampler_d,
@@ -110,8 +116,9 @@ class Shape {
 
     // All pdf functions implicitely assume that the passed
     // ray/isec/trafo combination actually lead to a hit.
-    virtual float pdf(Ray const& ray, Intersection const& isec, Transformation const& trafo,
-                      float area, bool two_sided, bool total_sphere) const = 0;
+    virtual float pdf(Ray const& ray, float3_p n, Intersection const& isec,
+                      Transformation const& trafo, float area, bool two_sided,
+                      bool total_sphere) const = 0;
 
     virtual float pdf_volume(Ray const& ray, Intersection const& isec, Transformation const& trafo,
                              float volume) const = 0;
@@ -150,7 +157,7 @@ class Shape {
 
     bool is_analytical() const;
 
-    virtual void prepare_sampling(uint32_t part);
+    virtual void prepare_sampling(uint32_t part, light::Tree_builder& builder, Threads& threads);
 
     virtual float4 cone(uint32_t part) const;
 

@@ -40,9 +40,9 @@ inline Reference Reference::clipped_max(float d, uint8_t axis) const {
 }
 
 inline Split_candidate::Split_candidate(uint8_t split_axis, float3_p p, bool spatial)
-    : aabb_0_(AABB::empty()),
-      aabb_1_(AABB::empty()),
-      d_(p.v[split_axis]),
+    : aabb_0_(Empty_AABB),
+      aabb_1_(Empty_AABB),
+      d_(p[split_axis]),
       axis_(split_axis),
       spatial_(spatial) {}
 
@@ -57,7 +57,7 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
         bool used_spatial = false;
 
         for (auto const& r : references) {
-            Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
+            Simd_AABB const b(r.bounds[0].v, r.bounds[1].v);
 
             if (behind(r.bounds[1].v)) {
                 ++num_side_0;
@@ -78,8 +78,8 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
             }
         }
 
-        aabb_0_.set_min_max(box_0.min, box_0.max);
-        aabb_1_.set_min_max(box_1.min, box_1.max);
+        aabb_0_ = AABB(box_0);
+        aabb_1_ = AABB(box_1);
 
         if (used_spatial) {
             aabb_0_.clip_max(d_, axis_);
@@ -89,7 +89,7 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
         }
     } else {
         for (auto const& r : references) {
-            Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
+            Simd_AABB const b(r.bounds[0].v, r.bounds[1].v);
 
             if (behind(r.bounds[1].v)) {
                 ++num_side_0;
@@ -102,8 +102,8 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
             }
         }
 
-        aabb_0_.set_min_max(box_0.min, box_0.max);
-        aabb_1_.set_min_max(box_1.min, box_1.max);
+        aabb_0_ = AABB(box_0);
+        aabb_1_ = AABB(box_1);
     }
 
     if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {

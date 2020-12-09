@@ -63,7 +63,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, alpha_, schlick, xi,
+    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, alpha_, schlick, xi, layer_,
                                                    result);
 
     result.reflection *= n_dot_wi;

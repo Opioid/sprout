@@ -23,11 +23,11 @@ void biased_shuffle(T* data, uint32_t count, Generator& rng) {
     // More related information:
     // http://www.pcg-random.org/posts/bounded-rands.html
     for (uint64_t i = uint64_t(count - 1); i > 0; --i) {
-        uint64_t const r     = uint64_t(rng.random_uint());
-        uint64_t const m     = r * (i + 1);
-        uint64_t const other = m >> 32;
+        uint64_t const r = uint64_t(rng.random_uint());
+        uint64_t const m = r * (i + 1);
+        uint64_t const o = m >> 32;
 
-        std::swap(data[i], data[other]);
+        std::swap(data[i], data[o]);
     }
 }
 

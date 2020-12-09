@@ -2,7 +2,6 @@
 #define SU_CORE_RENDERING_SENSOR_AOV_VALUE_HPP
 
 #include "base/math/vector3.hpp"
-#include "base/math/vector4.hpp"
 #include "property.hpp"
 
 namespace rendering::sensor::aov {
@@ -27,6 +26,8 @@ class Value {
 
     void clear();
 
+    void insert(float v, Property aov);
+
     void insert(float3_p v, Property aov);
 
     struct Result {
@@ -36,7 +37,7 @@ class Value {
 
     float3 value(uint32_t id) const;
 
-    bool accumulating(uint32_t id) const;
+    Operation operation(uint32_t id) const;
 
   private:
     Mapping mapping_;
@@ -44,8 +45,8 @@ class Value {
     uint8_t num_slots_;
 
     struct alignas(16) Slot {
-        float v[3];
-        bool  accumulating;
+        float     v[3];
+        Operation operation;
     };
 
     Slot* slots_;

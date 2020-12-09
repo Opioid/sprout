@@ -14,7 +14,7 @@ class Buffer {
 
     void resize(int2 dimensions, Value_pool const& aovs);
 
-    void clear();
+    void clear(Value_pool const& aovs);
 
     void add_pixel(int32_t id, uint32_t slot, float3_p value, float weight);
 

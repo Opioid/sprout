@@ -213,10 +213,10 @@ int4 Sensor::isolated_tile(int4_p tile) const {
     return tile + int4(r, r, -r, -r);
 }
 
-void Sensor::clear(float weight) {
+void Sensor::clear(float weight, aov::Value_pool const& aovs) {
     on_clear(weight);
 
-    aov_.clear();
+    aov_.clear(aovs);
 }
 
 void Sensor::add_AOV(int2 pixel, uint32_t slot, float3_p value, float weight) {
@@ -241,6 +241,16 @@ void Sensor::overwrite_AOV(int2 pixel, uint32_t slot, float3_p value) {
     int32_t const id = d[0] * pixel[1] + pixel[0];
 
     aov_.overwrite_pixel(id, slot, value);
+}
+
+void Sensor::less_AOV(int2 pixel, uint32_t slot, float value) {
+    auto const d = dimensions();
+
+    int32_t const id = d[0] * pixel[1] + pixel[0];
+
+    float const current = aov_.value(id, slot)[0];
+
+    aov_.overwrite_pixel(id, slot, float3(std::min(value, current)));
 }
 
 }  // namespace rendering::sensor

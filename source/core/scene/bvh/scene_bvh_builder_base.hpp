@@ -2,10 +2,10 @@
 #define SU_CORE_SCENE_BVH_BUILDER_BASE_HPP
 
 #include "base/math/aabb.hpp"
-#include "scene_bvh_node.hpp"
-#include "scene_bvh_split_candidate.hpp"
+#include "base/memory/array.hpp"
 
 #include <atomic>
+#include <vector>
 
 namespace thread {
 class Pool;
@@ -15,10 +15,16 @@ using Threads = thread::Pool;
 
 namespace scene::bvh {
 
+class Node;
+struct Reference;
+class Split_candidate;
+
+using References = memory::Array<Reference>;
+
 class Kernel {
   public:
     Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
-           uint32_t spatial_split_threshold = 0);
+           uint32_t spatial_split_threshold);
 
     ~Kernel();
 

@@ -33,7 +33,6 @@ void Distribution_3D::init() {
     marginal_.init(integrals, num_conditional);
 
     conditional_sizef_ = float(num_conditional);
-    conditional_max_   = num_conditional - 1;
 
     delete[] integrals;
 }
@@ -46,7 +45,7 @@ float4 Distribution_3D::sample_continuous(float3_p r3) const {
     auto const w = marginal_.sample_continuous(r3[2]);
 
     uint32_t const i = uint32_t(w.offset * conditional_sizef_);
-    uint32_t const c = std::min(i, conditional_max_);
+    uint32_t const c = std::min(i, conditional_size_ - 1);
 
     auto const uv = conditional_[c].sample_continuous(r3.xy());
 
@@ -57,7 +56,7 @@ float Distribution_3D::pdf(float3_p uvw) const {
     float const w_pdf = marginal_.pdf(uvw[2]);
 
     uint32_t const i = uint32_t(uvw[2] * conditional_sizef_);
-    uint32_t const c = std::min(i, conditional_max_);
+    uint32_t const c = std::min(i, conditional_size_ - 1);
 
     float const uv_pdf = conditional_[c].pdf(uvw.xy());
 

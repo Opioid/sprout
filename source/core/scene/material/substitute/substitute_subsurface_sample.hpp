@@ -9,6 +9,8 @@ namespace scene::material::substitute {
 
 class Sample_subsurface final : public material::Sample {
   public:
+    using Diffuse = disney::Isotropic_no_lambert;
+
     bxdf::Result evaluate_f(float3_p wi) const final;
 
     bxdf::Result evaluate_b(float3_p wi) const final;
@@ -17,13 +19,11 @@ class Sample_subsurface final : public material::Sample {
 
     void set_volumetric(float ior, float ior_outside);
 
-    Base_closure<disney::Isotropic_no_lambert> base_;
+    Base_closure<Diffuse> base_;
 
   private:
     template <bool Forward>
     bxdf::Result evaluate(float3_p wi) const;
-
-    void refract(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
     IoR ior_;
 };

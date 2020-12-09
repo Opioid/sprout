@@ -23,7 +23,7 @@ float3 Distant_sphere::object_to_texture_vector(float3_p v) const {
 }
 
 AABB Distant_sphere::transformed_aabb(float4x4 const& /*m*/) const {
-    return AABB::empty();
+    return Empty_AABB;
 }
 
 bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
@@ -154,9 +154,10 @@ bool Distant_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /
     return true;
 }
 
-bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo,
-                            float area, bool /*two_sided*/, Sampler& sampler, RNG& rng,
-                            uint32_t sampler_d, Sample_to& sample) const {
+bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+                            Transformation const& trafo, float area, bool /*two_sided*/,
+                            bool /*total_sphere*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                            Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r2);
 
@@ -209,7 +210,7 @@ bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& trafo, floa
     return true;
 }
 
-float Distant_sphere::pdf(Ray const& /*ray*/, Intersection const& /*isec*/,
+float Distant_sphere::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
                           Transformation const& /*trafo*/, float area, bool /*two_sided*/,
                           bool /*total_sphere*/) const {
     return 1.f / area;

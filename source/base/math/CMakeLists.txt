@@ -5,6 +5,7 @@ target_sources(base
     PRIVATE
     "aabb.hpp"
     "aabb.inl"
+    "cone.inl"
     "exp.hpp"
     "frustum.cpp"
     "frustum.hpp"
@@ -28,6 +29,7 @@ target_sources(base
     "plane.inl"
     "print.cpp"
     "print.hpp"
+    "print.inl"
     "quaternion.hpp"
     "quaternion.inl"
     "ray.hpp"

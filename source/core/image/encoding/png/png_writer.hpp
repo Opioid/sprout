@@ -14,8 +14,7 @@ class Writer : public image::Writer, Srgb {
 
     bool write(std::ostream& stream, Float4 const& image, Threads& threads) final;
 
-    bool write(std::ostream& stream, Float4 const& image, Encoding encoding,
-               Threads& threads) final;
+    bool write(std::ostream& stream, Float4 const& image, Layout layout, Threads& threads) final;
 
     static bool write(std::string_view name, Byte3 const& image);
 
@@ -26,6 +25,9 @@ class Writer : public image::Writer, Srgb {
 
     static bool write_heatmap(std::string_view name, float const* data, int2 dimensions,
                               float max_value, Threads& threads);
+
+  private:
+    void to_depth(Float4 const& image);
 };
 
 }  // namespace image::encoding::png

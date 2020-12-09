@@ -5,7 +5,6 @@
 #include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
-#include "resource/resource.hpp"
 #include "scene/animation/animation.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/material.inl"
@@ -34,8 +33,8 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
     properties_.set(Property::Visible_in_shadow, in_shadow);
 }
 
-void Prop::configure(Shape_ptr shape, Material_ptr const* materials) {
-    shape_ = shape.id;
+void Prop::configure(uint32_t shape, uint32_t const* materials, Scene const& scene) {
+    shape_ = shape;
 
     properties_.clear();
 
@@ -43,12 +42,14 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) {
     properties_.set(Property::Visible_in_reflection);
     properties_.set(Property::Visible_in_shadow);
 
-    properties_.set(Property::Test_AABB, shape.ptr->is_finite() && shape.ptr->is_complex());
+    shape::Shape const* shape_ptr = scene.shape(shape);
+
+    properties_.set(Property::Test_AABB, shape_ptr->is_finite() && shape_ptr->is_complex());
 
     properties_.set(Property::Static, true);
 
-    for (uint32_t i = 0, len = shape.ptr->num_materials(); i < len; ++i) {
-        auto const m = materials[i].ptr;
+    for (uint32_t i = 0, len = shape_ptr->num_materials(); i < len; ++i) {
+        auto const m = scene.material(materials[i]);
 
         if (m->is_masked()) {
             properties_.set(Property::Masked_material);
@@ -60,10 +61,10 @@ void Prop::configure(Shape_ptr shape, Material_ptr const* materials) {
     }
 }
 
-void Prop::configure_animated(uint32_t self, bool local_animation, Scene const& scene) {
-    Shape const* shape = scene.prop_shape(self);
+void Prop::configure_animated(bool local_animation, Scene const& scene) {
+    shape::Shape const* shape_ptr = scene.shape(shape_);
 
-    properties_.set(Property::Test_AABB, shape->is_finite());
+    properties_.set(Property::Test_AABB, shape_ptr->is_finite());
     properties_.set(Property::Static, false);
     properties_.set(Property::Local_animation, local_animation);
 }
@@ -204,14 +205,6 @@ bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker&
     auto const&    trafo = scene.prop_transformation_at(self, ray.time, temp);
 
     return scene.prop_shape(self)->thin_absorption(ray, trafo, self, filter, worker, ta);
-}
-
-bool Prop::has_masked_material() const {
-    return properties_.is(Property::Masked_material);
-}
-
-bool Prop::has_tinted_shadow() const {
-    return properties_.is(Property::Tinted_shadow);
 }
 
 }  // namespace scene::prop

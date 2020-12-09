@@ -35,7 +35,7 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
 
         bxdf::Sample result;
 
-        float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, alpha, schlick, xi,
+        float const n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, alpha, schlick, xi, layer,
                                                        result);
 
         accum += (n_dot_wi * result.reflection[0]) / result.pdf;
@@ -71,7 +71,7 @@ float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_sa
         float2 const xi = hammersley(i, num_samples, 0);
 
         float        n_dot_h;
-        float3 const h = ggx::Isotropic::sample(wo, layer, alpha, xi, n_dot_h);
+        float3 const h = ggx::Isotropic::sample(wo, alpha, xi, layer, n_dot_h);
 
         // float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -99,7 +99,7 @@ float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_sa
 
         {
             float const n_dot_wi = ggx::Isotropic::reflect(wo, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, layer, alpha, result);
+                                                           wo_dot_h, alpha, layer, result);
 
             accum += (std::min(n_dot_wi, n_dot_wo) * f * result.reflection[0]) / result.pdf;
         }
@@ -107,7 +107,7 @@ float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_sa
             float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
             float const n_dot_wi = ggx::Isotropic::refract(wo, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                           r_wo_dot_h, layer, alpha, ior, result);
+                                                           r_wo_dot_h, alpha, ior, layer, result);
 
             float const omf = 1.f - f;
 
@@ -145,7 +145,7 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
         float2 const xi = hammersley(i, num_samples, 0);
 
         float        n_dot_h;
-        float3 const h = ggx::Isotropic::sample(wo, layer, alpha, xi, n_dot_h);
+        float3 const h = ggx::Isotropic::sample(wo, alpha, xi, layer, n_dot_h);
 
         // float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -173,7 +173,7 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
 
         {
             float const n_dot_wi = ggx::Isotropic::reflect(wo, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, layer, alpha, result);
+                                                           wo_dot_h, alpha, layer, result);
 
             accum += (std::min(n_dot_wi, n_dot_wo) * f * result.reflection[0]) / result.pdf;
         }
@@ -187,7 +187,7 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
             float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
             float const n_dot_wi = ggx::Isotropic::refract(wo, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                           r_wo_dot_h, layer, alpha, ior, result);
+                                                           r_wo_dot_h, alpha, ior, layer, result);
 
             float const omf = 1.f - f;
 

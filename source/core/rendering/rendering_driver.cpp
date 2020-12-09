@@ -157,7 +157,7 @@ void Driver::start_frame(uint32_t frame) {
 
     camera.update(*scene_, start, workers_[0]);
 
-    camera.sensor().clear(0.f);
+    camera.sensor().clear(0.f, view_->aovs);
 
     particle_importance_.set_training(false);
 }
@@ -216,7 +216,7 @@ void Driver::render_frame_backward(uint32_t frame) {
 
     progressor_.start(ranges_.size());
 
-    camera.sensor().clear(float(view_->num_particles_per_pixel));
+    camera.sensor().clear(float(view_->num_particles_per_pixel), view_->aovs);
 
 #ifdef PARTICLE_GUIDING
     particle_importance_.set_training(true);
@@ -313,7 +313,7 @@ void Driver::render_frame_forward(uint32_t frame) {
 
     auto& camera = *view_->camera;
 
-    camera.sensor().clear(0.f);
+    camera.sensor().clear(0.f, view_->aovs);
 
     frame_ = frame;
 

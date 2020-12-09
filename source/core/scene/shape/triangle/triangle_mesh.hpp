@@ -3,9 +3,48 @@
 
 #include "base/math/distribution/distribution_1d.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
+#include "scene/light/light_tree.hpp"
 #include "scene/shape/shape.hpp"
 
 namespace scene::shape::triangle {
+
+struct Part {
+    using Distribution_1D = math::Distribution_1D;
+
+    ~Part();
+
+    void init(uint32_t part, bvh::Tree const& tree, light::Tree_builder& builder, Threads& threads);
+
+    light::Light_pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
+
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const;
+
+    Distribution_1D::Discrete sample(float r) const;
+
+    AABB const& light_aabb(uint32_t light) const;
+
+    float4_p light_cone(uint32_t light) const;
+
+    float light_power(uint32_t light) const;
+
+    uint32_t material;
+
+    uint32_t num_triangles;
+
+    uint32_t* triangle_mapping = nullptr;
+
+    AABB* aabbs = nullptr;
+
+    float4* cones = nullptr;
+
+    Distribution_1D distribution;
+
+    light::Primitive_tree light_tree;
+
+    AABB aabb;
+
+    float4 cone;
+};
 
 class alignas(64) Mesh final : public Shape {
   public:
@@ -50,15 +89,22 @@ class alignas(64) Mesh final : public Shape {
     bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 
-    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool two_sided,
-                Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
+    bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo, float area,
+                bool two_sided, bool total_sphere, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                Sample_to& sample) const final;
+
+    //    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool
+    //    two_sided,
+    //                Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const
+    //                final;
 
     bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
-              float area, bool two_sided, bool total_sphere) const final;
+    float pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
+              Transformation const& trafo, float area, bool two_sided,
+              bool total_sphere) const final;
 
     float pdf_volume(Ray const& ray, shape::Intersection const& isec, Transformation const& trafo,
                      float volume) const final;
@@ -83,38 +129,16 @@ class alignas(64) Mesh final : public Shape {
 
     Differential_surface differential_surface(uint32_t primitive) const final;
 
-    void prepare_sampling(uint32_t part) final;
+    void prepare_sampling(uint32_t part, light::Tree_builder& builder, Threads& threads) final;
 
     float4 cone(uint32_t part) const final;
 
   private:
     bvh::Tree tree_;
 
-    struct Part {
-        using Distribution_1D = math::Distribution_1D;
-
-        ~Part();
-
-        void init(uint32_t part, bvh::Tree const& tree);
-
-        bool empty() const;
-
-        Distribution_1D::Discrete sample(float r) const;
-
-        uint32_t material;
-
-        uint32_t num_triangles = 0xFFFFFFFF;
-
-        uint32_t* triangle_mapping = nullptr;
-
-        Distribution_1D distribution;
-
-        AABB aabb;
-
-        float4 cone;
-    };
-
     Part* parts_;
+
+    uint32_t* primitive_mapping_;
 };
 
 }  // namespace scene::shape::triangle

@@ -1,9 +1,10 @@
 #include "sub_image_writer.hpp"
-#include <fstream>
+#include "base/math/vector3.inl"
 #include "base/memory/bitfield.inl"
 #include "base/string/string.hpp"
 #include "image/image.hpp"
 
+#include <fstream>
 #include <iostream>
 
 namespace image::encoding::sub {
@@ -83,7 +84,7 @@ void Writer::write(std::string const& filename, Image const& image) {
     newline(jstream, 3);
     jstream << R"("type":")" << image_type_string(image.type()) << R"(",)";
 
-    int3_p d = description.dimensions_;
+    int3 const d = description.dimensions_;
     newline(jstream, 3);
     jstream << R"("dimensions":[)";
     jstream << d[0] << "," << d[1] << "," << d[2] << "],";

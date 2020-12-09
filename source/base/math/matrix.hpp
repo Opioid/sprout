@@ -3,8 +3,8 @@
 
 namespace math {
 
-struct alignas(16) Matrix3x3f_a;
-struct alignas(16) Matrix4x4f_a;
+struct Matrix3x3f_a;
+struct Matrix4x4f_a;
 
 // template<typename T> struct Matrix3x3;
 

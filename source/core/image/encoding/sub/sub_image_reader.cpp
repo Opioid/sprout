@@ -1,5 +1,5 @@
 #include "sub_image_reader.hpp"
-#include <fstream>
+#include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/memory/bitfield.inl"
 #include "base/string/string.hpp"
@@ -7,6 +7,8 @@
 #include "image/typed_image.hpp"
 #include "json/json.hpp"
 #include "logging/logging.hpp"
+
+#include <fstream>
 
 namespace image::encoding::sub {
 

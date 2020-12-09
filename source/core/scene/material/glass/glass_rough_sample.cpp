@@ -40,14 +40,12 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
     float2 const xi = sampler.sample_2D(rng);
 
     float        n_dot_h;
-    float3 const h = ggx::Isotropic::sample(wo_, layer, alpha_, xi, n_dot_h);
+    float3 const h = ggx::Isotropic::sample(wo_, alpha_, xi, layer, n_dot_h);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
     float const wo_dot_h = clamp_dot(wo_, h);
 
-    float const eta = ior.eta_i / ior.eta_t;
-
+    float const eta   = ior.eta_i / ior.eta_t;
     float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
     float f;
@@ -66,7 +64,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
     if (sampler.sample_1D(rng) <= f) {
         float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                       wo_dot_h, layer, alpha_, result);
+                                                       wo_dot_h, alpha_, layer, result);
 
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
@@ -77,7 +75,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
         float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
         float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                       r_wo_dot_h, layer, alpha_, ior, result);
+                                                       r_wo_dot_h, alpha_, ior, layer, result);
 
         float const omf = 1.f - f;
 
@@ -120,10 +118,9 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
             return {float3(0.f), 0.f};
         }
 
-        float const eta = ior.eta_i / ior.eta_t;
-
         float const wo_dot_h = dot(wo_, h);
 
+        float const eta   = ior.eta_i / ior.eta_t;
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
         if (sint2 >= 1.f) {
