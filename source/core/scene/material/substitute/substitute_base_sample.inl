@@ -273,7 +273,7 @@ void Base_closure<Diffuse>::pure_gloss_sample(float3_p wo, material::Sample cons
 
 template <typename Diffuse>
 float Base_closure<Diffuse>::base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const {
-    // I think this is what we have to weigh lambert with if it is added to a microfacet BRDF.
+    // I think this is what we have to weigh lambert with, if it is added to a microfacet BRDF.
     // At the moment this is only used with the "translucent" material,
     // which is kind of hacky anyway.
 

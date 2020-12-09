@@ -42,15 +42,15 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
             refract(sampler, rng, result);
         } else {
             if (p < 0.75f) {
-                coating_sample_and_base(sampler, rng, result);
+                coating_sample(sampler, rng, result);
             } else {
                 if (1.f == base_.metallic_) {
-                    pure_gloss_sample_and_coating(sampler, rng, result);
+                    pure_gloss_sample(sampler, rng, result);
                 } else {
                     if (p < 0.875f) {
-                        diffuse_sample_and_coating(sampler, rng, result);
+                        diffuse_sample(sampler, rng, result);
                     } else {
-                        gloss_sample_and_coating(sampler, rng, result);
+                        gloss_sample(sampler, rng, result);
                     }
                 }
             }
