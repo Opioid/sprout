@@ -66,7 +66,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
     if (float const p = sampler.sample_1D(rng); same_side) {
         if (p <= f) {
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                           wo_dot_h, alpha_, layer_, result);
+                                                           wo_dot_h, alpha_, layer, result);
 
             auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
                                                albedo_);
@@ -78,7 +78,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             float const r_wo_dot_h = -wo_dot_h;
 
             float const n_dot_wi = ggx::Isotropic::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                           r_wo_dot_h, alpha_, ior, layer_, result);
+                                                           r_wo_dot_h, alpha_, ior, layer, result);
 
             float const omf = 1.f - f;
 

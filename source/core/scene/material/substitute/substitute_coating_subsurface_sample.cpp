@@ -75,7 +75,7 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
 
             if (p <= f) {
                 float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
-                                                               wo_dot_h, alpha_, layer_, result);
+                                                               wo_dot_h, alpha_, layer, result);
 
                 auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
                                                    albedo_);
@@ -87,7 +87,7 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
                 float const r_wo_dot_h = -wo_dot_h;
 
                 float const n_dot_wi = ggx::Isotropic::refract(
-                    wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h, alpha_, ior, layer_, result);
+                    wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h, alpha_, ior, layer, result);
 
                 float const omf = 1.f - f;
 
