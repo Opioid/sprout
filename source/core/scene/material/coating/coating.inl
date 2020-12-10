@@ -18,9 +18,16 @@ Result Coating_layer<Coating>::evaluate_b(float3_p wi, float3_p wo, float3_p h, 
 }
 
 template <typename Coating>
-void Coating_layer<Coating>::sample(float3_p wo, Sampler& sampler, RNG& rng, float3& attenuation,
-                                    bxdf::Sample& result) const {
-    Coating::sample(wo, *this, sampler, rng, attenuation, result);
+void Coating_layer<Coating>::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h,
+                                     float wi_dot_h, float wo_dot_h, float3& attenuation,
+                                     bxdf::Sample& result) const {
+    Coating::reflect(wo, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h, *this, attenuation, result);
+}
+
+template <typename Coating>
+float Coating_layer<Coating>::sample(float3_p wo, Sampler& sampler, RNG& rng, float& n_dot_h,
+                                     bxdf::Sample& result) const {
+    return Coating::sample(wo, *this, sampler, rng, n_dot_h, result);
 }
 
 }  // namespace scene::material::coating

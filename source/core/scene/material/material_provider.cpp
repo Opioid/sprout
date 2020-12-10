@@ -25,7 +25,6 @@
 #include "material_sample_cache.inl"
 #include "metal/metal_material.hpp"
 #include "metal/metal_presets.hpp"
-#include "metallic_paint/metallic_paint_material.hpp"
 #include "mix/mix_material.hpp"
 #include "null/null_material.hpp"
 #include "resource/resource_manager.inl"
@@ -124,8 +123,6 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
                 material = load_light(n.value, resources);
             } else if ("Metal" == n.name) {
                 material = load_metal(n.value, resources);
-            } else if ("Metallic_paint" == n.name) {
-                material = load_metallic_paint(n.value, resources);
             } else if ("Mix" == n.name) {
                 material = load_mix(n.value, resources);
             } else if ("Null" == n.name) {
@@ -533,109 +530,6 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
     material->set_ior(ior);
     material->set_absorption(absorption);
     material->set_roughness(roughness);
-
-    return material;
-}
-
-Material* Provider::load_metallic_paint(json::Value const& paint_value,
-                                        Resources&         resources) const {
-    Sampler_settings sampler_settings;
-
-    Texture_adapter mask;
-    Texture_adapter flakes_normal_map;
-    Texture_adapter flakes_mask;
-
-    bool two_sided = false;
-
-    float3 color_a(1.f, 0.f, 0.f);
-    float3 color_b(0.f, 0.f, 1.f);
-    float  roughness      = 0.575f;
-    float  flakes_size    = 0.1f;
-    float  flakes_density = 0.2f;
-    float3 flakes_ior(1.f);
-    float3 flakes_absorption(0.75f);
-    float  flakes_roughness = 0.3f;
-    float  flakes_scale     = 1.f;
-
-    Coating_description coating;
-    coating.ior = 1.5f;
-
-    for (auto const& n : paint_value.GetObject()) {
-        if ("color_a" == n.name) {
-            color_a = read_color(n.value);
-        } else if ("color_b" == n.name) {
-            color_b = read_color(n.value);
-        } else if ("roughness" == n.name) {
-            roughness = json::read_float(n.value);
-        } else if ("two_sided" == n.name) {
-            two_sided = json::read_bool(n.value);
-        } else if ("flakes" == n.name) {
-            std::string flakes_preset = json::read_string(n.value, "preset");
-
-            if (flakes_preset.empty()) {
-                flakes_ior        = json::read_float3(n.value, "ior", flakes_ior);
-                flakes_absorption = json::read_float3(n.value, "absorption", flakes_absorption);
-            } else {
-                metal::ior_and_absorption(flakes_preset, flakes_ior, flakes_absorption);
-            }
-
-            flakes_size      = json::read_float(n.value, "size", flakes_size);
-            flakes_density   = json::read_float(n.value, "density", flakes_density);
-            flakes_roughness = json::read_float(n.value, "roughness", flakes_roughness);
-            flakes_scale     = json::read_float(n.value, "scale", flakes_scale);
-        } else if ("coating" == n.name) {
-            read_coating_description(n.value, coating);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const texture_description = read_texture_description(tn);
-
-                if (texture_description.filename.empty()) {
-                    continue;
-                }
-
-                Variants options;
-                if ("Mask" == texture_description.usage) {
-                    options.set("usage", Texture_usage::Mask);
-                    mask = create_texture(texture_description, options, resources);
-                }
-            }
-        } else if ("sampler" == n.name) {
-            read_sampler_settings(n.value, sampler_settings);
-        }
-    }
-
-    Texture_description texture_description;
-    texture_description.scale = flakes_scale;
-
-    Variants options;
-    options.set("size", flakes_size);
-    options.set("density", flakes_density);
-
-    texture_description.filename = "proc:flakes";
-    options.set("usage", Texture_usage::Normal);
-    flakes_normal_map = create_texture(texture_description, options, resources);
-
-    texture_description.filename = "proc:flakes_mask";
-    options.set("usage", Texture_usage::Mask);
-    flakes_mask = create_texture(texture_description, options, resources);
-
-    auto material = new metallic_paint::Material(sampler_settings, two_sided);
-
-    material->set_mask(mask);
-
-    material->set_color(color_a, color_b);
-    material->set_roughness(roughness);
-
-    material->set_flakes_mask(flakes_mask);
-    material->set_flakes_normal_map(flakes_normal_map);
-    material->set_flakes_ior(flakes_ior);
-    material->set_flakes_absorption(flakes_absorption);
-    material->set_flakes_roughness(flakes_roughness);
-
-    material->set_coating_attenuation(coating.color, coating.attenuation_distance);
-    material->set_coating_ior(coating.ior);
-    material->set_coating_roughness(coating.roughness);
-    material->set_coating_thickness(coating.thickness);
 
     return material;
 }
@@ -1305,7 +1199,6 @@ uint32_t Provider::max_sample_size() {
     num_bytes = std::max(light::Constant::sample_size(), num_bytes);
     num_bytes = std::max(metal::Material_anisotropic::sample_size(), num_bytes);
     num_bytes = std::max(metal::Material_isotropic::sample_size(), num_bytes);
-    num_bytes = std::max(metallic_paint::Material::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_clearcoat::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_coating_subsurface::sample_size(), num_bytes);

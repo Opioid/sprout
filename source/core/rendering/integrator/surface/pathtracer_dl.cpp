@@ -55,7 +55,7 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
     sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 1, 1, 1);
+        s->resize(num_samples_per_pixel, 1, 2, 1);
     }
 
     uint32_t const num_lights = scene.num_lights();

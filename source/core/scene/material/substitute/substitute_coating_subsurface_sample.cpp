@@ -38,29 +38,76 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
     float const p = sampler.sample_1D(rng);
 
     if (same_side) {
-        if (p < 0.5f) {
-            refract(sampler, rng, result);
+        float       n_dot_h;
+        float const cf = coating_.sample(wo_, sampler, rng, n_dot_h, result);
+
+        if (p <= cf) {
+            coating_reflect(cf, n_dot_h, result);
         } else {
-            if (p < 0.75f) {
-                coating_sample(sampler, rng, result);
+            Layer const layer = layer_.swapped(same_side);
+
+            IoR const ior = ior_.swapped(same_side);
+
+            float2 const xi = sampler.sample_2D(rng);
+
+            float        n_dot_h;
+            float3 const h = ggx::Isotropic::sample(wo_, alpha_, xi, layer, n_dot_h);
+
+            float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
+            float const wo_dot_h = clamp_dot(wo_, h);
+
+            float const eta   = ior.eta_i / ior.eta_t;
+            float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
+
+            float f;
+            float wi_dot_h;
+
+            if (sint2 >= 1.f) {
+                f        = 1.f;
+                wi_dot_h = 0.f;
             } else {
-                if (1.f == base_.metallic_) {
-                    pure_gloss_sample(sampler, rng, result);
-                } else {
-                    if (p < 0.875f) {
-                        diffuse_sample(sampler, rng, result);
-                    } else {
-                        gloss_sample(sampler, rng, result);
-                    }
-                }
+                wi_dot_h = std::sqrt(1.f - sint2);
+
+                float const cos_x = ior.eta_i > ior.eta_t ? wi_dot_h : wo_dot_h;
+
+                f = fresnel::schlick(cos_x, base_.f0_[0]);
             }
+
+            if (p <= f) {
+                float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
+                                                               wo_dot_h, alpha_, layer_, result);
+
+                auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
+                                                   albedo_);
+
+                float3 const refl = n_dot_wi * (f * result.reflection + d.reflection);
+                result.reflection = refl * ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_);
+                result.pdf        = f * result.pdf;
+            } else {
+                float const r_wo_dot_h = -wo_dot_h;
+
+                float const n_dot_wi = ggx::Isotropic::refract(
+                    wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h, alpha_, ior, layer_, result);
+
+                float const omf = 1.f - f;
+
+                float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);
+
+                // Approximating the full coating attenuation at entrance, for the benefit of SSS,
+                // which will ignore the border later.
+                // This will probably cause problems for shapes intersecting such materials.
+                float3 const attenuation = coating_.attenuation(0.5f, coating_n_dot_wo);
+
+                result.reflection *= omf * n_dot_wi * attenuation;
+                result.pdf *= omf;
+            }
+
+            result.pdf *= 1.f - cf;
         }
-
-        result.pdf *= 0.5f;
     } else {
-        Layer const layer = layer_.swapped();
+        Layer const layer = layer_.swapped(same_side);
 
-        IoR const ior = ior_.swapped();
+        IoR const ior = ior_.swapped(same_side);
 
         float2 const xi = sampler.sample_2D(rng);
 
@@ -68,11 +115,9 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
         float3 const h = ggx::Isotropic::sample(wo_, alpha_, xi, layer, n_dot_h);
 
         float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
-
         float const wo_dot_h = clamp_dot(wo_, h);
 
-        float const eta = ior.eta_i / ior.eta_t;
-
+        float const eta   = ior.eta_i / ior.eta_t;
         float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
 
         float f;
@@ -93,7 +138,8 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
             float const n_dot_wi = ggx::Isotropic::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h,
                                                            wo_dot_h, alpha_, layer, result);
 
-            result.reflection *= n_dot_wi;
+            result.reflection *= f * n_dot_wi;
+            result.pdf *= f;
         } else {
             float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
@@ -104,7 +150,10 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
 
             float3 const attenuation = coating_.attenuation(coating_n_dot_wo);
 
-            result.reflection *= n_dot_wi * attenuation;
+            float const omf = 1.f - f;
+
+            result.reflection *= omf * n_dot_wi * attenuation;
+            result.pdf *= omf;
         }
     }
 
@@ -150,43 +199,60 @@ bxdf::Result Sample_coating_subsurface::evaluate(float3_p wi) const {
 
         fresnel::Schlick1 const schlick(base_.f0_[0]);
 
-        auto const ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
-                                                    alpha_, ior, schlick);
+        auto ggx = ggx::Isotropic::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h,
+                                              alpha_, ior, schlick);
+
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
 
         if (Forward) {
             return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf()};
         }
 
-        return {ggx.reflection, ggx.pdf()};
+        return ggx;
     }
 
-    auto result = Clearcoat_no_lambert::evaluate<Forward>(wi);
+    float3 const h = normalize(wo_ + wi);
 
-    if (1.f != base_.metallic_) {
-        result.pdf() *= 0.5f;
+    float const wo_dot_h = clamp_dot(wo_, h);
+
+    auto const coating = coating_.evaluate_f(wi, wo_, h, wo_dot_h, avoid_caustics());
+
+    // TODO we need coating here as well
+    if (1.f == base_.metallic_) {
+        return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
     }
 
-    return result;
-}
+    Layer const& layer = layer_;
 
-void Sample_coating_subsurface::refract(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
-    float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+    float const alpha = alpha_;
 
-    fresnel::Schlick1 const schlick(base_.f0_[0]);
+    float const n_dot_wi = layer.clamp_n_dot(wi);
+    float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
 
-    float2 const xi = sampler.sample_2D(rng);
+    auto const d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, albedo_);
 
-    float const n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, alpha_, ior_, schlick, xi, layer_,
-                                                   result);
+    if (avoid_caustics() && alpha <= ggx::Min_alpha) {
+        if constexpr (Forward) {
+            return {n_dot_wi * d.reflection, d.pdf()};
+        } else {
+            return d;
+        }
+    }
 
-    float const coating_n_dot_wo = coating_.clamp_abs_n_dot(wo_);
+    float const n_dot_h = saturate(layer.n_dot(h));
 
-    // Approximating the full coating attenuation at entrance, for the benefit of SSS,
-    // which will ignore the border later.
-    // This will probably cause problems for shapes intersecting such materials.
-    float3 const attenuation = coating_.attenuation(0.5f, coating_n_dot_wo);
+    fresnel::Schlick const schlick(base_.f0_);
 
-    result.reflection *= n_dot_wi * attenuation;
+    float3 fresnel_result;
+    auto   ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick,
+                                          fresnel_result);
+
+    ggx.reflection *= ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha);
+
+    float const base_pdf = fresnel_result[0] * ggx.pdf();
+
+    float const pdf = coating.f * coating.pdf + (1.f - coating.f) * base_pdf;
+    return {coating.reflection + n_dot_wi * coating.attenuation * ggx.reflection, pdf};
 }
 
 }  // namespace scene::material::substitute

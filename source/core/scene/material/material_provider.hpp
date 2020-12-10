@@ -71,8 +71,6 @@ class Provider final : public resource::Provider<Material> {
 
     Material* load_metal(json::Value const& metal_value, Resources& resources) const;
 
-    Material* load_metallic_paint(json::Value const& paint_value, Resources& resources) const;
-
     Material* load_substitute(json::Value const& substitute_value, Resources& resources) const;
 
     Material* load_volumetric(json::Value const& volumetric_value, Resources& resources) const;

@@ -22,13 +22,13 @@ class Sample_coating : public material::Sample {
     template <bool Forward>
     bxdf::Result evaluate(float3_p wi) const;
 
-    void coating_sample(Sampler& sampler, RNG& rng, Sample& result) const;
+    void coating_reflect(float f, float n_dot_h, Sample& result) const;
 
-    void diffuse_sample(Sampler& sampler, RNG& rng, Sample& result) const;
+    void diffuse_sample(Sampler& sampler, RNG& rng, float f, Sample& result) const;
 
-    void gloss_sample(Sampler& sampler, RNG& rng, Sample& result) const;
+    void gloss_sample(Sampler& sampler, RNG& rng, float f, Sample& result) const;
 
-    void pure_gloss_sample(Sampler& sampler, RNG& rng, Sample& result) const;
+    void pure_gloss_sample(Sampler& sampler, RNG& rng, float f, Sample& result) const;
 
   public:
     Base_closure<Diff> base_;

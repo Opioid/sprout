@@ -193,8 +193,7 @@ bxdf::Result Sample_subsurface::evaluate(float3_p wi) const {
     fresnel::Schlick const schlick(base_.f0_);
 
     float3 fresnel_result;
-
-    auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick,
+    auto   ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick,
                                           fresnel_result);
 
     ggx.reflection *= ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha);

@@ -8,6 +8,7 @@ namespace scene::material::coating {
 struct Result {
     float3 reflection;
     float3 attenuation;
+    float  f;
     float  pdf;
 };
 
@@ -29,8 +30,12 @@ class Clearcoat {
     Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
                       bool avoid_caustics) const;
 
-    void sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& rng, float3& attenuation,
-                bxdf::Sample& result) const;
+    void reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
+                 float wo_dot_h, Layer const& layer, float3& attenuation,
+                 bxdf::Sample& result) const;
+
+    float sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& rng, float& n_dot_h,
+                 bxdf::Sample& result) const;
 
   public:
     float3 absorption_coef_;
@@ -57,8 +62,12 @@ class Thinfilm {
     Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
                       bool avoid_caustics) const;
 
-    void sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& rng, float3& attenuation,
-                bxdf::Sample& result) const;
+    void reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
+                 float wo_dot_h, Layer const& layer, float3& attenuation,
+                 bxdf::Sample& result) const;
+
+    float sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& rng, float& n_dot_h,
+                 bxdf::Sample& result) const;
 
   public:
     float ior_;
@@ -78,8 +87,11 @@ class Coating_layer : public Layer, public Coating {
     Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                       bool avoid_caustics) const;
 
-    void sample(float3_p wo, Sampler& sampler, RNG& rng, float3& attenuation,
-                bxdf::Sample& result) const;
+    void reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
+                 float wo_dot_h, float3& attenuation, bxdf::Sample& result) const;
+
+    float sample(float3_p wo, Sampler& sampler, RNG& rng, float& n_dot_h,
+                 bxdf::Sample& result) const;
 };
 
 using Clearcoat_layer = Coating_layer<Clearcoat>;
