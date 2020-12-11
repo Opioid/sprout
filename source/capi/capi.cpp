@@ -226,6 +226,8 @@ int32_t su_create_defaults() {
     engine->scene.calculate_num_interpolation_frames(camera->frame_step(),
                                                      camera->frame_duration());
 
+    engine->take.view.pipeline.init(*camera, engine->resources.threads());
+
     engine->valid = engine->take.view.valid();
 
     return 0;
