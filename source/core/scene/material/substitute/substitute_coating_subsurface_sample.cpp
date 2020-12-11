@@ -80,9 +80,10 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
                 auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
                                                    albedo_);
 
-                float3 const refl = n_dot_wi * (f * result.reflection + d.reflection);
-                result.reflection = refl * ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_);
-                result.pdf        = f * result.pdf;
+                float3 const reflection = n_dot_wi * (f * result.reflection + d.reflection);
+
+                result.reflection = reflection * ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_);
+                result.pdf *= f;
             } else {
                 float const r_wo_dot_h = -wo_dot_h;
 
