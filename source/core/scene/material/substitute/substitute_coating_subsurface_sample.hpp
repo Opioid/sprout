@@ -10,6 +10,8 @@ namespace scene::material::substitute {
 class Sample_coating_subsurface final
     : public Sample_coating<coating::Clearcoat_layer, disney::Isotropic_no_lambert> {
   public:
+    using Diffuse = disney::Isotropic_no_lambert;
+
     bxdf::Result evaluate_f(float3_p wi) const final;
 
     bxdf::Result evaluate_b(float3_p wi) const final;
@@ -21,8 +23,6 @@ class Sample_coating_subsurface final
   private:
     template <bool Forward>
     bxdf::Result evaluate(float3_p wi) const;
-
-    void refract(Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
     IoR ior_;
 };

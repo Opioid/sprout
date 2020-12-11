@@ -9,7 +9,7 @@
 
 namespace image::texture {
 
-inline Adapter::Adapter() : texture_(0xFFFFFFFF) {}
+inline Adapter::Adapter() : texture_(0xFFFFFFFF), scale_(1.f) {}
 
 inline Adapter::Adapter(uint32_t texture) : texture_(texture), scale_(1.f) {}
 
