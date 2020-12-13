@@ -86,8 +86,6 @@ class Scene {
 
     void clear();
 
-    void finish();
-
     AABB aabb() const;
 
     AABB caustic_aabb() const;

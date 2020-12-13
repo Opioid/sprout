@@ -39,8 +39,6 @@ void Driver::init(take::View& view, Scene& scene, bool progressive) {
 
     scene_ = &scene;
 
-    scene.finish();
-
     Camera const& camera = *view.camera;
 
     tiles_.init(camera.crop(), 32, camera.sensor().filter_radius_int());

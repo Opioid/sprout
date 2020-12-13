@@ -94,10 +94,6 @@ void Scene::clear() {
     extensions_.clear();
 }
 
-void Scene::finish() {
-    light_temp_powers_.resize(uint32_t(lights_.size()));
-}
-
 AABB Scene::aabb() const {
     return prop_bvh_.aabb();
 }
@@ -221,6 +217,8 @@ void Scene::compile(uint64_t time, Threads& threads) {
     volume_bvh_.set_props(infinite_volumes_, props_);
 
     // re-sort lights PDF
+    light_temp_powers_.resize(uint32_t(lights_.size()));
+
     for (uint32_t i = 0; auto& l : lights_) {
         l.prepare_sampling(i, time, *this, threads);
         light_temp_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
