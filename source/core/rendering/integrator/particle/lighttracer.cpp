@@ -189,6 +189,10 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
 bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                                      Light const*& light_out, uint32_t& light_id,
                                      Sample_from& light_sample) {
+    if (0 == worker.scene().num_lights()) {
+        return false;
+    }
+
     auto& rng = worker.rng();
 
     float const select = light_sampler_.sample_1D(rng, 1);

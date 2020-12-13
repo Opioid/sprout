@@ -52,8 +52,6 @@ static inline float3 volume_power(uint32_t prop, uint32_t part, float volume, Sc
 
 float3 Light::power(AABB const& scene_bb, Scene const& scene) const {
     switch (type_) {
-        case Type::Null:
-            return float3(0.f);
         case Type::Prop:
             return prop_power(prop_, part_, extent_, scene_bb, scene);
         case Type::Prop_image:
@@ -70,8 +68,6 @@ float3 Light::power(AABB const& scene_bb, Scene const& scene) const {
 void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
                              Threads& threads) const {
     switch (type_) {
-        case Type::Null:
-            break;
         case Type::Prop:
             scene.prop_prepare_sampling(prop_, part_, light_id, time, false, false, threads);
             break;
@@ -169,8 +165,6 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
 bool Light::sample(float3_p p, float3_p n, Transformation const& trafo, bool total_sphere,
                    Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const {
     switch (type_) {
-        case Type::Null:
-            return false;
         case Type::Prop:
             return prop_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler, sampler_d,
                                worker, result);
@@ -189,10 +183,6 @@ bool Light::sample(float3_p p, float3_p n, Transformation const& trafo, bool tot
 }
 
 float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const {
-    if (Type::Null == type_) {
-        return float3(0.f);
-    }
-
     auto const material = worker.scene().prop_material(prop_, part_);
 
     return material->evaluate_radiance(sample.wi, sample.uvw, extent_, filter, worker);
@@ -250,8 +240,6 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
 bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
                    AABB const& bounds, Worker& worker, Sample_from& result) const {
     switch (type_) {
-        case Type::Null:
-            return false;
         case Type::Prop:
             return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, bounds, worker,
                                result);
@@ -335,8 +323,6 @@ bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampl
                    Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                    Sample_from& result) const {
     switch (type_) {
-        case Type::Null:
-            return false;
         case Type::Prop:
             return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, importance, bounds,
                                worker, result);
@@ -353,10 +339,6 @@ bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampl
 }
 
 float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const {
-    if (Type::Null == type_) {
-        return float3(0.f);
-    }
-
     auto const material = worker.scene().prop_material(prop_, part_);
 
     return material->evaluate_radiance(-sample.dir, float3(sample.uv, 0.f), extent_, filter,
@@ -444,8 +426,6 @@ float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool tota
     auto const&    trafo = transformation_at(ray.time, temp, worker.scene());
 
     switch (type_) {
-        case Type::Null:
-            return 0.f;
         case Type::Prop:
             return prop_pdf(prop_, part_, extent_, ray, n, isec, trafo, total_sphere, worker);
         case Type::Prop_image:

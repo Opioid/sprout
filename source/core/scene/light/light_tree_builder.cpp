@@ -403,13 +403,15 @@ Tree_builder::~Tree_builder() {
 }
 
 void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
-    tree.allocate_light_mapping(scene.num_lights());
+    uint32_t const num_lights = scene.num_lights();
+
+    tree.allocate_light_mapping(num_lights);
 
     light_order_ = 0;
 
     uint32_t lm = 0;
 
-    for (uint32_t l = 0, len = scene.num_lights(); l < len; ++l) {
+    for (uint32_t l = 0; l < num_lights; ++l) {
         if (!scene.light(l).is_finite(scene)) {
             tree.light_mapping_[lm++] = l;
         }
@@ -417,7 +419,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
 
     uint32_t const num_infinite_lights = lm;
 
-    for (uint32_t l = 0, len = scene.num_lights(); l < len; ++l) {
+    for (uint32_t l = 0; l < num_lights; ++l) {
         if (scene.light(l).is_finite(scene)) {
             tree.light_mapping_[lm++] = l;
         }
@@ -443,7 +445,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
 
     tree.infinite_light_distribution_.init(tree.infinite_light_powers_, num_infinite_lights);
 
-    uint32_t const num_finite_lights = scene.num_lights() - num_infinite_lights;
+    uint32_t const num_finite_lights = num_lights - num_infinite_lights;
 
     uint32_t infinite_depth_bias = 0;
 
@@ -493,12 +495,13 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
     float const p1 = 0 == num_finite_lights ? 0.f : build_nodes_[0].power;
     float const pt = p0 + p1;
 
-    float const infinite_weight = p0 / pt;
+    float const infinite_weight = 0 == num_lights ? 0.f : p0 / pt;
 
     tree.infinite_weight_ = infinite_weight;
 
     // This is because I'm afraid of the 1.f == random case
-    tree.infinite_guard_ = 0 == num_finite_lights ? 1.1f : infinite_weight;
+    tree.infinite_guard_ = 0 == num_finite_lights ? (0 == num_infinite_lights ? 0.f : 1.1f)
+                                                  : infinite_weight;
 }
 
 void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& threads) {

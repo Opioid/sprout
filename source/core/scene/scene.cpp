@@ -95,11 +95,6 @@ void Scene::clear() {
 }
 
 void Scene::finish() {
-    if (lights_.empty()) {
-        uint32_t const dummy = create_entity();
-        allocate_light(light::Light::Type::Null, dummy, 0);
-    }
-
     light_temp_powers_.resize(uint32_t(lights_.size()));
 }
 

@@ -677,7 +677,7 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
         struct Parameters {
             image::Float4 const& source;
 
-            byte3* target;
+            byte3* const target;
 
             int32_t source_width;
             int32_t target_width;
@@ -690,7 +690,7 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
             [&parameters](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
                 image::Float4 const& source = parameters.source;
 
-                byte3* target = parameters.target;
+                byte3* const target = parameters.target;
 
                 int32_t const source_width = parameters.source_width;
 
@@ -712,9 +712,9 @@ int32_t su_copy_framebuffer(uint32_t type, uint32_t width, uint32_t height, uint
     if (SU_FLOAT32 == type && 4 == num_channels) {
         uint32_t const len = std::min(width * height, uint32_t(d[0] * d[1]));
 
-        float const* raw = reinterpret_cast<float const*>(buffer.data());
+        float const* const raw = reinterpret_cast<float const*>(buffer.data());
 
-        float* target = reinterpret_cast<float*>(destination);
+        float* const target = reinterpret_cast<float*>(destination);
 
         std::copy(raw, raw + 4 * len, target);
     }
