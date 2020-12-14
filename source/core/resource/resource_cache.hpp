@@ -60,8 +60,9 @@ class Typed_cache final : public Cache {
     Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources,
                          std::string& resolved_name);
 
-    Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
-                         Variants const& options, Manager& resources);
+    Resource_ptr<T> load(std::string const& name, void const* const data,
+                         std::string const& source_name, Variants const& options,
+                         Manager& resources);
 
     Resource_ptr<T> get(std::string const& name, Variants const& options);
 
