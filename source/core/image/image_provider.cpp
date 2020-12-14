@@ -178,4 +178,8 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
     return image;
 }
 
+void Provider::increment_generation() {
+    previous_name_.clear();
+}
+
 }  // namespace image

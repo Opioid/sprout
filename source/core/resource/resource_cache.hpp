@@ -52,7 +52,7 @@ class Typed_cache final : public Cache {
     Resource_ptr<T> load(std::string const& name, void const* data, std::string const& source_name,
                          Variants const& options, Manager& resources);
 
-    Resource_ptr<T> get(std::string const& filename, Variants const& options);
+    Resource_ptr<T> get(std::string const& name, Variants const& options);
 
     T* get(uint32_t id) const;
 

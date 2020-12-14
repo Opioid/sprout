@@ -101,8 +101,8 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const& options) {
-    auto const key = std::make_pair(filename, options);
+Resource_ptr<T> Typed_cache<T>::get(std::string const& name, Variants const& options) {
+    auto const key = std::make_pair(name, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
         auto& entry = cached->second;

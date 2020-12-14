@@ -79,10 +79,10 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
 
     uint32_t const decoded = decode_name(filename);
 
+    bool const is_id = resource::Null != decoded;
+
     uint32_t const image_id =
-        resource::Null != decoded
-            ? decoded
-            : resources.load<Image>(filename, image_options, resolved_name).id;
+        is_id ? decoded : resources.load<Image>(filename, image_options, resolved_name).id;
 
     auto const image = resources.get<Image>(image_id);
 
