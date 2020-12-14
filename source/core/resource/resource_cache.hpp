@@ -30,6 +30,17 @@ class Cache {
     void increment_generation();
 
   protected:
+    struct Entry {
+        uint32_t id;
+        uint32_t generation;
+
+        std::string source_name;
+
+        std::filesystem::file_time_type last_write;
+    };
+
+    bool check_up_to_date(Entry& entry) const;
+
     uint32_t generation_;
 };
 
@@ -61,21 +72,9 @@ class Typed_cache final : public Cache {
     uint32_t store(std::string const& name, Variants const& options, T* resource);
 
   private:
-    struct Entry {
-        uint32_t id;
-
-        uint32_t generation;
-
-        std::string source_name;
-
-        std::filesystem::file_time_type last_write;
-    };
-
-    bool check_up_to_date(Entry& entry) const;
-
     Provider<T>& provider_;
 
-    using Key = std::pair<std::string, memory::Variant_map>;
+    using Key = std::pair<std::string, Variants>;
 
     std::vector<T*> resources_;
 

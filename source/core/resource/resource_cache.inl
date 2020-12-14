@@ -149,19 +149,6 @@ uint32_t Typed_cache<T>::store(std::string const& name, Variants const& options,
     return id;
 }
 
-template <typename T>
-bool Typed_cache<T>::check_up_to_date(Entry& entry) const {
-    if (entry.generation == generation_ || entry.source_name.empty()) {
-        return true;
-    }
-
-    if (std::filesystem::last_write_time(entry.source_name) == entry.last_write) {
-        entry.generation = generation_;
-        return true;
-    }
-
-    return false;
-}
 
 }  // namespace resource
 
