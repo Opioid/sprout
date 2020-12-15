@@ -1,7 +1,6 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
-#include "base/math/vector3.hpp"
 #include "texture_byte1_unorm.hpp"
 #include "texture_byte2_snorm.hpp"
 #include "texture_byte2_unorm.hpp"
@@ -16,7 +15,7 @@
 
 namespace image::texture {
 
-class Texture {
+class alignas(16) Texture {
   public:
     static char const* identifier();
 
@@ -36,8 +35,6 @@ class Texture {
     int32_t num_channels() const;
 
     int32_t num_elements() const;
-
-    int32_t volume() const;
 
     int3_p dimensions() const;
 
@@ -85,8 +82,6 @@ class Texture {
         Float2,
         Float3,
     };
-
-    int3 const dimensions_;
 
     Type const type_;
 

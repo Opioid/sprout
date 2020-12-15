@@ -5,7 +5,7 @@
 
 namespace image {
 
-class alignas(64) Image {
+class Image {
   public:
     enum class Type {
         Byte1,

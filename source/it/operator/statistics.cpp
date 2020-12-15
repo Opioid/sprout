@@ -106,14 +106,14 @@ uint32_t statistics(std::vector<Item> const& items, it::options::Options const& 
 }
 
 Luminance average_and_max_luminance(Texture const* image) {
-    int32_t const len = image->volume();
+    auto const d = image->dimensions();
+
+    int32_t const len = d[0] * d[1] * d[2];
 
     float const ilen = 1.f / float(len);
 
     float average = 0.f;
     float max     = 0.f;
-
-    auto const d = image->dimensions();
 
     for (int32_t z = 0; z < d[2]; ++z) {
         for (int32_t y = 0; y < d[1]; ++y) {
@@ -160,7 +160,9 @@ void write_histogram(Item const& item, std::ostream& stream) {
 
     static uint32_t Num_rows = 16;
 
-    float const nl = hist_max / float(image->volume());
+    int32_t const len = d[0] * d[1] * d[2];
+
+    float const nl = hist_max / float(len);
 
     stream << std::setprecision(1);
 

@@ -9,7 +9,11 @@ class Float3 {
   public:
     Float3(image::Float3 const& image);
 
-    image::Float3 const& image() const;
+    Description const& description() const;
+
+    int3 dimensions() const {
+        return dimensions_;
+    }
 
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
@@ -33,7 +37,11 @@ class Float3 {
     void gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const;
 
   private:
-    image::Float3 const& image_;
+    Description const& description_;
+
+    packed_float3 const* data_;
+
+    int3 const dimensions_;
 };
 
 }  // namespace image::texture

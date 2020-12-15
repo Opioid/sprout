@@ -9,7 +9,11 @@ class Byte1_unorm {
   public:
     Byte1_unorm(Byte1 const& image);
 
-    Byte1 const& image() const;
+    Description const& description() const;
+
+    int3 dimensions() const {
+        return dimensions_;
+    }
 
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
@@ -33,7 +37,11 @@ class Byte1_unorm {
     void gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const;
 
   private:
-    Byte1 const& image_;
+    Description const& description_;
+
+    uint8_t const* data_;
+
+    int3 const dimensions_;
 };
 
 }  // namespace image::texture
