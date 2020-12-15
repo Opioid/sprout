@@ -14,10 +14,6 @@ struct Description {
 
     int3_p dimensions() const;
 
-    int32_t area() const;
-
-    int32_t volume() const;
-
     int32_t num_elements() const;
 
     int3 offset() const;

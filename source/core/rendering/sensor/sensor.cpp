@@ -25,7 +25,7 @@ bool Sensor::alpha_transparency() const {
 void Sensor::resolve(Threads& threads, image::Float4& target) const {
     threads.run_range([this, &target](uint32_t /*id*/, int32_t begin,
                                       int32_t end) noexcept { resolve(begin, end, target); },
-                      0, target.description().area());
+                      0, int32_t(target.description().num_pixels()));
 }
 
 void Sensor::resolve_accumulate(Threads& threads, image::Float4& target) const {
@@ -33,7 +33,7 @@ void Sensor::resolve_accumulate(Threads& threads, image::Float4& target) const {
         [this, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             resolve_accumulate(begin, end, target);
         },
-        0, target.description().area());
+        0, int32_t(target.description().num_pixels()));
 }
 
 void Sensor::resolve(uint32_t slot, AOV property, Threads& threads, image::Float4& target) const {
@@ -41,7 +41,7 @@ void Sensor::resolve(uint32_t slot, AOV property, Threads& threads, image::Float
         [this, slot, property, &target](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             resolve(begin, end, slot, property, target);
         },
-        0, target.description().area());
+        0, int32_t(target.description().num_pixels()));
 }
 
 void Sensor::resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& aovs) {

@@ -22,13 +22,13 @@ void Tonemapper::pre_apply(image::Float4 const& source, image::Float4& /*destina
         return;
     }
 
-    int32_t const num_pixels = source.description().area();
+    int32_t const num_pixels = int32_t(source.description().num_pixels());
 
     memory::Buffer<float> luminances(threads.num_threads());
 
     threads.run_range(
         [&source, &luminances](uint32_t id, int32_t begin, int32_t end) {
-            float const iaf = 1.f / float(source.description().area());
+            float const iaf = 1.f / float(source.description().num_pixels());
 
             float average = 0.f;
 

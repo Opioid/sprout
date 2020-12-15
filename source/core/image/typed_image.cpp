@@ -22,14 +22,6 @@ int3 Description::dimensions() const {
     return dimensions_;
 }
 
-int32_t Description::area() const {
-    return dimensions_[0] * dimensions_[1];
-}
-
-int32_t Description::volume() const {
-    return dimensions_[0] * dimensions_[1] * dimensions_[2];
-}
-
 int32_t Description::num_elements() const {
     return num_elements_;
 }

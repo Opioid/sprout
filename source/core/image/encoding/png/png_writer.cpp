@@ -197,7 +197,7 @@ void Writer::to_depth(Float4 const& image) {
     float min = std::numeric_limits<float>::max();
     float max = 0.f;
 
-    for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
+    for (int32_t i = 0, len = int32_t(image.description().num_pixels()); i < len; ++i) {
         float const depth = image.at(i)[0];
 
         bool const valid = depth < std::numeric_limits<float>::max();
@@ -210,7 +210,7 @@ void Writer::to_depth(Float4 const& image) {
 
     uint8_t* byte = reinterpret_cast<uint8_t*>(buffer_);
 
-    for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
+    for (int32_t i = 0, len = uint32_t(image.description().num_pixels()); i < len; ++i) {
         float const depth = image.at(i)[0];
 
         bool const valid = depth < std::numeric_limits<float>::max();
