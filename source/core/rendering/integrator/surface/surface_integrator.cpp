@@ -38,7 +38,7 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
     }
 
     if (aov.active(Property::Material_id)) {
-        aov.insert(float3(float(worker.scene().prop_material_id(isec.prop, isec.geo.part)) / 255.f),
+        aov.insert(float3(float(worker.scene().prop_material_id(isec.prop, isec.geo.part))),
                    Property::Material_id);
     }
 

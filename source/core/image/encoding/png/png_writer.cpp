@@ -5,6 +5,7 @@
 #include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "core/scene/scene_constants.hpp"
 #include "image/channels.hpp"
 #include "image/typed_image.hpp"
 #include "miniz/miniz.h"
@@ -76,6 +77,10 @@ bool Writer::write(std::ostream& stream, Float4 const& image, Layout layout, Thr
         threads.run_range([this, num_channels = layout.num_channels, &image](
                               uint32_t /*id*/, int32_t begin,
                               int32_t end) noexcept { to_unorm(image, num_channels, begin, end); },
+                          0, d[1]);
+    } else if (Encoding::UInt == encoding) {
+        threads.run_range([this, &image](uint32_t /*id*/, int32_t begin,
+                                         int32_t end) noexcept { to_uint(image, begin, end); },
                           0, d[1]);
     } else if (Encoding::Depth == encoding) {
         to_depth(image);
@@ -200,7 +205,7 @@ void Writer::to_depth(Float4 const& image) {
     for (int32_t i = 0, len = int32_t(image.description().num_pixels()); i < len; ++i) {
         float const depth = image.at(i)[0];
 
-        bool const valid = depth < std::numeric_limits<float>::max();
+        bool const valid = depth < scene::Almost_ray_max_t;
 
         min = valid ? std::min(depth, min) : min;
         max = valid ? std::max(depth, max) : max;
@@ -213,7 +218,7 @@ void Writer::to_depth(Float4 const& image) {
     for (int32_t i = 0, len = uint32_t(image.description().num_pixels()); i < len; ++i) {
         float const depth = image.at(i)[0];
 
-        bool const valid = depth < std::numeric_limits<float>::max();
+        bool const valid = depth < scene::Almost_ray_max_t;
 
         float const norm = valid ? (1.f - std::max(depth - min, 0.f) / range) : 0.f;
 
