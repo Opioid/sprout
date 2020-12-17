@@ -18,6 +18,8 @@ image::Layout layout(Property property) {
             return {Encoding::UInt, 1};
         case Property::Depth:
             return {Encoding::Depth, 1};
+        case Property::AO:
+            return {Encoding::UNorm, 1};
     }
 }
 

@@ -15,6 +15,7 @@ enum class Property {
     Shading_normal,
     Material_id,
     Depth,
+    AO,
     Unknown
 };
 
