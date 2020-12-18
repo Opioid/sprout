@@ -19,16 +19,28 @@ class Sampler {
 
     virtual ~Sampler();
 
-    void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
+    virtual void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
+                        uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
 
-    void start_pixel(RNG& rng);
+    virtual void start_pixel(RNG& rng);
 
     Camera_sample camera_sample(RNG& rng, int2 pixel);
 
     virtual float2 sample_2D(RNG& rng, uint32_t dimension = 0) = 0;
 
     virtual float sample_1D(RNG& rng, uint32_t dimension = 0) = 0;
+};
+
+class Buffered : public Sampler {
+  public:
+    Buffered();
+
+    ~Buffered() override;
+
+    void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
+                uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) final;
+
+    void start_pixel(RNG& rng) final;
 
   protected:
     virtual void on_resize() = 0;

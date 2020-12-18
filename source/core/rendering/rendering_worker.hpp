@@ -115,13 +115,13 @@ class alignas(64) Worker : public scene::Worker {
 
     sampler::Sampler* sampler_ = nullptr;
 
+    AOV* aov_ = nullptr;
+
     Photon_mapper* photon_mapper_ = nullptr;
 
     Photon_map* photon_map_ = nullptr;
 
     integrator::particle::Lighttracer* lighttracer_ = nullptr;
-
-    AOV* aov_ = nullptr;
 
     Particle_importance* particle_importance_ = nullptr;
 };

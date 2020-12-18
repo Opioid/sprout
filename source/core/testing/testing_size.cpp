@@ -81,8 +81,8 @@ void size() {
 
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
-    print_size<sampler::Sampler>("Sampler", 32);
-    print_size<sampler::Random>("Random", 32);
+    print_size<sampler::Sampler>("Sampler", 8);
+    print_size<sampler::Random>("Random", 8);
     print_size<sampler::Golden_ratio>("Golden_ratio", 64);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
@@ -150,11 +150,11 @@ void size() {
 
     print_size<scene::shape::Node_stack>("scene::shape::Node_stack", 512);
 
-    print_size<scene::Worker>("scene::Worker", 1088);
-    print_size<rendering::Worker>("rendering::Worker", 1152);
+    print_size<scene::Worker>("scene::Worker", 960);
+    print_size<rendering::Worker>("rendering::Worker", 1024);
 
     print_size<rendering::integrator::surface::Whitted>("Whitted", 64);
-    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 192);
+    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 128);
 }
 
 }  // namespace testing

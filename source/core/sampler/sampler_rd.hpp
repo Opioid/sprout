@@ -5,7 +5,7 @@
 
 namespace sampler {
 
-class alignas(64) RD final : public Sampler {
+class alignas(64) RD final : public Buffered {
   public:
     RD();
 
