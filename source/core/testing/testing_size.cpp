@@ -82,6 +82,7 @@ void size() {
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
     print_size<sampler::Sampler>("Sampler", 32);
+    print_size<sampler::Random>("Random", 32);
     print_size<sampler::Golden_ratio>("Golden_ratio", 64);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
