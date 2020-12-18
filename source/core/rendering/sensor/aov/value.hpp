@@ -58,7 +58,7 @@ class Value_pool {
 
     ~Value_pool();
 
-    void configure(uint32_t num_slots, Property const* properties);
+    void configure(uint32_t num_slots, Descriptor const* descriptors);
 
     void init(uint32_t num_values);
 
@@ -75,7 +75,7 @@ class Value_pool {
 
     uint8_t num_slots_;
 
-    Property* properties_;
+    Descriptor* descriptors_;
 
     Value* values_;
 };

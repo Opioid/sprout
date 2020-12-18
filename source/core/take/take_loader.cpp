@@ -1004,41 +1004,43 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs) {
     using namespace rendering::sensor::aov;
 
-    std::vector<Property> properties;
+    std::vector<Descriptor> descriptors;
 
     for (auto& n : value.GetObject()) {
         if ("Albedo" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Albedo);
+                descriptors.push_back({Property::Albedo, 0.f});
             }
         } else if ("Roughness" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Roughness);
+                descriptors.push_back({Property::Roughness, 0.f});
             }
         } else if ("Geometric_normal" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Geometric_normal);
+                descriptors.push_back({Property::Geometric_normal, 0.f});
             }
         } else if ("Shading_normal" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Shading_normal);
+                descriptors.push_back({Property::Shading_normal, 0.f});
             }
         } else if ("Material_id" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Material_id);
+                descriptors.push_back({Property::Material_id, 0.f});
             }
         } else if ("Depth" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Depth);
+                descriptors.push_back({Property::Depth, 0.f});
             }
         } else if ("AO" == n.name) {
-            if (json::read_bool(n.value)) {
-                properties.push_back(Property::AO);
+            if (n.value.IsObject()) {
+
+            } else if (json::read_bool(n.value)) {
+                descriptors.push_back({Property::AO, 1.f});
             }
         }
     }
 
-    aovs.configure(uint32_t(properties.size()), properties.data());
+    aovs.configure(uint32_t(descriptors.size()), descriptors.data());
 }
 
 }  // namespace take

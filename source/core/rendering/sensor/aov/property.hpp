@@ -19,6 +19,12 @@ enum class Property {
     Unknown
 };
 
+struct Descriptor {
+    Property property;
+
+    float fparam;
+};
+
 enum class Operation : uint8_t { Accumulate = 0, Overwrite, Less };
 
 image::Layout layout(Property property);

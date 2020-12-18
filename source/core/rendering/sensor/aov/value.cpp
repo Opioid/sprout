@@ -33,34 +33,32 @@ void Value::clear() {
     }
 }
 
-Value_pool::Value_pool() : num_slots_(0), properties_(nullptr), values_(nullptr) {}
+Value_pool::Value_pool() : num_slots_(0), descriptors_(nullptr), values_(nullptr) {}
 
 Value_pool::~Value_pool() {
-    delete[] properties_;
+    delete[] descriptors_;
     delete[] values_;
 }
 
-void Value_pool::configure(uint32_t num_slots, Property const* properties) {
+void Value_pool::configure(uint32_t num_slots, Descriptor const* descriptors) {
     if (0 == num_slots) {
         return;
     }
 
     num_slots_ = uint8_t(num_slots);
 
-    properties_ = new Property[num_slots];
-
-    for (uint32_t i = 0; i < num_slots; ++i) {
-        properties_[i] = properties[i];
-    }
+    descriptors_ = new Descriptor[num_slots];
 
     for (uint32_t i = 0; i < Value::Max_slots; ++i) {
         mapping_.m[i] = 255;
     }
 
     for (uint32_t i = 0; i < num_slots; ++i) {
-        auto const p = properties[i];
+        auto const& desc = descriptors[i];
 
-        mapping_.m[uint32_t(p)] = uint8_t(i);
+        descriptors_[i] = desc;
+
+        mapping_.m[uint32_t(desc.property)] = uint8_t(i);
     }
 }
 
@@ -85,7 +83,7 @@ uint32_t Value_pool::num_slots() const {
 }
 
 Property Value_pool::property(uint32_t slot) const {
-    return properties_[slot];
+    return descriptors_[slot].property;
 }
 
 Value* Value_pool::get(uint32_t id) const {
