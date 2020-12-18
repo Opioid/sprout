@@ -65,7 +65,7 @@ void Sensor::clear(float weight, aov::Value_pool const& aovs) {
     aov_.clear(aovs);
 }
 
-void Sensor::add_AOV(int2 pixel, uint32_t slot, float3_p value, float weight) {
+void Sensor::add_AOV(int2 pixel, uint32_t slot, float4_p value, float weight) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
@@ -73,7 +73,7 @@ void Sensor::add_AOV(int2 pixel, uint32_t slot, float3_p value, float weight) {
     aov_.add_pixel(id, slot, value, weight);
 }
 
-void Sensor::add_AOV_atomic(int2 pixel, uint32_t slot, float3_p value, float weight) {
+void Sensor::add_AOV_atomic(int2 pixel, uint32_t slot, float4_p value, float weight) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
@@ -81,7 +81,7 @@ void Sensor::add_AOV_atomic(int2 pixel, uint32_t slot, float3_p value, float wei
     aov_.add_pixel_atomic(id, slot, value, weight);
 }
 
-void Sensor::overwrite_AOV(int2 pixel, uint32_t slot, float3_p value) {
+void Sensor::overwrite_AOV(int2 pixel, uint32_t slot, float4_p value) {
     auto const d = dimensions();
 
     int32_t const id = d[0] * pixel[1] + pixel[0];
@@ -96,7 +96,7 @@ void Sensor::less_AOV(int2 pixel, uint32_t slot, float value) {
 
     float const current = aov_.value(id, slot)[0];
 
-    aov_.overwrite_pixel(id, slot, float3(std::min(value, current)));
+    aov_.overwrite_pixel(id, slot, float4(std::min(value, current)));
 }
 
 }  // namespace rendering::sensor

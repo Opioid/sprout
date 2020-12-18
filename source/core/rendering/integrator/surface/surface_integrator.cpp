@@ -29,7 +29,7 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
     if (aov.active(Property::Roughness)) {
         float const a = mat_sample.alpha();
         float const r = std::sqrt(a);
-        aov.insert(float3(r), Property::Roughness);
+        aov.insert(r, Property::Roughness);
     }
 
     if (aov.active(Property::Geometric_normal)) {

@@ -31,7 +31,7 @@ void Buffer::resize(int2 dimensions, Value_pool const& aovs) {
 
         buffer_len_ = 0;
 
-        buffers_ = new float3* [buffers_len] { nullptr };
+        buffers_ = new float4* [buffers_len] { nullptr };
 
         buffers_len_ = buffers_len;
     }
@@ -40,7 +40,7 @@ void Buffer::resize(int2 dimensions, Value_pool const& aovs) {
         for (uint32_t i = 0, len = buffers_len_; i < len; ++i) {
             delete[] buffers_[i];
 
-            buffers_[i] = new float3[buffer_len];
+            buffers_[i] = new float4[buffer_len];
         }
 
         buffer_len_ = buffer_len;
@@ -53,19 +53,19 @@ void Buffer::clear(Value_pool const& aovs) {
 
         float const iv = initial_value(op);
 
-        float3* buffer = buffers_[i];
+        float4* buffer = buffers_[i];
         for (uint32_t j = 0, jlen = buffer_len_; j < jlen; ++j) {
-            buffer[j] = float3(iv);
+            buffer[j] = float4(iv);
         }
     }
 }
 
-void Buffer::add_pixel(int32_t id, uint32_t slot, float3_p value, float weight) {
+void Buffer::add_pixel(int32_t id, uint32_t slot, float4_p value, float weight) {
     buffers_[slot][id] += weight * value;
 }
 
-void Buffer::add_pixel_atomic(int32_t id, uint32_t slot, float3_p value, float weight) {
-    float3* buffer = buffers_[slot];
+void Buffer::add_pixel_atomic(int32_t id, uint32_t slot, float4_p value, float weight) {
+    float4* buffer = buffers_[slot];
 
     auto& target = buffer[id];
     atomic::add_assign(target[0], weight * value[0]);
@@ -73,11 +73,11 @@ void Buffer::add_pixel_atomic(int32_t id, uint32_t slot, float3_p value, float w
     atomic::add_assign(target[2], weight * value[2]);
 }
 
-void Buffer::overwrite_pixel(int32_t id, uint32_t slot, float3_p value) {
+void Buffer::overwrite_pixel(int32_t id, uint32_t slot, float4_p value) {
     buffers_[slot][id] = value;
 }
 
-float3 Buffer::value(int32_t id, uint32_t slot) const {
+float4 Buffer::value(int32_t id, uint32_t slot) const {
     return buffers_[slot][id];
 }
 
