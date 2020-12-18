@@ -29,9 +29,7 @@ void Value::clear() {
     for (uint32_t i = 0, len = uint32_t(num_slots_); i < len; ++i) {
         float const iv = initial_value(slots_[i].operation);
 
-        slots_[i].v[0] = iv;
-        slots_[i].v[1] = iv;
-        slots_[i].v[2] = iv;
+        slots_[i].v = float4(iv);
     }
 }
 
