@@ -38,10 +38,6 @@ void Sampler::start_pixel(RNG& rng) {
     on_start_pixel(rng);
 }
 
-uint32_t Sampler::num_samples() const {
-    return num_samples_;
-}
-
 Camera_sample Sampler::camera_sample(RNG& rng, int2 pixel) {
     float2 const image_sample = sample_2D(rng, 0);
     float2 const lens_sample  = sample_2D(rng, 1);

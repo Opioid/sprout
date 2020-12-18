@@ -24,8 +24,6 @@ class Sampler {
 
     void start_pixel(RNG& rng);
 
-    uint32_t num_samples() const;
-
     Camera_sample camera_sample(RNG& rng, int2 pixel);
 
     virtual float2 sample_2D(RNG& rng, uint32_t dimension = 0) = 0;
