@@ -55,7 +55,7 @@ class Worker;
 
 namespace integrator {
 
-enum class Light_sampling { Single, Adaptive, All };
+enum class Light_sampling : uint8_t { Single, Adaptive, All };
 
 class Integrator {
   public:
