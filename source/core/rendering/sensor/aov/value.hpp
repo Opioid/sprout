@@ -18,7 +18,7 @@ class Value {
         uint8_t m[Max_slots];
     };
 
-    void init(Mapping mapping, uint32_t num_slots);
+    void init(Mapping mapping, uint32_t num_slots, Descriptor const* descriptors);
 
     uint32_t num_slots() const;
 
@@ -35,6 +35,8 @@ class Value {
     float4 value(uint32_t id) const;
 
     Operation operation(uint32_t id) const;
+
+    float param(Property aov) const;
 
   private:
     Mapping mapping_;

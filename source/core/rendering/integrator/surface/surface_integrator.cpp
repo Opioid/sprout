@@ -52,14 +52,9 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
     if (aov.active(Property::AO)) {
         Ray occlusion_ray;
         occlusion_ray.origin  = mat_sample.offset_p(isec.geo.p, false, false);
-        occlusion_ray.max_t() = 1.f;  // settings_.radius;
+        occlusion_ray.max_t() = aov.param(Property::AO);
         occlusion_ray.time    = ray.time;
 
-        float const num_samples_reciprocal = 1.f / float(1.f);
-
-        float result = 0.f;
-
-        //    for (uint32_t i = settings_.num_samples; i > 0; --i) {
         float2 const sample = float2(worker.rng().random_float(), worker.rng().random_float());
         //    float2 const sample = sampler_->sample_2D(worker.rng());
 
@@ -71,10 +66,7 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
 
         occlusion_ray.set_direction(ws);
 
-        if (auto const v = worker.visibility(occlusion_ray, Filter::Undefined); v.valid) {
-            result += num_samples_reciprocal;
-        }
-        //    }
+        float const result = worker.visibility(occlusion_ray, Filter::Undefined).valid ? 1.f : 0.f;
 
         aov.insert(result, Property::AO);
     }

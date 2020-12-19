@@ -52,6 +52,16 @@ inline Operation Value::operation(uint32_t id) const {
     return slots_[id].operation;
 }
 
+inline float Value::param(Property aov) const {
+    uint32_t const id = mapping_.m[uint32_t(aov)];
+
+    if (255 == id) {
+        return 0.f;
+    }
+
+    return slots_[id].fparam;
+}
+
 }  // namespace rendering::sensor::aov
 
 #endif

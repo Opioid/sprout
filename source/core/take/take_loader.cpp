@@ -1033,7 +1033,8 @@ void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aov
             }
         } else if ("AO" == n.name) {
             if (n.value.IsObject()) {
-
+                float const radius = json::read_float(n.value, "radius", 1.f);
+                descriptors.push_back({Property::AO, radius});
             } else if (json::read_bool(n.value)) {
                 descriptors.push_back({Property::AO, 1.f});
             }

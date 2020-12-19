@@ -9,7 +9,7 @@ Value::~Value() {
     delete[] slots_;
 }
 
-void Value::init(Mapping mapping, uint32_t num_slots) {
+void Value::init(Mapping mapping, uint32_t num_slots, Descriptor const* descriptors) {
     mapping_ = mapping;
 
     num_slots_ = uint8_t(num_slots);
@@ -17,10 +17,13 @@ void Value::init(Mapping mapping, uint32_t num_slots) {
     slots_ = new Slot[num_slots];
 
     for (uint32_t i = 0; i < Max_slots; ++i) {
-        uint8_t const slot = mapping.m[i];
+        uint8_t const s = mapping.m[i];
 
-        if (slot != 255) {
-            slots_[slot].operation = aov::operation(Property(i));
+        if (s != 255) {
+            Slot& slot = slots_[s];
+
+            slot.operation = aov::operation(Property(i));
+            slot.fparam    = descriptors[s].fparam;
         }
     }
 }
@@ -70,7 +73,7 @@ void Value_pool::init(uint32_t num_values) {
     values_ = new Value[num_values];
 
     for (uint32_t i = 0; i < num_values; ++i) {
-        values_[i].init(mapping_, num_slots_);
+        values_[i].init(mapping_, num_slots_, descriptors_);
     }
 }
 
