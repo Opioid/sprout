@@ -22,7 +22,7 @@ Debug::Debug(Settings const& settings) : settings_(settings) {
 }
 
 void Debug::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+    sampler_.resize(num_samples_per_pixel, 1, 1);
 }
 
 void Debug::start_pixel(rnd::Generator& /*rng*/) {}

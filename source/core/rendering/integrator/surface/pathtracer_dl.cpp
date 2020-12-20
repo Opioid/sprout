@@ -52,10 +52,10 @@ Pathtracer_DL::~Pathtracer_DL() {
 }
 
 void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+    sampler_.resize(num_samples_per_pixel, 1, 1);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 1, 2, 1);
+        s->resize(num_samples_per_pixel, 2, 1);
     }
 
     uint32_t const num_lights = scene.num_lights();
@@ -67,7 +67,7 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
     uint32_t const nd1 = max_lights + 1;
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, 1, nd2, nd1);
+        s->resize(num_samples_per_pixel, nd2, nd1);
     }
 
     lights_.reserve(max_lights);

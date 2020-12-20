@@ -30,7 +30,9 @@ AO::~AO() {
 }
 
 void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_->resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
+    uint32_t const num_samples = num_samples_per_pixel * settings_.num_samples;
+
+    sampler_->resize(num_samples, 1, 1);
 }
 
 void AO::start_pixel(RNG& rng) {

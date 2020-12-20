@@ -118,7 +118,7 @@ void test() {
 
         Golden_ratio sampler;
 
-        sampler.resize(num_samples, 1, 1, 1);
+        sampler.resize(num_samples, 1, 1);
         render_set("golden_ratio", sampler, num_samples, rng, renderer, target);
     }
 
@@ -127,7 +127,7 @@ void test() {
 
         RD sampler;
 
-        sampler.resize(num_samples, 1, 1, 1);
+        sampler.resize(num_samples, 1, 1);
         render_set("rd", sampler, num_samples, rng, renderer, target);
     }
 
@@ -136,7 +136,7 @@ void test() {
 
         Random sampler;
 
-        sampler.resize(num_samples, 1, 1, 1);
+        sampler.resize(num_samples, 1, 1);
         render_set("random", sampler, num_samples, rng, renderer, target);
     }
 }

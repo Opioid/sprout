@@ -19,8 +19,8 @@ class Sampler {
 
     virtual ~Sampler();
 
-    virtual void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                        uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
+    virtual void resize(uint32_t num_samples, uint32_t num_dimensions_2D,
+                        uint32_t num_dimensions_1D);
 
     virtual void start_pixel(RNG& rng);
 
@@ -37,8 +37,7 @@ class Buffered : public Sampler {
 
     ~Buffered() override;
 
-    void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) final;
+    void resize(uint32_t num_samples, uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) final;
 
     void start_pixel(RNG& rng) final;
 

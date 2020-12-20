@@ -8,8 +8,8 @@ Sampler::Sampler() = default;
 
 Sampler::~Sampler() {}
 
-void Sampler::resize(uint32_t /*num_iterations*/, uint32_t /*num_samples_per_iteration*/,
-                     uint32_t /*num_dimensions_2D*/, uint32_t /*num_dimensions_1D*/) {}
+void Sampler::resize(uint32_t /*num_samples*/, uint32_t /*num_dimensions_2D*/,
+                     uint32_t /*num_dimensions_1D*/) {}
 
 void Sampler::start_pixel(RNG& /*rng*/) {}
 
@@ -28,10 +28,8 @@ Buffered::~Buffered() {
     delete[] current_sample_;
 }
 
-void Buffered::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-                      uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) {
-    uint32_t const num_samples = num_iterations * num_samples_per_iteration;
-
+void Buffered::resize(uint32_t num_samples, uint32_t num_dimensions_2D,
+                      uint32_t num_dimensions_1D) {
     if (num_samples != num_samples_ || num_dimensions_2D != num_dimensions_2D_ ||
         num_dimensions_1D != num_dimensions_1D_) {
         delete[] current_sample_;

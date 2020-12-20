@@ -51,10 +51,12 @@ Pathtracer_MIS::~Pathtracer_MIS() {
 }
 
 void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
+    uint32_t const num_samples = num_samples_per_pixel * settings_.num_samples;
+
+    sampler_.resize(num_samples, 1, 1);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, settings_.num_samples, 2, 1);
+        s->resize(num_samples, 2, 1);
     }
 
     uint32_t const num_lights = scene.num_lights();
@@ -66,7 +68,7 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
     uint32_t const nd1 = max_lights + 1;
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, settings_.num_samples, nd2, nd1);
+        s->resize(num_samples, nd2, nd1);
     }
 
     lights_.reserve(max_lights);

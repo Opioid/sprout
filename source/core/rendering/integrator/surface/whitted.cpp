@@ -20,7 +20,7 @@ Whitted::Whitted() {}
 
 void Whitted::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
     uint32_t const num_lights = scene.num_lights();
-    sampler_.resize(num_samples_per_pixel, 1, num_lights, num_lights);
+    sampler_.resize(num_samples_per_pixel, num_lights, num_lights);
 }
 
 void Whitted::start_pixel(RNG& rng) {

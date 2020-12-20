@@ -56,16 +56,16 @@ Tracking_single::~Tracking_single() {
 }
 
 void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+    sampler_.resize(num_samples_per_pixel, 1, 1);
 
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 1, 0, Max_lights);
+        s->resize(num_samples_per_pixel, 0, Max_lights);
     }
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, 1, Max_lights, Max_lights + 1);
+        s->resize(num_samples_per_pixel, Max_lights, Max_lights + 1);
     }
 }
 
