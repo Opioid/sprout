@@ -120,8 +120,7 @@ class Scene {
 
     Light light(uint32_t id, bool calculate_pdf) const;
 
-    Light light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split,
-                bool calculate_pdf) const;
+    Light light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
 
     Light random_light(float random) const;
 

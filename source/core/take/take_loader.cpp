@@ -991,8 +991,6 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
                 sampling = Light_sampling::Single;
             } else if ("Adaptive" == strategy) {
                 sampling = Light_sampling::Adaptive;
-            } else if ("All" == strategy) {
-                sampling = Light_sampling::All;
             }
         } else if ("splitting_threshold" == n.name) {
             float const st = json::read_float(n.value);

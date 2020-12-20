@@ -126,13 +126,13 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
     return {id, pdf};
 }
 
-Scene::Light Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split,
-                          bool calculate_pdf) const {
+Scene::Light Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
+                          bool split) const {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
 
-    float const pdf = calculate_pdf ? light_tree_.pdf(p, n, total_sphere, split, id, *this) : 1.f;
+    float const pdf = light_tree_.pdf(p, n, total_sphere, split, id, *this);
 
     return {id, pdf};
 }

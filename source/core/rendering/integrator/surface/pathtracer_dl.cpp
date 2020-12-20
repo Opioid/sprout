@@ -60,13 +60,11 @@ void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) 
 
     uint32_t const num_lights = scene.num_lights();
 
-    bool const all = Light_sampling::All == settings_.light_sampling;
-
     uint32_t const max_lights = light::Tree::max_lights(
         num_lights, Light_sampling::Adaptive == settings_.light_sampling);
 
-    uint32_t const nd2 = all ? num_lights : max_lights;
-    uint32_t const nd1 = all ? num_lights : max_lights + 1;
+    uint32_t const nd2 = max_lights;
+    uint32_t const nd1 = max_lights + 1;
 
     for (auto s : light_samplers_) {
         s->resize(num_samples_per_pixel, 1, nd2, nd1);
@@ -240,35 +238,6 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
     auto& sampler = light_sampler(ray.depth);
 
     auto& rng = worker.rng();
-
-    if (Light_sampling::All == settings_.light_sampling) {
-        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
-            auto const& light = worker.scene().light(l);
-
-            Sample_to light_sample;
-            if (!light.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
-                continue;
-            }
-
-            shadow_ray.set_direction(light_sample.wi);
-            shadow_ray.max_t() = light_sample.t();
-
-            float3 tr;
-            if (!worker.transmitted(shadow_ray, mat_sample.wo(), isec, filter, tr)) {
-                continue;
-            }
-
-            auto const bxdf = mat_sample.evaluate_f(light_sample.wi);
-
-            float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
-
-            float const weight = 1.f / (light_sample.pdf());
-
-            result += weight * (tr * radiance * bxdf.reflection);
-        }
-
-        return result;
-    }
 
     float const select = sampler.sample_1D(rng, lights_.capacity());
 

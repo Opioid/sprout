@@ -59,13 +59,11 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
 
     uint32_t const num_lights = scene.num_lights();
 
-    bool const all = Light_sampling::All == settings_.light_sampling;
-
     uint32_t const max_lights = light::Tree::max_lights(
         num_lights, Light_sampling::Adaptive == settings_.light_sampling);
 
-    uint32_t const nd2 = all ? num_lights : max_lights;
-    uint32_t const nd1 = all ? num_lights : max_lights + 1;
+    uint32_t const nd2 = max_lights;
+    uint32_t const nd1 = max_lights + 1;
 
     for (auto s : light_samplers_) {
         s->resize(num_samples_per_pixel, 1, nd2, nd1);
@@ -325,34 +323,23 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
     auto& rng = worker.rng();
 
-    if (Light_sampling::All == settings_.light_sampling) {
-        for (uint32_t l = 0, len = worker.scene().num_lights(); l < len; ++l) {
-            auto const& light = worker.scene().light(l);
+    float3 const n = mat_sample.geometric_normal();
 
-            float3 const el = evaluate_light(light, 1.f, ray, p, l, isec, mat_sample, filter,
-                                             worker);
+    float const select = light_sampler(ray.depth).sample_1D(rng, lights_.capacity());
 
-            result += el;
-        }
-    } else {
-        float3 const n = mat_sample.geometric_normal();
+    bool const split = splitting(ray.depth);
 
-        float const select = light_sampler(ray.depth).sample_1D(rng, lights_.capacity());
+    worker.scene().random_light(p, n, translucent, select, split, lights_);
 
-        bool const split = splitting(ray.depth);
+    for (uint32_t l = 0; auto const light : lights_) {
+        auto const& light_ref = worker.scene().light(light.id);
 
-        worker.scene().random_light(p, n, translucent, select, split, lights_);
+        float3 const el = evaluate_light(light_ref, light.pdf, ray, p, l, isec, mat_sample, filter,
+                                         worker);
 
-        for (uint32_t l = 0; auto const light : lights_) {
-            auto const& light_ref = worker.scene().light(light.id);
+        result += el;
 
-            float3 const el = evaluate_light(light_ref, light.pdf, ray, p, l, isec, mat_sample,
-                                             filter, worker);
-
-            result += el;
-
-            ++l;
-        }
+        ++l;
     }
 
     return result;
@@ -403,10 +390,9 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
     if (state.no(State::Treat_as_singular)) {
         bool const translucent = state.is(State::Is_translucent);
         bool const split       = splitting(ray.depth);
-        bool const use_pdf     = Light_sampling::All != settings_.light_sampling;
 
-        auto const& scene = worker.scene();
-        auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, split, use_pdf);
+        auto const& scene     = worker.scene();
+        auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
         auto const& light_ref = scene.light(light.id);
 
         float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, translucent, Filter::Nearest,
@@ -448,10 +434,9 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Inter
     if (state.no(State::Treat_as_singular)) {
         bool const translucent = state.is(State::Is_translucent);
         bool const split       = splitting(ray.depth);
-        bool const use_pdf     = Light_sampling::All != settings_.light_sampling;
 
-        auto const& scene = worker.scene();
-        auto const  light = scene.light(light_id, ray.origin, geo_n, translucent, split, use_pdf);
+        auto const& scene     = worker.scene();
+        auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
         auto const& light_ref = scene.light(light.id);
 
         float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, state.is(State::Is_translucent),
