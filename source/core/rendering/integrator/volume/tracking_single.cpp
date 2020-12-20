@@ -48,7 +48,7 @@ Tracking_single::Tracking_single(bool progressive)
         }
     }
 
-    lights_.reserve(scene::light::Tree::Max_lights);
+    lights_.reserve(light::Tree::Max_lights);
 }
 
 Tracking_single::~Tracking_single() {
