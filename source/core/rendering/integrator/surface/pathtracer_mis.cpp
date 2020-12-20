@@ -66,7 +66,7 @@ void Pathtracer_MIS::prepare(Scene const& scene, uint32_t num_samples_per_pixel)
     uint32_t const nd1 = max_lights + 1;
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, 1, nd2, nd1);
+        s->resize(num_samples_per_pixel, settings_.num_samples, nd2, nd1);
     }
 
     lights_.reserve(max_lights);
