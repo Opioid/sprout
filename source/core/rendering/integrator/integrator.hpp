@@ -77,7 +77,7 @@ class Integrator {
 
     virtual ~Integrator();
 
-    virtual void prepare(Scene const& scene, uint32_t num_samples_per_pixel) = 0;
+    virtual void prepare(uint32_t num_samples_per_pixel) = 0;
 
     virtual void start_pixel(RNG& rng) = 0;
 };

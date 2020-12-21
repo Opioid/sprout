@@ -28,7 +28,7 @@ class alignas(64) Debug final : public Integrator {
 
     Debug(Settings const& settings);
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
+    void prepare(uint32_t num_samples_per_pixel) final;
 
     void start_pixel(RNG& rng) final;
 

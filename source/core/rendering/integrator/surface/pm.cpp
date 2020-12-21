@@ -29,7 +29,7 @@ PM::PM(Settings const& settings, bool progressive)
                                 : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(i);
+            material_samplers_[i] = sampler_pool_->get(i, 1, 1);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -42,11 +42,11 @@ PM::~PM() {
     delete sampler_pool_;
 }
 
-void PM::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1);
+void PM::prepare(uint32_t num_samples_per_pixel) {
+    sampler_.resize(num_samples_per_pixel);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 1, 1);
+        s->resize(num_samples_per_pixel);
     }
 }
 

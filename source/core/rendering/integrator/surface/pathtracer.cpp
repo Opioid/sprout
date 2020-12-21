@@ -33,7 +33,7 @@ Pathtracer::Pathtracer(Settings const& settings, bool progressive)
                                 : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(i);
+            material_samplers_[i] = sampler_pool_->get(i, 2, 1);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -46,13 +46,13 @@ Pathtracer::~Pathtracer() {
     delete sampler_pool_;
 }
 
-void Pathtracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+void Pathtracer::prepare(uint32_t num_samples_per_pixel) {
     uint32_t const num_samples = num_samples_per_pixel * settings_.num_samples;
 
-    sampler_.resize(num_samples, 1, 1);
+    sampler_.resize(num_samples);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples, 2, 1);
+        s->resize(num_samples);
     }
 }
 

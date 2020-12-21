@@ -15,7 +15,7 @@ namespace rendering::integrator::volume {
 
 Emission::Emission(Settings const& settings) : settings_(settings) {}
 
-void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Emission::prepare(uint32_t /*num_samples_per_pixel*/) {}
 
 void Emission::start_pixel(rnd::Generator& /*rng*/) {}
 

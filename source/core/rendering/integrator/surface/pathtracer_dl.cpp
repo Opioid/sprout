@@ -31,10 +31,12 @@ Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive)
     : settings_(settings),
       sampler_pool_(progressive ? nullptr
                                 : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
+    static uint32_t constexpr Max_lights = light::Tree::Max_lights;
+
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(2 * i + 0);
-            light_samplers_[i]    = sampler_pool_->get(2 * i + 1);
+            material_samplers_[i] = sampler_pool_->get(2 * i + 0, 2, 1);
+            light_samplers_[i]    = sampler_pool_->get(2 * i + 1, Max_lights, Max_lights + 1);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -45,32 +47,24 @@ Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive)
             s = &sampler_;
         }
     }
+
+    lights_.reserve(Max_lights);
 }
 
 Pathtracer_DL::~Pathtracer_DL() {
     delete sampler_pool_;
 }
 
-void Pathtracer_DL::prepare(Scene const& scene, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1);
+void Pathtracer_DL::prepare(uint32_t num_samples_per_pixel) {
+    sampler_.resize(num_samples_per_pixel);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 2, 1);
+        s->resize(num_samples_per_pixel);
     }
-
-    uint32_t const num_lights = scene.num_lights();
-
-    uint32_t const max_lights = light::Tree::max_lights(
-        num_lights, Light_sampling::Adaptive == settings_.light_sampling);
-
-    uint32_t const nd2 = max_lights;
-    uint32_t const nd1 = max_lights + 1;
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, nd2, nd1);
+        s->resize(num_samples_per_pixel);
     }
-
-    lights_.reserve(max_lights);
 }
 
 void Pathtracer_DL::start_pixel(RNG& rng) {

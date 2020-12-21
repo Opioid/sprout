@@ -8,8 +8,7 @@ Sampler::Sampler() = default;
 
 Sampler::~Sampler() {}
 
-void Sampler::resize(uint32_t /*num_samples*/, uint32_t /*num_dimensions_2D*/,
-                     uint32_t /*num_dimensions_1D*/) {}
+void Sampler::resize(uint32_t /*num_samples*/) {}
 
 void Sampler::start_pixel(RNG& /*rng*/) {}
 
@@ -21,25 +20,19 @@ Camera_sample Sampler::camera_sample(RNG& rng, int2 pixel) {
     return Camera_sample{pixel, image_sample, lens_sample, time_sample};
 }
 
-Buffered::Buffered()
-    : num_samples_(0), num_dimensions_2D_(0), num_dimensions_1D_(0), current_sample_(nullptr) {}
+Buffered::Buffered(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D)
+    : num_dimensions_2D_(num_dimensions_2D),
+      num_dimensions_1D_(num_dimensions_1D),
+      num_samples_(0),
+      current_sample_(new uint32_t[num_dimensions_2D + num_dimensions_1D]) {}
 
 Buffered::~Buffered() {
     delete[] current_sample_;
 }
 
-void Buffered::resize(uint32_t num_samples, uint32_t num_dimensions_2D,
-                      uint32_t num_dimensions_1D) {
-    if (num_samples != num_samples_ || num_dimensions_2D != num_dimensions_2D_ ||
-        num_dimensions_1D != num_dimensions_1D_) {
-        delete[] current_sample_;
-
+void Buffered::resize(uint32_t num_samples) {
+    if (num_samples != num_samples_) {
         num_samples_ = num_samples;
-
-        num_dimensions_2D_ = num_dimensions_2D;
-        num_dimensions_1D_ = num_dimensions_1D;
-
-        current_sample_ = new uint32_t[num_dimensions_2D + num_dimensions_1D];
 
         on_resize();
     }

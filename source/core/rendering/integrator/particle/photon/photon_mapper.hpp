@@ -42,7 +42,7 @@ class Mapper : public Integrator {
 
     ~Mapper() override;
 
-    void prepare(Scene const& scene, uint32_t num_photons) final;
+    void prepare(uint32_t num_photons) final;
 
     void start_pixel(RNG& rng) final;
 

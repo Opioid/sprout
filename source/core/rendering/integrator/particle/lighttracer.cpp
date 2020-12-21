@@ -30,13 +30,13 @@ Lighttracer::Lighttracer(Settings const& settings) : settings_(settings) {}
 
 Lighttracer::~Lighttracer() = default;
 
-void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1);
+void Lighttracer::prepare(uint32_t num_samples_per_pixel) {
+    sampler_.resize(num_samples_per_pixel);
 
-    light_sampler_.resize(num_samples_per_pixel, 2, 3);
+    light_sampler_.resize(num_samples_per_pixel);
 
     for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, 1, 1);
+        s.resize(num_samples_per_pixel);
     }
 }
 

@@ -7,7 +7,7 @@ namespace sampler {
 
 class alignas(64) RD final : public Buffered {
   public:
-    RD();
+    RD(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
 
     ~RD() final;
 

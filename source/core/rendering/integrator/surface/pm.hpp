@@ -19,7 +19,7 @@ class alignas(64) PM final : public Integrator {
 
     ~PM() final;
 
-    void prepare(Scene const& scene, uint32_t num_samples_per_pixel) final;
+    void prepare(uint32_t num_samples_per_pixel) final;
 
     void start_pixel(RNG& rng) final;
 

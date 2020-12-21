@@ -33,10 +33,12 @@ using namespace scene;
 Tracking_single::Tracking_single(bool progressive)
     : sampler_pool_(progressive ? nullptr
                                 : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
+    static uint32_t constexpr Max_lights = light::Tree::Max_lights;
+
     if (sampler_pool_) {
         for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(2 * i + 0);
-            light_samplers_[i]    = sampler_pool_->get(2 * i + 1);
+            material_samplers_[i] = sampler_pool_->get(2 * i + 0, 0, Max_lights);
+            light_samplers_[i]    = sampler_pool_->get(2 * i + 1, Max_lights, Max_lights + 1);
         }
     } else {
         for (auto& s : material_samplers_) {
@@ -55,17 +57,15 @@ Tracking_single::~Tracking_single() {
     delete sampler_pool_;
 }
 
-void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1);
-
-    static uint32_t constexpr Max_lights = light::Tree::Max_lights;
+void Tracking_single::prepare(uint32_t num_samples_per_pixel) {
+    sampler_.resize(num_samples_per_pixel);
 
     for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 0, Max_lights);
+        s->resize(num_samples_per_pixel);
     }
 
     for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, Max_lights, Max_lights + 1);
+        s->resize(num_samples_per_pixel);
     }
 }
 

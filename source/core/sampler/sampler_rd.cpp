@@ -35,13 +35,23 @@ static inline float2 r2i(float2 seed, uint32_t n) {
     return float2(frac(seed[0] + float(n * 12664745) / e), frac(seed[1] + float(n * 9560333) / e));
 }
 
-RD::RD()
-    : seeds_2D_(nullptr),
-      seeds_1D_(nullptr),
-      samples_2D_(nullptr),
-      samples_1D_(nullptr),
-      consumed_2D_(nullptr),
-      consumed_1D_(nullptr) {}
+RD::RD(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D)
+    : Buffered(num_dimensions_2D, num_dimensions_1D) {
+    float* seeds = memory::allocate_aligned<float>(2 * num_dimensions_2D + num_dimensions_1D);
+
+    seeds_2D_ = reinterpret_cast<float2*>(seeds);
+    seeds_1D_ = seeds + 2 * num_dimensions_2D;
+
+    float* buffer = memory::allocate_aligned<float>(Num_batch * 2 * num_dimensions_2D +
+                                                    Num_batch * num_dimensions_1D);
+
+    samples_2D_ = reinterpret_cast<float2*>(buffer);
+    samples_1D_ = buffer + Num_batch * 2 * num_dimensions_2D_;
+
+    consumed_2D_ = memory::allocate_aligned<uint32_t>(num_dimensions_2D + num_dimensions_1D);
+
+    consumed_1D_ = consumed_2D_ + num_dimensions_2D;
+}
 
 RD::~RD() {
     memory::free_aligned(consumed_2D_);
@@ -69,28 +79,7 @@ float RD::sample_1D(RNG& rng, uint32_t dimension) {
     return samples_1D_[dimension * Num_batch + current];
 }
 
-void RD::on_resize() {
-    memory::free_aligned(seeds_2D_);
-
-    float* seeds = memory::allocate_aligned<float>(2 * num_dimensions_2D_ + num_dimensions_1D_);
-
-    seeds_2D_ = reinterpret_cast<float2*>(seeds);
-    seeds_1D_ = seeds + 2 * num_dimensions_2D_;
-
-    memory::free_aligned(samples_2D_);
-
-    float* buffer = memory::allocate_aligned<float>(Num_batch * 2 * num_dimensions_2D_ +
-                                                    Num_batch * num_dimensions_1D_);
-
-    samples_2D_ = reinterpret_cast<float2*>(buffer);
-    samples_1D_ = buffer + Num_batch * 2 * num_dimensions_2D_;
-
-    memory::free_aligned(consumed_2D_);
-
-    consumed_2D_ = memory::allocate_aligned<uint32_t>(num_dimensions_2D_ + num_dimensions_1D_);
-
-    consumed_1D_ = consumed_2D_ + num_dimensions_2D_;
-}
+void RD::on_resize() {}
 
 void RD::on_start_pixel(RNG& rng) {
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {

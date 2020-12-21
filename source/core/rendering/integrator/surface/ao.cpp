@@ -19,7 +19,7 @@ static sampler::Sampler* create_sampler(bool progressive) {
     if (progressive) {
         return new sampler::Random();
     }
-    return new sampler::Golden_ratio();
+    return new sampler::Golden_ratio(1, 1);
 }
 
 AO::AO(Settings const& settings, bool progressive)
@@ -29,10 +29,10 @@ AO::~AO() {
     delete sampler_;
 }
 
-void AO::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
+void AO::prepare(uint32_t num_samples_per_pixel) {
     uint32_t const num_samples = num_samples_per_pixel * settings_.num_samples;
 
-    sampler_->resize(num_samples, 1, 1);
+    sampler_->resize(num_samples);
 }
 
 void AO::start_pixel(RNG& rng) {

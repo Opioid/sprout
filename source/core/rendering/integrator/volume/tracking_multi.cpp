@@ -34,7 +34,7 @@ static inline void set_scattering(Intersection& isec, Interface const* interface
 
 Tracking_multi::Tracking_multi() = default;
 
-void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Tracking_multi::prepare(uint32_t /*num_samples_per_pixel*/) {}
 
 void Tracking_multi::start_pixel(rnd::Generator& /*rng*/) {}
 

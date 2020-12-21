@@ -24,9 +24,11 @@ Typed_pool<T>::~Typed_pool() {
 }
 
 template <typename T>
-Sampler* Typed_pool<T>::get(uint32_t id) const {
-    if (uint32_t const zero = 0; 0 == std::memcmp(&zero, static_cast<void*>(&samplers_[id]), 4)) {
-        return new (&samplers_[id]) T();
+Sampler* Typed_pool<T>::get(uint32_t id, uint32_t num_dimensions_2D,
+                            uint32_t num_dimensions_1D) const {
+    if (uint64_t const zero = 0;
+        0 == std::memcmp(&zero, static_cast<void*>(&samplers_[id]), sizeof(uint64_t))) {
+        return new (&samplers_[id]) T(num_dimensions_2D, num_dimensions_1D);
     }
 
     return &samplers_[id];

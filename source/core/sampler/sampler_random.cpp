@@ -8,6 +8,8 @@ namespace sampler {
 
 Random::Random() = default;
 
+Random::Random(uint32_t /*num_dimensions_2D*/, uint32_t /*num_dimensions_1D*/) {}
+
 float2 Random::sample_2D(RNG& rng, uint32_t /*dimension*/) {
     return float2(rng.random_float(), rng.random_float());
 }

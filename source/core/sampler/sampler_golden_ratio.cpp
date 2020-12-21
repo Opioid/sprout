@@ -9,7 +9,8 @@
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio() : samples_(nullptr) {}
+Golden_ratio::Golden_ratio(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D)
+    : Buffered(num_dimensions_2D, num_dimensions_1D), samples_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
     delete[] samples_;
