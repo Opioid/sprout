@@ -15,6 +15,4 @@ target_sources(core
     "surface_integrator.cpp"
     "surface_integrator.inl"
     "surface_integrator.hpp"
-    "whitted.cpp"
-    "whitted.hpp"
 	) 

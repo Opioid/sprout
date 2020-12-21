@@ -23,7 +23,6 @@
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/pm.hpp"
-#include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/tracking_multi.hpp"
 #include "rendering/integrator/volume/tracking_single.hpp"
@@ -603,10 +602,6 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
             float const radius = json::read_float(n.value, "radius", 1.f);
 
             return new AO_pool(num_workers, progressive, num_samples, radius);
-        }
-
-        if ("Whitted" == n.name) {
-            return new Whitted_pool(num_workers);
         }
 
         if ("PM" == n.name) {
