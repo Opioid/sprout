@@ -477,12 +477,7 @@ Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progress
       progressive_(progressive) {}
 
 Integrator* Pathtracer_MIS_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer_MIS(settings_, progressive_);
-    }
-
-    return &integrators_[id];
+    return new (&integrators_[id]) Pathtracer_MIS(settings_, progressive_);
 }
 
 }  // namespace rendering::integrator::surface

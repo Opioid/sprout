@@ -54,9 +54,9 @@ RD::RD(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D)
 }
 
 RD::~RD() {
-    memory::free_aligned(consumed_2D_);
-    memory::free_aligned(samples_2D_);
-    memory::free_aligned(seeds_2D_);
+    std::free(consumed_2D_);
+    std::free(samples_2D_);
+    std::free(seeds_2D_);
 }
 
 float2 RD::sample_2D(RNG& rng, uint32_t dimension) {

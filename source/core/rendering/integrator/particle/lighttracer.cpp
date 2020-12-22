@@ -314,25 +314,18 @@ Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounce
                                    uint32_t max_bounces, bool full_light_path)
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, full_light_path} {
-    std::memset(static_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
-}
+      settings_{min_bounces, max_bounces, full_light_path} {}
 
 Lighttracer_pool::~Lighttracer_pool() {
     for (uint32_t i = 0, len = num_integrators_; i < len; ++i) {
-        memory::destroy(&integrators_[i]);
+        integrators_[i].~Lighttracer();
     }
 
-    memory::free_aligned(integrators_);
+    std::free(integrators_);
 }
 
 Lighttracer* Lighttracer_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Lighttracer(settings_);
-    }
-
-    return &integrators_[id];
+    return new (&integrators_[id]) Lighttracer(settings_);
 }
 
 uint32_t Lighttracer_pool::max_sample_depth() const {
