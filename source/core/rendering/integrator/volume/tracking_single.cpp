@@ -489,12 +489,7 @@ Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progre
     : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
 
 Integrator* Tracking_single_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
         return new (&integrators_[id]) Tracking_single(progressive_);
-    }
-
-    return &integrators_[id];
 }
 
 }  // namespace rendering::integrator::volume
