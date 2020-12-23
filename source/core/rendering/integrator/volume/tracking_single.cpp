@@ -2,7 +2,6 @@
 #include "base/math/aabb.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -49,8 +48,6 @@ Tracking_single::Tracking_single(bool progressive)
             s = &sampler_;
         }
     }
-
-    lights_.reserve(light::Tree::Max_lights);
 }
 
 Tracking_single::~Tracking_single() {
@@ -294,14 +291,16 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         bool const split = ray.depth < Num_dedicated_samplers;
 
-        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights_);
+        auto& lights = worker.lights();
+
+        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights);
 
         // li = one_bounce(ray, isec, material, worker);
 
         float3 lli(0.f);
 
-        for (uint32_t il = 0, len = lights_.size(); il < len; ++il) {
-            auto const  light     = lights_[il];
+        for (uint32_t il = 0, len = lights.size(); il < len; ++il) {
+            auto const  light     = lights[il];
             auto const& light_ref = worker.scene().light(light.id);
 
             if (light_ref.is_finite(worker.scene())) {
@@ -489,7 +488,7 @@ Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progre
     : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
 
 Integrator* Tracking_single_pool::get(uint32_t id) const {
-        return new (&integrators_[id]) Tracking_single(progressive_);
+    return new (&integrators_[id]) Tracking_single(progressive_);
 }
 
 }  // namespace rendering::integrator::volume

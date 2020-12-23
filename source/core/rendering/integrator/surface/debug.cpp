@@ -17,9 +17,7 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Debug::Debug(Settings const& settings) : settings_(settings) {
-    lights_.reserve(Settings::Value::Splitting == settings.value ? light::Tree::Max_lights : 0);
-}
+Debug::Debug(Settings const& settings) : settings_(settings) {}
 
 void Debug::prepare(uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel);
@@ -72,9 +70,11 @@ float4 Debug::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack c
 
             bool const translucent = mat_sample.is_translucent();
 
-            worker.scene().random_light(isec.geo.p, n, translucent, 1.f, true, lights_);
+            auto& lights = worker.lights();
 
-            float const r = float(lights_.size()) / float(light::Tree::Max_lights);
+            worker.scene().random_light(isec.geo.p, n, translucent, 1.f, true, lights);
+
+            float const r = float(lights.size()) / float(light::Tree::Max_lights);
 
             return float4(r, r, r, 1.f);
         } break;

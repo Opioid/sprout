@@ -47,8 +47,6 @@ Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive)
             s = &sampler_;
         }
     }
-
-    lights_.reserve(Max_lights);
 }
 
 Pathtracer_DL::~Pathtracer_DL() {
@@ -233,14 +231,16 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
 
     auto& rng = worker.rng();
 
-    float const select = sampler.sample_1D(rng, lights_.capacity());
+    auto& lights = worker.lights();
+
+    float const select = sampler.sample_1D(rng, lights.capacity());
 
     bool const split = splitting(ray.depth);
 
-    worker.scene().random_light(p, n, translucent, select, split, lights_);
+    worker.scene().random_light(p, n, translucent, select, split, lights);
 
-    for (uint32_t l = 0, len = lights_.size(); l < len; ++l) {
-        auto const  light     = lights_[l];
+    for (uint32_t l = 0, len = lights.size(); l < len; ++l) {
+        auto const  light     = lights[l];
         auto const& light_ref = worker.scene().light(light.id);
 
         Sample_to light_sample;

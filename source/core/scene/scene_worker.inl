@@ -60,6 +60,10 @@ inline rnd::Generator& Worker::rng() {
     return rng_;
 }
 
+inline light::Tree::Lights& Worker::lights() {
+    return lights_;
+}
+
 template <typename T>
 T& Worker::sample() {
     return sample_cache_.get<T>();

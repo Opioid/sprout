@@ -1,6 +1,7 @@
 #include "scene_worker.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector4.inl"
+#include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "material/material.inl"
 #include "material/material_helper.hpp"

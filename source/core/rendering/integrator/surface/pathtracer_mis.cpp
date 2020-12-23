@@ -46,8 +46,6 @@ Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
             s = &sampler_;
         }
     }
-
-    lights_.reserve(Max_lights);
 }
 
 Pathtracer_MIS::~Pathtracer_MIS() {
@@ -321,13 +319,15 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
     float3 const n = mat_sample.geometric_normal();
 
-    float const select = light_sampler(ray.depth).sample_1D(rng, lights_.capacity());
+    auto& lights = worker.lights();
+
+    float const select = light_sampler(ray.depth).sample_1D(rng, lights.capacity());
 
     bool const split = splitting(ray.depth);
 
-    worker.scene().random_light(p, n, translucent, select, split, lights_);
+    worker.scene().random_light(p, n, translucent, select, split, lights);
 
-    for (uint32_t l = 0; auto const light : lights_) {
+    for (uint32_t l = 0; auto const light : lights) {
         auto const& light_ref = worker.scene().light(light.id);
 
         float3 const el = evaluate_light(light_ref, light.pdf, ray, p, l, isec, mat_sample, filter,

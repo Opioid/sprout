@@ -51,11 +51,9 @@ Reader::Info::~Info() {
 }
 
 bool Reader::Info::allocate() {
-    uint32_t const row_size = uint32_t(width * num_channels);
-
+    uint32_t const row_size    = uint32_t(width * num_channels);
     uint32_t const buffer_size = row_size * uint32_t(height);
-
-    uint32_t const num_bytes = buffer_size + 2 * row_size;
+    uint32_t const num_bytes   = buffer_size + 2 * row_size;
 
     if (capacity < num_bytes) {
         std::free(buffer);

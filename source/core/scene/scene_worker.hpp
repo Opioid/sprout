@@ -2,7 +2,10 @@
 #define SU_CORE_SCENE_WORKER_HPP
 
 #include "base/math/vector.hpp"
+#include "base/memory/array.hpp"
 #include "base/random/generator.hpp"
+#include "light/light.hpp"
+#include "light/light_tree.hpp"
 #include "material/material_sample.hpp"
 #include "material/material_sample_cache.hpp"
 #include "material/sampler_settings.hpp"
@@ -49,6 +52,7 @@ class Worker {
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
     using Sampler            = sampler::Sampler;
+    using Lights             = light::Tree::Lights;
 
     Worker();
 
@@ -91,6 +95,8 @@ class Worker {
 
     RNG& rng();
 
+    Lights& lights();
+
     void reset_interface_stack(Interface_stack const& stack);
 
     float ior_outside(float3_p wo, Intersection const& isec) const;
@@ -119,6 +125,8 @@ class Worker {
     shape::Node_stack node_stack_;
 
     material::Sample_cache sample_cache_;
+
+    Lights lights_;
 };
 
 }  // namespace scene

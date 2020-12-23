@@ -41,8 +41,6 @@ class alignas(64) Tracking_single final : public Integrator {
     sampler::Sampler* material_samplers_[Num_dedicated_samplers];
 
     sampler::Sampler* light_samplers_[Num_dedicated_samplers];
-
-    Lights lights_;
 };
 
 class Tracking_single_pool final : public Typed_pool<Tracking_single> {

@@ -149,8 +149,8 @@ void size() {
 
     print_size<scene::shape::Node_stack>("scene::shape::Node_stack", 512);
 
-    print_size<scene::Worker>("scene::Worker", 960);
-    print_size<rendering::Worker>("rendering::Worker", 1024);
+    print_size<scene::Worker>("scene::Worker", 1280);
+    print_size<rendering::Worker>("rendering::Worker", 1344);
 
     print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 128);
 }

@@ -70,7 +70,7 @@ class Scene {
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
     using Light          = light::Light_pick;
-    using Lights         = memory::Array<Light>;
+    using Lights         = light::Tree::Lights;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;

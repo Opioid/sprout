@@ -41,8 +41,6 @@ class alignas(64) Debug final : public Integrator {
     Settings settings_;
 
     sampler::Random sampler_;
-
-    Lights lights_;
 };
 
 class Debug_pool final : public Typed_pool<Debug> {

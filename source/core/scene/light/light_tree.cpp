@@ -316,10 +316,6 @@ class Traversal_stack {
 // 0.08 ^ 4
 float Tree::splitting_threshold_ = 0.00004096f;
 
-uint32_t Tree::max_lights(uint32_t num_lights, bool split) {
-    return split ? std::min(Max_lights, num_lights) : 1;
-}
-
 void Tree::set_splitting_threshold(float st) {
     splitting_threshold_ = pow4(st);
 }
