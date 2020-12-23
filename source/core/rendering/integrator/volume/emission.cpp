@@ -15,8 +15,6 @@ namespace rendering::integrator::volume {
 
 Emission::Emission(Settings const& settings) : settings_(settings) {}
 
-void Emission::prepare(uint32_t /*num_samples_per_pixel*/) {}
-
 void Emission::start_pixel(rnd::Generator& /*rng*/) {}
 
 bool Emission::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
@@ -31,13 +29,8 @@ Event Emission::integrate(Ray& /*ray*/, Intersection& /*isec*/, Filter /*filter*
 Emission_pool::Emission_pool(uint32_t num_integrators, float step_size)
     : Typed_pool<Emission>(num_integrators), settings_{step_size} {}
 
-Integrator* Emission_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Emission(settings_);
-    }
-
-    return &integrators_[id];
+Integrator* Emission_pool::create(uint32_t id, uint32_t /*max_samples_per_pixel*/) const {
+    return new (&integrators_[id]) Emission(settings_);
 }
 
 }  // namespace rendering::integrator::volume

@@ -27,30 +27,23 @@ using namespace scene;
 
 namespace rendering::integrator::surface {
 
-Pathtracer::Pathtracer(Settings const& settings, bool progressive) : settings_(settings) {
+Pathtracer::Pathtracer(Settings const& settings, uint32_t max_samples_per_pixel, bool progressive)
+    : settings_(settings) {
     if (progressive) {
         sampler_pool_ = new sampler::Random_pool(Num_dedicated_samplers);
     } else {
         sampler_pool_ = new sampler::Golden_ratio_pool(Num_dedicated_samplers);
     }
 
+    uint32_t const max_samples = max_samples_per_pixel * settings_.num_samples;
+
     for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->create(i, 2, 1);
+        sampler_pool_->create(i, 2, 1, max_samples);
     }
 }
 
 Pathtracer::~Pathtracer() {
     delete sampler_pool_;
-}
-
-void Pathtracer::prepare(uint32_t num_samples_per_pixel) {
-    uint32_t const num_samples = num_samples_per_pixel * settings_.num_samples;
-
-    sampler_.resize(num_samples);
-
-    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->get(i).resize(num_samples);
-    }
 }
 
 void Pathtracer::start_pixel(RNG& rng) {
@@ -222,13 +215,8 @@ Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, bool progressive, uin
       settings_{num_samples, min_bounces, max_bounces, !enable_caustics},
       progressive_(progressive) {}
 
-Integrator* Pathtracer_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer(settings_, progressive_);
-    }
-
-    return &integrators_[id];
+Integrator* Pathtracer_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) Pathtracer(settings_, max_samples_per_pixel, progressive_);
 }
 
 }  // namespace rendering::integrator::surface

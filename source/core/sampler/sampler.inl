@@ -20,9 +20,9 @@ Typed_pool<T>::~Typed_pool() {
 }
 
 template <typename T>
-Sampler* Typed_pool<T>::create(uint32_t id, uint32_t num_dimensions_2D,
-                               uint32_t num_dimensions_1D) const {
-    return new (&samplers_[id]) T(num_dimensions_2D, num_dimensions_1D);
+Sampler* Typed_pool<T>::create(uint32_t id, uint32_t num_dimensions_2D, uint32_t num_dimensions_1D,
+                               uint32_t max_samples) const {
+    return new (&samplers_[id]) T(num_dimensions_2D, num_dimensions_1D, max_samples);
 }
 
 template <typename T>

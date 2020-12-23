@@ -23,7 +23,8 @@
 
 namespace rendering::integrator::surface {
 
-PM::PM(Settings const& settings, bool progressive) : settings_(settings) {
+PM::PM(Settings const& settings, uint32_t max_samples_per_pixel, bool progressive)
+    : settings_(settings) {
     if (progressive) {
         sampler_pool_ = new sampler::Random_pool(Num_dedicated_samplers);
     } else {
@@ -31,20 +32,12 @@ PM::PM(Settings const& settings, bool progressive) : settings_(settings) {
     }
 
     for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->create(i, 1, 1);
+        sampler_pool_->create(i, 1, 1, max_samples_per_pixel);
     }
 }
 
 PM::~PM() {
     delete sampler_pool_;
-}
-
-void PM::prepare(uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel);
-
-    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->get(i).resize(num_samples_per_pixel);
-    }
 }
 
 void PM::start_pixel(RNG& rng) {
@@ -180,13 +173,8 @@ PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounce
       settings_{min_bounces, max_bounces, !photons_only_through_specular},
       progressive_(progressive) {}
 
-Integrator* PM_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) PM(settings_, progressive_);
-    }
-
-    return &integrators_[id];
+Integrator* PM_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) PM(settings_, max_samples_per_pixel, progressive_);
 }
 
 }  // namespace rendering::integrator::surface

@@ -13,8 +13,6 @@ class alignas(64) Emission final : public Integrator {
 
     Emission(Settings const& settings);
 
-    void prepare(uint32_t num_samples_per_pixel) final;
-
     void start_pixel(RNG& rng) final;
 
     bool transmittance(Ray const& ray, Worker& worker, float3& transmittance) final;
@@ -29,7 +27,7 @@ class Emission_pool final : public Typed_pool<Emission> {
   public:
     Emission_pool(uint32_t num_integrators, float step_size);
 
-    Integrator* get(uint32_t id) const final;
+    Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const final;
 
   private:
     const Emission::Settings settings_;

@@ -26,19 +26,10 @@ namespace rendering::integrator::particle {
 
 using namespace scene;
 
-Lighttracer::Lighttracer(Settings const& settings) : settings_(settings) {}
+Lighttracer::Lighttracer(Settings const& settings, uint32_t /*max_samples_per_pixel*/)
+    : settings_(settings) {}
 
 Lighttracer::~Lighttracer() = default;
-
-void Lighttracer::prepare(uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel);
-
-    light_sampler_.resize(num_samples_per_pixel);
-
-    for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel);
-    }
-}
 
 void Lighttracer::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
@@ -324,8 +315,8 @@ Lighttracer_pool::~Lighttracer_pool() {
     std::free(integrators_);
 }
 
-Lighttracer* Lighttracer_pool::get(uint32_t id) const {
-    return new (&integrators_[id]) Lighttracer(settings_);
+Lighttracer* Lighttracer_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) Lighttracer(settings_, max_samples_per_pixel);
 }
 
 uint32_t Lighttracer_pool::max_sample_depth() const {

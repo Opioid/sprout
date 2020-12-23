@@ -15,24 +15,19 @@
 
 namespace rendering::integrator::surface {
 
-static sampler::Sampler* create_sampler(bool progressive) {
+static sampler::Sampler* create_sampler(uint32_t max_samples_per_pixel, bool progressive) {
     if (progressive) {
         return new sampler::Random();
     }
-    return new sampler::Golden_ratio(1, 1);
+    return new sampler::Golden_ratio(1, 1, max_samples_per_pixel);
 }
 
-AO::AO(Settings const& settings, bool progressive)
-    : settings_(settings), sampler_(create_sampler(progressive)) {}
+AO::AO(Settings const& settings, uint32_t max_samples_per_pixel, bool progressive)
+    : settings_(settings),
+      sampler_(create_sampler(settings.num_samples * max_samples_per_pixel, progressive)) {}
 
 AO::~AO() {
     delete sampler_;
-}
-
-void AO::prepare(uint32_t num_samples_per_pixel) {
-    uint32_t const num_samples = num_samples_per_pixel * settings_.num_samples;
-
-    sampler_->resize(num_samples);
 }
 
 void AO::start_pixel(RNG& rng) {
@@ -85,13 +80,8 @@ AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_sample
     settings_.radius      = radius;
 }
 
-Integrator* AO_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) AO(settings_, progressive_);
-    }
-
-    return &integrators_[id];
+Integrator* AO_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) AO(settings_, max_samples_per_pixel, progressive_);
 }
 
 }  // namespace rendering::integrator::surface

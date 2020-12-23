@@ -8,11 +8,9 @@ namespace rendering::integrator::volume {
 
 class alignas(64) Tracking_single final : public Integrator {
   public:
-    Tracking_single(bool progressive);
+    Tracking_single(uint32_t max_samples_per_pixel, bool progressive);
 
     ~Tracking_single();
-
-    void prepare(uint32_t num_samples_per_pixel) final;
 
     void start_pixel(RNG& rng) final;
 
@@ -43,7 +41,7 @@ class Tracking_single_pool final : public Typed_pool<Tracking_single> {
   public:
     Tracking_single_pool(uint32_t num_integrators, bool progressive);
 
-    Integrator* get(uint32_t id) const final;
+    Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const final;
 
   private:
     bool progressive_;

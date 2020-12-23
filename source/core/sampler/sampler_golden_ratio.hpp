@@ -7,7 +7,7 @@ namespace sampler {
 
 class alignas(32) Golden_ratio final : public Buffered {
   public:
-    Golden_ratio(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
+    Golden_ratio(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D, uint32_t max_samples);
 
     ~Golden_ratio() final;
 
@@ -16,8 +16,6 @@ class alignas(32) Golden_ratio final : public Buffered {
     float sample_1D(RNG& rng, uint32_t dimension = 0) final;
 
   private:
-    void on_resize() final;
-
     void on_start_pixel(RNG& rng) final;
 
     void generate_2D(RNG& rng, uint32_t dimension);

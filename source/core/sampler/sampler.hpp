@@ -19,8 +19,6 @@ class Sampler {
 
     virtual ~Sampler();
 
-    virtual void resize(uint32_t num_samples);
-
     virtual void start_pixel(RNG& rng);
 
     Camera_sample camera_sample(RNG& rng, int2 pixel);
@@ -32,17 +30,13 @@ class Sampler {
 
 class Buffered : public Sampler {
   public:
-    Buffered(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
+    Buffered(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D, uint32_t max_samples);
 
     ~Buffered() override;
-
-    void resize(uint32_t num_samples) final;
 
     void start_pixel(RNG& rng) final;
 
   protected:
-    virtual void on_resize() = 0;
-
     virtual void on_start_pixel(RNG& rng) = 0;
 
     uint32_t const num_dimensions_2D_;
@@ -59,8 +53,8 @@ class Pool {
 
     virtual ~Pool();
 
-    virtual Sampler* create(uint32_t id, uint32_t num_dimensions_2D,
-                            uint32_t num_dimensions_1D) const = 0;
+    virtual Sampler* create(uint32_t id, uint32_t num_dimensions_2D, uint32_t num_dimensions_1D,
+                            uint32_t max_samples) const = 0;
 
     virtual Sampler& get(uint32_t id) = 0;
 
@@ -75,8 +69,8 @@ class Typed_pool final : public Pool {
 
     ~Typed_pool() final;
 
-    Sampler* create(uint32_t id, uint32_t num_dimensions_2D,
-                    uint32_t num_dimensions_1D) const final;
+    Sampler* create(uint32_t id, uint32_t num_dimensions_2D, uint32_t num_dimensions_1D,
+                    uint32_t max_samples) const final;
 
     Sampler& get(uint32_t id) final;
 

@@ -70,7 +70,6 @@ void rough_refraction() {
     rnd::Generator rng(0, 0);
 
     sampler::Random sampler;
-    sampler.resize(1);
 
     Sample sample;
 

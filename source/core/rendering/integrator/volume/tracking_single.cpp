@@ -29,7 +29,7 @@ namespace rendering::integrator::volume {
 
 using namespace scene;
 
-Tracking_single::Tracking_single(bool progressive) {
+Tracking_single::Tracking_single(uint32_t max_samples_per_pixel, bool progressive) {
     if (progressive) {
         sampler_pool_ = new sampler::Random_pool(2 * Num_dedicated_samplers);
     } else {
@@ -39,21 +39,13 @@ Tracking_single::Tracking_single(bool progressive) {
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
     for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->create(2 * i + 0, 2, 1);
-        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1);
+        sampler_pool_->create(2 * i + 0, 2, 1, max_samples_per_pixel);
+        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1, max_samples_per_pixel);
     }
 }
 
 Tracking_single::~Tracking_single() {
     delete sampler_pool_;
-}
-
-void Tracking_single::prepare(uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel);
-
-    for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
-        sampler_pool_->get(i).resize(num_samples_per_pixel);
-    }
 }
 
 void Tracking_single::start_pixel(RNG& rng) {
@@ -473,8 +465,8 @@ sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) {
 Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progressive)
     : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
 
-Integrator* Tracking_single_pool::get(uint32_t id) const {
-    return new (&integrators_[id]) Tracking_single(progressive_);
+Integrator* Tracking_single_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) Tracking_single(max_samples_per_pixel, progressive_);
 }
 
 }  // namespace rendering::integrator::volume
