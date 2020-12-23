@@ -16,19 +16,19 @@ class Buffer {
 
     void clear(Value_pool const& aovs);
 
-    void add_pixel(int32_t id, uint32_t slot, float3_p value, float weight);
+    void add_pixel(int32_t id, uint32_t slot, float4_p value, float weight);
 
-    void add_pixel_atomic(int32_t id, uint32_t slot, float3_p value, float weight);
+    void add_pixel_atomic(int32_t id, uint32_t slot, float4_p value, float weight);
 
-    void overwrite_pixel(int32_t id, uint32_t slot, float3_p value);
+    void overwrite_pixel(int32_t id, uint32_t slot, float4_p value);
 
-    float3 value(int32_t id, uint32_t slot) const;
+    float4 value(int32_t id, uint32_t slot) const;
 
   private:
     uint32_t buffers_len_;
     uint32_t buffer_len_;
 
-    float3** buffers_;
+    float4** buffers_;
 };
 
 }  // namespace rendering::sensor::aov

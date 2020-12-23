@@ -180,6 +180,7 @@ int main(int argc, char* argv[]) {
         }
 
         resources.increment_generation();
+        image_provider.increment_generation();
     }
 
     return 0;

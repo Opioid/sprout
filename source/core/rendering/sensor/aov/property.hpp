@@ -15,7 +15,14 @@ enum class Property {
     Shading_normal,
     Material_id,
     Depth,
+    AO,
     Unknown
+};
+
+struct Descriptor {
+    Property property;
+
+    float fparam;
 };
 
 enum class Operation : uint8_t { Accumulate = 0, Overwrite, Less };

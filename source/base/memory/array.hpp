@@ -63,6 +63,45 @@ class Array {
     T* data_;
 };
 
+template <typename T, uint32_t N>
+class Static_array {
+  public:
+    Static_array();
+
+    bool empty() const;
+
+    bool full() const;
+
+    static uint32_t constexpr capacity();
+
+    uint32_t size() const;
+
+    T const* data() const;
+    T*       data();
+
+    void clear();
+
+    void resize(uint32_t size);
+
+    void push_back(T const& v);
+
+    T const& operator[](uint32_t i) const;
+    T&       operator[](uint32_t i);
+
+    T const* begin() const;
+    T*       begin();
+
+    T const* end() const;
+    T*       end();
+
+  private:
+    void allocate(uint32_t capacity);
+
+    uint32_t size_;
+
+    T data_[N];
+};
+
 template <typename T>
 class Concurrent_array {
   public:

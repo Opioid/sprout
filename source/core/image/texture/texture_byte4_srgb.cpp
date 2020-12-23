@@ -6,41 +6,57 @@
 
 namespace image::texture {
 
-Byte4_sRGB::Byte4_sRGB(Byte4 const& image) : image_(image) {}
+Byte4_sRGB::Byte4_sRGB(Byte4 const& image)
+    : description_(image.description()),
+      data_(image.data()),
+      dimensions_(image.description().dimensions()) {}
 
-Byte4 const& Byte4_sRGB::image() const {
-    return image_;
+Description const& Byte4_sRGB::description() const {
+    return description_;
 }
 
 float Byte4_sRGB::at_1(int32_t x, int32_t y) const {
-    auto const value = image_.at(x, y);
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
     return encoding::cached_srgb_to_float(value[0]);
 }
 
 float2 Byte4_sRGB::at_2(int32_t x, int32_t y) const {
-    auto const value = image_.at(x, y);
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
     return encoding::cached_srgb_to_float(value.xy());
 }
 
 float3 Byte4_sRGB::at_3(int32_t x, int32_t y) const {
-    auto const value = image_.at(x, y);
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
     return encoding::cached_srgb_to_float(value.xyz());
 }
 
 float4 Byte4_sRGB::at_4(int32_t x, int32_t y) const {
-    auto const value = image_.at(x, y);
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
     return encoding::cached_srgb_to_float(value);
 }
 
 void Byte4_sRGB::gather_1(int4_p xy_xy1, float c[4]) const {
-    byte4 v[4];
-    image_.gather(xy_xy1, v);
+    int32_t const width = dimensions_[0];
+
+    int32_t const y0 = width * xy_xy1[1];
+
+    byte3 const v0 = data_[y0 + xy_xy1[0]].xyz();
+    byte3 const v1 = data_[y0 + xy_xy1[2]].xyz();
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    byte3 const v2 = data_[y1 + xy_xy1[0]].xyz();
+    byte3 const v3 = data_[y1 + xy_xy1[2]].xyz();
 
 #ifdef SU_ACESCG
-    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0].xyz()))[0];
-    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]).xyz())[0];
-    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]).xyz())[0];
-    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]).xyz())[0];
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v0))[0];
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v1))[0];
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v2))[0];
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v3))[0];
 #else
     c[0] = encoding::cached_srgb_to_float(v[0][0]);
     c[1] = encoding::cached_srgb_to_float(v[1][0]);
@@ -50,14 +66,23 @@ void Byte4_sRGB::gather_1(int4_p xy_xy1, float c[4]) const {
 }
 
 void Byte4_sRGB::gather_2(int4_p xy_xy1, float2 c[4]) const {
-    byte4 v[4];
-    image_.gather(xy_xy1, v);
+    int32_t const width = dimensions_[0];
+
+    int32_t const y0 = width * xy_xy1[1];
+
+    byte3 const v0 = data_[y0 + xy_xy1[0]].xyz();
+    byte3 const v1 = data_[y0 + xy_xy1[2]].xyz();
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    byte3 const v2 = data_[y1 + xy_xy1[0]].xyz();
+    byte3 const v3 = data_[y1 + xy_xy1[2]].xyz();
 
 #ifdef SU_ACESCG
-    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0]).xyz()).xy();
-    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]).xyz()).xy();
-    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]).xyz()).xy();
-    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]).xyz()).xy();
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v0)).xy();
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v1)).xy();
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v2)).xy();
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v3)).xy();
 #else
     c[0] = encoding::cached_srgb_to_float(v[0].xy());
     c[1] = encoding::cached_srgb_to_float(v[1].xy());
@@ -67,14 +92,23 @@ void Byte4_sRGB::gather_2(int4_p xy_xy1, float2 c[4]) const {
 }
 
 void Byte4_sRGB::gather_3(int4_p xy_xy1, float3 c[4]) const {
-    byte4 v[4];
-    image_.gather(xy_xy1, v);
+    int32_t const width = dimensions_[0];
+
+    int32_t const y0 = width * xy_xy1[1];
+
+    byte3 const v0 = data_[y0 + xy_xy1[0]].xyz();
+    byte3 const v1 = data_[y0 + xy_xy1[2]].xyz();
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    byte3 const v2 = data_[y1 + xy_xy1[0]].xyz();
+    byte3 const v3 = data_[y1 + xy_xy1[2]].xyz();
 
 #ifdef SU_ACESCG
-    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0].xyz()));
-    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1].xyz()));
-    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2].xyz()));
-    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3].xyz()));
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v0));
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v1));
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v2));
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v3));
 #else
     c[0] = encoding::cached_srgb_to_float(v[0].xyz());
     c[1] = encoding::cached_srgb_to_float(v[1].xyz());
@@ -84,55 +118,106 @@ void Byte4_sRGB::gather_3(int4_p xy_xy1, float3 c[4]) const {
 }
 
 float Byte4_sRGB::at_element_1(int32_t x, int32_t y, int32_t element) const {
-    auto const value = image_.at_element(x, y, element);
+    int32_t const i     = (element * dimensions_[1] + y) * dimensions_[0] + x;
+    auto const    value = data_[i];
     return encoding::cached_srgb_to_float(value[0]);
 }
 
 float2 Byte4_sRGB::at_element_2(int32_t x, int32_t y, int32_t element) const {
-    auto const value = image_.at_element(x, y, element);
+    int32_t const i     = (element * dimensions_[1] + y) * dimensions_[0] + x;
+    auto const    value = data_[i];
     return float2(encoding::cached_srgb_to_float(value[0]),
                   encoding::cached_srgb_to_float(value[1]));
 }
 
 float3 Byte4_sRGB::at_element_3(int32_t x, int32_t y, int32_t element) const {
-    auto const value = image_.at_element(x, y, element);
+    int32_t const i     = (element * dimensions_[1] + y) * dimensions_[0] + x;
+    auto const    value = data_[i];
     return encoding::cached_srgb_to_float(value.xyz());
 }
 
 float Byte4_sRGB::at_1(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.at(x, y, z);
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
     return encoding::cached_srgb_to_float(value[0]);
 }
 
 float2 Byte4_sRGB::at_2(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.at(x, y, z);
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
     return float2(encoding::cached_srgb_to_float(value[0]),
                   encoding::cached_srgb_to_float(value[1]));
 }
 
 float3 Byte4_sRGB::at_3(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.at(x, y, z);
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
     return encoding::cached_srgb_to_float(value.xyz());
 }
 
 float4 Byte4_sRGB::at_4(int32_t x, int32_t y, int32_t z) const {
-    auto const value = image_.at(x, y, z);
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
     return encoding::cached_srgb_to_float(value);
 }
 
 void Byte4_sRGB::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
-    byte4 v[8];
-    image_.gather(xyz, xyz1, v);
+    int64_t const w = int64_t(dimensions_[0]);
+    int64_t const h = int64_t(dimensions_[1]);
+
+    int64_t const x = int64_t(xyz[0]);
+    int64_t const y = int64_t(xyz[1]);
+    int64_t const z = int64_t(xyz[2]);
+
+    int64_t const x1 = int64_t(xyz1[0]);
+    int64_t const y1 = int64_t(xyz1[1]);
+    int64_t const z1 = int64_t(xyz1[2]);
+
+    int64_t const d = z * h;
+
+    int64_t const c0 = (d + y) * w + x;
+    byte3 const   v0 = data_[c0].xyz();
+
+    int64_t const c1 = (d + y) * w + x1;
+    byte3 const   v1 = data_[c1].xyz();
+
+    int64_t const c2 = (d + y1) * w + x;
+    byte3 const   v2 = data_[c2].xyz();
+
+    int64_t const c3 = (d + y1) * w + x1;
+    byte3 const   v3 = data_[c3].xyz();
+
+    int64_t const d1 = z1 * h;
+
+    int64_t const c4 = (d1 + y) * w + x;
+    byte3 const   v4 = data_[c4].xyz();
+
+    int64_t const c5 = (d1 + y) * w + x1;
+    byte3 const   v5 = data_[c5].xyz();
+
+    int64_t const c6 = (d1 + y1) * w + x;
+    byte3 const   v6 = data_[c6].xyz();
+
+    int64_t const c7 = (d1 + y1) * w + x1;
+    byte3 const   v7 = data_[c7].xyz();
 
 #ifdef SU_ACESCG
-    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0]).xyz())[0];
-    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]).xyz())[0];
-    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]).xyz())[0];
-    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]).xyz())[0];
-    c[4] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[4]).xyz())[0];
-    c[5] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[5]).xyz())[0];
-    c[6] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[6]).xyz())[0];
-    c[7] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[7]).xyz())[0];
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v0))[0];
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v1))[0];
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v2))[0];
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v3))[0];
+    c[4] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v4))[0];
+    c[5] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v5))[0];
+    c[6] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v6))[0];
+    c[7] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v7))[0];
 #else
     c[0] = encoding::cached_srgb_to_float(v[0][0]);
     c[1] = encoding::cached_srgb_to_float(v[1][0]);
@@ -146,18 +231,54 @@ void Byte4_sRGB::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
 }
 
 void Byte4_sRGB::gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const {
-    byte4 v[8];
-    image_.gather(xyz, xyz1, v);
+    int64_t const w = int64_t(dimensions_[0]);
+    int64_t const h = int64_t(dimensions_[1]);
+
+    int64_t const x = int64_t(xyz[0]);
+    int64_t const y = int64_t(xyz[1]);
+    int64_t const z = int64_t(xyz[2]);
+
+    int64_t const x1 = int64_t(xyz1[0]);
+    int64_t const y1 = int64_t(xyz1[1]);
+    int64_t const z1 = int64_t(xyz1[2]);
+
+    int64_t const d = z * h;
+
+    int64_t const c0 = (d + y) * w + x;
+    byte3 const   v0 = data_[c0].xyz();
+
+    int64_t const c1 = (d + y) * w + x1;
+    byte3 const   v1 = data_[c1].xyz();
+
+    int64_t const c2 = (d + y1) * w + x;
+    byte3 const   v2 = data_[c2].xyz();
+
+    int64_t const c3 = (d + y1) * w + x1;
+    byte3 const   v3 = data_[c3].xyz();
+
+    int64_t const d1 = z1 * h;
+
+    int64_t const c4 = (d1 + y) * w + x;
+    byte3 const   v4 = data_[c4].xyz();
+
+    int64_t const c5 = (d1 + y) * w + x1;
+    byte3 const   v5 = data_[c5].xyz();
+
+    int64_t const c6 = (d1 + y1) * w + x;
+    byte3 const   v6 = data_[c6].xyz();
+
+    int64_t const c7 = (d1 + y1) * w + x1;
+    byte3 const   v7 = data_[c7].xyz();
 
 #ifdef SU_ACESCG
-    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[0]).xyz()).xy();
-    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[1]).xyz()).xy();
-    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[2]).xyz()).xy();
-    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[3]).xyz()).xy();
-    c[4] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[4]).xyz()).xy();
-    c[5] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[5]).xyz()).xy();
-    c[6] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[6]).xyz()).xy();
-    c[7] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v[7]).xyz()).xy();
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v0)).xy();
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v1)).xy();
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v2)).xy();
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v3)).xy();
+    c[4] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v4)).xy();
+    c[5] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v5)).xy();
+    c[6] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v6)).xy();
+    c[7] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(v7)).xy();
 #else
     c[0] = encoding::cached_srgb_to_float(v[0].xy());
     c[1] = encoding::cached_srgb_to_float(v[1].xy());

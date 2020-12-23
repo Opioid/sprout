@@ -44,13 +44,19 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
                                      Manager& resources, std::string& resolved_name) {
     auto const key = std::make_pair(filename, options);
 
+    uint32_t id = resource::Null;
+
     if (auto cached = entries_.find(key); entries_.end() != cached) {
         auto& entry = cached->second;
 
+        id = entry.id;
+
         if (check_up_to_date(entry)) {
-            uint32_t const id = entry.id;
             return {resources_[id], id};
         }
+
+        delete resources_[id];
+        resources_[id] = nullptr;
     }
 
     auto resource = provider_.load(filename, options, resources, resolved_name);
@@ -61,9 +67,13 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
     std::error_code ec;
     auto const      last_write = std::filesystem::last_write_time(resolved_name, ec);
 
-    resources_.push_back(resource);
+    if (id != resource::Null) {
+        resources_[id] = resource;
+    } else {
+        resources_.push_back(resource);
 
-    uint32_t const id = uint32_t(resources_.size()) - 1;
+        id = uint32_t(resources_.size()) - 1;
+    }
 
     entries_.insert_or_assign(key, Entry{id, generation_, resolved_name, last_write});
 
@@ -77,7 +87,7 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
+Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* const data,
                                      std::string const& source_name, Variants const& options,
                                      Manager& resources) {
     auto resource = provider_.load(data, source_name, options, resources);
@@ -92,7 +102,8 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
     if (!name.empty()) {
         auto const key = std::make_pair(name, options);
 
-        auto const last_write = std::filesystem::last_write_time(source_name);
+        std::error_code ec;
+        auto const      last_write = std::filesystem::last_write_time(source_name, ec);
 
         entries_.insert_or_assign(key, Entry{id, generation_, source_name, last_write});
     }
@@ -101,16 +112,20 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* data,
 }
 
 template <typename T>
-Resource_ptr<T> Typed_cache<T>::get(std::string const& filename, Variants const& options) {
-    auto const key = std::make_pair(filename, options);
+Resource_ptr<T> Typed_cache<T>::get(std::string const& name, Variants const& options) {
+    auto const key = std::make_pair(name, options);
 
     if (auto cached = entries_.find(key); entries_.end() != cached) {
         auto& entry = cached->second;
 
+        uint32_t const id = entry.id;
+
         if (check_up_to_date(entry)) {
-            uint32_t const id = entry.id;
             return {resources_[id], id};
         }
+
+        delete resources_[id];
+        resources_[id] = nullptr;
 
         return Resource_ptr<T>::Null();
     }
@@ -147,20 +162,6 @@ uint32_t Typed_cache<T>::store(std::string const& name, Variants const& options,
     entries_.insert_or_assign(key, Entry{id, generation_, "", std::filesystem::file_time_type()});
 
     return id;
-}
-
-template <typename T>
-bool Typed_cache<T>::check_up_to_date(Entry& entry) const {
-    if (entry.generation == generation_ || entry.source_name.empty()) {
-        return true;
-    }
-
-    if (std::filesystem::last_write_time(entry.source_name) == entry.last_write) {
-        entry.generation = generation_;
-        return true;
-    }
-
-    return false;
 }
 
 }  // namespace resource

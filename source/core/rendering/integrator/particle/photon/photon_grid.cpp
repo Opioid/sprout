@@ -41,7 +41,7 @@ static float3 scattering_coefficient(prop::Intersection const& isec, Worker cons
 Grid::Grid() : dimensions_(0), grid_(nullptr) {}
 
 Grid::~Grid() {
-    memory::free_aligned(grid_);
+    std::free(grid_);
 }
 
 void Grid::init(float search_radius, float grid_cell_factor, bool check_disk) {
@@ -70,7 +70,7 @@ void Grid::resize(AABB const& aabb) {
 
         int32_t const num_cells = dimensions[0] * dimensions[1] * dimensions[2] + 1;
 
-        memory::free_aligned(grid_);
+        std::free(grid_);
         grid_ = memory::allocate_aligned<int32_t>(uint32_t(num_cells));
 
         int32_t const area = dimensions[0] * dimensions[1];

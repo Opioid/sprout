@@ -30,23 +30,23 @@ Lighttracer::Lighttracer(Settings const& settings) : settings_(settings) {}
 
 Lighttracer::~Lighttracer() = default;
 
-void Lighttracer::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+void Lighttracer::prepare(uint32_t max_samples_per_pixel) {
+    sampler_.resize(max_samples_per_pixel);
 
-    light_sampler_.resize(num_samples_per_pixel, 1, 2, 3);
+    light_sampler_.resize(max_samples_per_pixel);
 
     for (auto& s : material_samplers_) {
-        s.resize(num_samples_per_pixel, 1, 1, 1);
+        s.resize(max_samples_per_pixel);
     }
 }
 
-void Lighttracer::start_pixel(RNG& rng, uint32_t num_samples) {
-    sampler_.start_pixel(rng, num_samples);
+void Lighttracer::start_pixel(RNG& rng, uint32_t num_samples_per_pixel) {
+    sampler_.start_pixel(rng, num_samples_per_pixel);
 
-    light_sampler_.start_pixel(rng, num_samples);
+    light_sampler_.start_pixel(rng, num_samples_per_pixel);
 
     for (auto& s : material_samplers_) {
-        s.start_pixel(rng, num_samples);
+        s.start_pixel(rng, num_samples_per_pixel);
     }
 }
 
@@ -189,6 +189,10 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
 bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                                      Light const*& light_out, uint32_t& light_id,
                                      Sample_from& light_sample) {
+    if (0 == worker.scene().num_lights()) {
+        return false;
+    }
+
     auto& rng = worker.rng();
 
     float const select = light_sampler_.sample_1D(rng, 1);
@@ -310,25 +314,18 @@ Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounce
                                    uint32_t max_bounces, bool full_light_path)
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, full_light_path} {
-    std::memset(static_cast<void*>(integrators_), 0, sizeof(Lighttracer) * num_integrators);
-}
+      settings_{min_bounces, max_bounces, full_light_path} {}
 
 Lighttracer_pool::~Lighttracer_pool() {
     for (uint32_t i = 0, len = num_integrators_; i < len; ++i) {
-        memory::destroy(&integrators_[i]);
+        integrators_[i].~Lighttracer();
     }
 
-    memory::free_aligned(integrators_);
+    std::free(integrators_);
 }
 
 Lighttracer* Lighttracer_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Lighttracer(settings_);
-    }
-
-    return &integrators_[id];
+    return new (&integrators_[id]) Lighttracer(settings_);
 }
 
 uint32_t Lighttracer_pool::max_sample_depth() const {

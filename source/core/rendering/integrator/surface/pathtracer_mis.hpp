@@ -26,9 +26,9 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     ~Pathtracer_MIS() final;
 
-    void prepare(Scene const& scene, uint32_t max_samples_per_pixel) final;
+    void prepare(uint32_t max_samples_per_pixel) final;
 
-    void start_pixel(RNG& rng, uint32_t num_samples) final;
+    void start_pixel(RNG& rng, uint32_t num_samples_per_pixel) final;
 
     float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
               AOV* aov) final;
@@ -82,12 +82,6 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
     sampler::Pool* sampler_pool_;
 
     static uint32_t constexpr Num_dedicated_samplers = 3;
-
-    sampler::Sampler* material_samplers_[Num_dedicated_samplers];
-
-    sampler::Sampler* light_samplers_[Num_dedicated_samplers];
-
-    Lights lights_;
 };
 
 class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {

@@ -9,7 +9,11 @@ class Byte2_snorm {
   public:
     Byte2_snorm(Byte2 const& image);
 
-    Byte2 const& image() const;
+    Description const& description() const;
+
+    int3 dimensions() const {
+        return dimensions_;
+    }
 
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
@@ -33,7 +37,11 @@ class Byte2_snorm {
     void gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const;
 
   private:
-    Byte2 const& image_;
+    Description const& description_;
+
+    byte2 const* data_;
+
+    int3 const dimensions_;
 };
 
 }  // namespace image::texture

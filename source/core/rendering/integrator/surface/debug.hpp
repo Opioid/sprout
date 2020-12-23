@@ -28,9 +28,9 @@ class alignas(64) Debug final : public Integrator {
 
     Debug(Settings const& settings);
 
-    void prepare(Scene const& scene, uint32_t max_samples_per_pixel) final;
+    void prepare(uint32_t max_samples_per_pixel) final;
 
-    void start_pixel(RNG& rng, uint32_t num_samples) final;
+    void start_pixel(RNG& rng, uint32_t num_samples_per_pixel) final;
 
     float4 li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack const& initial_stack,
               AOV* aov) final;
@@ -41,8 +41,6 @@ class alignas(64) Debug final : public Integrator {
     Settings settings_;
 
     sampler::Random sampler_;
-
-    Lights lights_;
 };
 
 class Debug_pool final : public Typed_pool<Debug> {

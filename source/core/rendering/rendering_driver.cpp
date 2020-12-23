@@ -109,8 +109,6 @@ void Driver::render(Exporters& exporters) {
 void Driver::render(uint32_t frame) {
     auto& camera = *view_->camera;
 
-    scene_->finish();
-
     logging::info("Frame " + string::to_string(frame));
 
     auto const render_start = std::chrono::high_resolution_clock::now();
@@ -149,8 +147,6 @@ void Driver::render(uint32_t frame) {
 
 void Driver::start_frame(uint32_t frame) {
     auto& camera = *view_->camera;
-
-    scene_->finish();
 
     uint64_t const start = frame * camera.frame_step();
     scene_->simulate(start, start + camera.frame_duration(), threads_);

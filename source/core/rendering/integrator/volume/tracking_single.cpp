@@ -2,7 +2,6 @@
 #include "base/math/aabb.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.hpp"
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -30,54 +29,38 @@ namespace rendering::integrator::volume {
 
 using namespace scene;
 
-Tracking_single::Tracking_single(bool progressive)
-    : sampler_pool_(progressive ? nullptr
-                                : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
-    if (sampler_pool_) {
-        for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(2 * i + 0);
-            light_samplers_[i]    = sampler_pool_->get(2 * i + 1);
-        }
+Tracking_single::Tracking_single(bool progressive) {
+    if (progressive) {
+        sampler_pool_ = new sampler::Random_pool(2 * Num_dedicated_samplers);
     } else {
-        for (auto& s : material_samplers_) {
-            s = &sampler_;
-        }
-
-        for (auto& s : light_samplers_) {
-            s = &sampler_;
-        }
+        sampler_pool_ = new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers);
     }
 
-    lights_.reserve(scene::light::Tree::Max_lights);
+    static uint32_t constexpr Max_lights = light::Tree::Max_lights;
+
+    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+        sampler_pool_->create(2 * i + 0, 2, 1);
+        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1);
+    }
 }
 
 Tracking_single::~Tracking_single() {
     delete sampler_pool_;
 }
 
-void Tracking_single::prepare(Scene const& /*scene*/, uint32_t num_samples_per_pixel) {
-    sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+void Tracking_single::prepare(uint32_t max_samples_per_pixel) {
+    sampler_.resize(max_samples_per_pixel);
 
-    static uint32_t constexpr Max_lights = light::Tree::Max_lights;
-
-    for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel, 1, 0, Max_lights);
-    }
-
-    for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel, 1, Max_lights, Max_lights + 1);
+    for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
+        sampler_pool_->get(i).resize(max_samples_per_pixel);
     }
 }
 
-void Tracking_single::start_pixel(RNG& rng, uint32_t num_samples) {
-    sampler_.start_pixel(rng, num_samples);
+void Tracking_single::start_pixel(RNG& rng, uint32_t num_samples_per_pixel) {
+    sampler_.start_pixel(rng, num_samples_per_pixel);
 
-    for (auto s : material_samplers_) {
-        s->start_pixel(rng, num_samples);
-    }
-
-    for (auto s : light_samplers_) {
-        s->start_pixel(rng, num_samples);
+    for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
+        sampler_pool_->get(i).start_pixel(rng, num_samples_per_pixel);
     }
 }
 /*
@@ -294,14 +277,16 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         bool const split = ray.depth < Num_dedicated_samplers;
 
-        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights_);
+        auto& lights = worker.lights();
+
+        worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights);
 
         // li = one_bounce(ray, isec, material, worker);
 
         float3 lli(0.f);
 
-        for (uint32_t il = 0, len = lights_.size(); il < len; ++il) {
-            auto const  light     = lights_[il];
+        for (uint32_t il = 0, len = lights.size(); il < len; ++il) {
+            auto const  light     = lights[il];
             auto const& light_ref = worker.scene().light(light.id);
 
             if (light_ref.is_finite(worker.scene())) {
@@ -471,7 +456,7 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
 
 sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
-        return *material_samplers_[bounce];
+        return sampler_pool_->get(2 * bounce + 0);
     }
 
     return sampler_;
@@ -479,7 +464,7 @@ sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) {
 
 sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
-        return *light_samplers_[bounce];
+        return sampler_pool_->get(2 * bounce + 1);
     }
 
     return sampler_;
@@ -489,12 +474,7 @@ Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progre
     : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
 
 Integrator* Tracking_single_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Tracking_single(progressive_);
-    }
-
-    return &integrators_[id];
+    return new (&integrators_[id]) Tracking_single(progressive_);
 }
 
 }  // namespace rendering::integrator::volume

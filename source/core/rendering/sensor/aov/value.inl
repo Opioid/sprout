@@ -29,6 +29,10 @@ inline void Value::insert(float v, Property aov) {
 }
 
 inline void Value::insert(float3_p v, Property aov) {
+    insert(float4(v, 0.f), aov);
+}
+
+inline void Value::insert(float4_p v, Property aov) {
     uint32_t const id = mapping_.m[uint32_t(aov)];
 
     if (255 == id) {
@@ -37,19 +41,25 @@ inline void Value::insert(float3_p v, Property aov) {
 
     Slot& slot = slots_[id];
 
-    slot.v[0] = v[0];
-    slot.v[1] = v[1];
-    slot.v[2] = v[2];
+    slot.v = v;
 }
 
-inline float3 Value::value(uint32_t id) const {
-    Slot const& slot = slots_[id];
-
-    return float3(slot.v);
+inline float4 Value::value(uint32_t id) const {
+    return slots_[id].v;
 }
 
 inline Operation Value::operation(uint32_t id) const {
     return slots_[id].operation;
+}
+
+inline float Value::param(Property aov) const {
+    uint32_t const id = mapping_.m[uint32_t(aov)];
+
+    if (255 == id) {
+        return 0.f;
+    }
+
+    return slots_[id].fparam;
 }
 
 }  // namespace rendering::sensor::aov

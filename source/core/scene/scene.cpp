@@ -94,15 +94,6 @@ void Scene::clear() {
     extensions_.clear();
 }
 
-void Scene::finish() {
-    if (lights_.empty()) {
-        uint32_t const dummy = create_entity();
-        allocate_light(light::Light::Type::Null, dummy, 0);
-    }
-
-    light_temp_powers_.resize(uint32_t(lights_.size()));
-}
-
 AABB Scene::aabb() const {
     return prop_bvh_.aabb();
 }
@@ -135,13 +126,13 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
     return {id, pdf};
 }
 
-Scene::Light Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split,
-                          bool calculate_pdf) const {
+Scene::Light Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
+                          bool split) const {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
 
-    float const pdf = calculate_pdf ? light_tree_.pdf(p, n, total_sphere, split, id, *this) : 1.f;
+    float const pdf = light_tree_.pdf(p, n, total_sphere, split, id, *this);
 
     return {id, pdf};
 }
@@ -226,6 +217,8 @@ void Scene::compile(uint64_t time, Threads& threads) {
     volume_bvh_.set_props(infinite_volumes_, props_);
 
     // re-sort lights PDF
+    light_temp_powers_.resize(uint32_t(lights_.size()));
+
     for (uint32_t i = 0; auto& l : lights_) {
         l.prepare_sampling(i, time, *this, threads);
         light_temp_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));

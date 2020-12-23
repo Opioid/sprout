@@ -9,7 +9,11 @@ class Byte4_sRGB {
   public:
     Byte4_sRGB(Byte4 const& image);
 
-    Byte4 const& image() const;
+    Description const& description() const;
+
+    int3 dimensions() const {
+        return dimensions_;
+    }
 
     float  at_1(int32_t x, int32_t y) const;
     float2 at_2(int32_t x, int32_t y) const;
@@ -33,7 +37,11 @@ class Byte4_sRGB {
     void gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const;
 
   private:
-    Byte4 const& image_;
+    Description const& description_;
+
+    byte4 const* data_;
+
+    int3 const dimensions_;
 };
 
 }  // namespace image::texture

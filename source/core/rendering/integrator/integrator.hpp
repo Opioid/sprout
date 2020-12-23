@@ -1,7 +1,6 @@
 #ifndef SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 #define SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 
-#include "base/memory/array.hpp"
 #include "scene/material/sampler_settings.hpp"
 
 #include <cstdint>
@@ -30,7 +29,6 @@ class Sample;
 
 namespace light {
 class Light;
-struct Light_pick;
 }  // namespace light
 
 namespace prop {
@@ -55,7 +53,7 @@ class Worker;
 
 namespace integrator {
 
-enum class Light_sampling { Single, Adaptive, All };
+enum class Light_sampling : uint8_t { Single, Adaptive };
 
 class Integrator {
   public:
@@ -63,7 +61,6 @@ class Integrator {
     using Scene           = scene::Scene;
     using Transformation  = scene::entity::Composed_transformation;
     using Light           = scene::light::Light;
-    using Lights          = memory::Array<scene::light::Light_pick>;
     using Material        = scene::material::Material;
     using Material_sample = scene::material::Sample;
     using Filter          = scene::material::Sampler_settings::Filter;
@@ -77,9 +74,9 @@ class Integrator {
 
     virtual ~Integrator();
 
-    virtual void prepare(Scene const& scene, uint32_t max_samples_per_pixel) = 0;
+    virtual void prepare(uint32_t max_samples_per_pixel) = 0;
 
-    virtual void start_pixel(RNG& rng, uint32_t num_samples) = 0;
+    virtual void start_pixel(RNG& rng, uint32_t num_samples_per_pixel) = 0;
 };
 
 }  // namespace integrator

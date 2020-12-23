@@ -23,7 +23,6 @@
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/pm.hpp"
-#include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/tracking_multi.hpp"
 #include "rendering/integrator/volume/tracking_single.hpp"
@@ -610,10 +609,6 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
             return new AO_pool(num_workers, progressive, num_samples, radius);
         }
 
-        if ("Whitted" == n.name) {
-            return new Whitted_pool(num_workers);
-        }
-
         if ("PM" == n.name) {
             uint32_t const min_bounces = json::read_uint(n.value, "min_bounces",
                                                          Default_min_bounces);
@@ -996,8 +991,6 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
                 sampling = Light_sampling::Single;
             } else if ("Adaptive" == strategy) {
                 sampling = Light_sampling::Adaptive;
-            } else if ("All" == strategy) {
-                sampling = Light_sampling::All;
             }
         } else if ("splitting_threshold" == n.name) {
             float const st = json::read_float(n.value);
@@ -1009,37 +1002,44 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs) {
     using namespace rendering::sensor::aov;
 
-    std::vector<Property> properties;
+    std::vector<Descriptor> descriptors;
 
     for (auto& n : value.GetObject()) {
         if ("Albedo" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Albedo);
+                descriptors.push_back({Property::Albedo, 0.f});
             }
         } else if ("Roughness" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Roughness);
+                descriptors.push_back({Property::Roughness, 0.f});
             }
         } else if ("Geometric_normal" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Geometric_normal);
+                descriptors.push_back({Property::Geometric_normal, 0.f});
             }
         } else if ("Shading_normal" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Shading_normal);
+                descriptors.push_back({Property::Shading_normal, 0.f});
             }
         } else if ("Material_id" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Material_id);
+                descriptors.push_back({Property::Material_id, 0.f});
             }
         } else if ("Depth" == n.name) {
             if (json::read_bool(n.value)) {
-                properties.push_back(Property::Depth);
+                descriptors.push_back({Property::Depth, 0.f});
+            }
+        } else if ("AO" == n.name) {
+            if (n.value.IsObject()) {
+                float const radius = json::read_float(n.value, "radius", 1.f);
+                descriptors.push_back({Property::AO, radius});
+            } else if (json::read_bool(n.value)) {
+                descriptors.push_back({Property::AO, 1.f});
             }
         }
     }
 
-    aovs.configure(uint32_t(properties.size()), properties.data());
+    aovs.configure(uint32_t(descriptors.size()), descriptors.data());
 }
 
 }  // namespace take

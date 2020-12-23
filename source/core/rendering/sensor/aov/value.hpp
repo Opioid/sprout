@@ -1,7 +1,7 @@
 #ifndef SU_CORE_RENDERING_SENSOR_AOV_VALUE_HPP
 #define SU_CORE_RENDERING_SENSOR_AOV_VALUE_HPP
 
-#include "base/math/vector3.hpp"
+#include "base/math/vector4.hpp"
 #include "property.hpp"
 
 namespace rendering::sensor::aov {
@@ -18,7 +18,7 @@ class Value {
         uint8_t m[Max_slots];
     };
 
-    void init(Mapping mapping, uint32_t num_slots);
+    void init(Mapping mapping, uint32_t num_slots, Descriptor const* descriptors);
 
     uint32_t num_slots() const;
 
@@ -30,23 +30,25 @@ class Value {
 
     void insert(float3_p v, Property aov);
 
-    struct Result {
-        float3   v;
-        Property p;
-    };
+    void insert(float4_p v, Property aov);
 
-    float3 value(uint32_t id) const;
+    float4 value(uint32_t id) const;
 
     Operation operation(uint32_t id) const;
+
+    float param(Property aov) const;
 
   private:
     Mapping mapping_;
 
     uint8_t num_slots_;
 
-    struct alignas(16) Slot {
-        float     v[3];
+    struct Slot {
+        float4 v;
+
         Operation operation;
+
+        float fparam;
     };
 
     Slot* slots_;
@@ -58,7 +60,7 @@ class Value_pool {
 
     ~Value_pool();
 
-    void configure(uint32_t num_slots, Property const* properties);
+    void configure(uint32_t num_slots, Descriptor const* descriptors);
 
     void init(uint32_t num_values);
 
@@ -75,7 +77,7 @@ class Value_pool {
 
     uint8_t num_slots_;
 
-    Property* properties_;
+    Descriptor* descriptors_;
 
     Value* values_;
 };

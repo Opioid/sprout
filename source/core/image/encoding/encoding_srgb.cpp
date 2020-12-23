@@ -168,4 +168,16 @@ void Srgb::to_snorm(Float4 const& image, int32_t begin, int32_t end) {
     }
 }
 
+void Srgb::to_uint(Float4 const& image, int32_t begin, int32_t end) {
+    int2 const d = image.description().dimensions().xy();
+
+    uint8_t* byte = reinterpret_cast<uint8_t*>(buffer_);
+
+    for (int32_t i = begin * d[0], len = end * d[0]; i < len; ++i) {
+        float const v = image.at(i)[0];
+
+        byte[i] = uint8_t(v);
+    }
+}
+
 }  // namespace image::encoding

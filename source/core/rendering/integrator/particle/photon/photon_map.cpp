@@ -16,8 +16,8 @@ namespace rendering::integrator::particle::photon {
 Map::Map() : aabbs_(nullptr), num_reduced_(nullptr) {}
 
 Map::~Map() {
-    memory::free_aligned(num_reduced_);
-    memory::free_aligned(aabbs_);
+    std::free(num_reduced_);
+    std::free(aabbs_);
 }
 
 void Map::init(uint32_t num_workers, uint32_t num_photons, float search_radius,

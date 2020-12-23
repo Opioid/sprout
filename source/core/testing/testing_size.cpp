@@ -7,9 +7,8 @@
 #include "image/typed_image.hpp"
 #include "rendering/integrator/particle/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
-#include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/rendering_worker.hpp"
-#include "sampler/sampler.hpp"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
@@ -81,7 +80,8 @@ void size() {
 
     print_size<rendering::integrator::particle::photon::Photon>("Photon", 48);
 
-    print_size<sampler::Sampler>("Sampler", 32);
+    print_size<sampler::Sampler>("Sampler", 8);
+    print_size<sampler::Random>("Random", 8);
     print_size<sampler::Golden_ratio>("Golden_ratio", 64);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
@@ -139,9 +139,9 @@ void size() {
 
     print_size<image::Byte3>("image::Byte3", 48);
 
-    print_size<image::texture::Texture>("texture::Texture", 24);
+    print_size<image::texture::Texture>("texture::Texture", 48);
 
-    print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 8);
+    print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 32);
 
     print_size<image::texture::Adapter>("texture::Adapter", 8);
 
@@ -149,11 +149,10 @@ void size() {
 
     print_size<scene::shape::Node_stack>("scene::shape::Node_stack", 512);
 
-    print_size<scene::Worker>("scene::Worker", 1088);
-    print_size<rendering::Worker>("rendering::Worker", 1152);
+    print_size<scene::Worker>("scene::Worker", 1280);
+    print_size<rendering::Worker>("rendering::Worker", 1344);
 
-    print_size<rendering::integrator::surface::Whitted>("Whitted", 64);
-    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 192);
+    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 64);
 }
 
 }  // namespace testing

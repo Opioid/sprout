@@ -6,30 +6,6 @@
 
 namespace image {
 
-struct Description {
-    Description();
-    Description(int2 dimensions, int32_t num_elements = 1);
-    Description(int3_p dimensions, int32_t num_elements, int3_p offset);
-
-    uint64_t num_pixels() const;
-
-    int3_p dimensions() const;
-
-    int32_t area() const;
-
-    int32_t volume() const;
-
-    int32_t num_elements() const;
-
-    int3 offset() const;
-
-    int3 dimensions_;
-
-    int32_t num_elements_;
-
-    int3 offset_;
-};
-
 template <typename T>
 class alignas(16) Typed_image {
   public:
@@ -49,8 +25,6 @@ class alignas(16) Typed_image {
 
     void clear(T v);
 
-    T* address(int32_t index) const;
-
     void store(int32_t index, T v);
 
     T at(int32_t index) const;
@@ -58,16 +32,6 @@ class alignas(16) Typed_image {
     void store(int32_t x, int32_t y, T v);
 
     T at(int32_t x, int32_t y) const;
-
-    T at_element(int32_t x, int32_t y, int32_t element) const;
-
-    T at(int32_t x, int32_t y, int32_t z) const;
-
-    T at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
-
-    void gather(int4_p xy_xy1, T c[4]) const;
-
-    void gather(int3_p xyz, int3_p xyz1, T c[8]) const;
 
     T* data() const;
 
@@ -90,23 +54,17 @@ class Typed_sparse_image {
 
     Description const& description() const;
 
-    T load(int64_t index) const;
-
     void store_sequentially(int64_t index, T v);
 
     T at(int64_t index) const;
 
     void store(int32_t x, int32_t y, T v);
 
-    T load_element(int32_t x, int32_t y, int32_t element) const;
-
     T at(int32_t x, int32_t y) const;
 
     T at_element(int32_t x, int32_t y, int32_t element) const;
 
     T at(int32_t x, int32_t y, int32_t z) const;
-
-    T at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 
     void gather(int4_p xy_xy1, T c[4]) const;
 

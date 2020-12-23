@@ -15,9 +15,9 @@ namespace rendering::integrator::volume {
 
 Emission::Emission(Settings const& settings) : settings_(settings) {}
 
-void Emission::prepare(scene::Scene const& /*scene*/, uint32_t /*max_samples_per_pixel*/) {}
+void Emission::prepare(uint32_t /*max_samples_per_pixel*/) {}
 
-void Emission::start_pixel(rnd::Generator& /*rng*/, uint32_t /*num_samples*/) {}
+void Emission::start_pixel(rnd::Generator& /*rng*/, uint32_t /*num_samples_per_pixel*/) {}
 
 bool Emission::transmittance(Ray const& ray, Worker& worker, float3& transmittance) {
     return Tracking::transmittance(ray, worker, transmittance);

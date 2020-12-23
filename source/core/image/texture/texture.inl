@@ -8,11 +8,8 @@
 
 namespace image::texture {
 
-#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER)                          \
-    inline Texture::Texture(TYPE const& texture)                   \
-        : dimensions_(texture.image().description().dimensions()), \
-          type_(Type::TYPE),                                       \
-          MEMBER(texture) {}
+#define TEXTURE_CONSTRUCTOR(TYPE, MEMBER) \
+    inline Texture::Texture(TYPE const& texture) : type_(Type::TYPE), MEMBER(texture) {}
 
 TEXTURE_CONSTRUCTOR(Byte1_unorm, byte1_unorm_)
 TEXTURE_CONSTRUCTOR(Byte2_snorm, byte2_snorm_)
@@ -74,54 +71,34 @@ inline int32_t Texture::num_channels() const {
         case Type::Byte4_sRGB:
             return 4;
     }
-
-    return 0;
 }
 
 inline int32_t Texture::num_elements() const {
-    TEXTURE_DELEGATE(image().description().num_elements)
-
-    return 0;
-}
-
-inline int32_t Texture::volume() const {
-    TEXTURE_DELEGATE(image().description().volume)
-
-    return 0;
+    TEXTURE_DELEGATE(description().num_elements)
 }
 
 inline int3 Texture::dimensions() const {
-    return dimensions_;
+    TEXTURE_DELEGATE(dimensions)
 }
 
 inline int3 Texture::offset() const {
-    TEXTURE_DELEGATE(image().description().offset)
-
-    return byte1_unorm_.image().description().offset();
+    TEXTURE_DELEGATE(description().offset)
 }
 
 inline float Texture::at_1(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_1, x, y)
-
-    return 0.f;
 }
 
 inline float2 Texture::at_2(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_2, x, y)
-
-    return float2(0.f);
 }
 
 inline float3 Texture::at_3(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_3, x, y)
-
-    return float3(0.f);
 }
 
 inline float4 Texture::at_4(int32_t x, int32_t y) const {
     TEXTURE_DELEGATE(at_4, x, y)
-
-    return float4(0.f);
 }
 
 inline void Texture::gather_1(int4_p xy_xy1, float c[4]) const {
@@ -138,44 +115,30 @@ inline void Texture::gather_3(int4_p xy_xy1, float3 c[4]) const {
 
 inline float Texture::at_element_1(int32_t x, int32_t y, int32_t element) const {
     TEXTURE_DELEGATE(at_element_1, x, y, element)
-
-    return 0.f;
 }
 
 inline float2 Texture::at_element_2(int32_t x, int32_t y, int32_t element) const {
     TEXTURE_DELEGATE(at_element_2, x, y, element)
-
-    return float2(0.f);
 }
 
 inline float3 Texture::at_element_3(int32_t x, int32_t y, int32_t element) const {
     TEXTURE_DELEGATE(at_element_3, x, y, element)
-
-    return float3(0.);
 }
 
 inline float Texture::at_1(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_1, x, y, z)
-
-    return 0.f;
 }
 
 inline float2 Texture::at_2(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_2, x, y, z)
-
-    return float2(0.);
 }
 
 inline float3 Texture::at_3(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_3, x, y, z)
-
-    return float3(0.f);
 }
 
 inline float4 Texture::at_4(int32_t x, int32_t y, int32_t z) const {
     TEXTURE_DELEGATE(at_4, x, y, z)
-
-    return float4(0.f);
 }
 
 inline void Texture::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {

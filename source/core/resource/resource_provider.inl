@@ -11,6 +11,9 @@ Provider<T>::Provider() = default;
 template <typename T>
 Provider<T>::~Provider() = default;
 
+template <typename T>
+void Provider<T>::increment_generation() {}
+
 }  // namespace resource
 
 #endif

@@ -57,7 +57,7 @@ class alignas(16) Light {
     using Sample_from    = shape::Sample_from;
     using Sampler        = sampler::Sampler;
 
-    enum class Type { Null, Prop, Prop_image, Volume, Volume_image };
+    enum class Type { Prop, Prop_image, Volume, Volume_image };
 
     Light();
 

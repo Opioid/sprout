@@ -26,6 +26,8 @@ class Provider {
 
     virtual T* load(void const* data, std::string const& source_name, Variants const& options,
                     Resources& resources) = 0;
+
+    virtual void increment_generation();
 };
 
 }  // namespace resource

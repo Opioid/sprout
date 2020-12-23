@@ -1,7 +1,6 @@
 target_sources(base
     PRIVATE
     "align.hpp"
-    "align.cpp"
     "array.hpp"
     "array.inl"
     "buffer.hpp"

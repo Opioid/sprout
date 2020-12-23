@@ -5,9 +5,9 @@
 
 namespace sampler {
 
-class alignas(32) Golden_ratio final : public Sampler {
+class alignas(32) Golden_ratio final : public Buffered {
   public:
-    Golden_ratio();
+    Golden_ratio(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
 
     ~Golden_ratio() final;
 

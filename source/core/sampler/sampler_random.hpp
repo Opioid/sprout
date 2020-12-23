@@ -5,18 +5,15 @@
 
 namespace sampler {
 
-class alignas(32) Random : public Sampler {
+class Random : public Sampler {
   public:
     Random();
+
+    Random(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
 
     float2 sample_2D(RNG& rng, uint32_t dimension = 0) final;
 
     float sample_1D(RNG& rng, uint32_t dimension = 0) final;
-
-  private:
-    void on_resize() final;
-
-    void on_start_pixel(RNG& rng) final;
 };
 
 extern template class Typed_pool<Random>;

@@ -138,7 +138,7 @@ void Renderer::draw_n_gon(float2 pos, float angle, float radius, uint32_t num_ve
 
 void Renderer::resolve_sRGB(Byte3& image) const {
     if (1 == sqrt_num_samples_) {
-        for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
+        for (int32_t i = 0, len = int32_t(image.description().num_pixels()); i < len; ++i) {
             auto const s = samples_[i];
 
             byte3 const srgb = encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(s.xyz()));
@@ -176,7 +176,7 @@ void Renderer::resolve_sRGB(Byte3& image) const {
 
 void Renderer::resolve(Byte3& image) const {
     if (1 == sqrt_num_samples_) {
-        for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
+        for (int32_t i = 0, len = int32_t(image.description().num_pixels()); i < len; ++i) {
             auto const s = samples_[i];
 
             image.store(i, encoding::float_to_snorm(s.xyz()));
@@ -211,7 +211,7 @@ void Renderer::resolve(Byte3& image) const {
 
 void Renderer::resolve(Byte1& image) const {
     if (1 == sqrt_num_samples_) {
-        for (int32_t i = 0, len = image.description().area(); i < len; ++i) {
+        for (int32_t i = 0, len = int32_t(image.description().num_pixels()); i < len; ++i) {
             auto const s = samples_[i];
 
             image.store(i, encoding::float_to_unorm(s[0]));

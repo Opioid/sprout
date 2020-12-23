@@ -73,11 +73,11 @@ class Sensor {
 
     virtual void add_pixel_atomic(int2 pixel, float4_p color, float weight) = 0;
 
-    void add_AOV(int2 pixel, uint32_t slot, float3_p value, float weight);
+    void add_AOV(int2 pixel, uint32_t slot, float4_p value, float weight);
 
-    void add_AOV_atomic(int2 pixel, uint32_t slot, float3_p value, float weight);
+    void add_AOV_atomic(int2 pixel, uint32_t slot, float4_p value, float weight);
 
-    void overwrite_AOV(int2 pixel, uint32_t slot, float3_p value);
+    void overwrite_AOV(int2 pixel, uint32_t slot, float4_p value);
 
     void less_AOV(int2 pixel, uint32_t slot, float value);
 

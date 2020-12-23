@@ -1,7 +1,6 @@
 #include "rendering_worker.hpp"
 #include "base/math/sample_distribution.inl"
 #include "base/math/vector4.inl"
-#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -45,14 +44,16 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
 
     if (surfaces) {
         surface_integrator_ = surfaces->get(id);
-        surface_integrator_->prepare(scene, num_samples_per_pixel);
+        surface_integrator_->prepare(num_samples_per_pixel);
     }
 
     volume_integrator_ = volumes.get(id);
-    volume_integrator_->prepare(scene, num_samples_per_pixel);
+    volume_integrator_->prepare(num_samples_per_pixel);
 
-    sampler_ = samplers.get(id);
-    sampler_->resize(num_samples_per_pixel, 1, 2, 1);
+    sampler_ = samplers.create(id, 2, 1);
+    sampler_->resize(num_samples_per_pixel);
+
+    aov_ = aovs.get(id);
 
     if (photon_settings.num_photons > 0) {
         delete photon_mapper_;
@@ -61,17 +62,15 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
                                          photon_settings.full_light_path};
 
         photon_mapper_ = new Photon_mapper(ps);
-        photon_mapper_->prepare(scene, 0);
+        photon_mapper_->prepare(0);
     }
 
     photon_map_ = photon_map;
 
     if (lighttracers) {
         lighttracer_ = lighttracers->get(id);
-        lighttracer_->prepare(scene, num_particles_per_chunk);
+        lighttracer_->prepare(num_particles_per_chunk);
     }
-
-    aov_ = aovs.get(id);
 
     particle_importance_ = particle_importance;
 }

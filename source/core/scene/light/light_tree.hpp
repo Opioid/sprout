@@ -70,13 +70,11 @@ class Tree {
     // which can have up to 4 lights
     static uint32_t constexpr Max_lights = 1 << (Max_split_depth + 1);
 
-    static uint32_t max_lights(uint32_t num_lights, bool split);
-
     static void set_splitting_threshold(float st);
 
     static float splitting_threshold_;
 
-    using Lights = memory::Array<Light_pick>;
+    using Lights = memory::Static_array<Light_pick, Max_lights>;
 
     Tree();
 

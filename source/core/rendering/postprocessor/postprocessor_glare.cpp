@@ -231,11 +231,11 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 
             glare *= intensity;
 
-            Simd3f s(reinterpret_cast<float*>(source.address(i)));
+            Simd3f s(reinterpret_cast<float*>(source.data() + i));
 
             s += glare;
 
-            simd::store_float4(reinterpret_cast<float*>(destination.address(i)), s.v);
+            simd::store_float4(reinterpret_cast<float*>(destination.data() + i), s.v);
         }
     }
 }

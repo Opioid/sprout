@@ -29,11 +29,11 @@ Mapper::Mapper(Settings const& settings)
     : settings_(settings), photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
 
 Mapper::~Mapper() {
-    memory::free_aligned(photons_);
+    std::free(photons_);
 }
 
-void Mapper::prepare(Scene const& /*scene*/, uint32_t /*num_photons*/) {
-    sampler_.resize(1, 1, 1, 1);
+void Mapper::prepare(uint32_t /*num_photons*/) {
+    sampler_.resize(1);
 }
 
 void Mapper::start_pixel(rnd::Generator& /*rng*/, uint32_t /*num_samples*/) {}

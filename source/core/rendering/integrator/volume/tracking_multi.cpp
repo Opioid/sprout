@@ -34,9 +34,9 @@ static inline void set_scattering(Intersection& isec, Interface const* interface
 
 Tracking_multi::Tracking_multi() = default;
 
-void Tracking_multi::prepare(Scene const& /*scene*/, uint32_t /*max_samples_per_pixel*/) {}
+void Tracking_multi::prepare(uint32_t /*max_samples_per_pixel*/) {}
 
-void Tracking_multi::start_pixel(rnd::Generator& /*rng*/, uint32_t /*num_samples*/) {}
+void Tracking_multi::start_pixel(rnd::Generator& /*rng*/, uint32_t /*num_samples_per_pixel*/) {}
 
 bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& tr) {
     return Tracking::transmittance(ray, worker, tr);
@@ -225,12 +225,7 @@ Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators)
     : Typed_pool<Tracking_multi>(num_integrators) {}
 
 Integrator* Tracking_multi_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Tracking_multi();
-    }
-
-    return &integrators_[id];
+    return new (&integrators_[id]) Tracking_multi();
 }
 
 }  // namespace rendering::integrator::volume

@@ -435,10 +435,10 @@ void Sparse_grid::release() {
     int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
     for (int32_t i = 0; i < cell_len; ++i) {
-        memory::free_aligned(cells_[i].data);
+        std::free(cells_[i].data);
     }
 
-    memory::free_aligned(cells_);
+    std::free(cells_);
 }
 
 void Sparse_grid::set(int3_p c, int32_t value) {

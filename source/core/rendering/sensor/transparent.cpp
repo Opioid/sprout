@@ -87,15 +87,15 @@ void Transparent::resolve(int32_t begin, int32_t end, uint32_t slot, AOV propert
         for (int32_t i = begin; i < end; ++i) {
             float const weight = pixel_weights_[i];
 
-            float3 const color = aov_.value(i, slot) / weight;
+            float4 const value = aov_.value(i, slot) / weight;
 
-            target.store(i, float4(color, 0.f));
+            target.store(i, value);
         }
     } else {
         for (int32_t i = begin; i < end; ++i) {
-            float3 const color = aov_.value(i, slot);
+            float4 const value = aov_.value(i, slot);
 
-            target.store(i, float4(color, 0.f));
+            target.store(i, value);
         }
     }
 }

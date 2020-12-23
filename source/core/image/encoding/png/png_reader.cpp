@@ -16,12 +16,12 @@
 namespace image::encoding::png {
 
 Reader::Chunk::~Chunk() {
-    memory::free_aligned(data);
+    std::free(data);
 }
 
 void Reader::Chunk::allocate() {
     if (capacity < length) {
-        memory::free_aligned(data);
+        std::free(data);
 
         data = memory::allocate_aligned<uint8_t>(length);
 
@@ -43,7 +43,7 @@ Reader::Info::Info() {
 }
 
 Reader::Info::~Info() {
-    memory::free_aligned(buffer);
+    std::free(buffer);
 
     if (stream.zfree) {
         mz_inflateEnd(&stream);
@@ -51,14 +51,12 @@ Reader::Info::~Info() {
 }
 
 bool Reader::Info::allocate() {
-    uint32_t const row_size = uint32_t(width * num_channels);
-
+    uint32_t const row_size    = uint32_t(width * num_channels);
     uint32_t const buffer_size = row_size * uint32_t(height);
-
-    uint32_t const num_bytes = buffer_size + 2 * row_size;
+    uint32_t const num_bytes   = buffer_size + 2 * row_size;
 
     if (capacity < num_bytes) {
-        memory::free_aligned(buffer);
+        std::free(buffer);
 
         buffer = memory::allocate_aligned<uint8_t>(num_bytes);
 

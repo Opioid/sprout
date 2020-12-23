@@ -31,7 +31,7 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4_p c
 }
 
 template <class Base, class Clamp, class F>
-void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, uint32_t slot, float weight, float3_p value,
+void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, uint32_t slot, float weight, float4_p value,
                                             int4_p isolated, int4_p bounds) {
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
@@ -54,7 +54,7 @@ void Filtered<Base, Clamp, F>::add_weighted(int2 pixel, float weight, float4_p c
 }
 
 template <class Base, class Clamp, class F>
-void Filtered<Base, Clamp, F>::overwrite(int2 pixel, uint32_t slot, float3_p value, int4_p bounds) {
+void Filtered<Base, Clamp, F>::overwrite(int2 pixel, uint32_t slot, float4_p value, int4_p bounds) {
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &
         (uint32_t(pixel[1] - bounds[1]) <= uint32_t(bounds[3]))) {
         Base::overwrite_AOV(pixel, slot, value);
@@ -89,7 +89,7 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 
 template <class Base, class Clamp, class F>
 void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, uint32_t slot, float2 relative_offset,
-                                              float3_p value, int4_p isolated, int4_p bounds) {
+                                              float4_p value, int4_p isolated, int4_p bounds) {
     // This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
     if ((uint32_t(pixel[0] - bounds[0]) <= uint32_t(bounds[2])) &

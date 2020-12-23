@@ -162,6 +162,85 @@ void Array<T>::allocate(uint32_t capacity) {
     data_ = new T[capacity];
 }
 
+template <typename T, uint32_t N>
+Static_array<T, N>::Static_array() : size_(0) {}
+
+template <typename T, uint32_t N>
+bool Static_array<T, N>::empty() const {
+    return 0 == size_;
+}
+
+template <typename T, uint32_t N>
+bool Static_array<T, N>::full() const {
+    return N == size_;
+}
+
+template <typename T, uint32_t N>
+uint32_t constexpr Static_array<T, N>::capacity() {
+    return N;
+}
+
+template <typename T, uint32_t N>
+uint32_t Static_array<T, N>::size() const {
+    return size_;
+}
+
+template <typename T, uint32_t N>
+T const* Static_array<T, N>::data() const {
+    return data_;
+}
+
+template <typename T, uint32_t N>
+T* Static_array<T, N>::data() {
+    return data_;
+}
+
+template <typename T, uint32_t N>
+void Static_array<T, N>::clear() {
+    size_ = 0;
+}
+
+template <typename T, uint32_t N>
+void Static_array<T, N>::push_back(T const& v) {
+    SOFT_ASSERT(size_ < N);
+
+    data_[size_++] = v;
+}
+
+template <typename T, uint32_t N>
+T const& Static_array<T, N>::operator[](uint32_t i) const {
+    SOFT_ASSERT(i < size_);
+
+    return data_[i];
+}
+
+template <typename T, uint32_t N>
+T& Static_array<T, N>::operator[](uint32_t i) {
+    SOFT_ASSERT(i < size_);
+
+    return data_[i];
+}
+
+template <typename T, uint32_t N>
+T const* Static_array<T, N>::begin() const {
+    return &data_[0];
+}
+
+template <typename T, uint32_t N>
+T* Static_array<T, N>::begin() {
+    return &data_[0];
+}
+
+template <typename T, uint32_t N>
+T const* Static_array<T, N>::end() const {
+    return &data_[size_];
+}
+
+template <typename T, uint32_t N>
+T* Static_array<T, N>::end() {
+    return &data_[size_];
+}
+
 template <typename T>
 Concurrent_array<T>::Concurrent_array() : capacity_(0), size_(0), data_(nullptr) {}
 

@@ -4,96 +4,211 @@
 
 namespace image::texture {
 
-Float2::Float2(image::Float2 const& image) : image_(image) {}
+Float2::Float2(image::Float2 const& image)
+    : description_(image.description()),
+      data_(image.data()),
+      dimensions_(image.description().dimensions()) {}
 
-image::Float2 const& Float2::image() const {
-    return image_;
+Description const& Float2::description() const {
+    return description_;
 }
 
 float Float2::at_1(int32_t x, int32_t y) const {
-    return image_.at(x, y)[0];
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
+    return value[0];
 }
 
 float2 Float2::at_2(int32_t x, int32_t y) const {
-    return image_.at(x, y);
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
+    return value;
 }
 
 float3 Float2::at_3(int32_t x, int32_t y) const {
-    return float3(image_.at(x, y), 0.f);
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
+    return float3(value, 0.f);
 }
 
 float4 Float2::at_4(int32_t x, int32_t y) const {
-    return float4(image_.at(x, y), 0.f, 1.f);
+    int32_t const i     = y * dimensions_[0] + x;
+    auto const    value = data_[i];
+    return float4(value, 0.f, 1.f);
 }
 
 void Float2::gather_1(int4_p xy_xy1, float c[4]) const {
-    float2 v[4];
-    image_.gather(xy_xy1, v);
+    int32_t const width = dimensions_[0];
 
-    c[0] = v[0][0];
-    c[1] = v[1][0];
-    c[2] = v[2][0];
-    c[3] = v[3][0];
+    int32_t const y0 = width * xy_xy1[1];
+
+    c[0] = data_[y0 + xy_xy1[0]][0];
+    c[1] = data_[y0 + xy_xy1[2]][0];
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    c[2] = data_[y1 + xy_xy1[0]][0];
+    c[3] = data_[y1 + xy_xy1[2]][0];
 }
 
 void Float2::gather_2(int4_p xy_xy1, float2 c[4]) const {
-    image_.gather(xy_xy1, c);
+    int32_t const width = dimensions_[0];
+
+    int32_t const y0 = width * xy_xy1[1];
+
+    c[0] = data_[y0 + xy_xy1[0]];
+    c[1] = data_[y0 + xy_xy1[2]];
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    c[2] = data_[y1 + xy_xy1[0]];
+    c[3] = data_[y1 + xy_xy1[2]];
 }
 
 void Float2::gather_3(int4_p xy_xy1, float3 c[4]) const {
-    float2 v[4];
-    image_.gather(xy_xy1, v);
+    int32_t const width = dimensions_[0];
 
-    c[0] = float3(v[0], 0.f);
-    c[1] = float3(v[1], 0.f);
-    c[2] = float3(v[2], 0.f);
-    c[3] = float3(v[3], 0.f);
+    int32_t const y0 = width * xy_xy1[1];
+
+    c[0] = float3(data_[y0 + xy_xy1[0]], 0.f);
+    c[1] = float3(data_[y0 + xy_xy1[2]], 0.f);
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    c[2] = float3(data_[y1 + xy_xy1[0]], 0.f);
+    c[3] = float3(data_[y1 + xy_xy1[2]], 0.f);
 }
 
 float Float2::at_element_1(int32_t x, int32_t y, int32_t element) const {
-    return image_.at_element(x, y, element)[0];
+    int32_t const i     = (element * dimensions_[1] + y) * dimensions_[0] + x;
+    auto const    value = data_[i];
+    return value[0];
 }
 
 float2 Float2::at_element_2(int32_t x, int32_t y, int32_t element) const {
-    return image_.at_element(x, y, element);
+    int32_t const i     = (element * dimensions_[1] + y) * dimensions_[0] + x;
+    auto const    value = data_[i];
+    return value;
 }
 
 float3 Float2::at_element_3(int32_t x, int32_t y, int32_t element) const {
-    return float3(image_.at_element(x, y, element), 0.f);
+    int32_t const i     = (element * dimensions_[1] + y) * dimensions_[0] + x;
+    auto const    value = data_[i];
+    return float3(value, 0.f);
 }
 
 float Float2::at_1(int32_t x, int32_t y, int32_t z) const {
-    return image_.at(x, y, z)[0];
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
+    return value[0];
 }
 
 float2 Float2::at_2(int32_t x, int32_t y, int32_t z) const {
-    return image_.at(x, y, z);
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
+    return value;
 }
 
 float3 Float2::at_3(int32_t x, int32_t y, int32_t z) const {
-    return float3(image_.at(x, y, z), 0.f);
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
+    return float3(value, 0.f);
 }
 
 float4 Float2::at_4(int32_t x, int32_t y, int32_t z) const {
-    return float4(image_.at(x, y, z), 0.f, 1.f);
+    int64_t const i = (int64_t(z) * int64_t(dimensions_[1]) + int64_t(y)) *
+                          int64_t(dimensions_[0]) +
+                      int64_t(x);
+    auto const value = data_[i];
+    return float4(value, 0.f, 1.f);
 }
 
 void Float2::gather_1(int3_p xyz, int3_p xyz1, float c[8]) const {
-    float2 v[8];
-    image_.gather(xyz, xyz1, v);
+    int64_t const w = int64_t(dimensions_[0]);
+    int64_t const h = int64_t(dimensions_[1]);
 
-    c[0] = v[0][0];
-    c[1] = v[1][0];
-    c[2] = v[2][0];
-    c[3] = v[3][0];
-    c[4] = v[4][0];
-    c[5] = v[5][0];
-    c[6] = v[6][0];
-    c[7] = v[7][0];
+    int64_t const x = int64_t(xyz[0]);
+    int64_t const y = int64_t(xyz[1]);
+    int64_t const z = int64_t(xyz[2]);
+
+    int64_t const x1 = int64_t(xyz1[0]);
+    int64_t const y1 = int64_t(xyz1[1]);
+    int64_t const z1 = int64_t(xyz1[2]);
+
+    int64_t const d = z * h;
+
+    int64_t const c0 = (d + y) * w + x;
+    c[0]             = data_[c0][0];
+
+    int64_t const c1 = (d + y) * w + x1;
+    c[1]             = data_[c1][0];
+
+    int64_t const c2 = (d + y1) * w + x;
+    c[2]             = data_[c2][0];
+
+    int64_t const c3 = (d + y1) * w + x1;
+    c[3]             = data_[c3][0];
+
+    int64_t const d1 = z1 * h;
+
+    int64_t const c4 = (d1 + y) * w + x;
+    c[4]             = data_[c4][0];
+
+    int64_t const c5 = (d1 + y) * w + x1;
+    c[5]             = data_[c5][0];
+
+    int64_t const c6 = (d1 + y1) * w + x;
+    c[6]             = data_[c6][0];
+
+    int64_t const c7 = (d1 + y1) * w + x1;
+    c[7]             = data_[c7][0];
 }
 
 void Float2::gather_2(int3_p xyz, int3_p xyz1, float2 c[8]) const {
-    image_.gather(xyz, xyz1, c);
+    int64_t const w = int64_t(dimensions_[0]);
+    int64_t const h = int64_t(dimensions_[1]);
+
+    int64_t const x = int64_t(xyz[0]);
+    int64_t const y = int64_t(xyz[1]);
+    int64_t const z = int64_t(xyz[2]);
+
+    int64_t const x1 = int64_t(xyz1[0]);
+    int64_t const y1 = int64_t(xyz1[1]);
+    int64_t const z1 = int64_t(xyz1[2]);
+
+    int64_t const d = z * h;
+
+    int64_t const c0 = (d + y) * w + x;
+    c[0]             = data_[c0];
+
+    int64_t const c1 = (d + y) * w + x1;
+    c[1]             = data_[c1];
+
+    int64_t const c2 = (d + y1) * w + x;
+    c[2]             = data_[c2];
+
+    int64_t const c3 = (d + y1) * w + x1;
+    c[3]             = data_[c3];
+
+    int64_t const d1 = z1 * h;
+
+    int64_t const c4 = (d1 + y) * w + x;
+    c[4]             = data_[c4];
+
+    int64_t const c5 = (d1 + y) * w + x1;
+    c[5]             = data_[c5];
+
+    int64_t const c6 = (d1 + y1) * w + x;
+    c[6]             = data_[c6];
+
+    int64_t const c7 = (d1 + y1) * w + x1;
+    c[7]             = data_[c7];
 }
 
 }  // namespace image::texture

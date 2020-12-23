@@ -70,7 +70,7 @@ class Scene {
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
     using Light          = light::Light_pick;
-    using Lights         = memory::Array<Light>;
+    using Lights         = light::Tree::Lights;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;
@@ -85,8 +85,6 @@ class Scene {
     ~Scene();
 
     void clear();
-
-    void finish();
 
     AABB aabb() const;
 
@@ -122,8 +120,7 @@ class Scene {
 
     Light light(uint32_t id, bool calculate_pdf) const;
 
-    Light light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split,
-                bool calculate_pdf) const;
+    Light light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
 
     Light random_light(float random) const;
 

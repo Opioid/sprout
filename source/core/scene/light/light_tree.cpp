@@ -316,10 +316,6 @@ class Traversal_stack {
 // 0.08 ^ 4
 float Tree::splitting_threshold_ = 0.00004096f;
 
-uint32_t Tree::max_lights(uint32_t num_lights, bool split) {
-    return split ? std::min(Max_lights, num_lights) : 1;
-}
-
 void Tree::set_splitting_threshold(float st) {
     splitting_threshold_ = pow4(st);
 }
@@ -359,9 +355,6 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
             lights.push_back({light_mapping_[i], 1.f});
         }
 
-        if (0 == num_nodes_) {
-            return;
-        }
     } else {
         ip = infinite_weight_;
 
@@ -376,6 +369,10 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
 
             return;
         }
+    }
+
+    if (0 == num_nodes_) {
+        return;
     }
 
     float const pdf = 1.f - ip;
@@ -457,10 +454,6 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
         for (uint32_t i = 0; i < num_infinite_lights; ++i) {
             lights.push_back({light_mapping_[i], 1.f});
         }
-
-        if (0 == num_nodes_) {
-            return;
-        }
     } else {
         ip = infinite_weight_;
 
@@ -475,6 +468,10 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
 
             return;
         }
+    }
+
+    if (0 == num_nodes_) {
+        return;
     }
 
     float3 const dir = normalize(p0 - p1);
@@ -556,6 +553,10 @@ float Tree::pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t 
         } else {
             return infinite_weight_ * infinite_light_distribution_.pdf(lo);
         }
+    }
+
+    if (0 == num_nodes_) {
+        return 0.f;
     }
 
     float const ip = split_infinite ? 0.f : infinite_weight_;
