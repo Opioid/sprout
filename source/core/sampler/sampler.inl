@@ -25,6 +25,11 @@ Sampler* Typed_pool<T>::get(uint32_t id, uint32_t num_dimensions_2D,
     return new (&samplers_[id]) T(num_dimensions_2D, num_dimensions_1D);
 }
 
+template <typename T>
+Sampler& Typed_pool<T>::at(uint32_t id) {
+    return samplers_[id];
+}
+
 }  // namespace sampler
 
 #endif
