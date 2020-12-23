@@ -26,8 +26,7 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
-Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
-    : settings_(settings) {
+Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive) : settings_(settings) {
     if (progressive) {
         sampler_pool_ = new sampler::Random_pool(2 * Num_dedicated_samplers);
     } else {
@@ -37,8 +36,8 @@ Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive)
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
     for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->get(2 * i + 0, 2, 1);
-        sampler_pool_->get(2 * i + 1, Max_lights, Max_lights + 1);
+        sampler_pool_->create(2 * i + 0, 2, 1);
+        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1);
     }
 }
 
@@ -52,7 +51,7 @@ void Pathtracer_MIS::prepare(uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples);
 
     for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
-        sampler_pool_->at(i).resize(num_samples);
+        sampler_pool_->get(i).resize(num_samples);
     }
 }
 
@@ -60,7 +59,7 @@ void Pathtracer_MIS::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
     for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
-        sampler_pool_->at(i).start_pixel(rng);
+        sampler_pool_->get(i).start_pixel(rng);
     }
 }
 
@@ -434,7 +433,7 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Inter
 
 sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
-        return sampler_pool_->at(2 * bounce + 0);
+        return sampler_pool_->get(2 * bounce + 0);
     }
 
     return sampler_;
@@ -442,7 +441,7 @@ sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {
 
 sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
-        return sampler_pool_->at(2 * bounce + 1);
+        return sampler_pool_->get(2 * bounce + 1);
     }
 
     return sampler_;

@@ -23,18 +23,15 @@
 
 namespace rendering::integrator::surface {
 
-PM::PM(Settings const& settings, bool progressive)
-    : settings_(settings),
-      sampler_pool_(progressive ? nullptr
-                                : new sampler::Golden_ratio_pool(Num_dedicated_samplers)) {
-    if (sampler_pool_) {
-        for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(i, 1, 1);
-        }
+PM::PM(Settings const& settings, bool progressive) : settings_(settings) {
+    if (progressive) {
+        sampler_pool_ = new sampler::Random_pool(Num_dedicated_samplers);
     } else {
-        for (auto& s : material_samplers_) {
-            s = &sampler_;
-        }
+        sampler_pool_ = new sampler::Golden_ratio_pool(Num_dedicated_samplers);
+    }
+
+    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+        sampler_pool_->create(i, 1, 1);
     }
 }
 
@@ -45,16 +42,16 @@ PM::~PM() {
 void PM::prepare(uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel);
 
-    for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel);
+    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+        sampler_pool_->get(i).resize(num_samples_per_pixel);
     }
 }
 
 void PM::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
-    for (auto s : material_samplers_) {
-        s->start_pixel(rng);
+    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+        sampler_pool_->get(i).start_pixel(rng);
     }
 }
 
@@ -171,7 +168,7 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
 
 sampler::Sampler& PM::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
-        return *material_samplers_[bounce];
+        return sampler_pool_->get(bounce);
     }
 
     return sampler_;

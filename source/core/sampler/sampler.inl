@@ -20,13 +20,13 @@ Typed_pool<T>::~Typed_pool() {
 }
 
 template <typename T>
-Sampler* Typed_pool<T>::get(uint32_t id, uint32_t num_dimensions_2D,
-                            uint32_t num_dimensions_1D) const {
+Sampler* Typed_pool<T>::create(uint32_t id, uint32_t num_dimensions_2D,
+                               uint32_t num_dimensions_1D) const {
     return new (&samplers_[id]) T(num_dimensions_2D, num_dimensions_1D);
 }
 
 template <typename T>
-Sampler& Typed_pool<T>::at(uint32_t id) {
+Sampler& Typed_pool<T>::get(uint32_t id) {
     return samplers_[id];
 }
 

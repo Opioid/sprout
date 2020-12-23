@@ -59,10 +59,10 @@ class Pool {
 
     virtual ~Pool();
 
-    virtual Sampler* get(uint32_t id, uint32_t num_dimensions_2D,
-                         uint32_t num_dimensions_1D) const = 0;
+    virtual Sampler* create(uint32_t id, uint32_t num_dimensions_2D,
+                            uint32_t num_dimensions_1D) const = 0;
 
-    virtual Sampler& at(uint32_t id) = 0;
+    virtual Sampler& get(uint32_t id) = 0;
 
   protected:
     uint32_t const num_samplers_;
@@ -75,9 +75,10 @@ class Typed_pool final : public Pool {
 
     ~Typed_pool() final;
 
-    Sampler* get(uint32_t id, uint32_t num_dimensions_2D, uint32_t num_dimensions_1D) const final;
+    Sampler* create(uint32_t id, uint32_t num_dimensions_2D,
+                    uint32_t num_dimensions_1D) const final;
 
-    Sampler& at(uint32_t id) final;
+    Sampler& get(uint32_t id) final;
 
   protected:
     T* samplers_;

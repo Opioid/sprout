@@ -39,8 +39,6 @@ class alignas(64) Pathtracer final : public Integrator {
     sampler::Pool* sampler_pool_;
 
     static uint32_t constexpr Num_dedicated_samplers = 3;
-
-    sampler::Sampler* material_samplers_[Num_dedicated_samplers];
 };
 
 class Pathtracer_pool final : public Typed_pool<Pathtracer> {

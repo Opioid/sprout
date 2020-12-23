@@ -27,25 +27,18 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
-Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive)
-    : settings_(settings),
-      sampler_pool_(progressive ? nullptr
-                                : new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers)) {
+Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive) : settings_(settings) {
+    if (progressive) {
+        sampler_pool_ = new sampler::Random_pool(2 * Num_dedicated_samplers);
+    } else {
+        sampler_pool_ = new sampler::Golden_ratio_pool(2 * Num_dedicated_samplers);
+    }
+
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
-    if (sampler_pool_) {
-        for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-            material_samplers_[i] = sampler_pool_->get(2 * i + 0, 2, 1);
-            light_samplers_[i]    = sampler_pool_->get(2 * i + 1, Max_lights, Max_lights + 1);
-        }
-    } else {
-        for (auto& s : material_samplers_) {
-            s = &sampler_;
-        }
-
-        for (auto& s : light_samplers_) {
-            s = &sampler_;
-        }
+    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+        sampler_pool_->create(2 * i + 0, 2, 1);
+        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1);
     }
 }
 
@@ -56,24 +49,16 @@ Pathtracer_DL::~Pathtracer_DL() {
 void Pathtracer_DL::prepare(uint32_t num_samples_per_pixel) {
     sampler_.resize(num_samples_per_pixel);
 
-    for (auto s : material_samplers_) {
-        s->resize(num_samples_per_pixel);
-    }
-
-    for (auto s : light_samplers_) {
-        s->resize(num_samples_per_pixel);
+    for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
+        sampler_pool_->get(i).resize(num_samples_per_pixel);
     }
 }
 
 void Pathtracer_DL::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
-    for (auto s : material_samplers_) {
-        s->start_pixel(rng);
-    }
-
-    for (auto s : light_samplers_) {
-        s->start_pixel(rng);
+    for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
+        sampler_pool_->get(i).start_pixel(rng);
     }
 }
 
@@ -270,7 +255,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
 
 sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
-        return *material_samplers_[bounce];
+        return sampler_pool_->get(2 * bounce + 0);
     }
 
     return sampler_;
@@ -278,7 +263,7 @@ sampler::Sampler& Pathtracer_DL::material_sampler(uint32_t bounce) {
 
 sampler::Sampler& Pathtracer_DL::light_sampler(uint32_t bounce) {
     if (Num_dedicated_samplers > bounce) {
-        return *light_samplers_[bounce];
+        return sampler_pool_->get(2 * bounce + 1);
     }
 
     return sampler_;

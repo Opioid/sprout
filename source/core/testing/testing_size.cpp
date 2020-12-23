@@ -152,7 +152,7 @@ void size() {
     print_size<scene::Worker>("scene::Worker", 1280);
     print_size<rendering::Worker>("rendering::Worker", 1344);
 
-    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 128);
+    print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 64);
 }
 
 }  // namespace testing

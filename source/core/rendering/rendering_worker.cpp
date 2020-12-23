@@ -50,7 +50,7 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     volume_integrator_ = volumes.get(id);
     volume_integrator_->prepare(num_samples_per_pixel);
 
-    sampler_ = samplers.get(id, 2, 1);
+    sampler_ = samplers.create(id, 2, 1);
     sampler_->resize(num_samples_per_pixel);
 
     aov_ = aovs.get(id);
