@@ -56,7 +56,7 @@ class Mapper : public Integrator {
                           uint32_t& light_id, Sample_from& light_sample);
 
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                            Light& light_out, uint32_t& light_id, Sample_from& light_sample);
+                            uint32_t& light_id, Sample_from& light_sample);
 
     Settings const settings_;
 
