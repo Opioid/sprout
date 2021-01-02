@@ -24,7 +24,7 @@ class Sample;
 
 namespace substitute {
 
-template <typename Diffuse>
+template <typename Diff>
 struct Base_closure {
     using Sampler = sampler::Sampler;
 
@@ -36,7 +36,7 @@ struct Base_closure {
 
     template <bool Forward>
     bxdf::Result base_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                               material::Sample const& sample, float diffuse_factor) const;
+                               material::Sample const& sample, float diff_factor) const;
 
     template <bool Forward>
     bxdf::Result pure_gloss_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
@@ -45,13 +45,13 @@ struct Base_closure {
     void diffuse_sample(float3_p wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
                         bxdf::Sample& result) const;
 
-    void diffuse_sample(float3_p wo, material::Sample const& sample, float diffuse_factor,
+    void diffuse_sample(float3_p wo, material::Sample const& sample, float diff_factor,
                         Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
     void gloss_sample(float3_p wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
                       bxdf::Sample& result) const;
 
-    void gloss_sample(float3_p wo, material::Sample const& sample, float diffuse_factor,
+    void gloss_sample(float3_p wo, material::Sample const& sample, float diff_factor,
                       Sampler& sampler, RNG& rng, bxdf::Sample& result) const;
 
     void pure_gloss_sample(float3_p wo, material::Sample const& sample, Sampler& sampler, RNG& rng,
