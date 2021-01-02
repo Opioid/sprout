@@ -23,8 +23,7 @@ bxdf::Result Sample::evaluate_f(float3_p wi) const {
 
     fresnel::Schlick const schlick(f0_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                schlick);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf()};
 }
@@ -45,8 +44,7 @@ bxdf::Result Sample::evaluate_b(float3_p wi) const {
 
     fresnel::Schlick const schlick(f0_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                schlick);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick);
 
     return {ggx.reflection, ggx.pdf()};
 }
@@ -63,8 +61,7 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, alpha_, schlick, xi, layer_,
-                                                   result);
+    float const n_dot_wi = ggx::Iso::reflect(wo_, n_dot_wo, alpha_, schlick, xi, layer_, result);
 
     result.reflection *= n_dot_wi;
 

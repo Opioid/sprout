@@ -25,7 +25,7 @@ struct Layer;
 
 namespace lambert {
 
-class Isotropic {
+class Iso {
   public:
     static bxdf::Result reflection(float3_p color, float n_dot_wi, Layer const& layer);
 

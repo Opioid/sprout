@@ -18,7 +18,7 @@ class Sample_translucent : public material::Sample {
     void set_transluceny(float3_p color, float thickness, float attenuation_distance,
                          float transparency);
 
-    Base_closure<disney::Isotropic> base_;
+    Base_closure<disney::Iso> base_;
 
   private:
     template <bool Forward>

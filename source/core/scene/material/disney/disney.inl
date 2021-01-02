@@ -18,8 +18,8 @@
 
 namespace scene::material::disney {
 
-inline bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
-                                          float alpha, float3_p color) {
+inline bxdf::Result Iso::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
+                                    float3_p color) {
     float3 const reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, alpha, color);
 
     float const pdf = n_dot_wi * Pi_inv;
@@ -30,8 +30,8 @@ inline bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float 
     return {reflection, pdf};
 }
 
-inline float Isotropic::reflect(float3_p wo, float n_dot_wo, Layer const& layer, float alpha,
-                                float3_p color, float2 xi, bxdf::Sample& result) {
+inline float Iso::reflect(float3_p wo, float n_dot_wo, Layer const& layer, float alpha,
+                          float3_p color, float2 xi, bxdf::Sample& result) {
     float3 const is = sample_hemisphere_cosine(xi);
     float3 const wi = normalize(layer.tangent_to_world(is));
 
@@ -53,8 +53,8 @@ inline float Isotropic::reflect(float3_p wo, float n_dot_wo, Layer const& layer,
     return n_dot_wi;
 }
 
-inline float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
-                                  float3_p color) {
+inline float3 Iso::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
+                            float3_p color) {
     //	float const f_D90 = 0.5f + (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
     //	float const fmo   = f_D90 - 1.f;
 

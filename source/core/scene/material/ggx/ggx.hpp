@@ -16,7 +16,7 @@ struct Sample;
 
 namespace ggx {
 
-class Isotropic {
+class Iso {
   public:
     template <typename Fresnel>
     static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
@@ -52,7 +52,7 @@ class Isotropic {
                          bxdf::Sample& result);
 };
 
-class Anisotropic {
+class Aniso {
   public:
     template <typename Fresnel>
     static bxdf::Result reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,

@@ -27,8 +27,8 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
         float const t = transparency_;
 
         if (p < t) {
-            float const n_dot_wi = lambert::Isotropic::reflect(base_.albedo_, layer_, sampler, rng,
-                                                               result);
+            float const n_dot_wi = lambert::Iso::reflect(base_.albedo_, layer_, sampler, rng,
+                                                         result);
 
             // This is the least attempt we can do at energy conservation
             float const n_dot_wo = layer_.clamp_n_dot(wo_);

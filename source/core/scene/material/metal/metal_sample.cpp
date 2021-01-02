@@ -27,8 +27,7 @@ void Sample_isotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) 
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, alpha_, conductor, xi, layer_,
-                                                   result);
+    float const n_dot_wi = ggx::Iso::reflect(wo_, n_dot_wo, alpha_, conductor, xi, layer_, result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
@@ -56,8 +55,7 @@ bxdf::Result Sample_isotropic::evaluate(float3_p wi) const {
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                conductor);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, conductor);
 
     if constexpr (Forward) {
         return {n_dot_wi * ggx.reflection, ggx.pdf()};
@@ -86,8 +84,8 @@ void Sample_anisotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, alpha_, layer_, conductor, xi,
-                                                     result);
+    float const n_dot_wi = ggx::Aniso::reflect(wo_, n_dot_wo, alpha_, layer_, conductor, xi,
+                                               result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
@@ -108,8 +106,8 @@ bxdf::Result Sample_anisotropic::evaluate(float3_p wi) const {
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    auto const ggx = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, alpha_, layer_,
-                                                  conductor);
+    auto const ggx = ggx::Aniso::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, alpha_, layer_,
+                                            conductor);
 
     if constexpr (Forward) {
         return {n_dot_wi * ggx.reflection, ggx.pdf()};

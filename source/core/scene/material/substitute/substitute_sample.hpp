@@ -15,7 +15,7 @@ class Sample : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    Base_closure<disney::Isotropic> base_;
+    Base_closure<disney::Iso> base_;
 
   private:
     template <bool Forward>

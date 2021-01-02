@@ -36,8 +36,8 @@ class Sample_coating : public material::Sample {
     Coat coating_;
 };
 
-using Sample_clearcoat = Sample_coating<coating::Clearcoat_layer, disney::Isotropic>;
-using Sample_thinfilm  = Sample_coating<coating::Thinfilm_layer, disney::Isotropic>;
+using Sample_clearcoat = Sample_coating<coating::Clearcoat_layer, disney::Iso>;
+using Sample_thinfilm  = Sample_coating<coating::Thinfilm_layer, disney::Iso>;
 
 }  // namespace scene::material::substitute
 

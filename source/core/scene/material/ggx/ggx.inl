@@ -153,15 +153,15 @@ static inline float pdf_visible(float d, float g1_wo) {
 }
 
 template <typename Fresnel>
-bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, Fresnel fresnel) {
+bxdf::Result Iso::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+                             float alpha, Fresnel fresnel) {
     float3 fresnel_result;
     return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, fresnel, fresnel_result);
 }
 
 template <typename Fresnel>
-bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-                                   float alpha, Fresnel fresnel, float3& fresnel_result) {
+bxdf::Result Iso::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+                             float alpha, Fresnel fresnel, float3& fresnel_result) {
     float const alpha2 = alpha * alpha;
 
     float const  d = distribution_isotropic(n_dot_h, alpha2);
@@ -180,15 +180,15 @@ bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_
 }
 
 template <typename Fresnel>
-float Isotropic::reflect(float3_p wo, float n_dot_wo, float alpha, Fresnel fresnel, float2 xi,
-                         Layer const& layer, bxdf::Sample& result) {
+float Iso::reflect(float3_p wo, float n_dot_wo, float alpha, Fresnel fresnel, float2 xi,
+                   Layer const& layer, bxdf::Sample& result) {
     float3 fresnel_result;
     return reflect(wo, n_dot_wo, alpha, fresnel, xi, layer, fresnel_result, result);
 }
 
 template <typename Fresnel>
-float Isotropic::reflect(float3_p wo, float n_dot_wo, float alpha, Fresnel fresnel, float2 xi,
-                         Layer const& layer, float3& fresnel_result, bxdf::Sample& result) {
+float Iso::reflect(float3_p wo, float n_dot_wo, float alpha, Fresnel fresnel, float2 xi,
+                   Layer const& layer, float3& fresnel_result, bxdf::Sample& result) {
     float        n_dot_h;
     float3 const h = sample(wo, alpha, xi, layer, n_dot_h);
 
@@ -224,8 +224,8 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, float alpha, Fresnel fresn
 // https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 
 template <typename Fresnel>
-bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
-                                   float n_dot_h, float alpha, IoR ior, Fresnel fresnel) {
+bxdf::Result Iso::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_h, float wo_dot_h,
+                             float n_dot_h, float alpha, IoR ior, Fresnel fresnel) {
     float const alpha2 = alpha * alpha;
 
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
@@ -255,8 +255,8 @@ bxdf::Result Isotropic::refraction(float n_dot_wi, float n_dot_wo, float wi_dot_
 }
 
 template <typename Fresnel>
-float Isotropic::refract(float3_p wo, float n_dot_wo, float alpha, IoR ior, Fresnel fresnel,
-                         float2 xi, Layer const& layer, bxdf::Sample& result) {
+float Iso::refract(float3_p wo, float n_dot_wo, float alpha, IoR ior, Fresnel fresnel, float2 xi,
+                   Layer const& layer, bxdf::Sample& result) {
     float        n_dot_h;
     float3 const h = sample(wo, alpha, xi, layer, n_dot_h);
 
@@ -310,8 +310,7 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float alpha, IoR ior, Fres
     return n_dot_wi;
 }
 
-inline float3 Isotropic::sample(float3_p wo, float alpha, float2 xi, Layer const& layer,
-                                float& n_dot_h) {
+inline float3 Iso::sample(float3_p wo, float alpha, float2 xi, Layer const& layer, float& n_dot_h) {
     float3 const lwo = layer.world_to_tangent(wo);
 
     // stretch view
@@ -346,9 +345,8 @@ inline float3 Isotropic::sample(float3_p wo, float alpha, float2 xi, Layer const
     return h;
 }
 
-inline float Isotropic::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h,
-                                float wi_dot_h, float wo_dot_h, float alpha, Layer const& layer,
-                                bxdf::Sample& result) {
+inline float Iso::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
+                          float wo_dot_h, float alpha, Layer const& layer, bxdf::Sample& result) {
     float3 const wi = normalize(2.f * wo_dot_h * h - wo);
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
@@ -371,9 +369,9 @@ inline float Isotropic::reflect(float3_p wo, float3_p h, float n_dot_wo, float n
     return n_dot_wi;
 }
 
-inline float Isotropic::refract(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h,
-                                float wi_dot_h, float wo_dot_h, float alpha, IoR ior,
-                                Layer const& layer, bxdf::Sample& result) {
+inline float Iso::refract(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
+                          float wo_dot_h, float alpha, IoR ior, Layer const& layer,
+                          bxdf::Sample& result) {
     float const eta = ior.eta_i / ior.eta_t;
 
     float const abs_wi_dot_h = clamp_abs(wi_dot_h);
@@ -411,8 +409,8 @@ inline float Isotropic::refract(float3_p wo, float3_p h, float n_dot_wo, float n
 }
 
 template <typename Fresnel>
-bxdf::Result Anisotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-                                     float2 alpha, Layer const& layer, Fresnel fresnel) {
+bxdf::Result Aniso::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+                               float2 alpha, Layer const& layer, Fresnel fresnel) {
     float const n_dot_h = saturate(dot(layer.n_, h));
 
     float const x_dot_h = dot(layer.t_, h);
@@ -435,8 +433,8 @@ bxdf::Result Anisotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo,
 }
 
 template <typename Fresnel>
-float Anisotropic::reflect(float3_p wo, float n_dot_wo, float2 alpha, Layer const& layer,
-                           Fresnel fresnel, float2 xi, bxdf::Sample& result) {
+float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Layer const& layer, Fresnel fresnel,
+                     float2 xi, bxdf::Sample& result) {
     float const phi     = (2.f * Pi) * xi[0];
     float const sin_phi = std::sin(phi);
     float const cos_phi = std::cos(phi);
