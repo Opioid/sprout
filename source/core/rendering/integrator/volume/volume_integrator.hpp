@@ -29,7 +29,7 @@ class Pool {
 
     virtual ~Pool();
 
-    virtual Integrator* get(uint32_t id) const = 0;
+    virtual Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const = 0;
 
   protected:
     uint32_t num_integrators_;

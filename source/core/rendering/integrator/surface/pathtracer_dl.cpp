@@ -27,7 +27,9 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
-Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive) : settings_(settings) {
+Pathtracer_DL::Pathtracer_DL(Settings const& settings, uint32_t max_samples_per_pixel,
+                             bool progressive)
+    : settings_(settings) {
     if (progressive) {
         sampler_pool_ = new sampler::Random_pool(2 * Num_dedicated_samplers);
     } else {
@@ -37,23 +39,13 @@ Pathtracer_DL::Pathtracer_DL(Settings const& settings, bool progressive) : setti
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
     for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->create(2 * i + 0, 2, 1);
-        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1);
+        sampler_pool_->create(2 * i + 0, 2, 1, max_samples_per_pixel);
+        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1, max_samples_per_pixel);
     }
 }
 
 Pathtracer_DL::~Pathtracer_DL() {
     delete sampler_pool_;
-}
-
-void Pathtracer_DL::prepare(uint32_t max_samples_per_pixel) {
-    uint32_t const max_samples = max_samples_per_pixel * settings_.num_samples;
-
-    sampler_.resize(max_samples);
-
-    for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
-        sampler_pool_->get(i).resize(max_samples);
-    }
 }
 
 void Pathtracer_DL::start_pixel(RNG& rng, uint32_t num_samples_per_pixel) {
@@ -288,13 +280,8 @@ Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, bool progressiv
       },
       progressive_(progressive) {}
 
-Integrator* Pathtracer_DL_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Pathtracer_DL(settings_, progressive_);
-    }
-
-    return &integrators_[id];
+Integrator* Pathtracer_DL_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) Pathtracer_DL(settings_, max_samples_per_pixel, progressive_);
 }
 
 }  // namespace rendering::integrator::surface

@@ -22,11 +22,9 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         bool photons_not_only_through_specular;
     };
 
-    Pathtracer_MIS(Settings const& settings, bool progressive);
+    Pathtracer_MIS(Settings const& settings, uint32_t max_samples_per_pixel, bool progressive);
 
     ~Pathtracer_MIS() final;
-
-    void prepare(uint32_t max_samples_per_pixel) final;
 
     void start_pixel(RNG& rng, uint32_t num_samples_per_pixel) final;
 
@@ -90,7 +88,7 @@ class Pathtracer_MIS_pool final : public Typed_pool<Pathtracer_MIS> {
                         uint32_t min_bounces, uint32_t max_bounces, Light_sampling light_sampling,
                         bool enable_caustics, bool photons_only_through_specular);
 
-    Integrator* get(uint32_t id) const final;
+    Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const final;
 
   private:
     Pathtracer_MIS::Settings settings_;

@@ -43,15 +43,12 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
     scene::Worker::init(scene, camera);
 
     if (surfaces) {
-        surface_integrator_ = surfaces->get(id);
-        surface_integrator_->prepare(num_samples_per_pixel);
+        surface_integrator_ = surfaces->create(id, num_samples_per_pixel);
     }
 
-    volume_integrator_ = volumes.get(id);
-    volume_integrator_->prepare(num_samples_per_pixel);
+    volume_integrator_ = volumes.create(id, num_samples_per_pixel);
 
-    sampler_ = samplers.create(id, 2, 1);
-    sampler_->resize(num_samples_per_pixel);
+    sampler_ = samplers.create(id, 2, 1, num_samples_per_pixel);
 
     aov_ = aovs.get(id);
 
@@ -62,14 +59,12 @@ void Worker::init(uint32_t id, Scene const& scene, Camera const& camera,
                                          photon_settings.full_light_path};
 
         photon_mapper_ = new Photon_mapper(ps);
-        photon_mapper_->prepare(0);
     }
 
     photon_map_ = photon_map;
 
     if (lighttracers) {
-        lighttracer_ = lighttracers->get(id);
-        lighttracer_->prepare(num_particles_per_chunk);
+        lighttracer_ = lighttracers->create(id, num_particles_per_chunk);
     }
 
     particle_importance_ = particle_importance;

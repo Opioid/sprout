@@ -35,8 +35,8 @@ static inline float2 r2i(float2 seed, uint32_t n) {
     return float2(frac(seed[0] + float(n * 12664745) / e), frac(seed[1] + float(n * 9560333) / e));
 }
 
-RD::RD(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D)
-    : Buffered(num_dimensions_2D, num_dimensions_1D) {
+RD::RD(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D, uint32_t max_samples)
+    : Buffered(num_dimensions_2D, num_dimensions_1D, max_samples) {
     float* seeds = memory::allocate_aligned<float>(2 * num_dimensions_2D + num_dimensions_1D);
 
     seeds_2D_ = reinterpret_cast<float2*>(seeds);
@@ -78,8 +78,6 @@ float RD::sample_1D(RNG& rng, uint32_t dimension) {
 
     return samples_1D_[dimension * Num_batch + current];
 }
-
-void RD::on_resize() {}
 
 void RD::on_start_pixel(RNG& rng) {
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {

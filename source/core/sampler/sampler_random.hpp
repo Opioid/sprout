@@ -9,7 +9,7 @@ class Random : public Sampler {
   public:
     Random();
 
-    Random(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
+    Random(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D, uint32_t max_samples);
 
     float2 sample_2D(RNG& rng, uint32_t dimension = 0) final;
 

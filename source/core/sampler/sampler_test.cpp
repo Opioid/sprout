@@ -116,18 +116,16 @@ void test() {
     {
         rnd::Generator rng(0, 0);
 
-        Golden_ratio sampler(1, 1);
+        Golden_ratio sampler(1, 1, num_samples);
 
-        sampler.resize(num_samples);
         render_set("golden_ratio", sampler, num_samples, rng, renderer, target);
     }
 
     {
         rnd::Generator rng(0, 0);
 
-        RD sampler(1, 1);
+        RD sampler(1, 1, num_samples);
 
-        sampler.resize(num_samples);
         render_set("rd", sampler, num_samples, rng, renderer, target);
     }
 
@@ -136,7 +134,6 @@ void test() {
 
         Random sampler;
 
-        sampler.resize(num_samples);
         render_set("random", sampler, num_samples, rng, renderer, target);
     }
 }

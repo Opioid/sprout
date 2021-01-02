@@ -16,11 +16,9 @@ class alignas(64) AO final : public Integrator {
         float    radius;
     };
 
-    AO(Settings const& settings, bool progressive);
+    AO(Settings const& settings, uint32_t max_samples_per_pixel, bool progressive);
 
     ~AO() final;
-
-    void prepare(uint32_t max_samples_per_pixel) final;
 
     void start_pixel(RNG& rng, uint32_t num_samples_per_pixel) final;
 
@@ -37,7 +35,7 @@ class AO_pool final : public Typed_pool<AO> {
   public:
     AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius);
 
-    Integrator* get(uint32_t id) const final;
+    Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const final;
 
   private:
     AO::Settings settings_;

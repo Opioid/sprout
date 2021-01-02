@@ -23,7 +23,6 @@
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/surface/pm.hpp"
-#include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/tracking_multi.hpp"
 #include "rendering/integrator/volume/tracking_single.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
@@ -718,12 +717,6 @@ static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t nu
     using namespace rendering::integrator::volume;
 
     for (auto& n : value.GetObject()) {
-        if ("Emission" == n.name) {
-            float const step_size = json::read_float(n.value, "step_size", 1.f);
-
-            return new Emission_pool(num_workers, step_size);
-        }
-
         if ("Tracking" == n.name) {
             bool const multiple_scattering = json::read_bool(n.value, "multiple_scattering", true);
 

@@ -1,7 +1,5 @@
 target_sources(core
     PRIVATE
-    "emission.cpp"
-    "emission.hpp"
     "tracking_multi.cpp"
     "tracking_multi.hpp"
     "tracking_single.cpp"

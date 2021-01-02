@@ -26,7 +26,9 @@ namespace rendering::integrator::surface {
 using namespace scene;
 using namespace scene::shape;
 
-Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive) : settings_(settings) {
+Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, uint32_t max_samples_per_pixel,
+                               bool progressive)
+    : settings_(settings) {
     if (progressive) {
         sampler_pool_ = new sampler::Random_pool(2 * Num_dedicated_samplers);
     } else {
@@ -35,24 +37,16 @@ Pathtracer_MIS::Pathtracer_MIS(Settings const& settings, bool progressive) : set
 
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
+    uint32_t const max_samples = max_samples_per_pixel * settings_.num_samples;
+
     for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->create(2 * i + 0, 2, 1);
-        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1);
+        sampler_pool_->create(2 * i + 0, 2, 1, max_samples);
+        sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1, max_samples);
     }
 }
 
 Pathtracer_MIS::~Pathtracer_MIS() {
     delete sampler_pool_;
-}
-
-void Pathtracer_MIS::prepare(uint32_t max_samples_per_pixel) {
-    uint32_t const max_samples = max_samples_per_pixel * settings_.num_samples;
-
-    sampler_.resize(max_samples);
-
-    for (uint32_t i = 0; i < 2 * Num_dedicated_samplers; ++i) {
-        sampler_pool_->get(i).resize(max_samples);
-    }
 }
 
 void Pathtracer_MIS::start_pixel(RNG& rng, uint32_t num_samples_per_pixel) {
@@ -463,8 +457,8 @@ Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progress
                 light_sampling, !enable_caustics, !photons_only_through_specular},
       progressive_(progressive) {}
 
-Integrator* Pathtracer_MIS_pool::get(uint32_t id) const {
-    return new (&integrators_[id]) Pathtracer_MIS(settings_, progressive_);
+Integrator* Pathtracer_MIS_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) Pathtracer_MIS(settings_, max_samples_per_pixel, progressive_);
 }
 
 }  // namespace rendering::integrator::surface

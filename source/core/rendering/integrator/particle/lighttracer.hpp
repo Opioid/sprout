@@ -49,11 +49,9 @@ class alignas(64) Lighttracer final : public Integrator {
         bool full_light_path;
     };
 
-    Lighttracer(Settings const& settings);
+    Lighttracer(Settings const& settings, uint32_t max_samples_per_pixel);
 
     ~Lighttracer() final;
-
-    void prepare(uint32_t max_samples_per_pixel) final;
 
     void start_pixel(RNG& rng, uint32_t num_samples_per_pixel) final;
 
@@ -86,7 +84,7 @@ class Lighttracer_pool final {
 
     ~Lighttracer_pool();
 
-    Lighttracer* get(uint32_t id) const;
+    Lighttracer* create(uint32_t id, uint32_t max_samples_per_pixel) const;
 
     uint32_t max_sample_depth() const;
 

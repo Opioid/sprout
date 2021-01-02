@@ -17,11 +17,7 @@ namespace rendering::integrator::surface {
 
 using namespace scene;
 
-Debug::Debug(Settings const& settings) : settings_(settings) {}
-
-void Debug::prepare(uint32_t max_samples_per_pixel) {
-    sampler_.resize(max_samples_per_pixel);
-}
+Debug::Debug(Settings const& settings, uint32_t /*max_samples_per_pixel*/) : settings_(settings) {}
 
 void Debug::start_pixel(rnd::Generator& rng, uint32_t num_samples_per_pixel) {
     sampler_.start_pixel(rng, num_samples_per_pixel);
@@ -126,13 +122,8 @@ Debug_pool::Debug_pool(uint32_t num_integrators, Debug::Settings::Value vector)
     settings_.value = vector;
 }
 
-Integrator* Debug_pool::get(uint32_t id) const {
-    if (uint32_t const zero = 0;
-        0 == std::memcmp(&zero, static_cast<void*>(&integrators_[id]), 4)) {
-        return new (&integrators_[id]) Debug(settings_);
-    }
-
-    return &integrators_[id];
+Integrator* Debug_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
+    return new (&integrators_[id]) Debug(settings_, max_samples_per_pixel);
 }
 
 }  // namespace rendering::integrator::surface

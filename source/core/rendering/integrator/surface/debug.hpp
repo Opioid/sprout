@@ -26,9 +26,7 @@ class alignas(64) Debug final : public Integrator {
         Value value;
     };
 
-    Debug(Settings const& settings);
-
-    void prepare(uint32_t max_samples_per_pixel) final;
+    Debug(Settings const& settings, uint32_t max_samples_per_pixel);
 
     void start_pixel(RNG& rng, uint32_t num_samples_per_pixel) final;
 
@@ -47,7 +45,7 @@ class Debug_pool final : public Typed_pool<Debug> {
   public:
     Debug_pool(uint32_t num_integrators, Debug::Settings::Value value);
 
-    Integrator* get(uint32_t id) const final;
+    Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const final;
 
   private:
     Debug::Settings settings_;
