@@ -7,12 +7,20 @@
 
 namespace scene::material::substitute {
 
-bxdf::Result Sample::evaluate_f(float3_p wi) const {
-    return evaluate<true>(wi);
-}
+bxdf::Result Sample::evaluate(float3_p wi) const {
+    if (!same_hemisphere(wo_)) {
+        return {float3(0.f), 0.f};
+    }
 
-bxdf::Result Sample::evaluate_b(float3_p wi) const {
-    return evaluate<false>(wi);
+    float3 const h = normalize(wo_ + wi);
+
+    float const wo_dot_h = clamp_dot(wo_, h);
+
+    if (1.f == base_.metallic_) {
+        return base_.pure_gloss_evaluate(wi, wo_, h, wo_dot_h, *this);
+    }
+
+    return base_.base_evaluate(wi, wo_, h, wo_dot_h, *this);
 }
 
 void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
@@ -34,23 +42,6 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     }
 
     result.wavelength = 0.f;
-}
-
-template <bool Forward>
-bxdf::Result Sample::evaluate(float3_p wi) const {
-    if (!same_hemisphere(wo_)) {
-        return {float3(0.f), 0.f};
-    }
-
-    float3 const h = normalize(wo_ + wi);
-
-    float const wo_dot_h = clamp_dot(wo_, h);
-
-    if (1.f == base_.metallic_) {
-        return base_.pure_gloss_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
-    }
-
-    return base_.base_evaluate<Forward>(wi, wo_, h, wo_dot_h, *this);
 }
 
 }  // namespace scene::material::substitute

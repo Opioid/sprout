@@ -60,9 +60,7 @@ class Sample {
 
     virtual ~Sample();
 
-    virtual bxdf::Result evaluate_f(float3_p wi) const = 0;
-
-    virtual bxdf::Result evaluate_b(float3_p wi) const = 0;
+    virtual bxdf::Result evaluate(float3_p wi) const = 0;
 
     virtual void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const = 0;
 

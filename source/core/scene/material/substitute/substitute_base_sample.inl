@@ -24,7 +24,6 @@ void Base_closure<Diff>::set(float3_p color, float f0, float metallic) {
 }
 
 template <typename Diff>
-template <bool Forward>
 bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                                                Mat_sample const& sample) const {
     Layer const& layer = sample.layer_;
@@ -37,11 +36,7 @@ bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_
     auto const d = Diff::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, albedo_);
 
     if (sample.avoid_caustics() && alpha <= ggx::Min_alpha) {
-        if constexpr (Forward) {
-            return {n_dot_wi * d.reflection, d.pdf()};
-        } else {
-            return d;
-        }
+        return {n_dot_wi * d.reflection, d.pdf()};
     }
 
     float const n_dot_h = saturate(layer.n_dot(h));
@@ -57,15 +52,10 @@ bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume diffuse has the proper fresnel built in - which Disney does (?)
 
-    if constexpr (Forward) {
-        return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
-    } else {
-        return {d.reflection + ggx.reflection, pdf};
-    }
+    return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
 }
 
 template <typename Diff>
-template <bool Forward>
 bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                                                Mat_sample const& sample, float diff_factor) const {
     Layer const& layer = sample.layer_;
@@ -78,11 +68,7 @@ bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_
     auto const d = Diff::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, diff_factor * albedo_);
 
     if (sample.avoid_caustics() && alpha <= ggx::Min_alpha) {
-        if constexpr (Forward) {
-            return {n_dot_wi * d.reflection, d.pdf()};
-        } else {
-            return d;
-        }
+        return {n_dot_wi * d.reflection, d.pdf()};
     }
 
     float const n_dot_h = saturate(layer.n_dot(h));
@@ -98,15 +84,10 @@ bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume diffuse has the proper fresnel built in - which Disney does (?)
 
-    if constexpr (Forward) {
-        return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
-    } else {
-        return {d.reflection + ggx.reflection, pdf};
-    }
+    return {n_dot_wi * (d.reflection + ggx.reflection), pdf};
 }
 
 template <typename Diff>
-template <bool Forward>
 bxdf::Result Base_closure<Diff>::pure_gloss_evaluate(float3_p wi, float3_p wo, float3_p h,
                                                      float             wo_dot_h,
                                                      Mat_sample const& sample) const {
@@ -132,11 +113,7 @@ bxdf::Result Base_closure<Diff>::pure_gloss_evaluate(float3_p wi, float3_p wo, f
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume diffuse has the proper fresnel built in - which Disney does (?)
 
-    if constexpr (Forward) {
-        return {n_dot_wi * ggx.reflection, ggx.pdf()};
-    } else {
-        return ggx;
-    }
+    return {n_dot_wi * ggx.reflection, ggx.pdf()};
 }
 
 template <typename Diff>

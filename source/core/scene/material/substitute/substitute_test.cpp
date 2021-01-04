@@ -123,7 +123,7 @@ void Setup::test(float3_p wi, float3_p wo, float3_p t, float3_p b, float3_p n,
     sample.layer_.set_tangent_frame(t, b, n);
 
     {
-        auto /*const*/ result = sample.evaluate_f(wi);
+        auto /*const*/ result = sample.evaluate(wi);
 
         result.reflection *= dot(n, wo);
 

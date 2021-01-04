@@ -13,12 +13,67 @@
 
 namespace scene::material::glass {
 
-bxdf::Result Sample_rough::evaluate_f(float3_p wi) const {
-    return evaluate<true>(wi);
-}
+bxdf::Result Sample_rough::evaluate(float3_p wi) const {
+    if (ior_.eta_i == ior_.eta_t) {
+        return {float3(0.f), 0.f};
+    }
 
-bxdf::Result Sample_rough::evaluate_b(float3_p wi) const {
-    return evaluate<false>(wi);
+    if (!same_hemisphere(wo_)) {
+        if (avoid_caustics()) {
+            return {float3(0.f), 0.f};
+        }
+
+        IoR const ior = ior_.swapped();
+
+        float3 const h = -normalize(ior.eta_t * wi + ior.eta_i * wo_);
+
+        float const wi_dot_h = dot(wi, h);
+        if (wi_dot_h <= 0.f) {
+            return {float3(0.f), 0.f};
+        }
+
+        float const wo_dot_h = dot(wo_, h);
+
+        float const eta   = ior.eta_i / ior.eta_t;
+        float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
+
+        if (sint2 >= 1.f) {
+            return {float3(0.f), 0.f};
+        }
+
+        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+        float const n_dot_h  = saturate(dot(layer_.n_, h));
+
+        fresnel::Schlick1 const schlick(f0_);
+
+        auto ggx = ggx::Iso::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h, alpha_,
+                                        ior, schlick);
+
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
+
+        return {std::min(n_dot_wi, n_dot_wo) * albedo_ * ggx.reflection, ggx.pdf()};
+
+    } else {
+        float const n_dot_wi = layer_.clamp_n_dot(wi);
+        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
+
+        float3 const h = normalize(wo_ + wi);
+
+        float const wo_dot_h = clamp_dot(wo_, h);
+        float const n_dot_h  = saturate(dot(layer_.n_, h));
+
+        fresnel::Schlick const schlick(f0_);
+
+        float3 fresnel;
+
+        auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick,
+                                        fresnel);
+
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
+
+        return {n_dot_wi * ggx.reflection, fresnel[0] * ggx.pdf()};
+    }
 }
 
 void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
@@ -96,77 +151,6 @@ void Sample_rough::set(float ior, float ior_outside) {
 
     ior_.eta_t = ior;
     ior_.eta_i = ior_outside;
-}
-
-template <bool Forward>
-bxdf::Result Sample_rough::evaluate(float3_p wi) const {
-    if (ior_.eta_i == ior_.eta_t) {
-        return {float3(0.f), 0.f};
-    }
-
-    if (!same_hemisphere(wo_)) {
-        if (avoid_caustics()) {
-            return {float3(0.f), 0.f};
-        }
-
-        IoR const ior = ior_.swapped();
-
-        float3 const h = -normalize(ior.eta_t * wi + ior.eta_i * wo_);
-
-        float const wi_dot_h = dot(wi, h);
-        if (wi_dot_h <= 0.f) {
-            return {float3(0.f), 0.f};
-        }
-
-        float const wo_dot_h = dot(wo_, h);
-
-        float const eta   = ior.eta_i / ior.eta_t;
-        float const sint2 = (eta * eta) * (1.f - wo_dot_h * wo_dot_h);
-
-        if (sint2 >= 1.f) {
-            return {float3(0.f), 0.f};
-        }
-
-        float const n_dot_wi = layer_.clamp_n_dot(wi);
-        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
-        float const n_dot_h  = saturate(dot(layer_.n_, h));
-
-        fresnel::Schlick1 const schlick(f0_);
-
-        auto ggx = ggx::Iso::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h, alpha_,
-                                        ior, schlick);
-
-        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
-
-        if constexpr (Forward) {
-            return {std::min(n_dot_wi, n_dot_wo) * albedo_ * ggx.reflection, ggx.pdf()};
-        } else {
-            return {albedo_ * ggx.reflection, ggx.pdf()};
-        }
-    } else {
-        float const n_dot_wi = layer_.clamp_n_dot(wi);
-        float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
-
-        float3 const h = normalize(wo_ + wi);
-
-        float const wo_dot_h = clamp_dot(wo_, h);
-        float const n_dot_h  = saturate(dot(layer_.n_, h));
-
-        fresnel::Schlick const schlick(f0_);
-
-        float3 fresnel;
-
-        auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick,
-                                        fresnel);
-
-        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
-
-        if constexpr (Forward) {
-            return {n_dot_wi * ggx.reflection, fresnel[0] * ggx.pdf()};
-        } else {
-            return {ggx.reflection, fresnel[0] * ggx.pdf()};
-        }
-    }
 }
 
 }  // namespace scene::material::glass

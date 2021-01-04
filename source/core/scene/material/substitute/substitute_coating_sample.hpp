@@ -12,16 +12,11 @@ class Sample_coating : public material::Sample {
   public:
     using Sample = bxdf::Sample;
 
-    bxdf::Result evaluate_f(float3_p wi) const override;
-
-    bxdf::Result evaluate_b(float3_p wi) const override;
+    bxdf::Result evaluate(float3_p wi) const override;
 
     void sample(Sampler& sampler, RNG& rng, Sample& result) const override;
 
   protected:
-    template <bool Forward>
-    bxdf::Result evaluate(float3_p wi) const;
-
     void coating_reflect(float f, float n_dot_h, Sample& result) const;
 
     void diffuse_sample(Sampler& sampler, RNG& rng, float f, Sample& result) const;

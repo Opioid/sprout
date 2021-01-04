@@ -235,7 +235,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
             continue;
         }
 
-        auto const bxdf = mat_sample.evaluate_f(light_sample.wi);
+        auto const bxdf = mat_sample.evaluate(light_sample.wi);
 
         float3 const radiance = light_ref.evaluate(light_sample, Filter::Nearest, worker);
 

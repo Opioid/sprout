@@ -356,7 +356,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
 
     SOFT_ASSERT(all_finite(tr));
 
-    //    auto const bxdf = mat_sample.evaluate_f(light_sample.wi, evaluate_back);
+    //    auto const bxdf = mat_sample.evaluate(light_sample.wi, evaluate_back);
 
     float const phase = 1.f / (4.f * Pi);
 

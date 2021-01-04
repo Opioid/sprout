@@ -7,9 +7,7 @@ namespace scene::material::glass {
 
 class Sample_rough final : public material::Sample {
   public:
-    bxdf::Result evaluate_f(float3_p wi) const final;
-
-    bxdf::Result evaluate_b(float3_p wi) const final;
+    bxdf::Result evaluate(float3_p wi) const final;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
@@ -18,10 +16,6 @@ class Sample_rough final : public material::Sample {
     float f0_;
 
     IoR ior_;
-
-  private:
-    template <bool Forward>
-    bxdf::Result evaluate(float3_p wi) const;
 };
 
 }  // namespace scene::material::glass

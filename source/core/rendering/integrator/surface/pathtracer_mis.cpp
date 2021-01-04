@@ -341,7 +341,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 
     SOFT_ASSERT(all_finite(tr));
 
-    auto const bxdf = mat_sample.evaluate_f(light_sample.wi);
+    auto const bxdf = mat_sample.evaluate(light_sample.wi);
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 

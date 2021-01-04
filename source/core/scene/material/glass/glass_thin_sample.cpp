@@ -20,11 +20,7 @@ Sample_thin::Sample_thin() {
     properties_.set(Property::Translucent);
 }
 
-bxdf::Result Sample_thin::evaluate_f(float3_p /*wi*/) const {
-    return {float3(0.f), 0.f};
-}
-
-bxdf::Result Sample_thin::evaluate_b(float3_p /*wi*/) const {
+bxdf::Result Sample_thin::evaluate(float3_p /*wi*/) const {
     return {float3(0.f), 0.f};
 }
 

@@ -30,15 +30,12 @@ struct Base_closure {
 
     void set(float3_p color, float f0, float metallic);
 
-    template <bool Forward>
     bxdf::Result base_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                                material::Sample const& sample) const;
 
-    template <bool Forward>
     bxdf::Result base_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                                material::Sample const& sample, float diff_factor) const;
 
-    template <bool Forward>
     bxdf::Result pure_gloss_evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                                      material::Sample const& sample) const;
 

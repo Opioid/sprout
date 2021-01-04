@@ -41,8 +41,8 @@ float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const {
     return attenuation;
 }
 
-Result Clearcoat::evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                             Layer const& layer, bool avoid_caustics) const {
+Result Clearcoat::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                           bool avoid_caustics) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -132,8 +132,8 @@ float3 Thinfilm::attenuation(float /*n_dot*/) const {
     return float3(1.f);
 }
 
-Result Thinfilm::evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                            Layer const& layer, bool /*avoid_caustics*/) const {
+Result Thinfilm::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                          bool /*avoid_caustics*/) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 

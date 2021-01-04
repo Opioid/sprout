@@ -6,7 +6,7 @@
 
 namespace scene::material::debug {
 
-bxdf::Result Sample::evaluate_f(float3_p wi) const {
+bxdf::Result Sample::evaluate(float3_p wi) const {
     float const n_dot_wi = layer_.clamp_n_dot(wi);
 
     float const pdf = n_dot_wi * Pi_inv;
@@ -14,16 +14,6 @@ bxdf::Result Sample::evaluate_f(float3_p wi) const {
     float3 const lambert = Pi_inv * albedo_;
 
     return {n_dot_wi * lambert, pdf};
-}
-
-bxdf::Result Sample::evaluate_b(float3_p wi) const {
-    float const n_dot_wi = layer_.clamp_n_dot(wi);
-
-    float const pdf = n_dot_wi * Pi_inv;
-
-    float3 const lambert = Pi_inv * albedo_;
-
-    return {lambert, pdf};
 }
 
 void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
