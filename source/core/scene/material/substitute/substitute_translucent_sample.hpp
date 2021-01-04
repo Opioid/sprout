@@ -9,21 +9,16 @@ namespace scene::material::substitute {
 
 class Sample_translucent : public material::Sample {
   public:
-    bxdf::Result evaluate_f(float3_p wi) const final;
-
-    bxdf::Result evaluate_b(float3_p wi) const final;
+    bxdf::Result evaluate(float3_p wi) const final;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
     void set_transluceny(float3_p color, float thickness, float attenuation_distance,
                          float transparency);
 
-    Base_closure<disney::Isotropic> base_;
+    Base_closure<disney::Iso> base_;
 
   private:
-    template <bool Forward>
-    bxdf::Result evaluate(float3_p wi) const;
-
     float3 attenuation_;
 
     float thickness_;

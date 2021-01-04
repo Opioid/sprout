@@ -9,9 +9,7 @@ class Sample : public material::Sample {
   public:
     Sample();
 
-    bxdf::Result evaluate_f(float3_p wi) const override;
-
-    bxdf::Result evaluate_b(float3_p wi) const override;
+    bxdf::Result evaluate(float3_p wi) const override;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 

@@ -59,7 +59,7 @@ class alignas(64) Lighttracer final : public Integrator {
 
   private:
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                            Light const*& light_out, uint32_t& light_id, Sample_from& light_sample);
+                            uint32_t& light_id, Sample_from& light_sample);
 
     bool direct_camera(Camera const& camera, float3_p radiance, Ray const& history,
                        Intersection const& isec, Material_sample const& mat_sample, Filter filter,

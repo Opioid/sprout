@@ -1,7 +1,6 @@
 #include "photon_mapper.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/frustum.hpp"
-#include "base/memory/align.hpp"
 #include "photon.hpp"
 #include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -19,17 +18,15 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-#include <iostream>
-
 //#define ISLAND_MODE
 
 namespace rendering::integrator::particle::photon {
 
 Mapper::Mapper(Settings const& settings)
-    : settings_(settings), photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
+    : settings_(settings), photons_(new Photon[settings.max_bounces]) {}
 
 Mapper::~Mapper() {
-    std::free(photons_);
+    delete[] photons_;
 }
 
 void Mapper::start_pixel(rnd::Generator& /*rng*/, uint32_t /*num_samples*/) {}
@@ -38,8 +35,8 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
                       Worker& worker) {
     Frustum const frustum = worker.camera().frustum();
 
-    AABB const& world_bounds = settings_.full_light_path ? worker.scene().aabb()
-                                                         : worker.scene().caustic_aabb();
+    AABB const world_bounds = settings_.full_light_path ? worker.scene().aabb()
+                                                        : worker.scene().caustic_aabb();
 
     AABB const bounds = world_bounds.intersection(frustum.calculate_aabb());
 
@@ -69,7 +66,6 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
             i += num_photons;
 
             num_paths += num_iterations;
-
         } else {
             return 0;
         }
@@ -88,8 +84,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
     AABB unnatural_limit = bounds;
     unnatural_limit.scale(8.f);
 
-    Filter const filter = Filter::Undefined;
-
     bool constexpr avoid_caustics = false;
 
     Bxdf_sample sample_result;
@@ -103,19 +97,21 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
     for (uint32_t i = 0; i < Max_iterations; ++i) {
         worker.interface_stack().clear();
 
+        Filter filter = Filter::Undefined;
+
         bool caustic_path    = false;
         bool from_subsurface = false;
 
         Ray ray;
-        //   Light const* light;
-        Light light;
-        if (!generate_light_ray(frame, bounds, worker, ray, light, light_id, light_sample)) {
+        if (!generate_light_ray(frame, bounds, worker, ray, light_id, light_sample)) {
             continue;
         }
 
         if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
             continue;
         }
+
+        auto const& light = worker.scene().light(light_id);
 
         float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) /
                           (light_sample.pdf);
@@ -161,7 +157,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                         if (isec.subsurface && (isec.material(worker)->ior() > 1.f)) {
                             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
-                            radi *= isec.material(worker)->ior() / ior_t;
+                            float const eta   = isec.material(worker)->ior() / ior_t;
+
+                            radi *= eta * eta;
                         }
 
                         photon.p        = isec.geo.p;
@@ -183,6 +181,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                 if (sample_result.type.is(Bxdf_type::Caustic)) {
                     caustic_path = true;
+                } else {
+                    filter = Filter::Nearest;
                 }
 
                 float3 const nr  = radiance * sample_result.reflection / sample_result.pdf;
@@ -257,7 +257,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 }
 
 bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                                Light& light_out, uint32_t& light_id, Sample_from& light_sample) {
+                                uint32_t& light_id, Sample_from& light_sample) {
     auto& rng = worker.rng();
 
     float const select = sampler_.sample_1D(rng, 1);
@@ -290,8 +290,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_out = light_ref;
-    light_id  = light.id;
+    light_id = light.id;
 
     light_sample.pdf *= light.pdf;
 

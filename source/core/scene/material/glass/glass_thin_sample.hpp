@@ -9,9 +9,7 @@ class Sample_thin : public material::Sample {
   public:
     Sample_thin();
 
-    bxdf::Result evaluate_f(float3_p wi) const final;
-
-    bxdf::Result evaluate_b(float3_p wi) const final;
+    bxdf::Result evaluate(float3_p wi) const final;
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 

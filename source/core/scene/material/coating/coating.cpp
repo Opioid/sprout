@@ -41,8 +41,8 @@ float3 Clearcoat::attenuation(float n_dot_wi, float n_dot_wo) const {
     return attenuation;
 }
 
-Result Clearcoat::evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                             Layer const& layer, bool avoid_caustics) const {
+Result Clearcoat::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                           bool avoid_caustics) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -57,8 +57,8 @@ Result Clearcoat::evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_
     fresnel::Schlick const schlick(f0_);
 
     float3     fresnel_result;
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                schlick, fresnel_result);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick,
+                                          fresnel_result);
 
     float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
 
@@ -81,8 +81,8 @@ Result Clearcoat::evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_
     fresnel::Schlick const schlick(f0_);
 
     float3     fresnel_result;
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                schlick, fresnel_result);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick,
+                                          fresnel_result);
 
     float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
 
@@ -94,8 +94,8 @@ void Clearcoat::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, 
                         bxdf::Sample& result) const {
     float3 const fresnel = result.reflection;
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h,
-                                                   alpha_, layer, result);
+    float const n_dot_wi = ggx::Iso::reflect(wo, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h, alpha_,
+                                             layer, result);
 
     attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
 
@@ -108,7 +108,7 @@ float Clearcoat::sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& 
                         bxdf::Sample& result) const {
     float2 const xi = sampler.sample_2D(rng, 1);
 
-    float3 const h = ggx::Isotropic::sample(wo, alpha_, xi, layer, n_dot_h);
+    float3 const h = ggx::Iso::sample(wo, alpha_, xi, layer, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -132,8 +132,8 @@ float3 Thinfilm::attenuation(float /*n_dot*/) const {
     return float3(1.f);
 }
 
-Result Thinfilm::evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                            Layer const& layer, bool /*avoid_caustics*/) const {
+Result Thinfilm::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                          bool /*avoid_caustics*/) const {
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -142,8 +142,8 @@ Result Thinfilm::evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h
     const fresnel::Thinfilm thinfilm(1.f, ior_, ior_internal_, thickness_);
 
     float3     fresnel;
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                thinfilm, fresnel);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, thinfilm,
+                                          fresnel);
 
     float3 const attenuation = (1.f - fresnel);
 
@@ -160,8 +160,8 @@ Result Thinfilm::evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h
     const fresnel::Thinfilm thinfilm(1.f, ior_, ior_internal_, thickness_);
 
     float3     fresnel;
-    auto const ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_,
-                                                thinfilm, fresnel);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, thinfilm,
+                                          fresnel);
 
     float3 const attenuation = (1.f - fresnel);
 
@@ -173,8 +173,8 @@ void Thinfilm::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, f
                        bxdf::Sample& result) const {
     float3 const fresnel = result.reflection;
 
-    float const n_dot_wi = ggx::Isotropic::reflect(wo, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h,
-                                                   alpha_, layer, result);
+    float const n_dot_wi = ggx::Iso::reflect(wo, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h, alpha_,
+                                             layer, result);
 
     attenuation = 1 - fresnel;
 
@@ -185,7 +185,7 @@ float Thinfilm::sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& r
                        bxdf::Sample& result) const {
     float2 const xi = sampler.sample_2D(rng, 1);
 
-    float3 const h = ggx::Isotropic::sample(wo, alpha_, xi, layer, n_dot_h);
+    float3 const h = ggx::Iso::sample(wo, alpha_, xi, layer, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 

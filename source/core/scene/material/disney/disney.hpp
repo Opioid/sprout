@@ -15,7 +15,7 @@ struct Layer;
 
 namespace disney {
 
-class Isotropic {
+class Iso {
   public:
     static bxdf::Result reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo, float alpha,
                                    float3_p color);

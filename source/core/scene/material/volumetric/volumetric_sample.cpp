@@ -17,13 +17,7 @@ Sample::Sample() {
     properties_.set(Property::Translucent);
 }
 
-bxdf::Result Sample::evaluate_f(float3_p wi) const {
-    float const phase = Sample::phase(wo_, wi);
-
-    return {float3(phase), phase};
-}
-
-bxdf::Result Sample::evaluate_b(float3_p wi) const {
+bxdf::Result Sample::evaluate(float3_p wi) const {
     float const phase = Sample::phase(wo_, wi);
 
     return {float3(phase), phase};

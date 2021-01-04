@@ -6,9 +6,9 @@
 namespace scene::material::coating {
 
 template <typename Coating>
-Result Coating_layer<Coating>::evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                                          bool avoid_caustics) const {
-    return Coating::evaluate_f(wi, wo, h, wo_dot_h, *this, avoid_caustics);
+Result Coating_layer<Coating>::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
+                                        bool avoid_caustics) const {
+    return Coating::evaluate(wi, wo, h, wo_dot_h, *this, avoid_caustics);
 }
 
 template <typename Coating>

@@ -273,15 +273,14 @@ void Worker::render_use_variance(uint32_t frame, uint32_t view, int4_p tile, uin
 void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     Camera const& camera = *camera_;
 
-    uint32_t const num_samples = uint32_t(range[1] - range[0]);
+    rng_.start(0, offset + range[0]);
 
-    lighttracer_->start_pixel(rng(), num_samples);
+    uint32_t const num_samples = uint32_t(range[1] - range[0]);
+    lighttracer_->start_pixel(rng_, num_samples);
 
     auto const& interface_stack = camera.interface_stack();
 
     for (uint64_t i = range[0]; i < range[1]; ++i) {
-        rng_.start(0, i + offset);
-
         lighttracer_->li(frame, *this, interface_stack);
     }
 }

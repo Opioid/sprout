@@ -53,17 +53,16 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
     AABB const frustum_bounds = world_bounds;  //.isec(frustum.calculate_aabb());
     // ---
 
-    Ray          ray;
-    Light const* light;
-    uint32_t     light_id;
-    Sample_from  light_sample;
-    if (!generate_light_ray(frame, frustum_bounds, worker, ray, light, light_id, light_sample)) {
+    Ray         ray;
+    uint32_t    light_id;
+    Sample_from light_sample;
+    if (!generate_light_ray(frame, frustum_bounds, worker, ray, light_id, light_sample)) {
         return;
     }
 
     Intersection isec;
 
-    Filter const filter = Filter::Undefined;
+    Filter filter = Filter::Undefined;
 
     if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
         return;
@@ -73,7 +72,9 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
 
     Importance_cache& importance = worker.particle_importance();
 
-    float3 radiance = light->evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
+    auto const& light = worker.scene().light(light_id);
+
+    float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
     float3 wo1(0.f);
 
     Bxdf_sample sample_result;
@@ -103,15 +104,13 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
         }
 
         if (sample_result.type.no(Bxdf_type::Straight)) {
-            if (sample_result.type.no(Bxdf_type::Specular)) {
-                bool const side = isec.subsurface | mat_sample.same_hemisphere(wo);
-
-                if (side & (caustic_path | settings_.full_light_path)) {
-                    if (direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker)) {
-                        if (first) {
-                            importance.increment(light_id, light_sample.xy, isec.geo.p);
-                            first = false;
-                        }
+            if (sample_result.type.no(Bxdf_type::Specular) &&
+                (isec.subsurface | mat_sample.same_hemisphere(wo)) &&
+                (caustic_path | settings_.full_light_path)) {
+                if (direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker)) {
+                    if (first) {
+                        importance.increment(light_id, light_sample.xy, isec.geo.p);
+                        first = false;
                     }
                 }
             }
@@ -120,6 +119,7 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
                 //   caustic_path |= !primary_ray;//true;
                 caustic_path = true;
             } else {
+                filter      = Filter::Nearest;
                 primary_ray = false;
             }
         }
@@ -178,8 +178,7 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
 }
 
 bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
-                                     Light const*& light_out, uint32_t& light_id,
-                                     Sample_from& light_sample) {
+                                     uint32_t& light_id, Sample_from& light_sample) {
     if (0 == worker.scene().num_lights()) {
         return false;
     }
@@ -216,8 +215,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_out = &light_ref;
-    light_id  = light.id;
+    light_id = light.id;
 
     light_sample.pdf *= light.pdf;
 
@@ -260,11 +258,11 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
         float3 const wi = -camera_sample.dir;
 
-        auto const bxdf = mat_sample.evaluate_f(wi);
+        auto const bxdf = mat_sample.evaluate(wi);
 
-        float3_p wo = mat_sample.wo();
+        float3 const wo = mat_sample.wo();
 
-        float3_p n = mat_sample.interpolated_normal();
+        float3 const n = mat_sample.interpolated_normal();
 
         float nsc = material::non_symmetry_compensation(wo, wi, isec.geo.geo_n, n);
 
@@ -272,7 +270,9 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
         if (isec.subsurface && (material.ior() > 1.f)) {
             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
-            nsc *= material.ior() / ior_t;
+            float const eta   = material.ior() / ior_t;
+
+            nsc *= eta * eta;
         }
 
         float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);

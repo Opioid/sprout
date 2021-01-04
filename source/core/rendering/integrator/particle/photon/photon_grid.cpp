@@ -347,7 +347,7 @@ float3 Grid::li(Intersection const& isec, Material_sample const& sample,
                 }
 
                 if (squared_distance(photon.p, position) <= radius2) {
-                    auto const bxdf = sample.evaluate_f(photon.wi);
+                    auto const bxdf = sample.evaluate(photon.wi);
 
                     result += float3(photon.alpha) * bxdf.reflection;
                 }
@@ -385,11 +385,14 @@ float3 Grid::li(Intersection const& isec, Material_sample const& sample,
 
                         // float const k = cone_filter(distance2, inv_radius2);
 
+                        float const n_dot_wi = material::clamp_dot(sample.shading_normal(),
+                                                                   photon.wi);
+
                         float const k = conely_filter(distance2, inv_radius2);
 
-                        auto const bxdf = sample.evaluate_b(photon.wi);
+                        auto const bxdf = sample.evaluate(photon.wi);
 
-                        result += k * float3(photon.alpha) * bxdf.reflection;
+                        result += (k / n_dot_wi) * float3(photon.alpha) * bxdf.reflection;
                     }
                 }
             }

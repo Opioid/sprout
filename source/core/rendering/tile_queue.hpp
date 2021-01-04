@@ -48,8 +48,6 @@ class Range_queue {
 
     bool pop(ulong2& range);
 
-    uint32_t index(ulong2 const& range, uint32_t segment) const;
-
   private:
     uint64_t total0_;
     uint64_t total1_;

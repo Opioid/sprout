@@ -24,8 +24,8 @@ class Clearcoat {
     float3 attenuation(float n_dot_wi, float n_dot_wo) const;
 
   protected:
-    Result evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
-                      bool avoid_caustics) const;
+    Result evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                    bool avoid_caustics) const;
 
     Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
                       bool avoid_caustics) const;
@@ -56,8 +56,8 @@ class Thinfilm {
     float3 attenuation(float n_dot_wo) const;
 
   protected:
-    Result evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
-                      bool avoid_caustics) const;
+    Result evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
+                    bool avoid_caustics) const;
 
     Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
                       bool avoid_caustics) const;
@@ -81,8 +81,8 @@ class Coating_layer : public Layer, public Coating {
   public:
     using Sampler = sampler::Sampler;
 
-    Result evaluate_f(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                      bool avoid_caustics) const;
+    Result evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
+                    bool avoid_caustics) const;
 
     Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
                       bool avoid_caustics) const;
