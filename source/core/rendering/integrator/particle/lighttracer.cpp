@@ -9,6 +9,7 @@
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -26,18 +27,25 @@ namespace rendering::integrator::particle {
 
 using namespace scene;
 
-Lighttracer::Lighttracer(Settings const& settings, uint32_t /*max_samples_per_pixel*/)
-    : settings_(settings) {}
+Lighttracer::Lighttracer(Settings const& settings, uint32_t max_samples_per_pixel)
+    : settings_(settings),
+      sampler_pool_(new sampler::Golden_ratio_pool(1 + Num_dedicated_samplers)) {
+    for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
+        sampler_pool_->create(i, 2, 1, max_samples_per_pixel);
+    }
 
-Lighttracer::~Lighttracer() = default;
+    sampler_pool_->create(Num_dedicated_samplers, 1, 3, max_samples_per_pixel);
+}
+
+Lighttracer::~Lighttracer() {
+    delete sampler_pool_;
+}
 
 void Lighttracer::start_pixel(RNG& rng, uint32_t num_samples_per_pixel) {
     sampler_.start_pixel(rng, num_samples_per_pixel);
 
-    light_sampler_.start_pixel(rng, num_samples_per_pixel);
-
-    for (auto& s : material_samplers_) {
-        s.start_pixel(rng, num_samples_per_pixel);
+    for (uint32_t i = 0; i < Num_dedicated_samplers + 1; ++i) {
+        sampler_pool_->get(i).start_pixel(rng, num_samples_per_pixel);
     }
 }
 
@@ -185,21 +193,23 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
     auto& rng = worker.rng();
 
-    float const select = light_sampler_.sample_1D(rng, 1);
+    auto& light_sampler = sampler_pool_->get(Num_dedicated_samplers);
+
+    float const select = light_sampler.sample_1D(rng, 1);
 
     auto const  light     = worker.scene().random_light(select);
     auto const& light_ref = worker.scene().light(light.id);
 
-    uint64_t const time = worker.absolute_time(frame, light_sampler_.sample_1D(rng, 2));
+    uint64_t const time = worker.absolute_time(frame, light_sampler.sample_1D(rng, 2));
 
     Importance const& importance = worker.particle_importance().importance(light.id);
 
     if (importance.distribution().empty()) {
-        if (!light_ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
+        if (!light_ref.sample(time, light_sampler, 1, bounds, worker, light_sample)) {
             return false;
         }
     } else {
-        if (!light_ref.sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
+        if (!light_ref.sample(time, light_sampler, 1, importance.distribution(), bounds, worker,
                               light_sample)) {
             return false;
         }
@@ -294,8 +304,8 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 }
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
-    if (Num_material_samplers > bounce) {
-        return material_samplers_[bounce];
+    if (Num_dedicated_samplers > bounce) {
+        return sampler_pool_->get(bounce);
     }
 
     return sampler_;

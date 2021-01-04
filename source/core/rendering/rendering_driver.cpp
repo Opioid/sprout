@@ -15,7 +15,7 @@
 
 namespace rendering {
 
-static uint32_t constexpr Num_particles_per_chunk = 1024;
+static uint32_t constexpr Num_particles_per_chunk = 16384;
 
 Driver::Driver(Threads& threads, progress::Sink& progressor)
     : threads_(threads),
