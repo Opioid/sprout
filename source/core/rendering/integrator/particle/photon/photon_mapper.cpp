@@ -1,7 +1,6 @@
 #include "photon_mapper.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/frustum.hpp"
-#include "base/memory/align.hpp"
 #include "photon.hpp"
 #include "photon_map.hpp"
 #include "rendering/integrator/integrator_helper.hpp"
@@ -19,17 +18,15 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_sample.hpp"
 
-#include <iostream>
-
 //#define ISLAND_MODE
 
 namespace rendering::integrator::particle::photon {
 
 Mapper::Mapper(Settings const& settings)
-    : settings_(settings), photons_(memory::allocate_aligned<Photon>(settings.max_bounces)) {}
+    : settings_(settings), photons_(new Photon[settings.max_bounces]) {}
 
 Mapper::~Mapper() {
-    std::free(photons_);
+    delete[] photons_;
 }
 
 void Mapper::start_pixel(rnd::Generator& /*rng*/) {}
@@ -69,7 +66,6 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
             i += num_photons;
 
             num_paths += num_iterations;
-
         } else {
             return 0;
         }
@@ -88,8 +84,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
     AABB unnatural_limit = bounds;
     unnatural_limit.scale(8.f);
 
-    Filter const filter = Filter::Undefined;
-
     bool constexpr avoid_caustics = false;
 
     Bxdf_sample sample_result;
@@ -102,6 +96,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
     for (uint32_t i = 0; i < Max_iterations; ++i) {
         worker.interface_stack().clear();
+
+        Filter filter = Filter::Undefined;
 
         bool caustic_path    = false;
         bool from_subsurface = false;
@@ -185,6 +181,8 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                 if (sample_result.type.is(Bxdf_type::Caustic)) {
                     caustic_path = true;
+                } else {
+                    filter = Filter::Nearest;
                 }
 
                 float3 const nr  = radiance * sample_result.reflection / sample_result.pdf;

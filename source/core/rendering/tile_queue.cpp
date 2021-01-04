@@ -119,8 +119,4 @@ bool Range_queue::pop(ulong2& range) {
     return false;
 }
 
-uint32_t Range_queue::index(ulong2 const& range, uint32_t segment) const {
-    return uint32_t(range[0] / uint64_t(range_size_)) + segment * num_ranges0_;
-}
-
 }  // namespace rendering

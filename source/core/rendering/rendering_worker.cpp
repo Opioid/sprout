@@ -130,13 +130,12 @@ void Worker::render(uint32_t frame, uint32_t view, uint32_t iteration, int4_p ti
 void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
     Camera const& camera = *camera_;
 
-    lighttracer_->start_pixel(rng());
+    rng_.start(0, offset + range[0]);
+    lighttracer_->start_pixel(rng_);
 
     auto const& interface_stack = camera.interface_stack();
 
     for (uint64_t i = range[0]; i < range[1]; ++i) {
-        rng_.start(0, i + offset);
-
         lighttracer_->li(frame, *this, interface_stack);
     }
 }
