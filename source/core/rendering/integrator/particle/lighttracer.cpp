@@ -272,7 +272,9 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
         if (isec.subsurface && (material.ior() > 1.f)) {
             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
-            nsc *= material.ior() / ior_t;
+            float const eta   = material.ior() / ior_t;
+
+            nsc *= eta * eta;
         }
 
         float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);

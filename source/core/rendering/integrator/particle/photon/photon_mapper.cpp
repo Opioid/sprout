@@ -161,7 +161,9 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
                         if (isec.subsurface && (isec.material(worker)->ior() > 1.f)) {
                             float const ior_t = worker.interface_stack().next_to_bottom_ior(worker);
-                            radi *= isec.material(worker)->ior() / ior_t;
+                            float const eta   = isec.material(worker)->ior() / ior_t;
+
+                            radi *= eta * eta;
                         }
 
                         photon.p        = isec.geo.p;
