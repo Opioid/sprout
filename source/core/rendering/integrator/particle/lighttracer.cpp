@@ -34,7 +34,7 @@ Lighttracer::Lighttracer(Settings const& settings, uint32_t max_samples_per_pixe
         sampler_pool_->create(i, 2, 1, max_samples_per_pixel);
     }
 
-    sampler_pool_->create(Num_dedicated_samplers, 1, 3, max_samples_per_pixel);
+    sampler_pool_->create(Num_dedicated_samplers, 2, 3, max_samples_per_pixel);
 }
 
 Lighttracer::~Lighttracer() {
@@ -195,7 +195,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
     auto& light_sampler = sampler_pool_->get(Num_dedicated_samplers);
 
-    float const select = light_sampler.sample_1D(rng, 1);
+    float const select = light_sampler.sample_1D(rng, 0);
 
     auto const  light     = worker.scene().random_light(select);
     auto const& light_ref = worker.scene().light(light.id);
