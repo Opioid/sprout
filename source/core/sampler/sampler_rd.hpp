@@ -21,16 +21,12 @@ class alignas(64) RD final : public Buffered {
     void generate_2D(RNG& rng, uint32_t dimension);
     void generate_1D(RNG& rng, uint32_t dimension);
 
-    static uint32_t constexpr Num_batch = 16;
+    static uint32_t constexpr Num_batch = 64;
 
-    float2* seeds_2D_;
-    float*  seeds_1D_;
+    float* seeds_;
+    float* samples_;
 
-    float2* samples_2D_;
-    float*  samples_1D_;
-
-    uint32_t* consumed_2D_;
-    uint32_t* consumed_1D_;
+    uint32_t* consumed_;
 };
 
 extern template class Typed_pool<RD>;

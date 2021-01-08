@@ -9,6 +9,7 @@
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
+#include "sampler/sampler_rd.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
@@ -83,6 +84,7 @@ void size() {
     print_size<sampler::Sampler>("Sampler", 8);
     print_size<sampler::Random>("Random", 8);
     print_size<sampler::Golden_ratio>("Golden_ratio", 64);
+    print_size<sampler::RD>("RD", 64);
 
     print_size<scene::shape::Intersection>("shape::Intersection", 96);
 

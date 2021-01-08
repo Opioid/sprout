@@ -1,7 +1,6 @@
 #include "sampler_rd.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector2.inl"
-#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/random/shuffle.hpp"
 #include "sampler.inl"
@@ -36,67 +35,69 @@ static inline float2 r2i(float2 seed, uint32_t n) {
 }
 
 RD::RD(uint32_t num_dimensions_2D, uint32_t num_dimensions_1D, uint32_t max_samples)
-    : Buffered(num_dimensions_2D, num_dimensions_1D, max_samples) {
-    float* seeds = memory::allocate_aligned<float>(2 * num_dimensions_2D + num_dimensions_1D);
+    : Buffered(num_dimensions_2D, num_dimensions_1D, max_samples),
+      seeds_(new float[2 * num_dimensions_2D + num_dimensions_1D]),
 
-    seeds_2D_ = reinterpret_cast<float2*>(seeds);
-    seeds_1D_ = seeds + 2 * num_dimensions_2D;
+      samples_(new float[Num_batch * 2 * num_dimensions_2D + Num_batch * num_dimensions_1D]),
 
-    float* buffer = memory::allocate_aligned<float>(Num_batch * 2 * num_dimensions_2D +
-                                                    Num_batch * num_dimensions_1D);
-
-    samples_2D_ = reinterpret_cast<float2*>(buffer);
-    samples_1D_ = buffer + Num_batch * 2 * num_dimensions_2D_;
-
-    consumed_2D_ = memory::allocate_aligned<uint32_t>(num_dimensions_2D + num_dimensions_1D);
-
-    consumed_1D_ = consumed_2D_ + num_dimensions_2D;
-}
+      consumed_(new uint32_t[num_dimensions_2D + num_dimensions_1D]) {}
 
 RD::~RD() {
-    std::free(consumed_2D_);
-    std::free(samples_2D_);
-    std::free(seeds_2D_);
+    delete[] consumed_;
+    delete[] samples_;
+    delete[] seeds_;
 }
 
 float2 RD::sample_2D(RNG& rng, uint32_t dimension) {
-    if (Num_batch == consumed_2D_[dimension]) {
+    if (Num_batch == consumed_[dimension]) {
         generate_2D(rng, dimension);
     }
 
-    uint32_t const current = consumed_2D_[dimension]++;
+    uint32_t const current = consumed_[dimension]++;
 
-    return samples_2D_[dimension * Num_batch + current];
+    float2 const* samples_2D = reinterpret_cast<float2*>(samples_);
+
+    return samples_2D[dimension * Num_batch + current];
 }
 
 float RD::sample_1D(RNG& rng, uint32_t dimension) {
-    if (Num_batch == consumed_1D_[dimension]) {
+    uint32_t const od = num_dimensions_2D_ + dimension;
+
+    if (Num_batch == consumed_[od]) {
         generate_1D(rng, dimension);
     }
 
-    uint32_t const current = consumed_1D_[dimension]++;
+    uint32_t const current = consumed_[od]++;
 
-    return samples_1D_[dimension * Num_batch + current];
+    float const* samples_1D = samples_ + Num_batch * 2 * num_dimensions_2D_;
+
+    return samples_1D[dimension * Num_batch + current];
 }
 
 void RD::on_start_pixel(RNG& rng) {
+    float2* seeds_2D = reinterpret_cast<float2*>(seeds_);
+
     for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
-        seeds_2D_[i] = float2(rng.random_float(), rng.random_float());
+        seeds_2D[i] = float2(rng.random_float(), rng.random_float());
     }
 
+    float* seeds_1D = seeds_ + 2 * num_dimensions_2D_;
+
     for (uint32_t i = 0, len = num_dimensions_1D_; i < len; ++i) {
-        seeds_1D_[i] = rng.random_float();
+        seeds_1D[i] = rng.random_float();
     }
 
     for (uint32_t i = 0, len = num_dimensions_2D_ + num_dimensions_1D_; i < len; ++i) {
-        consumed_2D_[i] = Num_batch;
+        consumed_[i] = Num_batch;
     }
 }
 
 void RD::generate_2D(RNG& rng, uint32_t dimension) {
-    float2 const seed = seeds_2D_[dimension];
+    float2 const seed = reinterpret_cast<float2*>(seeds_)[dimension];
 
-    float2* begin = samples_2D_ + dimension * Num_batch;
+    float2* samples_2D = reinterpret_cast<float2*>(samples_);
+
+    float2* begin = samples_2D + dimension * Num_batch;
 
     uint32_t& current_sample = current_sample_[dimension];
 
@@ -108,13 +109,15 @@ void RD::generate_2D(RNG& rng, uint32_t dimension) {
 
     rnd::biased_shuffle(begin, Num_batch, rng);
 
-    consumed_2D_[dimension] = 0;
+    consumed_[dimension] = 0;
 }
 
 void RD::generate_1D(RNG& rng, uint32_t dimension) {
-    float const seed = seeds_1D_[dimension];
+    float const seed = (seeds_ + 2 * num_dimensions_2D_)[dimension];
 
-    float* begin = samples_1D_ + dimension * Num_batch;
+    float* samples_1D = samples_ + Num_batch * 2 * num_dimensions_2D_;
+
+    float* begin = samples_1D + dimension * Num_batch;
 
     uint32_t& current_sample = current_sample_[num_dimensions_2D_ + dimension];
 
@@ -126,7 +129,7 @@ void RD::generate_1D(RNG& rng, uint32_t dimension) {
 
     rnd::biased_shuffle(begin, Num_batch, rng);
 
-    consumed_1D_[dimension] = 0;
+    consumed_[num_dimensions_2D_ + dimension] = 0;
 }
 
 template class Typed_pool<RD>;
