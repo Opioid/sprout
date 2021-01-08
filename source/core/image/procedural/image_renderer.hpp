@@ -63,6 +63,8 @@ class Renderer {
 
     void resolve_sRGB(Byte3& image) const;
 
+    void resolve_linear(Byte3& image) const;
+
     void resolve(Byte3& image) const;
 
     void resolve(Byte1& image) const;

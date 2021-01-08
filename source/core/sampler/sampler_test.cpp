@@ -1,7 +1,9 @@
 #include "sampler_test.hpp"
+#include "base/encoding/encoding.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
+#include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/image.hpp"
@@ -221,7 +223,7 @@ void render_disk(std::string const& name, Sampler& sampler, uint32_t num_samples
 
     renderer.resolve_sRGB(target);
 
-    encoding::png::Writer::write(name, target);
+    image::encoding::png::Writer::write(name, target);
 }
 
 void render_triangle(std::string const& name, Sampler& sampler, uint32_t num_samples, RNG& rng,
@@ -273,7 +275,7 @@ void render_triangle(std::string const& name, Sampler& sampler, uint32_t num_sam
 
     renderer.resolve_sRGB(target);
 
-    encoding::png::Writer::write(name, target);
+    image::encoding::png::Writer::write(name, target);
 }
 
 void render_triangle_heitz(std::string const& name, Sampler& sampler, uint32_t num_samples,
@@ -325,7 +327,7 @@ void render_triangle_heitz(std::string const& name, Sampler& sampler, uint32_t n
 
     renderer.resolve_sRGB(target);
 
-    encoding::png::Writer::write(name, target);
+    image::encoding::png::Writer::write(name, target);
 }
 
 void render_triangle_one(std::string const& name, Sampler& sampler, uint32_t num_samples, RNG& rng,
@@ -377,51 +379,29 @@ void render_triangle_one(std::string const& name, Sampler& sampler, uint32_t num
 
     renderer.resolve_sRGB(target);
 
-    encoding::png::Writer::write(name, target);
+    image::encoding::png::Writer::write(name, target);
 }
 
 void render_quad(std::string const& name, Sampler& sampler, uint32_t num_samples, RNG& rng,
                  Renderer& renderer, Byte3& target) {
     std::cout << name << std::endl;
 
-    renderer.set_brush(float3(0.18f));
+    renderer.set_brush(float3(0.5f));
     renderer.clear();
-
-    uint32_t const segment_len = num_samples / 4;
 
     sampler.start_pixel(rng);
 
-    renderer.set_brush(float3(1.f, 0.f, 0.f));
-    for (uint32_t i = 0; i < segment_len; ++i) {
+    for (uint32_t i = 0; i < num_samples; ++i) {
+        renderer.set_brush(
+            ::encoding::unorm_to_float(spectrum::turbo(float(i) / float(num_samples - 1))));
         float2 const s = sampler.sample_2D(rng);
         //    std::cout << s << std::endl;
         renderer.draw_circle(s, Dot_radius);
     }
 
-    renderer.set_brush(float3(0.f, 0.7f, 0.f));
-    for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s = sampler.sample_2D(rng);
-        //    std::cout << s << std::endl;
-        renderer.draw_circle(s, Dot_radius);
-    }
+    renderer.resolve_linear(target);
 
-    renderer.set_brush(float3(0.f, 0.f, 1.f));
-    for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s = sampler.sample_2D(rng);
-        //    std::cout << s << std::endl;
-        renderer.draw_circle(s, Dot_radius);
-    }
-
-    renderer.set_brush(float3(0.7f, 0.7f, 0.f));
-    for (uint32_t i = 0; i < segment_len; ++i) {
-        float2 const s = sampler.sample_2D(rng);
-        //    std::cout << s << std::endl;
-        renderer.draw_circle(s, Dot_radius);
-    }
-
-    renderer.resolve_sRGB(target);
-
-    encoding::png::Writer::write(name, target);
+    image::encoding::png::Writer::write(name, target);
 }
 
 void render_quad(std::string const& name, Sampler& sampler, uint32_t num_samples, RNG& rng,
@@ -447,7 +427,7 @@ void render_quad(std::string const& name, Sampler& sampler, uint32_t num_samples
 
     renderer.resolve_sRGB(target);
 
-    encoding::png::Writer::write(name, target);
+    image::encoding::png::Writer::write(name, target);
 }
 
 }  // namespace sampler::testing
