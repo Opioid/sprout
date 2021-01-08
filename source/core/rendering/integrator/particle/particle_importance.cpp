@@ -83,7 +83,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, Threads& threads) 
 }
 
 void Importance::filter(float* buffer, Threads& threads) const {
-    static int32_t constexpr Kernel_radius = 4;
+    static int32_t constexpr Kernel_radius = 1;
 
     threads.run_range(
         [this, buffer](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
@@ -93,8 +93,7 @@ void Importance::filter(float* buffer, Threads& threads) const {
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float filtered   = 0.f;
-                    float weight_sum = 0.f;
+                    float max_value = 0.f;
 
                     for (int32_t ky = -Kernel_radius; ky <= Kernel_radius; ++ky) {
                         for (int32_t kx = -Kernel_radius; kx <= Kernel_radius; ++kx) {
@@ -108,16 +107,12 @@ void Importance::filter(float* buffer, Threads& threads) const {
 
                                 float const value = w.c > 0 ? w.w / float(w.c) : 0.f;
 
-                                float const weight = (1.f / (length(float2(kx, ky)) + 1.f));
-
-                                filtered += value * weight;
-
-                                weight_sum += weight;
+                                max_value = std::max(value, max_value);
                             }
                         }
                     }
 
-                    buffer[i] = weight_sum > 0.f ? filtered / weight_sum : 0.f;
+                    buffer[i] = max_value;
                 }
             }
         },
