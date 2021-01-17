@@ -11,6 +11,43 @@
 
 namespace rendering::integrator::particle {
 
+class Histogram {
+  public:
+    static int32_t constexpr Num_buckets = 16;
+
+    Histogram(float max_value) : max_value_(max_value) {
+        for (uint32_t i = 0; i < Num_buckets; ++i) {
+            buckets_[i] = 0;
+        }
+    }
+
+    void insert(float value) {
+        uint32_t const i = uint32_t(std::lrint((value / max_value_) * float(Num_buckets - 1)));
+
+        ++buckets_[i];
+    }
+
+    float max_of_lower(uint32_t lower, uint32_t total) const {
+        uint32_t count = total;
+
+        int32_t i = Num_buckets - 1;
+        for (; i >= 0; --i) {
+            if (count <= lower) {
+                break;
+            }
+
+            count -= buckets_[i];
+        }
+
+        return (i + 1) * (max_value_ / float(Num_buckets));
+    }
+
+  private:
+    uint32_t buckets_[Num_buckets];
+
+    float max_value_;
+};
+
 Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]) {
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
         importance_[i] = {0.f, 0};
@@ -46,16 +83,26 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, Threads& threads) 
 
     filter(buffer, threads);
 
-    std::string const name = "particle_importance_" + std::to_string(id) + ".png";
-
-    image::encoding::png::Writer::write_heatmap(name, buffer, int2(Dimensions), threads);
-
-    distribution_.allocate(Dimensions);
+    static int32_t constexpr N = Dimensions * Dimensions;
 
     float max = 0.f;
-    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
+    for (int32_t i = 0; i < N; ++i) {
         max = std::max(buffer[i], max);
     }
+
+    Histogram hist(max);
+
+    for (int32_t i = 0; i < N; ++i) {
+        hist.insert(buffer[i]);
+    }
+
+    max = hist.max_of_lower(uint32_t(0.9f * float(N)), N);
+
+    std::string const name = "particle_importance_" + std::to_string(id) + ".png";
+
+    image::encoding::png::Writer::write_heatmap(name, buffer, int2(Dimensions), max, threads);
+
+    distribution_.allocate(Dimensions);
 
     threads.run_range(
         [this, buffer, max](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
@@ -63,13 +110,15 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, Threads& threads) 
 
             auto weights = memory::Buffer<float>(Dimensions);
 
+            float const im = 1.f / max;
+
             for (int32_t y = begin; y < end; ++y) {
                 int32_t const row = y * Dimensions;
 
                 for (int32_t x = 0; x < Dimensions; ++x) {
                     int32_t const i = row + x;
 
-                    float const weight = buffer[i] / max;
+                    float const weight = std::min(buffer[i], max) * im;
 
                     weights[x] = weight;
                 }
@@ -156,11 +205,11 @@ void Importance_cache::increment(uint32_t light_id, float2 uv) {
     }
 }
 
-void Importance_cache::increment(uint32_t light_id, float2 uv, float3_p p) {
+void Importance_cache::increment(uint32_t light_id, float2 uv, float3_p p, float weight) {
     if (training_) {
         float const d = std::max(squared_distance(p, eye_), 1.f);
 
-        importances_[light_id].increment(uv, 1.f / d);
+        importances_[light_id].increment(uv, weight / d);
     }
 }
 

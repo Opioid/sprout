@@ -64,7 +64,7 @@ class Importance_cache {
 
     void increment(uint32_t light_id, float2 uv);
 
-    void increment(uint32_t light_id, float2 uv, float3_p p);
+    void increment(uint32_t light_id, float2 uv, float3_p p, float weight);
 
     Importance const& importance(uint32_t light_id) const;
 

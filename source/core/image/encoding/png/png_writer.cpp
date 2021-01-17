@@ -172,9 +172,9 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     float const im = max_value > 0.f ? 1.f / max_value : 1.f;
 
     threads.run_range(
-        [bytes, data, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+        [bytes, data, max_value, im](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
             for (int32_t i = begin; i < end; ++i) {
-                float const n = data[i] * im;
+                float const n = std::min(data[i], max_value) * im;
 
                 bytes[i] = spectrum::turbo(n);
             }

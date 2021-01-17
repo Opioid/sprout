@@ -58,9 +58,12 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
-                map.insert(photons_[j], uint32_t(i) + j);
+                Photon const& ph = photons_[j];
 
-                worker.particle_importance().increment(light_id, light_sample.xy, photons_[j].p);
+                map.insert(ph, uint32_t(i) + j);
+
+                float const w = std::max(ph.alpha[0], std::max(ph.alpha[1], ph.alpha[2]));
+                worker.particle_importance().increment(light_id, light_sample.xy, ph.p, w);
             }
 
             i += num_photons;

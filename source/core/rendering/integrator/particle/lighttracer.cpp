@@ -84,7 +84,6 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
     bool primary_ray     = true;
     bool caustic_path    = false;
     bool from_subsurface = false;
-    bool first           = true;
 
     for (;;) {
         float3 const wo = -ray.direction;
@@ -107,11 +106,9 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
             if (sample_result.type.no(Bxdf_type::Specular) &&
                 (isec.subsurface | mat_sample.same_hemisphere(wo)) &&
                 (caustic_path | settings_.full_light_path)) {
-                if (direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker)) {
-                    if (first) {
-                        importance.increment(light_id, light_sample.xy, isec.geo.p);
-                        first = false;
-                    }
+                if (float w;
+                    direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker, w)) {
+                    importance.increment(light_id, light_sample.xy, isec.geo.p, w);
                 }
             }
 
@@ -224,7 +221,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
 bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray const& history,
                                 Intersection const& isec, Material_sample const& mat_sample,
-                                Filter filter, Worker& worker) {
+                                Filter filter, Worker& worker, float& weight) {
     if (!isec.visible_in_camera(worker)) {
         return false;
     }
@@ -240,6 +237,8 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
     bool hit = false;
 
     float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, false);
+
+    weight = 0.f;
 
     for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
         Camera_sample_to camera_sample;
@@ -276,6 +275,8 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
         }
 
         float3 const result = (camera_sample.pdf * nsc) * (tr * radiance * bxdf.reflection);
+
+        weight += max_component(result);
 
         int2 const offset = camera.view_offset(v);
 
