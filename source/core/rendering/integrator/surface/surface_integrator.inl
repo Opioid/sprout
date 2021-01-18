@@ -16,7 +16,7 @@ Typed_pool<T>::~Typed_pool() {
         integrators_[i].~T();
     }
 
-    std::free(integrators_);
+    memory::free_aligned(integrators_);
 }
 
 }  // namespace rendering::integrator::surface

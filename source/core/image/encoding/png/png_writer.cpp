@@ -185,7 +185,7 @@ bool Writer::write_heatmap(std::string_view name, float const* data, int2 dimens
     void*  png_buffer = tdefl_write_image_to_png_file_in_memory(bytes, dimensions[0], dimensions[1],
                                                                3, &buffer_len);
 
-    std::free(bytes);
+    memory::free_aligned(bytes);
 
     if (!png_buffer) {
         return false;
