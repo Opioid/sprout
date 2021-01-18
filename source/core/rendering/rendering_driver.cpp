@@ -233,7 +233,7 @@ void Driver::render_frame_backward(uint32_t frame) {
     });
 
 #ifdef PARTICLE_GUIDING
-    particle_importance_.prepare_sampling(threads_);
+    particle_importance_.prepare_sampling(*scene_, threads_);
     particle_importance_.set_training(false);
 
     ranges_.restart(1);
@@ -421,7 +421,7 @@ void Driver::bake_photons(uint32_t frame) {
         uint32_t const new_begin = photon_map_.compile_iteration(num_photons, num_paths, threads_);
 
 #ifdef PHOTON_GUIDING
-        particle_importance_.prepare_sampling(threads_);
+        particle_importance_.prepare_sampling(*scene_, threads_);
         particle_importance_.set_training(false);
 #endif
 

@@ -30,7 +30,7 @@ class Importance {
 
     float denormalization_factor() const;
 
-    void prepare_sampling(uint32_t id, float* buffer, Threads& threads);
+    void prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene, Threads& threads);
 
     static int32_t constexpr Dimensions = 256;
 
@@ -60,7 +60,7 @@ class Importance_cache {
 
     void set_training(bool training);
 
-    void prepare_sampling(Threads& threads);
+    void prepare_sampling(scene::Scene const& scene, Threads& threads);
 
     void increment(uint32_t light_id, float2 uv);
 

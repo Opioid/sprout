@@ -28,18 +28,22 @@ class Histogram {
     }
 
     float max_of_lower(uint32_t lower, uint32_t total) const {
+        if (lower == total) {
+            return max_value_;
+        }
+
         uint32_t count = total;
 
         int32_t i = Num_buckets - 1;
-        for (; i >= 0; --i) {
-            if (count <= lower) {
+        for (; i >= 1; --i) {
+            count -= buckets_[i];
+
+            if (count < lower || 1 == i) {
                 break;
             }
-
-            count -= buckets_[i];
         }
 
-        return (i + 1) * (max_value_ / float(Num_buckets));
+        return i * (max_value_ / float(Num_buckets));
     }
 
   private:
@@ -76,8 +80,14 @@ float Importance::denormalization_factor() const {
     return float(Dimensions * Dimensions);
 }
 
-void Importance::prepare_sampling(uint32_t id, float* buffer, Threads& threads) {
+void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene, Threads& threads) {
     if (!distribution_.empty()) {
+        return;
+    }
+
+    float4 const cone = scene.light_cone(id);
+
+    if (cone[3] < 0.5f) {
         return;
     }
 
@@ -97,6 +107,10 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, Threads& threads) 
     }
 
     max = hist.max_of_lower(uint32_t(0.9f * float(N)), N);
+
+    if (0.f == max) {
+        return;
+    }
 
     std::string const name = "particle_importance_" + std::to_string(id) + ".png";
 
@@ -187,16 +201,11 @@ void Importance_cache::set_training(bool training) {
     training_ = training;
 }
 
-void Importance_cache::prepare_sampling(Threads& threads) {
-    // This entire ordeal is very hacky!
-    // We need a proper way to select which light should have importances and which not.
-    uint32_t const light = std::min(1u, uint32_t(importances_.size()) - 1);
-
-    importances_[light].prepare_sampling(light, buffer_, threads);
-
-    //        for (uint32_t i = 0, len = num_importances_; i < len; ++i) {
-    //            importances_[i].prepare_sampling(i, threads);
-    //        }
+void Importance_cache::prepare_sampling(scene::Scene const& scene, Threads& threads) {
+    for (uint32_t i = 0;auto& importance : importances_) {
+        importance.prepare_sampling(i, buffer_, scene, threads);
+        ++i;
+    }
 }
 
 void Importance_cache::increment(uint32_t light_id, float2 uv) {
