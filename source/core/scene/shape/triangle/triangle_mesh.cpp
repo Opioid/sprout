@@ -415,7 +415,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     sample = Sample_to(dir, float3(tc), pdf * s.pdf, offset_b(d));
 
 #ifdef SU_DEBUG
-    uint32_t const pm = primitive_mapping_[s.id];
+    uint32_t const pm = primitive_mapping_[s.offset];
 
     float const guessed_pdf = parts_[part].pdf(op, on, total_sphere, pm);
 

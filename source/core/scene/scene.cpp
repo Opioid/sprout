@@ -153,7 +153,7 @@ void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random
 
 #ifdef SU_DEBUG
     for (auto const l : lights) {
-        float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, split, l.id, *this);
+        float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, split, l.offset, *this);
 
         float const diff = std::abs(guessed_pdf - l.pdf);
 
