@@ -69,7 +69,7 @@ class Scene {
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
-    using Light          = light::Light_pick;
+    using Light_pick     = light::Light_pick;
     using Lights         = light::Tree::Lights;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
@@ -118,11 +118,11 @@ class Scene {
 
     light::Light const& light(uint32_t id) const;
 
-    Light light(uint32_t id, bool calculate_pdf) const;
+    Light_pick light(uint32_t id, bool calculate_pdf) const;
 
-    Light light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
+    Light_pick light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
 
-    Light random_light(float random) const;
+    Light_pick random_light(float random) const;
 
     void random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,
                       Lights& lights) const;

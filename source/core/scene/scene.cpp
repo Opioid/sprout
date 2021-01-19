@@ -114,7 +114,7 @@ bool Scene::is_infinite() const {
     return !infinite_props_.empty() || !infinite_volumes_.empty();
 }
 
-Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
+light::Light_pick Scene::light(uint32_t id, bool calculate_pdf) const {
     // If the assert doesn't hold it would pose a problem,
     // but I think it is more efficient to handle those cases outside or implicitely.
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
@@ -126,7 +126,7 @@ Scene::Light Scene::light(uint32_t id, bool calculate_pdf) const {
     return {id, pdf};
 }
 
-Scene::Light Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
+light::Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
                           bool split) const {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
@@ -137,7 +137,7 @@ Scene::Light Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere
     return {id, pdf};
 }
 
-Scene::Light Scene::random_light(float random) const {
+light::Light_pick Scene::random_light(float random) const {
     SOFT_ASSERT(!lights_.empty());
 
     auto const l = light_distribution_.sample_discrete(random);
@@ -226,7 +226,7 @@ void Scene::compile(uint64_t time, Threads& threads) {
         ++i;
     }
 
-    light_distribution_.init(light_temp_powers_.data(), uint32_t(light_temp_powers_.size()));
+    light_distribution_.init(light_temp_powers_.data(), light_temp_powers_.size());
 
     light_tree_builder_.build(light_tree_, *this, threads);
 
