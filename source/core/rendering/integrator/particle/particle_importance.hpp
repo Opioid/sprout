@@ -2,13 +2,11 @@
 #define SU_RENDERING_INTEGRATOR_PARTICLE_IMPORTANCE_HPP
 
 #include "base/math/distribution/distribution_2d.hpp"
+#include "core/scene/scene.hpp"
 #include "base/math/vector3.hpp"
+#include "base/memory/array.hpp"
 
 #include <vector>
-
-namespace scene {
-class Scene;
-}
 
 namespace thread {
 class Pool;
@@ -30,7 +28,9 @@ class Importance {
 
     float denormalization_factor() const;
 
-    void prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene, Threads& threads);
+    float total_weight() const;
+
+    float prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene, Threads& threads);
 
     static int32_t constexpr Dimensions = 256;
 
@@ -66,6 +66,8 @@ class Importance_cache {
 
     void increment(uint32_t light_id, float2 uv, float3_p p, float weight);
 
+    scene::Scene::Light_pick random_light(float random, scene::Scene const& scene) const;
+
     Importance const& importance(uint32_t light_id) const;
 
   private:
@@ -76,6 +78,10 @@ class Importance_cache {
     std::vector<Importance> importances_;
 
     float* buffer_;
+
+    memory::Array<float> relative_importances_;
+
+    Distribution_1D light_distribution_;
 };
 
 }  // namespace rendering::integrator::particle
