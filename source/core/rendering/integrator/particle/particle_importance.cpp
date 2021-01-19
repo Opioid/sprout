@@ -80,7 +80,8 @@ float Importance::denormalization_factor() const {
     return float(Dimensions * Dimensions);
 }
 
-void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene, Threads& threads) {
+void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene,
+                                  Threads& threads) {
     if (!distribution_.empty()) {
         return;
     }
@@ -202,7 +203,7 @@ void Importance_cache::set_training(bool training) {
 }
 
 void Importance_cache::prepare_sampling(scene::Scene const& scene, Threads& threads) {
-    for (uint32_t i = 0;auto& importance : importances_) {
+    for (uint32_t i = 0; auto& importance : importances_) {
         importance.prepare_sampling(i, buffer_, scene, threads);
         ++i;
     }

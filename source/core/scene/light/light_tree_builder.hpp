@@ -24,7 +24,6 @@ struct Part;
 namespace light {
 
 class Light;
-struct Light_pick;
 
 struct Build_node;
 struct Node;

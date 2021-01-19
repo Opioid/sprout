@@ -217,7 +217,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                     float const select = light_sampler(ray.depth).sample_1D(rng, 1);
 
                     auto const  light     = scene.random_light(select);
-                    auto const& light_ref = scene.light(light.id);
+                    auto const& light_ref = scene.light(light.offset);
 
                     li = w * direct_light(light_ref, light.pdf, ray, p, 0, isec, worker);
                     tr = float3(0.f);
@@ -251,7 +251,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
         float const select = light_sampler(ray.depth).sample_1D(rng, 1);
 
         auto const  light     = worker.scene().random_light(select);
-        auto const& light_ref = worker.scene().light(light.id);
+        auto const& light_ref = worker.scene().light(light.offset);
 
         float3 const l = direct_light(light_ref, light.pdf, ray, p, 0, isec, worker);
 
@@ -279,11 +279,11 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         for (uint32_t il = 0, len = lights.size(); il < len; ++il) {
             auto const  light     = lights[il];
-            auto const& light_ref = worker.scene().light(light.id);
+            auto const& light_ref = worker.scene().light(light.offset);
 
             if (light_ref.is_finite(worker.scene())) {
                 // Equi-angular sampling
-                float3 const position = worker.scene().light_aabb(light.id).position();
+                float3 const position = worker.scene().light_aabb(light.offset).position();
 
                 float const delta = dot(position - ray.origin, ray.direction);
 

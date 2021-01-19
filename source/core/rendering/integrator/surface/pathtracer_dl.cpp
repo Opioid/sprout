@@ -220,7 +220,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
 
     for (uint32_t l = 0, len = lights.size(); l < len; ++l) {
         auto const  light     = lights[l];
-        auto const& light_ref = worker.scene().light(light.id);
+        auto const& light_ref = worker.scene().light(light.offset);
 
         Sample_to light_sample;
         if (!light_ref.sample(p, n, ray.time, translucent, sampler, l, worker, light_sample)) {
