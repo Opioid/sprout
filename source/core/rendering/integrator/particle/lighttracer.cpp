@@ -313,7 +313,7 @@ Lighttracer_pool::~Lighttracer_pool() {
         integrators_[i].~Lighttracer();
     }
 
-    std::free(integrators_);
+    memory::free_aligned(integrators_);
 }
 
 Lighttracer* Lighttracer_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
