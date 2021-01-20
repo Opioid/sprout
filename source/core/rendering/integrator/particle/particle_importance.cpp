@@ -52,14 +52,22 @@ class Histogram {
     float max_value_;
 };
 
-Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]) {
-    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
-        importance_[i] = {0.f, 0};
-    }
-}
+Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]) {}
 
 Importance::~Importance() {
     delete[] importance_;
+}
+
+void Importance::clear() {
+    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
+        importance_[i] = {0.f, 0};
+    }
+
+    valid_ = false;
+}
+
+bool Importance::valid() const {
+    return valid_;
 }
 
 void Importance::increment(float2 uv, float weight) {
@@ -82,13 +90,9 @@ float Importance::denormalization_factor() const {
 
 void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene,
                                   Threads& threads) {
-    if (!distribution_.empty()) {
-        return;
-    }
-
     float4 const cone = scene.light_cone(id);
 
-    if (cone[3] < 0.5f) {
+    if (cone[3] < 0.f) {
         return;
     }
 
@@ -144,6 +148,8 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const
         0, Dimensions);
 
     distribution_.init();
+
+    valid_ = true;
 }
 
 void Importance::filter(float* buffer, Threads& threads) const {
@@ -192,6 +198,12 @@ Importance_cache::~Importance_cache() {
 
 void Importance_cache::init(scene::Scene const& scene) {
     importances_.resize(scene.num_lights());
+}
+
+void Importance_cache::clear() {
+    for (auto& importance : importances_) {
+        importance.clear();
+    }
 }
 
 void Importance_cache::set_eye_position(float3_p eye) {
