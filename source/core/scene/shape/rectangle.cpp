@@ -336,10 +336,20 @@ bool Rectangle::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
     return false;
 }
 
-bool Rectangle::sample(uint32_t /*part*/, float2 /*uv*/, Transformation const& /*trafo*/,
-                       float /*area*/, bool /*two_sided*/, float2 /*importance_uv*/,
-                       AABB const& /*bounds*/, Sample_from& /*sample*/) const {
-    return false;
+bool Rectangle::sample(uint32_t /*part*/, float2 uv, Transformation const& trafo,
+                       float area, bool /*two_sided*/, float2 importance_uv,
+                       AABB const& /*bounds*/, Sample_from& sample) const {
+    float3 const ls(-2.f * uv + 1.f, 0.f);
+    float3 const ws = trafo.object_to_world_point(ls);
+
+    float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, trafo.rotation);
+
+    sample.p   = ws;
+    sample.dir = dir;
+    sample.xy  = importance_uv;
+    sample.pdf = 1.f / (Pi * area);
+
+    return true;
 }
 
 float Rectangle::pdf_uv(Ray const& ray, Intersection const& isec, Transformation const& trafo,
