@@ -489,8 +489,9 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
 
     sample.p   = ws;
     sample.dir = dir;
+    sample.uv  = tc;
     sample.xy  = importance_uv;
-    sample.pdf = 1.f / ((1.f * Pi) * area);
+    sample.pdf = 1.f / (Pi * area);
 
     return true;
 }
