@@ -52,7 +52,7 @@ class Histogram {
     float max_value_;
 };
 
-Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]) {}
+Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]), valid_(false) {}
 
 Importance::~Importance() {
     delete[] importance_;
@@ -92,7 +92,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const
                                   Threads& threads) {
     float4 const cone = scene.light_cone(id);
 
-    if (cone[3] < 0.f) {
+    if (cone[3] < 0.5f) {
         return;
     }
 

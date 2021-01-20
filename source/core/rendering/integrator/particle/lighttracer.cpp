@@ -236,7 +236,9 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
     bool hit = false;
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, false);
+    bool const translucent = mat_sample.is_translucent();
+
+    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
 
     weight = 0.f;
 
@@ -247,7 +249,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
             continue;
         }
 
-        Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.wavelength,
+        Ray ray(p, -camera_sample.dir, p[3], camera_sample.t, history.depth, history.wavelength,
                 history.time);
 
         float3 tr;
