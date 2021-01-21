@@ -95,20 +95,16 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
         if (sample_result.type.is(Bxdf_type::Caustic)) {
             treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            filter            = Filter::Nearest;
-            primary_ray       = false;
             treat_as_singular = false;
-        }
 
-        if (sample_result.type.no(Bxdf_type::Specular)) {
-            if (ray.depth > 0 || settings_.photons_not_only_through_specular) {
-                result += throughput * worker.photon_li(isec, mat_sample);
-            }
 
-            if ((sample_result.type.no(Bxdf_type::Transmission) &&
-                 mat_sample.same_hemisphere(wo)) ||
-                isec.subsurface) {
-                break;
+            if (primary_ray) {
+                primary_ray = false;
+                filter = Filter::Nearest;
+
+                if (0 != ray.depth || settings_.photons_not_only_through_specular) {
+                    result += throughput * worker.photon_li(isec, mat_sample);
+                }
             }
         }
 
@@ -120,6 +116,8 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
             ray.wavelength = sample_result.wavelength;
         }
 
+        throughput *= sample_result.reflection / sample_result.pdf;
+
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = scene::offset_f(ray.max_t());
 
@@ -127,8 +125,6 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
                 ++ray.depth;
             }
         } else {
-            throughput *= sample_result.reflection / sample_result.pdf;
-
             ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
