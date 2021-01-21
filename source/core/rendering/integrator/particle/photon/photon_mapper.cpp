@@ -266,11 +266,11 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
     float const select = sampler_.sample_1D(rng, 1);
 
     auto const  light     = worker.scene().random_light(select);
-    auto const& light_ref = worker.scene().light(light.id);
+    auto const& light_ref = worker.scene().light(light.offset);
 
     uint64_t const time = worker.absolute_time(frame, sampler_.sample_1D(rng, 2));
 
-    Importance const& importance = worker.particle_importance().importance(light.id);
+    Importance const& importance = worker.particle_importance().importance(light.offset);
 
     if (importance.distribution().empty()) {
         if (!light_ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
@@ -293,7 +293,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_id = light.id;
+    light_id = light.offset;
 
     light_sample.pdf *= light.pdf;
 

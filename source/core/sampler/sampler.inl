@@ -16,7 +16,7 @@ Typed_pool<T>::~Typed_pool() {
         samplers_[i].~T();
     }
 
-    std::free(samplers_);
+    memory::free_aligned(samplers_);
 }
 
 template <typename T>

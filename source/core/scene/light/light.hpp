@@ -125,11 +125,7 @@ class alignas(16) Light {
     float extent_;
 };
 
-struct Light_pick {
-    uint32_t id;
-
-    float pdf;
-};
+using Light_pick = Distribution_1D::Discrete;
 
 }  // namespace light
 }  // namespace scene

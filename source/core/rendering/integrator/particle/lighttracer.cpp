@@ -185,23 +185,23 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     float const select = light_sampler_.sample_1D(rng, 1);
 
     auto const  light     = worker.particle_importance().random_light(select, worker.scene());// worker.scene().random_light(select);
-    auto const& light_ref = worker.scene().light(light.id);
+    auto const& light_ref = worker.scene().light(light.offset);
 
     uint64_t const time = worker.absolute_time(frame, light_sampler_.sample_1D(rng, 2));
 
-    Importance const& importance = worker.particle_importance().importance(light.id);
+    Importance const& importance = worker.particle_importance().importance(light.offset);
 
-    if (importance.distribution().empty()) {
-        if (!light_ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
-            return false;
-        }
-    } else {
+    if (importance.valid()) {
         if (!light_ref.sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
                               light_sample)) {
             return false;
         }
 
         light_sample.pdf *= importance.denormalization_factor();
+    } else {
+        if (!light_ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
+            return false;
+        }
     }
 
     ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);
@@ -212,7 +212,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
     ray.time       = time;
     ray.wavelength = 0.f;
 
-    light_id = light.id;
+    light_id = light.offset;
 
     light_sample.pdf *= light.pdf;
 
@@ -236,7 +236,9 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
     bool hit = false;
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, false);
+    bool const translucent = mat_sample.is_translucent();
+
+    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
 
     weight = 0.f;
 
@@ -247,7 +249,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
             continue;
         }
 
-        Ray ray(p, -camera_sample.dir, 0.f, camera_sample.t, history.depth, history.wavelength,
+        Ray ray(p, -camera_sample.dir, p[3], camera_sample.t, history.depth, history.wavelength,
                 history.time);
 
         float3 tr;
@@ -313,7 +315,7 @@ Lighttracer_pool::~Lighttracer_pool() {
         integrators_[i].~Lighttracer();
     }
 
-    std::free(integrators_);
+    memory::free_aligned(integrators_);
 }
 
 Lighttracer* Lighttracer_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {

@@ -117,9 +117,9 @@ void Part::init(uint32_t part, bvh::Tree const& tree, light::Tree_builder& build
 light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float r) const {
     auto const pick = light_tree.random_light(p, n, total_sphere, r);
 
-    float const relative_primitive_area = distribution.pdf(pick.id);
+    float const relative_primitive_area = distribution.pdf(pick.offset);
 
-    return {triangle_mapping[pick.id], pick.pdf / relative_primitive_area};
+    return {triangle_mapping[pick.offset], pick.pdf / relative_primitive_area};
 }
 
 float Part::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
@@ -389,10 +389,10 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 
     float3 sv;
     float2 tc;
-    tree_.sample(s.id, r2, sv, tc);
+    tree_.sample(s.offset, r2, sv, tc);
     float3 const v = trafo.object_to_world_point(sv);
 
-    float3 const sn = tree_.triangle_normal(s.id);
+    float3 const sn = tree_.triangle_normal(s.offset);
     float3 const wn = transform_vector(trafo.rotation, sn);
 
     float3 const axis = v - p;
@@ -415,7 +415,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     sample = Sample_to(dir, float3(tc), pdf * s.pdf, offset_b(d));
 
 #ifdef SU_DEBUG
-    uint32_t const pm = primitive_mapping_[s.id];
+    uint32_t const pm = primitive_mapping_[s.offset];
 
     float const guessed_pdf = parts_[part].pdf(op, on, total_sphere, pm);
 
@@ -489,8 +489,9 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
 
     sample.p   = ws;
     sample.dir = dir;
+    sample.uv  = tc;
     sample.xy  = importance_uv;
-    sample.pdf = 1.f / ((1.f * Pi) * area);
+    sample.pdf = 1.f / (Pi * area);
 
     return true;
 }

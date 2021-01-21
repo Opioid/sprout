@@ -307,7 +307,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
     worker.scene().random_light(p, n, translucent, select, split, lights);
 
     for (uint32_t l = 0; auto const light : lights) {
-        auto const& light_ref = worker.scene().light(light.id);
+        auto const& light_ref = worker.scene().light(light.offset);
 
         float3 const el = evaluate_light(light_ref, light.pdf, ray, p, l, isec, mat_sample, filter,
                                          worker);
@@ -368,7 +368,7 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
 
         auto const& scene     = worker.scene();
         auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
-        auto const& light_ref = scene.light(light.id);
+        auto const& light_ref = scene.light(light.offset);
 
         float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, translucent, Filter::Nearest,
                                            worker);
@@ -412,7 +412,7 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Inter
 
         auto const& scene     = worker.scene();
         auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
-        auto const& light_ref = scene.light(light.id);
+        auto const& light_ref = scene.light(light.offset);
 
         float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, state.is(State::Is_translucent),
                                            Filter::Nearest, worker);

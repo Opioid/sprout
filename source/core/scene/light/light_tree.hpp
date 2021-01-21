@@ -27,9 +27,8 @@ struct Part;
 namespace light {
 
 class Light;
-struct Light_pick;
-
-using UInts = uint32_t const* const;
+using Light_pick = Distribution_1D::Discrete;
+using UInts      = uint32_t const* const;
 
 struct Node {
     float weight(float3_p p, float3_p n, bool total_sphere) const;

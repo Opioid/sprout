@@ -52,14 +52,22 @@ class Histogram {
     float max_value_;
 };
 
-Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]) {
-    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
-        importance_[i] = {0.f, 0};
-    }
-}
+Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]), valid_(false) {}
 
 Importance::~Importance() {
     delete[] importance_;
+}
+
+void Importance::clear() {
+    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
+        importance_[i] = {0.f, 0};
+    }
+
+    valid_ = false;
+}
+
+bool Importance::valid() const {
+    return valid_;
 }
 
 void Importance::increment(float2 uv, float weight) {
@@ -164,7 +172,9 @@ float Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene cons
 
     distribution_.init();
 
-    return lower_total;
+   valid_ = true;
+
+   return lower_total;
 }
 
 void Importance::filter(float* buffer, Threads& threads) const {
@@ -213,6 +223,12 @@ Importance_cache::~Importance_cache() {
 
 void Importance_cache::init(scene::Scene const& scene) {
     importances_.resize(scene.num_lights());
+}
+
+void Importance_cache::clear() {
+    for (auto& importance : importances_) {
+        importance.clear();
+    }
 }
 
 void Importance_cache::set_eye_position(float3_p eye) {

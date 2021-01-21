@@ -22,6 +22,10 @@ class Importance {
 
     ~Importance();
 
+    void clear();
+
+    bool valid() const;
+
     void increment(float2 uv, float weight);
 
     Distribution_2D const& distribution() const;
@@ -46,6 +50,8 @@ class Importance {
     Weight* importance_;
 
     Distribution_2D distribution_;
+
+    bool valid_;
 };
 
 class Importance_cache {
@@ -55,6 +61,8 @@ class Importance_cache {
     ~Importance_cache();
 
     void init(scene::Scene const& scene);
+
+    void clear();
 
     void set_eye_position(float3_p eye);
 

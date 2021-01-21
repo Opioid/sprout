@@ -430,7 +430,7 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
                 Light_pick const pick = node.random_light(p, n, total_sphere, t.random,
                                                           light_mapping_, scene);
 
-                lights.push_back({pick.id, pick.pdf * t.pdf});
+                lights.push_back({pick.offset, pick.pdf * t.pdf});
             }
 
             t = stack.pop();
@@ -531,7 +531,7 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
                 Light_pick const pick = node.random_light(p0, p1, dir, t.random, light_mapping_,
                                                           scene);
 
-                lights.push_back({pick.id, pick.pdf * t.pdf});
+                lights.push_back({pick.offset, pick.pdf * t.pdf});
             }
 
             t = stack.pop();

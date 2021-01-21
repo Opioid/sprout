@@ -127,7 +127,7 @@ light::Light_pick Scene::light(uint32_t id, bool calculate_pdf) const {
 }
 
 light::Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
-                          bool split) const {
+                               bool split) const {
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
@@ -144,7 +144,7 @@ light::Light_pick Scene::random_light(float random) const {
 
     SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
 
-    return {l.offset, l.pdf};
+    return l;
 }
 
 void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,
@@ -153,7 +153,7 @@ void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random
 
 #ifdef SU_DEBUG
     for (auto const l : lights) {
-        float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, split, l.id, *this);
+        float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, split, l.offset, *this);
 
         float const diff = std::abs(guessed_pdf - l.pdf);
 
