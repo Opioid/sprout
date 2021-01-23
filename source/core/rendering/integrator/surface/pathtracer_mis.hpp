@@ -54,7 +54,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
         Treat_as_singular = 1 << 1,
         Is_translucent    = 1 << 2,
         Split_photon      = 1 << 3,
-        Transparent       = 1 << 4,
+        Direct            = 1 << 4,
         From_subsurface   = 1 << 5
     };
 

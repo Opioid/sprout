@@ -103,7 +103,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
     Path_state state;
     state.set(State::Primary_ray);
     state.set(State::Treat_as_singular);
-    state.set(State::Transparent);
+    state.set(State::Direct);
 
     float3 throughput(1.f);
     float3 result_li(0.f);
@@ -139,7 +139,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
         }
 
         if (mat_sample.is_pure_emissive()) {
-            state.unset(State::Transparent);
+            state.unset(State::Direct);
             break;
         }
 
@@ -172,9 +172,10 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
                 state.unset(State::Primary_ray);
                 filter = Filter::Nearest;
 
-                if (integrate_photons | (0 != ray.depth)) {
+                if (bool const indirect = state.no(State::Direct) & (0 != ray.depth);
+                    integrate_photons | indirect) {
                     photon_li = throughput * worker.photon_li(isec, mat_sample);
-                    state.set(State::Split_photon, 0 != ray.depth);
+                    state.set(State::Split_photon, indirect);
                 }
             }
         }
@@ -196,7 +197,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
-            state.unset(State::Transparent);
+            state.unset(State::Direct);
             state.unset(State::From_subsurface);
         }
 
@@ -261,7 +262,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
         result_li += throughput * radiance;
 
         if (pure_emissive) {
-            state.and_set(State::Transparent,
+            state.and_set(State::Direct,
                           (!isec.visible_in_camera(worker)) & (ray.max_t() >= Ray_max_t));
             break;
         }
@@ -277,7 +278,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
         }
     }
 
-    return Result{compose_alpha(result_li, throughput, state.is(State::Transparent)), photon_li,
+    return Result{compose_alpha(result_li, throughput, state.is(State::Direct)), photon_li,
                   state.is(State::Split_photon)};
 }
 

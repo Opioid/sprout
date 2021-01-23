@@ -66,6 +66,7 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
 
     bool primary_ray       = true;
     bool treat_as_singular = true;
+    bool direct            = true;
 
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
@@ -97,12 +98,12 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
             treat_as_singular = false;
 
-
             if (primary_ray) {
                 primary_ray = false;
-                filter = Filter::Nearest;
+                filter      = Filter::Nearest;
 
-                if (0 != ray.depth || settings_.photons_not_only_through_specular) {
+                if (bool const indirect = !direct & (0 != ray.depth);
+                    indirect || settings_.photons_not_only_through_specular) {
                     result += throughput * worker.photon_li(isec, mat_sample);
                 }
             }
@@ -128,6 +129,8 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
             ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
+
+            direct = false;
         }
 
         ray.max_t() = scene::Ray_max_t;
