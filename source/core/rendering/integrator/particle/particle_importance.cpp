@@ -88,23 +88,13 @@ float Importance::denormalization_factor() const {
     return float(Dimensions * Dimensions);
 }
 
-float Importance::total_weight() const {
-    float total = 0.f;
+void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene,
+                                  Threads& threads) {
+    float4 const cone = scene.light_cone(id);
 
-    for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
-   //     if (float const v = buffer[i]; v <= max) {
-            float const v = importance_[i].w;
-            total += v;
-     //   }
+    if (cone[3] < 0.5f) {
+        return;
     }
-
-    return total;
-}
-
-float Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene, Threads& threads) {
-//    if (!distribution_.empty()) {
-//        return 0.f;
-//    }
 
     filter(buffer, threads);
 
@@ -123,21 +113,8 @@ float Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene cons
 
     max = hist.max_of_lower(uint32_t(0.9f * float(N)), N);
 
-    float lower_total = 0.f;
-
-    for (int32_t i = 0; i < N; ++i) {
-   //     if (float const v = buffer[i]; v <= max) {
-            float const v = buffer[i];
-            lower_total += v;
-     //   }
-    }
-
-    lower_total= total_weight();
-
-    float4 const cone = scene.light_cone(id);
-
-    if (0.f == max || cone[3] < 0.5f) {
-        return lower_total;
+    if (0.f == max) {
+        return;
     }
 
     std::string const name = "particle_importance_" + std::to_string(id) + ".png";
@@ -172,9 +149,7 @@ float Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene cons
 
     distribution_.init();
 
-   valid_ = true;
-
-   return lower_total;
+    valid_ = true;
 }
 
 void Importance::filter(float* buffer, Threads& threads) const {
@@ -240,14 +215,10 @@ void Importance_cache::set_training(bool training) {
 }
 
 void Importance_cache::prepare_sampling(scene::Scene const& scene, Threads& threads) {
-    relative_importances_.resize(uint32_t(importances_.size()));
-
     for (uint32_t i = 0; auto& importance : importances_) {
-        relative_importances_[i] = std::sqrt(importance.prepare_sampling(i, buffer_, scene, threads));
+        importance.prepare_sampling(i, buffer_, scene, threads);
         ++i;
     }
-
-    light_distribution_.init(relative_importances_.data(), relative_importances_.size());
 }
 
 void Importance_cache::increment(uint32_t light_id, float2 uv) {
@@ -262,16 +233,6 @@ void Importance_cache::increment(uint32_t light_id, float2 uv, float3_p p, float
 
         importances_[light_id].increment(uv, weight / d);
     }
-}
-
-scene::Scene::Light_pick Importance_cache::random_light(float random, scene::Scene const& scene) const {
-    if (training_) {
-        return scene.random_light(random);
-    }
-
-    auto const l = light_distribution_.sample_discrete(random);
-
-    return {l.offset, l.pdf};
 }
 
 Importance const& Importance_cache::importance(uint32_t light_id) const {

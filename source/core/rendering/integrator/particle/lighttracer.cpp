@@ -197,7 +197,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
     float const select = light_sampler_.sample_1D(rng, 1);
 
-    auto const  light     = worker.particle_importance().random_light(select, worker.scene());// worker.scene().random_light(select);
+    auto const  light     = worker.scene().random_light(select);
     auto const& light_ref = worker.scene().light(light.offset);
 
     uint64_t const time = worker.absolute_time(frame, light_sampler_.sample_1D(rng, 2));
