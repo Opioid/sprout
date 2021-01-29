@@ -5,7 +5,7 @@
 #include "simd/simd.hpp"
 #include "vector3.inl"
 
-#include <cstring>
+#include <bit>
 
 namespace math {
 
@@ -18,10 +18,9 @@ static inline uint16_t rounded(int32_t value, int32_t g, int32_t s) {
 }
 
 static inline int16_t float_to_half2(float f) {
-    int32_t fbits;
-    std::memcpy(&fbits, &f, sizeof(float));
+    int32_t fbits = std::bit_cast<int32_t>(f);
 
-    int32_t sign = (fbits >> 16) & 0x8000;
+    int32_t const sign = (fbits >> 16) & 0x8000;
     fbits &= 0x7FFFFFFF;
 
     if (fbits >= 0x7F800000) {
@@ -73,9 +72,7 @@ static inline float half_to_float2(uint16_t h) {
         fbits += int32_t(abs) << 13;
     }
 
-    float out;
-    std::memcpy(&out, &fbits, sizeof(float));
-    return out;
+    return std::bit_cast<float>(fbits);
 }
 
 static inline float2 half_to_float(ushort2 h) {

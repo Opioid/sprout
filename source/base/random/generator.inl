@@ -1,8 +1,9 @@
 #ifndef SU_BASE_RANDOM_GENERATOR_INL
 #define SU_BASE_RANDOM_GENERATOR_INL
 
-#include <cstring>
 #include "generator.hpp"
+
+#include <bit>
 
 namespace rnd {
 
@@ -25,21 +26,13 @@ inline uint32_t Generator::random_uint() {
     return advance_pcg32();
 }
 
-static inline float uint_as_float(uint32_t x) {
-    float f;
-    std::memcpy(&f, &x, sizeof(float));
-    return f;
-}
-
 inline float Generator::random_float() {
     uint32_t bits = advance_pcg32();
 
     bits &= 0x007FFFFFu;
     bits |= 0x3F800000u;
 
-    return uint_as_float(bits) - 1.f;
-
-    //   return 2.3283064365386963e-10f * float(bits);
+    return std::bit_cast<float>(bits) - 1.f;
 }
 
 inline uint32_t Generator::advance_pcg32() {
