@@ -36,11 +36,11 @@ make
 
 All source files needed to build the project are included in the repository and organized with cmake.
 
-sprout needs a compiler with c++17 support.
+sprout needs a compiler with (partial) c++20 support.
 
-On Linux it should work with Clang 8 and libstdc++ 8 or higher.
-It should also build with GCC 8 or higher.
-On Windows it should work with Visual Studio 2017 or a newer version.
+On Linux it should work with Clang 11 and libstdc++ 11 or higher.
+It should also build with GCC 11 or higher.
+On Windows it should work with Visual Studio 2019 or a newer version.
 
 ** Dependencies
 

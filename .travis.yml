@@ -5,7 +5,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-9
+      - g++-11
 
 # the install step will take care of deploying a newer cmake version
 install:    
@@ -32,5 +32,5 @@ install:
 script:
  - mkdir build
  - cd build
- - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-9 ../source
+ - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-11 ../source
  - make
