@@ -212,7 +212,7 @@ void Driver::render_frame_backward(uint32_t frame) {
 
     progressor_.start(ranges_.size());
 
-    camera.sensor().clear(float(view_->num_particles_per_pixel), view_->aovs);
+    camera.sensor().clear(float(view_->num_particle_samples_per_pixel()), view_->aovs);
 
 #ifdef PARTICLE_GUIDING
     particle_importance_.clear();

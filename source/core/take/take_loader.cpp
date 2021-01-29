@@ -743,7 +743,9 @@ static Particle_pool* load_particle_integrator(json::Value const& value, uint32_
 
     num_particles_per_pixel = json::read_uint(value, "particles_per_pixel", 1);
 
-    return new Lighttracer_pool(num_workers, 1, max_bounces, full_light_path);
+    uint32_t const num_samples = json::read_uint(value, "num_samples", 1);
+
+    return new Lighttracer_pool(num_workers, num_samples, 1, max_bounces, full_light_path);
 }
 
 void Loader::set_default_integrators(uint32_t num_workers, bool progressive, View& view) {

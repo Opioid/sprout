@@ -58,6 +58,8 @@ struct View {
 
     bool valid() const;
 
+    uint32_t num_particle_samples_per_pixel() const;
+
     rendering::integrator::surface::Pool* surface_integrators = nullptr;
 
     rendering::integrator::volume::Pool* volume_integrators = nullptr;

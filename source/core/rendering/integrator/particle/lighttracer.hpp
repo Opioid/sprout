@@ -43,6 +43,7 @@ class alignas(64) Lighttracer final : public Integrator {
     using Sample_from      = scene::shape::Sample_from;
 
     struct Settings {
+        uint32_t num_samples;
         uint32_t min_bounces;
         uint32_t max_bounces;
 
@@ -58,6 +59,9 @@ class alignas(64) Lighttracer final : public Integrator {
     void li(uint32_t frame, Worker& worker, Interface_stack const& initial_stack);
 
   private:
+    void integrate(float3 radiance, Ray& ray, Intersection& isec, Worker& worker, uint32_t light_id,
+                   float2 light_sample_xy);
+
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                             uint32_t& light_id, Sample_from& light_sample);
 
@@ -79,14 +83,14 @@ class alignas(64) Lighttracer final : public Integrator {
 
 class Lighttracer_pool final {
   public:
-    Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces, uint32_t max_bounces,
-                     bool full_light_path);
+    Lighttracer_pool(uint32_t num_integrators, uint32_t num_samples, uint32_t min_bounces,
+                     uint32_t max_bounces, bool full_light_path);
 
     ~Lighttracer_pool();
 
     Lighttracer* create(uint32_t id, uint32_t max_samples_per_pixel) const;
 
-    uint32_t max_sample_depth() const;
+    uint32_t num_samples() const;
 
   private:
     uint32_t num_integrators_;

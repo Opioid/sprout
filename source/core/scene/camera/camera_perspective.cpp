@@ -92,7 +92,6 @@ bool Perspective::sample(uint32_t /*view*/, int4_p bounds, uint64_t time, float3
     float t;
 
     float3 dir;
-
     float3 out_dir;
 
     if (lens_radius_ > 0.f) {

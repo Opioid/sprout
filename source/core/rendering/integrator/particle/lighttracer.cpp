@@ -62,20 +62,33 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
 
     Intersection isec;
 
-    Filter filter = Filter::Undefined;
-
-    if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {
+    if (!worker.intersect_and_resolve_mask(ray, isec, Filter::Undefined)) {
         return;
     }
 
+    auto const& light = worker.scene().light(light_id);
+
+    float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker) /
+                            (light_sample.pdf);
+
+    for (uint32_t i = settings_.num_samples; i > 0; --i) {
+        Ray split_ray = ray;
+
+        Intersection split_isec = isec;
+
+        integrate(radiance, split_ray, split_isec, worker, light_id, light_sample.xy);
+    }
+}
+
+void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worker& worker,
+                            uint32_t light_id, float2 light_sample_xy) {
     Camera const& camera = worker.camera();
 
     Importance_cache& importance = worker.particle_importance();
 
-    auto const& light = worker.scene().light(light_id);
-
-    float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) / (light_sample.pdf);
     float3 wo1(0.f);
+
+    Filter filter = Filter::Undefined;
 
     Bxdf_sample sample_result;
 
@@ -108,7 +121,7 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
                 (caustic_path | settings_.full_light_path)) {
                 if (float w;
                     direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker, w)) {
-                    importance.increment(light_id, light_sample.xy, isec.geo.p, w);
+                    importance.increment(light_id, light_sample_xy, isec.geo.p, w);
                 }
             }
 
@@ -262,8 +275,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
         auto const bxdf = mat_sample.evaluate(wi);
 
         float3 const wo = mat_sample.wo();
-
-        float3 const n = mat_sample.interpolated_normal();
+        float3 const n  = mat_sample.interpolated_normal();
 
         float nsc = material::non_symmetry_compensation(wo, wi, isec.geo.geo_n, n);
 
@@ -304,11 +316,11 @@ sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
     return sampler_;
 }
 
-Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t min_bounces,
-                                   uint32_t max_bounces, bool full_light_path)
+Lighttracer_pool::Lighttracer_pool(uint32_t num_integrators, uint32_t num_samples,
+                                   uint32_t min_bounces, uint32_t max_bounces, bool full_light_path)
     : num_integrators_(num_integrators),
       integrators_(memory::allocate_aligned<Lighttracer>(num_integrators)),
-      settings_{min_bounces, max_bounces, full_light_path} {}
+      settings_{num_samples, min_bounces, max_bounces, full_light_path} {}
 
 Lighttracer_pool::~Lighttracer_pool() {
     for (uint32_t i = 0, len = num_integrators_; i < len; ++i) {
@@ -322,8 +334,8 @@ Lighttracer* Lighttracer_pool::create(uint32_t id, uint32_t max_samples_per_pixe
     return new (&integrators_[id]) Lighttracer(settings_, max_samples_per_pixel);
 }
 
-uint32_t Lighttracer_pool::max_sample_depth() const {
-    return 1;
+uint32_t Lighttracer_pool::num_samples() const {
+    return settings_.num_samples;
 }
 
 }  // namespace rendering::integrator::particle

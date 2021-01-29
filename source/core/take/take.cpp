@@ -54,6 +54,14 @@ bool View::valid() const {
            nullptr != camera;
 }
 
+uint32_t View::num_particle_samples_per_pixel() const {
+    if (lighttracers) {
+        return num_particles_per_pixel * lighttracers->num_samples();
+    }
+
+    return 0;
+}
+
 Take::Take() = default;
 
 Take::~Take() {
