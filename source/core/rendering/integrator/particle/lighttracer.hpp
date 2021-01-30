@@ -2,7 +2,6 @@
 #define SU_RENDERING_INTEGRATOR_PARTICLE_LIGHTTRACER_HPP
 
 #include "rendering/integrator/integrator.hpp"
-#include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 
 namespace math {
@@ -77,8 +76,9 @@ class alignas(64) Lighttracer final : public Integrator {
 
     sampler::Random light_sampler_;
 
+    sampler::Pool* sampler_pool_;
+
     static uint32_t constexpr Num_material_samplers = 3;
-    sampler::Random material_samplers_[Num_material_samplers];
 };
 
 class Lighttracer_pool final {

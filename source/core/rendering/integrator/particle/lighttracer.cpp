@@ -9,6 +9,7 @@
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "scene/camera/camera.hpp"
 #include "scene/light/light.inl"
 #include "scene/material/bxdf.hpp"
@@ -27,22 +28,32 @@ namespace rendering::integrator::particle {
 using namespace scene;
 
 Lighttracer::Lighttracer(Settings const& settings, uint32_t /*max_samples_per_pixel*/)
-    : settings_(settings) {}
+    : settings_(settings) {
+    if (1 == settings.num_samples) {
+        sampler_pool_ = new sampler::Random_pool(Num_material_samplers);
+    } else {
+        sampler_pool_ = new sampler::Golden_ratio_pool(Num_material_samplers);
+    }
 
-Lighttracer::~Lighttracer() = default;
+    for (uint32_t i = 0; i < Num_material_samplers; ++i) {
+        sampler_pool_->create(i, 2, 1, settings.num_samples);
+    }
+}
+
+Lighttracer::~Lighttracer() {
+    delete sampler_pool_;
+};
 
 void Lighttracer::start_pixel(RNG& rng) {
     sampler_.start_pixel(rng);
 
     light_sampler_.start_pixel(rng);
-
-    for (auto& s : material_samplers_) {
-        s.start_pixel(rng);
-    }
 }
 
 void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*initial_stack*/) {
-    worker.interface_stack().clear();
+    for (uint32_t i = 0; i < Num_material_samplers; ++i) {
+        sampler_pool_->get(i).start_pixel(worker.rng());
+    }
 
     // ---
     // Frustum const frustum = worker.camera().frustum();
@@ -72,6 +83,8 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
                             (light_sample.pdf);
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
+        worker.interface_stack().clear();
+
         Ray split_ray = ray;
 
         Intersection split_isec = isec;
@@ -94,7 +107,6 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
 
     bool const avoid_caustics = false;
 
-    bool primary_ray     = true;
     bool caustic_path    = false;
     bool from_subsurface = false;
 
@@ -126,11 +138,9 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
             }
 
             if (sample_result.type.is(Bxdf_type::Caustic)) {
-                //   caustic_path |= !primary_ray;//true;
                 caustic_path = true;
             } else {
-                filter      = Filter::Nearest;
-                primary_ray = false;
+                filter = Filter::Nearest;
             }
         }
 
@@ -310,7 +320,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
 sampler::Sampler& Lighttracer::material_sampler(uint32_t bounce) {
     if (Num_material_samplers > bounce) {
-        return material_samplers_[bounce];
+        return sampler_pool_->get(bounce);
     }
 
     return sampler_;
