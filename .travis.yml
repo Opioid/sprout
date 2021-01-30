@@ -1,5 +1,8 @@
 language: cpp
 
+os: linux
+dist: focal
+
 addons:
   apt:
     sources:
