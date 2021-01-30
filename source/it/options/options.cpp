@@ -3,6 +3,7 @@
 #include "core/logging/logging.hpp"
 
 #include <cctype>
+#include <charconv>
 #include <string_view>
 
 namespace it::options {
@@ -68,8 +69,8 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.op = Options::Operator::Average;
     } else if ("cat" == command || "c" == command) {
         result.op = Options::Operator::Cat;
-
-        result.concat_num_per_row = uint32_t(std::atoi(parameter.data()));
+        std::from_chars(parameter.data(), parameter.data() + parameter.size(),
+                        result.concat_num_per_row);
     } else if ("diff" == command || "d" == command) {
         result.op = Options::Operator::Diff;
     } else if ("clamp" == command) {
@@ -95,7 +96,7 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
     } else if ("take" == command) {
         result.take = parameter;
     } else if ("threads" == command || "t" == command) {
-        result.threads = std::atoi(parameter.data());
+        std::from_chars(parameter.data(), parameter.data() + parameter.size(), result.threads);
     } else {
         logging::warning("Option %S does not exist.", command);
     }

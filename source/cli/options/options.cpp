@@ -2,6 +2,7 @@
 #include "core/logging/logging.hpp"
 
 #include <cctype>
+#include <charconv>
 #include <string_view>
 
 namespace options {
@@ -62,13 +63,13 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
     if ("help" == command || "h" == command) {
         help();
     } else if ("frame" == command) {
-        result.start_frame = std::atoi(parameter.data());
+        std::from_chars(parameter.data(), parameter.data() + parameter.size(), result.start_frame);
     } else if ("input" == command || "i" == command) {
         result.take = parameter;
     } else if ("mount" == command || "m" == command) {
         result.mounts.push_back(parameter);
     } else if ("threads" == command || "t" == command) {
-        result.threads = std::atoi(parameter.data());
+        std::from_chars(parameter.data(), parameter.data() + parameter.size(), result.threads);
     } else if ("quit" == command || "q" == command) {
         result.quit = true;
     } else if ("no-textures" == command) {

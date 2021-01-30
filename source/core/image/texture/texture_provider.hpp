@@ -37,7 +37,7 @@ class Provider final : public resource::Provider<Texture> {
 
     static std::string encode_name(uint32_t image_id);
 
-    static uint32_t decode_name(std::string const& name);
+    static uint32_t decode_name(std::string_view name);
 
   private:
     bool no_textures_;

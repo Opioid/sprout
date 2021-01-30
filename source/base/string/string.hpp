@@ -21,8 +21,6 @@ static std::string to_string(T value, int num_padded_zeros = 0) {
     return stream.str();
 }
 
-bool is_space(char c);
-
 bool is_json(std::string_view text);
 
 void trim(std::string& text);

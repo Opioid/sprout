@@ -22,6 +22,8 @@
 #include "base/debug/assert.hpp"
 #include "texture_test.hpp"
 
+#include <charconv>
+
 namespace image::texture {
 
 Provider::Provider(bool no_textures) : no_textures_(no_textures) {}
@@ -151,12 +153,14 @@ std::string Provider::encode_name(uint32_t image_id) {
     return "tex:" + std::to_string(image_id);
 }
 
-uint32_t Provider::decode_name(std::string const& name) {
+uint32_t Provider::decode_name(std::string_view name) {
+    uint32_t id = resource::Null;
+
     if ("tex:" == name.substr(0, 4)) {
-        return uint32_t(std::atoi(name.substr(4).c_str()));
+        std::from_chars(name.data() + 4, name.data() + name.size(), id);
     }
 
-    return resource::Null;
+    return id;
 }
 
 }  // namespace image::texture

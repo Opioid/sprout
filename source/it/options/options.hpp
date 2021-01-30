@@ -3,6 +3,7 @@
 
 #include "base/math/vector2.hpp"
 
+#include <limits>
 #include <string>
 #include <vector>
 

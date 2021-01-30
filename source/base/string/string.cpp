@@ -5,7 +5,7 @@
 
 namespace string {
 
-bool is_space(char c) {
+static inline bool is_space(char c) {
     return std::isspace(int32_t(c)) != 0;
 }
 
