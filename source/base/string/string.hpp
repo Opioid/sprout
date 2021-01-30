@@ -23,8 +23,6 @@ static std::string to_string(T value, int num_padded_zeros = 0) {
 
 bool is_json(std::string_view text);
 
-void trim(std::string& text);
-
 std::string_view parent_directory(std::string_view filename);
 
 std::string_view suffix(std::string_view filename);

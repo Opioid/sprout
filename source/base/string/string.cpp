@@ -5,10 +5,6 @@
 
 namespace string {
 
-static inline bool is_space(char c) {
-    return std::isspace(int32_t(c)) != 0;
-}
-
 bool is_json(std::string_view text) {
     auto const it = text.find_first_not_of(" \t");
 
@@ -17,13 +13,6 @@ bool is_json(std::string_view text) {
     }
 
     return false;
-}
-
-void trim(std::string& text) {
-    auto const begin = std::find_if_not(text.begin(), text.end(), is_space);
-    auto const end   = std::find_if_not(text.rbegin(), text.rend(), is_space).base();
-
-    text.assign(begin, end);
 }
 
 std::string_view parent_directory(std::string_view filename) {
