@@ -12,7 +12,7 @@
 
 namespace json {
 
-std::string read_error(rapidjson::Document const& document) {
+std::string read_error(json::Document const& document) {
     return rapidjson::GetParseError_En(document.GetParseError());
 }
 
@@ -47,7 +47,7 @@ static Error calculate_line_number(std::istream& stream, size_t offset) {
     return {line, column};
 }
 
-std::string read_error(rapidjson::Document const& document, std::istream& stream) {
+std::string read_error(json::Document const& document, std::istream& stream) {
     auto const [line, column] = calculate_line_number(stream, document.GetErrorOffset());
 
     std::ostringstream sstream;
@@ -58,7 +58,7 @@ std::string read_error(rapidjson::Document const& document, std::istream& stream
     return sstream.str();
 }
 
-rapidjson::Document parse(std::istream& stream, std::string& error) {
+json::Document parse(std::istream& stream, std::string& error) {
     static size_t constexpr Buffer_size = 8192;
 
     memory::Buffer<char> buffer(Buffer_size);
@@ -76,11 +76,11 @@ rapidjson::Document parse(std::istream& stream, std::string& error) {
     return document;
 }
 
-bool read_bool(rapidjson::Value const& value) {
+bool read_bool(json::Value const& value) {
     return value.GetBool();
 }
 
-bool read_bool(rapidjson::Value const& value, std::string_view name, bool default_value) {
+bool read_bool(json::Value const& value, std::string_view name, bool default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return node->value.GetBool();
     }
@@ -88,11 +88,11 @@ bool read_bool(rapidjson::Value const& value, std::string_view name, bool defaul
     return default_value;
 }
 
-float read_float(rapidjson::Value const& value) {
+float read_float(json::Value const& value) {
     return value.GetFloat();
 }
 
-float read_float(rapidjson::Value const& value, std::string_view name, float default_value) {
+float read_float(json::Value const& value, std::string_view name, float default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return node->value.GetFloat();
     }
@@ -100,15 +100,15 @@ float read_float(rapidjson::Value const& value, std::string_view name, float def
     return default_value;
 }
 
-double read_double(rapidjson::Value const& value) {
+double read_double(json::Value const& value) {
     return value.GetDouble();
 }
 
-float2 read_float2(rapidjson::Value const& value) {
+float2 read_float2(json::Value const& value) {
     return float2(value[0u].GetFloat(), value[1].GetFloat());
 }
 
-float2 read_float2(rapidjson::Value const& value, std::string_view name, float2 default_value) {
+float2 read_float2(json::Value const& value, std::string_view name, float2 default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return read_float2(node->value);
     }
@@ -116,11 +116,11 @@ float2 read_float2(rapidjson::Value const& value, std::string_view name, float2 
     return default_value;
 }
 
-float3 read_float3(rapidjson::Value const& value) {
+float3 read_float3(json::Value const& value) {
     return float3(value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat());
 }
 
-float3 read_float3(rapidjson::Value const& value, std::string_view name, float3_p default_value) {
+float3 read_float3(json::Value const& value, std::string_view name, float3_p default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return read_float3(node->value);
     }
@@ -128,20 +128,20 @@ float3 read_float3(rapidjson::Value const& value, std::string_view name, float3_
     return default_value;
 }
 
-float4 read_float4(rapidjson::Value const& value) {
+float4 read_float4(json::Value const& value) {
     return float4(value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat(),
                   value[3].GetFloat());
 }
 
-int32_t read_int(rapidjson::Value const& value) {
+int32_t read_int(json::Value const& value) {
     return value.GetInt();
 }
 
-uint32_t read_uint(rapidjson::Value const& value) {
+uint32_t read_uint(json::Value const& value) {
     return value.GetUint();
 }
 
-uint32_t read_uint(rapidjson::Value const& value, std::string_view name, uint32_t default_value) {
+uint32_t read_uint(json::Value const& value, std::string_view name, uint32_t default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return node->value.GetUint();
     }
@@ -149,11 +149,11 @@ uint32_t read_uint(rapidjson::Value const& value, std::string_view name, uint32_
     return default_value;
 }
 
-uint64_t read_uint64(rapidjson::Value const& value) {
+uint64_t read_uint64(json::Value const& value) {
     return value.GetUint64();
 }
 
-uint64_t read_uint64(rapidjson::Value const& value, std::string_view name, uint64_t default_value) {
+uint64_t read_uint64(json::Value const& value, std::string_view name, uint64_t default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return node->value.GetUint64();
     }
@@ -161,11 +161,11 @@ uint64_t read_uint64(rapidjson::Value const& value, std::string_view name, uint6
     return default_value;
 }
 
-int2 read_int2(rapidjson::Value const& value) {
+int2 read_int2(json::Value const& value) {
     return int2(value[0].GetInt(), value[1].GetInt());
 }
 
-int2 read_int2(rapidjson::Value const& value, std::string_view name, int2 default_value) {
+int2 read_int2(json::Value const& value, std::string_view name, int2 default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return read_int2(node->value);
     }
@@ -173,11 +173,11 @@ int2 read_int2(rapidjson::Value const& value, std::string_view name, int2 defaul
     return default_value;
 }
 
-uint2 read_uint2(rapidjson::Value const& value) {
+uint2 read_uint2(json::Value const& value) {
     return uint2(value[0].GetUint(), value[1].GetUint());
 }
 
-uint2 read_uint2(rapidjson::Value const& value, std::string_view name, uint2 default_value) {
+uint2 read_uint2(json::Value const& value, std::string_view name, uint2 default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return read_uint2(node->value);
     }
@@ -185,7 +185,7 @@ uint2 read_uint2(rapidjson::Value const& value, std::string_view name, uint2 def
     return default_value;
 }
 
-int3 read_int3(rapidjson::Value const& value) {
+int3 read_int3(json::Value const& value) {
     return int3(value[0].GetInt(), value[1].GetInt(), value[2].GetInt());
 }
 
@@ -197,11 +197,11 @@ int3 read_int3(json::Value const& value, std::string_view name, int3 default_val
     return default_value;
 }
 
-uint3 read_uint3(rapidjson::Value const& value) {
+uint3 read_uint3(json::Value const& value) {
     return uint3(value[0].GetUint(), value[1].GetUint(), value[2].GetUint());
 }
 
-int4 read_int4(rapidjson::Value const& value) {
+int4 read_int4(json::Value const& value) {
     return int4(value[0].GetInt(), value[1].GetInt(), value[2].GetInt(), value[3].GetInt());
 }
 
@@ -226,21 +226,21 @@ float3x3 create_rotation_matrix(float3_p xyz) {
     return rot_z * rot_x * rot_y;
 }
 
-float3x3 read_rotation_matrix(rapidjson::Value const& value) {
+float3x3 read_rotation_matrix(json::Value const& value) {
     float3 const rot = read_float3(value);
 
     return create_rotation_matrix(rot);
 }
 
-math::Quaternion read_local_rotation(rapidjson::Value const& value) {
+math::Quaternion read_local_rotation(json::Value const& value) {
     return math::quaternion::create(read_rotation_matrix(value));
 }
 
-std::string read_string(rapidjson::Value const& value) {
+std::string read_string(json::Value const& value) {
     return std::string(value.GetString(), value.GetStringLength());
 }
 
-std::string read_string(rapidjson::Value const& value, std::string_view name,
+std::string read_string(json::Value const& value, std::string_view name,
                         std::string const& default_value) {
     if (auto const node = value.FindMember(name.data()); value.MemberEnd() != node) {
         return std::string(node->value.GetString(), node->value.GetStringLength());
@@ -249,7 +249,7 @@ std::string read_string(rapidjson::Value const& value, std::string_view name,
     return default_value;
 }
 
-void read_transformation(rapidjson::Value const& value, math::Transformation& trafo) {
+void read_transformation(json::Value const& value, math::Transformation& trafo) {
     if (value.IsArray()) {
         float4x4 const m(
             value[0].GetFloat(), value[1].GetFloat(), value[2].GetFloat(), value[3].GetFloat(),

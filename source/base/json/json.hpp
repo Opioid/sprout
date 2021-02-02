@@ -13,7 +13,7 @@
 
 namespace json {
 
-std::string read_error(rapidjson::Document const& document);
+std::string read_error(json::Document const& document);
 
 json::Document parse(std::istream& stream, std::string& error);
 
