@@ -184,6 +184,20 @@ static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_dif
     return float4(dudx, dvdx, dudy, dvdy);
 }
 
+float4 Worker::screenspace_differential(Intersection const& isec, uint64_t time) const {
+    Ray_differential const rd = camera_->calculate_ray_differential(isec.geo.p, time, *scene_);
+
+    Transformation temp;
+    auto const&    trafo = scene_->prop_transformation_at(isec.prop, time, temp);
+
+    auto const ds = scene_->prop_shape(isec.prop)->differential_surface(isec.geo.primitive);
+
+    float3 const dpdu_w = trafo.object_to_world_vector(ds.dpdu);
+    float3 const dpdv_w = trafo.object_to_world_vector(ds.dpdv);
+
+    return calculate_screenspace_differential(isec.geo.p, isec.geo.geo_n, rd, dpdu_w, dpdv_w);
+}
+
 float4 Worker::screenspace_differential(Renderstate const& rs, uint64_t time) const {
     Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
 

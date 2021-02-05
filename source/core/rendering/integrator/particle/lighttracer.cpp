@@ -315,6 +315,12 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
         hit = true;
     }
 
+    if (hit) {
+        float4 const dd = worker.screenspace_differential(isec, history.time);
+
+        weight /= 1.f;//max_component(abs(dd));
+    }
+
     return hit;
 }
 

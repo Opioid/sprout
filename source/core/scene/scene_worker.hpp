@@ -110,6 +110,7 @@ class Worker {
                                            bool avoid_caustics, bool straight_border,
                                            Sampler& sampler);
 
+    float4 screenspace_differential(Intersection const& isec, uint64_t time) const;
     float4 screenspace_differential(Renderstate const& rs, uint64_t time) const;
 
   protected:

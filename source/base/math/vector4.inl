@@ -212,8 +212,16 @@ static inline Vector4f_a constexpr min(Vector4f_a_p a, Vector4f_a_p b) {
                       std::min(a[3], b[3]));
 }
 
+static inline float constexpr max_component(Vector4f_a_p v) {
+    return std::max(std::max(std::max(v[0], v[1]), v[2]), v[3]);
+}
+
 static inline float constexpr average(Vector4f_a_p c) {
     return (c[0] + c[1] + c[2] + c[3]) / 4.f;
+}
+
+static inline Vector4f_a abs(Vector4f_a_p v) {
+    return Vector4f_a(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]), std::abs(v[3]));
 }
 
 static inline bool all_finite(Vector4f_a_p v) {
