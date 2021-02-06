@@ -7,8 +7,16 @@
 #include <vector>
 
 namespace scene {
+
+namespace prop {
+struct Intersection;
+}  // namespace prop
+
 class Scene;
-}
+
+class Worker;
+
+}  // namespace scene
 
 namespace thread {
 class Pool;
@@ -56,6 +64,9 @@ class Importance {
 
 class Importance_cache {
   public:
+    using Intersection = scene::prop::Intersection;
+    using Worker       = scene::Worker;
+
     Importance_cache();
 
     ~Importance_cache();
@@ -72,7 +83,8 @@ class Importance_cache {
 
     void increment(uint32_t light_id, float2 uv);
 
-    void increment(uint32_t light_id, float2 uv, float3_p p, float weight);
+    void increment(uint32_t light_id, float2 uv, Intersection const& isec, uint64_t time,
+                   float weight, Worker const& worker);
 
     Importance const& importance(uint32_t light_id) const;
 

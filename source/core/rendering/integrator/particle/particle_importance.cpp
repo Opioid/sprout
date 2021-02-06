@@ -8,6 +8,7 @@
 #include "image/encoding/png/png_writer.hpp"
 #include "scene/light/light.hpp"
 #include "scene/scene.inl"
+#include "scene/scene_worker.hpp"
 
 namespace rendering::integrator::particle {
 
@@ -227,11 +228,12 @@ void Importance_cache::increment(uint32_t light_id, float2 uv) {
     }
 }
 
-void Importance_cache::increment(uint32_t light_id, float2 uv, float3_p p, float weight) {
+void Importance_cache::increment(uint32_t light_id, float2 uv, Intersection const& isec,
+                                 uint64_t time, float weight, Worker const& worker) {
     if (training_) {
-        float const d = std::max(squared_distance(p, eye_), 1.f);
+        float4 const dd = worker.screenspace_differential(isec, time);
 
-        importances_[light_id].increment(uv, weight / d);
+        importances_[light_id].increment(uv, weight / max_component(abs(dd)));
     }
 }
 

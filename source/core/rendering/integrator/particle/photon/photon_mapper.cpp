@@ -50,20 +50,15 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
         uint32_t const max_photons = std::min(settings_.max_bounces, uint32_t(end - i));
 
         uint32_t       num_photons;
-        uint32_t       light_id;
-        Sample_from    light_sample;
         uint32_t const num_iterations = trace_photon(frame, bounds, frustum, infinite_world,
                                                      caustics_only, worker, max_photons, photons_,
-                                                     num_photons, light_id, light_sample);
+                                                     num_photons);
 
         if (num_iterations > 0) {
             for (uint32_t j = 0; j < num_photons; ++j) {
                 Photon const& ph = photons_[j];
 
                 map.insert(ph, uint32_t(i) + j);
-
-                float const w = std::max(ph.alpha[0], std::max(ph.alpha[1], ph.alpha[2]));
-                worker.particle_importance().increment(light_id, light_sample.xy, ph.p, w);
             }
 
             i += num_photons;
@@ -79,8 +74,7 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
 
 uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const& /*frustum*/,
                               bool infinite_world, bool caustics_only, Worker& worker,
-                              uint32_t max_photons, Photon* photons, uint32_t& num_photons,
-                              uint32_t& light_id, Sample_from& light_sample) {
+                              uint32_t max_photons, Photon* photons, uint32_t& num_photons) {
     // How often should we try to create a valid photon path?
     static uint32_t constexpr Max_iterations = 1024 * 10;
 
@@ -89,10 +83,6 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
 
     bool constexpr avoid_caustics = false;
 
-    Bxdf_sample sample_result;
-
-    Intersection isec;
-
     uint32_t iteration = 0;
 
     num_photons = 0;
@@ -100,12 +90,18 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
     for (uint32_t i = 0; i < Max_iterations; ++i) {
         worker.interface_stack().clear();
 
+        Bxdf_sample sample_result;
+
+        Intersection isec;
+
         Filter filter = Filter::Undefined;
 
         bool caustic_path    = false;
         bool from_subsurface = false;
 
-        Ray ray;
+        Ray         ray;
+        uint32_t    light_id;
+        Sample_from light_sample;
         if (!generate_light_ray(frame, bounds, worker, ray, light_id, light_sample)) {
             continue;
         }
@@ -175,6 +171,10 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                         iteration = i + 1;
 
                         ++num_photons;
+
+                        float const w = std::max(radi[0], std::max(radi[1], radi[2]));
+                        worker.particle_importance().increment(light_id, light_sample.xy, isec,
+                                                               ray.time, w, worker);
 
                         if (max_photons == num_photons || caustics_only) {
                             return iteration;

@@ -133,7 +133,7 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
                 (caustic_path | settings_.full_light_path)) {
                 if (float w;
                     direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker, w)) {
-                    importance.increment(light_id, light_sample_xy, isec.geo.p, w);
+                    importance.increment(light_id, light_sample_xy, isec, ray.time, w, worker);
                 }
             }
 
@@ -313,12 +313,6 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
         sensor.splat_sample(camera_sample, float4(result, 1.f), offset, crop);
 
         hit = true;
-    }
-
-    if (hit) {
-        float4 const dd = worker.screenspace_differential(isec, history.time);
-
-        weight /= 1.f;//max_component(abs(dd));
     }
 
     return hit;

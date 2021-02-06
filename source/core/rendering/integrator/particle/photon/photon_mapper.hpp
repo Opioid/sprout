@@ -52,8 +52,7 @@ class Mapper : public Integrator {
   private:
     uint32_t trace_photon(uint32_t frame, AABB const& bounds, Frustum const& frustum,
                           bool infinite_world, bool caustics_only, Worker& worker,
-                          uint32_t max_photons, Photon* photons, uint32_t& num_photons,
-                          uint32_t& light_id, Sample_from& light_sample);
+                          uint32_t max_photons, Photon* photons, uint32_t& num_photons);
 
     bool generate_light_ray(uint32_t frame, AABB const& bounds, Worker& worker, Ray& ray,
                             uint32_t& light_id, Sample_from& light_sample);
