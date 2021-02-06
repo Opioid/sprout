@@ -118,9 +118,6 @@ void Driver::render(uint32_t frame) {
 
     camera.update(*scene_, start, workers_[0]);
 
-    particle_importance_.set_eye_position(
-        scene_->prop_world_transformation(camera.entity()).position);
-
     auto const preparation_duration = chrono::seconds_since(render_start);
     logging::info("Preparation time %f s", preparation_duration);
 

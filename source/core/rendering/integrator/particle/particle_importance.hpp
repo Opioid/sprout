@@ -75,8 +75,6 @@ class Importance_cache {
 
     void clear();
 
-    void set_eye_position(float3_p eye);
-
     void set_training(bool training);
 
     void prepare_sampling(scene::Scene const& scene, Threads& threads);
@@ -89,8 +87,6 @@ class Importance_cache {
     Importance const& importance(uint32_t light_id) const;
 
   private:
-    float3 eye_;
-
     bool training_;
 
     std::vector<Importance> importances_;

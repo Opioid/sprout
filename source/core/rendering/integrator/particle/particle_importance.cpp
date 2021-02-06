@@ -207,10 +207,6 @@ void Importance_cache::clear() {
     }
 }
 
-void Importance_cache::set_eye_position(float3_p eye) {
-    eye_ = eye;
-}
-
 void Importance_cache::set_training(bool training) {
     training_ = training;
 }
