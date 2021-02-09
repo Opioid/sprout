@@ -272,17 +272,17 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
 
     Importance const& importance = worker.particle_importance().importance(light.offset);
 
-    if (importance.distribution().empty()) {
-        if (!light_ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
-            return false;
-        }
-    } else {
+    if (importance.valid()) {
         if (!light_ref.sample(time, sampler_, 0, importance.distribution(), bounds, worker,
                               light_sample)) {
             return false;
         }
 
         light_sample.pdf *= importance.denormalization_factor();
+    } else {
+        if (!light_ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
+            return false;
+        }
     }
 
     ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);
