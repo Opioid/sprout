@@ -59,12 +59,14 @@ Importance::~Importance() {
     delete[] importance_;
 }
 
-void Importance::clear() {
+void Importance::clear(uint32_t num_expected_particles) {
     for (int32_t i = 0, len = Dimensions * Dimensions; i < len; ++i) {
         importance_[i] = {0.f, 0};
     }
 
     valid_ = false;
+
+    weight_norm_ = 1.f / (num_expected_particles);
 }
 
 bool Importance::valid() const {
@@ -76,6 +78,8 @@ void Importance::increment(float2 uv, float weight) {
     int32_t const y = std::min(int32_t(std::lrint(uv[1] * float(Dimensions - 1))), Dimensions - 1);
 
     int32_t const id = y * Dimensions + x;
+
+    weight *= weight_norm_;
 
     atomic::add_assign(importance_[id].w, weight);
     atomic::add_assign(importance_[id].c, 1);
@@ -91,6 +95,11 @@ float Importance::denormalization_factor() const {
 
 void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene,
                                   Threads& threads) {
+
+    if (valid()) {
+        return;
+    }
+
     float4 const cone = scene.light_cone(id);
 
     if (cone[3] < 0.5f) {
@@ -201,9 +210,9 @@ void Importance_cache::init(scene::Scene const& scene) {
     importances_.resize(scene.num_lights());
 }
 
-void Importance_cache::clear() {
+void Importance_cache::clear(uint32_t num_expected_particles) {
     for (auto& importance : importances_) {
-        importance.clear();
+        importance.clear(num_expected_particles);
     }
 }
 
@@ -214,6 +223,7 @@ void Importance_cache::set_training(bool training) {
 void Importance_cache::prepare_sampling(scene::Scene const& scene, Threads& threads) {
     for (uint32_t i = 0; auto& importance : importances_) {
         importance.prepare_sampling(i, buffer_, scene, threads);
+
         ++i;
     }
 }
@@ -229,7 +239,9 @@ void Importance_cache::increment(uint32_t light_id, float2 uv, Intersection cons
     if (training_) {
         float4 const dd = worker.screenspace_differential(isec, time);
 
-        importances_[light_id].increment(uv, weight / max_component(abs(dd)));
+        float const w = weight / std::max(max_component(abs(dd)), 1.e-4f);
+
+        importances_[light_id].increment(uv, w);
     }
 }
 

@@ -84,6 +84,10 @@ void Range_queue::init(uint64_t total0, uint64_t total1, uint32_t range_size) {
     num_ranges1_ = uint32_t(std::ceil(float(total1) / float(range_size)));
 }
 
+uint64_t Range_queue::head() const {
+    return total0_;
+}
+
 uint64_t Range_queue::total() const {
     return total0_ + total1_;
 }

@@ -212,7 +212,7 @@ void Driver::render_frame_backward(uint32_t frame) {
     camera.sensor().clear(float(view_->num_particle_samples_per_pixel()), view_->aovs);
 
 #ifdef PARTICLE_GUIDING
-    particle_importance_.clear();
+    particle_importance_.clear(uint32_t(ranges_.head()));
     particle_importance_.set_training(true);
 #else
     particle_importance_.set_training(false);
@@ -387,7 +387,7 @@ void Driver::bake_photons(uint32_t frame) {
 
 #ifdef PHOTON_GUIDING
     uint32_t num_photons = std::max(settings_num_photons / 10, 1u);
-    particle_importance_.clear();
+    particle_importance_.clear(num_photons);
     particle_importance_.set_training(true);
 #else
     uint32_t num_photons = settings_num_photons;

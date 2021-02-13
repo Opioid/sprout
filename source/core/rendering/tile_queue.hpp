@@ -40,6 +40,8 @@ class Range_queue {
 
     void init(uint64_t total0, uint64_t total1, uint32_t range_size);
 
+    uint64_t head() const;
+
     uint64_t total() const;
 
     uint32_t size() const;

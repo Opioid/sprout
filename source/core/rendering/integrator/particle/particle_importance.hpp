@@ -32,7 +32,7 @@ class Importance {
 
     ~Importance();
 
-    void clear();
+    void clear(uint32_t num_expected_particles);
 
     bool valid() const;
 
@@ -59,6 +59,8 @@ class Importance {
 
     Distribution_2D distribution_;
 
+    float weight_norm_;
+
     bool valid_;
 };
 
@@ -73,7 +75,7 @@ class Importance_cache {
 
     void init(scene::Scene const& scene);
 
-    void clear();
+    void clear(uint32_t num_expected_particles);
 
     void set_training(bool training);
 

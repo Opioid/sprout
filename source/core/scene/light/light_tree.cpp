@@ -193,7 +193,7 @@ inline float Node::weight(float3_p p0, float3_p p1, float3_p dir) const {
 
 inline bool Node::split(float3_p p) const {
     float const r = center[3];
-    float const d = distance(p, center.xyz());
+    float const d = std::min(distance(p, center.xyz()), 1.e6f);
 
     float const a = std::max(d - r, 0.001f);
     float const b = d + r;
@@ -211,11 +211,13 @@ inline bool Node::split(float3_p p) const {
     float const ve = variance;
     float const ee = power / float(num_lights);
 
-    float const s2 = (ve * vg + ve * eg2 + ee * ee * vg);
+    float const s2 = std::max(ve * vg + ve * eg2 + ee * ee * vg, 0.f);
     float const ns = 1.f / (1.f + std::sqrt(s2));
     // float const ns = std::pow(1.f / (1.f + std::sqrt(s2)), 1.f / 4.f);
 
-    return ns < Tree::splitting_threshold_;
+    SOFT_ASSERT(std::isfinite(ns));
+
+    return ns <= Tree::splitting_threshold_;
 }
 
 inline bool Node::split(float3_p p0, float3_p dir) const {

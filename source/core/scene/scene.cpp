@@ -22,6 +22,8 @@
 
 #include "base/debug/assert.hpp"
 
+//#define DISABLE_LIGHT_TREE 1
+
 namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
@@ -128,6 +130,16 @@ light::Light_pick Scene::light(uint32_t id, bool calculate_pdf) const {
 
 light::Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
                                bool split) const {
+#ifdef DISABLE_LIGHT_TREE
+
+    id = light::Light::strip_mask(id);
+
+    float const pdf = light_distribution_.pdf(id);
+
+    return {id, pdf};
+
+#else
+
     SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
     id = light::Light::strip_mask(id);
@@ -135,6 +147,8 @@ light::Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_s
     float const pdf = light_tree_.pdf(p, n, total_sphere, split, id, *this);
 
     return {id, pdf};
+
+#endif
 }
 
 light::Light_pick Scene::random_light(float random) const {
@@ -149,9 +163,19 @@ light::Light_pick Scene::random_light(float random) const {
 
 void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,
                          Lights& lights) const {
+#ifdef DISABLE_LIGHT_TREE
+
+    auto const l = light_distribution_.sample_discrete(random);
+
+    lights.clear();
+    lights.push_back(l);
+
+#else
+
     light_tree_.random_light(p, n, total_sphere, random, split, *this, lights);
 
 #ifdef SU_DEBUG
+
     for (auto const l : lights) {
         float const guessed_pdf = light_tree_.pdf(p, n, total_sphere, split, l.offset, *this);
 
@@ -159,6 +183,9 @@ void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random
 
         SOFT_ASSERT(diff < 1e-8f);
     }
+
+#endif
+
 #endif
 }
 
