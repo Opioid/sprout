@@ -36,7 +36,6 @@ inline float Distribution_1D::integral() const {
 }
 
 static inline uint32_t search(float const* buffer, uint32_t begin, uint32_t end, float key) {
-    // The loop will terminate eventually, because buffer[len - 1] == 1.f and key <= 1.f
     for (uint32_t i = begin; i < end; ++i) {
         if (buffer[i] >= key) {
             return i;
@@ -109,18 +108,20 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(float const* data, uint32_t l
         integral += data[i];
     }
 
-    if (0.f == integral && 0.f != integral_) {
-        delete[] cdf_;
+    if (0.f == integral) {
+        if (0.f != integral_) {
+            delete[] cdf_;
 
-        uint32_t const size = 1;
+            uint32_t const size = 1;
 
-        size_ = size;
-        cdf_  = new float[size + 1];
+            size_ = size;
+            cdf_  = new float[size + 1];
 
-        cdf_[0] = 1.f;
-        cdf_[1] = 1.f;
+            cdf_[0] = 1.f;
+            cdf_[1] = 1.f;
 
-        integral_ = 0.f;
+            integral_ = 0.f;
+        }
 
         return;
     }
