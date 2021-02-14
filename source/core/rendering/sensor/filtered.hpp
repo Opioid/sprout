@@ -21,7 +21,7 @@ class Filter;
 template <class Base, class Clamp, class F>
 class alignas(64) Filtered : public Base {
   public:
-    Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius);
+    Filtered(Clamp clamp, F&& filter, int32_t filter_radius);
 
     ~Filtered() override;
 
@@ -58,7 +58,7 @@ class Filtered_1p0 final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_1p0(Clamp const& clamp, F&& filter);
+    Filtered_1p0(Clamp clamp, F&& filter);
 
     void add_sample(Sample const& sample, float4_p color, aov::Value const* aov, int4_p isolated,
                     int2 offset, int4_p bounds) final;
@@ -74,7 +74,7 @@ class Filtered_2p0 final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_2p0(Clamp const& clamp, F&& filter);
+    Filtered_2p0(Clamp clamp, F&& filter);
 
     void add_sample(Sample const& sample, float4_p color, aov::Value const* aov, int4_p isolated,
                     int2 offset, int4_p bounds) final;
@@ -90,7 +90,7 @@ class Filtered_inf final : public Filtered<Base, Clamp, F> {
     using Filter        = filter::Filter;
     using Filtered_base = Filtered<Base, Clamp, F>;
 
-    Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius);
+    Filtered_inf(Clamp clamp, F&& filter, float filter_radius);
 
     void add_sample(Sample const& sample, float4_p color, aov::Value const* aov, int4_p isolated,
                     int2 offset, int4_p bounds) final;

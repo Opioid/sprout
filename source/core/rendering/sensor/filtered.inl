@@ -9,7 +9,7 @@
 namespace rendering::sensor {
 
 template <class Base, class Clamp, class F>
-Filtered<Base, Clamp, F>::Filtered(Clamp const& clamp, F&& filter, int32_t filter_radius)
+Filtered<Base, Clamp, F>::Filtered(Clamp clamp, F&& filter, int32_t filter_radius)
     : Base(filter_radius), clamp_(clamp), filter_(std::move(filter)) {}
 
 template <class Base, class Clamp, class F>
@@ -118,7 +118,7 @@ void Filtered<Base, Clamp, F>::weight_and_add(int2 pixel, float2 relative_offset
 }
 
 template <class Base, class Clamp, class F>
-Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp const& clamp, F&& filter)
+Filtered_1p0<Base, Clamp, F>::Filtered_1p0(Clamp clamp, F&& filter)
     : Filtered_base(clamp, std::move(filter), 1) {}
 
 template <class Base, class Clamp, class F>
@@ -222,7 +222,7 @@ void Filtered_1p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4_
 }
 
 template <class Base, class Clamp, class F>
-Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp const& clamp, F&& filter)
+Filtered_2p0<Base, Clamp, F>::Filtered_2p0(Clamp clamp, F&& filter)
     : Filtered_base(clamp, std::move(filter), 2) {}
 
 template <class Base, class Clamp, class F>
@@ -394,7 +394,7 @@ void Filtered_2p0<Base, Clamp, F>::splat_sample(Sample_to const& sample, float4_
 }
 
 template <class Base, class Clamp, class F>
-Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp const& clamp, F&& filter, float filter_radius)
+Filtered_inf<Base, Clamp, F>::Filtered_inf(Clamp clamp, F&& filter, float filter_radius)
     : Filtered_base(clamp, std::move(filter), int32_t(std::ceil(filter_radius))),
       filter_radius_(filter_radius) {}
 

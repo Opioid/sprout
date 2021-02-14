@@ -95,7 +95,6 @@ float Importance::denormalization_factor() const {
 
 void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const& scene,
                                   Threads& threads) {
-
     if (valid()) {
         return;
     }
