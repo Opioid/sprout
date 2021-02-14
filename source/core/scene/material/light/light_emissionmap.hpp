@@ -24,9 +24,9 @@ class Emissionmap : public Material {
 
     float emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const final;
 
-    void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
-                          Transformation const& trafo, float area, bool importance_sampling,
-                          Threads& threads, Scene const& scene) override;
+    void prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
+                          float area, bool importance_sampling, Threads& threads,
+                          Scene const& scene) override;
 
     void set_emission_map(Texture_adapter const& emission_map);
 

@@ -129,9 +129,9 @@ class Material {
 
     float similarity_relation_scale(uint32_t depth) const;
 
-    virtual void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
-                                  Transformation const& trafo, float extent,
-                                  bool importance_sampling, Threads& threads, Scene const& scene);
+    virtual void prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
+                                  float extent, bool importance_sampling, Threads& threads,
+                                  Scene const& scene);
 
     uint32_t sampler_key() const;
 

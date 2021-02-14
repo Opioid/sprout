@@ -44,11 +44,6 @@ float3 Sun_material::average_radiance(float /*area*/) const {
     return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
 }
 
-void Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
-                                    Transformation const& /*trafo*/, float /*area*/,
-                                    bool /*importance_sampling*/, Threads& /*threads*/,
-                                    Scene const& /*scene*/) {}
-
 Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
 
 material::Sample const& Sun_baked_material::sample(float3_p           wo, Ray const& /*ray*/,
@@ -79,9 +74,9 @@ float3 Sun_baked_material::average_radiance(float /*area*/) const {
 }
 
 void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
-                                          uint64_t /*time*/, Transformation const& /*trafo*/,
-                                          float /*area*/, bool /*importance_sampling*/,
-                                          Threads& /*threads*/, Scene const& /*scene*/) {
+                                          Transformation const& /*trafo*/, float /*area*/,
+                                          bool /*importance_sampling*/, Threads& /*threads*/,
+                                          Scene const& /*scene*/) {
     using namespace image;
 
     if (!sky_.sun_changed_since_last_check()) {

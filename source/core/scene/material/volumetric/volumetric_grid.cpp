@@ -189,7 +189,7 @@ void Grid_emission::commit(Threads& threads, Scene const& scene) {
     //    std::cout << max_t << std::endl;
 }
 
-void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
+void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                      Transformation const& /*trafo*/, float /*area*/,
                                      bool importance_sampling, Threads& threads,
                                      Scene const& scene) {

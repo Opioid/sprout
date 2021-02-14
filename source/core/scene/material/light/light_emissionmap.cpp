@@ -66,7 +66,7 @@ float Emissionmap::emission_pdf(float3_p uvw, Filter filter, Worker const& worke
     return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
+void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
                                    Transformation const& /*trafo*/, float /*area*/,
                                    bool importance_sampling, Threads& threads, Scene const& scene) {
     if (average_emission_[0] >= 0.f) {
@@ -75,7 +75,8 @@ void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64
         return;
     }
 
-    prepare_sampling_internal(shape, 0, importance_sampling, threads, scene);
+    prepare_sampling_internal(shape, element_ < 0 ? 0 : element_, importance_sampling, threads,
+                              scene);
 }
 
 void Emissionmap::set_emission_map(Texture_adapter const& emission_map) {

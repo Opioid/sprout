@@ -22,10 +22,6 @@ class Emissionmap_animated : public Emissionmap {
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const final;
 
-    void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
-                          Transformation const& trafo, float area, bool importance_sampling,
-                          Threads& threads, Scene const& scene) final;
-
     void set_emission_map(Texture_adapter const& emission_map, uint64_t animation_duration);
 
   protected:

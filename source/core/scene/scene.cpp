@@ -513,8 +513,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
     Material* material = material_resources_[materials_[p]];
-    material->prepare_sampling(*shape, part, time, trafo, extent, material_importance_sampling,
-                               threads, *this);
+    material->prepare_sampling(*shape, part, trafo, extent, material_importance_sampling, threads,
+                               *this);
 
     lights_[light].set_extent(extent);
 

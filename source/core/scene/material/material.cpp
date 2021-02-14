@@ -111,7 +111,7 @@ float Material::similarity_relation_scale(uint32_t depth) const {
     return van_de_hulst(volumetric_anisotropy_, gs);
 }
 
-void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
+void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                 Transformation const& /*trafo*/, float /*extent*/,
                                 bool /*importance_sampling*/, Threads& /*threads*/,
                                 Scene const& /*scene*/) {}

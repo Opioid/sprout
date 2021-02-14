@@ -22,9 +22,9 @@ class Sky_material : public Material {
 
     float3 average_radiance(float area) const final;
 
-    void prepare_sampling(Shape const& shape, uint32_t part, uint64_t time,
-                          Transformation const& trafo, float area, bool importance_sampling,
-                          Threads& threads, scene::Scene const& scene) final;
+    void prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
+                          float area, bool importance_sampling, Threads& threads,
+                          scene::Scene const& scene) final;
 };
 
 class Sky_baked_material : public Material {
@@ -46,9 +46,9 @@ class Sky_baked_material : public Material {
 
     float emission_pdf(float3_p uvw, Filter filter, scene::Worker const& worker) const final;
 
-    void prepare_sampling(const Shape& shape, uint32_t part, uint64_t time,
-                          Transformation const& trafo, float area, bool importance_sampling,
-                          Threads& threads, scene::Scene const& scene) final;
+    void prepare_sampling(const Shape& shape, uint32_t part, Transformation const& trafo,
+                          float area, bool importance_sampling, Threads& threads,
+                          scene::Scene const& scene) final;
 
   private:
     static float3 unclipped_canopy_mapping(Transformation const& trafo, float2 uv);

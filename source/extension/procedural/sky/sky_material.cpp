@@ -53,7 +53,7 @@ float3 Sky_material::average_radiance(float /*area*/) const {
     return sky_.model().evaluate_sky(Model::zenith());
 }
 
-void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/, uint64_t /*time*/,
+void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                     Transformation const& /*trafo*/, float /*area*/,
                                     bool /*importance_sampling*/, Threads& /*threads*/,
                                     Scene const& /*scene*/) {}
@@ -110,7 +110,7 @@ float Sky_baked_material::emission_pdf(float3_p uvw, Filter filter, Worker const
     return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }
 
-void Sky_baked_material::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t /*time*/,
+void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t /*part*/,
                                           Transformation const& trafo, float /*area*/,
                                           bool importance_sampling, Threads& threads,
                                           Scene const& /*scene*/) {

@@ -50,26 +50,9 @@ float3 Emissionmap_animated::evaluate_radiance(float3_p /*wi*/, float3_p uvw, fl
     return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy(), element_);
 }
 
-void Emissionmap_animated::prepare_sampling(Shape const& shape, uint32_t /*part*/, uint64_t time,
-                                            Transformation const& /*trafo*/, float /*area*/,
-                                            bool importance_sampling, Threads& threads,
-                                            Scene const& scene) {
-    uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
-
-    int32_t const element = int32_t((time / (animation_duration_ / num_elements)) % num_elements);
-
-    if (element == element_) {
-        return;
-    }
-
-    element_ = element;
-
-    prepare_sampling_internal(shape, element, importance_sampling, threads, scene);
-}
-
 void Emissionmap_animated::set_emission_map(Texture_adapter const& emission_map,
                                             uint64_t               animation_duration) {
-    emission_map_ = emission_map;
+    Emissionmap::set_emission_map(emission_map);
 
     animation_duration_ = animation_duration;
 }
