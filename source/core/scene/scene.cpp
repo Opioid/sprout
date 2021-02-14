@@ -516,6 +516,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     material->prepare_sampling(*shape, part, trafo, extent, material_importance_sampling, threads,
                                *this);
 
+    bool const two_sided = material->is_two_sided();
+
     lights_[light].set_extent(extent);
 
     uint32_t const f = prop_frames_[entity];
@@ -528,7 +530,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
         float4 const cone = shape->cone(part);
 
-        light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()), cone[3]);
+        light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()),
+                                     two_sided ? -1.f : cone[3]);
     } else {
         entity::Keyframe const* frames = &keyframes_[f];
 
@@ -536,7 +539,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
         float4 const part_cone = shape->cone(part);
 
-        float4 cone = float4(trafo.object_to_world_normal(part_cone.xyz()), part_cone[3]);
+        float4 cone = float4(trafo.object_to_world_normal(part_cone.xyz()),
+                             two_sided ? -1.f : part_cone[3]);
 
         for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
             auto const& a = frames[i].trafo;
@@ -622,7 +626,7 @@ void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t pa
     lights_.emplace_back(type, entity, part);
 
     light_aabbs_.emplace_back(AABB(float3(0.f), float3(0.f)));
-    light_cones_.emplace_back(float4(0.f, 0.f, 0.f, Pi));
+    light_cones_.emplace_back(float4(0.f, 0.f, 1.f, -1.f));
 }
 
 bool Scene::prop_is_instance(uint32_t shape, uint32_t const* materials, uint32_t num_parts) const {
