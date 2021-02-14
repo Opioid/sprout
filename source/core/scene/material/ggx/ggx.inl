@@ -24,8 +24,8 @@ inline Interpolated_function_2D_N<float, E_size, E_size> const E_tex(&E[0][0]);
 
 inline Interpolated_function_3D_N<float, E_s_size, E_s_size, E_s_size> const E_s_tex(&E_s[0][0][0]);
 
-static inline float3 ilm_ep_conductor(float3_p f0, float n_dot_wo, float alpha) {
-    return 1.f + (1.f / E_tex(n_dot_wo, alpha) - 1.f) * f0;
+static inline float3 ilm_ep_conductor(float3_p f0, float n_dot_wo, float alpha, float metallic) {
+    return 1.f + (metallic / E_tex(n_dot_wo, alpha) - 1.f) * f0;
 }
 
 static inline float ilm_ep_dielectric(float n_dot_wo, float alpha, float ior) {

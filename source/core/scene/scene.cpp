@@ -22,7 +22,7 @@
 
 #include "base/debug/assert.hpp"
 
-//#define DISABLE_LIGHT_TREE 1
+// #define DISABLE_LIGHT_TREE 1
 
 namespace scene {
 
