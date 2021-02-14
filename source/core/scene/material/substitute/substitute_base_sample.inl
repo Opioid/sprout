@@ -77,7 +77,7 @@ bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_
 
     auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
 
-    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha);
+    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
 
     float const pdf = 0.5f * (d.pdf() + ggx.pdf());
 
