@@ -71,10 +71,6 @@ static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_do
     // ---------------------------
     // 4 * dot(n, wi) * dot(n, wo)
 
-    //	float const g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * alpha2) * n_dot_wo + alpha2);
-    //	float const g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * alpha2) * n_dot_wi + alpha2);
-    //	return 1.f / (g_wo * g_wi);
-
     // Height-correlated version
     // https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
     // lambda_v = ( -1 + sqrt ( alphaG2 * (1 - NdotL2 ) / NdotL2 + 1)) * 0.5 f;
