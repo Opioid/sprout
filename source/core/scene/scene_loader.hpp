@@ -65,8 +65,6 @@ class Loader {
     uint32_t cube() const;
     uint32_t null_shape() const;
 
-    void create_light(uint32_t prop_id, Scene& scene);
-
     Materials& materials_buffer();
 
     uint32_t fallback_material() const;

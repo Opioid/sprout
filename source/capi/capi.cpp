@@ -471,7 +471,7 @@ int32_t su_create_light(uint32_t entity) {
         return -2;
     }
 
-    engine->scene_loader.create_light(entity, engine->scene);
+    engine->scene.create_light(entity);
 
     return 0;
 }

@@ -17,6 +17,7 @@
 namespace procedural::sky {
 
 using namespace scene;
+using Light_type = scene::light::Light::Type;
 
 static Provider provider;
 
@@ -70,13 +71,8 @@ uint32_t Provider::create_extension(json::Value const& extension_value, Scene& s
         sky->update(scene);
     }
 
-    if (bake) {
-        scene.create_prop_image_light(sky_prop, 0);
-    } else {
-        scene.create_prop_light(sky_prop, 0);
-    }
-
-    scene.create_prop_light(sun_prop, 0);
+    scene.create_light(sky_prop);
+    scene.create_light(sun_prop);
 
     return sky_entity;
 }

@@ -57,11 +57,11 @@ class alignas(16) Light {
     using Sample_from    = shape::Sample_from;
     using Sampler        = sampler::Sampler;
 
-    enum class Type { Prop, Prop_image, Volume, Volume_image };
+    enum class Type : uint8_t { Prop, Prop_image, Volume, Volume_image };
 
     Light();
 
-    Light(Type type, uint32_t prop, uint32_t part);
+    Light(Type type, bool two_sided, uint32_t prop, uint32_t part);
 
     float area() const;
 
@@ -118,6 +118,8 @@ class alignas(16) Light {
 
   private:
     Type type_;
+
+    bool two_sided_;
 
     uint32_t prop_;
     uint32_t part_;

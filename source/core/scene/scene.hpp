@@ -141,13 +141,7 @@ class Scene {
 
     uint32_t create_prop(uint32_t shape, uint32_t const* materials);
 
-    void create_prop_light(uint32_t prop, uint32_t part);
-
-    void create_prop_image_light(uint32_t prop, uint32_t part);
-
-    void create_prop_volume_light(uint32_t prop, uint32_t part);
-
-    void create_prop_volume_image_light(uint32_t prop, uint32_t part);
+    void create_light(uint32_t prop);
 
     uint32_t create_extension(Extension* extension);
 
@@ -232,7 +226,7 @@ class Scene {
     };
     Prop_ptr allocate_prop();
 
-    void allocate_light(light::Light::Type type, uint32_t entity, uint32_t part);
+    void allocate_light(light::Light::Type type, bool two_sided, uint32_t entity, uint32_t part);
 
     bool prop_is_instance(uint32_t shape, uint32_t const* materials, uint32_t num_parts) const;
 

@@ -22,8 +22,8 @@ using Sampler     = sampler::Sampler;
 
 Light::Light() = default;
 
-Light::Light(Type type, uint32_t prop, uint32_t part)
-    : type_(type), prop_(prop), part_(part), extent_(0.f) {}
+Light::Light(Type type, bool two_sided, uint32_t prop, uint32_t part)
+    : type_(type), two_sided_(two_sided), prop_(prop), part_(part), extent_(0.f) {}
 
 float Light::area() const {
     return extent_;
@@ -84,13 +84,10 @@ void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3_p p, float3_p n,
-                               Transformation const& trafo, bool total_sphere, Sampler& sampler,
-                               uint32_t sampler_d, Worker& worker, Sample_to& result) {
+                               Transformation const& trafo, bool two_sided, bool total_sphere,
+                               Sampler& sampler, uint32_t sampler_d, Worker& worker,
+                               Sample_to& result) {
     shape::Shape const* shape = worker.scene().prop_shape(prop);
-
-    auto const material = worker.scene().prop_material(prop, part);
-
-    bool const two_sided = material->is_two_sided();
 
     if (!shape->sample(part, p, n, trafo, area, two_sided, total_sphere, sampler, worker.rng(),
                        sampler_d, result)) {
@@ -101,9 +98,9 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3_
 }
 
 static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, float3_p p,
-                                     float3_p n, Transformation const& trafo, bool total_sphere,
-                                     Sampler& sampler, uint32_t sampler_d, Worker& worker,
-                                     Sample_to& result) {
+                                     float3_p n, Transformation const& trafo, bool two_sided,
+                                     bool total_sphere, Sampler& sampler, uint32_t sampler_d,
+                                     Worker& worker, Sample_to& result) {
     auto const material = worker.scene().prop_material(prop, part);
 
     float2 const s2d = sampler.sample_2D(worker.rng(), sampler_d);
@@ -112,8 +109,6 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
     if (0.f == rs.pdf()) {
         return false;
     }
-
-    bool const two_sided = material->is_two_sided();
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
     if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw.xy(), trafo, area, two_sided,
@@ -166,11 +161,11 @@ bool Light::sample(float3_p p, float3_p n, Transformation const& trafo, bool tot
                    Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const {
     switch (type_) {
         case Type::Prop:
-            return prop_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler, sampler_d,
-                               worker, result);
+            return prop_sample(prop_, part_, extent_, p, n, trafo, two_sided_, total_sphere,
+                               sampler, sampler_d, worker, result);
         case Type::Prop_image:
-            return prop_image_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler,
-                                     sampler_d, worker, result);
+            return prop_image_sample(prop_, part_, extent_, p, n, trafo, two_sided_, total_sphere,
+                                     sampler, sampler_d, worker, result);
         case Type::Volume:
             return volume_sample(prop_, part_, extent_, p, n, trafo, total_sphere, sampler,
                                  sampler_d, worker, result);

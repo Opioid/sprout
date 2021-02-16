@@ -100,28 +100,6 @@ uint32_t Loader::null_shape() const {
     return null_shape_;
 }
 
-void Loader::create_light(uint32_t prop_id, Scene& scene) {
-    auto const shape = scene.prop_shape(prop_id);
-
-    for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
-        if (auto const material = scene.prop_material(prop_id, i); material->is_emissive()) {
-            if (material->is_scattering_volume()) {
-                if (shape->is_analytical() && material->has_emission_map()) {
-                    scene.create_prop_volume_image_light(prop_id, i);
-                } else {
-                    scene.create_prop_volume_light(prop_id, i);
-                }
-            } else {
-                if (shape->is_analytical() && material->has_emission_map()) {
-                    scene.create_prop_image_light(prop_id, i);
-                } else {
-                    scene.create_prop_light(prop_id, i);
-                }
-            }
-        }
-    }
-}
-
 Loader::Materials& Loader::materials_buffer() {
     return materials_;
 }
@@ -244,7 +222,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             uint32_t const prop_id = load_prop(e, local_materials, scene);
 
             if (prop::Null != prop_id && scene.prop(prop_id)->visible_in_reflection()) {
-                create_light(prop_id, scene);
+                scene.create_light(prop_id);
             }
 
             entity_id = prop_id;

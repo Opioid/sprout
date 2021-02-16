@@ -315,20 +315,28 @@ uint32_t Scene::create_prop(uint32_t shape, uint32_t const* materials) {
     return prop.id;
 }
 
-void Scene::create_prop_light(uint32_t prop, uint32_t part) {
-    allocate_light(light::Light::Type::Prop, prop, part);
-}
+void Scene::create_light(uint32_t prop) {
+    auto const shape = prop_shape(prop);
 
-void Scene::create_prop_image_light(uint32_t prop, uint32_t part) {
-    allocate_light(light::Light::Type::Prop_image, prop, part);
-}
+    for (uint32_t i = 0, len = shape->num_parts(); i < len; ++i) {
+        if (auto const material = prop_material(prop, i); material->is_emissive()) {
+            if (material->is_scattering_volume()) {
+                if (shape->is_analytical() && material->has_emission_map()) {
+                    allocate_light(light::Light::Type::Volume_image, false, prop, i);
+                } else {
+                    allocate_light(light::Light::Type::Volume, false, prop, i);
+                }
+            } else {
+                bool const two_sided = material->is_two_sided();
 
-void Scene::create_prop_volume_light(uint32_t prop, uint32_t part) {
-    allocate_light(light::Light::Type::Volume, prop, part);
-}
-
-void Scene::create_prop_volume_image_light(uint32_t prop, uint32_t part) {
-    allocate_light(light::Light::Type::Volume_image, prop, part);
+                if (shape->is_analytical() && material->has_emission_map()) {
+                    allocate_light(light::Light::Type::Prop_image, two_sided, prop, i);
+                } else {
+                    allocate_light(light::Light::Type::Prop, two_sided, prop, i);
+                }
+            }
+        }
+    }
 }
 
 uint32_t Scene::create_extension(Extension* extension) {
@@ -622,8 +630,9 @@ Scene::Prop_ptr Scene::allocate_prop() {
     return {prop, prop_id};
 }
 
-void Scene::allocate_light(light::Light::Type type, uint32_t entity, uint32_t part) {
-    lights_.emplace_back(type, entity, part);
+void Scene::allocate_light(light::Light::Type type, bool two_sided, uint32_t entity,
+                           uint32_t part) {
+    lights_.emplace_back(type, two_sided, entity, part);
 
     light_aabbs_.emplace_back(AABB(float3(0.f), float3(0.f)));
     light_cones_.emplace_back(float4(0.f, 0.f, 1.f, -1.f));
