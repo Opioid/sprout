@@ -58,7 +58,8 @@ struct Node {
 
     uint32_t has_children : 1;
     uint32_t children_or_light : 31;
-    uint32_t num_lights;
+    uint32_t two_sided : 1;
+    uint32_t num_lights : 31;
 };
 
 class Tree {

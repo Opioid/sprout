@@ -13,7 +13,8 @@ struct Part {
 
     ~Part();
 
-    void init(uint32_t part, bvh::Tree const& tree, light::Tree_builder& builder, Threads& threads);
+    void init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tree_builder& builder,
+              Threads& threads);
 
     light::Light_pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
 
@@ -129,7 +130,8 @@ class alignas(64) Mesh final : public Shape {
 
     Differential_surface differential_surface(uint32_t primitive) const final;
 
-    void prepare_sampling(uint32_t part, light::Tree_builder& builder, Threads& threads) final;
+    void prepare_sampling(uint32_t part, bool two_sided, light::Tree_builder& builder,
+                          Threads& threads) final;
 
     float4 cone(uint32_t part) const final;
 

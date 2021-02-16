@@ -507,7 +507,11 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
                                   Threads& threads) {
     auto shape = prop_shape(entity);
 
-    shape->prepare_sampling(part, light_tree_builder_, threads);
+    uint32_t const p = prop_parts_[entity] + part;
+
+    Material* material = material_resources_[materials_[p]];
+
+    shape->prepare_sampling(part, material->is_two_sided(), light_tree_builder_, threads);
 
     Transformation temp;
     auto const&    trafo = prop_transformation_at(entity, time, temp);
@@ -516,15 +520,10 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     float const extent = volume ? shape->volume(part, scale) : shape->area(part, scale);
 
-    uint32_t const p = prop_parts_[entity] + part;
-
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
-    Material* material = material_resources_[materials_[p]];
     material->prepare_sampling(*shape, part, trafo, extent, material_importance_sampling, threads,
                                *this);
-
-    bool const two_sided = material->is_two_sided();
 
     lights_[light].set_extent(extent);
 
@@ -538,8 +537,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
         float4 const cone = shape->cone(part);
 
-        light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()),
-                                     two_sided ? -1.f : cone[3]);
+        light_cones_[light] = float4(trafo.object_to_world_normal(cone.xyz()), cone[3]);
     } else {
         entity::Keyframe const* frames = &keyframes_[f];
 
@@ -547,8 +545,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
         float4 const part_cone = shape->cone(part);
 
-        float4 cone = float4(trafo.object_to_world_normal(part_cone.xyz()),
-                             two_sided ? -1.f : part_cone[3]);
+        float4 cone = float4(trafo.object_to_world_normal(part_cone.xyz()), part_cone[3]);
 
         for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
             auto const& a = frames[i].trafo;

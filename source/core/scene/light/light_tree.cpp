@@ -25,7 +25,7 @@ static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float
 }
 
 static inline float importance(float3_p p, float3_p n, float3_p center, float4_p cone, float radius,
-                               float power, bool total_sphere) {
+                               float power, bool two_sided, bool total_sphere) {
     float3 const axis = center - p;
 
     float const il = rlength(axis);
@@ -35,7 +35,8 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
 
     float const sin_cu   = std::min(il * radius, 1.f);
     float const cos_cone = cone[3];
-    float const cos_a    = -dot(da, na);
+    float const cos_at   = dot(da, na);
+    float const cos_a    = two_sided ? std::abs(cos_at) : -cos_at;
     float const cos_n    = dot(n, na);
 
     Simd3f const sa(float3(sin_cu, cos_cone, cos_a, cos_n));
@@ -62,7 +63,7 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
 }
 
 static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p center,
-                               float4_p cone, float radius, float power) {
+                               float4_p cone, float radius, float power, bool two_sided) {
     float3 const axis = p0 - center;
 
     float3 const v0 = normalize(axis);
@@ -82,8 +83,8 @@ static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p 
 
     float3 const da = cone.xyz();
 
-    float const cos_a0 = material::clamp_dot(o0, da);
-    float const cos_a1 = material::clamp_dot(o1, da);
+    float const cos_a0 = two_sided ? material::clamp_abs_dot(o0, da) : material::clamp_dot(o0, da);
+    float const cos_a1 = two_sided ? material::clamp_abs_dot(o1, da) : material::clamp_dot(o1, da);
 
     float const cos_phi = cos_a0 / std::sqrt(cos_a0 * cos_a0 + cos_a1 * cos_a1);
     float const sin_phi = std::sqrt(std::max(1.f - cos_phi * cos_phi, 0.f));
@@ -125,24 +126,26 @@ static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p 
 template <typename Set>
 static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t light,
                           Set const& set) {
-    AABB const   aabb   = set.light_aabb(light);
-    float3 const center = aabb.position();
-    float4 const cone   = set.light_cone(light);
-    float const  radius = aabb.cached_radius();
-    float const  power  = set.light_power(light);
+    bool const   two_sided = set.light_two_sided(light);
+    AABB const   aabb      = set.light_aabb(light);
+    float3 const center    = aabb.position();
+    float4 const cone      = set.light_cone(light);
+    float const  radius    = aabb.cached_radius();
+    float const  power     = set.light_power(light);
 
-    return importance(p, n, center, cone, radius, power, total_sphere);
+    return importance(p, n, center, cone, radius, power, two_sided, total_sphere);
 }
 
 static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light,
                           Scene const& scene) {
-    AABB const   aabb   = scene.light_aabb(light);
-    float3 const center = aabb.position();
-    float4 const cone   = scene.light_cone(light);
-    float const  radius = aabb.cached_radius();
-    float const  power  = scene.light_power(light);
+    bool const   two_sided = scene.light_two_sided(light);
+    AABB const   aabb      = scene.light_aabb(light);
+    float3 const center    = aabb.position();
+    float4 const cone      = scene.light_cone(light);
+    float const  radius    = aabb.cached_radius();
+    float const  power     = scene.light_power(light);
 
-    return importance(p0, p1, center, dir, cone, radius, power);
+    return importance(p0, p1, center, dir, cone, radius, power, two_sided);
 }
 
 struct Build_node {
@@ -180,15 +183,17 @@ struct Build_node {
 };
 
 inline float Node::weight(float3_p p, float3_p n, bool total_sphere) const {
-    float const r = center[3];
+    float const r            = center[3];
+    bool const  is_two_sided = 1 == two_sided;
 
-    return importance(p, n, center.xyz(), cone, r, power, total_sphere);
+    return importance(p, n, center.xyz(), cone, r, power, is_two_sided, total_sphere);
 }
 
 inline float Node::weight(float3_p p0, float3_p p1, float3_p dir) const {
-    float const r = center[3];
+    float const r            = center[3];
+    bool const  is_two_sided = 1 == two_sided;
 
-    return importance(p0, p1, center.xyz(), dir, cone, r, power);
+    return importance(p0, p1, center.xyz(), dir, cone, r, power, is_two_sided);
 }
 
 inline bool Node::split(float3_p p) const {

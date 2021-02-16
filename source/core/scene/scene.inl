@@ -149,6 +149,10 @@ inline float Scene::light_area(uint32_t entity, uint32_t part) const {
     return lights_[light_id].area();
 }
 
+inline bool Scene::light_two_sided(uint32_t entity) const {
+    return lights_[entity].is_two_sided();
+}
+
 inline float Scene::light_power(uint32_t light) const {
     return light_aabbs_[light].bounds[1][3];
 }

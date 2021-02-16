@@ -54,7 +54,10 @@ struct Build_node {
 
     uint32_t middle;
     uint32_t children_or_light;
+
     uint32_t num_lights;
+
+    bool two_sided;
 };
 
 template <typename Set>
@@ -128,6 +131,9 @@ struct Split_candidate {
 
     uint32_t axis_;
 
+    bool two_sided_0_;
+    bool two_sided_1_;
+
     bool exhausted_;
 };
 
@@ -150,6 +156,9 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     float4 cone_0(1.f);
     float4 cone_1(1.f);
 
+    bool two_sided_0 = false;
+    bool two_sided_1 = false;
+
     float power_0(0.f);
     float power_1(0.f);
 
@@ -160,6 +169,8 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         float4 const cone = scene.light_cone(l);
 
+        bool const two_sided = scene.light_two_sided(l);
+
         float const power = scene.light_power(l);
 
         if (behind(box.max().v)) {
@@ -167,12 +178,14 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
             box_0.merge_assign(box);
             cone_0 = cone::merge(cone_0, cone);
+            two_sided_0 |= two_sided;
             power_0 += power;
         } else {
             ++num_side_1;
 
             box_1.merge_assign(box);
             cone_1 = cone::merge(cone_1, cone);
+            two_sided_1 |= two_sided;
             power_1 += power;
         }
     }
@@ -191,13 +204,17 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     power_0_ = power_0;
     power_1_ = power_1;
 
+    two_sided_0_ = two_sided_0;
+    two_sided_1_ = two_sided_1;
+
     if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
         cost_ = 2.f * reg * (power_0 + power_1) * (4.f * Pi) * surface_area * float(end - begin);
 
         exhausted_ = true;
     } else {
-        float const cone_weight_a = cone_cost(cone_0[3]);
-        float const cone_weight_b = cone_cost(cone_1[3]);
+        float const cone_weight_a = cone_cost(cone_0[3]) * (two_sided_0 ? 2.f : 1.f);
+        float const cone_weight_b = cone_cost(cone_1[3]) * (two_sided_1 ? 2.f : 1.f);
+        ;
 
         float const surface_area_a = AABB(box_0).surface_area();
         float const surface_area_b = AABB(box_1).surface_area();
@@ -458,6 +475,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
 
         Simd_AABB tbounds(Empty_AABB);
         float4    cone(1.f);
+        bool      two_sided = false;
         float     total_power(0.f);
 
         for (uint32_t i = 0; i < num_finite_lights; ++i) {
@@ -465,13 +483,14 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
 
             tbounds.merge_assign(scene.light_aabb(l));
             cone = cone::merge(cone, scene.light_cone(l));
+            two_sided |= scene.light_two_sided(l);
             total_power += scene.light_power(l);
         }
 
         AABB const bounds(tbounds);
 
-        split(tree, 0, num_infinite_lights, num_total_lights, bounds, cone, total_power, scene,
-              threads);
+        split(tree, 0, num_infinite_lights, num_total_lights, bounds, cone, two_sided, total_power,
+              scene, threads);
 
         tree.allocate_nodes(current_node_);
         serialize(tree.nodes_, tree.node_middles_);
@@ -504,7 +523,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
                                                   : infinite_weight;
 }
 
-void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& threads) {
+void Tree_builder::build(Primitive_tree& tree, Part const& part, bool two_sided, Threads& threads) {
     uint32_t const num_finite_lights = part.num_triangles;
 
     tree.allocate_light_mapping(num_finite_lights);
@@ -525,7 +544,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
     float const total_power = part.distribution.integral();
 
     split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 32, 8u), part.aabb, part.cone,
-          total_power, part, threads);
+          total_power, part, two_sided, threads);
 
     tree.allocate_nodes(current_node_);
 
@@ -557,7 +576,7 @@ void Tree_builder::allocate(uint32_t num_lights, uint32_t sweep_threshold) {
 }
 
 uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
-                             AABB const& bounds, float4_p cone, float total_power,
+                             AABB const& bounds, float4_p cone, bool two_sided, float total_power,
                              Scene const& scene, Threads& threads) {
     uint32_t* const lights = tree.light_mapping_;
 
@@ -566,10 +585,14 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     uint32_t const len = end - begin;
 
     if (len <= 4) {
+        bool two_sided = false;
+
         for (uint32_t i = begin; i < end; ++i) {
             uint32_t const l = lights[i];
 
             tree.light_orders_[l] = light_order_++;
+
+            two_sided |= scene.light_two_sided(l);
         }
 
         node.bounds            = bounds;
@@ -579,6 +602,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
         node.middle            = 0;
         node.children_or_light = begin;
         node.num_lights        = len;
+        node.two_sided         = two_sided;
 
         return begin + len;
     }
@@ -602,9 +626,9 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
                                 lights;
 
     uint32_t const c0_end = split(tree, child0, begin, split_node, sc.aabb_0_, sc.cone_0_,
-                                  sc.power_0_, scene, threads);
+                                  sc.two_sided_0_, sc.power_0_, scene, threads);
     uint32_t const c1_end = split(tree, child0 + 1, split_node, end, sc.aabb_1_, sc.cone_1_,
-                                  sc.power_1_, scene, threads);
+                                  sc.two_sided_1_, sc.power_1_, scene, threads);
 
     node.bounds            = bounds;
     node.cone              = cone;
@@ -613,13 +637,15 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     node.middle            = c0_end;
     node.children_or_light = child0;
     node.num_lights        = len;
+    node.two_sided         = two_sided;
 
     return c1_end;
 }
 
 uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
                              uint32_t max_primitives, AABB const& bounds, float4_p cone,
-                             float total_power, Part const& part, Threads& threads) {
+                             float total_power, Part const& part, bool two_sided,
+                             Threads& threads) {
     uint32_t* const lights = tree.light_mapping_;
 
     Build_node& node = build_nodes_[node_id];
@@ -627,7 +653,7 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     uint32_t const len = end - begin;
 
     if (len <= max_primitives || cone[3] > 0.9f) {
-        return assign(node, tree, begin, end, bounds, cone, total_power, part);
+        return assign(node, tree, begin, end, bounds, cone, total_power, part, two_sided);
     }
 
     uint32_t const child0 = current_node_;
@@ -638,7 +664,7 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
                                                Part_sweep_threshold, candidates_, part, threads);
 
     if (sc.exhausted_) {
-        return assign(node, tree, begin, end, bounds, cone, total_power, part);
+        return assign(node, tree, begin, end, bounds, cone, total_power, part, two_sided);
     }
 
     uint32_t const split_node = std::partition(lights + begin, lights + end,
@@ -651,9 +677,9 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     current_node_ += 2;
 
     uint32_t const c0_end = split(tree, child0, begin, split_node, max_primitives, sc.aabb_0_,
-                                  sc.cone_0_, sc.power_0_, part, threads);
+                                  sc.cone_0_, sc.power_0_, part, two_sided, threads);
     uint32_t const c1_end = split(tree, child0 + 1, split_node, end, max_primitives, sc.aabb_1_,
-                                  sc.cone_1_, sc.power_1_, part, threads);
+                                  sc.cone_1_, sc.power_1_, part, two_sided, threads);
 
     node.bounds            = bounds;
     node.cone              = cone;
@@ -662,13 +688,14 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     node.middle            = c0_end;
     node.children_or_light = child0;
     node.num_lights        = len;
+    node.two_sided         = two_sided;
 
     return c1_end;
 }
 
 uint32_t Tree_builder::assign(Build_node& node, Primitive_tree& tree, uint32_t begin, uint32_t end,
                               AABB const& bounds, float4_p cone, float total_power,
-                              Part const& part) {
+                              Part const& part, bool two_sided) {
     uint32_t* const lights = tree.light_mapping_;
 
     uint32_t const len = end - begin;
@@ -686,6 +713,7 @@ uint32_t Tree_builder::assign(Build_node& node, Primitive_tree& tree, uint32_t b
     node.middle            = 0;
     node.children_or_light = begin;
     node.num_lights        = len;
+    node.two_sided         = two_sided;
 
     return begin + len;
 }
@@ -705,6 +733,7 @@ void Tree_builder::serialize(Node* nodes, uint32_t* node_middles) {
         dest.has_children      = source.has_children() ? 1 : 0;
         dest.children_or_light = source.children_or_light;
         dest.num_lights        = source.num_lights;
+        dest.two_sided         = source.two_sided ? 1 : 0;
 
         node_middles[i] = source.middle;
     }
@@ -725,6 +754,7 @@ void Tree_builder::serialize(Primitive_tree& tree, Part const& part) {
         dest.has_children      = source.has_children() ? 1 : 0;
         dest.children_or_light = source.children_or_light;
         dest.num_lights        = source.num_lights;
+        dest.two_sided         = source.two_sided ? 1 : 0;
 
         tree.node_middles_[i] = source.middle;
 

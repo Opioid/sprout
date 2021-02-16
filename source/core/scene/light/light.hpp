@@ -63,6 +63,8 @@ class alignas(16) Light {
 
     Light(Type type, bool two_sided, uint32_t prop, uint32_t part);
 
+    bool is_two_sided() const;
+
     float area() const;
 
     void set_extent(float extent);
