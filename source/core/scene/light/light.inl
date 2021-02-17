@@ -10,6 +10,14 @@ namespace scene::light {
 
 using Transformation = entity::Composed_transformation;
 
+inline bool Light::is_two_sided() const {
+    return two_sided_;
+}
+
+inline float Light::area() const {
+    return extent_;
+}
+
 inline Transformation const& Light::transformation_at(uint64_t time, Transformation& trafo,
                                                       Scene const& scene) const {
     return scene.prop_transformation_at(prop_, time, trafo);

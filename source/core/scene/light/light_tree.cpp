@@ -35,8 +35,7 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
 
     float const sin_cu   = std::min(il * radius, 1.f);
     float const cos_cone = cone[3];
-    float const cos_at   = dot(da, na);
-    float const cos_a    = two_sided ? std::abs(cos_at) : -cos_at;
+    float const cos_a    = material::abs_reverse_dot(da, na, two_sided);
     float const cos_n    = dot(n, na);
 
     Simd3f const sa(float3(sin_cu, cos_cone, cos_a, cos_n));
@@ -83,8 +82,8 @@ static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p 
 
     float3 const da = cone.xyz();
 
-    float const cos_a0 = two_sided ? material::clamp_abs_dot(o0, da) : material::clamp_dot(o0, da);
-    float const cos_a1 = two_sided ? material::clamp_abs_dot(o1, da) : material::clamp_dot(o1, da);
+    float const cos_a0 = material::clamp_abs_dot(o0, da, two_sided);
+    float const cos_a1 = material::clamp_abs_dot(o1, da, two_sided);
 
     float const cos_phi = cos_a0 / std::sqrt(cos_a0 * cos_a0 + cos_a1 * cos_a1);
     float const sin_phi = std::sqrt(std::max(1.f - cos_phi * cos_phi, 0.f));
@@ -101,13 +100,14 @@ static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p 
     float cos_theta_min;
 
     if (cos_a1 < 0.f || dot(v0, v1) > cos_phi) {
-        float const b_max = std::max(dot(v0, da), dot(v1, da));
+        float const b_max = std::max(material::abs_dot(v0, da, two_sided),
+                                     material::abs_dot(v1, da, two_sided));
 
         cos_theta_min = std::min(b_max, 1.f);
     } else {
         float3 const v = cos_phi * o0 + sin_phi * o1;
 
-        cos_theta_min = clamp(dot(v, da), -1.f, 1.f);
+        cos_theta_min = clamp(material::abs_dot(v, da, two_sided), -1.f, 1.f);
     }
 
     float const cos_cone = cone[3];

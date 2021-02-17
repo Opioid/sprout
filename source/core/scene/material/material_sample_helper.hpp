@@ -9,6 +9,16 @@ static inline float abs_dot(float3_p a, float3_p b) {
     return std::abs(dot(a, b));
 }
 
+static inline float abs_dot(float3_p a, float3_p b, bool c) {
+    float const d = dot(a, b);
+    return c ? std::abs(d) : d;
+}
+
+static inline float abs_reverse_dot(float3_p a, float3_p b, bool c) {
+    float const d = dot(a, b);
+    return c ? std::abs(d) : -d;
+}
+
 inline float constexpr Dot_min = 0.00001f;
 
 static inline float clamp(float x) {
@@ -25,6 +35,14 @@ static inline float clamp_dot(float3_p a, float3_p b) {
 
 static inline float clamp_abs_dot(float3_p a, float3_p b) {
     return std::clamp(std::abs(dot(a, b)), Dot_min, 1.f);
+}
+
+static inline float clamp_abs_dot(float3_p a, float3_p b, bool c) {
+    if (c) {
+        return std::clamp(std::abs(dot(a, b)), Dot_min, 1.f);
+    } else {
+        return std::clamp(dot(a, b), Dot_min, 1.f);
+    }
 }
 
 static inline bool refract(float3_p n, float3_p v, float eta, float3& vr) {
