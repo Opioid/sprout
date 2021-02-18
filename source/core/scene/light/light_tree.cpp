@@ -658,14 +658,14 @@ Primitive_tree::Primitive_tree()
       num_nodes_(0),
       nodes_(nullptr),
       node_middles_(nullptr),
-      distributions_(nullptr),
       light_orders_(nullptr),
-      light_mapping_(nullptr) {}
+      light_mapping_(nullptr),
+      distributions_(nullptr) {}
 
 Primitive_tree::~Primitive_tree() {
+    delete[] distributions_;
     delete[] light_mapping_;
     delete[] light_orders_;
-    delete[] distributions_;
     delete[] node_middles_;
     delete[] nodes_;
 }

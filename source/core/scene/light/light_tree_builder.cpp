@@ -740,6 +740,8 @@ void Tree_builder::serialize(Node* nodes, uint32_t* node_middles) {
 }
 
 void Tree_builder::serialize(Primitive_tree& tree, Part const& part) {
+    memory::Array<float> powers;
+
     for (uint32_t i = 0, len = current_node_; i < len; ++i) {
         Build_node const& source = build_nodes_[i];
 
@@ -762,7 +764,7 @@ void Tree_builder::serialize(Primitive_tree& tree, Part const& part) {
             uint32_t const first = source.children_or_light;
             uint32_t const num   = source.num_lights;
 
-            memory::Buffer<float> powers(num);
+            powers.resize(num);
 
             for (uint32_t t = 0; t < num; ++t) {
                 powers[t] = part.light_power(tree.light_mapping_[t + first]);

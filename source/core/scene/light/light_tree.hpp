@@ -137,10 +137,10 @@ class Primitive_tree {
     Node*     nodes_;
     uint32_t* node_middles_;
 
-    Distribution_1D* distributions_;
-
     uint32_t* light_orders_;
     uint32_t* light_mapping_;
+
+    Distribution_1D* distributions_;
 };
 
 }  // namespace light

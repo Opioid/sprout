@@ -33,6 +33,8 @@ class Array {
     T const* data() const;
     T*       data();
 
+    operator T const *() const;
+
     void operator=(Array&& other) noexcept;
 
     void clear();

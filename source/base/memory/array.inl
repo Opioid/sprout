@@ -74,6 +74,11 @@ T* Array<T>::data() {
 }
 
 template <typename T>
+Array<T>::operator T const *() const {
+    return data_;
+}
+
+template <typename T>
 void Array<T>::operator=(Array&& other) noexcept {
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
