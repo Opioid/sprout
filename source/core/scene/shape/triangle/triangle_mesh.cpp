@@ -111,11 +111,13 @@ void Part::init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tre
     aabb = bb;
     cone = float4(dominant_axis, std::cos(angle));
 
-    builder.build(light_tree, *this, two_sided, threads);
+    two_sided_ = two_sided;
+
+    builder.build(light_tree, *this, threads);
 }
 
 light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float r) const {
-    auto const pick = light_tree.random_light(p, n, total_sphere, r);
+    auto const pick = light_tree.random_light(p, n, total_sphere, r, *this);
 
     float const relative_primitive_area = distribution.pdf(pick.offset);
 
@@ -123,7 +125,7 @@ light::Light_pick Part::sample(float3_p p, float3_p n, bool total_sphere, float 
 }
 
 float Part::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
-    float const pdf = light_tree.pdf(p, n, total_sphere, id);
+    float const pdf = light_tree.pdf(p, n, total_sphere, id, *this);
 
     float const relative_primitive_area = distribution.pdf(id);
 
@@ -145,6 +147,10 @@ float4_p Part::light_cone(uint32_t light) const {
     SOFT_ASSERT(light < num_triangles);
 
     return cones[light];
+}
+
+bool Part::light_two_sided(uint32_t /*light*/) const {
+    return two_sided_;
 }
 
 float Part::light_power(uint32_t light) const {

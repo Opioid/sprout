@@ -183,17 +183,15 @@ struct Build_node {
 };
 
 inline float Node::weight(float3_p p, float3_p n, bool total_sphere) const {
-    float const r            = center[3];
-    bool const  is_two_sided = 1 == two_sided;
+    float const r = center[3];
 
-    return importance(p, n, center.xyz(), cone, r, power, is_two_sided, total_sphere);
+    return importance(p, n, center.xyz(), cone, r, power, 1 == two_sided, total_sphere);
 }
 
 inline float Node::weight(float3_p p0, float3_p p1, float3_p dir) const {
-    float const r            = center[3];
-    bool const  is_two_sided = 1 == two_sided;
+    float const r = center[3];
 
-    return importance(p0, p1, center.xyz(), dir, cone, r, power, is_two_sided);
+    return importance(p0, p1, center.xyz(), dir, cone, r, power, 1 == two_sided);
 }
 
 inline bool Node::split(float3_p p) const {
@@ -670,8 +668,8 @@ Primitive_tree::~Primitive_tree() {
     delete[] nodes_;
 }
 
-Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere,
-                                        float random) const {
+Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                                        Part const& part) const {
     float pdf = 1.f;
 
     for (uint32_t nid = 0;;) {
@@ -704,6 +702,13 @@ Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_spher
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
 
+            if (node.num_lights <= 4) {
+                Light_pick const pick = node.random_light(p, n, total_sphere, random,
+                                                          light_mapping_, part);
+
+                return {pick.offset, pick.pdf * pdf};
+            }
+
             auto const pick = distributions_[nid].sample_discrete(random);
 
             return {light_mapping_[node.children_or_light + pick.offset], pick.pdf * pdf};
@@ -711,7 +716,8 @@ Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_spher
     }
 }
 
-float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
+float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
+                          Part const& part) const {
     uint32_t const lo = light_orders_[id];
 
     float pdf = 1.f;
@@ -742,6 +748,10 @@ float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id
         } else {
             SOFT_ASSERT(std::isfinite(pdf));
             SOFT_ASSERT(pdf > 0.f);
+
+            if (node.num_lights <= 4) {
+                return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, part);
+            }
 
             return pdf * distributions_[nid].pdf(lo - node.children_or_light);
         }

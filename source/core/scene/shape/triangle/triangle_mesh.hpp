@@ -26,6 +26,8 @@ struct Part {
 
     float4_p light_cone(uint32_t light) const;
 
+    bool light_two_sided(uint32_t light) const;
+
     float light_power(uint32_t light) const;
 
     uint32_t material;
@@ -45,6 +47,8 @@ struct Part {
     AABB aabb;
 
     float4 cone;
+
+    bool two_sided_;
 };
 
 class alignas(64) Mesh final : public Shape {
