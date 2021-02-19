@@ -18,13 +18,13 @@ class Distribution_1D {
 
     uint32_t sample(float r) const;
 
-    struct Discrete {
+    struct alignas(8) Discrete {
         uint32_t offset;
         float    pdf;
     };
     Discrete sample_discrete(float r) const;
 
-    struct Continuous {
+    struct alignas(8) Continuous {
         float offset;
         float pdf;
     };
