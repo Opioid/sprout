@@ -64,9 +64,9 @@ struct Node {
 
 class Tree {
   public:
-    static uint32_t constexpr Max_split_depth = 4;
+    static uint32_t constexpr Max_split_depth = 5;
 
-    // (Max_split_depth + 1) to have space for worst case where we want to split on leaf node,
+    // (Max_split_depth + 1) to have space for worst case where we want to split on a leaf node,
     // which can have up to 4 lights
     static uint32_t constexpr Max_lights = 1 << (Max_split_depth + 1);
 

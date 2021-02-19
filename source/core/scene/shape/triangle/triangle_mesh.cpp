@@ -429,7 +429,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 
     SOFT_ASSERT(diff < 1e-8f);
 
-    if (diff > 1e-8f) {
+    if (diff >= 1e-8f) {
         std::cout << "problem " << s.pdf << "  " << guessed_pdf << std::endl;
     }
 #endif
