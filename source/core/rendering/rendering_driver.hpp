@@ -1,8 +1,8 @@
 #ifndef SU_CORE_RENDERING_DRIVER_HPP
 #define SU_CORE_RENDERING_DRIVER_HPP
 
-//#define PARTICLE_GUIDING
-//#define PHOTON_GUIDING
+#define PARTICLE_GUIDING
+#define PHOTON_GUIDING
 
 #include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
