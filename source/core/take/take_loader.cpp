@@ -381,12 +381,31 @@ template <typename Base, typename Filter>
 static Sensor* make_filtered_sensor(float3_p clamp_max, json::Value const& filter_value) {
     using namespace rendering::sensor;
 
-    bool const clamp = !any_negative(clamp_max);
+    bool const clamp = clamp_max[0] >= 0.f;
+
+    bool const clamp_luminance = clamp && clamp_max[1] < 0.f;
 
     float  radius;
     Filter filter = load_filter<Filter>(filter_value, radius);
 
     if (clamp) {
+        if (clamp_luminance) {
+            float const m = clamp_max[0];
+
+            if (radius <= 1.f) {
+                return new Filtered_1p0<Base, clamp::Luminance, Filter>(clamp::Luminance(m),
+                                                                        std::move(filter));
+            }
+
+            if (radius <= 2.f) {
+                return new Filtered_2p0<Base, clamp::Luminance, Filter>(clamp::Luminance(m),
+                                                                        std::move(filter));
+            }
+
+            return new Filtered_inf<Base, clamp::Luminance, Filter>(clamp::Luminance(m),
+                                                                    std::move(filter), radius);
+        }
+
         if (radius <= 1.f) {
             return new Filtered_1p0<Base, clamp::Clamp, Filter>(clamp::Clamp(clamp_max),
                                                                 std::move(filter));
@@ -451,7 +470,11 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
         if ("alpha_transparency" == n.name) {
             alpha_transparency = json::read_bool(n.value);
         } else if ("clamp" == n.name) {
-            clamp_max = json::read_float3(n.value);
+            if (n.value.IsArray()) {
+                clamp_max = json::read_float3(n.value);
+            } else {
+                clamp_max[0] = json::read_float(n.value);
+            }
         } else if ("filter" == n.name) {
             filter_value = &n.value;
             filter_type  = read_filter_type(n.value);

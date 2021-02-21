@@ -17,6 +17,22 @@ inline float4 Clamp::clamp(float4_p color) const {
                   std::min(color[2], max_[2]), color[3]);
 }
 
+inline Luminance::Luminance(float max) : max_(max) {}
+
+inline float4 Luminance::clamp(float4_p color) const {
+    float3 const rgb = color.xyz();
+
+    float const mc = max_component(rgb);
+
+    if (mc > max_) {
+        float const r = max_ / mc;
+
+        return float4(r * rgb, color[3]);
+    }
+
+    return color;
+}
+
 }  // namespace rendering::sensor::clamp
 
 #endif

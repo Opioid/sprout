@@ -21,6 +21,16 @@ class Clamp {
     float3 max_;
 };
 
+class Luminance {
+  public:
+    Luminance(float max);
+
+    float4 clamp(float4_p color) const;
+
+  private:
+    float max_;
+};
+
 }  // namespace rendering::sensor::clamp
 
 #endif

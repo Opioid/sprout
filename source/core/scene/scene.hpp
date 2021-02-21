@@ -249,6 +249,8 @@ class Scene {
     prop::BVH_wrapper prop_bvh_;
     prop::BVH_wrapper volume_bvh_;
 
+    AABB caustic_aabb_;
+
     uint32_t null_shape_;
 
     bool has_masked_material_;

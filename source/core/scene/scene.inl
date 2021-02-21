@@ -13,6 +13,19 @@
 
 namespace scene {
 
+inline AABB Scene::aabb() const {
+    return prop_bvh_.aabb();
+}
+
+inline AABB Scene::caustic_aabb() const {
+    return caustic_aabb_;
+}
+
+inline bool Scene::is_infinite() const {
+    return !infinite_props_.empty() || !infinite_volumes_.empty();
+}
+
+
 inline bool Scene::has_volumes() const {
     return has_volumes_;
 }

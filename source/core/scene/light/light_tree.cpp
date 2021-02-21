@@ -425,8 +425,9 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
             }
         } else {
             if (do_split) {
-                for (uint32_t i = 0, len = node.num_lights; i < len; ++i) {
-                    lights.push_back({light_mapping_[node.children_or_light + i], t.pdf});
+                uint32_t const begin = node.children_or_light;
+                for (uint32_t i = begin, end = begin + node.num_lights; i < end; ++i) {
+                    lights.push_back({light_mapping_[i], t.pdf});
                 }
             } else {
                 SOFT_ASSERT(std::isfinite(t.pdf));
@@ -526,8 +527,9 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
             }
         } else {
             if (do_split) {
-                for (uint32_t i = 0, len = node.num_lights; i < len; ++i) {
-                    lights.push_back({light_mapping_[node.children_or_light + i], t.pdf});
+                uint32_t const begin = node.children_or_light;
+                for (uint32_t i = begin, end = begin + node.num_lights; i < end; ++i) {
+                    lights.push_back({light_mapping_[i], t.pdf});
                 }
             } else {
                 SOFT_ASSERT(std::isfinite(t.pdf));

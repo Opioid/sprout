@@ -96,26 +96,6 @@ void Scene::clear() {
     extensions_.clear();
 }
 
-AABB Scene::aabb() const {
-    return prop_bvh_.aabb();
-}
-
-AABB Scene::caustic_aabb() const {
-    AABB aabb = Empty_AABB;
-
-    for (auto const i : finite_props_) {
-        if (prop_has_caustic_material(i)) {
-            aabb.merge_assign(prop_aabbs_[i]);
-        }
-    }
-
-    return aabb;
-}
-
-bool Scene::is_infinite() const {
-    return !infinite_props_.empty() || !infinite_volumes_.empty();
-}
-
 light::Light_pick Scene::light(uint32_t id, bool calculate_pdf) const {
     // If the assert doesn't hold it would pose a problem,
     // but I think it is more efficient to handle those cases outside or implicitely.
@@ -258,6 +238,16 @@ void Scene::compile(uint64_t time, Threads& threads) {
     light_tree_builder_.build(light_tree_, *this, threads);
 
     has_volumes_ = !volumes_.empty() || !infinite_volumes_.empty();
+
+    AABB caustic_aabb = Empty_AABB;
+
+    for (auto const i : finite_props_) {
+        if (prop_has_caustic_material(i)) {
+            caustic_aabb.merge_assign(prop_aabbs_[i]);
+        }
+    }
+
+    caustic_aabb_ = caustic_aabb;
 }
 
 void Scene::calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) {
