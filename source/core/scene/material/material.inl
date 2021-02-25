@@ -10,6 +10,12 @@
 
 namespace scene::material {
 
+static inline float phase_hg(float cos_theta, float g) {
+    float const gg    = g * g;
+    float const denom = 1.f + gg + 2.f * g * cos_theta;
+    return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
+}
+
 inline float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter,
                                Worker const& worker) const {
     if (mask_.is_valid()) {
@@ -92,6 +98,11 @@ inline bool Material::is_heterogeneous_volume() const {
 
 inline float Material::ior() const {
     return ior_;
+}
+
+inline float Material::phase(float3_p wo, float3_p wi) const {
+    float const g = volumetric_anisotropy_;
+    return phase_hg(dot(wo, wi), g);
 }
 
 inline Material::Radiance_sample::Radiance_sample(float2 uv, float pdf)

@@ -39,7 +39,7 @@ Tracking_single::Tracking_single(uint32_t max_samples_per_pixel, bool progressiv
     static uint32_t constexpr Max_lights = light::Tree::Max_lights;
 
     for (uint32_t i = 0; i < Num_dedicated_samplers; ++i) {
-        sampler_pool_->create(2 * i + 0, 2, 1, max_samples_per_pixel);
+        sampler_pool_->create(2 * i + 0, 0, Max_lights, max_samples_per_pixel);
         sampler_pool_->create(2 * i + 1, Max_lights, Max_lights + 1, max_samples_per_pixel);
     }
 }
@@ -219,7 +219,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                     auto const  light     = scene.random_light(select);
                     auto const& light_ref = scene.light(light.offset);
 
-                    li = w * direct_light(light_ref, light.pdf, ray, p, 0, isec, worker);
+                    li = w * direct_light(light_ref, light.pdf, ray, p, 0, isec, material, worker);
                     tr = float3(0.f);
                     return Event::Pass;
                 }
@@ -253,7 +253,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
         auto const  light     = worker.scene().random_light(select);
         auto const& light_ref = worker.scene().light(light.offset);
 
-        float3 const l = direct_light(light_ref, light.pdf, ray, p, 0, isec, worker);
+        float3 const l = direct_light(light_ref, light.pdf, ray, p, 0, isec, material, worker);
 
         li = l * (1.f - tr) * scattering_albedo;
     } else {
@@ -301,7 +301,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
                 float3 const p = ray.point(sample_t);
 
-                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec, worker);
+                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec, material,
+                                              worker);
 
                 float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
@@ -310,12 +311,13 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                 lli += (l * attenuation) * (scattering_albedo * w) / pdf;
             } else {
                 // Distance sampling
-                float const r = material_sampler(ray.depth).sample_1D(rng, 0);
+                float const r = material_sampler(ray.depth).sample_1D(rng, il);
                 float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
                 float3 const p = ray.point(ray.min_t() + t);
 
-                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec, worker);
+                float3 const l = direct_light(light_ref, light.pdf, ray, p, il, isec, material,
+                                              worker);
 
                 // Short version
                 lli += l * (1.f - tr) * scattering_albedo;
@@ -339,7 +341,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray const& ray,
                                      float3_p position, uint32_t sampler_d,
-                                     Intersection const& isec, Worker& worker) {
+                                     Intersection const& isec, Material const& material,
+                                     Worker& worker) {
     shape::Sample_to light_sample;
     if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_d, worker,
                       light_sample)) {
@@ -356,9 +359,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
 
     SOFT_ASSERT(all_finite(tr));
 
-    //    auto const bxdf = mat_sample.evaluate(light_sample.wi, evaluate_back);
-
-    float const phase = 1.f / (4.f * Pi);
+    float const phase = material.phase(-ray.direction, light_sample.wi);
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 

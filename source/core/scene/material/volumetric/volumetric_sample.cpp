@@ -3,15 +3,10 @@
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 
 namespace scene::material::volumetric {
-
-static inline float phase_hg(float cos_theta, float g) {
-    float const gg    = g * g;
-    float const denom = 1.f + gg + 2.f * g * cos_theta;
-    return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
-}
 
 Sample::Sample() {
     properties_.set(Property::Translucent);

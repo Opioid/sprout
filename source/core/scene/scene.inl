@@ -25,7 +25,6 @@ inline bool Scene::is_infinite() const {
     return !infinite_props_.empty() || !infinite_volumes_.empty();
 }
 
-
 inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
