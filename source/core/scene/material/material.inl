@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_INL
 
 #include "base/math/vector2.inl"
+#include "base/math/sampling.inl"
 #include "collision_coefficients.inl"
 #include "fresnel/fresnel.inl"
 #include "image/texture/texture_adapter.inl"
@@ -14,6 +15,27 @@ static inline float phase_hg(float cos_theta, float g) {
     float const gg    = g * g;
     float const denom = 1.f + gg + 2.f * g * cos_theta;
     return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
+}
+
+static inline float4 sample_phase(float3_p wo, float2 r2, float g) {
+    float cos_theta;
+    if (std::abs(g) < 0.001f) {
+        cos_theta = 1.f - 2.f * r2[0];
+    } else {
+        float const gg  = g * g;
+        float const sqr = (1.f - gg) / (1.f - g + 2.f * g * r2[0]);
+
+        cos_theta = (1.f + gg - sqr * sqr) / (2.f * g);
+    }
+
+    float const sin_theta = std::sqrt(std::max(0.f, 1.f - cos_theta * cos_theta));
+    float const phi       = r2[1] * (2.f * Pi);
+
+    auto const [t, b] = orthonormal_basis(wo);
+
+    float3 const wi = math::sphere_direction(sin_theta, cos_theta, phi, t, b, -wo);
+
+    return float4(wi, phase_hg(-cos_theta, g));
 }
 
 inline float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter,
@@ -103,6 +125,11 @@ inline float Material::ior() const {
 inline float Material::phase(float3_p wo, float3_p wi) const {
     float const g = volumetric_anisotropy_;
     return phase_hg(dot(wo, wi), g);
+}
+
+inline float4 Material::sample_phase(float3_p wo, float2 r2) const {
+    float const g = volumetric_anisotropy_;
+    return material::sample_phase(wo, r2, g);
 }
 
 inline Material::Radiance_sample::Radiance_sample(float2 uv, float pdf)

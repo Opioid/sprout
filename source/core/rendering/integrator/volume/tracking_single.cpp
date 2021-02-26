@@ -273,9 +273,11 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights);
 
-        // li = one_bounce(ray, isec, material, worker);
+//         li = one_bounce(ray, isec, material, worker);
 
-        float3 lli(0.f);
+//        return Event::Pass;
+
+        float3 lli(one_bounce(ray, isec, material, worker));
 
         for (uint32_t il = 0, len = lights.size(); il < len; ++il) {
             auto const  light     = lights[il];
@@ -363,7 +365,12 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
-    return (phase * tr * radiance) / (light_sample.pdf() * light_pdf);
+    float const light_pdflu = light_sample.pdf();// * light_weight;
+    float const weight    = predivided_power_heuristic(light_pdflu, phase);
+
+    return weight * (phase * tr * radiance);
+
+ //   return (phase * tr * radiance) / (light_sample.pdf() * light_pdf);
 }
 
 float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
@@ -380,14 +387,18 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
 
     auto& rng = worker.rng();
 
-    float const r = material_sampler(ray.depth).sample_1D(rng, 0);
+    float const r = rng.random_float();//material_sampler(ray.depth).sample_1D(rng, 0);
     float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
 
     float3 const p = ray.point(ray.min_t() + t);
 
     float2 const uv(rng.random_float(), rng.random_float());
 
-    float3 const wi = sample_sphere_uniform(uv);
+//    float3 const wi = sample_sphere_uniform(uv);
+    float4 const sp = material.sample_phase(-ray.direction, uv);
+
+    float3 const wi = sp.xyz();
+ //   float const pdf = sp[3];
 
     Ray bounce_ray(p, wi, 0.f, scene::Ray_max_t, ray.depth, ray.wavelength, ray.time);
 
@@ -403,22 +414,49 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
     }
 
     float light_pdf = 0.f;
-    /*
-        if (state.no(State::Treat_as_singular)) {
-            bool const calculate_pdf = Light_sampling::Single ==
-                                       settings_.light_sampling;
 
-            bool const translucent = state.is(State::Is_translucent);
+    {
+    //    if (state.no(State::Treat_as_singular)) {
+        float3 const geo_n = isec.geo.geo_n;
 
-            auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent,
-                                                    calculate_pdf);
+            bool const calculate_pdf = true;//Light_sampling::Single == settings_.light_sampling;
 
-            float const ls_pdf = light.ptr->pdf(ray, isec.geo, translucent, Filter::Nearest,
+            bool const translucent = true;//state.is(State::Is_translucent);
+
+            auto const& scene     = worker.scene();
+            auto const light = scene.light(light_id, p, geo_n, translucent, calculate_pdf);
+            auto const& light_ref = scene.light(light.offset);
+
+            float const ls_pdf = light_ref.pdf(bounce_ray, geo_n, isec.geo, translucent, Filter::Nearest,
                                                worker);
 
             light_pdf = ls_pdf * light.pdf;
-        }
-    */
+
+
+        {
+        // Equi-angular sampling
+        float3 const position = worker.scene().light_aabb(light.offset).position();
+
+        float const delta = dot(position - ray.origin, ray.direction);
+
+        float3 const closest_point = ray.point(delta);
+
+        float const D = distance(closest_point, position);
+
+        float const theta_a = std::atan2(ray.min_t() - delta, D);
+        float const theta_b = std::atan2(d - delta, D);
+
+        float const t = D * std::tan(lerp(theta_a, theta_b, r));
+
+        float const ea_pdf = D / ((theta_b - theta_a) * (D * D + t * t));
+
+
+        light_pdf = power_heuristic(sp[3] * ea_pdf, light_pdf);
+
+            }
+    }
+
+
     float3 const wo = -wi;  // sample_result.wi;
 
     // This will invalidate the contents of previous material sample.
@@ -442,9 +480,9 @@ float3 Tracking_single::one_bounce(Ray const& ray, Intersection const& isec,
 
     float3 const weight = (1.f - tr) / (ltr * attenuation);
 
-    return (trans * ls_energy) * attenuation * scattering_albedo * ltr * weight;
+    return  light_pdf * ((trans * ls_energy) * attenuation * scattering_albedo * ltr * weight);
 
-    //   return  ((1.f - tr) * scattering_albedo) * (trans * ls_energy);
+    //   return  pdf * ((1.f - tr) * scattering_albedo) * (trans * ls_energy);
 }
 
 sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) {

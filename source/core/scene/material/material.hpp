@@ -129,6 +129,8 @@ class Material {
 
     float phase(float3_p wo, float3_p wi) const;
 
+    float4 sample_phase(float3_p wo, float2 r2) const;
+
     float similarity_relation_scale(uint32_t depth) const;
 
     virtual void prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
