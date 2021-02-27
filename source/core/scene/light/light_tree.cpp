@@ -284,6 +284,21 @@ float Node::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
     return distribution_pdf<4>(weights, id - children_or_light);
 }
 
+inline float Node::pdf(float3_p p0, float3_p p1, float3_p dir, uint32_t id, UInts light_mapping,
+                       Scene const& scene) const {
+    if (1 == num_lights) {
+        return 1.f;
+    }
+
+    float weights[4] = {0.f, 0.f, 0.f, 0.f};
+
+    for (uint32_t i = 0, len = num_lights; i < len; ++i) {
+        weights[i] = light_weight(p0, p1, dir, light_mapping[children_or_light + i], scene);
+    }
+
+    return distribution_pdf<4>(weights, id - children_or_light);
+}
+
 class Traversal_stack {
   public:
     Traversal_stack() = default;
@@ -614,6 +629,80 @@ float Tree::pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t 
                 SOFT_ASSERT(pdf > 0.f);
 
                 return pdf * node.pdf(p, n, total_sphere, lo, light_mapping_, scene);
+            }
+        }
+    }
+}
+
+float Tree::pdf(float3_p p0, float3_p p1, bool split, uint32_t id, Scene const& scene) const {
+    uint32_t const lo = light_orders_[id];
+
+    uint32_t const num_infinite_lights = num_infinite_lights_;
+
+    bool const split_infinite = split && num_infinite_lights < Max_lights - 1;
+
+    if (lo < infinite_end_) {
+        if (split_infinite) {
+            return 1.f;
+        } else {
+            return infinite_weight_ * infinite_light_distribution_.pdf(lo);
+        }
+    }
+
+    if (0 == num_nodes_) {
+        return 0.f;
+    }
+
+    float3 const dir = normalize(p0 - p1);
+
+    float const ip = split_infinite ? 0.f : infinite_weight_;
+
+    float pdf = 1.f - ip;
+
+    SOFT_ASSERT(pdf > 0.f);
+
+    for (uint32_t nid = 0, depth = split ? infinite_depth_bias_ : Max_split_depth;; ++depth) {
+        Node const& node = nodes_[nid];
+
+        bool const do_split = depth < Max_split_depth && node.split(p0, dir);
+
+        if (1 == node.has_children) {
+            uint32_t const c0 = node.children_or_light;
+            uint32_t const c1 = c0 + 1;
+
+            uint32_t const middle = node_middles_[nid];
+
+            if (do_split) {
+                if (lo < middle) {
+                    nid = c0;
+                } else {
+                    nid = c1;
+                }
+            } else {
+                float const pr0 = nodes_[c0].weight(p0, p1, dir);
+                float const pr1 = nodes_[c1].weight(p0, p1, dir);
+                float const prt = pr0 + pr1;
+
+                SOFT_ASSERT(prt > 0.f);
+
+                if (lo < middle) {
+                    nid = c0;
+                    pdf *= pr0 / prt;
+                } else {
+                    nid = c1;
+                    pdf *= pr1 / prt;
+                }
+
+                depth = Max_split_depth;
+            }
+        } else {
+            if (do_split) {
+                return pdf;
+            } else {
+                SOFT_ASSERT(std::isfinite(pdf));
+                SOFT_ASSERT(pdf > 0.f);
+
+                return pdf * node.pdf(p0, p1, dir, lo, light_mapping_, scene);
             }
         }
     }

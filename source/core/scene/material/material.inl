@@ -1,8 +1,8 @@
 #ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_INL
 #define SU_CORE_SCENE_MATERIAL_MATERIAL_INL
 
-#include "base/math/vector2.inl"
 #include "base/math/sampling.inl"
+#include "base/math/vector2.inl"
 #include "collision_coefficients.inl"
 #include "fresnel/fresnel.inl"
 #include "image/texture/texture_adapter.inl"

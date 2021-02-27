@@ -122,6 +122,8 @@ class Scene {
 
     Light_pick light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
 
+    Light_pick light(uint32_t id, float3_p p0, float3_p p1, bool split) const;
+
     Light_pick random_light(float random) const;
 
     void random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,

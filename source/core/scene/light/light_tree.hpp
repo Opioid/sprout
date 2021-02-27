@@ -47,8 +47,11 @@ struct Node {
                             UInts light_mapping, Scene const& scene) const;
 
     template <typename Set>
-    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-              uint32_t const* const light_mapping, Set const& set) const;
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, UInts light_mapping,
+              Set const& set) const;
+
+    float pdf(float3_p p0, float3_p p1, float3_p dir, uint32_t id, UInts light_mapping,
+              Scene const& scene) const;
 
     float4 center;
     float4 cone;
@@ -88,6 +91,8 @@ class Tree {
 
     float pdf(float3_p p, float3_p n, bool total_sphere, bool split, uint32_t id,
               Scene const& scene) const;
+
+    float pdf(float3_p p0, float3_p p1, bool split, uint32_t id, Scene const& scene) const;
 
     void allocate_light_mapping(uint32_t num_lights);
 

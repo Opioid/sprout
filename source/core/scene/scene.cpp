@@ -131,6 +131,26 @@ light::Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_s
 #endif
 }
 
+light::Light_pick Scene::light(uint32_t id, float3_p p0, float3_p p1, bool split) const {
+#ifdef DISABLE_LIGHT_TREE
+
+    id = light::Light::strip_mask(id);
+
+    float const pdf = light_distribution_.pdf(id);
+
+    return {id, pdf};
+
+#else
+
+    id = light::Light::strip_mask(id);
+
+    float const pdf = light_tree_.pdf(p0, p1, split, id, *this);
+
+    return {id, pdf};
+
+#endif
+}
+
 light::Light_pick Scene::random_light(float random) const {
     SOFT_ASSERT(!lights_.empty());
 
@@ -170,7 +190,30 @@ void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random
 }
 
 void Scene::random_light(float3_p p0, float3_p p1, float random, bool split, Lights& lights) const {
+#ifdef DISABLE_LIGHT_TREE
+
+    auto const l = light_distribution_.sample_discrete(random);
+
+    lights.clear();
+    lights.push_back(l);
+
+#else
+
     light_tree_.random_light(p0, p1, random, split, *this, lights);
+
+#ifdef SU_DEBUG
+
+    for (auto const l : lights) {
+        float const guessed_pdf = light_tree_.pdf(p0, p1, split, l.offset, *this);
+
+        float const diff = std::abs(guessed_pdf - l.pdf);
+
+        SOFT_ASSERT(diff < 1e-8f);
+    }
+
+#endif
+
+#endif
 }
 
 void Scene::simulate(uint64_t start, uint64_t end, Threads& threads) {
