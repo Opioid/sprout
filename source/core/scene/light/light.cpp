@@ -409,7 +409,7 @@ static inline float volume_image_pdf(float volume, Ray const& ray, Intersection 
 
 float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere,
                  Filter filter, Worker const& worker) const {
-    SOFT_ASSERT(prop_ == isec.prop && part_ == isec.geo.part);
+    SOFT_ASSERT(isec.prop == prop_ && isec.geo.part == part_);
 
     Transformation temp;
     auto const&    trafo = transformation_at(ray.time, temp, worker.scene());
