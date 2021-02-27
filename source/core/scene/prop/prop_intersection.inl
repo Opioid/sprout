@@ -16,6 +16,10 @@ inline material::Material const* Intersection::material(Worker const& worker) co
     return worker.scene().prop_material(prop, geo.part);
 }
 
+inline shape::Shape const* Intersection::shape(Worker const& worker) const {
+    return worker.scene().prop_shape(prop);
+}
+
 inline uint32_t Intersection::light_id(Worker const& worker) const {
     return worker.scene().prop_light_id(prop, geo.part);
 }
