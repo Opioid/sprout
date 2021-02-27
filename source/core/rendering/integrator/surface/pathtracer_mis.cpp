@@ -371,8 +371,7 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
         auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
         auto const& light_ref = scene.light(light.offset);
 
-        float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, translucent, Filter::Nearest,
-                                           worker);
+        float const ls_pdf = light_ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
 
         light_pdf = ls_pdf * light.pdf;
     }
@@ -415,7 +414,7 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Inter
         auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
         auto const& light_ref = scene.light(light.offset);
 
-        float const ls_pdf = light_ref.pdf(ray, geo_n, isec.geo, state.is(State::Is_translucent),
+        float const ls_pdf = light_ref.pdf(ray, geo_n, isec, state.is(State::Is_translucent),
                                            Filter::Nearest, worker);
 
         light_pdf = ls_pdf * light.pdf;
