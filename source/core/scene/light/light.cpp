@@ -428,4 +428,24 @@ float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool tota
     return 0.f;
 }
 
+float Light::pdf(Ray const& ray, Intersection const& isec, Filter filter, Worker const& worker) const {
+    SOFT_ASSERT(isec.prop == prop_ && isec.geo.part == part_);
+
+    Transformation temp;
+    auto const&    trafo = transformation_at(ray.time, temp, worker.scene());
+
+    switch (type_) {
+        case Type::Prop:
+            return prop_pdf(extent_, ray, float3(0.f), isec, trafo, true, worker);
+        case Type::Prop_image:
+            return prop_image_pdf(extent_, ray, isec, trafo, filter, worker);
+        case Type::Volume:
+            return volume_pdf(extent_, ray, isec, trafo, worker);
+        case Type::Volume_image:
+            return volume_image_pdf(extent_, ray, isec, trafo, filter, worker);
+    }
+
+    return 0.f;
+}
+
 }  // namespace scene::light

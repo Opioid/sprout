@@ -20,11 +20,11 @@ class alignas(64) Tracking_single final : public Integrator {
                     float3& tr) final;
 
   private:
-    float3 direct_light(Light const& light, float light_weight, Ray const& ray, float3_p position,
+    float3 direct_light(Light const& light, float light_weight, float sample_pdf, Ray const& ray, float3_p position,
                         uint32_t sampler_d, Intersection const& isec, Material const& material,
                         Worker& worker);
 
-    float3 one_bounce(Ray const& ray, Material const& material, Worker& worker);
+    float3 one_bounce(Ray const& ray, Material const& material, bool split, Worker& worker);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

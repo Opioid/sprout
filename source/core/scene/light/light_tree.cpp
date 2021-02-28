@@ -374,7 +374,6 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
         for (uint32_t i = 0; i < num_infinite_lights; ++i) {
             lights.push_back({light_mapping_[i], 1.f});
         }
-
     } else {
         ip = infinite_weight_;
 
