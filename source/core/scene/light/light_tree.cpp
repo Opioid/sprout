@@ -26,7 +26,7 @@ static inline float clamped_sin_sub(float cos_a, float cos_b, float sin_a, float
 
 static inline float importance(float3_p p, float3_p n, float3_p center, float4_p cone, float radius,
                                float power, bool two_sided, bool total_sphere) {
-    float3 const axis = center - p;
+    float3 const axis = p - center;
 
     float const il = rlength(axis);
 
@@ -35,8 +35,8 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
 
     float const sin_cu   = std::min(il * radius, 1.f);
     float const cos_cone = cone[3];
-    float const cos_a    = material::abs_reverse_dot(da, na, two_sided);
-    float const cos_n    = dot(n, na);
+    float const cos_a    = material::abs_dot(da, na, two_sided);
+    float const cos_n    = -dot(n, na);
 
     Simd3f const sa(float3(sin_cu, cos_cone, cos_a, cos_n));
     Simd3f const sb = max(simd::One - sa * sa, simd::Min_normal.v);
