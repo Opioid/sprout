@@ -273,13 +273,9 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights);
 
-        //         li = one_bounce(ray, isec, material, worker);
-
-        //        return Event::Pass;
-
         float3 lli(one_bounce(ray, material, split, worker));
 
-     //   float3 lli(0.f);
+      //  float3 lli(0.f);
 
         for (uint32_t il = 0, len = lights.size(); il < len; ++il) {
             auto const  light     = lights[il];
@@ -375,7 +371,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_weight, flo
         float const light_pdf = light_sample.pdf() * light_weight;
         weight                = predivided_power_heuristic(light_pdf * sample_pdf, phase);
 
-    //    weight = 1.f / (light_sample.pdf() * light_weight * sample_pdf);
+     //   weight = 1.f / (light_sample.pdf() * light_weight * sample_pdf);
     } else {
         weight = 1.f / (light_sample.pdf() * light_weight);
     }
