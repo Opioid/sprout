@@ -34,7 +34,7 @@ class alignas(64) Tracking_single final : public Integrator {
 
     sampler::Pool* sampler_pool_;
 
-    static uint32_t constexpr Num_dedicated_samplers = 1;
+    static uint32_t constexpr Num_dedicated_samplers = 2;
 };
 
 class Tracking_single_pool final : public Typed_pool<Tracking_single> {
