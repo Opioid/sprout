@@ -219,7 +219,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                     auto const  light     = scene.random_light(select);
                     auto const& light_ref = scene.light(light.offset);
 
-                    li = w * direct_light(light_ref, light.pdf, 1.f, ray, p, 0, isec, material, worker);
+                    li = w * direct_light(light_ref, light.pdf, 1.f, 1.f, ray, p, 0, isec, material, worker);
                     tr = float3(0.f);
                     return Event::Pass;
                 }
@@ -253,7 +253,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
         auto const  light     = worker.scene().random_light(select);
         auto const& light_ref = worker.scene().light(light.offset);
 
-        float3 const l = direct_light(light_ref, light.pdf, 1.f, ray, p, 0, isec, material, worker);
+        float3 const l = direct_light(light_ref, light.pdf, 1.f, 1.f, ray, p, 0, isec, material, worker);
 
         li = l * (1.f - tr) * scattering_albedo;
     } else {
@@ -275,7 +275,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         float3 lli(one_bounce(ray, material, split, worker));
 
-      //  float3 lli(0.f);
+    //    float3 lli(0.f);
 
         for (uint32_t il = 0, len = lights.size(); il < len; ++il) {
             auto const  light     = lights[il];
@@ -303,7 +303,12 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
                                 float const pdf = D / ((theta_b - theta_a) * (D * D + t * t));
 
-                float3 const l = direct_light(light_ref, light.pdf, pdf, ray, p, il, isec, material,
+
+                //float singa_lunga = sample_t - ray.min_t();
+                // float secret_pdf = singa_lunga * average(attenuation);
+                float secret_pdf = exp(-(sample_t - ray.min_t()) * average(attenuation));
+
+                float3 const l = direct_light(light_ref, light.pdf, pdf, secret_pdf, ray, p, il, isec, material,
                                               worker);
 
 
@@ -318,7 +323,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
                 float3 const p = ray.point(ray.min_t() + t);
 
-                float3 const l = direct_light(light_ref, light.pdf, 1.f, ray, p, il, isec, material,
+                float3 const l = direct_light(light_ref, light.pdf, 1.f, 1.f, ray, p, il, isec, material,
                                               worker);
 
                 // Short version
@@ -341,7 +346,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
     return Event::Pass;
 }
 
-float3 Tracking_single::direct_light(Light const& light, float light_weight, float sample_pdf, Ray const& ray,
+float3 Tracking_single::direct_light(Light const& light, float light_weight, float sample_pdf, float secret_pdf, Ray const& ray,
                                      float3_p position, uint32_t sampler_d,
                                      Intersection const& isec, Material const& material,
                                      Worker& worker) {
@@ -369,14 +374,15 @@ float3 Tracking_single::direct_light(Light const& light, float light_weight, flo
 
     if (light.is_finite(worker.scene())) {
         float const light_pdf = light_sample.pdf() * light_weight;
-        weight                = predivided_power_heuristic(light_pdf * sample_pdf, phase);
+        weight                = 1.f;//predivided_power_heuristic(light_pdf * sample_pdf, phase);
+        weight = power_heuristic(light_pdf * sample_pdf , phase* secret_pdf);
 
      //   weight = 1.f / (light_sample.pdf() * light_weight * sample_pdf);
     } else {
         weight = 1.f / (light_sample.pdf() * light_weight);
     }
 
-    return (weight * phase) * (tr * radiance);
+    return (weight * phase) * (tr * radiance) / (light_sample.pdf() * light_weight * sample_pdf);
 }
 
 float3 Tracking_single::one_bounce(Ray const& ray, Material const& material, bool split, Worker& worker) {
@@ -461,7 +467,13 @@ float3 Tracking_single::one_bounce(Ray const& ray, Material const& material, boo
 
             float const ea_pdf = D / ((theta_b - theta_a) * (D * D + ea_t * ea_t));
 
-            light_pdf = power_heuristic(sp[3], ea_pdf * light_pdf);
+
+       //     float secret_pdf =  t * average(attenuation);
+
+            float secret_pdf = exp(-(t) * average(attenuation));
+
+
+            light_pdf = power_heuristic(secret_pdf * sp[3], ea_pdf * light_pdf);
         }
     }
 
