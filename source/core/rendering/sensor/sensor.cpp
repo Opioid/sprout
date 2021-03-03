@@ -51,7 +51,7 @@ void Sensor::resize(int2 dimensions, int32_t num_layers, aov::Value_pool const& 
 
     dimensions_ = dimensions;
 
-    num_layers_ = num_layers;
+    num_layers_ = uint16_t(num_layers);
 }
 
 int4 Sensor::isolated_tile(int4_p tile) const {

@@ -109,11 +109,11 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
     float const p = sampler.sample_1D(rng);
 
     if (same_side) {
-        float       n_dot_h;
-        float const cf = coating_.sample(wo_, sampler, rng, n_dot_h, result);
+        float       coat_n_dot_h;
+        float const cf = coating_.sample(wo_, sampler, rng, coat_n_dot_h, result);
 
         if (p <= cf) {
-            coating_reflect(cf, n_dot_h, result);
+            coating_reflect(cf, coat_n_dot_h, result);
         } else {
             Layer const layer = layer_.swapped(same_side);
 
