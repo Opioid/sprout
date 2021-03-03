@@ -31,10 +31,10 @@ struct Composed_transformation;
 
 namespace prop {
 class Prop;
-}
+struct Intersection;
+}  // namespace prop
 
 namespace shape {
-struct Intersection;
 class Node_stack;
 struct Sample_to;
 struct Sample_from;
@@ -52,7 +52,7 @@ class alignas(16) Light {
   public:
     using Transformation = entity::Composed_transformation;
     using Filter         = material::Sampler_settings::Filter;
-    using Intersection   = shape::Intersection;
+    using Intersection   = prop::Intersection;
     using Sample_to      = shape::Sample_to;
     using Sample_from    = shape::Sample_from;
     using Sampler        = sampler::Sampler;

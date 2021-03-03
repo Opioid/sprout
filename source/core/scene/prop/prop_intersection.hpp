@@ -20,6 +20,10 @@ class Material;
 
 }  // namespace material
 
+namespace shape {
+class Shape;
+}
+
 namespace prop {
 
 class Prop;
@@ -30,6 +34,8 @@ struct Intersection {
     using Sampler = sampler::Sampler;
 
     material::Material const* material(Worker const& worker) const;
+
+    shape::Shape const* shape(Worker const& worker) const;
 
     uint32_t light_id(Worker const& worker) const;
 
