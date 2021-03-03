@@ -306,7 +306,11 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
                 //float singa_lunga = sample_t - ray.min_t();
                 // float secret_pdf = singa_lunga * average(attenuation);
-                float secret_pdf = exp(-(sample_t - ray.min_t()) * average(attenuation));
+             //   float secret_pdf = exp(-(sample_t - ray.min_t()) * average(attenuation));
+
+                float const  avgatt = average(attenuation);
+
+                float const secret_pdf = avgatt / (exp((sample_t - ray.min_t()) * avgatt) -  exp((sample_t - d) * avgatt));
 
                 float3 const l = direct_light(light_ref, light.pdf, pdf, secret_pdf, ray, p, il, isec, material,
                                               worker);
@@ -379,7 +383,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_weight, flo
 
      //   weight = 1.f / (light_sample.pdf() * light_weight * sample_pdf);
     } else {
-        weight = 1.f / (light_sample.pdf() * light_weight);
+        weight = 1.f;// / (light_sample.pdf() * light_weight);
     }
 
     return (weight * phase) * (tr * radiance) / (light_sample.pdf() * light_weight * sample_pdf);
@@ -470,7 +474,13 @@ float3 Tracking_single::one_bounce(Ray const& ray, Material const& material, boo
 
        //     float secret_pdf =  t * average(attenuation);
 
-            float secret_pdf = exp(-(t) * average(attenuation));
+        //    float secret_pdf = exp(-(t) * average(attenuation));
+
+            float const  avgatt = average(attenuation);
+
+            float const sample_t = ray.min_t() + t;
+
+            float const secret_pdf = avgatt / (exp((sample_t - ray.min_t()) * avgatt) -  exp((sample_t - d) * avgatt));
 
 
             light_pdf = power_heuristic(secret_pdf * sp[3], ea_pdf * light_pdf);
