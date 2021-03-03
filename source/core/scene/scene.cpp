@@ -546,16 +546,16 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
                 math::Transformation const inter = lerp(a, b, t);
 
                 float3x3 const rotation = quaternion::create_matrix3x3(inter.rotation);
-                float4x4 const trafo    = compose(rotation, inter.scale, inter.position);
+                float4x4 const composed = compose(rotation, inter.scale, inter.position);
 
-                bb.merge_assign(shape->transformed_part_aabb(part, trafo));
+                bb.merge_assign(shape->transformed_part_aabb(part, composed));
                 cone = cone::merge(cone, cone::transform(rotation, cone));
             }
 
             float3x3 const rotation = quaternion::create_matrix3x3(b.rotation);
-            float4x4 const trafo    = compose(rotation, b.scale, b.position);
+            float4x4 const composed = compose(rotation, b.scale, b.position);
 
-            bb.merge_assign(shape->transformed_part_aabb(part, trafo));
+            bb.merge_assign(shape->transformed_part_aabb(part, composed));
             cone = cone::merge(cone, cone::transform(rotation, cone));
         }
 
