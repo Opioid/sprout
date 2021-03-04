@@ -587,14 +587,14 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     uint32_t const len = end - begin;
 
     if (len <= 4) {
-        bool two_sided = false;
+        bool node_two_sided = false;
 
         for (uint32_t i = begin; i < end; ++i) {
             uint32_t const l = lights[i];
 
             tree.light_orders_[l] = light_order_++;
 
-            two_sided |= scene.light_two_sided(l);
+            node_two_sided |= scene.light_two_sided(l);
         }
 
         node.bounds            = bounds;
@@ -604,7 +604,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
         node.middle            = 0;
         node.children_or_light = begin;
         node.num_lights        = len;
-        node.two_sided         = two_sided;
+        node.two_sided         = node_two_sided;
 
         return begin + len;
     }
@@ -620,12 +620,13 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
     SOFT_ASSERT(!sc.exhausted_);
 
-    uint32_t const split_node = std::partition(lights + begin, lights + end,
-                                               [&sc, &scene](uint32_t l) {
-                                                   float3 const max = scene.light_aabb(l).max();
-                                                   return sc.behind(max.v);
-                                               }) -
-                                lights;
+    uint32_t const split_node = uint32_t(
+        std::partition(lights + begin, lights + end,
+                       [&sc, &scene](uint32_t l) {
+                           float3 const max = scene.light_aabb(l).max();
+                           return sc.behind(max.v);
+                       }) -
+        lights);
 
     uint32_t const c0_end = split(tree, child0, begin, split_node, sc.aabb_0_, sc.cone_0_,
                                   sc.two_sided_0_, sc.power_0_, scene, threads);
@@ -668,12 +669,13 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
         return assign(node, tree, begin, end, bounds, cone, total_power, part);
     }
 
-    uint32_t const split_node = std::partition(lights + begin, lights + end,
-                                               [&sc, &part](uint32_t l) {
-                                                   float3 const max = part.light_aabb(l).max();
-                                                   return sc.behind(max.v);
-                                               }) -
-                                lights;
+    uint32_t const split_node = uint32_t(
+        std::partition(lights + begin, lights + end,
+                       [&sc, &part](uint32_t l) {
+                           float3 const max = part.light_aabb(l).max();
+                           return sc.behind(max.v);
+                       }) -
+        lights);
 
     current_node_ += 2;
 

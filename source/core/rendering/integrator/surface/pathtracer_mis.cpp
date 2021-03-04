@@ -361,24 +361,9 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
         return float3(0.f);
     }
 
-    float light_pdf = 0.f;
-
-    if (state.no(State::Treat_as_singular)) {
-        bool const translucent = state.is(State::Is_translucent);
-        bool const split       = splitting(ray.depth);
-
-        auto const& scene     = worker.scene();
-        auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
-        auto const& light_ref = scene.light(light.offset);
-
-        float const ls_pdf = light_ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
-
-        light_pdf = ls_pdf * light.pdf;
-    }
-
     float3 const wo = -sample_result.wi;
 
-    // This will invalidate the contents of previous material sample.
+    // This will invalidate the contents of the previous material sample.
     auto const& mat_sample = isec.sample(wo, ray, filter, 0.f, false, sampler_, worker);
 
     pure_emissive = mat_sample.is_pure_emissive();
@@ -387,14 +372,25 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
         return float3(0.f);
     }
 
-    float const weight = power_heuristic(sample_result.pdf, light_pdf);
-
     float3 const ls_energy = mat_sample.radiance();
-    float3 const radiance  = weight * ls_energy;
 
-    SOFT_ASSERT(all_finite_and_positive(radiance));
+    if (state.is(State::Treat_as_singular)) {
+        return ls_energy;
+    }
 
-    return radiance;
+    bool const translucent = state.is(State::Is_translucent);
+    bool const split       = splitting(ray.depth);
+
+    auto const& scene     = worker.scene();
+    auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
+    auto const& light_ref = scene.light(light.offset);
+
+    float const ls_pdf = light_ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
+    float const weight = power_heuristic(sample_result.pdf, ls_pdf * light.pdf);
+
+    SOFT_ASSERT(std::isfinite(weight) && weight >= 0.f);
+
+    return weight * ls_energy;
 }
 
 float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Intersection const& isec,
@@ -404,25 +400,20 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Inter
         return 0.f;
     }
 
-    float light_pdf = 0.f;
-
-    if (state.no(State::Treat_as_singular)) {
-        bool const translucent = state.is(State::Is_translucent);
-        bool const split       = splitting(ray.depth);
-
-        auto const& scene     = worker.scene();
-        auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
-        auto const& light_ref = scene.light(light.offset);
-
-        float const ls_pdf = light_ref.pdf(ray, geo_n, isec, state.is(State::Is_translucent),
-                                           Filter::Nearest, worker);
-
-        light_pdf = ls_pdf * light.pdf;
+    if (state.is(State::Treat_as_singular)) {
+        return 1.f;
     }
 
-    float const weight = power_heuristic(bxdf_pdf, light_pdf);
+    bool const translucent = state.is(State::Is_translucent);
+    bool const split       = splitting(ray.depth);
 
-    return weight;
+    auto const& scene     = worker.scene();
+    auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
+    auto const& light_ref = scene.light(light.offset);
+
+    float const ls_pdf = light_ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
+
+    return power_heuristic(bxdf_pdf, ls_pdf * light.pdf);
 }
 
 sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {
