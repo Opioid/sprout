@@ -428,7 +428,8 @@ float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool tota
     return 0.f;
 }
 
-float Light::pdf(Ray const& ray, Intersection const& isec, Filter filter, Worker const& worker) const {
+float Light::pdf(Ray const& ray, Intersection const& isec, Filter filter,
+                 Worker const& worker) const {
     SOFT_ASSERT(isec.prop == prop_ && isec.geo.part == part_);
 
     Transformation temp;
