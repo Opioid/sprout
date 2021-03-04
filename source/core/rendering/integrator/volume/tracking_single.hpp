@@ -28,7 +28,8 @@ class alignas(64) Tracking_single final : public Integrator {
                         Ray const& ray, float3_p position, uint32_t sampler_d,
                         Intersection const& isec, Material const& material, Worker& worker);
 
-    float3 one_bounce(Ray const& ray, Material const& material, bool split, Worker& worker);
+    float3 one_bounce(float3_p tr, float3_p scattering_tr, Ray const& ray, Material const& material,
+                      bool split, Worker& worker);
 
     sampler::Sampler& material_sampler(uint32_t bounce);
 

@@ -265,6 +265,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         tr = exp(-(d - ray.min_t()) * attenuation);
 
+        float3 const scattering_tr = (1.f - tr) * scattering_albedo;
+
         float const select = light_sampler(ray.depth).sample_1D(rng, light::Tree::Max_lights);
 
         bool const split = ray.depth < Num_dedicated_samplers;
@@ -273,7 +275,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
         worker.scene().random_light(ray.point(ray.min_t()), ray.point(d), select, split, lights);
 
-        float3 lli(one_bounce(ray, material, split, worker));
+        float3 lli(one_bounce(tr, scattering_tr, ray, material, split, worker));
 
         for (uint32_t il = 0, len = lights.size(); il < len; ++il) {
             auto const  light     = lights[il];
@@ -323,7 +325,7 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                                               worker);
 
                 // Short version
-                lli += l * (1.f - tr) * scattering_albedo;
+                lli += l * scattering_tr;
 
                 // Instructive version
                 //            {
@@ -366,7 +368,7 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker);
 
-    return phase * (tr * radiance) / (light_sample.pdf() * light_pdf);
+    return (phase / (light_sample.pdf() * light_pdf)) * (tr * radiance);
 }
 
 float3 Tracking_single::direct_light(Light const& light, float light_pdf, float ea_pdf,
@@ -399,25 +401,22 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, float 
     return (weight * phase) * (tr * radiance);
 }
 
-float3 Tracking_single::one_bounce(Ray const& ray, Material const& material, bool split,
-                                   Worker& worker) {
+float3 Tracking_single::one_bounce(float3_p tr, float3_p scattering_tr, Ray const& ray,
+                                   Material const& material, bool split, Worker& worker) {
     auto const mu = material.collision_coefficients();
 
     float3 const attenuation = mu.a + mu.s;
 
-    float3 const scattering_albedo = mu.s / attenuation;
-
-    float const d     = ray.max_t();
-    float const range = d - ray.min_t();
-
-    float3 const tr = exp(-range * attenuation);
+    float const d = ray.max_t();
 
     auto& rng = worker.rng();
 
     auto& sampler = material_sampler(ray.depth);
 
+    float const avg_att = average(attenuation);
+
     float const r = sampler.sample_1D(rng, light::Tree::Max_lights);
-    float const t = -std::log(1.f - r * (1.f - average(tr))) / average(attenuation);
+    float const t = -std::log(1.f - r * (1.f - average(tr))) / avg_att;
 
     float const sample_t = ray.min_t() + t;
 
@@ -480,7 +479,7 @@ float3 Tracking_single::one_bounce(Ray const& ray, Material const& material, boo
     float const ea_pdf = D / ((theta_b - theta_a) * (D * D + ea_t * ea_t));
 
     // PDF for distance sampling
-    float const avg_att      = average(attenuation);
+    float const range        = d - ray.min_t();
     float const distance_pdf = avg_att / (exp(t * avg_att) - exp((t - range) * avg_att));
 
     float const mis_weight = power_heuristic(distance_pdf * phase, ea_pdf * light_pdf);
@@ -494,7 +493,7 @@ float3 Tracking_single::one_bounce(Ray const& ray, Material const& material, boo
         return float3(0.f);
     }
 
-    return mis_weight * (trans * ls_energy * scattering_albedo * (1.f - tr));
+    return mis_weight * (trans * ls_energy * scattering_tr);
 }
 
 sampler::Sampler& Tracking_single::material_sampler(uint32_t bounce) {
