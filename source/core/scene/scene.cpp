@@ -96,27 +96,15 @@ void Scene::clear() {
     extensions_.clear();
 }
 
-light::Light_pick Scene::light(uint32_t id, bool calculate_pdf) const {
-    // If the assert doesn't hold it would pose a problem,
-    // but I think it is more efficient to handle those cases outside or implicitely.
-    SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
-
-    id = light::Light::strip_mask(id);
-
-    float const pdf = calculate_pdf ? light_distribution_.pdf(id) : 1.f;
-
-    return {id, pdf};
-}
-
-light::Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
-                               bool split) const {
+Light_select Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
+                          bool split) const {
 #ifdef DISABLE_LIGHT_TREE
 
     id = light::Light::strip_mask(id);
 
     float const pdf = light_distribution_.pdf(id);
 
-    return {id, pdf};
+    return {light(id), pdf};
 
 #else
 
@@ -126,7 +114,7 @@ light::Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_s
 
     float const pdf = light_tree_.pdf(p, n, total_sphere, split, id, *this);
 
-    return {id, pdf};
+    return {light(id), pdf};
 
 #endif
 }
