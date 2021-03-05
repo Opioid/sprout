@@ -22,7 +22,9 @@
 namespace scene::material::light {
 
 Emissionmap::Emissionmap(Sampler_settings sampler_settings, bool two_sided)
-    : Material(sampler_settings, two_sided), average_emission_(float3(-1.f)) {}
+    : Material(sampler_settings, two_sided), average_emission_(float3(-1.f)) {
+    properties_.set(Property::Pure_emisive);
+}
 
 Emissionmap::~Emissionmap() = default;
 

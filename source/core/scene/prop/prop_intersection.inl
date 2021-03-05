@@ -70,6 +70,23 @@ inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray,
     return material->sample(wo, ray, rs, filter, sampler, worker);
 }
 
+inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& worker,
+                                            float3& radiance, bool& pure_emissive) const {
+    material::Material const* material = Intersection::material(worker);
+
+    pure_emissive = material->is_pure_emissive();
+
+    if (!material->is_two_sided() && dot(geo.geo_n, wo) < 0.f) {
+        return false;
+    }
+
+    float const extent = worker.scene().light_area(prop, geo.part);
+
+    radiance = material->evaluate_radiance(wo, float3(geo.uv), extent, filter, worker);
+
+    return true;
+}
+
 inline bool Intersection::same_hemisphere(float3_p v) const {
     return dot(geo.geo_n, v) >= 0.f;
 }

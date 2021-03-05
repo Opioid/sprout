@@ -144,6 +144,7 @@ class Material {
     bool has_tinted_shadow() const;
     bool has_emission_map() const;
     bool is_emissive() const;
+    bool is_pure_emissive() const;
     bool is_scattering_volume() const;
     bool is_textured_volume() const;
     bool is_heterogeneous_volume() const;
@@ -162,9 +163,10 @@ class Material {
         Caustic              = 1 << 2,
         Tinted_shadow        = 1 << 3,
         Emission_map         = 1 << 4,
-        Scattering_volume    = 1 << 5,
-        Textured_volume      = 1 << 6,
-        Heterogeneous_volume = 1 << 7
+        Pure_emisive         = 1 << 5,
+        Scattering_volume    = 1 << 6,
+        Textured_volume      = 1 << 7,
+        Heterogeneous_volume = 1 << 8
     };
 
     flags::Flags<Property> properties_;

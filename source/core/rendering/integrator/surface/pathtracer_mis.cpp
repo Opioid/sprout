@@ -363,16 +363,10 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
 
     float3 const wo = -sample_result.wi;
 
-    // This will invalidate the contents of the previous material sample.
-    auto const& mat_sample = isec.sample(wo, ray, filter, 0.f, false, sampler_, worker);
-
-    pure_emissive = mat_sample.is_pure_emissive();
-
-    if (!mat_sample.same_hemisphere(wo)) {
+    float3 ls_energy;
+    if (!isec.evaluate_radiance(wo, filter, worker, ls_energy, pure_emissive)) {
         return float3(0.f);
     }
-
-    float3 const ls_energy = mat_sample.radiance();
 
     if (state.is(State::Treat_as_singular)) {
         return ls_energy;
