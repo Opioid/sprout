@@ -120,7 +120,7 @@ float Plane::visibility(Ray const& ray, Transformation const& trafo, uint32_t en
         float3 p = ray.point(hit_t);
         float2 uv(dot(trafo.rotation.r[0], p), dot(trafo.rotation.r[1], p));
 
-        return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+        return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
     }
 
     return 1.f;
@@ -137,8 +137,8 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_
         float3 p = ray.point(hit_t);
         float2 uv(dot(trafo.rotation.r[0], p), dot(trafo.rotation.r[1], p));
 
-        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv,
-                                                                      ray.time, filter, worker);
+        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv, filter,
+                                                                      worker);
         return true;
     }
 

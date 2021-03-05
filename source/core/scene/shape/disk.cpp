@@ -192,8 +192,7 @@ float Disk::visibility(Ray const& ray, Transformation const& trafo, uint32_t ent
             float2 const uv((-dot(trafo.rotation.r[0], sk) + 1.f) * uv_scale,
                             (-dot(trafo.rotation.r[1], sk) + 1.f) * uv_scale);
 
-            return 1.f -
-                   worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+            return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
         }
     }
 
@@ -224,7 +223,7 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
                             (dot(trafo.rotation.r[1], sk) + 1.f) * uv_scale);
 
             ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
-                                                                          ray.time, filter, worker);
+                                                                          filter, worker);
 
             return true;
         }

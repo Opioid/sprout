@@ -61,6 +61,11 @@ class Worker;
 
 struct Ray;
 
+struct Light_select {
+    light::Light const& ref;
+    float               pdf;
+};
+
 class Scene {
   public:
     using Node_stack     = shape::Node_stack;
@@ -118,9 +123,7 @@ class Scene {
 
     light::Light const& light(uint32_t id) const;
 
-    Light_pick light(uint32_t id, bool calculate_pdf) const;
-
-    Light_pick light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
+    Light_select light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
 
     Light_pick light(uint32_t id, float3_p p0, float3_p p1, bool split) const;
 

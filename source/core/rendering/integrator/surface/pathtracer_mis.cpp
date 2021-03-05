@@ -363,16 +363,10 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
 
     float3 const wo = -sample_result.wi;
 
-    // This will invalidate the contents of the previous material sample.
-    auto const& mat_sample = isec.sample(wo, ray, filter, 0.f, false, sampler_, worker);
-
-    pure_emissive = mat_sample.is_pure_emissive();
-
-    if (!mat_sample.same_hemisphere(wo)) {
+    float3 ls_energy;
+    if (!isec.evaluate_radiance(wo, filter, worker, ls_energy, pure_emissive)) {
         return float3(0.f);
     }
-
-    float3 const ls_energy = mat_sample.radiance();
 
     if (state.is(State::Treat_as_singular)) {
         return ls_energy;
@@ -381,11 +375,9 @@ float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersectio
     bool const translucent = state.is(State::Is_translucent);
     bool const split       = splitting(ray.depth);
 
-    auto const& scene     = worker.scene();
-    auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
-    auto const& light_ref = scene.light(light.offset);
+    auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent, split);
 
-    float const ls_pdf = light_ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
+    float const ls_pdf = light.ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
     float const weight = power_heuristic(sample_result.pdf, ls_pdf * light.pdf);
 
     SOFT_ASSERT(std::isfinite(weight) && weight >= 0.f);
@@ -407,11 +399,9 @@ float Pathtracer_MIS::connect_light_volume(Ray const& ray, float3_p geo_n, Inter
     bool const translucent = state.is(State::Is_translucent);
     bool const split       = splitting(ray.depth);
 
-    auto const& scene     = worker.scene();
-    auto const  light     = scene.light(light_id, ray.origin, geo_n, translucent, split);
-    auto const& light_ref = scene.light(light.offset);
+    auto const light = worker.scene().light(light_id, ray.origin, geo_n, translucent, split);
 
-    float const ls_pdf = light_ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
+    float const ls_pdf = light.ref.pdf(ray, geo_n, isec, translucent, Filter::Nearest, worker);
 
     return power_heuristic(bxdf_pdf, ls_pdf * light.pdf);
 }

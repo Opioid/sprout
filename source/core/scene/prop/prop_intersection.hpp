@@ -41,12 +41,15 @@ struct Intersection {
 
     bool visible_in_camera(Worker const& worker) const;
 
-    float opacity(uint64_t time, Filter filter, Worker const& worker) const;
+    float opacity(Filter filter, Worker const& worker) const;
 
-    float3 thin_absorption(float3_p wo, uint64_t time, Filter filter, Worker const& worker) const;
+    float3 thin_absorption(float3_p wo, Filter filter, Worker const& worker) const;
 
     Sample const& sample(float3_p wo, Ray const& ray, Filter filter, float alpha,
                          bool avoid_caustics, Sampler& sampler, Worker& worker) const;
+
+    bool evaluate_radiance(float3_p wo, Filter filter, Worker& worker, float3& radiance,
+                           bool& pure_emissive) const;
 
     bool same_hemisphere(float3_p v) const;
 

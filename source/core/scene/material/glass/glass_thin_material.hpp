@@ -12,7 +12,7 @@ class Glass_thin : public Material {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    float3 thin_absorption(float3_p wi, float3_p n, float2 uv, uint64_t time, Filter filter,
+    float3 thin_absorption(float3_p wi, float3_p n, float2 uv, Filter filter,
                            Worker const& worker) const final;
 
     void set_normal_map(Texture_adapter const& normal_map);

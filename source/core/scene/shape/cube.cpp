@@ -160,8 +160,7 @@ float Cube::visibility(Ray const& ray, Transformation const& trafo, uint32_t ent
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return 1.f -
-                   worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+            return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
         }
 
         float t1 = b + dist;
@@ -175,8 +174,7 @@ float Cube::visibility(Ray const& ray, Transformation const& trafo, uint32_t ent
             float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                                std::acos(xyz[1]) * Pi_inv);
 
-            return 1.f -
-                   worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+            return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
         }
     }
 

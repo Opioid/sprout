@@ -11,6 +11,8 @@ Material::Material(Sky& sky)
           Sampler_settings(Sampler_settings::Filter::Linear, Sampler_settings::Address::Repeat,
                            Sampler_settings::Address::Clamp),
           false),
-      sky_(sky) {}
+      sky_(sky) {
+    properties_.set(Property::Pure_emisive);
+}
 
 }  // namespace procedural::sky

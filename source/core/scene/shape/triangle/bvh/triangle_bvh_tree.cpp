@@ -183,8 +183,7 @@ bool Tree::intersect_p(Simd3f_p ray_origin, Simd3f_p ray_direction, scalar_p ray
     return false;
 }
 
-float Tree::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
-                       Worker& worker) const {
+float Tree::visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker) const {
     auto& nodes = worker.node_stack();
 
     nodes.push(0xFFFFFFFF);
@@ -230,7 +229,7 @@ float Tree::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
 
                     auto const material = worker.scene().prop_material(entity, data_.part(i));
 
-                    visibility *= 1.f - material->opacity(uv, time, filter, worker);
+                    visibility *= 1.f - material->opacity(uv, filter, worker);
                     if (visibility <= 0.f) {
                         return 0.f;
                     }
@@ -247,8 +246,7 @@ float Tree::visibility(ray& ray, uint64_t time, uint32_t entity, Filter filter,
     return visibility;
 }
 
-bool Tree::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, Worker& worker,
-                      float3& ta) const {
+bool Tree::absorption(ray& ray, uint32_t entity, Filter filter, Worker& worker, float3& ta) const {
     auto& nodes = worker.node_stack();
 
     nodes.push(0xFFFFFFFF);
@@ -296,8 +294,8 @@ bool Tree::absorption(ray& ray, uint64_t time, uint32_t entity, Filter filter, W
 
                     auto const material = worker.scene().prop_material(entity, data_.part(i));
 
-                    float3 const tta = material->thin_absorption(ray.direction, normal, uv, time,
-                                                                 filter, worker);
+                    float3 const tta = material->thin_absorption(ray.direction, normal, uv, filter,
+                                                                 worker);
                     absorption *= tta;
                     if (all_equal_zero(absorption)) {
                         ta = float3(0.f);

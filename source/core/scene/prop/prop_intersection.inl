@@ -28,13 +28,13 @@ inline bool Intersection::visible_in_camera(Worker const& worker) const {
     return worker.scene().prop(prop)->visible_in_camera();
 }
 
-inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& worker) const {
-    return material(worker)->opacity(geo.uv, time, filter, worker);
+inline float Intersection::opacity(Filter filter, Worker const& worker) const {
+    return material(worker)->opacity(geo.uv, filter, worker);
 }
 
-inline float3 Intersection::thin_absorption(float3_p wo, uint64_t time, Filter filter,
+inline float3 Intersection::thin_absorption(float3_p wo, Filter filter,
                                             Worker const& worker) const {
-    return material(worker)->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
+    return material(worker)->thin_absorption(wo, geo.geo_n, geo.uv, filter, worker);
 }
 
 inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray, Filter filter,
@@ -68,6 +68,23 @@ inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray,
     rs.avoid_caustics = avoid_caustics;
 
     return material->sample(wo, ray, rs, filter, sampler, worker);
+}
+
+inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& worker,
+                                            float3& radiance, bool& pure_emissive) const {
+    material::Material const* material = Intersection::material(worker);
+
+    pure_emissive = material->is_pure_emissive();
+
+    if (!material->is_two_sided() && dot(geo.geo_n, wo) < 0.f) {
+        return false;
+    }
+
+    float const extent = worker.scene().light_area(prop, geo.part);
+
+    radiance = material->evaluate_radiance(wo, float3(geo.uv), extent, filter, worker);
+
+    return true;
 }
 
 inline bool Intersection::same_hemisphere(float3_p v) const {
