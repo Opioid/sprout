@@ -37,7 +37,7 @@ material::Sample const& Glass_thin::sample(float3_p wo, Ray const& /*ray*/, Rend
     return sample;
 }
 
-float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, uint64_t time, Filter filter,
+float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, Filter filter,
                                    Worker const& worker) const {
     float const eta_i = 1.f;
     float const eta_t = ior_;
@@ -60,7 +60,7 @@ float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, uint64_t 
 
     float3 const attenuation = rendering::attenuation(approx_distance, cc_.a);
 
-    float const o = opacity(uv, time, filter, worker);
+    float const o = opacity(uv, filter, worker);
 
     float3 const ta = min((1.f - o) + (refraction_color_ * attenuation), 1.f);
 

@@ -211,7 +211,7 @@ float Rectangle::visibility(Ray const& ray, Transformation const& trafo, uint32_
         }
 
         float2 const uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-        return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, ray.time, filter, worker);
+        return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
     }
 
     return 1.f;
@@ -248,7 +248,7 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
 
         float2 const uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
         ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
-                                                                      ray.time, filter, worker);
+                                                                      filter, worker);
         return true;
     }
 

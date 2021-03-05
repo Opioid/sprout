@@ -16,8 +16,7 @@ static inline float phase_hg(float cos_theta, float g) {
     return (1.f / (4.f * Pi)) * (1.f - gg) / (denom * std::sqrt(denom));
 }
 
-inline float Material::opacity(float2 uv, uint64_t /*time*/, Filter filter,
-                               Worker const& worker) const {
+inline float Material::opacity(float2 uv, Filter filter, Worker const& worker) const {
     if (mask_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key_, filter);
 

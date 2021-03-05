@@ -28,13 +28,13 @@ inline bool Intersection::visible_in_camera(Worker const& worker) const {
     return worker.scene().prop(prop)->visible_in_camera();
 }
 
-inline float Intersection::opacity(uint64_t time, Filter filter, Worker const& worker) const {
-    return material(worker)->opacity(geo.uv, time, filter, worker);
+inline float Intersection::opacity(Filter filter, Worker const& worker) const {
+    return material(worker)->opacity(geo.uv, filter, worker);
 }
 
-inline float3 Intersection::thin_absorption(float3_p wo, uint64_t time, Filter filter,
+inline float3 Intersection::thin_absorption(float3_p wo, Filter filter,
                                             Worker const& worker) const {
-    return material(worker)->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
+    return material(worker)->thin_absorption(wo, geo.geo_n, geo.uv, filter, worker);
 }
 
 inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray, Filter filter,

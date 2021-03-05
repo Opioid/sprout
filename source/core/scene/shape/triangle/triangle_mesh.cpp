@@ -372,7 +372,7 @@ float Mesh::visibility(Ray const& ray, Transformation const& trafo, uint32_t ent
     math::ray tray(trafo.world_to_object_point(ray.origin),
                    trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
-    return tree_.visibility(tray, ray.time, entity, filter, worker);
+    return tree_.visibility(tray, entity, filter, worker);
 }
 
 bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
@@ -380,7 +380,7 @@ bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
     math::ray tray(trafo.world_to_object_point(ray.origin),
                    trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
 
-    return tree_.absorption(tray, ray.time, entity, filter, worker, ta);
+    return tree_.absorption(tray, entity, filter, worker, ta);
 }
 
 bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo, float area,
