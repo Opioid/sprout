@@ -157,14 +157,25 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             float3     vtr;
             auto const hit = worker.volume(ray, isec, filter, vli, vtr);
 
-            if (treat_as_singular) {
-                result += throughput * vli;
+            if (Event::Absorb == hit) {
+                if (0 == ray.depth) {
+                    // This is the direct eye-light connection for the volume case.
+                    result += vli;
+                } else {
+                    result += throughput * vli;
+                }
+
+                SOFT_ASSERT(all_finite_and_positive(result_li));
+
+                break;
             }
+
+            // This is only needed for Tracking_single at the moment...
+            result += throughput * vli;
 
             throughput *= vtr;
 
-            if ((Event::Abort == hit) | (Event::Absorb == hit)) {
-                SOFT_ASSERT(all_finite_and_positive(result));
+            if (Event::Abort == hit) {
                 break;
             }
         } else if (!worker.intersect_and_resolve_mask(ray, isec, filter)) {

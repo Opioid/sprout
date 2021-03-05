@@ -104,7 +104,7 @@ Light_select Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere
 
     float const pdf = light_distribution_.pdf(id);
 
-    return {light(id), pdf};
+    return {light(id), id, pdf};
 
 #else
 
@@ -114,19 +114,19 @@ Light_select Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere
 
     float const pdf = light_tree_.pdf(p, n, total_sphere, split, id, *this);
 
-    return {light(id), pdf};
+    return {light(id), id, pdf};
 
 #endif
 }
 
-light::Light_pick Scene::light(uint32_t id, float3_p p0, float3_p p1, bool split) const {
+Light_select Scene::light(uint32_t id, float3_p p0, float3_p p1, bool split) const {
 #ifdef DISABLE_LIGHT_TREE
 
     id = light::Light::strip_mask(id);
 
     float const pdf = light_distribution_.pdf(id);
 
-    return {id, pdf};
+    return {light(id), id, pdf};
 
 #else
 
@@ -134,7 +134,7 @@ light::Light_pick Scene::light(uint32_t id, float3_p p0, float3_p p1, bool split
 
     float const pdf = light_tree_.pdf(p0, p1, split, id, *this);
 
-    return {id, pdf};
+    return {light(id), id, pdf};
 
 #endif
 }

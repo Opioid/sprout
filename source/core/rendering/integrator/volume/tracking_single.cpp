@@ -442,29 +442,26 @@ float3 Tracking_single::one_bounce(float3_p tr, float3_p scattering_tr, Ray cons
         return float3(0.f);
     }
 
-    auto const& scene     = worker.scene();
-    auto const  light     = scene.light(light_id, ray.point(ray.min_t()), ray.point(d), split);
-    auto const& light_ref = scene.light(light.offset);
-
-    if (!light_ref.is_finite(scene)) {
-        return float3(0.f);
-    }
-
     float3 const wo = -wi;
 
-    // This will invalidate the contents of the previous material sample.
-    auto const& mat_sample = isec.sample(wo, bounce_ray, Filter::Undefined, 0.f, false, sampler_,
-                                         worker);
-
-    if (!mat_sample.same_hemisphere(wo)) {
+    float3 ls_energy;
+    bool   pure_emissive;
+    if (!isec.evaluate_radiance(wo, Filter::Undefined, worker, ls_energy, pure_emissive)) {
         return float3(0.f);
     }
 
-    float const ls_pdf    = light_ref.pdf(bounce_ray, isec, Filter::Nearest, worker);
+    auto const& scene = worker.scene();
+    auto const  light = scene.light(light_id, ray.point(ray.min_t()), ray.point(d), split);
+
+    if (!light.ref.is_finite(scene)) {
+        return float3(0.f);
+    }
+
+    float const ls_pdf    = light.ref.pdf(bounce_ray, isec, Filter::Nearest, worker);
     float const light_pdf = ls_pdf * light.pdf;
 
     // PDF for equi-angular sampling
-    float3 const position = worker.scene().light_aabb(light.offset).position();
+    float3 const position = scene.light_aabb(light.offset).position();
 
     float const delta = dot(position - ray.origin, ray.direction);
 
@@ -483,8 +480,6 @@ float3 Tracking_single::one_bounce(float3_p tr, float3_p scattering_tr, Ray cons
     float const distance_pdf = avg_att / (exp(t * avg_att) - exp((t - range) * avg_att));
 
     float const mis_weight = power_heuristic(distance_pdf * phase, ea_pdf * light_pdf);
-
-    float3 const ls_energy = mat_sample.radiance();
 
     bounce_ray.max_t() = std::max(scene::offset_b(bounce_ray.max_t()), 0.f);
 
