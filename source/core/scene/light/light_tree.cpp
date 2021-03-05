@@ -234,8 +234,8 @@ inline bool Node::split(float3_p p0, float3_p dir) const {
 }
 
 template <typename Set>
-Light_pick Node::random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                              UInts light_mapping, Set const& set) const {
+Pick Node::random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                        UInts light_mapping, Set const& set) const {
     if (1 == num_lights) {
         return {light_mapping[children_or_light], 1.f};
     }
@@ -251,8 +251,8 @@ Light_pick Node::random_light(float3_p p, float3_p n, bool total_sphere, float r
     return {light_mapping[children_or_light + l.offset], l.pdf};
 }
 
-inline Light_pick Node::random_light(float3_p p0, float3_p p1, float3_p dir, float random,
-                                     UInts light_mapping, Scene const& scene) const {
+inline Pick Node::random_light(float3_p p0, float3_p p1, float3_p dir, float random,
+                               UInts light_mapping, Scene const& scene) const {
     if (1 == num_lights) {
         return {light_mapping[children_or_light], 1.f};
     }
@@ -447,8 +447,8 @@ void Tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
                 SOFT_ASSERT(std::isfinite(t.pdf));
                 SOFT_ASSERT(t.pdf > 0.f);
 
-                Light_pick const pick = node.random_light(p, n, total_sphere, t.random,
-                                                          light_mapping_, scene);
+                Pick const pick = node.random_light(p, n, total_sphere, t.random, light_mapping_,
+                                                    scene);
 
                 lights.push_back({pick.offset, pick.pdf * t.pdf});
             }
@@ -549,8 +549,7 @@ void Tree::random_light(float3_p p0, float3_p p1, float random, bool split, Scen
                 SOFT_ASSERT(std::isfinite(t.pdf));
                 SOFT_ASSERT(t.pdf > 0.f);
 
-                Light_pick const pick = node.random_light(p0, p1, dir, t.random, light_mapping_,
-                                                          scene);
+                Pick const pick = node.random_light(p0, p1, dir, t.random, light_mapping_, scene);
 
                 lights.push_back({pick.offset, pick.pdf * t.pdf});
             }
@@ -758,8 +757,8 @@ Primitive_tree::~Primitive_tree() {
     delete[] nodes_;
 }
 
-Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                                        Part const& part) const {
+Pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                                  Part const& part) const {
     float pdf = 1.f;
 
     for (uint32_t nid = 0;;) {
@@ -793,8 +792,8 @@ Light_pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_spher
             SOFT_ASSERT(pdf > 0.f);
 
             if (node.num_lights <= 4) {
-                Light_pick const pick = node.random_light(p, n, total_sphere, random,
-                                                          light_mapping_, part);
+                Pick const pick = node.random_light(p, n, total_sphere, random, light_mapping_,
+                                                    part);
 
                 return {pick.offset, pick.pdf * pdf};
             }

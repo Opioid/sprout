@@ -27,8 +27,8 @@ struct Part;
 namespace light {
 
 class Light;
-using Light_pick = Distribution_1D::Discrete;
-using UInts      = uint32_t const* const;
+using Pick  = Distribution_1D::Discrete;
+using UInts = uint32_t const* const;
 
 struct Node {
     float weight(float3_p p, float3_p n, bool total_sphere) const;
@@ -40,11 +40,11 @@ struct Node {
     bool split(float3_p p0, float3_p dir) const;
 
     template <typename Set>
-    Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                            UInts light_mapping, Set const& set) const;
+    Pick random_light(float3_p p, float3_p n, bool total_sphere, float random, UInts light_mapping,
+                      Set const& set) const;
 
-    Light_pick random_light(float3_p p0, float3_p p1, float3_p dir, float random,
-                            UInts light_mapping, Scene const& scene) const;
+    Pick random_light(float3_p p0, float3_p p1, float3_p dir, float random, UInts light_mapping,
+                      Scene const& scene) const;
 
     template <typename Set>
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, UInts light_mapping,
@@ -77,7 +77,7 @@ class Tree {
 
     static float splitting_threshold_;
 
-    using Lights = memory::Static_array<Light_pick, Max_lights>;
+    using Lights = memory::Static_array<Pick, Max_lights>;
 
     Tree();
 
@@ -128,8 +128,8 @@ class Primitive_tree {
 
     ~Primitive_tree();
 
-    Light_pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                            Part const& part) const;
+    Pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
+                      Part const& part) const;
 
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, Part const& part) const;
 

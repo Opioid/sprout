@@ -16,7 +16,7 @@ struct Part {
     void init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tree_builder& builder,
               Threads& threads);
 
-    light::Light_pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
+    light::Pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
 
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const;
 

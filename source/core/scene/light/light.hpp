@@ -1,13 +1,13 @@
 #ifndef SU_SCENE_LIGHT_LIGHT_HPP
 #define SU_SCENE_LIGHT_LIGHT_HPP
 
-#include "base/math/distribution/distribution_2d.hpp"
 #include "base/math/vector.hpp"
 #include "scene/material/sampler_settings.hpp"
 
 namespace math {
 struct AABB;
-}
+class Distribution_2D;
+}  // namespace math
 
 namespace image::texture {
 class Sampler_2D;
@@ -130,8 +130,6 @@ class alignas(16) Light {
 
     float extent_;
 };
-
-using Light_pick = Distribution_1D::Discrete;
 
 }  // namespace light
 }  // namespace scene

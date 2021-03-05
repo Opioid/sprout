@@ -207,22 +207,21 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
     float const select = light_sampler_.sample_1D(rng, 1);
 
-    auto const  light     = worker.scene().random_light(select);
-    auto const& light_ref = worker.scene().light(light.offset);
+    auto const light = worker.scene().random_light(select);
 
     uint64_t const time = worker.absolute_time(frame, light_sampler_.sample_1D(rng, 2));
 
     Importance const& importance = worker.particle_importance().importance(light.offset);
 
     if (importance.valid()) {
-        if (!light_ref.sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
+        if (!light.ref.sample(time, light_sampler_, 1, importance.distribution(), bounds, worker,
                               light_sample)) {
             return false;
         }
 
         light_sample.pdf *= importance.denormalization_factor();
     } else {
-        if (!light_ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
+        if (!light.ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
             return false;
         }
     }

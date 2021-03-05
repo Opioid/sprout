@@ -96,8 +96,7 @@ void Scene::clear() {
     extensions_.clear();
 }
 
-Light_select Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere,
-                          bool split) const {
+Light_pick Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const {
 #ifdef DISABLE_LIGHT_TREE
 
     id = light::Light::strip_mask(id);
@@ -119,7 +118,7 @@ Light_select Scene::light(uint32_t id, float3_p p, float3_p n, bool total_sphere
 #endif
 }
 
-Light_select Scene::light(uint32_t id, float3_p p0, float3_p p1, bool split) const {
+Light_pick Scene::light(uint32_t id, float3_p p0, float3_p p1, bool split) const {
 #ifdef DISABLE_LIGHT_TREE
 
     id = light::Light::strip_mask(id);
@@ -139,14 +138,14 @@ Light_select Scene::light(uint32_t id, float3_p p0, float3_p p1, bool split) con
 #endif
 }
 
-light::Light_pick Scene::random_light(float random) const {
+Light_pick Scene::random_light(float random) const {
     SOFT_ASSERT(!lights_.empty());
 
     auto const l = light_distribution_.sample_discrete(random);
 
     SOFT_ASSERT(l.offset < uint32_t(lights_.size()));
 
-    return l;
+    return {light(l.offset), l.offset, l.pdf};
 }
 
 void Scene::random_light(float3_p p, float3_p n, bool total_sphere, float random, bool split,

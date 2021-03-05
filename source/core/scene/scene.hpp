@@ -61,7 +61,7 @@ class Worker;
 
 struct Ray;
 
-struct Light_select {
+struct Light_pick {
     light::Light const& ref;
 
     uint32_t offset;
@@ -76,7 +76,6 @@ class Scene {
     using Entity_ref     = entity::Entity_ref;
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
-    using Light_pick     = light::Light_pick;
     using Lights         = light::Tree::Lights;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
@@ -125,9 +124,9 @@ class Scene {
 
     light::Light const& light(uint32_t id) const;
 
-    Light_select light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
+    Light_pick light(uint32_t id, float3_p p, float3_p n, bool total_sphere, bool split) const;
 
-    Light_select light(uint32_t id, float3_p p0, float3_p p1, bool split) const;
+    Light_pick light(uint32_t id, float3_p p0, float3_p p1, bool split) const;
 
     Light_pick random_light(float random) const;
 
