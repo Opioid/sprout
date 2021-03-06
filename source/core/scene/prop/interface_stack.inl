@@ -51,15 +51,6 @@ inline bool Interface_stack::empty() const {
     return 0 == index_;
 }
 
-inline bool Interface_stack::empty_or_scattering(Worker const& worker) const {
-    if (0 == index_) {
-        return true;
-    }
-
-    auto const material = stack_[index_ - 1].material(worker);
-    return material->ior() > 1.f;
-}
-
 inline void Interface_stack::clear() {
     index_ = 0;
 }

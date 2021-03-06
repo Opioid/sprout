@@ -142,11 +142,9 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             break;
         }
 
-        if (ray.depth < max_bounces) {
-            result_li += throughput * sample_lights(ray, isec, mat_sample, filter, worker);
+        result_li += throughput * sample_lights(ray, isec, mat_sample, filter, worker);
 
-            SOFT_ASSERT(all_finite_and_positive(result_li));
-        }
+        SOFT_ASSERT(all_finite_and_positive(result_li));
 
         float effective_bxdf_pdf = sample_result.pdf;
 
@@ -266,7 +264,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             break;
         }
 
-        if ((ray.depth >= max_bounces) & worker.interface_stack().empty_or_scattering(worker)) {
+        if (ray.depth >= max_bounces) {
             break;
         }
 

@@ -42,8 +42,6 @@ class Interface_stack {
 
     bool empty() const;
 
-    bool empty_or_scattering(Worker const& worker) const;
-
     void clear();
 
     Interface const* top() const;
