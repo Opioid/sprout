@@ -6,7 +6,7 @@
 namespace scene::material::null {
 
 Sample::Sample() {
-    properties_.set(Property::Can_evaluate, false);
+    properties_.unset(Property::Can_evaluate);
 }
 
 bxdf::Result Sample::evaluate(float3_p /*wi*/) const {

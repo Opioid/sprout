@@ -4,7 +4,7 @@
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "scene/material/material_sample.inl"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "scene/scene_ray.inl"
 
 namespace rendering::integrator::surface {
@@ -22,7 +22,7 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
         aov.insert(throughput * mat_sample.albedo(), Property::Albedo);
     }
 
-    if (ray.depth > 0) {
+    if (ray.depth > 0 || isec.material(worker)->ior() <= 1.f) {
         return;
     }
 

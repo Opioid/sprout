@@ -116,8 +116,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics = settings_.avoid_caustics & state.no(State::Primary_ray);
-
+        bool const avoid_caustics  = settings_.avoid_caustics & state.no(State::Primary_ray);
         bool const straight_border = state.is(State::From_subsurface);
 
         auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
@@ -294,10 +293,9 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
     bool const translucent = mat_sample.is_translucent();
 
     float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const n = mat_sample.geometric_normal();
 
     auto& rng = worker.rng();
-
-    float3 const n = mat_sample.geometric_normal();
 
     auto& lights = worker.lights();
 

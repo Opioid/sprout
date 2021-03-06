@@ -208,7 +208,6 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
     bool const translucent = mat_sample.is_translucent();
 
     float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
-
     float3 const n = mat_sample.geometric_normal();
 
     Ray shadow_ray;
