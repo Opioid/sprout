@@ -6,7 +6,7 @@
 namespace spectrum {
 
 // convert sRGB linear value to sRGB gamma value
-static inline float linear_to_gamma_sRGB(float c) {
+static inline float constexpr linear_to_gamma_sRGB(float c) {
     if (c <= 0.f) {
         return 0.f;
     } else if (c < 0.0031308f) {
@@ -31,7 +31,7 @@ static inline float4 linear_to_gamma_sRGB(float4_p c) {
 }
 
 // convert sRGB gamma value to sRGB linear value
-static inline float gamma_to_linear_sRGB(float c) {
+static inline float constexpr gamma_to_linear_sRGB(float c) {
     if (c <= 0.f) {
         return 0.f;
     } else if (c < 0.04045f) {

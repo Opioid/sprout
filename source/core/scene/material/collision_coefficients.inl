@@ -48,7 +48,7 @@ inline void CM::add(CC const& cc) {
 }
 
 static inline float3 attenuation_coefficient(float3_p color, float distance) {
-    float3 const ca = clamp(color, 0.001f, 0.99f);
+    float3 const ca = min(color, 0.991102f);
     float3 const a  = log(ca);
 
     return -a / distance;
