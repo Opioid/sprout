@@ -1146,6 +1146,10 @@ static inline float3 map_color(float3_p color) {
 }
 
 float3 read_color(json::Value const& color_value) {
+    if (color_value.IsNumber()) {
+        return float3(map_color(float3(json::read_float(color_value)))[1]);
+    }
+
     if (color_value.IsArray()) {
         return map_color(json::read_float3(color_value));
     }
