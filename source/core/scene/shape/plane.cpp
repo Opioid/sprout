@@ -35,6 +35,7 @@ bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 const p = ray.point(hit_t);
+        float3 const k = p - trafo.position;
         float3 const t = -trafo.rotation.r[0];
         float3 const b = -trafo.rotation.r[1];
 
@@ -43,8 +44,8 @@ bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes
         isec.b     = b;
         isec.n     = n;
         isec.geo_n = n;
-        isec.uv[0] = dot(t, p);
-        isec.uv[1] = dot(b, p);
+        isec.uv[0] = dot(t, k);
+        isec.uv[1] = dot(b, k);
 
         isec.part = 0;
 
@@ -63,14 +64,15 @@ bool Plane::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*n
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float3 t = -trafo.rotation.r[0];
-        float3 b = -trafo.rotation.r[1];
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - trafo.position;
+        float3 const t = -trafo.rotation.r[0];
+        float3 const b = -trafo.rotation.r[1];
 
         isec.p     = p;
         isec.geo_n = n;
-        isec.uv[0] = dot(t, p);
-        isec.uv[1] = dot(b, p);
+        isec.uv[0] = dot(t, k);
+        isec.uv[1] = dot(b, k);
 
         isec.part = 0;
 
@@ -117,8 +119,9 @@ float Plane::visibility(Ray const& ray, Transformation const& trafo, uint32_t en
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float2 uv(dot(trafo.rotation.r[0], p), dot(trafo.rotation.r[1], p));
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - trafo.position;
+        float2 uv(dot(trafo.rotation.r[0], k), dot(trafo.rotation.r[1], k));
 
         return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
     }
@@ -134,8 +137,9 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_
     float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 p = ray.point(hit_t);
-        float2 uv(dot(trafo.rotation.r[0], p), dot(trafo.rotation.r[1], p));
+        float3 const p = ray.point(hit_t);
+        float3 const k = p - trafo.position;
+        float2 uv(dot(trafo.rotation.r[0], k), dot(trafo.rotation.r[1], k));
 
         ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv, filter,
                                                                       worker);
