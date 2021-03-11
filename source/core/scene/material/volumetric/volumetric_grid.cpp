@@ -373,7 +373,8 @@ float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volu
                                      Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
-    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
+    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_,
+                                     volumetric_anisotropy_);
 
     return cc.a * emission_;
 }
@@ -381,21 +382,24 @@ float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volu
 CC Grid_color::collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
-    return c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
+    return c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_,
+                              volumetric_anisotropy_);
 }
 
 CCE Grid_color::collision_coefficients_emission(float3_p uvw, Filter filter,
                                                 Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
-    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_);
+    CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_,
+                                     volumetric_anisotropy_);
 
     return {cc, emission_};
 }
 
-void Grid_color::set_attenuation(float scattering_factor, float distance) {
-    attenuation_distance_ = distance;
-    scattering_factor_    = scattering_factor;
+void Grid_color::set_volumetric(float scattering_factor, float distance, float anisotropy) {
+    attenuation_distance_  = distance;
+    scattering_factor_     = scattering_factor;
+    volumetric_anisotropy_ = anisotropy;
 }
 
 void Grid_color::commit(Threads& threads, Scene const& scene) {

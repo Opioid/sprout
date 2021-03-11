@@ -16,8 +16,6 @@ class Material : public material::Material {
 
     float3 average_radiance(float volume) const override;
 
-    void set_attenuation(float3_p absorption_color, float3_p scattering_color, float distance);
-
     static size_t sample_size();
 
   protected:

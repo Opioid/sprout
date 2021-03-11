@@ -49,28 +49,25 @@ inline void CM::add(CC const& cc) {
 
 static inline float3 attenuation_coefficient(float3_p color, float distance) {
     float3 const ca = clamp(color, 0.001f, 0.99f);
-
-    float3 const a = log(ca);
+    float3 const a  = log(ca);
 
     return -a / distance;
 }
 
-static inline CC scattering(float3_p mu_t, float3_p ssc) {
-    float3 const root = sqrt(9.59217f + 41.6808f * ssc + 17.7126f * ssc * ssc);
-
-    float3 const factor = 4.09712f + 4.20863f * ssc - root;
-
-    float3 const pss = 1.f - (factor * factor);
-
-    float3 const mu_a = mu_t * (1.f - pss);
+static inline CC scattering(float3_p mu_t, float3_p ssc, float g) {
+    float3 const root   = sqrt(9.59217f + 41.6808f * ssc + 17.7126f * ssc * ssc);
+    float3 const factor = max(4.097125f + 4.20863f * ssc - root, 0.f);
+    float3 const fsq    = factor * factor;
+    float3 const pss    = (1.f - fsq) / (1.f - g * fsq);
+    float3 const mu_a   = mu_t * (1.f - pss);
 
     return {mu_a, mu_t - mu_a};
 }
 
-static inline CC attenuation(float3_p ac, float3_p ssc, float distance) {
+static inline CC attenuation(float3_p ac, float3_p ssc, float distance, float g) {
     float3 const mu_t = attenuation_coefficient(ac, distance);
 
-    return scattering(mu_t, ssc);
+    return scattering(mu_t, ssc, g);
 }
 
 }  // namespace scene::material

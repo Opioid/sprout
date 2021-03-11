@@ -71,7 +71,7 @@ inline CC Material::collision_coefficients(float2 uv, Filter filter, Worker cons
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
         float3 const color   = color_map_.sample_3(worker, sampler, uv);
 
-        return scattering(cc_.a, color);
+        return scattering(cc_.a, color, volumetric_anisotropy_);
     }
 
     return cc_;

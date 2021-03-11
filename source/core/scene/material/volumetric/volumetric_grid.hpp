@@ -93,7 +93,7 @@ class Grid_color : public Material {
     CCE collision_coefficients_emission(float3_p uvw, Filter filter,
                                         Worker const& worker) const final;
 
-    void set_attenuation(float scattering_factor, float distance);
+    void set_volumetric(float scattering_factor, float distance, float anisotropy);
 
     void commit(Threads& threads, Scene const& scene) final;
 

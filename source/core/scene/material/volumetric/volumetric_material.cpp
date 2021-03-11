@@ -42,17 +42,6 @@ float3 Material::average_radiance(float /*volume*/) const {
     return cc_.a * emission_;
 }
 
-void Material::set_attenuation(float3_p absorption_color, float3_p scattering_color,
-                               float distance) {
-    if (any_greater_zero(scattering_color)) {
-        cc_ = attenuation(absorption_color, scattering_color, distance);
-    } else {
-        cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
-    }
-
-    attenuation_distance_ = distance;
-}
-
 size_t Material::sample_size() {
     return sizeof(Sample);
 }

@@ -12,7 +12,7 @@ class Material_translucent : public Material_base {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_attenuation(float thickness, float attenuation_distance);
+    void set_volumetric(float thickness, float attenuation_distance);
 
     static size_t sample_size();
 

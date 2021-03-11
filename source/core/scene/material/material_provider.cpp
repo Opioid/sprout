@@ -322,7 +322,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         material->set_normal_map(normal_map);
         material->set_roughness_map(roughness_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
+        material->set_volumetric(absorption_color, float3(0.f), attenuation_distance, 0.f);
         material->set_ior(ior);
         material->set_roughness(roughness);
         return material;
@@ -333,7 +333,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         material->set_mask(mask);
         material->set_normal_map(normal_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
+        material->set_volumetric(absorption_color, float3(0.f), attenuation_distance, 0.f);
         material->set_ior(ior);
         material->set_thickness(thickness);
         return material;
@@ -343,7 +343,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         auto material = new glass::Glass_dispersion(sampler_settings);
         material->set_normal_map(normal_map);
         material->set_refraction_color(refraction_color);
-        material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
+        material->set_volumetric(absorption_color, float3(0.f), attenuation_distance, 0.f);
         material->set_ior(ior);
         material->set_abbe(abbe);
         return material;
@@ -352,7 +352,7 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
     auto material = new glass::Glass(sampler_settings);
     material->set_normal_map(normal_map);
     material->set_refraction_color(refraction_color);
-    material->set_attenuation(absorption_color, float3(0.f), attenuation_distance);
+    material->set_volumetric(absorption_color, float3(0.f), attenuation_distance, 0.f);
     material->set_ior(ior);
     return material;
 }
@@ -730,7 +730,7 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
         material->set_roughness(roughness);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
-        material->set_attenuation(thickness, attenuation_distance);
+        material->set_volumetric(thickness, attenuation_distance);
 
         return material;
     }
@@ -785,8 +785,8 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
             material->set_density_map(density_map);
 
             material->set_color(color);
-            material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
-            material->set_volumetric_anisotropy(volumetric_anisotropy);
+            material->set_volumetric(absorption_color, scattering_color, attenuation_distance,
+                                     volumetric_anisotropy);
             material->set_ior(ior);
             material->set_roughness(roughness);
             material->set_metallic(metallic);
@@ -837,8 +837,8 @@ Material* Provider::load_substitute(json::Value const& substitute_value,
         material->set_density_map(density_map);
 
         material->set_color(color);
-        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
-        material->set_volumetric_anisotropy(volumetric_anisotropy);
+        material->set_volumetric(absorption_color, scattering_color, attenuation_distance,
+                                 volumetric_anisotropy);
         material->set_ior(ior);
         material->set_roughness(roughness);
         material->set_metallic(metallic);
@@ -959,33 +959,31 @@ Material* Provider::load_volumetric(json::Value const& volumetric_value,
     if (density_map.is_valid()) {
         if (any_greater_zero(emission) || temperature_map.is_valid()) {
             auto material = new Grid_emission(sampler_settings, density_map);
-            material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+            material->set_volumetric(absorption_color, scattering_color, attenuation_distance,
+                                     anisotropy);
             material->set_emission(emission);
-            material->set_volumetric_anisotropy(anisotropy);
             material->set_temperature_map(temperature_map);
             return material;
         }
 
         auto material = new Grid(sampler_settings, density_map);
-        material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+        material->set_volumetric(absorption_color, scattering_color, attenuation_distance,
+                                 anisotropy);
         material->set_emission(emission);
-        material->set_volumetric_anisotropy(anisotropy);
         return material;
     }
 
     if (color_map.is_valid()) {
         auto material = new Grid_color(sampler_settings);
         material->set_color(color_map);
-        material->set_attenuation(1.f, attenuation_distance);
+        material->set_volumetric(1.f, attenuation_distance, anisotropy);
         material->set_emission(emission);
-        material->set_volumetric_anisotropy(anisotropy);
         return material;
     }
 
     auto material = new Homogeneous(sampler_settings);
-    material->set_attenuation(absorption_color, scattering_color, attenuation_distance);
+    material->set_volumetric(absorption_color, scattering_color, attenuation_distance, anisotropy);
     material->set_emission(emission);
-    material->set_volumetric_anisotropy(anisotropy);
     return material;
 }
 

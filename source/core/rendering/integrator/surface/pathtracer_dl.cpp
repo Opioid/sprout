@@ -165,7 +165,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
                     result += throughput * vli;
                 }
 
-                SOFT_ASSERT(all_finite_and_positive(result_li));
+                SOFT_ASSERT(all_finite_and_positive(result));
 
                 break;
             }

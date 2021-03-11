@@ -41,19 +41,18 @@ void Material::set_ior(float ior) {
     ior_ = ior;
 }
 
-void Material::set_attenuation(float3_p absorption_color, float3_p scattering_color,
-                               float distance) {
+void Material::set_volumetric(float3_p absorption_color, float3_p scattering_color, float distance,
+                              float anisotropy) {
+    anisotropy = std::clamp(anisotropy, -0.999f, 0.999f);
+
     if (any_greater_zero(scattering_color)) {
-        cc_ = attenuation(absorption_color, scattering_color, distance);
+        cc_ = attenuation(absorption_color, scattering_color, distance, anisotropy);
     } else {
         cc_ = {attenuation_coefficient(absorption_color, distance), float3(0.f)};
     }
 
-    attenuation_distance_ = distance;
-}
-
-void Material::set_volumetric_anisotropy(float anisotropy) {
-    volumetric_anisotropy_ = std::clamp(anisotropy, -0.999f, 0.999f);
+    attenuation_distance_  = distance;
+    volumetric_anisotropy_ = anisotropy;
 }
 
 void Material::commit(Threads& /*threads*/, Scene const& /*scene*/) {}

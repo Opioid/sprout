@@ -112,7 +112,8 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
                 for (int32_t x = minb[0]; x < maxb[0]; ++x) {
                     float4 const color = texture.at_4(x, y, z);
 
-                    lcm.add(color[3] * attenuation(color.xyz(), factor * color.xyz(), distance));
+                    lcm.add(color[3] *
+                            attenuation(color.xyz(), factor * color.xyz(), distance, 0.f));
                 }
             }
         }

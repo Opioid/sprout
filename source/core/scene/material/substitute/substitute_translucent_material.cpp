@@ -30,7 +30,7 @@ material::Sample const& Material_translucent::sample(float3_p           wo, Ray 
     return sample;
 }
 
-void Material_translucent::set_attenuation(float thickness, float attenuation_distance) {
+void Material_translucent::set_volumetric(float thickness, float attenuation_distance) {
     thickness_            = thickness;
     attenuation_distance_ = attenuation_distance;
 

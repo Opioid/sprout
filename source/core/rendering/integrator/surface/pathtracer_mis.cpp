@@ -282,10 +282,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
 float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
                                      Material_sample const& mat_sample, Filter filter,
                                      Worker& worker) {
-    float3 result(0.f);
-
     if (!mat_sample.can_evaluate()) {
-        return result;
+        return float3(0.f);
     }
 
     bool const translucent = mat_sample.is_translucent();
@@ -303,6 +301,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
     worker.scene().random_light(p, n, translucent, select, split, lights);
 
+    float3 result(0.f);
     for (uint32_t l = 0; auto const light : lights) {
         auto const& light_ref = worker.scene().light(light.offset);
 
