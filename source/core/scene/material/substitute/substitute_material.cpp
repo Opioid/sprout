@@ -75,7 +75,7 @@ material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstat
 
     float4 const dd = scale_ * worker.screenspace_differential(rs, ray.time);
 
-    float const t = checkers_grad(scale_ * rs.uv, dd.xy(), dd.zw());
+    float const t = checkers_grad(scale_ * sampler.address(rs.uv), dd.xy(), dd.zw());
 
     float3 const color = lerp(checkers_[0], checkers_[1], t);
 
