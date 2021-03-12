@@ -135,9 +135,9 @@ class Scene {
 
     void random_light(float3_p p0, float3_p p1, float random, bool split, Lights& lights) const;
 
-    void simulate(uint64_t start, uint64_t end, Threads& threads);
+    void simulate(float3_p camera_pos, uint64_t start, uint64_t end, Threads& threads);
 
-    void compile(uint64_t time, Threads& threads);
+    void compile(float3_p camera_pos, uint64_t time, Threads& threads);
 
     uint32_t num_interpolation_frames() const;
 
@@ -170,7 +170,7 @@ class Scene {
 
     Transformation const& prop_world_transformation(uint32_t entity) const;
 
-    math::Transformation const& prop_local_frame_0(uint32_t entity) const;
+    float3_p prop_world_position(uint32_t entity) const;
 
     void prop_allocate_frames(uint32_t entity, bool local_animation);
 
@@ -179,14 +179,6 @@ class Scene {
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames);
 
     void prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k);
-
-    void prop_calculate_world_transformation(uint32_t entity);
-
-    void prop_propagate_transformation(uint32_t entity);
-
-    void prop_inherit_transformation(uint32_t entity, const Transformation& trafo);
-
-    void prop_inherit_transformation(uint32_t entity, Keyframe const* frames);
 
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection, bool in_shadow);
 
@@ -224,6 +216,15 @@ class Scene {
     void create_animation_stage(uint32_t entity, animation::Animation* animation);
 
   private:
+    void prop_calculate_world_transformation(uint32_t entity, float3_p camera_pos);
+
+    void prop_propagate_transformation(uint32_t entity, float3_p camera_pos);
+
+    void prop_inherit_transformation(uint32_t entity, const Transformation& trafo,
+                                     float3_p camera_pos);
+
+    void prop_inherit_transformation(uint32_t entity, Keyframe const* frames, float3_p camera_pos);
+
     Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
                                                           Transformation& trafo) const;
 
@@ -265,6 +266,7 @@ class Scene {
 
     std::vector<Prop>           props_;
     std::vector<Transformation> prop_world_transformations_;
+    std::vector<float3>         prop_world_positions_;
     std::vector<uint32_t>       prop_parts_;
     std::vector<uint32_t>       prop_frames_;
     std::vector<Prop_topology>  prop_topology_;

@@ -22,6 +22,12 @@ void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restri
     }
 }
 
+void Keyframe::set(Keyframe const& other, float3_p camera_pos) {
+    trafo.position = other.trafo.position - camera_pos;
+    trafo.scale    = other.trafo.scale;
+    trafo.rotation = other.trafo.rotation;
+}
+
 void Keyframe::interpolate(Keyframe& __restrict result, Keyframe const& __restrict other,
                            float t) const {
     result.trafo = lerp(trafo, other.trafo, t);

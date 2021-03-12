@@ -75,6 +75,10 @@ inline Scene::Transformation const& Scene::prop_world_transformation(uint32_t en
     return prop_world_transformations_[entity];
 }
 
+inline float3_p Scene::prop_world_position(uint32_t entity) const {
+    return prop_world_positions_[entity];
+}
+
 inline void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) {
     uint32_t const f = prop_frames_[entity];
 
@@ -84,7 +88,8 @@ inline void Scene::prop_set_transformation(uint32_t entity, math::Transformation
 }
 
 inline void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) {
-    prop_world_transformations_[entity].set(t);
+    prop_world_transformations_[entity].prepare(t);
+    prop_world_positions_[entity] = t.position;
 }
 
 inline Scene::Transformation const& Scene::prop_transformation_at(uint32_t entity, uint64_t time,
@@ -106,12 +111,6 @@ inline Scene::Transformation const& Scene::prop_transformation_at(uint32_t entit
     }
 
     return prop_animated_transformation_at(prop_frames_[entity], time, trafo);
-}
-
-inline math::Transformation const& Scene::prop_local_frame_0(uint32_t entity) const {
-    entity::Keyframe const* frames = &keyframes_[prop_frames_[entity]];
-
-    return frames[num_interpolation_frames_].trafo;
 }
 
 inline AABB const& Scene::prop_aabb(uint32_t entity) const {

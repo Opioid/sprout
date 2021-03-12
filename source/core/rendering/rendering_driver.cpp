@@ -107,14 +107,17 @@ void Driver::render(Exporters& exporters) {
 }
 
 void Driver::render(uint32_t frame) {
-    auto& camera = *view_->camera;
-
     logging::info("Frame " + string::to_string(frame));
 
     auto const render_start = std::chrono::high_resolution_clock::now();
 
+    auto& camera = *view_->camera;
+
+    float3 const camera_pos = scene_->prop_world_position(camera.entity());
+
     uint64_t const start = frame * camera.frame_step();
-    scene_->simulate(start, start + camera.frame_duration(), threads_);
+
+    scene_->simulate(camera_pos, start, start + camera.frame_duration(), threads_);
 
     camera.update(*scene_, start, workers_[0]);
 
@@ -145,8 +148,11 @@ void Driver::render(uint32_t frame) {
 void Driver::start_frame(uint32_t frame) {
     auto& camera = *view_->camera;
 
+    float3 const camera_pos = scene_->prop_world_position(camera.entity());
+
     uint64_t const start = frame * camera.frame_step();
-    scene_->simulate(start, start + camera.frame_duration(), threads_);
+
+    scene_->simulate(camera_pos, start, start + camera.frame_duration(), threads_);
 
     camera.update(*scene_, start, workers_[0]);
 

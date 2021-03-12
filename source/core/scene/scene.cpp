@@ -41,6 +41,7 @@ Scene::Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
       texture_resources_(texture_resources) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
+    prop_world_positions_.reserve(Num_reserved_props);
     prop_parts_.reserve(Num_reserved_props);
     prop_frames_.reserve(Num_reserved_props);
     prop_topology_.reserve(Num_reserved_props);
@@ -203,7 +204,7 @@ void Scene::random_light(float3_p p0, float3_p p1, float random, bool split, Lig
 #endif
 }
 
-void Scene::simulate(uint64_t start, uint64_t end, Threads& threads) {
+void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Threads& threads) {
     uint64_t const frames_start = start - (start % tick_duration_);
     uint64_t const end_rem      = end % tick_duration_;
     uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
@@ -222,10 +223,10 @@ void Scene::simulate(uint64_t start, uint64_t end, Threads& threads) {
         m->simulate(start, end, tick_duration_, threads, *this);
     }
 
-    compile(start, threads);
+    compile(camera_pos, start, threads);
 }
 
-void Scene::compile(uint64_t time, Threads& threads) {
+void Scene::compile(float3_p camera_pos, uint64_t time, Threads& threads) {
     has_masked_material_ = false;
     has_tinted_shadow_   = false;
 
@@ -234,7 +235,7 @@ void Scene::compile(uint64_t time, Threads& threads) {
     }
 
     for (uint32_t i = 0; auto& p : props_) {
-        prop_calculate_world_transformation(i);
+        prop_calculate_world_transformation(i, camera_pos);
         has_masked_material_ = has_masked_material_ || p.has_masked_material();
         has_tinted_shadow_   = has_tinted_shadow_ || p.has_tinted_shadow();
 
@@ -426,97 +427,6 @@ void Scene::prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k) {
     local_frames[frame] = k;
 }
 
-void Scene::prop_calculate_world_transformation(uint32_t entity) {
-    auto const& p = props_[entity];
-
-    if (p.has_no_parent()) {
-        uint32_t const f = prop_frames_[entity];
-
-        if (prop::Null != f) {
-            entity::Keyframe* frames = &keyframes_[f];
-            for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
-                frames[i] = frames[len + i];
-            }
-        }
-
-        prop_propagate_transformation(entity);
-    }
-}
-
-void Scene::prop_propagate_transformation(uint32_t entity) {
-    uint32_t const f = prop_frames_[entity];
-
-    if (prop::Null == f) {
-        auto const& trafo = prop_world_transformation(entity);
-
-        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(trafo.object_to_world());
-
-        for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
-            prop_inherit_transformation(child, trafo);
-
-            child = prop_topology(child).next;
-        }
-    } else {
-        entity::Keyframe const* frames = &keyframes_[f];
-
-        Shape const* shape = prop_shape(entity);
-
-        AABB aabb = shape->transformed_aabb(float4x4(frames[0].trafo));
-
-        for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
-            auto const& a = frames[i].trafo;
-            auto const& b = frames[i + 1].trafo;
-
-            float t = Interval;
-            for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
-                math::Transformation const inter = lerp(a, b, t);
-
-                aabb.merge_assign(shape->transformed_aabb(float4x4(inter)));
-            }
-
-            aabb.merge_assign(shape->transformed_aabb(float4x4(b)));
-        }
-
-        prop_aabbs_[entity] = aabb;
-
-        for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
-            prop_inherit_transformation(child, frames);
-
-            child = prop_topology(child).next;
-        }
-    }
-}
-
-void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& trafo) {
-    uint32_t const f = prop_frames_[entity];
-
-    if (prop::Null != f) {
-        entity::Keyframe* frames = &keyframes_[f];
-
-        bool const local_animation = prop(entity)->has_local_animation();
-
-        for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
-            uint32_t const lf = local_animation ? i : 0;
-            frames[len + lf].transform(frames[i], trafo);
-        }
-    }
-
-    prop_propagate_transformation(entity);
-}
-
-void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames) {
-    bool const local_animation = prop(entity)->has_local_animation();
-
-    entity::Keyframe* tf = &keyframes_[prop_frames_[entity]];
-
-    for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
-        uint32_t const lf = local_animation ? i : 0;
-        tf[len + lf].transform(tf[i], frames[i]);
-    }
-
-    prop_propagate_transformation(entity);
-}
-
 void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection,
                                 bool in_shadow) {
     props_[entity].set_visibility(in_camera, in_reflection, in_shadow);
@@ -612,6 +522,101 @@ void Scene::create_animation_stage(uint32_t entity, animation::Animation* animat
     prop_allocate_frames(entity, true);
 }
 
+void Scene::prop_calculate_world_transformation(uint32_t entity, float3_p camera_pos) {
+    auto const& p = props_[entity];
+
+    if (p.has_no_parent()) {
+        uint32_t const f = prop_frames_[entity];
+
+        if (prop::Null != f) {
+            entity::Keyframe* frames = &keyframes_[f];
+            for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
+                frames[i].set(frames[len + i], camera_pos);
+            }
+        }
+
+        prop_propagate_transformation(entity, camera_pos);
+    }
+}
+
+void Scene::prop_propagate_transformation(uint32_t entity, float3_p camera_pos) {
+    uint32_t const f = prop_frames_[entity];
+
+    if (prop::Null == f) {
+        auto& trafo = prop_world_transformations_[entity];
+
+        trafo.set_position(prop_world_positions_[entity] - camera_pos);
+
+        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(trafo.object_to_world());
+
+        for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
+            prop_inherit_transformation(child, trafo, camera_pos);
+
+            child = prop_topology(child).next;
+        }
+    } else {
+        entity::Keyframe const* frames = &keyframes_[f];
+
+        Shape const* shape = prop_shape(entity);
+
+        AABB aabb = shape->transformed_aabb(float4x4(frames[0].trafo));
+
+        for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
+            auto const& a = frames[i].trafo;
+            auto const& b = frames[i + 1].trafo;
+
+            float t = Interval;
+            for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
+                math::Transformation const inter = lerp(a, b, t);
+
+                aabb.merge_assign(shape->transformed_aabb(float4x4(inter)));
+            }
+
+            aabb.merge_assign(shape->transformed_aabb(float4x4(b)));
+        }
+
+        prop_aabbs_[entity] = aabb;
+
+        for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
+            prop_inherit_transformation(child, frames, camera_pos);
+
+            child = prop_topology(child).next;
+        }
+    }
+}
+
+void Scene::prop_inherit_transformation(uint32_t entity, Transformation const& trafo,
+                                        float3_p camera_pos) {
+    uint32_t const f = prop_frames_[entity];
+
+    if (prop::Null != f) {
+        entity::Keyframe* frames = &keyframes_[f];
+
+        bool const local_animation = prop(entity)->has_local_animation();
+
+        for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
+            uint32_t const lf = local_animation ? i : 0;
+            frames[len + lf].transform(frames[i], trafo);
+        }
+    }
+
+    prop_propagate_transformation(entity, camera_pos);
+}
+
+void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const* frames,
+                                        float3_p camera_pos) {
+    bool const local_animation = prop(entity)->has_local_animation();
+
+    entity::Keyframe* tf = &keyframes_[prop_frames_[entity]];
+
+    for (uint32_t i = 0, len = num_interpolation_frames_; i < len; ++i) {
+        uint32_t const lf = local_animation ? i : 0;
+        tf[len + lf].transform(tf[i], frames[i]);
+    }
+
+    prop_propagate_transformation(entity, camera_pos);
+}
+
 Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t        frames_id,
                                                                     uint64_t        time,
                                                                     Transformation& trafo) const {
@@ -635,6 +640,7 @@ Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t    
 Scene::Prop_ptr Scene::allocate_prop() {
     props_.emplace_back();
     prop_world_transformations_.emplace_back();
+    prop_world_positions_.emplace_back();
     prop_parts_.emplace_back();
     prop_frames_.emplace_back(prop::Null);
     prop_topology_.emplace_back();

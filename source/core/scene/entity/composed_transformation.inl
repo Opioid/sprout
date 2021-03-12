@@ -8,12 +8,8 @@
 
 namespace scene::entity {
 
-inline void Composed_transformation::set(math::Transformation const& t) {
+inline void Composed_transformation::prepare(math::Transformation const& t) {
     float3x3 const rot = quaternion::create_matrix3x3(t.rotation);
-
-    float4x4 const otw = compose(rot, t.scale, t.position);
-
-    world_to_object = affine_inverted(otw);
 
     rotation = rot;
 
@@ -22,6 +18,18 @@ inline void Composed_transformation::set(math::Transformation const& t) {
     rotation.r[2][3] = t.scale[2];
 
     position = t.position;
+}
+
+inline void Composed_transformation::set(math::Transformation const& t) {
+    prepare(t);
+
+    world_to_object = affine_inverted(object_to_world());
+}
+
+inline void Composed_transformation::set_position(float3_p p) {
+    position = p;
+
+    world_to_object = affine_inverted(object_to_world());
 }
 
 inline float Composed_transformation::scale_x() const {
@@ -45,8 +53,8 @@ inline float3 Composed_transformation::scale() const {
 }
 
 inline float4x4 Composed_transformation::object_to_world() const {
-    float3 const s(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
-    return compose(rotation, s, position);
+    float3 const scale(rotation.r[0][3], rotation.r[1][3], rotation.r[2][3]);
+    return compose(rotation, scale, position);
 }
 
 inline float3 Composed_transformation::world_to_object_point(float3_p p) const {

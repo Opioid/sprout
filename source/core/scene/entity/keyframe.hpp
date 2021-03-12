@@ -15,6 +15,8 @@ struct Morphing {
 };
 
 struct alignas(16) Keyframe {
+    void set(Keyframe const& other, float3_p camera_pos);
+
     void interpolate(Keyframe& __restrict result, Keyframe const& __restrict other, float t) const;
 
     using Transformation = Composed_transformation;

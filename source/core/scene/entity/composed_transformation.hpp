@@ -12,7 +12,11 @@ struct Transformation;
 namespace scene::entity {
 
 struct alignas(64) Composed_transformation {
+    void prepare(math::Transformation const& t);
+
     void set(math::Transformation const& t);
+
+    void set_position(float3_p p);
 
     float4x4 object_to_world() const;
 
