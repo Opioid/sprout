@@ -303,8 +303,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
                 float const sample_t = delta + t;
 
                 float const avg_att       = average(attenuation);
-                float const dinstance_pdf = avg_att / (exp((sample_t - ray.min_t()) * avg_att) -
-                                                       exp((sample_t - d) * avg_att));
+                float const dinstance_pdf = avg_att / (math::exp((sample_t - ray.min_t()) * avg_att) -
+                                                       math::exp((sample_t - d) * avg_att));
 
                 float3 const p = ray.point(sample_t);
 
@@ -477,7 +477,7 @@ float3 Tracking_single::one_bounce(float3_p tr, float3_p scattering_tr, Ray cons
 
     // PDF for distance sampling
     float const range        = d - ray.min_t();
-    float const distance_pdf = avg_att / (exp(t * avg_att) - exp((t - range) * avg_att));
+    float const distance_pdf = avg_att / (math::exp(t * avg_att) - math::exp((t - range) * avg_att));
 
     float const mis_weight = power_heuristic(distance_pdf * phase, ea_pdf * light_pdf);
 
