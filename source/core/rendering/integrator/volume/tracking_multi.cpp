@@ -14,6 +14,7 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
+#include "scene/ray_offset.inl"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape.hpp"
 #include "tracking.inl"

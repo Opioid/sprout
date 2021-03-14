@@ -4,7 +4,7 @@
 #include "base/math/vector3.inl"
 #include "material_sample.hpp"
 #include "material_sample_helper.hpp"
-#include "scene/scene_constants.hpp"
+#include "scene/ray_offset.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 

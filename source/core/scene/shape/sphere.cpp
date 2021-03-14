@@ -8,7 +8,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material.inl"
 #include "scene/scene.inl"
-#include "scene/scene_constants.hpp"
+#include "scene/ray_offset.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
 #include "shape_intersection.hpp"
@@ -21,7 +21,7 @@
 // in "Precision Improvements for Ray/Sphere Intersection"
 // and
 // https://github.com/NVIDIAGameWorks/GettingStartedWithRTXRayTracing/blob/master/DXR-Sphereflake/Data/Sphereflake/sphereIntersect.hlsli
-// Note that the ray direction is not necessarily normalized, which might make problems,
+// Note that the ray direction is not necessarily normalized, which might cause problems,
 // but so far I didn't encounter any.
 
 namespace scene::shape {

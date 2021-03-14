@@ -11,7 +11,7 @@
 #include "scene/entity/composed_transformation.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_tree_builder.hpp"
-#include "scene/scene_constants.hpp"
+#include "scene/ray_offset.inl"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"

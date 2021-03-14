@@ -11,6 +11,7 @@ target_sources(core
     PRIVATE
     "extension.hpp"
     "extension_provider.hpp"
+    "ray_offset.inl"
     "scene.cpp"
     "scene.hpp"
     "scene.inl"

@@ -10,7 +10,7 @@
 #include "scene/material/volumetric/volumetric_octree.hpp"
 #include "scene/prop/interface_stack.inl"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/scene_constants.hpp"
+#include "scene/ray_offset.inl"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape.hpp"
 

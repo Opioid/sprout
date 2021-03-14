@@ -13,7 +13,7 @@ struct Vector2 {
 
     Vector2();
 
-    explicit constexpr Vector2(T s);
+    explicit constexpr Vector2(T s) : v{s, s} {}
 
     constexpr Vector2(T x, T y) : v{x, y} {}
 

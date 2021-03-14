@@ -1,6 +1,7 @@
 #ifndef SU_BASE_MATH_SINCOS_HPP
 #define SU_BASE_MATH_SINCOS_HPP
 
+#include "vector3.inl"
 #include "simd/simd.inl"
 
 namespace simd {

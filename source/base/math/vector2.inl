@@ -12,9 +12,6 @@ template <typename T>
 Vector2<T>::Vector2() = default;
 
 template <typename T>
-constexpr Vector2<T>::Vector2(T s) : v{s, s} {}
-
-template <typename T>
 constexpr Vector2<T>::Vector2(T const* a) : v{a[0], a[1]} {}
 
 template <typename T>
