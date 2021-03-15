@@ -47,12 +47,10 @@ inline float Layer::abs_n_dot(float3_p v) const {
 }
 
 inline float Layer::clamp_n_dot(float3_p v) const {
-    // return std::max(dot(n, v), Dot_min);
     return clamp_dot(n_, v);
 }
 
 inline float Layer::clamp_abs_n_dot(float3_p v) const {
-    // return std::max(dot(n, v), Dot_min);
     return clamp_abs_dot(n_, v);
 }
 
@@ -98,7 +96,10 @@ inline float3 Sample::offset_p(float3_p p, bool subsurface, bool translucent) co
     }
 
     if (translucent) {
-        return float3(p[0], p[1], p[2], Float_scale);
+        float const t = max_component(abs(p));
+        float const d = offset_f(t) - t;
+
+        return float3(p[0], p[1], p[2], d);
     }
 
     return offset_ray(p, geo_n_);
