@@ -298,7 +298,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation 
     float3 const ws = trafo.object_to_world_point(ls);
     float3       wn = trafo.rotation.r[2];
 
-    if (two_sided && (dot(wn, ws - p) > 0.f)) {
+    if (two_sided && dot(wn, ws - p) > 0.f) {
         wn *= -1.f;
     }
 

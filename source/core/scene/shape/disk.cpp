@@ -243,7 +243,7 @@ bool Disk::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation 
     float3 const ws = trafo.position + trafo.scale_x() * transform_vector(trafo.rotation, ls);
     float3       wn = trafo.rotation.r[2];
 
-    if (two_sided && (dot(wn, ws - p) > 0.f)) {
+    if (two_sided && dot(wn, ws - p) > 0.f) {
         wn *= -1.f;
     }
 

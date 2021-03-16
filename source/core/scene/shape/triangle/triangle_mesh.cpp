@@ -402,7 +402,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     float3 const sn = tree_.triangle_normal(s.offset);
     float3       wn = transform_vector(trafo.rotation, sn);
 
-    if (two_sided && (dot(wn, v - p) > 0.f)) {
+    if (two_sided && dot(wn, v - p) > 0.f) {
         wn *= -1.f;
     }
 
