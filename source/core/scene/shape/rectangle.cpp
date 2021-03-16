@@ -285,9 +285,9 @@ bool Rectangle::sample(uint32_t /*part*/, Transformation const& trafo, float are
 float Rectangle::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
                      Transformation const& trafo, float area, bool two_sided,
                      bool /*total_sphere*/) const {
-    float3_p normal = trafo.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float c = -dot(normal, ray.direction);
+    float c = -dot(n, ray.direction);
 
     if (two_sided) {
         c = std::abs(c);
