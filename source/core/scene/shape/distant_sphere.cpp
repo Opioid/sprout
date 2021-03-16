@@ -39,29 +39,29 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack
     float const radius = trafo.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
-    if (det > 0.f) {
-        float constexpr hit_t = Almost_ray_max_t;
-
-        ray.max_t() = hit_t;
-
-        isec.p     = ray.point(hit_t);
-        isec.geo_n = n;
-        isec.t     = trafo.rotation.r[0];
-        isec.b     = trafo.rotation.r[1];
-        isec.n     = n;
-
-        float3 const k  = ray.direction - n;
-        float3 const sk = k / radius;
-
-        isec.uv[0] = (dot(isec.t, sk) + 1.f) * 0.5f;
-        isec.uv[1] = (dot(isec.b, sk) + 1.f) * 0.5f;
-
-        isec.part = 0;
-
-        return true;
+    if (det <= 0.f) {
+        return false;
     }
 
-    return false;
+    float constexpr hit_t = Almost_ray_max_t;
+
+    ray.max_t() = hit_t;
+
+    isec.p     = ray.point(hit_t);
+    isec.geo_n = n;
+    isec.t     = trafo.rotation.r[0];
+    isec.b     = trafo.rotation.r[1];
+    isec.n     = n;
+
+    float3 const k  = ray.direction - n;
+    float3 const sk = k / radius;
+
+    isec.uv[0] = (dot(isec.t, sk) + 1.f) * 0.5f;
+    isec.uv[1] = (dot(isec.b, sk) + 1.f) * 0.5f;
+
+    isec.part = 0;
+
+    return true;
 }
 
 bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
@@ -77,26 +77,26 @@ bool Distant_sphere::intersect_nsf(Ray& ray, Transformation const& trafo, Node_s
     float const radius = trafo.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
-    if (det > 0.f) {
-        float constexpr hit_t = Almost_ray_max_t;
-
-        ray.max_t() = hit_t;
-
-        isec.p     = ray.point(hit_t);
-        isec.geo_n = n;
-
-        float3 const k  = ray.direction - n;
-        float3 const sk = k / radius;
-
-        isec.uv[0] = (dot(isec.t, sk) + 1.f) * 0.5f;
-        isec.uv[1] = (dot(isec.b, sk) + 1.f) * 0.5f;
-
-        isec.part = 0;
-
-        return true;
+    if (det <= 0.f) {
+        return false;
     }
 
-    return false;
+    float constexpr hit_t = Almost_ray_max_t;
+
+    ray.max_t() = hit_t;
+
+    isec.p     = ray.point(hit_t);
+    isec.geo_n = n;
+
+    float3 const k  = ray.direction - n;
+    float3 const sk = k / radius;
+
+    isec.uv[0] = (dot(isec.t, sk) + 1.f) * 0.5f;
+    isec.uv[1] = (dot(isec.b, sk) + 1.f) * 0.5f;
+
+    isec.part = 0;
+
+    return true;
 }
 
 bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
@@ -112,16 +112,16 @@ bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack
     float const radius = trafo.scale_x();
     float const det    = (b * b) - dot(n, n) + (radius * radius);
 
-    if (det > 0.f) {
-        ray.max_t() = Almost_ray_max_t;
-
-        normals.geo_n = n;
-        normals.n     = n;
-
-        return true;
+    if (det <= 0.f) {
+        return false;
     }
 
-    return false;
+    ray.max_t() = Almost_ray_max_t;
+
+    normals.geo_n = n;
+    normals.n     = n;
+
+    return true;
 }
 
 bool Distant_sphere::intersect_p(Ray const& ray, Transformation const& trafo,

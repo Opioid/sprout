@@ -32,75 +32,74 @@ AABB Infinite_sphere::transformed_aabb(float4x4 const& /*m*/) const {
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                                 Intersection& isec) const {
-    if (ray.max_t() >= Ray_max_t) {
-        // This is nonsense
-        isec.t = trafo.rotation.r[0];
-        isec.b = trafo.rotation.r[1];
-
-        float3 xyz = transform_vector_transposed(trafo.rotation, ray.direction);
-        xyz        = normalize(xyz);
-
-        isec.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
-        isec.uv[1] = std::acos(xyz[1]) * Pi_inv;
-
-        isec.p = ray.point(Ray_max_t);
-
-        float3 const n = -ray.direction;
-
-        isec.n     = n;
-        isec.geo_n = n;
-        isec.part  = 0;
-
-        ray.max_t() = Ray_max_t;
-
-        SOFT_ASSERT(testing::check(isec, trafo, ray));
-
-        return true;
+    if (ray.max_t() < Ray_max_t) {
+        return false;
     }
 
-    return false;
+    // This is nonsense
+    isec.t = trafo.rotation.r[0];
+    isec.b = trafo.rotation.r[1];
+
+    float3 xyz = transform_vector_transposed(trafo.rotation, ray.direction);
+    xyz        = normalize(xyz);
+
+    isec.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+    isec.uv[1] = std::acos(xyz[1]) * Pi_inv;
+
+    isec.p = ray.point(Ray_max_t);
+
+    float3 const n = -ray.direction;
+
+    isec.n     = n;
+    isec.geo_n = n;
+    isec.part  = 0;
+
+    ray.max_t() = Ray_max_t;
+
+    SOFT_ASSERT(testing::check(isec, trafo, ray));
+
+    return true;
 }
 
 bool Infinite_sphere::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                                     Intersection& isec) const {
-    if (ray.max_t() >= Ray_max_t) {
-        float3 xyz = transform_vector_transposed(trafo.rotation, ray.direction);
-        xyz        = normalize(xyz);
-
-        isec.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
-        isec.uv[1] = std::acos(xyz[1]) * Pi_inv;
-
-        isec.p = ray.point(Ray_max_t);
-
-        float3 const n = -ray.direction;
-
-        isec.geo_n = n;
-        isec.part  = 0;
-
-        ray.max_t() = Ray_max_t;
-
-        SOFT_ASSERT(testing::check(isec, trafo, ray));
-
-        return true;
+    if (ray.max_t() < Ray_max_t) {
+        return false;
     }
+    float3 xyz = transform_vector_transposed(trafo.rotation, ray.direction);
+    xyz        = normalize(xyz);
 
-    return false;
+    isec.uv[0] = std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f;
+    isec.uv[1] = std::acos(xyz[1]) * Pi_inv;
+
+    isec.p = ray.point(Ray_max_t);
+
+    float3 const n = -ray.direction;
+
+    isec.geo_n = n;
+    isec.part  = 0;
+
+    ray.max_t() = Ray_max_t;
+
+    SOFT_ASSERT(testing::check(isec, trafo, ray));
+
+    return true;
 }
 
 bool Infinite_sphere::intersect(Ray& ray, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
                                 Normals& normals) const {
-    if (ray.max_t() >= Ray_max_t) {
-        ray.max_t() = Ray_max_t;
-
-        float3 const n = -ray.direction;
-
-        normals.geo_n = n;
-        normals.n     = n;
-
-        return true;
+    if (ray.max_t() < Ray_max_t) {
+        return false;
     }
 
-    return false;
+    float3 const n = -ray.direction;
+
+    normals.geo_n = n;
+    normals.n     = n;
+
+    ray.max_t() = Ray_max_t;
+
+    return true;
 }
 
 bool Infinite_sphere::intersect_p(Ray const& /*ray*/, Transformation const& /*trafo*/,
