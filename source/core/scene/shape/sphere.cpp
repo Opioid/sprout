@@ -7,8 +7,8 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material.inl"
-#include "scene/scene.inl"
 #include "scene/ray_offset.inl"
+#include "scene/scene.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
 #include "shape_intersection.hpp"
@@ -383,7 +383,7 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& trafo, float area, 
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, x, y, ls);
 
-    sample.p   = ws;
+    sample.p   = offset_ray(ws, ls);
     sample.dir = dir;
     sample.xy  = importance_uv;
     sample.pdf = 1.f / ((1.f * Pi) * area);

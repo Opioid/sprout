@@ -1,8 +1,8 @@
 #ifndef SU_CORE_SCENE_CONSTANTS_HPP
 #define SU_CORE_SCENE_CONSTANTS_HPP
 
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
 
 namespace scene {
 

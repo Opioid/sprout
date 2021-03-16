@@ -7,8 +7,8 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material.inl"
-#include "scene/scene.inl"
 #include "scene/ray_offset.inl"
+#include "scene/scene.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
 #include "shape_intersection.hpp"
@@ -241,19 +241,17 @@ bool Disk::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation 
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = trafo.position + trafo.scale_x() * transform_vector(trafo.rotation, ls);
+    float3       wn = trafo.rotation.r[2];
 
-    float3 const axis = ws - p;
-
-    float const sl = squared_length(axis);
-    float const t  = std::sqrt(sl);
-
-    float3 const wi = axis / t;
-
-    float c = -dot(trafo.rotation.r[2], wi);
-
-    if (two_sided) {
-        c = std::abs(c);
+    if (two_sided && (dot(wn, ws - p) > 0.f)) {
+        wn *= -1.f;
     }
+
+    float3 const axis = offset_ray(ws, wn) - p;
+    float const  sl   = squared_length(axis);
+    float const  t    = std::sqrt(sl);
+    float3 const wi   = axis / t;
+    float const  c    = -dot(wn, wi);
 
     if (c < Dot_min) {
         return false;
@@ -261,7 +259,7 @@ bool Disk::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation 
 
     float const pdf = sl / (c * area);
 
-    sample = Sample_to(wi, float3(0.f), pdf, offset_b(t));
+    sample = Sample_to(wi, float3(0.f), pdf, t);
 
     return true;
 }
@@ -274,10 +272,11 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& trafo, float area, bo
 
     float3 const ls = float3(xy, 0.f);
     float3 const ws = trafo.position + transform_vector(trafo.rotation, trafo.scale_x() * ls);
+    float3 const wn = trafo.rotation.r[2];
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, trafo.rotation);
 
-    sample.p   = ws;
+    sample.p   = offset_ray(ws, wn);
     sample.dir = dir;
     sample.xy  = importance_uv;
     sample.pdf = 1.f / (Pi * area);

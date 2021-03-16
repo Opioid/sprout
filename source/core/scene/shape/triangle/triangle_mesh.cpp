@@ -21,6 +21,8 @@
 #endif
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace scene::shape::triangle {
 
 Part::~Part() {
@@ -396,21 +398,19 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     float3 sv;
     float2 tc;
     tree_.sample(s.offset, r2, sv, tc);
-    float3 const v = trafo.object_to_world_point(sv);
-
+    float3 const v  = trafo.object_to_world_point(sv);
     float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = transform_vector(trafo.rotation, sn);
+    float3       wn = transform_vector(trafo.rotation, sn);
 
-    float3 const axis = v - p;
+    if (two_sided && (dot(wn, v - p) > 0.f)) {
+        wn *= -1.f;
+    }
+
+    float3 const axis = offset_ray(v, wn) - p;
     float const  sl   = squared_length(axis);
     float const  d    = std::sqrt(sl);
     float3 const dir  = axis / d;
-
-    float c = -dot(wn, dir);
-
-    if (two_sided) {
-        c = std::abs(c);
-    }
+    float const  c    = -dot(wn, dir);
 
     if (c < Dot_min) {
         return false;
@@ -418,7 +418,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 
     float const pdf = sl / (c * area);
 
-    sample = Sample_to(dir, float3(tc), pdf * s.pdf, offset_b(d));
+    sample = Sample_to(dir, float3(tc), pdf * s.pdf, d);
 
 #ifdef SU_DEBUG
     uint32_t const pm = primitive_mapping_[s.offset];
@@ -493,7 +493,7 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, x, y, wn);
 
-    sample.p   = ws;
+    sample.p   = offset_ray(ws, wn);
     sample.dir = dir;
     sample.uv  = tc;
     sample.xy  = importance_uv;

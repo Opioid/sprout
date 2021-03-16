@@ -7,8 +7,8 @@
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material.inl"
-#include "scene/scene.inl"
 #include "scene/ray_offset.inl"
+#include "scene/scene.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
 #include "shape_intersection.hpp"
@@ -264,22 +264,12 @@ bool Rectangle::sample(uint32_t part, float3_p p, float3_p /*n*/, Transformation
     return Rectangle::sample(part, p, r2, trafo, area, two_sided, sample);
 }
 
-bool Rectangle::sample(uint32_t /*part*/, Transformation const& trafo, float area,
-                       bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                       float2 importance_uv, AABB const& /*bounds*/, Sample_from& sample) const {
+bool Rectangle::sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
+                       Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
+                       AABB const& bounds, Sample_from& sample) const {
     float2 const r0 = sampler.sample_2D(rng, sampler_d);
 
-    float3 const ls(-2.f * r0 + 1.f, 0.f);
-    float3 const ws = trafo.object_to_world_point(ls);
-
-    float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, trafo.rotation);
-
-    sample.p   = ws;
-    sample.dir = dir;
-    sample.xy  = importance_uv;
-    sample.pdf = 1.f / (Pi * area);
-
-    return true;
+    return Rectangle::sample(part, r0, trafo, area, two_sided, importance_uv, bounds, sample);
 }
 
 float Rectangle::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
@@ -306,26 +296,23 @@ bool Rectangle::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation 
                        float area, bool two_sided, Sample_to& sample) const {
     float3 const ls(-2.f * uv + 1.f, 0.f);
     float3 const ws = trafo.object_to_world_point(ls);
+    float3       wn = trafo.rotation.r[2];
 
-    float3 const axis = ws - p;
+    if (two_sided && (dot(wn, ws - p) > 0.f)) {
+        wn *= -1.f;
+    }
+
+    float3 const axis = offset_ray(ws, wn) - p;
     float const  sl   = squared_length(axis);
     float const  t    = std::sqrt(sl);
-
-    float3 const dir = axis / t;
-
-    float3 const wn = trafo.rotation.r[2];
-
-    float c = -dot(wn, dir);
-
-    if (two_sided) {
-        c = std::abs(c);
-    }
+    float3 const dir  = axis / t;
+    float const  c    = -dot(wn, dir);
 
     if (c < Dot_min) {
         return false;
     }
 
-    sample = Sample_to(dir, float3(uv), sl / (c * area), offset_b(t));
+    sample = Sample_to(dir, float3(uv), sl / (c * area), t);
 
     return true;
 }
@@ -341,10 +328,11 @@ bool Rectangle::sample(uint32_t /*part*/, float2 uv, Transformation const& trafo
                        Sample_from& sample) const {
     float3 const ls(-2.f * uv + 1.f, 0.f);
     float3 const ws = trafo.object_to_world_point(ls);
+    float3 const wn = trafo.rotation.r[2];
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, trafo.rotation);
 
-    sample.p   = ws;
+    sample.p   = offset_ray(ws, wn);
     sample.dir = dir;
     sample.uv  = uv;
     sample.xy  = importance_uv;

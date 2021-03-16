@@ -284,7 +284,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
         }
     }
 
-    ray.origin = scene::offset_ray(light_sample.p, light_sample.dir);
+    ray.origin = light_sample.p;
     ray.set_direction(light_sample.dir);
     ray.min_t()    = 0.f;
     ray.max_t()    = scene::Ray_max_t;

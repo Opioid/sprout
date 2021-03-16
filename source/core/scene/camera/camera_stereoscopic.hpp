@@ -1,8 +1,8 @@
 #ifndef SU_CORE_SCENE_CAMERA_STEREOSCOPIC_HPP
 #define SU_CORE_SCENE_CAMERA_STEREOSCOPIC_HPP
 
-#include "camera.hpp"
 #include "base/math/vector3.hpp"
+#include "camera.hpp"
 
 namespace scene::camera {
 

@@ -41,4 +41,3 @@ static inline float offset_b(float t) {
 }  // namespace scene
 
 #endif
-
