@@ -71,7 +71,7 @@ class Material {
 
     void set_ior(float ior);
 
-    void set_volumetric(float3_p absorption_color, float3_p scattering_color, float distance,
+    void set_volumetric(float3_p attenuation_color, float3_p subsurface_color, float distance,
                         float anisotropy);
 
     virtual void commit(Threads& threads, Scene const& scene);

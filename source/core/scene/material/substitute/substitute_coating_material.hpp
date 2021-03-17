@@ -45,7 +45,7 @@ class Material_clearcoat : public Material_coating<Clearcoat_data> {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const override;
 
-    void set_coating_attenuation(float3_p absorption_color, float distance);
+    void set_coating_attenuation(float3_p attenuation_color, float distance);
 
     void set_coating_ior(float ior);
 

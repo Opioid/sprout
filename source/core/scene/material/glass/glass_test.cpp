@@ -32,11 +32,11 @@ void test() {
     sample.layer_.set_tangent_frame(t, b, n);
 
     float3 refraction_color(1.f, 1.f, 1.f);
-    float3 absorption_color(1.f, 1.f, 1.f);
+    float3 attenuation_color(1.f, 1.f, 1.f);
     float  attenuation_distance = 1.f;
     float  ior                  = 1.5f;
 
-    sample.layer_.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f);
+    sample.layer_.set(refraction_color, attenuation_color, attenuation_distance, ior, 1.f);
 
     result.wi         = float3(0.f);
     result.reflection = float3(0.f);
@@ -93,7 +93,7 @@ void rough_refraction() {
     sample_rough.layer_.set_tangent_frame(t, b, n);
 
     float3 refraction_color(1.f, 1.f, 1.f);
-    //  float3 absorption_color(1.f, 1.f, 1.f);
+    //  float3 attenuation_color(1.f, 1.f, 1.f);
 
     //    float attenuation_distance = 1.f;
     float ior       = 1.02f;

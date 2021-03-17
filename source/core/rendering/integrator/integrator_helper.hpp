@@ -2,9 +2,6 @@
 #define SU_CORE_RENDERING_INTEGRATOR_HELPER_HPP
 
 #include "base/math/vector4.inl"
-#include "scene/material/material_sample_helper.hpp"
-
-#include <cmath>
 
 namespace rendering {
 
