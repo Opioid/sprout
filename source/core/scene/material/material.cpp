@@ -45,11 +45,7 @@ void Material::set_volumetric(float3_p attenuation_color, float3_p subsurface_co
                               float anisotropy) {
     anisotropy = std::clamp(anisotropy, -0.999f, 0.999f);
 
-    if (any_greater_zero(subsurface_color)) {
-        cc_ = attenuation(attenuation_color, subsurface_color, distance, anisotropy);
-    } else {
-        cc_ = {attenuation_coefficient(attenuation_color, distance), float3(0.f)};
-    }
+    cc_ = attenuation(attenuation_color, subsurface_color, distance, anisotropy);
 
     attenuation_distance_  = distance;
     volumetric_anisotropy_ = anisotropy;
