@@ -155,11 +155,11 @@ bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*n
 
 bool Rectangle::intersect_p(Ray const& ray, Transformation const& trafo,
                             Node_stack& /*nodes*/) const {
-    float3_p normal = trafo.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
+    float const d     = dot(n, trafo.position);
+    float const denom = -dot(n, ray.direction);
+    float const numer = dot(n, ray.origin) - d;
     float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
@@ -185,11 +185,11 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& trafo,
 
 float Rectangle::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
                             Filter filter, Worker& worker) const {
-    float3_p normal = trafo.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
+    float const d     = dot(n, trafo.position);
+    float const denom = -dot(n, ray.direction);
+    float const numer = dot(n, ray.origin) - d;
     float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
@@ -219,11 +219,11 @@ float Rectangle::visibility(Ray const& ray, Transformation const& trafo, uint32_
 
 bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                                 Filter filter, Worker& worker, float3& ta) const {
-    float3_p normal = trafo.rotation.r[2];
+    float3 const n = trafo.rotation.r[2];
 
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
+    float const d     = dot(n, trafo.position);
+    float const denom = -dot(n, ray.direction);
+    float const numer = dot(n, ray.origin) - d;
     float const hit_t = numer / denom;
 
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
@@ -247,7 +247,7 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
         }
 
         float2 const uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
+        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv,
                                                                       filter, worker);
         return true;
     }
