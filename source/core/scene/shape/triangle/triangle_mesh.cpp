@@ -21,8 +21,6 @@
 #endif
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace scene::shape::triangle {
 
 Part::~Part() {

@@ -154,7 +154,7 @@ inline float Sample::clamp_geo_n_dot(float3_p v) const {
 }
 
 inline bool Sample::same_hemisphere(float3_p v) const {
-    return dot(geo_n_, v) >= 0.f;
+    return dot(geo_n_, v) > 0.f;
 }
 
 inline void Sample::set_common(Renderstate const& rs, float3_p wo, float3_p albedo,

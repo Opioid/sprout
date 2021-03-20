@@ -76,7 +76,7 @@ inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& 
 
     pure_emissive = material->is_pure_emissive();
 
-    if (!material->is_two_sided() && dot(geo.geo_n, wo) < 0.f) {
+    if (!material->is_two_sided() && !same_hemisphere(wo)) {
         return false;
     }
 
@@ -88,7 +88,7 @@ inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& 
 }
 
 inline bool Intersection::same_hemisphere(float3_p v) const {
-    return dot(geo.geo_n, v) >= 0.f;
+    return dot(geo.geo_n, v) > 0.f;
 }
 
 }  // namespace scene::prop
