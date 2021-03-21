@@ -247,8 +247,8 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
         }
 
         float2 const uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv,
-                                                                      filter, worker);
+        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv, filter,
+                                                                      worker);
         return true;
     }
 

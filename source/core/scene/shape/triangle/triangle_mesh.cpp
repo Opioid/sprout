@@ -410,7 +410,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     float3 const dir  = axis / d;
     float const  c    = -dot(wn, dir);
 
-    if (c < Dot_min) {
+    if (c < Dot_min || sl < Dot_min) {
         return false;
     }
 
@@ -434,42 +434,6 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 
     return true;
 }
-
-/*
-bool Mesh::sample(uint32_t part, float3_p p, Transformation const& trafo, float area,
-                  bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                  Sample_to& sample) const {
-    float const  r  = sampler.sample_1D(rng, sampler_d);
-    float2 const r2 = sampler.sample_2D(rng, sampler_d);
-    auto const   s  = parts_[part].sample(r);
-
-    float3 sv;
-    float2 tc;
-    tree_.sample(s.offset, r2, sv, tc);
-    float3 const v = trafo.object_to_world_point(sv);
-
-    float3 const sn = tree_.triangle_normal(s.offset);
-    float3 const wn = transform_vector(trafo.rotation, sn);
-
-    float3 const axis = v - p;
-    float const  sl   = squared_length(axis);
-    float const  d    = std::sqrt(sl);
-    float3 const dir  = axis / d;
-
-    float c = -dot(wn, dir);
-
-    if (two_sided) {
-        c = std::abs(c);
-    }
-
-    if (c < Dot_min) {
-        return false;
-    }
-
-    sample = Sample_to(dir, float3(tc), sl / (c * area), offset_b(d));
-
-    return true;
-}*/
 
 bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /*two_sided*/,
                   Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
@@ -502,13 +466,24 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
 
 float Mesh::pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
                 Transformation const& trafo, float area, bool two_sided, bool total_sphere) const {
-    float c = -dot(isec.geo_n, ray.direction);
+    float3 wn = isec.geo_n;
 
-    if (two_sided) {
-        c = std::abs(c);
+    float c = -dot(wn, ray.direction);
+
+    if (two_sided && c < 0.f) {
+        c = -c;
+        wn *= -1.f;
     }
 
-    float const sl  = ray.max_t() * ray.max_t();
+    float3 const axis = offset_ray(isec.p, wn) - ray.origin;
+
+    float const sl = squared_length(axis);
+    //   float const sl  = ray.max_t() * ray.max_t();
+
+    if (c < Dot_min || sl < Dot_min) {
+        return 0.f;
+    }
+
     float const pdf = sl / (c * area);
 
     float3 const op = trafo.world_to_object_point(ray.origin);
