@@ -250,8 +250,15 @@ float Distant_sphere::uv_weight(float2 /*uv*/) const {
 }
 
 float Distant_sphere::area(uint32_t /*part*/, float3_p scale) const {
+    // This calculates the solid angle, not the area!
+    // I think it is what we actually need for the PDF, but results are extremely close
+
     float const radius = scale[0];
-    return Pi * (radius * radius);
+
+    //    float const angular_radius = std::atan(radius);
+    //    return (2.f * Pi) * (1.f - std::cos(angular_radius));
+
+    return (2.f * Pi) * (1.f - (1.f / std::sqrt(radius * radius + 1.f)));
 }
 
 float Distant_sphere::volume(uint32_t /*part*/, float3_p /*scale*/) const {
