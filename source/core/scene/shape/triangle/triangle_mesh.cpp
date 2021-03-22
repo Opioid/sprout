@@ -410,7 +410,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     float3 const dir  = axis / d;
     float const  c    = -dot(wn, dir);
 
-    if (c < Dot_min || sl < Dot_min) {
+    if (c < Dot_min) {
         return false;
     }
 
@@ -466,24 +466,13 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
 
 float Mesh::pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
                 Transformation const& trafo, float area, bool two_sided, bool total_sphere) const {
-    float3 wn = isec.geo_n;
+    float c = -dot(isec.geo_n, ray.direction);
 
-    float c = -dot(wn, ray.direction);
-
-    if (two_sided && c < 0.f) {
-        c = -c;
-        wn *= -1.f;
+    if (two_sided) {
+        c = std::abs(c);
     }
 
-    float3 const axis = offset_ray(isec.p, wn) - ray.origin;
-
-    float const sl = squared_length(axis);
-    //   float const sl  = ray.max_t() * ray.max_t();
-
-    if (c < Dot_min || sl < Dot_min) {
-        return 0.f;
-    }
-
+    float const sl  = ray.max_t() * ray.max_t();
     float const pdf = sl / (c * area);
 
     float3 const op = trafo.world_to_object_point(ray.origin);
