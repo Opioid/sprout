@@ -239,19 +239,20 @@ bool Disk::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation 
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
     float2 const xy = sample_disk_concentric(r2);
 
-    float3 const ls = float3(xy, 0.f);
-    float3 const ws = trafo.position + trafo.scale_x() * transform_vector(trafo.rotation, ls);
-    float3       wn = trafo.rotation.r[2];
+    float3 const ls   = float3(xy, 0.f);
+    float3 const ws   = trafo.position + trafo.scale_x() * transform_vector(trafo.rotation, ls);
+    float3 const axis = ws - p;
 
-    if (two_sided && dot(wn, ws - p) > 0.f) {
-        wn *= -1.f;
+    float const sl = squared_length(axis);
+    float const t  = std::sqrt(sl);
+
+    float3 const wi = axis / t;
+
+    float c = -dot(trafo.rotation.r[2], wi);
+
+    if (two_sided) {
+        c = std::abs(c);
     }
-
-    float3 const axis = offset_ray(ws, wn) - p;
-    float const  sl   = squared_length(axis);
-    float const  t    = std::sqrt(sl);
-    float3 const wi   = axis / t;
-    float const  c    = -dot(wn, wi);
 
     if (c < Dot_min) {
         return false;
@@ -259,7 +260,7 @@ bool Disk::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation 
 
     float const pdf = sl / (c * area);
 
-    sample = Sample_to(wi, float3(0.f), pdf, t);
+    sample = Sample_to(wi, float3(0.f), pdf, offset_b(t));
 
     return true;
 }

@@ -41,8 +41,7 @@ uint32_t Mapper::bake(Map& map, int32_t begin, int32_t end, uint32_t frame, uint
     AABB const bounds = world_bounds.intersection(frustum.calculate_aabb());
 
     bool const infinite_world = worker.scene().is_infinite();
-
-    bool const caustics_only = map.caustics_only();
+    bool const caustics_only  = map.caustics_only();
 
     uint32_t num_paths = 0;
 

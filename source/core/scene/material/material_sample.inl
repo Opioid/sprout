@@ -96,7 +96,7 @@ inline float3 Sample::offset_p(float3_p p, bool subsurface, bool translucent) co
     }
 
     if (translucent) {
-        float const t = max_component(abs(p));
+        float const t = max_component(abs(p * geo_n_));
         float const d = offset_f(t) - t;
 
         return float3(p[0], p[1], p[2], d);

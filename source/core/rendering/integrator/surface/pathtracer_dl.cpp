@@ -217,10 +217,8 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
     shadow_ray.wavelength = ray.wavelength;
 
     auto& sampler = light_sampler(ray.depth);
-
-    auto& rng = worker.rng();
-
-    auto& lights = worker.lights();
+    auto& rng     = worker.rng();
+    auto& lights  = worker.lights();
 
     float const select = sampler.sample_1D(rng, lights.capacity());
 

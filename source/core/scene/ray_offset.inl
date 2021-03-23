@@ -38,6 +38,11 @@ static inline float offset_b(float t) {
                       : std::bit_cast<float>(std::bit_cast<int32_t>(t) - int32_t(Int_scale));
 }
 
+static inline float offset_b(float3_p p, float3_p n, float t) {
+    float const s = max_component(abs(p * n));
+    return t - (offset_f(s) - s);
+}
+
 }  // namespace scene
 
 #endif
