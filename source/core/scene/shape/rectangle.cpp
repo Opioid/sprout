@@ -295,26 +295,24 @@ float Rectangle::pdf_volume(Ray const& /*ray*/, Intersection const& /*isec*/,
 bool Rectangle::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation const& trafo,
                        float area, bool two_sided, Sample_to& sample) const {
     float3 const ls(-2.f * uv + 1.f, 0.f);
-    float3 const ws   = trafo.object_to_world_point(ls);
-    float3 const axis = ws - p;
+    float3 const ws = trafo.object_to_world_point(ls);
+    float3       wn = trafo.rotation.r[2];
 
-    float const sl = squared_length(axis);
-    float const t  = std::sqrt(sl);
-
-    float3 const dir = axis / t;
-    float3 const wn  = trafo.rotation.r[2];
-
-    float c = -dot(wn, dir);
-
-    if (two_sided) {
-        c = std::abs(c);
+    if (two_sided && dot(wn, ws - p) > 0.f) {
+        wn *= -1.f;
     }
+
+    float3 const axis = offset_ray(ws, wn) - p;
+    float const  sl   = squared_length(axis);
+    float const  t    = std::sqrt(sl);
+    float3 const dir  = axis / t;
+    float const  c    = -dot(wn, dir);
 
     if (c < Dot_min) {
         return false;
     }
 
-    sample = Sample_to(dir, float3(uv), sl / (c * area), offset_b(t));
+    sample = Sample_to(dir, float3(uv), sl / (c * area), t);
 
     return true;
 }
