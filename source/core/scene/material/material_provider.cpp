@@ -52,7 +52,7 @@ struct Texture_description {
 
     std::string usage = "Color";
 
-    image::Swizzle swizzle = image::Swizzle::XYZW;
+    image::Swizzle swizzle;
 
     float scale = 1.f;
 
@@ -1056,6 +1056,8 @@ void read_sampler_settings(json::Value const& value, Sampler_settings& settings)
 }
 
 Texture_description read_texture_description(json::Value const& value, bool no_tex_dwim) {
+    using image::Swizzle;
+
     Texture_description desc;
 
     for (auto& n : value.GetObject()) {
@@ -1067,8 +1069,27 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
             desc.usage = json::read_string(n.value);
         } else if ("swizzle" == n.name) {
             std::string const swizzle = json::read_string(n.value);
-            if ("YXZW" == swizzle) {
-                desc.swizzle = image::Swizzle::YXZW;
+
+            if ("X" == swizzle) {
+                desc.swizzle = Swizzle::X;
+            } else if ("Y" == swizzle) {
+                desc.swizzle = Swizzle::Y;
+            } else if ("Z" == swizzle) {
+                desc.swizzle = Swizzle::Z;
+            } else if ("W" == swizzle) {
+                desc.swizzle = Swizzle::W;
+            } else if ("XY" == swizzle) {
+                desc.swizzle = Swizzle::XY;
+            } else if ("YX" == swizzle) {
+                desc.swizzle = Swizzle::YX;
+            } else if ("XYZ" == swizzle) {
+                desc.swizzle = Swizzle::XYZ;
+            } else if ("YXZ" == swizzle) {
+                desc.swizzle = Swizzle::YXZ;
+            } else if ("XYZW" == swizzle) {
+                desc.swizzle = Swizzle::XYZW;
+            } else if ("YXZW" == swizzle) {
+                desc.swizzle = Swizzle::YXZW;
             }
         } else if ("scale" == n.name) {
             desc.scale = json::read_float(n.value);
