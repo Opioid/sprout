@@ -85,8 +85,7 @@ using Chunk = Reader::Chunk;
 
 using Filter = Reader::Filter;
 
-static Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
-                           bool invert);
+static Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, bool invert);
 
 static bool read_chunk(std::istream& stream, Chunk& chunk);
 
@@ -113,8 +112,7 @@ static uint32_t constexpr Signature_size = 8;
 static uint8_t constexpr Signature[Signature_size] = {0x89, 0x50, 0x4E, 0x47,
                                                       0x0D, 0x0A, 0x1A, 0x0A};
 
-Image* Reader::read(std::istream& stream, Channels channels, int32_t num_elements, bool swap_xy,
-                    bool invert) {
+Image* Reader::read(std::istream& stream, Swizzle swizzle, int32_t num_elements, bool invert) {
     uint8_t signature[Signature_size];
 
     stream.read(reinterpret_cast<char*>(signature), Signature_size);
@@ -127,38 +125,50 @@ Image* Reader::read(std::istream& stream, Channels channels, int32_t num_element
     for (; handle_chunk(stream, chunk_, info_);) {
     }
 
-    return create_image(info_, channels, num_elements, swap_xy, invert);
+    return create_image(info_, swizzle, num_elements, invert);
 }
 
-Image* Reader::create_from_buffer(Channels channels, int32_t num_elements, bool swap_xy,
-                                  bool invert) const {
-    return create_image(info_, channels, num_elements, swap_xy, invert);
+Image* Reader::create_from_buffer(Swizzle swizzle, int32_t num_elements, bool invert) const {
+    return create_image(info_, swizzle, num_elements, invert);
 }
 
-Image* create_image(Info const& info, Channels channels, int32_t num_elements, bool swap_xy,
-                    bool invert) {
-    if (0 == info.num_channels || Channels::None == channels) {
+Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, bool invert) {
+    if (0 == info.num_channels || Swizzle::Undefined == swizzle) {
         return nullptr;
     }
 
     int32_t num_channels;
 
-    switch (channels) {
-        case Channels::X:
-        case Channels::Y:
-        case Channels::Z:
-        case Channels::W:
+    bool swap_xy = false;
+
+    switch (swizzle) {
+        case Swizzle::X:
+        case Swizzle::Y:
+        case Swizzle::Z:
+        case Swizzle::W:
         default:
             num_channels = 1;
             break;
-        case Channels::XY:
+        case Swizzle::XY:
             num_channels = 2;
             break;
-        case Channels::XYZ:
+        case Swizzle::YX:
+            num_channels = 2;
+            swap_xy      = true;
+            break;
+        case Swizzle::XYZ:
             num_channels = 3;
             break;
-        case Channels::XYZW:
+        case Swizzle::YXZ:
+            num_channels = 3;
+            swap_xy      = true;
+            break;
+        case Swizzle::XYZW:
             num_channels = 4;
+            break;
+        case Swizzle::YXZW:
+            num_channels = 4;
+            swap_xy      = true;
     }
 
     bool const byte_compatible = num_channels == info.num_channels && !swap_xy && !invert;
@@ -183,18 +193,18 @@ Image* create_image(Info const& info, Channels channels, int32_t num_elements, b
         } else {
             int32_t c;
 
-            switch (channels) {
-                case Channels::X:
+            switch (swizzle) {
+                case Swizzle::X:
                 default:
                     c = 0;
                     break;
-                case Channels::Y:
+                case Swizzle::Y:
                     c = 1;
                     break;
-                case Channels::Z:
+                case Swizzle::Z:
                     c = 2;
                     break;
-                case Channels::W:
+                case Swizzle::W:
                     c = 3;
                     break;
             }

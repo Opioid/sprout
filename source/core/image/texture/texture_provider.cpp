@@ -34,7 +34,8 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
         return nullptr;
     }
 
-    Channels channels = Channels::XYZ;
+    Swizzle swizzle = Swizzle::Undefined;
+    options.query("swizzle", swizzle);
 
     Usage usage = Usage::Undefined;
     options.query("usage", usage);
@@ -43,33 +44,45 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
     bool color  = false;
 
     if (Usage::Color == usage) {
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::XYZ;
+        }
         color = true;
     } else if (Usage::Color_with_alpha == usage) {
-        channels = Channels::XYZW;
-        color    = true;
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::XYZW;
+        }
+        color = true;
     } else if (Usage::Mask == usage) {
-        channels = Channels::W;
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::W;
+        }
     } else if (Usage::Anisotropy == usage) {
-        channels = Channels::XY;
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::XY;
+        }
     } else if (Usage::Surface == usage) {
-        channels = Channels::XY;
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::XY;
+        }
     } else if (Usage::Roughness == usage) {
-        channels = Channels::X;
-    } else if (Usage::Roughness_in_alpha == usage) {
-        channels = Channels::W;
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::X;
+        }
     } else if (Usage::Gloss == usage) {
-        channels = Channels::X;
-        invert   = true;
-    } else if (Usage::Gloss_in_alpha == usage) {
-        channels = Channels::W;
-        invert   = true;
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::X;
+        }
+        invert = true;
     } else if (Usage::Normal == usage) {
-        channels = Channels::XYZ;
+        if (Swizzle::Undefined == swizzle) {
+            swizzle = Swizzle::XYZ;
+        }
     }
 
     memory::Variant_map image_options;
-    image_options.set("channels", channels);
     image_options.inherit_except(options, "usage");
+    image_options.set("swizzle", swizzle);
 
     if (invert) {
         image_options.set("invert", invert);

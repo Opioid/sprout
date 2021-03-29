@@ -52,24 +52,20 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
     }
 
     if (file::Type::PNG == type) {
-        Channels channels = Channels::None;
-        options.query("channels", channels);
+        Swizzle swizzle = Swizzle::Undefined;
+        options.query("swizzle", swizzle);
 
         int32_t num_elements = 1;
         options.query("num_elements", num_elements);
-
-        Swizzle swizzle = Swizzle::XYZW;
-        options.query("swizzle", swizzle);
-        bool const swap_xy = Swizzle::YXZW == swizzle;
 
         bool invert = false;
         options.query("invert", invert);
 
         if (previous_name == resolved_name) {
-            return png_reader_.create_from_buffer(channels, num_elements, swap_xy, invert);
+            return png_reader_.create_from_buffer(swizzle, num_elements, invert);
         }
 
-        return png_reader_.read(*stream, channels, num_elements, swap_xy, invert);
+        return png_reader_.read(*stream, swizzle, num_elements, invert);
     }
 
     if (file::Type::RGBE == type) {

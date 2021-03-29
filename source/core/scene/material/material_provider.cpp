@@ -737,13 +737,8 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
                     surface_map = create_texture(desc, Texture_usage::Surface, resources);
                 } else if ("Roughness" == desc.usage) {
                     surface_map = create_texture(desc, Texture_usage::Roughness, resources);
-                } else if ("Roughness_in_alpha" == desc.usage) {
-                    surface_map = create_texture(desc, Texture_usage::Roughness_in_alpha,
-                                                 resources);
                 } else if ("Gloss" == desc.usage) {
                     surface_map = create_texture(desc, Texture_usage::Gloss, resources);
-                } else if ("Gloss_in_alpha" == desc.usage) {
-                    surface_map = create_texture(desc, Texture_usage::Gloss_in_alpha, resources);
                 } else if ("Emission" == desc.usage) {
                     emission_map = create_texture(desc, Texture_usage::Color, resources);
                 } else if ("Mask" == desc.usage) {
