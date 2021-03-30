@@ -40,8 +40,7 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
     Usage usage = Usage::Undefined;
     options.query("usage", usage);
 
-    bool invert = false;
-    bool color  = false;
+    bool color = false;
 
     if (Usage::Color == usage) {
         if (Swizzle::Undefined == swizzle) {
@@ -69,24 +68,19 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
         if (Swizzle::Undefined == swizzle) {
             swizzle = Swizzle::X;
         }
-    } else if (Usage::Gloss == usage) {
-        if (Swizzle::Undefined == swizzle) {
-            swizzle = Swizzle::X;
-        }
-        invert = true;
     } else if (Usage::Normal == usage) {
         if (Swizzle::Undefined == swizzle) {
             swizzle = Swizzle::XYZ;
         }
     }
 
+    if (Swizzle::Undefined == swizzle) {
+        swizzle = Swizzle::XYZW;
+    }
+
     memory::Variant_map image_options;
     image_options.inherit_except(options, "usage");
     image_options.set("swizzle", swizzle);
-
-    if (invert) {
-        image_options.set("invert", invert);
-    }
 
     if (color) {
         image_options.set("color", color);

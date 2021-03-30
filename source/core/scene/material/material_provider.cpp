@@ -57,6 +57,8 @@ struct Texture_description {
     float scale = 1.f;
 
     int32_t num_elements = 1;
+
+    bool invert = false;
 };
 
 struct Coating_description {
@@ -737,8 +739,6 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
                     surface_map = create_texture(desc, Texture_usage::Surface, resources);
                 } else if ("Roughness" == desc.usage) {
                     surface_map = create_texture(desc, Texture_usage::Roughness, resources);
-                } else if ("Gloss" == desc.usage) {
-                    surface_map = create_texture(desc, Texture_usage::Gloss, resources);
                 } else if ("Emission" == desc.usage) {
                     emission_map = create_texture(desc, Texture_usage::Color, resources);
                 } else if ("Mask" == desc.usage) {
@@ -1095,6 +1095,8 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
             desc.scale = json::read_float(n.value);
         } else if ("num_elements" == n.name) {
             desc.num_elements = json::read_int(n.value);
+        } else if ("invert" == n.name) {
+            desc.invert = json::read_bool(n.value);
         }
     }
 
@@ -1114,8 +1116,12 @@ Texture_adapter create_texture(Texture_description const& desc, Texture_usage us
         options.set("num_elements", desc.num_elements);
     }
 
-    if (image::Swizzle::XYZW != desc.swizzle) {
+    if (image::Swizzle::Undefined != desc.swizzle) {
         options.set("swizzle", desc.swizzle);
+    }
+
+    if (desc.invert) {
+        options.set("invert", desc.invert);
     }
 
     return Texture_adapter(resources.load<Texture>(desc.filename, options).id, desc.scale);

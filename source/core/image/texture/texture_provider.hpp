@@ -23,7 +23,6 @@ class Provider final : public resource::Provider<Texture> {
         Anisotropy,
         Roughness,
         Surface,
-        Gloss,
         Mask
     };
 
