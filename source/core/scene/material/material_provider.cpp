@@ -409,15 +409,15 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
 
     std::string quantity;
 
+    Mapped_value<float3> emission(float3(10.f));
+
     float3 color(1.f);
-    float3 radiance(10.f);
 
     float value           = 1.f;
     float emission_factor = 1.f;
 
     uint64_t animation_duration = 0;
 
-    Texture_adapter emission_map;
     Texture_adapter mask;
 
     bool two_sided = false;
@@ -426,7 +426,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
         if ("mask" == n.name) {
             mask = read_texture(n.value, no_tex_dwim_, Texture_usage::Mask, resources);
         } else if ("emission" == n.name) {
-            radiance = read_color(n.value);
+            read_mapped_value(n.value, no_tex_dwim_, Texture_usage::Color, resources,  emission);
         } else if ("emittance" == n.name) {
             quantity = json::read_string(n.value, "quantity");
 
@@ -451,7 +451,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
                 }
 
                 if ("Emission" == desc.usage) {
-                    emission_map = create_texture(desc, Texture_usage::Color, resources);
+                    emission.texture = create_texture(desc, Texture_usage::Color, resources);
                 } else if ("Mask" == desc.usage) {
                     mask = create_texture(desc, Texture_usage::Mask, resources);
                 }
@@ -461,18 +461,18 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
         }
     }
 
-    if (emission_map.is_valid()) {
+    if (emission.texture.is_valid()) {
         if (animation_duration > 0) {
             auto material = new light::Emissionmap_animated(sampler_settings, two_sided);
             material->set_mask(mask);
-            material->set_emission_map(emission_map, animation_duration);
+            material->set_emission_map(emission.texture, animation_duration);
             material->set_emission_factor(emission_factor);
             return material;
         }
 
         auto material = new light::Emissionmap(sampler_settings, two_sided);
         material->set_mask(mask);
-        material->set_emission_map(emission_map);
+        material->set_emission_map(emission.texture);
         material->set_emission_factor(emission_factor);
         return material;
     }
@@ -491,7 +491,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
     } else if ("Radiance" == quantity) {
         material->emittance().set_radiance(value * color);
     } else {
-        material->emittance().set_radiance(radiance);
+        material->emittance().set_radiance(emission.value);
     }
 
     return material;
