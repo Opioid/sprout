@@ -11,10 +11,10 @@ class Variant_map {
     template <typename T>
     T query(std::string_view key, T def) const;
 
-    bool query(std::string_view key, bool def) const;
-    int32_t query(std::string_view key, int32_t def) const;
+    bool     query(std::string_view key, bool def) const;
+    int32_t  query(std::string_view key, int32_t def) const;
     uint32_t query(std::string_view key, uint32_t def) const;
-    float query(std::string_view key, float def) const;
+    float    query(std::string_view key, float def) const;
 
     template <typename T>
     void set(std::string const& key, T value);

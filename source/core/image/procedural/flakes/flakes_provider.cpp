@@ -73,7 +73,7 @@ Image* Provider::create_mask(Variants const& options) {
 }
 
 Provider::Properties::Properties(Variants const& options) : dimensions(1024, 1024) {
-    float const size = options.query("size", 0.006f);
+    float const size    = options.query("size", 0.006f);
     float const density = options.query("density", 0.5f);
 
     radius = 0.5f * size;
