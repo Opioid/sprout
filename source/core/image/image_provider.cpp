@@ -45,21 +45,17 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
     file::Type const type = file::query_type(*stream);
 
     if (file::Type::EXR == type) {
-        bool color = false;
-        options.query("color", color);
+        bool const color = options.query("color", false);
 
         return encoding::exr::Reader::read(*stream, color);
     }
 
     if (file::Type::PNG == type) {
-        Swizzle swizzle = Swizzle::Undefined;
-        options.query("swizzle", swizzle);
+        Swizzle const swizzle = options.query("swizzle", Swizzle::XYZW);
 
-        int32_t num_elements = 1;
-        options.query("num_elements", num_elements);
+        int32_t const num_elements = options.query("num_elements", 1);
 
-        bool invert = false;
-        options.query("invert", invert);
+        bool const invert = options.query("invert", false);
 
         if (previous_name == resolved_name) {
             return png_reader_.create_from_buffer(swizzle, num_elements, invert);

@@ -34,11 +34,9 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
         return nullptr;
     }
 
-    Swizzle swizzle = Swizzle::Undefined;
-    options.query("swizzle", swizzle);
+    Swizzle swizzle = options.query("swizzle", Swizzle::Undefined);
 
-    Usage usage = Usage::Undefined;
-    options.query("usage", usage);
+    Usage const usage = options.query("usage", Usage::Undefined);
 
     bool color = false;
 
@@ -78,8 +76,7 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
         swizzle = Swizzle::XYZW;
     }
 
-    memory::Variant_map image_options;
-    image_options.inherit_except(options, "usage");
+    Variants image_options = options.clone_except("usage");
     image_options.set("swizzle", swizzle);
 
     if (color) {

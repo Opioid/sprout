@@ -9,12 +9,12 @@ namespace memory {
 class Variant_map {
   public:
     template <typename T>
-    bool query(std::string_view key, T& value) const;
+    T query(std::string_view key, T def) const;
 
-    bool query(std::string_view key, bool& value) const;
-    bool query(std::string_view key, int32_t& value) const;
-    bool query(std::string_view key, uint32_t& value) const;
-    bool query(std::string_view key, float& value) const;
+    bool query(std::string_view key, bool def) const;
+    int32_t query(std::string_view key, int32_t def) const;
+    uint32_t query(std::string_view key, uint32_t def) const;
+    float query(std::string_view key, float def) const;
 
     template <typename T>
     void set(std::string const& key, T value);
@@ -24,8 +24,7 @@ class Variant_map {
     void set(std::string const& key, uint32_t value);
     void set(std::string const& key, float value);
 
-    void inherit(Variant_map const& other, std::string const& key);
-    void inherit_except(Variant_map const& other, std::string_view key);
+    Variant_map clone_except(std::string_view key) const;
 
     bool operator<(Variant_map const& other) const;
 
