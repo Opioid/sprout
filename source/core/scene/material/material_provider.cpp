@@ -50,9 +50,9 @@ using Variants      = memory::Variant_map;
 struct Texture_description {
     std::string filename;
 
-    std::string usage = "Color";
+    std::string usage;
 
-    image::Swizzle swizzle;
+    image::Swizzle swizzle = image::Swizzle::Undefined;
 
     float scale = 1.f;
 

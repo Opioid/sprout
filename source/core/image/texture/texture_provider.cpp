@@ -43,7 +43,7 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
     bool invert = false;
     bool color  = false;
 
-    if (Usage::Color == usage || Usage::Undefined == usage) {
+    if (Usage::Color == usage) {
         if (Swizzle::Undefined == swizzle) {
             swizzle = Swizzle::XYZ;
         }
