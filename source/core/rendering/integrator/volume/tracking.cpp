@@ -136,7 +136,7 @@ static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tra
     }
 }
 
-bool Tracking::transmittance(Ray const& ray, Worker& worker, float3& tr) {
+bool Tracking::transmittance(Ray const& ray, Filter filter, Worker& worker, float3& tr) {
     SOFT_ASSERT(!worker.interface_stack().empty());
 
     auto const interface = worker.interface_stack().top();
@@ -165,7 +165,7 @@ bool Tracking::transmittance(Ray const& ray, Worker& worker, float3& tr) {
                 cm.minorant_mu_s *= srs;
                 cm.majorant_mu_s *= srs;
 
-                if (!tracking_transmitted(w, local_ray, cm, material, srs, Filter::Nearest, rng,
+                if (!tracking_transmitted(w, local_ray, cm, material, srs, filter, rng,
                                           worker)) {
                     return false;
                 }
@@ -182,7 +182,7 @@ bool Tracking::transmittance(Ray const& ray, Worker& worker, float3& tr) {
     }
 
     if (material.is_textured_volume()) {
-        auto const mu = material.collision_coefficients(interface->uv, Filter::Nearest, worker);
+        auto const mu = material.collision_coefficients(interface->uv, filter, worker);
 
         float3 const mu_t = mu.a + mu.s;
 

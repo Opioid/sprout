@@ -143,7 +143,7 @@ void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
 bool Worker::transmitted(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
                          float3& tr) {
     if (float3 a; tinted_visibility(ray, wo, isec, filter, a)) {
-        if (float3 b; transmittance(ray, b)) {
+        if (float3 b; transmittance(ray, filter, b)) {
             tr = a * b;
             return true;
         }
@@ -206,7 +206,7 @@ float4 Worker::li(Ray& ray, Interface_stack const& interface_stack, AOV* aov) {
     return float4(0.f);
 }
 
-bool Worker::transmittance(Ray const& ray, float3& transmittance) {
+bool Worker::transmittance(Ray const& ray, Filter filter, float3& transmittance) {
     if (!scene_->has_volumes()) {
         transmittance = float3(1.f);
         return true;
@@ -235,7 +235,7 @@ bool Worker::transmittance(Ray const& ray, float3& transmittance) {
         SOFT_ASSERT(tray.max_t() >= tray.min_t());
 
         if (!interface_stack_.empty()) {
-            if (float3 tr; volume_integrator_->transmittance(tray, *this, tr)) {
+            if (float3 tr; volume_integrator_->transmittance(tray, filter, *this, tr)) {
                 w *= saturate(tr);
             } else {
                 return false;
@@ -276,7 +276,7 @@ bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, 
         float const ray_max_t = ray.max_t();
 
         if (scene::shape::Normals normals; intersect(ray, normals)) {
-            if (float3 tr; volume_integrator_->transmittance(ray, *this, tr)) {
+            if (float3 tr; volume_integrator_->transmittance(ray, filter, *this, tr)) {
                 SOFT_ASSERT(all_finite_and_positive(tr));
 
                 ray.min_t() = scene::offset_f(ray.max_t());

@@ -104,7 +104,7 @@ class alignas(64) Worker : public scene::Worker {
   private:
     float4 li(Ray& ray, Interface_stack const& interface_stack, AOV* aov);
 
-    bool transmittance(Ray const& ray, float3& transmittance);
+    bool transmittance(Ray const& ray, Filter filter, float3& transmittance);
 
     bool tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
                            float3& tv);
