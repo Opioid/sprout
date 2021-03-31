@@ -52,6 +52,7 @@ Texture_sampler_3D const& Sampler_cache::sampler_3D(uint32_t key, Filter filter)
     if (Filter::Undefined == filter) {
         return *samplers_3D_[key];
     }
+
     uint32_t const address  = key & uint32_t(Sampler_settings::Address::Mask);
     uint32_t const override = uint32_t(filter) | address;
 

@@ -60,8 +60,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
                          Interface_stack const& initial_stack, AOV* aov) {
     worker.reset_interface_stack(initial_stack);
 
-    Filter filter = Filter::Undefined;
-
     Bxdf_sample sample_result;
 
     bool primary_ray       = true;
@@ -79,6 +77,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
         float3 const wo = -ray.direction;
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
+
+        Filter const filter = ((ray.depth <= 1) | primary_ray) ? Filter::Undefined : Filter::Nearest;
 
         auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
                                                         avoid_caustics, from_subsurface, sampler_);
@@ -118,7 +118,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
 
             treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            filter            = Filter::Nearest;
             primary_ray       = false;
             treat_as_singular = false;
         }

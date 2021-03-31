@@ -96,8 +96,6 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
                                                  bool integrate_photons, AOV* aov) {
     uint32_t const max_bounces = settings_.max_bounces;
 
-    Filter filter = Filter::Undefined;
-
     Bxdf_sample sample_result;
 
     Path_state state;
@@ -116,8 +114,11 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        bool const avoid_caustics  = settings_.avoid_caustics & state.no(State::Primary_ray);
+        bool const pr = state.is(State::Primary_ray);
+        bool const avoid_caustics  = settings_.avoid_caustics & !pr;
         bool const straight_border = state.is(State::From_subsurface);
+
+        Filter const filter = ((ray.depth <= 1) | pr) ? Filter::Undefined : Filter::Nearest;
 
         auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
                                                         avoid_caustics, straight_border, sampler_);
@@ -167,7 +168,6 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
 
             if (state.is(State::Primary_ray)) {
                 state.unset(State::Primary_ray);
-                filter = Filter::Nearest;
 
                 if (bool const indirect = state.no(State::Direct) & (0 != ray.depth);
                     integrate_photons | indirect) {
