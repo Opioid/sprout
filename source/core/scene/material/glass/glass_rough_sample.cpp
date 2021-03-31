@@ -18,11 +18,11 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
         return {float3(0.f), 0.f};
     }
 
-    if (!same_hemisphere(wo_)) {
-        if (avoid_caustics()) {
-            return {float3(0.f), 0.f};
-        }
+    if (avoid_caustics()  && alpha_ <= ggx::Min_alpha) {
+        return {float3(0.f), 0.f};
+    }
 
+    if (!same_hemisphere(wo_)) {
         IoR const ior = ior_.swapped();
 
         float3 const h = -normalize(ior.eta_t * wi + ior.eta_i * wo_);
@@ -123,9 +123,6 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
-        if (!same_side) {
-            result.type.set(bxdf::Type::Caustic);
-        }
     } else {
         float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
@@ -136,7 +133,6 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
         result.reflection *= omf * n_dot_wi * albedo_;
         result.pdf *= omf;
-        result.type.set(bxdf::Type::Caustic);
     }
 
     result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
