@@ -54,7 +54,7 @@ class Tracking {
     using CM             = scene::material::CM;
     using Intersection   = scene::prop::Intersection;
 
-    static bool transmittance(Ray const& ray, Worker& worker, float3& tr);
+    static bool transmittance(Ray const& ray, Filter filter, Worker& worker, float3& tr);
 
     static bool tracking(ray const& ray, CM const& cm, Material const& material, float srs,
                          Filter filter, Worker& worker, float& t_out, float3& w);

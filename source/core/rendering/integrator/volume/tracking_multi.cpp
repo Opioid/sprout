@@ -37,8 +37,8 @@ Tracking_multi::Tracking_multi() = default;
 
 void Tracking_multi::start_pixel(rnd::Generator& /*rng*/) {}
 
-bool Tracking_multi::transmittance(Ray const& ray, Worker& worker, float3& tr) {
-    return Tracking::transmittance(ray, worker, tr);
+bool Tracking_multi::transmittance(Ray const& ray, Filter filter, Worker& worker, float3& tr) {
+    return Tracking::transmittance(ray, filter, worker, tr);
 }
 
 Event Tracking_multi::integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker,

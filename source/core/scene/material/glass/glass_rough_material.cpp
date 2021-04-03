@@ -12,8 +12,10 @@
 
 namespace scene::material::glass {
 
-Glass_rough::Glass_rough(Sampler_settings sampler_settings) : Material(sampler_settings, false) {
-    properties_.set(Property::Caustic);
+Glass_rough::Glass_rough(Sampler_settings sampler_settings) : Material(sampler_settings, false) {}
+
+void Glass_rough::commit(Threads& /*threads*/, Scene const& /*scene*/) {
+    properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 }
 
 material::Sample const& Glass_rough::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,

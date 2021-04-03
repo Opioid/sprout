@@ -18,11 +18,11 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
         return {float3(0.f), 0.f};
     }
 
-    if (!same_hemisphere(wo_)) {
-        if (avoid_caustics()) {
-            return {float3(0.f), 0.f};
-        }
+    if (avoid_caustics()  && alpha_ <= ggx::Min_alpha) {
+        return {float3(0.f), 0.f};
+    }
 
+    if (!same_hemisphere(wo_)) {
         IoR const ior = ior_.swapped();
 
         float3 const h = -normalize(ior.eta_t * wi + ior.eta_i * wo_);

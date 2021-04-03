@@ -158,8 +158,8 @@ average(mu_s * w); float const mn = average(mu_n * w); float const c = 1.f / (ms
         wn = (mu_n / (mt * pn));
 }
 */
-bool Tracking_single::transmittance(Ray const& ray, Worker& worker, float3& tr) {
-    return Tracking::transmittance(ray, worker, tr);
+bool Tracking_single::transmittance(Ray const& ray, Filter filter, Worker& worker, float3& tr) {
+    return Tracking::transmittance(ray, filter, worker, tr);
 }
 
 Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker,

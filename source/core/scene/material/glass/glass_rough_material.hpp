@@ -9,6 +9,8 @@ class Glass_rough : public Material {
   public:
     Glass_rough(Sampler_settings sampler_settings);
 
+    void commit(Threads& threads, Scene const& scene) final;
+
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 

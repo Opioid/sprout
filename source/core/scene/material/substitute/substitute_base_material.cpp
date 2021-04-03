@@ -15,7 +15,7 @@ Material_base::Material_base(Sampler_settings sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 void Material_base::commit(Threads& /*threads*/, Scene const& scene) {
-    properties_.set(Property::Caustic, !surface_map_.is_valid() && alpha_ <= ggx::Min_alpha);
+    properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 
     if (emission_map_.is_valid()) {
         average_emission_ = emission_map_.texture(scene).average_3();

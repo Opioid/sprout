@@ -15,7 +15,7 @@ class alignas(64) Tracking_multi final : public Integrator {
 
     void start_pixel(RNG& rng) final;
 
-    bool transmittance(Ray const& ray, Worker& worker, float3& tr) final;
+    bool transmittance(Ray const& ray, Filter filter, Worker& worker, float3& tr) final;
 
     Event integrate(Ray& ray, Intersection& isec, Filter filter, Worker& worker, float3& li,
                     float3& tr) final;
