@@ -950,7 +950,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
             bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
 
-            exporters.push_back(new exporting::Ffmpeg("output", camera.sensor().dimensions(),
+            exporters.push_back(new exporting::Ffmpeg("output", camera.sensor_dimensions(),
                                                       error_diffusion, framerate));
         } else if ("Stats" == n.name || "Statistics" == n.name) {
             exporters.push_back(new exporting::Statistics);
