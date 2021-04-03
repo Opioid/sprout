@@ -148,12 +148,6 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
             break;
         }
 
-        if (0.f == ray.wavelength) {
-            ray.wavelength = sample_result.wavelength;
-        }
-
-        radiance *= sample_result.reflection / sample_result.pdf;
-
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = scene::offset_f(ray.max_t());
 
@@ -169,6 +163,12 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
         }
 
         ray.max_t() = scene::Ray_max_t;
+
+        if (0.f == ray.wavelength) {
+            ray.wavelength = sample_result.wavelength;
+        }
+
+        radiance *= sample_result.reflection / sample_result.pdf;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             auto const ior = worker.interface_change_ior(sample_result.wi, isec);

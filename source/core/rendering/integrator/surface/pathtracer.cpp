@@ -150,12 +150,6 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
             primary_ray = false;
         }
 
-        if (0.f == ray.wavelength) {
-            ray.wavelength = sample_result.wavelength;
-        }
-
-        throughput *= sample_result.reflection / sample_result.pdf;
-
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = offset_f(ray.max_t());
 
@@ -172,6 +166,12 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
         }
 
         ray.max_t() = Ray_max_t;
+
+        if (0.f == ray.wavelength) {
+            ray.wavelength = sample_result.wavelength;
+        }
+
+        throughput *= sample_result.reflection / sample_result.pdf;
 
         if (sample_result.type.is(Bxdf_type::Transmission)) {
             worker.interface_change(sample_result.wi, isec);
