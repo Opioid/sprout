@@ -123,9 +123,6 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
-        if (!same_side) {
-            result.type.set(bxdf::Type::Caustic);
-        }
     } else {
         float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
@@ -136,7 +133,6 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
         result.reflection *= omf * n_dot_wi * albedo_;
         result.pdf *= omf;
-        result.type.set(bxdf::Type::Caustic);
     }
 
     result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);

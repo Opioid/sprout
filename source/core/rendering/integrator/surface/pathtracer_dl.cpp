@@ -111,12 +111,12 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             break;
         }
 
-        if (sample_result.type.is(Bxdf_type::Caustic)) {
+        if (sample_result.type.is(Bxdf_type::Specular)) {
             if (avoid_caustics) {
                 break;
             }
 
-            treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
+            treat_as_singular = true;
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
             filter            = Filter::Nearest;
             primary_ray       = false;

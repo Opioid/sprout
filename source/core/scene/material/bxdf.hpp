@@ -12,15 +12,14 @@ enum class Type {
     Diffuse      = 1 << 2,
     Glossy       = 1 << 3,
     Specular     = 1 << 4,
-    Caustic      = 1 << 5,
-    Straight     = 1 << 6,
+    Straight     = 1 << 5,
 
     Diffuse_reflection    = Reflection | Diffuse,
     Glossy_reflection     = Reflection | Glossy,
-    Specular_reflection   = Reflection | Specular | Caustic,
+    Specular_reflection   = Reflection | Specular,
     Diffuse_transmission  = Transmission | Diffuse,
     Glossy_transmission   = Transmission | Glossy,
-    Specular_transmission = Transmission | Specular | Caustic,
+    Specular_transmission = Transmission | Specular,
     Straight_transmission = Transmission | Straight
 };
 

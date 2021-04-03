@@ -154,12 +154,12 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             break;
         }
 
-        if (sample_result.type.is(Bxdf_type::Caustic)) {
+        if (sample_result.type.is(Bxdf_type::Specular)) {
             if (avoid_caustics) {
                 break;
             }
 
-            state.set(State::Treat_as_singular, sample_result.type.is(Bxdf_type::Specular));
+            state.set(State::Treat_as_singular);
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
             state.unset(State::Treat_as_singular);
 

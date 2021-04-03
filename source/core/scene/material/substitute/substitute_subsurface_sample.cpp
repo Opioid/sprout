@@ -160,7 +160,6 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
 
             result.reflection *= f * n_dot_wi;
             result.pdf *= f;
-            //  result.type.set(bxdf::Type::Caustic);
         } else {
             float const r_wo_dot_h = wo_dot_h;
 
@@ -171,7 +170,6 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
 
             result.reflection *= omf * n_dot_wi;
             result.pdf *= omf;
-            //  result.type.set(bxdf::Type::Caustic);
         }
 
         result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);

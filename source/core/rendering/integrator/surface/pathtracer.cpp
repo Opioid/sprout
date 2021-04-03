@@ -138,7 +138,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
             break;
         }
 
-        if (sample_result.type.is(Bxdf_type::Caustic)) {
+        if (sample_result.type.is(Bxdf_type::Specular)) {
 #ifdef ONLY_CAUSTICS
             caustic_path |= !primary_ray;
 #else

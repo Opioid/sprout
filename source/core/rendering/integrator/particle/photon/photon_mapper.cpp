@@ -181,7 +181,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
                     }
                 }
 
-                if (sample_result.type.is(Bxdf_type::Caustic)) {
+                if (sample_result.type.is(Bxdf_type::Specular)) {
                     caustic_path = true;
                 } else {
                     filter = Filter::Nearest;

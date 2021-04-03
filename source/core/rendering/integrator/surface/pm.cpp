@@ -93,8 +93,8 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
             break;
         }
 
-        if (sample_result.type.is(Bxdf_type::Caustic)) {
-            treat_as_singular = sample_result.type.is(Bxdf_type::Specular);
+        if (sample_result.type.is(Bxdf_type::Specular)) {
+            treat_as_singular = true;
         } else if (sample_result.type.no(Bxdf_type::Straight)) {
             treat_as_singular = false;
 

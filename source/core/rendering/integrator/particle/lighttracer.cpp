@@ -137,7 +137,7 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
                 }
             }
 
-            if (sample_result.type.is(Bxdf_type::Caustic)) {
+            if (sample_result.type.is(Bxdf_type::Specular)) {
                 caustic_path = true;
             } else {
                 filter = Filter::Nearest;
