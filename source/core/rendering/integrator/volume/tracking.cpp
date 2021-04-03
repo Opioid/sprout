@@ -165,8 +165,7 @@ bool Tracking::transmittance(Ray const& ray, Filter filter, Worker& worker, floa
                 cm.minorant_mu_s *= srs;
                 cm.majorant_mu_s *= srs;
 
-                if (!tracking_transmitted(w, local_ray, cm, material, srs, filter, rng,
-                                          worker)) {
+                if (!tracking_transmitted(w, local_ray, cm, material, srs, filter, rng, worker)) {
                     return false;
                 }
             }

@@ -95,7 +95,8 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
-        Filter const filter = ((ray.depth <= 1) | primary_ray) ? Filter::Undefined : Filter::Nearest;
+        Filter const filter = ((ray.depth <= 1) | primary_ray) ? Filter::Undefined
+                                                               : Filter::Nearest;
 
         auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
                                                         avoid_caustics, from_subsurface, sampler_);
@@ -146,8 +147,6 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
                 break;
             }
 #endif
-        } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            primary_ray = false;
         }
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
@@ -161,6 +160,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
+            primary_ray     = false;
             transparent     = false;
             from_subsurface = false;
         }

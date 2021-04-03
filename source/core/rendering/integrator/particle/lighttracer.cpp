@@ -113,6 +113,9 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
     for (;;) {
         float3 const wo = -ray.direction;
 
+        Filter const filter = ((ray.depth <= 1) | caustic_path) ? Filter::Undefined
+                                                                : Filter::Nearest;
+
         auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, 0.f,
                                                         avoid_caustics, from_subsurface, sampler_);
 
@@ -127,27 +130,6 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
             break;
         }
 
-        if (sample_result.type.no(Bxdf_type::Straight)) {
-            if (sample_result.type.no(Bxdf_type::Specular) &&
-                (isec.subsurface | mat_sample.same_hemisphere(wo)) &&
-                (caustic_path | settings_.full_light_path)) {
-                if (float w;
-                    direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker, w)) {
-                    importance.increment(light_id, light_sample_xy, isec, ray.time, w, worker);
-                }
-            }
-
-            if (sample_result.type.is(Bxdf_type::Specular)) {
-                caustic_path = true;
-            } else {
-                filter = Filter::Nearest;
-            }
-        }
-
-        if (ray.depth >= settings_.max_bounces - 1) {
-            break;
-        }
-
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = scene::offset_f(ray.max_t());
 
@@ -159,7 +141,24 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
+            if (sample_result.type.no(Bxdf_type::Specular) &&
+                (isec.subsurface | mat_sample.same_hemisphere(wo)) &&
+                (caustic_path | settings_.full_light_path)) {
+                if (float w;
+                    direct_camera(camera, radiance, ray, isec, mat_sample, filter, worker, w)) {
+                    importance.increment(light_id, light_sample_xy, isec, ray.time, w, worker);
+                }
+            }
+
+            if (sample_result.type.is(Bxdf_type::Specular)) {
+                caustic_path = true;
+            }
+
             from_subsurface = false;
+        }
+
+        if (ray.depth >= settings_.max_bounces) {
+            break;
         }
 
         ray.max_t() = scene::Ray_max_t;

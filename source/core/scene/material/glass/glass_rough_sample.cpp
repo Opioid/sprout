@@ -18,7 +18,7 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
         return {float3(0.f), 0.f};
     }
 
-    if (avoid_caustics()  && alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics() && alpha_ <= ggx::Min_alpha) {
         return {float3(0.f), 0.f};
     }
 

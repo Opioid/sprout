@@ -114,7 +114,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
     for (uint32_t i = ray.depth;; ++i) {
         float3 const wo = -ray.direction;
 
-        bool const pr = state.is(State::Primary_ray);
+        bool const pr              = state.is(State::Primary_ray);
         bool const avoid_caustics  = settings_.avoid_caustics & !pr;
         bool const straight_border = state.is(State::From_subsurface);
 
@@ -161,20 +161,6 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             }
 
             state.set(State::Treat_as_singular);
-        } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            state.unset(State::Treat_as_singular);
-
-            effective_bxdf_pdf = sample_result.pdf;
-
-            if (state.is(State::Primary_ray)) {
-                state.unset(State::Primary_ray);
-
-                if (bool const indirect = state.no(State::Direct) & (0 != ray.depth);
-                    integrate_photons | indirect) {
-                    photon_li = throughput * worker.photon_li(isec, mat_sample);
-                    state.set(State::Split_photon, indirect);
-                }
-            }
         }
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
@@ -188,6 +174,19 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
+            effective_bxdf_pdf = sample_result.pdf;
+
+            if (state.is(State::Primary_ray)) {
+                state.unset(State::Primary_ray);
+
+                if (bool const indirect = state.no(State::Direct) & (0 != ray.depth);
+                    integrate_photons | indirect) {
+                    photon_li = throughput * worker.photon_li(isec, mat_sample);
+                    state.set(State::Split_photon, indirect);
+                }
+            }
+
+            state.unset(State::Treat_as_singular);
             state.unset(State::Direct);
             state.unset(State::From_subsurface);
         }

@@ -78,7 +78,8 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
 
         bool const avoid_caustics = settings_.avoid_caustics & (!primary_ray);
 
-        Filter const filter = ((ray.depth <= 1) | primary_ray) ? Filter::Undefined : Filter::Nearest;
+        Filter const filter = ((ray.depth <= 1) | primary_ray) ? Filter::Undefined
+                                                               : Filter::Nearest;
 
         auto const& mat_sample = worker.sample_material(ray, wo, wo1, isec, filter, alpha,
                                                         avoid_caustics, from_subsurface, sampler_);
@@ -117,9 +118,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             }
 
             treat_as_singular = true;
-        } else if (sample_result.type.no(Bxdf_type::Straight)) {
-            primary_ray       = false;
-            treat_as_singular = false;
         }
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
@@ -133,8 +131,10 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
-            transparent     = false;
-            from_subsurface = false;
+            primary_ray       = false;
+            treat_as_singular = false;
+            transparent       = false;
+            from_subsurface   = false;
         }
 
         ray.max_t() = Ray_max_t;
