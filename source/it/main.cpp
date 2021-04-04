@@ -151,7 +151,7 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
     for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
             pipeline.camera = take::Loader::load_camera(n.value, nullptr);
-        } else if ("post" == n.name || "postprocessors" == n.name) {
+        } else if ("post" == n.name) {
             std::string_view const take_mount_folder = string::parent_directory(take_name);
 
             auto& filesystem = resources.filesystem();
