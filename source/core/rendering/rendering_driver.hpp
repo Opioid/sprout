@@ -51,8 +51,6 @@ class Driver {
 
     image::Float4 const& target() const;
 
-    void render(Exporters& exporters);
-
     void render(uint32_t frame);
 
     void start_frame(uint32_t frame);

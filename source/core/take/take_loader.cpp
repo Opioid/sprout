@@ -96,7 +96,7 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
-                  uint32_t start_frame, bool progressive, Scene& scene, Resources& resources) {
+                  uint32_t frame, bool progressive, Scene& scene, Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -117,10 +117,6 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
             take.view.camera = load_camera(n.value, &scene);
         } else if ("export" == n.name) {
             exporter_value = &n.value;
-        } else if ("start_frame" == n.name) {
-            take.view.start_frame = json::read_uint(n.value);
-        } else if ("num_frames" == n.name) {
-            take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
             integrator_value = &n.value;
         } else if ("aov" == n.name) {
@@ -160,11 +156,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         }
     }
 
-    if (start_frame != 0xFFFFFFFF) {
-        take.view.start_frame = start_frame;
-    }
-
-    resources.filesystem().set_frame(take.view.start_frame);
+    resources.filesystem().set_frame(frame);
 
     if (postprocessors_value) {
         std::string_view const take_mount_folder = string::parent_directory(take_name);

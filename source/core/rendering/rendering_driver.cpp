@@ -96,16 +96,6 @@ image::Float4 const& Driver::target() const {
     return target_;
 }
 
-void Driver::render(Exporters& exporters) {
-    for (uint32_t f = 0; f < view_->num_frames; ++f) {
-        uint32_t const frame = view_->start_frame + f;
-
-        render(frame);
-
-        export_frame(frame, exporters);
-    }
-}
-
 void Driver::render(uint32_t frame) {
     logging::info("Frame " + string::to_string(frame));
 

@@ -117,39 +117,48 @@ int main(int argc, char* argv[]) {
 
     take::Take take;
 
+    bool reload_take = true;
+    bool reload_scene = true;
+
     SOFT_ASSERT(material::Sample_cache::Max_sample_size >= material::Provider::max_sample_size());
 
-    for (;;) {
+    for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
         logging::info("Loading...");
 
         auto const loading_start = std::chrono::high_resolution_clock::now();
 
-        take.clear();
-        scene.clear();
-
         bool success = true;
 
-        {
+        if (reload_take) {
+            take.clear();
+
             bool const is_json = string::is_json(args.take);
 
             auto stream = is_json ? filesystem.string_stream(args.take)
                                   : filesystem.read_stream(args.take, take_name);
 
-            if (!stream || !take::Loader::load(take, *stream, take_name, args.start_frame, false,
+            if (!stream || !take::Loader::load(take, *stream, take_name, f, false,
                                                scene, resources)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }
+
+            reload_take = false;
         }
 
-        if (success && !scene_loader.load(take.scene_filename, take_name, take, scene)) {
+        if (reload_scene && success) {
+            scene.clear();
+
+            if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
             logging::error("Loading scene %S: ", take.scene_filename);
             success = false;
+            }
+
+                        reload_scene = args.reload;
         }
 
         if (success) {
             logging::info("Loading time %f s", chrono::seconds_since(loading_start));
-
             logging::info("Rendering...");
 
             progress::Std_out progressor;
@@ -159,24 +168,28 @@ int main(int argc, char* argv[]) {
             rendering::Driver driver(threads, progressor);
 
             driver.init(take.view, scene, false);
-
-            driver.render(take.exporters);
+            driver.render(f);
+            driver.export_frame(f, take.exporters);
 
             logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
-
             logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
         }
 
-        if (args.quit) {
-            break;
-        }
+        if (!success || f == end - 1) {
+            if (args.quit) {
+                break;
+            }
 
-        std::cout << "Press 'q' to quit, or any other key to render again." << std::endl;
+            std::cout << "Press 'q' to quit, or any other key to render again." << std::endl;
 
-        char const key = read_key();
+            char const key = read_key();
 
-        if ('q' == key) {
-            break;
+            if ('q' == key) {
+                break;
+            }
+
+            reload_take = true;
+            reload_scene = true;
         }
 
         resources.increment_generation();

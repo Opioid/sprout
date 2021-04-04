@@ -582,7 +582,8 @@ int32_t su_render() {
 
     engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
-    engine->driver.render(engine->take.exporters);
+    engine->driver.render(0);
+    engine->driver.export_frame(0, engine->take.exporters);
 
     return 0;
 }
