@@ -101,8 +101,6 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
 
     float3 wo1(0.f);
 
-    Filter filter = Filter::Undefined;
-
     Bxdf_sample sample_result;
 
     bool const avoid_caustics = false;
