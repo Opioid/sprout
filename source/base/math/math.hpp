@@ -39,12 +39,12 @@ static int constexpr sign(T val) {
 }
 
 template <typename T>
-static T frac(T x) {
+static T constexpr frac(T x) {
     return x - std::floor(x);
 }
 
 template <typename T>
-static T saturate(T a) {
+static T constexpr saturate(T a) {
     return std::min(std::max(a, T(0)), T(1));
 }
 
