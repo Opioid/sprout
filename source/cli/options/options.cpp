@@ -121,8 +121,7 @@ Usage:
   -t, --threads  int          Specifies the number of threads used by sprout.
                               0 creates one thread for each logical CPU.
                               -x creates as many threads as the number of
-                              logical CPUs minus x.
-                              The default value is 0.
+                              logical CPUs minus x. The default value is 0.
   -q, --quit                  Automatically quit sprout after rendering.
       --no-textures           Disables loading of all textures
       --no-tex-dwim           Disables loading of most textures)";
