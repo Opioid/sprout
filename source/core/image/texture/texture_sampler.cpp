@@ -353,6 +353,59 @@ float3 Linear_3D<Address_mode>::map(Texture const& texture, float3_p uvw, int3& 
     return float3(u - fu, v - fv, w - fw);
 }
 
+void Stochastic_sampler_3D::set_random(float3_p r) {
+    r_ = r;
+}
+
+template <typename Address_mode>
+float Stochastic_3D<Address_mode>::sample_1(Texture const& texture, float3_p uvw) const {
+    int3 const xyz = map(texture, uvw);
+
+    return texture.at_1(xyz[0], xyz[1], xyz[2]);
+}
+
+template <typename Address_mode>
+float2 Stochastic_3D<Address_mode>::sample_2(Texture const& texture, float3_p uvw) const {
+    int3 const xyz = map(texture, uvw);
+
+    return texture.at_2(xyz[0], xyz[1], xyz[2]);
+}
+
+template <typename Address_mode>
+float3 Stochastic_3D<Address_mode>::sample_3(Texture const& texture, float3_p uvw) const {
+    int3 const xyz = map(texture, uvw);
+
+    return texture.at_3(xyz[0], xyz[1], xyz[2]);
+}
+
+template <typename Address_mode>
+float4 Stochastic_3D<Address_mode>::sample_4(Texture const& texture, float3_p uvw) const {
+    int3 const xyz = map(texture, uvw);
+
+    return texture.at_4(xyz[0], xyz[1], xyz[2]);
+}
+
+template <typename Address_mode>
+float3 Stochastic_3D<Address_mode>::address(float3_p uvw) const {
+    return float3(Address_mode::f(uvw[0]), Address_mode::f(uvw[1]), Address_mode::f(uvw[2]));
+}
+
+template <typename Address_mode>
+int3 Stochastic_3D<Address_mode>::map(Texture const& texture, float3_p uvw) const {
+    int3 const d = texture.dimensions();
+
+    float3 const df = float3(d);
+
+    float const u = Address_mode::f(uvw[0]);
+    float const v = Address_mode::f(uvw[1]);
+    float const w = Address_mode::f(uvw[2]);
+
+    int3 const b = d - 1;
+
+    return int3(std::min(int32_t(u * df[0]), b[0]), std::min(int32_t(v * df[1]), b[1]),
+                std::min(int32_t(w * df[2]), b[2]));
+}
+
 template class Nearest_2D<Address_mode_clamp, Address_mode_clamp>;
 template class Nearest_2D<Address_mode_clamp, Address_mode_repeat>;
 template class Nearest_2D<Address_mode_repeat, Address_mode_clamp>;
@@ -368,5 +421,8 @@ template class Nearest_3D<Address_mode_repeat>;
 
 template class Linear_3D<Address_mode_clamp>;
 template class Linear_3D<Address_mode_repeat>;
+
+template class Stochastic_3D<Address_mode_clamp>;
+template class Stochastic_3D<Address_mode_repeat>;
 
 }  // namespace image::texture

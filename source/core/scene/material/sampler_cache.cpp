@@ -63,4 +63,26 @@ Texture_sampler_3D const& Sampler_cache::sampler_3D(uint32_t key, Filter filter)
     return *samplers_3D_[override];
 }
 
+Stochastic_cache::Stochastic_cache() {
+    using namespace image::texture;
+
+    stochastic_3D_[0] = new Stochastic_3D<Address_mode_clamp>;
+    stochastic_3D_[1] = new Stochastic_3D<Address_mode_repeat>;
+}
+
+Stochastic_cache::~Stochastic_cache() {
+    delete stochastic_3D_[0];
+    delete stochastic_3D_[1];
+}
+
+Texture_sampler_3D const& Stochastic_cache::sampler_3D(uint32_t key, float3_p r) {
+    uint32_t const address = key & uint32_t(Sampler_settings::Address::Mask);
+
+    uint32_t const id = 0 == address ? 0 : 1;
+
+    Sampler_3D& sampler = *stochastic_3D_[id];
+    sampler.set_random(r);
+    return sampler;
+}
+
 }  // namespace scene::material

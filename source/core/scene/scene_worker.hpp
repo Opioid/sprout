@@ -11,6 +11,7 @@
 #include "material/sampler_settings.hpp"
 #include "prop/interface_stack.hpp"
 #include "shape/node_stack.hpp"
+#include "material/sampler_cache.hpp"
 
 namespace image::texture {
 class Texture;
@@ -89,6 +90,8 @@ class Worker {
 
     Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const;
 
+    Texture_sampler_3D const& stochastic_3D(uint32_t key, float3_p r);
+
     Texture const* texture(uint32_t id) const;
 
     Interface_stack& interface_stack();
@@ -126,6 +129,8 @@ class Worker {
     shape::Node_stack node_stack_;
 
     material::Sample_cache sample_cache_;
+
+    material::Stochastic_cache stochastic_cache_;
 
     Lights lights_;
 };
