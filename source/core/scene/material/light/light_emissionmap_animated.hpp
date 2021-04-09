@@ -20,7 +20,7 @@ class Emissionmap_animated : public Emissionmap {
                                    Filter filter, Sampler& sampler, Worker& worker) const override;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
-                             Worker const& worker) const final;
+                             Worker& worker) const final;
 
     void set_emission_map(Texture_adapter const& emission_map, uint64_t animation_duration);
 

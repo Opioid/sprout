@@ -31,7 +31,7 @@ material::Sample const& Constant::sample(float3_p wo, Ray const& /*ray*/, Render
 }
 
 float3 Constant::evaluate_radiance(float3_p /*wi*/, float3_p /*uvw*/, float /*extent*/,
-                                   Filter /*filter*/, Worker const& /*worker*/) const {
+                                   Filter /*filter*/, Worker& /*worker*/) const {
     return emission_;
 }
 

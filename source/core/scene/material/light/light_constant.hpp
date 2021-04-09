@@ -14,7 +14,7 @@ class Constant : public Material {
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
-                             Worker const& worker) const final;
+                             Worker& worker) const final;
 
     float3 average_radiance(float area) const final;
 

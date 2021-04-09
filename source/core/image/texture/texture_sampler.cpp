@@ -365,11 +365,6 @@ float4 Linear_3D<Address_mode>::sample_4(Texture const& texture, float3_p uvw) c
 }
 
 template <typename Address_mode>
-float3 Linear_3D<Address_mode>::address(float3_p uvw) const {
-    return float3(Address_mode::f(uvw[0]), Address_mode::f(uvw[1]), Address_mode::f(uvw[2]));
-}
-
-template <typename Address_mode>
 float3 Linear_3D<Address_mode>::map(Texture const& texture, float3_p uvw, int3& xyz0, int3& xyz1) {
     int3 const d = texture.dimensions();
 

@@ -65,7 +65,7 @@ void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
 }
 
 CC Material_subsurface::collision_coefficients(float3_p p, Filter filter,
-                                               Worker const& worker) const {
+                                               Worker& worker) const {
     SOFT_ASSERT(density_map_.is_valid());
 
     float const d = density(p, filter, worker);
@@ -94,7 +94,7 @@ size_t Material_subsurface::sample_size() {
     return sizeof(Sample_subsurface);
 }
 
-float Material_subsurface::density(float3_p p, Filter filter, Worker const& worker) const {
+float Material_subsurface::density(float3_p p, Filter filter, Worker& worker) const {
     // p is in object space already
 
     float3 const p_g = 0.5f * (float3(1.f) + p);

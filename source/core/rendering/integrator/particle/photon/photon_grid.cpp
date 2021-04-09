@@ -36,7 +36,7 @@ static inline uint8_t adjacent(float s, float2 cell_bound) {
     return None;
 }
 
-static float3 scattering_coefficient(prop::Intersection const& isec, Worker const& worker);
+static float3 scattering_coefficient(prop::Intersection const& isec, Worker& worker);
 
 Grid::Grid() : dimensions_(0), grid_(nullptr) {}
 
@@ -317,7 +317,7 @@ void Grid::set_num_paths(uint64_t num_paths) {
 }
 
 float3 Grid::li(Intersection const& isec, Material_sample const& sample,
-                scene::Worker const& worker) const {
+                scene::Worker& worker) const {
     if (0 == num_photons_) {
         return float3(0.f);
     }
@@ -541,7 +541,7 @@ void Grid::adjacent_cells(float3_p v, float2 cell_bound, Adjacency& adjacency) c
     }
 }
 
-static float3 scattering_coefficient(prop::Intersection const& isec, Worker const& worker) {
+static float3 scattering_coefficient(prop::Intersection const& isec, Worker& worker) {
     using Filter = material::Sampler_settings::Filter;
 
     auto const& material = *isec.material(worker);

@@ -15,7 +15,7 @@ class Sun_material : public Material {
                                           Sampler& sampler, scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
-                             scene::Worker const& worker) const final;
+                             scene::Worker& worker) const final;
 
     float3 average_radiance(float area) const final;
 };
@@ -29,7 +29,7 @@ class Sun_baked_material : public Material {
                                           Sampler& sampler, scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
-                             scene::Worker const& worker) const final;
+                             scene::Worker& worker) const final;
 
     float3 average_radiance(float area) const final;
 

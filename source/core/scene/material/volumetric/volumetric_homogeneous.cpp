@@ -12,7 +12,7 @@ void Homogeneous::commit(Threads& /*threads*/, Scene const& /*scene*/) {
 }
 
 float3 Homogeneous::evaluate_radiance(float3_p /*wi*/, float3_p /*uvw*/, float /*volume*/,
-                                      Filter /*filter*/, Worker const& /*worker*/) const {
+                                      Filter /*filter*/, Worker& /*worker*/) const {
     return cc_.a * emission_;
 }
 

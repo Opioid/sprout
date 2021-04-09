@@ -13,7 +13,7 @@ Material_clearcoat::Material_clearcoat(Sampler_settings sampler_settings, bool t
     : Material_coating<Clearcoat_data>(sampler_settings, two_sided) {}
 
 float3 Material_clearcoat::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
-                                             Filter filter, Worker const& worker) const {
+                                             Filter filter, Worker& worker) const {
     if (emission_map_.is_valid()) {
         float2 const uv = uvw.xy();
 

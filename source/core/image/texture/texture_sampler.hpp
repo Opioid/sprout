@@ -84,7 +84,7 @@ class Stochastic_3D : public Sampler_3D {
     float3 stochastic_3(Texture const& texture, float3_p uvw, float3_p r) const final;
     float4 stochastic_4(Texture const& texture, float3_p uvw, float3_p r) const final;
 
-    float3 address(float3_p uvw) const override;
+    float3 address(float3_p uvw) const final;
 
   private:
     static int3 map(Texture const& texture, float3_p uvw, float3_p r);
@@ -109,8 +109,6 @@ class Linear_3D : public Stochastic_3D<Address_mode> {
     float2 sample_2(Texture const& texture, float3_p uvw) const final;
     float3 sample_3(Texture const& texture, float3_p uvw) const final;
     float4 sample_4(Texture const& texture, float3_p uvw) const final;
-
-    float3 address(float3_p uvw) const final;
 
   private:
     static float3 map(Texture const& texture, float3_p uvw, int3& xyz, int3& xyz1);

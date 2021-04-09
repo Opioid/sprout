@@ -12,7 +12,7 @@ class Material_base : public material::Material {
     void commit(Threads& threads, Scene const& scene) override;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
-                             Worker const& worker) const override;
+                             Worker& worker) const override;
 
     float3 average_radiance(float area) const final;
 

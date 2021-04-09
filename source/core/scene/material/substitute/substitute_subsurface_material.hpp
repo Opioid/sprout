@@ -17,14 +17,14 @@ class Material_subsurface final : public Material_base {
 
     void set_density_map(Texture_adapter const& density_map);
 
-    CC collision_coefficients(float3_p p, Filter filter, Worker const& worker) const final;
+    CC collision_coefficients(float3_p p, Filter filter, Worker& worker) const final;
 
     volumetric::Gridtree const* volume_tree() const final;
 
     static size_t sample_size();
 
   private:
-    float density(float3_p p, Filter filter, Worker const& worker) const;
+    float density(float3_p p, Filter filter, Worker& worker) const;
 
     float3 color(float3_p p, Filter filter, Worker const& worker) const;
 

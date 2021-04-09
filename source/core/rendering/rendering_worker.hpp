@@ -97,7 +97,7 @@ class alignas(64) Worker : public scene::Worker {
 
     uint32_t bake_photons(int32_t begin, int32_t end, uint32_t frame, uint32_t iteration);
 
-    float3 photon_li(Intersection const& isec, Material_sample const& sample) const;
+    float3 photon_li(Intersection const& isec, Material_sample const& sample);
 
     Particle_importance& particle_importance() const;
 

@@ -77,7 +77,7 @@ class alignas(16) Light {
     bool sample(float3_p p, float3_p n, Transformation const& trafo, bool total_sphere,
                 Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const;
 
-    float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const;
+    float3 evaluate(Sample_to const& sample, Filter filter, Worker& worker) const;
 
     bool sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
                 AABB const& bounds, Worker& worker, Sample_from& result) const;
@@ -86,7 +86,7 @@ class alignas(16) Light {
                 Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
 
-    float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const;
+    float3 evaluate(Sample_from const& sample, Filter filter, Worker& worker) const;
 
     bool sample(float3_p p, float3_p n, uint64_t time, bool total_sphere, Sampler& sampler,
                 uint32_t sampler_d, Worker& worker, Sample_to& result) const;

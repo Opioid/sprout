@@ -50,7 +50,7 @@ class Grid {
     void set_num_paths(uint64_t num_paths);
 
     float3 li(Intersection const& isec, Material_sample const& sample,
-              scene::Worker const& worker) const;
+              scene::Worker& worker) const;
 
   private:
     uint32_t reduce(float merge_radius, int32_t begin, int32_t end);

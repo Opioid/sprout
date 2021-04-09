@@ -12,7 +12,7 @@ class Homogeneous : public Material {
     void commit(Threads& threads, Scene const& scene) final;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
-                             Worker const& worker) const final;
+                             Worker& worker) const final;
 };
 
 }  // namespace scene::material::volumetric

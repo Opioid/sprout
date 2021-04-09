@@ -17,7 +17,7 @@ class Material_coating_subsurface final : public Material_clearcoat {
 
     void set_density_map(Texture_adapter const& density_map);
 
-    CC collision_coefficients(float3_p p, Filter filter, Worker const& worker) const final;
+    CC collision_coefficients(float3_p p, Filter filter, Worker& worker) const final;
 
     volumetric::Gridtree const* volume_tree() const final;
 

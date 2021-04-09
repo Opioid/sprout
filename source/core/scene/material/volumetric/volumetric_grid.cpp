@@ -27,13 +27,13 @@ Grid::Grid(Sampler_settings sampler_settings, Texture_adapter const& density)
 Grid::~Grid() = default;
 
 float3 Grid::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/, Filter filter,
-                               Worker const& worker) const {
+                               Worker& worker) const {
     float const d = density(uvw, filter, worker);
 
     return d * cc_.a * emission_;
 }
 
-CC Grid::collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const {
+CC Grid::collision_coefficients(float3_p uvw, Filter filter, Worker& worker) const {
     float const d = density(uvw, filter, worker);
 
     return {d * cc_.a, d * cc_.s};
@@ -65,10 +65,17 @@ Material::Boxi Grid::volume_texture_space_bounds(Scene const& scene) const {
     return {texture.offset(), texture.dimensions()};
 }
 
-float Grid::density(float3_p uvw, Filter filter, Worker const& worker) const {
+float Grid::density(float3_p uvw, Filter filter, Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return density_.sample_1(worker, sampler, uvw);
+    if (Filter::Undefined == filter) {
+        auto& rng = worker.rng();
+        float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+
+        return density_.sample_1(worker, sampler, uvw, r);
+    } else {
+        return density_.sample_1(worker, sampler, uvw);
+    }
 }
 
 Grid_emission::Grid_emission(Sampler_settings sampler_settings, Texture_adapter const& grid)
@@ -83,21 +90,40 @@ float3 Grid_emission::average_radiance(float /*volume*/) const {
 }
 
 float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/,
-                                        Filter filter, Worker const& worker) const {
+                                        Filter filter, Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float3 const emission = temperature_.is_valid()
-                                ? blackbody_(temperature_.sample_1(worker, sampler, uvw))
-                                : emission_;
+    if (Filter::Undefined == filter) {
+        auto& rng = worker.rng();
+        float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
 
-    if (2 == density_.texture(worker.scene()).num_channels()) {
-        float2 const d = density_.sample_2(worker, sampler, uvw);
+        float3 const emission = temperature_.is_valid()
+                                    ? blackbody_(temperature_.sample_1(worker, sampler, uvw, r))
+                                    : emission_;
 
-        return (d[0] * d[1]) * a_norm_ * emission;
+        if (2 == density_.texture(worker.scene()).num_channels()) {
+            float2 const d = density_.sample_2(worker, sampler, uvw, r);
+
+            return (d[0] * d[1]) * a_norm_ * emission;
+        } else {
+            float const d = density_.sample_1(worker, sampler, uvw, r);
+
+            return d * a_norm_ * emission;
+        }
     } else {
-        float const d = density_.sample_1(worker, sampler, uvw);
+        float3 const emission = temperature_.is_valid()
+                                    ? blackbody_(temperature_.sample_1(worker, sampler, uvw))
+                                    : emission_;
 
-        return d * a_norm_ * emission;
+        if (2 == density_.texture(worker.scene()).num_channels()) {
+            float2 const d = density_.sample_2(worker, sampler, uvw);
+
+            return (d[0] * d[1]) * a_norm_ * emission;
+        } else {
+            float const d = density_.sample_1(worker, sampler, uvw);
+
+            return d * a_norm_ * emission;
+        }
     }
 }
 
@@ -119,23 +145,37 @@ CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,
                                                    Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    float3 const emission = temperature_.is_valid()
-                                ? blackbody_(temperature_.sample_1(worker, sampler, uvw))
-                                : emission_;
-
-    if (2 == density_.texture(worker.scene()).num_channels()) {
+    if (Filter::Undefined == filter) {
         auto& rng = worker.rng();
         float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
 
-        float2 const d = density_.sample_2(worker, sampler, uvw, r);
+        float3 const emission = temperature_.is_valid()
+                                    ? blackbody_(temperature_.sample_1(worker, sampler, uvw, r))
+                                    : emission_;
 
-     //   float2 const d = density_.sample_2(worker, sampler, uvw);
+        if (2 == density_.texture(worker.scene()).num_channels()) {
+            float2 const d = density_.sample_2(worker, sampler, uvw, r);
 
-        return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * emission};
+            return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * emission};
+        } else {
+            float const d = density_.sample_1(worker, sampler, uvw, r);
+
+            return {{d * cc_.a, d * cc_.s}, emission};
+        }
     } else {
-        float const d = density_.sample_1(worker, sampler, uvw);
+        float3 const emission = temperature_.is_valid()
+                                    ? blackbody_(temperature_.sample_1(worker, sampler, uvw))
+                                    : emission_;
 
-        return {{d * cc_.a, d * cc_.s}, emission};
+        if (2 == density_.texture(worker.scene()).num_channels()) {
+            float2 const d = density_.sample_2(worker, sampler, uvw);
+
+            return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * emission};
+        } else {
+            float const d = density_.sample_1(worker, sampler, uvw);
+
+            return {{d * cc_.a, d * cc_.s}, emission};
+        }
     }
 }
 
@@ -375,7 +415,7 @@ void Grid_color::set_color(Texture_adapter const& color) {
 }
 
 float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/, Filter filter,
-                                     Worker const& worker) const {
+                                     Worker& worker) const {
     float4 const c = color(uvw, filter, worker);
 
     CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_,
@@ -384,7 +424,7 @@ float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volu
     return cc.a * emission_;
 }
 
-CC Grid_color::collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const {
+CC Grid_color::collision_coefficients(float3_p uvw, Filter filter, Worker& worker) const {
     float4 const c = color(uvw, filter, worker);
 
     return c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_,

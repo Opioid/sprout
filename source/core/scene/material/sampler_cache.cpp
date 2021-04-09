@@ -53,10 +53,6 @@ Texture_sampler_2D const& Sampler_cache::sampler_2D(uint32_t key, Filter filter)
 }
 
 Texture_sampler_3D const& Sampler_cache::sampler_3D(uint32_t key, Filter filter) const {
-    if (Filter::Stochastic == filter) {
-        filter = Filter::Linear;
-    }
-
     if (Filter::Undefined == filter) {
         return *samplers_3D_[key];
     }

@@ -85,7 +85,7 @@ class Material {
     virtual float3 average_radiance(float extent) const;
 
     virtual float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
-                                     Worker const& worker) const;
+                                     Worker& worker) const;
 
     struct Radiance_sample {
         Radiance_sample(float2 uv, float pdf);
@@ -111,7 +111,7 @@ class Material {
 
     CC collision_coefficients(float2 uv, Filter filter, Worker const& worker) const;
 
-    virtual CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const;
+    virtual CC collision_coefficients(float3_p uvw, Filter filter, Worker& worker) const;
 
     CCE collision_coefficients_emission() const;
 

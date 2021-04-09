@@ -34,7 +34,7 @@ static inline uint8_t adjacent(float s, float2 cell_bound) {
     return None;
 }
 
-static float3 scattering_coefficient(prop::Intersection const& isec, Worker const& worker);
+static float3 scattering_coefficient(prop::Intersection const& isec, Worker& worker);
 
 Sparse_grid::Sparse_grid(float search_radius, float grid_cell_factor, bool check_disk)
     : num_photons_(0),
@@ -338,7 +338,7 @@ void Sparse_grid::set_num_paths(uint64_t num_paths) {
 }
 
 float3 Sparse_grid::li(Intersection const& isec, Material_sample const&  sample,
-                       Photon_ref* /*photon_refs*/, scene::Worker const& worker) const {
+                       Photon_ref* /*photon_refs*/, scene::Worker& worker) const {
     if (0 == num_photons_) {
         return float3(0.f);
     }
@@ -614,7 +614,7 @@ void Sparse_grid::adjacent_cells(float3_p v, float2 cell_bound, Adjacency& adjac
     }
 }
 
-static float3 scattering_coefficient(prop::Intersection const& isec, Worker const& worker) {
+static float3 scattering_coefficient(prop::Intersection const& isec, Worker& worker) {
     using Filter = material::Sampler_settings::Filter;
 
     auto const& material = *isec.material(worker);

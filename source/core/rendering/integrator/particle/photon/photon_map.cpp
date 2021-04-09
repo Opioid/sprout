@@ -75,7 +75,7 @@ void Map::compile_finalize() {
 }
 
 float3 Map::li(Intersection const& isec, Material_sample const& sample,
-               scene::Worker const& worker) const {
+               scene::Worker& worker) const {
     return grid_.li(isec, sample, worker);
 }
 

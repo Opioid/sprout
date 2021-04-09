@@ -61,7 +61,7 @@ float3 Material::average_radiance(float /*extent*/) const {
 }
 
 float3 Material::evaluate_radiance(float3_p /*wi*/, float3_p /*uvw*/, float /*extent*/,
-                                   Filter /*filter*/, Worker const& /*worker*/) const {
+                                   Filter /*filter*/, Worker& /*worker*/) const {
     return float3(0.f);
 }
 
@@ -79,7 +79,7 @@ float3 Material::thin_absorption(float3_p /*wi*/, float3_p /*n*/, float2 uv, Fil
 }
 
 CC Material::collision_coefficients(float3_p /*uvw*/, Filter /*filter*/,
-                                    Worker const& /*worker*/) const {
+                                    Worker& /*worker*/) const {
     return cc_;
 }
 

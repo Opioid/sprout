@@ -46,7 +46,7 @@ material::Sample const& Emissionmap_animated::sample(float3_p           wo, Ray 
 }
 
 float3 Emissionmap_animated::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
-                                               Filter filter, Worker const& worker) const {
+                                               Filter filter, Worker& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
     return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy(), element_);
 }

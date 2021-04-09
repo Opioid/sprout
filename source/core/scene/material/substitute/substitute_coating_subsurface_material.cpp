@@ -90,7 +90,7 @@ void Material_coating_subsurface::set_density_map(Texture_adapter const& density
 }
 
 CC Material_coating_subsurface::collision_coefficients(float3_p p, Filter filter,
-                                                       Worker const& worker) const {
+                                                       Worker& worker) const {
     SOFT_ASSERT(density_map_.is_valid());
 
     float const d = density(p, filter, worker);

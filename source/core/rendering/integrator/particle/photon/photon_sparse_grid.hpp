@@ -49,7 +49,7 @@ class Sparse_grid {
     void set_num_paths(uint64_t num_paths);
 
     float3 li(Intersection const& isec, Material_sample const& sample, Photon_ref* photon_refs,
-              scene::Worker const& worker) const;
+              scene::Worker& worker) const;
 
   private:
     void release();
