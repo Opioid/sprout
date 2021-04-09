@@ -116,7 +116,7 @@ class Material {
     CCE collision_coefficients_emission() const;
 
     virtual CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                                Worker const& worker) const;
+                                                Worker& worker) const;
 
     virtual volumetric::Gridtree const* volume_tree() const;
 

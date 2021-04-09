@@ -80,6 +80,26 @@ inline float4 Adapter::sample_4(Worker const& worker, Sampler_3D const& sampler,
     return sampler.sample_4(*worker.texture(texture_), uvw);
 }
 
+inline float Adapter::sample_1(Worker const& worker, Sampler_3D const& sampler,
+                               float3_p uvw, float3_p r) const {
+    return sampler.stochastic_1(*worker.texture(texture_), uvw, r);
+}
+
+inline float2 Adapter::sample_2(Worker const& worker, Sampler_3D const& sampler,
+                                float3_p uvw, float3_p r) const {
+    return sampler.stochastic_2(*worker.texture(texture_), uvw, r);
+}
+
+inline float3 Adapter::sample_3(Worker const& worker, Sampler_3D const& sampler,
+                                float3_p uvw, float3_p r) const {
+    return sampler.stochastic_3(*worker.texture(texture_), uvw, r);
+}
+
+inline float4 Adapter::sample_4(Worker const& worker, Sampler_3D const& sampler,
+                                float3_p uvw, float3_p r) const {
+    return sampler.stochastic_4(*worker.texture(texture_), uvw, r);
+}
+
 inline float3 Adapter::address(Sampler_3D const& sampler, float3_p uvw) const {
     return sampler.address(uvw);
 }

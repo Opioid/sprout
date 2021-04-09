@@ -39,7 +39,7 @@ CC Grid::collision_coefficients(float3_p uvw, Filter filter, Worker const& worke
     return {d * cc_.a, d * cc_.s};
 }
 
-CCE Grid::collision_coefficients_emission(float3_p uvw, Filter filter, Worker const& worker) const {
+CCE Grid::collision_coefficients_emission(float3_p uvw, Filter filter, Worker& worker) const {
     float const d = density(uvw, filter, worker);
 
     return {{d * cc_.a, d * cc_.s}, emission_};
@@ -116,7 +116,7 @@ float Grid_emission::emission_pdf(float3_p uvw, Filter filter, Worker const& wor
 }
 
 CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,
-                                                   Worker const& worker) const {
+                                                   Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     float3 const emission = temperature_.is_valid()
@@ -124,7 +124,12 @@ CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,
                                 : emission_;
 
     if (2 == density_.texture(worker.scene()).num_channels()) {
-        float2 const d = density_.sample_2(worker, sampler, uvw);
+        auto& rng = worker.rng();
+        float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+
+        float2 const d = density_.sample_2(worker, sampler, uvw, r);
+
+     //   float2 const d = density_.sample_2(worker, sampler, uvw);
 
         return {{d[0] * cc_.a, d[0] * cc_.s}, d[1] * emission};
     } else {
@@ -387,7 +392,7 @@ CC Grid_color::collision_coefficients(float3_p uvw, Filter filter, Worker const&
 }
 
 CCE Grid_color::collision_coefficients_emission(float3_p uvw, Filter filter,
-                                                Worker const& worker) const {
+                                                Worker& worker) const {
     float4 const c = color(uvw, filter, worker);
 
     CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_,

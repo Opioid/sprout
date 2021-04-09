@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
 #define SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
 
-#include "base/math/vector.hpp"
 #include "sampler_settings.hpp"
 
 #include <cstdint>
@@ -33,21 +32,6 @@ class Sampler_cache {
 
     Texture_sampler_2D* samplers_2D_[Num_samplers];
     Texture_sampler_3D* samplers_3D_[Num_samplers];
-};
-
-class Stochastic_cache {
-public:
-  using Sampler_3D = image::texture::Stochastic_sampler_3D;
-
-  Stochastic_cache();
-
-  ~Stochastic_cache();
-
-  image::texture::Sampler_3D const& sampler_3D(uint32_t key, float3_p r);
-
-private:
-
-  Sampler_3D* stochastic_3D_[2];
 };
 
 }  // namespace scene::material

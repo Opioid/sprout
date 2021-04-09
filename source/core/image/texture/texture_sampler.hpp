@@ -65,25 +65,45 @@ class Sampler_3D {
     virtual float3 sample_3(Texture const& texture, float3_p uvw) const = 0;
     virtual float4 sample_4(Texture const& texture, float3_p uvw) const = 0;
 
+    virtual float  stochastic_1(Texture const& texture, float3_p uvw, float3_p r) const = 0;
+    virtual float2 stochastic_2(Texture const& texture, float3_p uvw, float3_p r) const = 0;
+    virtual float3 stochastic_3(Texture const& texture, float3_p uvw, float3_p r) const = 0;
+    virtual float4 stochastic_4(Texture const& texture, float3_p uvw, float3_p r) const = 0;
+
     virtual float3 address(float3_p uvw) const = 0;
 };
 
 template <typename Address_mode>
-class Nearest_3D : public Sampler_3D {
+class Stochastic_3D : public Sampler_3D {
+  public:
+
+    virtual ~Stochastic_3D();
+
+    float  stochastic_1(Texture const& texture, float3_p uvw, float3_p r) const final;
+    float2 stochastic_2(Texture const& texture, float3_p uvw, float3_p r) const final;
+    float3 stochastic_3(Texture const& texture, float3_p uvw, float3_p r) const final;
+    float4 stochastic_4(Texture const& texture, float3_p uvw, float3_p r) const final;
+
+    float3 address(float3_p uvw) const override;
+
+  private:
+    static int3 map(Texture const& texture, float3_p uvw, float3_p r);
+};
+
+template <typename Address_mode>
+class Nearest_3D : public Stochastic_3D<Address_mode> {
   public:
     float  sample_1(Texture const& texture, float3_p uvw) const final;
     float2 sample_2(Texture const& texture, float3_p uvw) const final;
     float3 sample_3(Texture const& texture, float3_p uvw) const final;
     float4 sample_4(Texture const& texture, float3_p uvw) const final;
 
-    float3 address(float3_p uvw) const final;
-
-  private:
-    static int3 map(Texture const& texture, float3_p uvw);
+private:
+  static int3 map(Texture const& texture, float3_p uvw);
 };
 
 template <typename Address_mode>
-class Linear_3D : public Sampler_3D {
+class Linear_3D : public Stochastic_3D<Address_mode> {
   public:
     float  sample_1(Texture const& texture, float3_p uvw) const final;
     float2 sample_2(Texture const& texture, float3_p uvw) const final;
@@ -94,33 +114,6 @@ class Linear_3D : public Sampler_3D {
 
   private:
     static float3 map(Texture const& texture, float3_p uvw, int3& xyz, int3& xyz1);
-};
-
-class Stochastic_sampler_3D : public Sampler_3D {
-public:
-    void set_random(float3_p r);
-
-protected:
-
-    float3 r_;
-};
-
-template <typename Address_mode>
-class Stochastic_3D : public Stochastic_sampler_3D {
-  public:
-
-
-    float  sample_1(Texture const& texture, float3_p uvw) const final;
-    float2 sample_2(Texture const& texture, float3_p uvw) const final;
-    float3 sample_3(Texture const& texture, float3_p uvw) const final;
-    float4 sample_4(Texture const& texture, float3_p uvw) const final;
-
-    float3 address(float3_p uvw) const final;
-
-  private:
-    int3 map(Texture const& texture, float3_p uvw) const;
-
-    float3 r_;
 };
 
 struct Address_mode_clamp;
@@ -136,14 +129,14 @@ extern template class Linear_2D<Address_mode_clamp, Address_mode_repeat>;
 extern template class Linear_2D<Address_mode_repeat, Address_mode_clamp>;
 extern template class Linear_2D<Address_mode_repeat, Address_mode_repeat>;
 
+extern template class Stochastic_3D<Address_mode_clamp>;
+extern template class Stochastic_3D<Address_mode_repeat>;
+
 extern template class Nearest_3D<Address_mode_clamp>;
 extern template class Nearest_3D<Address_mode_repeat>;
 
 extern template class Linear_3D<Address_mode_clamp>;
 extern template class Linear_3D<Address_mode_repeat>;
-
-extern template class Stochastic_3D<Address_mode_clamp>;
-extern template class Stochastic_3D<Address_mode_repeat>;
 
 }  // namespace image::texture
 

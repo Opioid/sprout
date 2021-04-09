@@ -48,12 +48,14 @@ class Adapter {
     float2 address(Sampler_2D const& sampler, float2 uv) const;
 
     float sample_1(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
-
     float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
-
     float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
-
     float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3_p uvw) const;
+
+    float sample_1(Worker const& worker, Sampler_3D const& sampler, float3_p uvw, float3_p r) const;
+    float2 sample_2(Worker const& worker, Sampler_3D const& sampler, float3_p uvw, float3_p r) const;
+    float3 sample_3(Worker const& worker, Sampler_3D const& sampler, float3_p uvw, float3_p r) const;
+    float4 sample_4(Worker const& worker, Sampler_3D const& sampler, float3_p uvw, float3_p r) const;
 
     float3 address(Sampler_3D const& sampler, float3_p uvw) const;
 

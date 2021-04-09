@@ -591,6 +591,10 @@ static inline Vector3f_a constexpr max(Vector3f_a_p a, Vector3f_a_p b) {
     return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
+static inline Vector3f_a constexpr floor(Vector3f_a_p v) {
+    return Vector3f_a(std::floor(v[0]), std::floor(v[1]), std::floor(v[2]));
+}
+
 static inline Vector3f_a constexpr ceil(Vector3f_a_p v) {
     return Vector3f_a(std::ceil(v[0]), std::ceil(v[1]), std::ceil(v[2]));
 }

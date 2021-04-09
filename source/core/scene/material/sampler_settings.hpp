@@ -13,7 +13,7 @@ struct Sampler_settings {
         Undefined = 0xFF
     };
 
-    enum class Filter : uint8_t { Nearest = 0 << 2, Linear = 1 << 2, Undefined = 0xFF };
+    enum class Filter : uint8_t { Nearest = 0 << 2, Linear = 1 << 2, Stochastic = 2 << 2, Undefined = 0xFF };
 
     Sampler_settings(Filter filter = Filter::Linear, Address address_u = Address::Repeat,
                      Address address_v = Address::Repeat);

@@ -88,7 +88,7 @@ CCE Material::collision_coefficients_emission() const {
 }
 
 CCE Material::collision_coefficients_emission(float3_p /*uvw*/, Filter /*filter*/,
-                                              Worker const& /*worker*/) const {
+                                              Worker& /*worker*/) const {
     return {cc_, emission_};
 }
 

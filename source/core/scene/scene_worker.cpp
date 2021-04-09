@@ -6,6 +6,7 @@
 #include "material/material.inl"
 #include "material/material_helper.hpp"
 #include "material/material_sample.inl"
+#include "material/sampler_cache.hpp"
 #include "material/null/null_sample.hpp"
 #include "prop/interface_stack.inl"
 #include "prop/prop.hpp"
@@ -70,10 +71,6 @@ Texture_sampler_2D const& Worker::sampler_2D(uint32_t key, Filter filter) const 
 
 Texture_sampler_3D const& Worker::sampler_3D(uint32_t key, Filter filter) const {
     return Sampler_cache.sampler_3D(key, filter);
-}
-
-Texture_sampler_3D const& Worker::stochastic_3D(uint32_t key, float3_p r) {
-    return stochastic_cache_.sampler_3D(key, r);
 }
 
 void Worker::reset_interface_stack(Interface_stack const& stack) {

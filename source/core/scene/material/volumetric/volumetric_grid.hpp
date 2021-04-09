@@ -21,7 +21,7 @@ class Grid : public Material {
     CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const final;
 
     CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                        Worker const& worker) const override;
+                                        Worker& worker) const override;
 
     void commit(Threads& threads, Scene const& scene) override;
 
@@ -53,7 +53,7 @@ class Grid_emission : public Grid {
     float emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const final;
 
     CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                        Worker const& worker) const final;
+                                        Worker& worker) const final;
 
     void commit(Threads& threads, Scene const& scene) final;
 
@@ -91,7 +91,7 @@ class Grid_color : public Material {
     CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const final;
 
     CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                        Worker const& worker) const final;
+                                        Worker& worker) const final;
 
     void set_volumetric(float scattering_factor, float distance, float anisotropy);
 
