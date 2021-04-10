@@ -32,7 +32,7 @@ bool check(float3_p majorant_mt, float mt);
 static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray const& ray,
                                                        float minorant_mu_t, float majorant_mu_t,
                                                        Tracking::Material const& material,
-                                                       float srs, Tracking::Filter filter, RNG& rng,
+                                                       float srs, Tracking::Filter filter,
                                                        Worker& worker) {
     // Transmittance of the control medium
     transmitted *= attenuation(ray.max_t() - ray.min_t(), minorant_mu_t);
@@ -46,6 +46,8 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
     if (mt < Tracking::Min_mt) {
         return true;
     }
+
+    auto& rng = worker.rng();
 
     // Transmittance of the residual medium
     float const imt = 1.f / mt;
@@ -83,7 +85,7 @@ static inline bool residual_ratio_tracking_transmitted(float3& transmitted, ray 
 
 static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tracking::CM const& cm,
                                         Tracking::Material const& material, float srs,
-                                        Tracking::Filter filter, RNG& rng, Worker& worker) {
+                                        Tracking::Filter filter, Worker& worker) {
     float const mt = cm.majorant_mu_t();
 
     if (mt < Tracking::Min_mt) {
@@ -92,8 +94,10 @@ static inline bool tracking_transmitted(float3& transmitted, ray const& ray, Tra
 
     if (float minorant_mu_t = cm.minorant_mu_t(); minorant_mu_t > 0.f) {
         return residual_ratio_tracking_transmitted(transmitted, ray, minorant_mu_t, mt, material,
-                                                   srs, filter, rng, worker);
+                                                   srs, filter, worker);
     }
+
+    auto& rng = worker.rng();
 
     float const imt = 1.f / mt;
 
@@ -143,8 +147,6 @@ bool Tracking::transmittance(Ray const& ray, Filter filter, Worker& worker, floa
 
     auto const& material = *interface->material(worker);
 
-    auto& rng = worker.rng();
-
     float const d = ray.max_t();
 
     if (scene::offset_f(ray.min_t()) >= d) {
@@ -165,7 +167,7 @@ bool Tracking::transmittance(Ray const& ray, Filter filter, Worker& worker, floa
                 cm.minorant_mu_s *= srs;
                 cm.majorant_mu_s *= srs;
 
-                if (!tracking_transmitted(w, local_ray, cm, material, srs, filter, rng, worker)) {
+                if (!tracking_transmitted(w, local_ray, cm, material, srs, filter, worker)) {
                     return false;
                 }
             }
