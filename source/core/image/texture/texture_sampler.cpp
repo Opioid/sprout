@@ -10,32 +10,32 @@ namespace image::texture {
 
 Sampler_2D::~Sampler_2D() = default;
 
-template <typename Address_mode_U, typename Address_mode_V>
-float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& texture,
+template <typename Address_U, typename Address_V>
+float Nearest_2D<Address_U, Address_V>::sample_1(Texture const& texture,
                                                            float2         uv) const {
     int2 const xy = map(texture, uv);
 
     return texture.at_1(xy[0], xy[1]);
 }
 
-template <typename Address_mode_U, typename Address_mode_V>
-float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& texture,
+template <typename Address_U, typename Address_V>
+float2 Nearest_2D<Address_U, Address_V>::sample_2(Texture const& texture,
                                                             float2         uv) const {
     int2 const xy = map(texture, uv);
 
     return texture.at_2(xy[0], xy[1]);
 }
 
-template <typename Address_mode_U, typename Address_mode_V>
-float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& texture,
+template <typename Address_U, typename Address_V>
+float3 Nearest_2D<Address_U, Address_V>::sample_3(Texture const& texture,
                                                             float2         uv) const {
     int2 const xy = map(texture, uv);
 
     return texture.at_3(xy[0], xy[1]);
 }
 
-template <typename Address_mode_U, typename Address_mode_V>
-float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& texture, float2 uv,
+template <typename Address_U, typename Address_V>
+float Nearest_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 uv,
                                                            int32_t element) const {
     int2 const xy = map(texture, uv);
 
@@ -44,8 +44,8 @@ float Nearest_2D<Address_mode_U, Address_mode_V>::sample_1(Texture const& textur
     return texture.at_element_1(xy[0], xy[1], min_element);
 }
 
-template <typename Address_mode_U, typename Address_mode_V>
-float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& texture, float2 uv,
+template <typename Address_U, typename Address_V>
+float2 Nearest_2D<Address_U, Address_V>::sample_2(Texture const& texture, float2 uv,
                                                             int32_t element) const {
     int2 const xy = map(texture, uv);
 
@@ -54,8 +54,8 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::sample_2(Texture const& textu
     return texture.at_element_2(xy[0], xy[1], min_element);
 }
 
-template <typename Address_mode_U, typename Address_mode_V>
-float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& texture, float2 uv,
+template <typename Address_U, typename Address_V>
+float3 Nearest_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 uv,
                                                             int32_t element) const {
     int2 const xy = map(texture, uv);
 
@@ -64,19 +64,19 @@ float3 Nearest_2D<Address_mode_U, Address_mode_V>::sample_3(Texture const& textu
     return texture.at_element_3(xy[0], xy[1], min_element);
 }
 
-template <typename Address_mode_U, typename Address_mode_V>
-float2 Nearest_2D<Address_mode_U, Address_mode_V>::address(float2 uv) const {
-    return float2(Address_mode_U::f(uv[0]), Address_mode_V::f(uv[1]));
+template <typename Address_U, typename Address_V>
+float2 Nearest_2D<Address_U, Address_V>::address(float2 uv) const {
+    return float2(Address_U::f(uv[0]), Address_V::f(uv[1]));
 }
 
-template <typename Address_mode_U, typename Address_mode_V>
-int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(Texture const& texture, float2 uv) {
+template <typename Address_U, typename Address_V>
+int2 Nearest_2D<Address_U, Address_V>::map(Texture const& texture, float2 uv) {
     int2 const d = texture.dimensions().xy();
 
     float2 const df = float2(d);
 
-    float const u = Address_mode_U::f(uv[0]);
-    float const v = Address_mode_V::f(uv[1]);
+    float const u = Address_U::f(uv[0]);
+    float const v = Address_V::f(uv[1]);
 
     int2 const b = d - 1;
 

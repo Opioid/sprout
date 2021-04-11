@@ -22,7 +22,7 @@ class Sampler_2D {
     virtual float2 address(float2 uv) const = 0;
 };
 
-template <typename Address_mode_U, typename Address_mode_V>
+template <typename Address_U, typename Address_V>
 class Nearest_2D final : public Sampler_2D {
   public:
     float  sample_1(Texture const& texture, float2 uv) const final;
