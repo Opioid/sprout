@@ -20,21 +20,25 @@ Sampler_cache::Sampler_cache() {
     samplers_2D_[6] = new Linear_2D<Address_mode_repeat, Address_mode_clamp>;
     samplers_2D_[7] = new Linear_2D<Address_mode_repeat, Address_mode_repeat>;
 
-    samplers_3D_[0] = new Nearest_3D<Address_mode_clamp /*,  Address_mode_clamp*/>;
-    samplers_3D_[1] = new Nearest_3D<Address_mode_clamp /*,  Address_mode_repeat*/>;
-    samplers_3D_[2] = new Nearest_3D<Address_mode_repeat /*, Address_mode_clamp*/>;
-    samplers_3D_[3] = new Nearest_3D<Address_mode_repeat /*, Address_mode_repeat*/>;
-    samplers_3D_[4] = new Linear_3D<Address_mode_clamp /*,  Address_mode_clamp*/>;
-    samplers_3D_[5] = new Linear_3D<Address_mode_clamp /*,  Address_mode_repeat*/>;
-    samplers_3D_[6] = new Linear_3D<Address_mode_repeat /*, Address_mode_clamp*/>;
-    samplers_3D_[7] = new Linear_3D<Address_mode_repeat /*, Address_mode_repeat*/>;
+    samplers_3D_[0] = new Nearest_3D<Address_mode_clamp>;
+    samplers_3D_[1] = samplers_3D_[0];
+    samplers_3D_[2] = new Nearest_3D<Address_mode_repeat>;
+    samplers_3D_[3] = samplers_3D_[2];
+    samplers_3D_[4] = new Linear_3D<Address_mode_clamp>;
+    samplers_3D_[5] = samplers_3D_[4];
+    samplers_3D_[6] = new Linear_3D<Address_mode_repeat>;
+    samplers_3D_[7] = samplers_3D_[6];
 }
 
 Sampler_cache::~Sampler_cache() {
     for (uint32_t i = 0; i < Num_samplers; ++i) {
         delete samplers_2D_[i];
-        delete samplers_3D_[i];
     }
+
+    delete samplers_3D_[0];
+    delete samplers_3D_[2];
+    delete samplers_3D_[4];
+    delete samplers_3D_[6];
 }
 
 Texture_sampler_2D const& Sampler_cache::sampler_2D(uint32_t key, Filter filter) const {

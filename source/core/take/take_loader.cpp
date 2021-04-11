@@ -121,7 +121,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
             integrator_value = &n.value;
         } else if ("aov" == n.name) {
             load_AOVs(n.value, take.view.aovs);
-        } else if ("post" == n.name || "postprocessors" == n.name) {
+        } else if ("post" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
             sampler_value = &n.value;
