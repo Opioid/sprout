@@ -62,7 +62,7 @@ bool handle_all(std::string const& command, std::string const& parameter, Option
 bool handle(std::string const& command, std::string const& parameter, Options& result) {
     if ("help" == command || "h" == command) {
         help();
-    } else if ("frame" == command) {
+    } else if ("frame" == command || "f" == command) {
         std::from_chars(parameter.data(), parameter.data() + parameter.size(), result.start_frame);
     } else if ("input" == command || "i" == command) {
         result.take = parameter;
@@ -112,7 +112,7 @@ Usage:
   sprout [OPTION...]
 
   -h, --help                  Print help.
-      --frame    int          Index of the frame to render.
+  -f  --frame    int          Index of the frame to render.
                               Overrides starting_frame specified in take file.
   -i, --input    file/string  Path of the take file to render,
                               or json-string describing the take.
@@ -121,8 +121,7 @@ Usage:
   -t, --threads  int          Specifies the number of threads used by sprout.
                               0 creates one thread for each logical CPU.
                               -x creates as many threads as the number of
-                              logical CPUs minus x.
-                              The default value is 0.
+                              logical CPUs minus x. The default value is 0.
   -q, --quit                  Automatically quit sprout after rendering.
       --no-textures           Disables loading of all textures
       --no-tex-dwim           Disables loading of most textures)";

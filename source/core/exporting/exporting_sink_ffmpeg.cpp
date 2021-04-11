@@ -12,7 +12,6 @@ namespace exporting {
 Ffmpeg::Ffmpeg(std::string const& filename, int2 dimensions, bool error_diffusion,
                uint32_t framerate)
     : Srgb(error_diffusion, false, false) {
-    // -i - tells it to read frames from stdin
     std::ostringstream cmd;
 
     cmd << "ffmpeg";

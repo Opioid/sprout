@@ -149,7 +149,6 @@ int main(int argc, char* argv[]) {
 
         if (success) {
             logging::info("Loading time %f s", chrono::seconds_since(loading_start));
-
             logging::info("Rendering...");
 
             progress::Std_out progressor;
@@ -159,11 +158,9 @@ int main(int argc, char* argv[]) {
             rendering::Driver driver(threads, progressor);
 
             driver.init(take.view, scene, false);
-
             driver.render(take.exporters);
 
             logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
-
             logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
         }
 
