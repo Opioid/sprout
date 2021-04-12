@@ -68,7 +68,7 @@ Material::Boxi Grid::volume_texture_space_bounds(Scene const& scene) const {
 float Grid::density(float3_p uvw, Filter filter, Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    if (Filter::Undefined == filter) {
+    if (Filter::Nearest == filter) {
         auto& rng = worker.rng();
         float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
 
@@ -93,7 +93,7 @@ float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*v
                                         Filter filter, Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    if (Filter::Undefined == filter) {
+    if (Filter::Nearest == filter) {
         auto& rng = worker.rng();
         float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
 
@@ -145,7 +145,7 @@ CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,
                                                    Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    if (Filter::Undefined == filter) {
+    if (Filter::Nearest == filter) {
         auto& rng = worker.rng();
         float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
 
