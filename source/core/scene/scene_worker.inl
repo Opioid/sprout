@@ -60,6 +60,26 @@ inline rnd::Generator& Worker::rng() {
     return rng_;
 }
 
+inline float3 Worker::random_float3_10bit() {
+    uint32_t const r = rng_.random_uint();
+
+    uint32_t bits0 = r >> 8;
+    uint32_t bits1 = r << 2;
+    uint32_t bits2 = r << 12;
+
+    bits0 &= 0x007FE000u;
+    bits1 &= 0x007FE000u;
+    bits2 &= 0x007FE000u;
+
+    bits0 |= 0x3F800000u;
+    bits1 |= 0x3F800000u;
+    bits2 |= 0x3F800000u;
+
+    return float3(std::bit_cast<float>(bits0) * 1.0004885196685791015625f - 1.f,
+                  std::bit_cast<float>(bits1) * 1.0004885196685791015625f - 1.f,
+                  std::bit_cast<float>(bits2) * 1.0004885196685791015625f - 1.f);
+}
+
 inline light::Tree::Lights& Worker::lights() {
     return lights_;
 }

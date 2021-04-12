@@ -97,6 +97,8 @@ class Worker {
 
     RNG& rng();
 
+    float3 random_float3_10bit();
+
     Lights& lights();
 
     void reset_interface_stack(Interface_stack const& stack);

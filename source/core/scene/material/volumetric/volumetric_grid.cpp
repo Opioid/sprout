@@ -69,8 +69,10 @@ float Grid::density(float3_p uvw, Filter filter, Worker& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     if (Filter::Nearest == filter) {
-        auto& rng = worker.rng();
-        float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+     //   auto& rng = worker.rng();
+     //   float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+
+        float3 const r = worker.random_float3_10bit();
 
         return density_.sample_1(worker, sampler, uvw, r);
     } else {
@@ -94,8 +96,10 @@ float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*v
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     if (Filter::Nearest == filter) {
-        auto& rng = worker.rng();
-        float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+    //    auto& rng = worker.rng();
+     //   float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+
+        float3 const r = worker.random_float3_10bit();
 
         float3 const emission = temperature_.is_valid()
                                     ? blackbody_(temperature_.sample_1(worker, sampler, uvw, r))
@@ -146,8 +150,10 @@ CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     if (Filter::Nearest == filter) {
-        auto& rng = worker.rng();
-        float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+    //    auto& rng = worker.rng();
+    //    float3 const r(rng.random_float(), rng.random_float(), rng.random_float());
+
+        float3 const r = worker.random_float3_10bit();
 
         float3 const emission = temperature_.is_valid()
                                     ? blackbody_(temperature_.sample_1(worker, sampler, uvw, r))
