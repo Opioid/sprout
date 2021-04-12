@@ -11,16 +11,18 @@ struct Address_mode_clamp {
     }
 
     static int32_t constexpr increment(int32_t v, int32_t max) {
-        if (v >= max) {
-            return max;
-        }
-
-        return ++v;
+        return v >= max ? max : ++v;
     }
 
     static int32_t constexpr lower_bound(int32_t v, int32_t /*max*/) {
+        return v < 0 ? 0 : v;
+    }
+
+    static int32_t constexpr bound(int32_t v, int32_t max) {
         if (v < 0) {
             return 0;
+        } else if (v >= max) {
+            return max;
         }
 
         return v;
@@ -33,16 +35,18 @@ struct Address_mode_repeat {
     }
 
     static int32_t constexpr increment(int32_t v, int32_t max) {
-        if (v >= max) {
-            return 0;
-        }
-
-        return ++v;
+        return v >= max ? 0 : ++v;
     }
 
     static int32_t constexpr lower_bound(int32_t v, int32_t max) {
+        return v < 0 ? max : v;
+    }
+
+    static int32_t constexpr bound(int32_t v, int32_t max) {
         if (v < 0) {
             return max;
+        } else if (v >= max) {
+            return 0;
         }
 
         return v;

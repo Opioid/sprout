@@ -244,8 +244,9 @@ int3 Stochastic_3D<Address_mode>::map(Texture const& texture, float3_p uvw, floa
 
     int3 const b = d - 1;
 
-    return int3(std::min(int32_t(u * df[0] + r[0] - 0.5f), b[0]), std::min(int32_t(v * df[1] + r[1] - 0.5f), b[1]),
-                std::min(int32_t(w * df[2] + r[2] - 0.5f), b[2]));
+    return int3(Address_mode::bound(int32_t(u * df[0] + r[0] - 0.5f), b[0]),
+                Address_mode::bound(int32_t(v * df[1] + r[1] - 0.5f), b[1]),
+                Address_mode::bound(int32_t(w * df[2] + r[2] - 0.5f), b[2]));
 }
 
 template <typename Address_mode>
