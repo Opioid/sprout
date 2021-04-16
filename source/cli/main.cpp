@@ -119,8 +119,12 @@ int main(int argc, char* argv[]) {
 
     bool reload_take = true;
     bool reload_scene = true;
+    bool reload_all = true;
 
     SOFT_ASSERT(material::Sample_cache::Max_sample_size >= material::Provider::max_sample_size());
+
+    progress::Std_out progressor;
+    rendering::Driver driver(threads, progressor);
 
     for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
         logging::info("Loading...");
@@ -128,6 +132,11 @@ int main(int argc, char* argv[]) {
         auto const loading_start = std::chrono::high_resolution_clock::now();
 
         bool success = true;
+
+        if (reload_all) {
+            take.clear();
+            scene.clear();
+        }
 
         if (reload_take) {
             take.clear();
@@ -137,13 +146,14 @@ int main(int argc, char* argv[]) {
             auto stream = is_json ? filesystem.string_stream(args.take)
                                   : filesystem.read_stream(args.take, take_name);
 
-            if (!stream || !take::Loader::load(take, *stream, take_name, f, false,
+            if (!stream || !take::Loader::load(take, *stream, take_name, f, false, reload_all,
                                                scene, resources)) {
                 logging::error("Loading take %S: ", args.take);
                 success = false;
             }
 
             reload_take = false;
+            reload_all = false;
         }
 
         if (reload_scene && success) {
@@ -154,18 +164,14 @@ int main(int argc, char* argv[]) {
             success = false;
             }
 
-                        reload_scene = args.reload;
+            reload_scene = args.reload;
         }
 
         if (success) {
             logging::info("Loading time %f s", chrono::seconds_since(loading_start));
             logging::info("Rendering...");
 
-            progress::Std_out progressor;
-
             auto const rendering_start = std::chrono::high_resolution_clock::now();
-
-            rendering::Driver driver(threads, progressor);
 
             driver.init(take.view, scene, false);
             driver.render(f);
@@ -190,6 +196,7 @@ int main(int argc, char* argv[]) {
 
             reload_take = true;
             reload_scene = true;
+            reload_all = true;
         }
 
         resources.increment_generation();

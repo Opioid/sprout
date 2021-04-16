@@ -96,7 +96,7 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
-                  uint32_t frame, bool progressive, Scene& scene, Resources& resources) {
+                  uint32_t frame, bool progressive, bool overwrite, Scene& scene, Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -140,11 +140,11 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         return false;
     }
 
-    if (integrator_value) {
+    if (overwrite && integrator_value) {
         load_integrators(*integrator_value, num_threads, progressive, take.view);
     }
 
-    if (sampler_value) {
+    if (!take.view.samplers && sampler_value) {
         bool const potential_surface_integrator = nullptr != take.view.surface_integrators ||
                                                   nullptr == take.view.lighttracers;
 
@@ -172,7 +172,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         set_default_postprocessor(take);
     }
 
-    if (exporter_value) {
+    if (take.exporters.empty() && exporter_value) {
         take.exporters = load_exporters(*exporter_value, take.view);
     }
 
