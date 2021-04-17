@@ -51,12 +51,11 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& isec, Filter filter, Wor
 
     float const d = ray.max_t();
 
-    // Not sure wether the first test still makes sense.
-    // The second test avoids falsely reporting very long volume sections,
-    // when in fact a very short isec was missed.
+    // This test avoids falsely reporting very long volume sections,
+    // when in fact a very close intersection was missed.
     // However, this might cause problems if we ever want to support "infinite" volumes.
 
-    if (scene::offset_f(ray.min_t()) >= d || scene::Almost_ray_max_t <= d) {
+    if (scene::Almost_ray_max_t <= d) {
         li = float3(0.f);
         tr = float3(1.f);
         return Event::Pass;
