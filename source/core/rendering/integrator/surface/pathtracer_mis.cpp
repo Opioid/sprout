@@ -170,7 +170,7 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
                 ++ray.depth;
             }
         } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
@@ -287,7 +287,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const p = isec.offset_p(translucent);
     float3 const n = mat_sample.geometric_normal();
 
     auto& rng = worker.rng();

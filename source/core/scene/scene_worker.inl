@@ -28,6 +28,10 @@ inline Result1 Worker::visibility(Ray const& ray, Filter filter) {
     return scene_->visibility(ray, filter, *this);
 }
 
+inline bool Worker::intersect_p(uint32_t prop, Ray const& ray) {
+    return scene_->prop(prop)->intersect_p(prop, ray, *this);
+}
+
 inline Scene const& Worker::scene() const {
     return *scene_;
 }

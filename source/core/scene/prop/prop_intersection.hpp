@@ -53,6 +53,9 @@ struct Intersection {
 
     bool same_hemisphere(float3_p v) const;
 
+    float3 offset_p(bool translucent) const;
+    float3 offset_p(float3_p wi) const;
+
     shape::Intersection geo;
 
     uint32_t prop;

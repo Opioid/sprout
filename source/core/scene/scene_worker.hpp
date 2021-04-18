@@ -72,6 +72,8 @@ class Worker {
 
     Result1 visibility(Ray const& ray, Filter filter);
 
+    bool intersect_p(uint32_t prop, Ray const& ray);
+
     Scene const& scene() const;
 
     Camera const& camera() const;

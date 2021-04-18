@@ -135,7 +135,7 @@ void Lighttracer::integrate(float3 radiance, Ray& ray, Intersection& isec, Worke
                 ++ray.depth;
             }
         } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
@@ -257,7 +257,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const p = isec.offset_p(translucent);
 
     weight = 0.f;
 

@@ -170,21 +170,27 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
         return Event::Abort;
     }
 
-    float const d = ray.max_t();
-
-    // This test avoids falsely reporting very long volume sections,
-    // when in fact a very close intersection was missed.
-    // However, this might cause problems if we ever want to support "infinite" volumes.
-
-    if (scene::Almost_ray_max_t <= d) {
-        li = float3(0.f);
-        tr = float3(1.f);
-        return Event::Pass;
-    }
-
     SOFT_ASSERT(!worker.interface_stack().empty());
 
+    auto stack = worker.interface_stack();
+
     auto const interface = worker.interface_stack().top();
+
+    float const d = ray.max_t();
+
+    // This test is intended to catch corner cases where we actually left the scattering medium,
+    // but the intersection point was too close to detect.
+    if (!interface->matches(isec)) {
+        float3 const v = -ray.direction;
+
+        Ray const tray(isec.offset_p(v), v, 0.f, d);
+        if (worker.intersect_p(interface->prop, tray)) {
+            stack.pop();
+            li = float3(0.f);
+            tr = float3(1.f);
+            return Event::Pass;
+        }
+    }
 
     auto const& material = *interface->material(worker);
 

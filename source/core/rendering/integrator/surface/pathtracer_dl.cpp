@@ -127,7 +127,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
                 ++ray.depth;
             }
         } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
@@ -206,7 +206,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const p = isec.offset_p(translucent);
     float3 const n = mat_sample.geometric_normal();
 
     Ray shadow_ray;

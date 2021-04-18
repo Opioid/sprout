@@ -5,6 +5,7 @@
 #include "prop.hpp"
 #include "prop_intersection.hpp"
 #include "scene/material/material.inl"
+#include "scene/ray_offset.inl"
 #include "scene/scene.inl"
 #include "scene/scene_ray.hpp"
 #include "scene/scene_renderstate.hpp"
@@ -89,6 +90,33 @@ inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& 
 
 inline bool Intersection::same_hemisphere(float3_p v) const {
     return dot(geo.geo_n, v) > 0.f;
+}
+
+inline float3 Intersection::offset_p(bool translucent) const {
+    float3 const p = geo.p;
+
+    if (subsurface) {
+        return float3(p[0], p[1], p[2], 0.f);
+    }
+
+    if (translucent) {
+        float const t = max_component(abs(p * geo.geo_n));
+        float const d = offset_f(t) - t;
+
+        return float3(p[0], p[1], p[2], d);
+    }
+
+    return offset_ray(p, geo.geo_n);
+}
+
+inline float3 Intersection::offset_p(float3_p wi) const {
+    float3 const p = geo.p;
+
+    if (subsurface) {
+        return float3(p[0], p[1], p[2], 0.f);
+    }
+
+    return offset_ray(p, same_hemisphere(wi) ? geo.geo_n : -geo.geo_n);
 }
 
 }  // namespace scene::prop
