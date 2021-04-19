@@ -95,13 +95,27 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* const 
         return Resource_ptr<T>::Null();
     }
 
-    resources_.push_back(resource);
+    uint32_t id = resource::Null;
 
-    uint32_t const id = uint32_t(resources_.size()) - 1;
+    auto const key = std::make_pair(name, options);
+
+    if (auto cached = entries_.find(key); entries_.end() != cached) {
+        auto& entry = cached->second;
+
+        id = entry.id;
+    }
+
+    if (resource::Null == id) {
+        resources_.push_back(resource);
+
+        id = uint32_t(resources_.size()) - 1;
+    } else {
+        delete resources_[id];
+
+        resources_[id] = resource;
+    }
 
     if (!name.empty()) {
-        auto const key = std::make_pair(name, options);
-
         std::error_code ec;
         auto const      last_write = std::filesystem::last_write_time(source_name, ec);
 
@@ -123,9 +137,6 @@ Resource_ptr<T> Typed_cache<T>::get(std::string const& name, Variants const& opt
         if (check_up_to_date(entry)) {
             return {resources_[id], id};
         }
-
-        delete resources_[id];
-        resources_[id] = nullptr;
 
         return Resource_ptr<T>::Null();
     }
