@@ -16,6 +16,10 @@ inline bool Worker::intersect(Ray& ray, shape::Normals& normals) {
     return scene_->intersect(ray, *this, normals);
 }
 
+inline bool Worker::intersect(uint32_t prop, Ray& ray, shape::Normals& normals) {
+    return scene_->prop(prop)->intersect(prop, ray, *this, normals);
+}
+
 inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
     if (!intersect(ray, isec)) {
         return false;
@@ -26,10 +30,6 @@ inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& isec, Fil
 
 inline Result1 Worker::visibility(Ray const& ray, Filter filter) {
     return scene_->visibility(ray, filter, *this);
-}
-
-inline bool Worker::intersect_p(uint32_t prop, Ray const& ray) {
-    return scene_->prop(prop)->intersect_p(prop, ray, *this);
 }
 
 inline Scene const& Worker::scene() const {

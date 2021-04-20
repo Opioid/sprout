@@ -4,6 +4,10 @@
 #include "base/math/vector4.hpp"
 #include "rendering/integrator/integrator.hpp"
 
+namespace scene::shape {
+struct Normals;
+}
+
 namespace rendering {
 
 class Worker;
@@ -13,6 +17,8 @@ namespace integrator::volume {
 
 class Integrator : public integrator::Integrator {
   public:
+    using Normals = scene::shape::Normals;
+
     Integrator();
 
     virtual ~Integrator();

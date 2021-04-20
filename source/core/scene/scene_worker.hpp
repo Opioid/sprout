@@ -66,13 +66,13 @@ class Worker {
 
     bool intersect(Ray& ray, shape::Normals& normals);
 
+    bool intersect(uint32_t prop, Ray& ray, shape::Normals& normals);
+
     bool resolve_mask(Ray& ray, Intersection& isec, Filter filter);
 
     bool intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter);
 
     Result1 visibility(Ray const& ray, Filter filter);
-
-    bool intersect_p(uint32_t prop, Ray const& ray);
 
     Scene const& scene() const;
 

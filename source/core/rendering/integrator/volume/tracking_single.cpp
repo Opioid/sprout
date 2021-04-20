@@ -180,16 +180,26 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
 
     // This test is intended to catch corner cases where we actually left the scattering medium,
     // but the intersection point was too close to detect.
-    if (!interface->matches(isec)) {
+    bool missed = false;
+
+    if (scene::Almost_ray_max_t <= d) {
+        missed = true;
+    } else if (!interface->matches(isec) || !isec.same_hemisphere(ray.direction)) {
         float3 const v = -ray.direction;
 
-        Ray const tray(isec.offset_p(v), v, 0.f, d);
-        if (worker.intersect_p(interface->prop, tray)) {
-            stack.pop();
-            li = float3(0.f);
-            tr = float3(1.f);
-            return Event::Pass;
+        Ray tray(isec.offset_p(v), v, 0.f, scene::Ray_max_t, 0, 0.f, ray.time);
+        if (Normals normals; worker.intersect(interface->prop, tray, normals)) {
+            if (dot(normals.geo_n, v) <= 0.f) {
+                missed = true;
+            }
         }
+    }
+
+    if (missed) {
+        stack.pop();
+        li = float3(0.f);
+        tr = float3(1.f);
+        return Event::Pass;
     }
 
     auto const& material = *interface->material(worker);
