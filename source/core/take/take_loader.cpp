@@ -96,7 +96,7 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
 
 bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
-                  uint32_t frame, bool progressive, bool overwrite, Scene& scene, Resources& resources) {
+                  uint32_t frame, bool progressive,  Scene& scene, Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -114,7 +114,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
 
     for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
-            take.view.camera = load_camera(n.value, &scene);
+            load_camera(n.value, &scene, take.view.camera);
         } else if ("export" == n.name) {
             exporter_value = &n.value;
         } else if ("integrator" == n.name) {
@@ -140,7 +140,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         return false;
     }
 
-    if (overwrite && integrator_value) {
+    if (integrator_value) {
         load_integrators(*integrator_value, num_threads, progressive, take.view);
     }
 
@@ -158,7 +158,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
 
     resources.filesystem().set_frame(frame);
 
-    if (postprocessors_value) {
+    if (take.view.pipeline.empty() && postprocessors_value) {
         std::string_view const take_mount_folder = string::parent_directory(take_name);
 
         auto& filesystem = resources.filesystem();
@@ -197,7 +197,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
     return true;
 }
 
-Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
+bool Loader::load_camera(json::Value const& camera_value, Scene* scene, Camera*& camera) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -205,7 +205,10 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
     json::Value const* type_value = nullptr;
 
     for (auto& n : camera_value.GetObject()) {
+        if (!camera) {
         type_name  = n.name.GetString();
+        }
+
         type_value = &n.value;
 
         if ("Cubic" == type_name) {
@@ -216,7 +219,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
     if (!type_value) {
         // Can this happen at all!
         logging::push_error("Empty camera object");
-        return nullptr;
+        return false;
     }
 
     math::Transformation trafo{float3(0.f), float3(1.f), quaternion::Identity};
@@ -251,16 +254,14 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         resolution = max(resolution, int2(0));
         if (int2(0) == resolution) {
             logging::push_error("Sensor resolution must be greater than zero");
-            return nullptr;
+            return false;
         }
 
         crop = json::read_int4(*sensor_value, "crop", int4(int2(0), resolution));
     } else {
         logging::push_error("No sensor configuration included");
-        return nullptr;
+        return false;
     }
-
-    Camera* camera;
 
     if ("Cubic" == type_name) {
         if (stereo) {
@@ -297,7 +298,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         camera = new Hemispherical();
     } else {
         logging::push_error("Camera type \"" + type_name + "\" not recognized");
-        return nullptr;
+        return false;
     }
 
     camera->set_resolution(resolution, crop);
@@ -307,7 +308,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
     }
 
     if (scene) {
-        if (sensor_value) {
+        if (!camera->has_sensor() && sensor_value) {
             auto sensor = load_sensor(*sensor_value);
 
             camera->set_sensor(sensor);
@@ -327,7 +328,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         }
     }
 
-    return camera;
+    return true;
 }
 
 template <typename Filter>
@@ -573,24 +574,18 @@ static bool peek_surface_integrator(json::Value const& integrator_value) {
 void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
                               bool progressive, View& view) {
     if (auto const particle_node = integrator_value.FindMember("particle");
-        integrator_value.MemberEnd() != particle_node) {
+        integrator_value.MemberEnd() != particle_node && !view.lighttracers) {
         bool const surface_integrator = peek_surface_integrator(integrator_value);
-
-        delete view.lighttracers;
 
         view.lighttracers = load_particle_integrator(
             particle_node->value, num_workers, surface_integrator, view.num_particles_per_pixel);
     }
 
     for (auto& n : integrator_value.GetObject()) {
-        if ("surface" == n.name) {
-            delete view.surface_integrators;
-
+        if ("surface" == n.name && !view.surface_integrators) {
             view.surface_integrators = load_surface_integrator(n.value, num_workers, progressive,
                                                                nullptr != view.lighttracers);
-        } else if ("volume" == n.name) {
-            delete view.volume_integrators;
-
+        } else if ("volume" == n.name && !view.volume_integrators) {
             view.volume_integrators = load_volume_integrator(n.value, num_workers, progressive);
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, view.photon_settings);

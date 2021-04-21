@@ -113,6 +113,10 @@ void Camera::set_resolution(int2 resolution, int4_p crop) {
     crop_[3] = std::min(resolution[1], crop[3]);
 }
 
+bool Camera::has_sensor() const {
+    return nullptr != sensor_;
+}
+
 rendering::sensor::Sensor& Camera::sensor() const {
     return *sensor_;
 }

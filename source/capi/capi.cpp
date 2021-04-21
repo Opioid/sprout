@@ -193,7 +193,7 @@ int32_t su_load_take(char const* string) {
                               : engine->resources.filesystem().read_stream(take, take_name);
 
         if (!stream || !take::Loader::load(engine->take, *stream, take_name, 0xFFFFFFFF,
-                                           engine->progressive, true, engine->scene, engine->resources)) {
+                                           engine->progressive, engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
         }
@@ -238,17 +238,13 @@ uint32_t su_create_camera(char const* string) {
 
     ASSERT_PARSE(string, prop::Null)
 
-    if (auto camera = take::Loader::load_camera(root, &engine->scene); camera) {
-        engine->take.view.clear();
+    engine->take.view.clear();
 
-        engine->take.view.camera = camera;
+    take::Loader::load_camera(root, &engine->scene, engine->take.view.camera);
 
-        engine->valid = engine->take.view.valid();
+    engine->valid = engine->take.view.valid();
 
-        return camera->entity();
-    }
-
-    return prop::Null;
+    return engine->take.view.camera ? engine->take.view.camera->entity() : prop::Null;
 }
 
 uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov) {

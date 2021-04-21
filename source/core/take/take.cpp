@@ -18,7 +18,6 @@ View::~View() {
 
 void View::clear() {
     delete camera;
-
     camera = nullptr;
 
     delete samplers;

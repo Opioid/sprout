@@ -89,6 +89,8 @@ class Camera {
 
     void set_resolution(int2 resolution, int4_p crop);
 
+    bool has_sensor() const;
+
     Sensor& sensor() const;
 
     void set_sensor(Sensor* sensor);

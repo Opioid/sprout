@@ -35,9 +35,9 @@ class Loader {
     using Resources = resource::Manager;
 
     static bool load(Take& take, std::istream& stream, std::string_view take_name,
-                     uint32_t frame, bool progressive, bool overwrite, Scene& scene, Resources& resources);
+                     uint32_t frame, bool progressive, Scene& scene, Resources& resources);
 
-    static Camera* load_camera(json::Value const& camera_value, Scene* scene);
+    static bool load_camera(json::Value const& camera_value, Scene* scene, Camera*& camera);
 
     static void load_integrators(json::Value const& integrator_value, uint32_t num_workers,
                                  bool progressive, View& view);

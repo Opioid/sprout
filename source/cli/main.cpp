@@ -40,8 +40,12 @@
 //#include "core/scene/material/ggx/ggx_integrate.hpp"
 //#include "core/image/texture/texture_encoding.hpp"
 
+using namespace scene;
+
+static bool load_take_and_scene(std::string const& take_string, scene::Loader& scene_loader,
+                         resource::Manager& resources, uint32_t frame, take::Take& take, Scene& scene);
+
 int main(int argc, char* argv[]) {
-    using namespace scene;
 
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
@@ -117,91 +121,112 @@ int main(int argc, char* argv[]) {
 
     take::Take take;
 
-    bool reload_take = true;
-    bool reload_scene = true;
-    bool reload_all = true;
-
     SOFT_ASSERT(material::Sample_cache::Max_sample_size >= material::Provider::max_sample_size());
 
     progress::Std_out progressor;
     rendering::Driver driver(threads, progressor);
 
-    for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
-        logging::info("Loading...");
+    for (;;) {
+        take.clear();
+        scene.clear();
 
-        auto const loading_start = std::chrono::high_resolution_clock::now();
+        if (args.reload) {
+            for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
+                logging::info("Loading...");
 
-        bool success = true;
+                auto const loading_start = std::chrono::high_resolution_clock::now();
 
-        if (reload_all) {
-            take.clear();
-            scene.clear();
-        }
 
-        if (reload_take) {
-            take.clear();
+                    scene.clear();
 
-            bool const is_json = string::is_json(args.take);
+                 load_take_and_scene(args.take, scene_loader, resources, f, take, scene);
 
-            auto stream = is_json ? filesystem.string_stream(args.take)
-                                  : filesystem.read_stream(args.take, take_name);
+                    logging::info("Loading time %f s", chrono::seconds_since(loading_start));
+                    logging::info("Rendering...");
 
-            if (!stream || !take::Loader::load(take, *stream, take_name, f, false, reload_all,
-                                               scene, resources)) {
-                logging::error("Loading take %S: ", args.take);
-                success = false;
+                    auto const rendering_start = std::chrono::high_resolution_clock::now();
+
+                    driver.init(take.view, scene, false);
+                    driver.render(f);
+                    driver.export_frame(f, take.exporters);
+
+                    logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
+                    logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
+
+
             }
+        } else {
+            logging::info("Loading...");
 
-            reload_take = false;
-            reload_all = false;
-        }
+            auto const loading_start = std::chrono::high_resolution_clock::now();
 
-        if (reload_scene && success) {
-            scene.clear();
 
-            if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
-            logging::error("Loading scene %S: ", take.scene_filename);
-            success = false;
+             load_take_and_scene(args.take, scene_loader, resources, args.start_frame, take, scene);
+
+                logging::info("Loading time %f s", chrono::seconds_since(loading_start));
+                logging::info("Rendering...");
+
+                  auto const rendering_start = std::chrono::high_resolution_clock::now();
+
+                driver.init(take.view, scene, false);
+
+
+            for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
+                    driver.render(f);
+                    driver.export_frame(f, take.exporters);
             }
-
-            reload_scene = args.reload;
-        }
-
-        if (success) {
-            logging::info("Loading time %f s", chrono::seconds_since(loading_start));
-            logging::info("Rendering...");
-
-            auto const rendering_start = std::chrono::high_resolution_clock::now();
-
-            driver.init(take.view, scene, false);
-            driver.render(f);
-            driver.export_frame(f, take.exporters);
 
             logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
             logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
+
         }
 
-        if (!success || f == end - 1) {
-            if (args.quit) {
-                break;
-            }
 
-            std::cout << "Press 'q' to quit, or any other key to render again." << std::endl;
 
-            char const key = read_key();
 
-            if ('q' == key) {
-                break;
-            }
-
-            reload_take = true;
-            reload_scene = true;
-            reload_all = true;
+        if (args.quit) {
+            break;
         }
 
-        resources.increment_generation();
-        image_provider.increment_generation();
+        std::cout << "Press 'q' to quit, or any other key to render again." << std::endl;
+
+        char const key = read_key();
+
+        if ('q' == key) {
+            break;
+        }
+
+
+    resources.increment_generation();
+    image_provider.increment_generation();
+
     }
 
     return 0;
+}
+
+static bool load_take_and_scene(std::string const& take_string, scene::Loader& scene_loader,
+                         resource::Manager& resources, uint32_t frame, take::Take& take, Scene& scene) {
+    file::System& filesystem = resources.filesystem();
+
+    bool const is_json = string::is_json(take_string);
+
+    std::string take_name;
+
+    auto stream = is_json ? filesystem.string_stream(take_string)
+                          : filesystem.read_stream(take_string, take_name);
+
+    if (!stream || !take::Loader::load(take, *stream, take_name, frame, false,
+                                       scene, resources)) {
+        logging::error("Loading take %S: ", take_string);
+        return false;
+    }
+
+
+        if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
+        logging::error("Loading scene %S: ", take.scene_filename);
+        return false;
+        }
+
+        return true;
 }
