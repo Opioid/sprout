@@ -161,18 +161,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             }
 
             state.set(State::Treat_as_singular);
-        }
-
-        if (sample_result.type.is(Bxdf_type::Straight)) {
-            ray.min_t() = offset_f(ray.max_t());
-
-            if (sample_result.type.no(Bxdf_type::Transmission)) {
-                ++ray.depth;
-            }
-        } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
-            ray.set_direction(sample_result.wi);
-            ++ray.depth;
+        } else if (sample_result.type.no(Bxdf_type::Straight)) {
+            state.unset(State::Treat_as_singular);
 
             effective_bxdf_pdf = sample_result.pdf;
 
@@ -185,12 +175,20 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
                     state.set(State::Split_photon, indirect);
                 }
             }
+        }
 
-            state.unset(State::Treat_as_singular);
+        if (sample_result.type != Bxdf_type::Straight) {
+            ++ray.depth;
+        }
+
+        if (sample_result.type.no(Bxdf_type::Straight)) {
+            ray.set_direction(sample_result.wi);
+
             state.unset(State::Direct);
             state.unset(State::From_subsurface);
         }
 
+        ray.origin  = isec.offset_p(sample_result.wi);
         ray.max_t() = Ray_max_t;
 
         if (0.f == ray.wavelength) {
@@ -287,7 +285,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const p = isec.offset_p(translucent);
     float3 const n = mat_sample.geometric_normal();
 
     auto& rng = worker.rng();

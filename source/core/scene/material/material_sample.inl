@@ -4,11 +4,8 @@
 #include "base/math/vector3.inl"
 #include "material_sample.hpp"
 #include "material_sample_helper.hpp"
-#include "scene/ray_offset.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
-
-#include <cmath>
 
 namespace scene::material {
 
@@ -88,29 +85,6 @@ inline bool Sample::can_evaluate() const {
 
 inline bool Sample::avoid_caustics() const {
     return properties_.is(Property::Avoid_caustics);
-}
-
-inline float3 Sample::offset_p(float3_p p, bool subsurface, bool translucent) const {
-    if (subsurface) {
-        return float3(p[0], p[1], p[2], 0.f);
-    }
-
-    if (translucent) {
-        float const t = max_component(abs(p * geo_n_));
-        float const d = offset_f(t) - t;
-
-        return float3(p[0], p[1], p[2], d);
-    }
-
-    return offset_ray(p, geo_n_);
-}
-
-inline float3 Sample::offset_p(float3_p p, float3_p wi, bool subsurface) const {
-    if (subsurface) {
-        return float3(p[0], p[1], p[2], 0.f);
-    }
-
-    return offset_ray(p, same_hemisphere(wi) ? geo_n_ : -geo_n_);
 }
 
 inline float3 Sample::geometric_normal() const {

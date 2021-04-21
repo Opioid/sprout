@@ -51,7 +51,7 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
     }
 
     Ray occlusion_ray;
-    occlusion_ray.origin  = mat_sample.offset_p(isec.geo.p, false, false);
+    occlusion_ray.origin  = isec.offset_p(false);
     occlusion_ray.max_t() = settings_.radius;
     occlusion_ray.time    = ray.time;
 

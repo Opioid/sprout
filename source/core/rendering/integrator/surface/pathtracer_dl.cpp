@@ -118,25 +118,23 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             }
 
             treat_as_singular = true;
-        }
-
-        if (sample_result.type.is(Bxdf_type::Straight)) {
-            ray.min_t() = offset_f(ray.max_t());
-
-            if (sample_result.type.no(Bxdf_type::Transmission)) {
-                ++ray.depth;
-            }
-        } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
-            ray.set_direction(sample_result.wi);
-            ++ray.depth;
-
-            primary_ray       = false;
+        } else if (sample_result.type.no(Bxdf_type::Straight)) {
             treat_as_singular = false;
-            transparent       = false;
-            from_subsurface   = false;
+            primary_ray       = false;
         }
 
+        if (sample_result.type != Bxdf_type::Straight) {
+            ++ray.depth;
+        }
+
+        if (sample_result.type.no(Bxdf_type::Straight)) {
+            ray.set_direction(sample_result.wi);
+
+            transparent     = false;
+            from_subsurface = false;
+        }
+
+        ray.origin  = isec.offset_p(sample_result.wi);
         ray.max_t() = Ray_max_t;
 
         if (0.f == ray.wavelength) {
@@ -206,7 +204,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const p = isec.offset_p(translucent);
     float3 const n = mat_sample.geometric_normal();
 
     Ray shadow_ray;

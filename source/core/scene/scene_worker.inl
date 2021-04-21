@@ -16,6 +16,10 @@ inline bool Worker::intersect(Ray& ray, shape::Normals& normals) {
     return scene_->intersect(ray, *this, normals);
 }
 
+inline bool Worker::intersect(uint32_t prop, Ray& ray, shape::Normals& normals) {
+    return scene_->prop(prop)->intersect(prop, ray, *this, normals);
+}
+
 inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
     if (!intersect(ray, isec)) {
         return false;

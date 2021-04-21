@@ -66,6 +66,8 @@ class Worker {
 
     bool intersect(Ray& ray, shape::Normals& normals);
 
+    bool intersect(uint32_t prop, Ray& ray, shape::Normals& normals);
+
     bool resolve_mask(Ray& ray, Intersection& isec, Filter filter);
 
     bool intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter);

@@ -39,10 +39,19 @@ void Sample::set(float ior, float ior_outside) {
 }
 
 void Sample::sample(float ior, float p, bxdf::Sample& result) const {
-    float3 n = layer_.n_;
-
     float eta_i = ior_outside_;
     float eta_t = ior;
+
+    if (eta_i == eta_t) {
+        result.reflection = albedo_;
+        result.wi         = -wo_;
+        result.pdf        = 1.f;
+        result.wavelength = 0.f;
+        result.type.clear(bxdf::Type::Straight_transmission);
+        return;
+    }
+
+    float3 n = layer_.n_;
 
     if (!same_hemisphere(wo_)) {
         n = -n;

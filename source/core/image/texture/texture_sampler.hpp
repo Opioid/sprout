@@ -29,7 +29,7 @@ class Nearest_2D final : public Sampler_2D {
     float2 sample_2(Texture const& texture, float2 uv) const final;
     float3 sample_3(Texture const& texture, float2 uv) const final;
 
-    float sample_1(Texture const& texture, float2 uv, int32_t element) const final;
+    float  sample_1(Texture const& texture, float2 uv, int32_t element) const final;
     float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
     float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
 
@@ -46,7 +46,7 @@ class Linear_2D : public Sampler_2D {
     float2 sample_2(Texture const& texture, float2 uv) const final;
     float3 sample_3(Texture const& texture, float2 uv) const final;
 
-    float sample_1(Texture const& texture, float2 uv, int32_t element) const final;
+    float  sample_1(Texture const& texture, float2 uv, int32_t element) const final;
     float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
     float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
 

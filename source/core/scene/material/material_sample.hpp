@@ -65,15 +65,9 @@ class Sample {
     virtual void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const = 0;
 
     bool is_pure_emissive() const;
-
     bool is_translucent() const;
-
     bool can_evaluate() const;
-
     bool avoid_caustics() const;
-
-    float3 offset_p(float3_p p, bool subsurface, bool translucent) const;
-    float3 offset_p(float3_p p, float3_p wi, bool subsurface) const;
 
     float3 geometric_normal() const;
     float3 interpolated_normal() const;
