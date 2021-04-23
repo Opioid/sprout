@@ -47,6 +47,9 @@ class Manager {
     std::vector<T*> const& register_provider(Provider<T>& provider);
 
     template <typename T>
+    void reload_frame_dependant(uint32_t frame);
+
+    template <typename T>
     Resource_ptr<T> load(std::string const& filename, Variants const& options = Variants());
 
     template <typename T>

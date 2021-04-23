@@ -172,6 +172,8 @@ int main(int argc, char* argv[]) {
 
 
             for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
+                resources.reload_frame_dependant<image::Image>(f);
+
                     driver.render(f);
                     driver.export_frame(f, take.exporters);
             }

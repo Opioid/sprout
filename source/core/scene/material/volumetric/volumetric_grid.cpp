@@ -196,7 +196,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
-        return;
+     //   return;
     }
 
     auto const& texture = density_.texture(scene);

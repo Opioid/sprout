@@ -32,11 +32,28 @@ std::vector<T*> const& Typed_cache<T>::resources() const {
 }
 
 template <typename T>
+void Typed_cache<T>::reload_frame_dependant(Manager& resources) {
+    for (auto const& kv : entries_) {
+        if (std::string const& filename = kv.first.first; file::System::frame_dependant_name(filename)) {
+            std::string resolved_name;
+            auto resource = provider_.load(filename, kv.first.second, resources, resolved_name);
+
+            if (resource) {
+                uint32_t const id = kv.second.id;
+
+                delete resources_[id];
+                resources_[id] = resource;
+            }
+        }
+    }
+}
+
+template <typename T>
 Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
-                                     Manager& manager) {
+                                     Manager& resources) {
     std::string resolved_name;
 
-    return load(filename, options, manager, resolved_name);
+    return load(filename, options, resources, resolved_name);
 }
 
 template <typename T>

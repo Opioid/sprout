@@ -61,7 +61,11 @@ class System {
 
     void pop_mount();
 
+    uint32_t frame() const;
+
     void set_frame(uint32_t frame);
+
+    static bool frame_dependant_name(std::string_view name);
 
   private:
     std::istream& open_read_stream(std::string_view name, std::string& resolved_name);
@@ -86,6 +90,7 @@ class System {
 
     std::vector<std::string> mount_folders_;
 
+    uint32_t frame_;
     std::string frame_string_;
 };
 

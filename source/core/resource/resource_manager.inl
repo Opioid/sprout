@@ -24,6 +24,21 @@ std::vector<T*> const& Manager::register_provider(Provider<T>& provider) {
 }
 
 template <typename T>
+void Manager::reload_frame_dependant(uint32_t frame) {
+    if (frame == filesystem_.frame()) {
+        return;
+    }
+
+    filesystem_.set_frame(frame);
+
+    Typed_cache<T>* cache = typed_cache<T>();
+
+    if (cache) {
+        cache->reload_frame_dependant(*this);
+    }
+}
+
+template <typename T>
 Resource_ptr<T> Manager::load(std::string const& filename, Variants const& options) {
     if (filename.empty()) {
         return Resource_ptr<T>::Null();
