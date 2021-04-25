@@ -177,18 +177,20 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             }
         }
 
-        if (sample_result.type != Bxdf_type::Straight) {
+        if (sample_result.type != Bxdf_type::Straight_transmission) {
             ++ray.depth;
         }
 
-        if (sample_result.type.no(Bxdf_type::Straight)) {
+        if (sample_result.type.is(Bxdf_type::Straight)) {
+            ray.min_t() = offset_f(ray.max_t());
+        } else {
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
 
             state.unset(State::Direct);
             state.unset(State::From_subsurface);
         }
 
-        ray.origin  = isec.offset_p(sample_result.wi);
         ray.max_t() = Ray_max_t;
 
         if (0.f == ray.wavelength) {
