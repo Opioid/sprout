@@ -281,6 +281,12 @@ void Scene::compile(float3_p camera_pos, uint64_t time, Threads& threads) {
     caustic_aabb_ = caustic_aabb;
 }
 
+void Scene::commit_materials(Threads& threads) const {
+    for (auto m : material_resources_) {
+        m->commit(threads, *this);
+    }
+}
+
 void Scene::calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) {
     num_interpolation_frames_ = count_frames(frame_step, frame_duration) + 1;
 }

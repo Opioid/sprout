@@ -70,8 +70,6 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.take = parameter;
     } else if ("mount" == command || "m" == command) {
         result.mounts.push_back(parameter);
-    } else if ("reload" == command || "r" == command) {
-        result.reload = true;
     } else if ("threads" == command || "t" == command) {
         std::from_chars(parameter.data(), parameter.data() + parameter.size(), result.threads);
     } else if ("quit" == command || "q" == command) {
@@ -122,7 +120,6 @@ Usage:
                                  or json-string describing the take.
   -m, --mount       path+        Specifies a mount point for the data directory.
                                  The default value is "../data/"
-  -r, --reload                   Reloads the scene after each frame.
   -t, --threads     int          Specifies the number of threads used by sprout.
                                  0 creates one thread for each logical CPU.
                                  -x creates as many threads as the number of

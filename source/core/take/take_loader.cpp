@@ -95,8 +95,8 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 
 static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
 
-bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
-                  uint32_t frame, bool progressive,  Scene& scene, Resources& resources) {
+bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, uint32_t frame,
+                  bool progressive, Scene& scene, Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -206,7 +206,7 @@ bool Loader::load_camera(json::Value const& camera_value, Scene* scene, Camera*&
 
     for (auto& n : camera_value.GetObject()) {
         if (!camera) {
-        type_name  = n.name.GetString();
+            type_name = n.name.GetString();
         }
 
         type_value = &n.value;

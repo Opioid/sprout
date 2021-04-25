@@ -139,6 +139,8 @@ class Scene {
 
     void compile(float3_p camera_pos, uint64_t time, Threads& threads);
 
+    void commit_materials(Threads& threads) const;
+
     uint32_t num_interpolation_frames() const;
 
     void calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration);

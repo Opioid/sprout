@@ -91,6 +91,7 @@ class System {
     std::vector<std::string> mount_folders_;
 
     uint32_t frame_;
+
     std::string frame_string_;
 };
 

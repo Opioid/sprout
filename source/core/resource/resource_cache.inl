@@ -32,9 +32,20 @@ std::vector<T*> const& Typed_cache<T>::resources() const {
 }
 
 template <typename T>
+void Typed_cache<T>::deprecate_frame_dependant() {
+    for (auto& kv : entries_) {
+        if (std::string const& filename = kv.first.first;
+            file::System::frame_dependant_name(filename)) {
+            kv.second.generation = 0xFFFFFFFF;
+        }
+    }
+}
+
+template <typename T>
 void Typed_cache<T>::reload_frame_dependant(Manager& resources) {
     for (auto const& kv : entries_) {
-        if (std::string const& filename = kv.first.first; file::System::frame_dependant_name(filename)) {
+        if (std::string const& filename = kv.first.first;
+            file::System::frame_dependant_name(filename)) {
             std::string resolved_name;
             auto resource = provider_.load(filename, kv.first.second, resources, resolved_name);
 
@@ -71,9 +82,6 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
         if (check_up_to_date(entry)) {
             return {resources_[id], id};
         }
-
-        delete resources_[id];
-        resources_[id] = nullptr;
     }
 
     auto resource = provider_.load(filename, options, resources, resolved_name);
@@ -85,11 +93,13 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
     auto const      last_write = std::filesystem::last_write_time(resolved_name, ec);
 
     if (id != resource::Null) {
+        delete resources_[id];
+
         resources_[id] = resource;
     } else {
-        resources_.push_back(resource);
+        id = uint32_t(resources_.size());
 
-        id = uint32_t(resources_.size()) - 1;
+        resources_.push_back(resource);
     }
 
     entries_.insert_or_assign(key, Entry{id, generation_, resolved_name, last_write});
@@ -123,9 +133,9 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* const 
     }
 
     if (resource::Null == id) {
-        resources_.push_back(resource);
+        id = uint32_t(resources_.size());
 
-        id = uint32_t(resources_.size()) - 1;
+        resources_.push_back(resource);
     } else {
         delete resources_[id];
 

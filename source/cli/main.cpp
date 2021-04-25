@@ -43,10 +43,12 @@
 using namespace scene;
 
 static bool load_take_and_scene(std::string const& take_string, scene::Loader& scene_loader,
-                         resource::Manager& resources, uint32_t frame, take::Take& take, Scene& scene);
+                                resource::Manager& resources, uint32_t frame, take::Take& take,
+                                Scene& scene);
+
+static void reload_frame_dependant(uint32_t frame, Scene& scene, resource::Manager& resources);
 
 int main(int argc, char* argv[]) {
-
     //	scene::material::substitute::testing::test();
     //	scene::material::glass::testing::test();
     //  scene::material::glass::testing::rough_refraction();
@@ -130,61 +132,30 @@ int main(int argc, char* argv[]) {
         take.clear();
         scene.clear();
 
-        if (args.reload) {
-            for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
-                logging::info("Loading...");
+        logging::info("Loading...");
 
-                auto const loading_start = std::chrono::high_resolution_clock::now();
+        auto const loading_start = std::chrono::high_resolution_clock::now();
 
+        if (load_take_and_scene(args.take, scene_loader, resources, args.start_frame, take,
+                                scene)) {
+            logging::info("Loading time %f s", chrono::seconds_since(loading_start));
+            logging::info("Rendering...");
 
-                    scene.clear();
+            auto const rendering_start = std::chrono::high_resolution_clock::now();
 
-                 load_take_and_scene(args.take, scene_loader, resources, f, take, scene);
+            driver.init(take.view, scene, false);
 
-                    logging::info("Loading time %f s", chrono::seconds_since(loading_start));
-                    logging::info("Rendering...");
+            for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end;
+                 ++f) {
+                reload_frame_dependant(f, scene, resources);
 
-                    auto const rendering_start = std::chrono::high_resolution_clock::now();
-
-                    driver.init(take.view, scene, false);
-                    driver.render(f);
-                    driver.export_frame(f, take.exporters);
-
-                    logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
-                    logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
-
-
-            }
-        } else {
-            logging::info("Loading...");
-
-            auto const loading_start = std::chrono::high_resolution_clock::now();
-
-
-             load_take_and_scene(args.take, scene_loader, resources, args.start_frame, take, scene);
-
-                logging::info("Loading time %f s", chrono::seconds_since(loading_start));
-                logging::info("Rendering...");
-
-                  auto const rendering_start = std::chrono::high_resolution_clock::now();
-
-                driver.init(take.view, scene, false);
-
-
-            for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end; ++f) {
-                resources.reload_frame_dependant<image::Image>(f);
-
-                    driver.render(f);
-                    driver.export_frame(f, take.exporters);
+                driver.render(f);
+                driver.export_frame(f, take.exporters);
             }
 
             logging::info("Total render time %f s", chrono::seconds_since(rendering_start));
             logging::info("Total elapsed time %f s", chrono::seconds_since(loading_start));
-
         }
-
-
-
 
         if (args.quit) {
             break;
@@ -198,17 +169,16 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-
-    resources.increment_generation();
-    image_provider.increment_generation();
-
+        resources.increment_generation();
+        image_provider.increment_generation();
     }
 
     return 0;
 }
 
 static bool load_take_and_scene(std::string const& take_string, scene::Loader& scene_loader,
-                         resource::Manager& resources, uint32_t frame, take::Take& take, Scene& scene) {
+                                resource::Manager& resources, uint32_t frame, take::Take& take,
+                                Scene& scene) {
     file::System& filesystem = resources.filesystem();
 
     bool const is_json = string::is_json(take_string);
@@ -218,17 +188,30 @@ static bool load_take_and_scene(std::string const& take_string, scene::Loader& s
     auto stream = is_json ? filesystem.string_stream(take_string)
                           : filesystem.read_stream(take_string, take_name);
 
-    if (!stream || !take::Loader::load(take, *stream, take_name, frame, false,
-                                       scene, resources)) {
+    if (!stream || !take::Loader::load(take, *stream, take_name, frame, false, scene, resources)) {
         logging::error("Loading take %S: ", take_string);
         return false;
     }
 
-
-        if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
+    if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
         logging::error("Loading scene %S: ", take.scene_filename);
         return false;
-        }
+    }
 
-        return true;
+    return true;
+}
+
+static void reload_frame_dependant(uint32_t frame, Scene& scene, resource::Manager& resources) {
+    file::System& filesystem = resources.filesystem();
+
+    if (frame == filesystem.frame()) {
+        return;
+    }
+
+    filesystem.set_frame(frame);
+
+    resources.deprecate_frame_dependant<image::Image>();
+    resources.reload_frame_dependant<image::texture::Texture>();
+
+    scene.commit_materials(resources.threads());
 }

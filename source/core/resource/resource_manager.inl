@@ -24,13 +24,16 @@ std::vector<T*> const& Manager::register_provider(Provider<T>& provider) {
 }
 
 template <typename T>
-void Manager::reload_frame_dependant(uint32_t frame) {
-    if (frame == filesystem_.frame()) {
-        return;
+void Manager::deprecate_frame_dependant() {
+    Typed_cache<T>* cache = typed_cache<T>();
+
+    if (cache) {
+        cache->deprecate_frame_dependant();
     }
+}
 
-    filesystem_.set_frame(frame);
-
+template <typename T>
+void Manager::reload_frame_dependant() {
     Typed_cache<T>* cache = typed_cache<T>();
 
     if (cache) {

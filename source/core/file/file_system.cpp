@@ -35,7 +35,8 @@ void System::Stream_ptr::close() {
     }
 }
 
-System::System() : read_buffer_size_(0), buffer_size_(0), read_buffer_(nullptr), buffer_(nullptr), frame_(0) {}
+System::System()
+    : read_buffer_size_(0), buffer_size_(0), read_buffer_(nullptr), buffer_(nullptr), frame_(0) {}
 
 System::~System() {
     delete[] read_buffer_;

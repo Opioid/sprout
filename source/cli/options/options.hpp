@@ -20,7 +20,6 @@ struct Options {
     bool no_textures    = false;
     bool no_tex_dwim    = false;
     bool debug_material = false;
-    bool reload         = false;
     bool quit           = false;
 };
 

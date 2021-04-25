@@ -11,6 +11,10 @@ void Cache::increment_generation() {
 }
 
 bool Cache::check_up_to_date(Entry& entry) const {
+    if (0xFFFFFFFF == entry.generation) {
+        return false;
+    }
+
     if (entry.generation == generation_ || entry.source_name.empty()) {
         return true;
     }

@@ -135,6 +135,8 @@ CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,
 }
 
 void Grid_emission::commit(Threads& threads, Scene const& scene) {
+    average_emission_ = float3(-1.f);
+
     auto const& texture = density_.texture(scene);
 
     Octree_builder builder;
@@ -196,7 +198,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
-     //   return;
+        //   return;
     }
 
     auto const& texture = density_.texture(scene);
