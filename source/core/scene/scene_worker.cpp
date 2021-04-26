@@ -42,10 +42,8 @@ void Worker::init_rng(uint64_t sequence) {
 bool Worker::resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
     float const start_min_t = ray.min_t();
 
-    float opacity = isec.opacity(filter, *this);
-
-    while (opacity < 1.f) {
-        if (opacity > 0.f && opacity > rng_.random_float()) {
+    for (float o = isec.opacity(filter, *this); o < 1.f; o = isec.opacity(filter, *this)) {
+        if (o > 0.f && o > rng_.random_float()) {
             ray.min_t() = start_min_t;
             return true;
         }
@@ -57,8 +55,6 @@ bool Worker::resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
             ray.min_t() = start_min_t;
             return false;
         }
-
-        opacity = isec.opacity(filter, *this);
     }
 
     ray.min_t() = start_min_t;
