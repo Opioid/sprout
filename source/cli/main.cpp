@@ -14,7 +14,9 @@
 #include "core/progress/progress_sink_std_out.hpp"
 #include "core/rendering/rendering_driver.hpp"
 #include "core/resource/resource_manager.inl"
+#include "core/scene/camera/camera.hpp"
 #include "core/scene/material/material_provider.hpp"
+#include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/shape/shape.hpp"
@@ -46,7 +48,8 @@ static bool load_take_and_scene(std::string const& take_string, scene::Loader& s
                                 resource::Manager& resources, uint32_t frame, take::Take& take,
                                 Scene& scene);
 
-static void reload_frame_dependant(uint32_t frame, Scene& scene, resource::Manager& resources);
+static bool reload_frame_dependant(scene::Loader& scene_loader, resource::Manager& resources,
+                                   uint32_t frame, take::Take& take, Scene& scene);
 
 int main(int argc, char* argv[]) {
     //	scene::material::substitute::testing::test();
@@ -147,7 +150,9 @@ int main(int argc, char* argv[]) {
 
             for (uint32_t f = args.start_frame, end = args.start_frame + args.num_frames; f < end;
                  ++f) {
-                reload_frame_dependant(f, scene, resources);
+                if (!reload_frame_dependant(scene_loader, resources, f, take, scene)) {
+                    continue;
+                }
 
                 driver.render(f);
                 driver.export_frame(f, take.exporters);
@@ -181,19 +186,19 @@ static bool load_take_and_scene(std::string const& take_string, scene::Loader& s
                                 Scene& scene) {
     file::System& filesystem = resources.filesystem();
 
+    filesystem.set_frame(frame);
+
     bool const is_json = string::is_json(take_string);
 
-    std::string take_name;
-
     auto stream = is_json ? filesystem.string_stream(take_string)
-                          : filesystem.read_stream(take_string, take_name);
+                          : filesystem.read_stream(take_string, take.resolved_name);
 
-    if (!stream || !take::Loader::load(take, *stream, take_name, frame, false, scene, resources)) {
+    if (!stream || !take::Loader::load(take, *stream, false, scene, resources)) {
         logging::error("Loading take %S: ", take_string);
         return false;
     }
 
-    if (!scene_loader.load(take.scene_filename, take_name, take, scene)) {
+    if (!scene_loader.load(take.scene_filename, take, scene)) {
         logging::error("Loading scene %S: ", take.scene_filename);
         return false;
     }
@@ -201,17 +206,38 @@ static bool load_take_and_scene(std::string const& take_string, scene::Loader& s
     return true;
 }
 
-static void reload_frame_dependant(uint32_t frame, Scene& scene, resource::Manager& resources) {
+static bool reload_frame_dependant(scene::Loader& scene_loader, resource::Manager& resources,
+                                   uint32_t frame, take::Take& take, Scene& scene) {
     file::System& filesystem = resources.filesystem();
 
     if (frame == filesystem.frame()) {
-        return;
+        return true;
     }
 
     filesystem.set_frame(frame);
 
-    resources.deprecate_frame_dependant<image::Image>();
+    if (!resources.deprecate_frame_dependant<image::Image>()) {
+        return true;
+    }
+
+    logging::info("Loading...");
+
+    auto const loading_start = std::chrono::high_resolution_clock::now();
+
     resources.reload_frame_dependant<image::texture::Texture>();
 
     scene.commit_materials(resources.threads());
+
+    take.view.camera->set_entity(prop::Null);
+
+    scene.clear();
+
+    if (!scene_loader.load(take.scene_filename, take, scene)) {
+        logging::error("Loading scene %S: ", take.scene_filename);
+        return false;
+    }
+
+    logging::info("Loading time %f s", chrono::seconds_since(loading_start));
+
+    return true;
 }

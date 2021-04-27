@@ -32,16 +32,6 @@ std::vector<T*> const& Typed_cache<T>::resources() const {
 }
 
 template <typename T>
-void Typed_cache<T>::deprecate_frame_dependant() {
-    for (auto& kv : entries_) {
-        if (std::string const& filename = kv.first.first;
-            file::System::frame_dependant_name(filename)) {
-            kv.second.generation = 0xFFFFFFFF;
-        }
-    }
-}
-
-template <typename T>
 void Typed_cache<T>::reload_frame_dependant(Manager& resources) {
     for (auto const& kv : entries_) {
         if (std::string const& filename = kv.first.first;

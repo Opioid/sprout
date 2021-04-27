@@ -87,6 +87,7 @@ struct Take {
 
     void clear();
 
+    std::string resolved_name;
     std::string scene_filename;
 
     View view;

@@ -130,7 +130,7 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = offset_f(ray.max_t());
         } else {
-            ray.origin  = isec.offset_p(sample_result.wi);
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
 
             transparent     = false;

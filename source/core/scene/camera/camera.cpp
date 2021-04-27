@@ -23,7 +23,7 @@ Camera::~Camera() {
     delete sensor_;
 }
 
-void Camera::init(uint32_t entity) {
+void Camera::set_entity(uint32_t entity) {
     entity_ = entity;
 }
 

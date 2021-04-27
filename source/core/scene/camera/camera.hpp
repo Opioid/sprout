@@ -55,7 +55,7 @@ class Camera {
 
     virtual ~Camera();
 
-    void init(uint32_t entity);
+    void set_entity(uint32_t entity);
 
     uint32_t entity() const;
 

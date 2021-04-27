@@ -47,7 +47,7 @@ class Manager {
     std::vector<T*> const& register_provider(Provider<T>& provider);
 
     template <typename T>
-    void deprecate_frame_dependant();
+    bool deprecate_frame_dependant();
 
     template <typename T>
     void reload_frame_dependant();

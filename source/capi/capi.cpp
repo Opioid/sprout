@@ -182,18 +182,18 @@ int32_t su_load_take(char const* string) {
 
     bool success = true;
 
-    std::string take_name;
-
     std::string const take(string);
 
     {
         bool const is_json = string::is_json(take);
 
-        auto stream = is_json ? engine->resources.filesystem().string_stream(take)
-                              : engine->resources.filesystem().read_stream(take, take_name);
+        auto& filesystem = engine->resources.filesystem();
 
-        if (!stream || !take::Loader::load(engine->take, *stream, take_name, 0xFFFFFFFF,
-                                           engine->progressive, engine->scene, engine->resources)) {
+        auto stream = is_json ? filesystem.string_stream(take)
+                              : filesystem.read_stream(take, engine->take.resolved_name);
+
+        if (!stream || !take::Loader::load(engine->take, *stream, engine->progressive,
+                                           engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
         }
@@ -201,8 +201,8 @@ int32_t su_load_take(char const* string) {
         engine->valid = success && engine->take.view.valid();
     }
 
-    if (success && !engine->scene_loader.load(engine->take.scene_filename, take_name, engine->take,
-                                              engine->scene)) {
+    if (success &&
+        !engine->scene_loader.load(engine->take.scene_filename, engine->take, engine->scene)) {
         logging::error("Loading scene %S: ", engine->take.scene_filename);
         success = false;
     }
@@ -273,7 +273,7 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
 
     uint32_t const prop_id = engine->scene.create_entity();
 
-    camera->init(prop_id);
+    camera->set_entity(prop_id);
 
     engine->take.view.camera = camera;
 

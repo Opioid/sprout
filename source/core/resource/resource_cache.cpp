@@ -1,4 +1,6 @@
 #include "resource_cache.hpp"
+#include "base/memory/variant_map.inl"
+#include "file/file_system.hpp"
 
 namespace resource {
 
@@ -8,6 +10,20 @@ Cache::~Cache() = default;
 
 void Cache::increment_generation() {
     ++generation_;
+}
+
+bool Cache::deprecate_frame_dependant() {
+    bool deprecated = false;
+
+    for (auto& kv : entries_) {
+        if (std::string const& filename = kv.first.first;
+            file::System::frame_dependant_name(filename)) {
+            kv.second.generation = 0xFFFFFFFF;
+            deprecated           = true;
+        }
+    }
+
+    return deprecated;
 }
 
 bool Cache::check_up_to_date(Entry& entry) const {

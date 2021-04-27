@@ -24,12 +24,14 @@ std::vector<T*> const& Manager::register_provider(Provider<T>& provider) {
 }
 
 template <typename T>
-void Manager::deprecate_frame_dependant() {
+bool Manager::deprecate_frame_dependant() {
     Typed_cache<T>* cache = typed_cache<T>();
 
     if (cache) {
-        cache->deprecate_frame_dependant();
+        return cache->deprecate_frame_dependant();
     }
+
+    return false;
 }
 
 template <typename T>

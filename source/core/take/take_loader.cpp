@@ -95,8 +95,8 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 
 static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
 
-bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, uint32_t frame,
-                  bool progressive, Scene& scene, Resources& resources) {
+bool Loader::load(Take& take, std::istream& stream, bool progressive, Scene& scene,
+                  Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -156,10 +156,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name, 
         }
     }
 
-    resources.filesystem().set_frame(frame);
-
     if (take.view.pipeline.empty() && postprocessors_value) {
-        std::string_view const take_mount_folder = string::parent_directory(take_name);
+        std::string_view const take_mount_folder = string::parent_directory(take.resolved_name);
 
         auto& filesystem = resources.filesystem();
 
@@ -316,7 +314,7 @@ bool Loader::load_camera(json::Value const& camera_value, Scene* scene, Camera*&
 
         uint32_t const prop_id = scene->create_entity();
 
-        camera->init(prop_id);
+        camera->set_entity(prop_id);
 
         if (animation_value) {
             if (auto animation = scene::animation::load(*animation_value, trafo, *scene);
