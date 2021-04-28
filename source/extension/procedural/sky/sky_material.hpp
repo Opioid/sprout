@@ -11,7 +11,7 @@ namespace procedural::sky {
 
 class Sky_material : public Material {
   public:
-    Sky_material(Sky& sky);
+    Sky_material(Sky* sky);
 
     scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
                                           const scene::Renderstate& rs, Filter filter,
@@ -29,7 +29,7 @@ class Sky_material : public Material {
 
 class Sky_baked_material : public Material {
   public:
-    Sky_baked_material(Sky& sky);
+    Sky_baked_material(Sky* sky);
 
     ~Sky_baked_material() override;
 

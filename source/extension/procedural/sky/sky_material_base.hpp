@@ -9,10 +9,12 @@ class Sky;
 
 class Material : public scene::material::Material {
   public:
-    Material(Sky& sky);
+    Material(Sky* sky);
+
+    void set_sky(Sky* sky);
 
   protected:
-    Sky& sky_;
+    Sky* sky_;
 };
 
 }  // namespace procedural::sky

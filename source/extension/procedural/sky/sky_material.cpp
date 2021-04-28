@@ -28,7 +28,7 @@ namespace procedural::sky {
 
 using namespace scene;
 
-Sky_material::Sky_material(Sky& sky) : Material(sky) {}
+Sky_material::Sky_material(Sky* sky) : Material(sky) {}
 
 material::Sample const& Sky_material::sample(float3_p           wo, scene::Ray const& /*ray*/,
                                              Renderstate const& rs, Filter /*filter*/,
@@ -37,7 +37,7 @@ material::Sample const& Sky_material::sample(float3_p           wo, scene::Ray c
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    float3 const radiance = sky_.model().evaluate_sky(-wo);
+    float3 const radiance = sky_->model().evaluate_sky(-wo);
 
     sample.set_common(rs, wo, radiance, radiance, 0.f);
 
@@ -46,11 +46,11 @@ material::Sample const& Sky_material::sample(float3_p           wo, scene::Ray c
 
 float3 Sky_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, float /*extent*/,
                                        Filter /*filter*/, Worker const& /*worker*/) const {
-    return sky_.model().evaluate_sky(wi);
+    return sky_->model().evaluate_sky(wi);
 }
 
 float3 Sky_material::average_radiance(float /*area*/) const {
-    return sky_.model().evaluate_sky(Model::zenith());
+    return sky_->model().evaluate_sky(Model::zenith());
 }
 
 void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
@@ -60,7 +60,7 @@ void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
 
 static int2 constexpr Bake_dimensions(256);
 
-Sky_baked_material::Sky_baked_material(Sky& sky)
+Sky_baked_material::Sky_baked_material(Sky* sky)
     : Material(sky),
       cache_(image::Description(Bake_dimensions)),
       cache_texture_(image::texture::Float3(cache_)) {
@@ -116,7 +116,7 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
                                           Scene const& /*scene*/) {
     using namespace image;
 
-    if (!sky_.sky_changed_since_last_check()) {
+    if (!sky_->sky_changed_since_last_check()) {
         return;
     }
 
@@ -150,7 +150,7 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
 
                         float2 const uv = float2(u, v);
                         float3 const wi = unclipped_canopy_mapping(trafo, uv);
-                        float3 const li = sky_.model().evaluate_sky(wi);
+                        float3 const li = sky_->model().evaluate_sky(wi);
 
                         cache.store(x, y, packed_float3(li));
 
@@ -184,7 +184,7 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
         // This controls how often the sky will be sampled,
         // Zenith sample cause less variance in one test (favoring the sun)...
         // average_emission_ = cache_texture->average_3();
-        average_emission_ = sky_.model().evaluate_sky(Model::zenith());
+        average_emission_ = sky_->model().evaluate_sky(Model::zenith());
     }
 }
 

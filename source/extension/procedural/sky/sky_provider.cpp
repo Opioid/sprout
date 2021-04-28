@@ -44,21 +44,40 @@ uint32_t Provider::create_extension(json::Value const& extension_value, Scene& s
 
     uint32_t const sky_entity = scene.create_extension(sky);
 
-    static bool constexpr bake = true;
+    static bool constexpr Bake = true;
 
-    Material* sky_material;
-    Material* sun_material;
+    static char constexpr Sky_name[] = "proc:sky";
+    static char constexpr Sun_name[] = "proc:sun";
 
-    if (bake) {
-        sky_material = new Sky_baked_material(*sky);
-        sun_material = new Sun_baked_material(*sky);
+    uint32_t sky_material_id;
+
+    if (auto const resource = resources.get<material::Material>(Sky_name); resource.ptr) {
+        sky_material_id = resource.id;
+
+        static_cast<Material*>(resource.ptr)->set_sky(sky);
     } else {
-        sky_material = new Sky_material(*sky);
-        sun_material = new Sun_material(*sky);
+        if (Bake) {
+            sky_material_id = resources.store<material::Material>(Sky_name,
+                                                                  new Sky_baked_material(sky));
+        } else {
+            sky_material_id = resources.store<material::Material>(Sky_name, new Sky_material(sky));
+        }
     }
 
-    uint32_t const sky_material_id = resources.store<material::Material>(sky_material);
-    uint32_t const sun_material_id = resources.store<material::Material>(sun_material);
+    uint32_t sun_material_id;
+
+    if (auto const resource = resources.get<material::Material>(Sun_name); resource.ptr) {
+        sun_material_id = resource.id;
+
+        static_cast<Material*>(resource.ptr)->set_sky(sky);
+    } else {
+        if (Bake) {
+            sun_material_id = resources.store<material::Material>(Sun_name,
+                                                                  new Sun_baked_material(sky));
+        } else {
+            sun_material_id = resources.store<material::Material>(Sun_name, new Sun_material(sky));
+        }
+    }
 
     uint32_t const sky_prop = scene.create_prop(scene_loader_->canopy(), &sky_material_id);
     uint32_t const sun_prop = scene.create_prop(scene_loader_->distant_sphere(), &sun_material_id);
