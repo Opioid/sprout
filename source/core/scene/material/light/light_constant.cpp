@@ -12,7 +12,7 @@ namespace scene::material::light {
 
 Constant::Constant(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {
-    properties_.set(Property::Pure_emisive);
+    properties_.set(Property::Pure_emissive);
 }
 
 material::Sample const& Constant::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,

@@ -41,8 +41,6 @@ void Provider::set_material_provider(material::Provider& material_provider) {
 uint32_t Provider::create_extension(json::Value const& value, Scene& scene, Resources& resources) {
     Sky* sky = new Sky;
 
-    uint32_t const sky_entity = scene.create_extension(sky);
-
     static bool constexpr Bake = true;
 
     static char constexpr Sky_name[] = "proc:sky";
@@ -90,7 +88,8 @@ uint32_t Provider::create_extension(json::Value const& value, Scene& scene, Reso
     scene.create_light(sky_prop);
     scene.create_light(sun_prop);
 
-    return sky_entity;
+    return scene.create_extension(sky);
+    ;
 }
 
 }  // namespace procedural::sky

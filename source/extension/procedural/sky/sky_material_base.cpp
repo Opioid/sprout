@@ -12,7 +12,7 @@ Material::Material(Sky* sky)
                            Sampler_settings::Address::Clamp),
           false),
       sky_(sky) {
-    properties_.set(Property::Pure_emisive);
+    properties_.set(Property::Pure_emissive);
 }
 
 void Material::set_sky(Sky* sky) {
