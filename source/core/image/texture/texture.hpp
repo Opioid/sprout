@@ -13,24 +13,32 @@
 #include "texture_float3.hpp"
 #include "texture_half3.hpp"
 
+#include "base/math/vector2.hpp"
+
+namespace scene {
+class Scene;
+}  // namespace scene
+
 namespace image::texture {
 
 class alignas(16) Texture {
   public:
     static char const* identifier();
 
-    Texture(Byte1_unorm const& texture);
-    Texture(Byte2_snorm const& texture);
-    Texture(Byte2_unorm const& texture);
-    Texture(Byte3_snorm const& texture);
-    Texture(Byte3_unorm const& texture);
-    Texture(Byte3_sRGB const& texture);
-    Texture(Byte4_sRGB const& texture);
-    Texture(Half3 const& texture);
-    Texture(Float1 const& texture);
-    Texture(Float1_sparse const& texture);
-    Texture(Float2 const& texture);
-    Texture(Float3 const& texture);
+    uint32_t image_id_;
+
+    Texture(Byte1_unorm const& texture, uint32_t image_id);
+    Texture(Byte2_snorm const& texture, uint32_t image_id);
+    Texture(Byte2_unorm const& texture, uint32_t image_id);
+    Texture(Byte3_snorm const& texture, uint32_t image_id);
+    Texture(Byte3_unorm const& texture, uint32_t image_id);
+    Texture(Byte3_sRGB const& texture, uint32_t image_id);
+    Texture(Byte4_sRGB const& texture, uint32_t image_id);
+    Texture(Half3 const& texture, uint32_t image_id);
+    Texture(Float1 const& texture, uint32_t image_id);
+    Texture(Float1_sparse const& texture, uint32_t image_id);
+    Texture(Float2 const& texture, uint32_t image_id);
+    Texture(Float3 const& texture, uint32_t image_id);
 
     int32_t num_channels() const;
 
@@ -99,6 +107,50 @@ class alignas(16) Texture {
         Float2 const        float2_;
         Float3 const        float3_;
     };
+};
+
+class Sampler_2D;
+
+class Turbotexture {
+public:
+
+    using Scene = scene::Scene;
+
+    enum class Type {
+        Byte1_unorm,
+        Byte2_snorm,
+        Byte2_unorm,
+        Byte3_snorm,
+        Byte3_unorm,
+        Byte3_sRGB,
+        Byte4_sRGB,
+        Half3,
+        Float1,
+        Float1_sparse,
+        Float2,
+        Float3,
+    };
+
+    Turbotexture();
+
+    Turbotexture(Type type, uint32_t image);
+
+    Description const& description(Scene const& scene) const;
+
+    float3 sample_3(Scene const& scene, Sampler_2D const& sampler, float2 uv) const;
+
+    float3 at_3(int32_t x, int32_t y, Scene const& scene) const;
+
+    void gather_3(int4_p xy_xy1, float3 c[4], Scene const& scene) const;
+
+private:
+
+
+    Type type_;
+
+    uint32_t image_id_;
+
+    float2 scale_;
 };
 
 }  // namespace image::texture

@@ -3,12 +3,19 @@
 
 #include "base/math/vector.hpp"
 
+namespace scene {
+class Scene;
+}
+
 namespace image::texture {
 
 class Texture;
+class Turbotexture;
 
 class Sampler_2D {
   public:
+    using Scene = scene::Scene;
+
     virtual ~Sampler_2D();
 
     virtual float  sample_1(Texture const& texture, float2 uv) const = 0;
@@ -18,6 +25,8 @@ class Sampler_2D {
     virtual float  sample_1(Texture const& texture, float2 uv, int32_t element) const = 0;
     virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element) const = 0;
     virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element) const = 0;
+
+    virtual float3 sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const = 0;
 
     virtual float2 address(float2 uv) const = 0;
 };
@@ -33,10 +42,12 @@ class Nearest_2D final : public Sampler_2D {
     float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
     float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
 
+    float3 sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
+
     float2 address(float2 uv) const final;
 
   private:
-    static int2 map(Texture const& texture, float2 uv);
+    static int2 map(int2 d, float2 uv);
 };
 
 template <typename Address_U, typename Address_V>
@@ -50,10 +61,12 @@ class Linear_2D : public Sampler_2D {
     float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
     float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
 
+    float3 sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
+
     float2 address(float2 uv) const final;
 
   private:
-    static float2 map(Texture const& texture, float2 uv, int4& xy_xy1);
+    static float2 map(int2 d, float2 uv, int4& xy_xy1);
 };
 
 class Sampler_3D {

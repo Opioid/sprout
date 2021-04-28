@@ -34,11 +34,12 @@ static float constexpr Interval = 1.f / float(Num_steps);
 
 Scene::Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
              std::vector<Material*> const& material_resources,
-             std::vector<Texture*> const&  texture_resources)
+             std::vector<Texture*> const&  texture_resources, std::vector<Image*> const&  image_resources)
     : null_shape_(null_shape),
       shape_resources_(shape_resources),
       material_resources_(material_resources),
-      texture_resources_(texture_resources) {
+      texture_resources_(texture_resources),
+      image_resources_(image_resources) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_world_positions_.reserve(Num_reserved_props);

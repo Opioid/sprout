@@ -6,6 +6,7 @@
 #include "base/spectrum/discrete.hpp"
 #include "collision_coefficients.hpp"
 #include "image/texture/texture_adapter.hpp"
+#include "image/texture/texture.hpp"
 #include "sampler_settings.hpp"
 
 namespace math {
@@ -56,6 +57,7 @@ class Material {
     using Transformation  = entity::Composed_transformation;
     using Sampler         = sampler::Sampler;
     using Texture_adapter = image::texture::Adapter;
+    using Turbotexture = image::texture::Turbotexture;
 
     static char const* identifier();
 
@@ -174,6 +176,8 @@ class Material {
 
     Texture_adapter mask_;
     Texture_adapter color_map_;
+
+    Turbotexture color_maply_;
 
     CC cc_;
 

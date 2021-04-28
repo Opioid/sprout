@@ -18,9 +18,11 @@ namespace thread {
 class Pool;
 }
 
-namespace image::texture {
+namespace image {
+class Image;
+namespace texture {
 class Texture;
-}
+}}
 
 namespace scene {
 
@@ -83,10 +85,11 @@ class Scene {
     using Material       = material::Material;
     using Shape          = shape::Shape;
     using Texture        = image::texture::Texture;
+    using Image          = image::Image;
 
     Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
           std::vector<Material*> const& material_resources,
-          std::vector<Texture*> const&  texture_resources);
+          std::vector<Texture*> const&  texture_resources, std::vector<Image*> const&  image_resources);
 
     ~Scene();
 
@@ -119,6 +122,10 @@ class Scene {
     Shape const* shape(uint32_t index) const;
 
     Material const* material(uint32_t index) const;
+
+    Texture const* texture(uint32_t id) const;
+
+    Image const* image(uint32_t id) const;
 
     uint32_t num_lights() const;
 
@@ -198,8 +205,6 @@ class Scene {
     uint32_t prop_material_id(uint32_t entity, uint32_t part) const;
 
     prop::Prop_topology const& prop_topology(uint32_t entity) const;
-
-    Texture const* texture(uint32_t id) const;
 
     uint32_t prop_light_id(uint32_t entity, uint32_t part) const;
 
@@ -297,6 +302,7 @@ class Scene {
     std::vector<Shape*> const&    shape_resources_;
     std::vector<Material*> const& material_resources_;
     std::vector<Texture*> const&  texture_resources_;
+    std::vector<Image*> const& image_resources_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;
