@@ -68,6 +68,7 @@ class Material {
     void set_mask(Texture_adapter const& mask);
 
     void set_color_map(Texture_adapter const& color_map);
+    void set_color_maply(uint32_t image);
 
     void set_emission(float3_p emission);
 

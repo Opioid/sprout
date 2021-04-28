@@ -137,11 +137,11 @@ public:
 
     Description const& description(Scene const& scene) const;
 
-    float3 sample_3(Scene const& scene, Sampler_2D const& sampler, float2 uv) const;
+    float2 scale() const;
 
     float3 at_3(int32_t x, int32_t y, Scene const& scene) const;
 
-    void gather_3(int4_p xy_xy1, float3 c[4], Scene const& scene) const;
+    void gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) const;
 
 private:
 

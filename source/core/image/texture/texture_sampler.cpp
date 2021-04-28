@@ -63,7 +63,7 @@ float3 Nearest_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2
 
 template <typename Address_U, typename Address_V>
 float3 Nearest_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const {
-    int2 const xy = map(texture.description(scene).dimensions().xy(), uv);
+    int2 const xy = map(texture.description(scene).dimensions().xy(), texture.scale() * uv);
 
     return texture.at_3(xy[0], xy[1], scene);
 }
@@ -168,7 +168,13 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 
 
 template <typename Address_U, typename Address_V>
 float3 Linear_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const {
-    return float3(0.f);
+    int4         xy_xy1;
+    float2 const st = map(texture.description(scene).dimensions().xy(), texture.scale() * uv, xy_xy1);
+
+    float3 c[4];
+    texture.gather_3(xy_xy1, scene, c);
+
+    return bilinear(c, st[0], st[1]);
 }
 
 template <typename Address_U, typename Address_V>

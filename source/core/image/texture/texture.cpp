@@ -52,4 +52,45 @@ float3 Texture::average_3(int32_t element) const {
     return average / (df[0] * df[1]);
 }
 
+float3 Turbotexture::at_3(int32_t x, int32_t y, Scene const& scene) const {
+    Image const* image = scene.image(image_id_);
+
+    switch (type_) {
+    case Type::Byte3_sRGB: {
+        byte3 const value = image->byte3().at(x, y);
+#ifdef SU_ACESCG
+    return spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value));
+#else
+    return encoding::cached_srgb_to_float(value);
+#endif
+    }
+    }
+
+    return float3(0.f);
+}
+
+void Turbotexture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) const {
+    Image const* image = scene.image(image_id_);
+
+    switch (type_) {
+    case Type::Byte3_sRGB: {
+        byte3 values[4];
+        image->byte3().gather(xy_xy1, values);
+#ifdef SU_ACESCG
+    c[0] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(values[0]));
+    c[1] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(values[1]));
+    c[2] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(values[2]));
+    c[3] = spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(values[3]));
+#else
+    c[0] = encoding::cached_srgb_to_float(values[0]);
+    c[1] = encoding::cached_srgb_to_float(values[1]);
+    c[2] = encoding::cached_srgb_to_float(values[2]);
+    c[3] = encoding::cached_srgb_to_float(values[3]);
+#endif
+        return;
+    }
+    }
+
+}
+
 }  // namespace image::texture

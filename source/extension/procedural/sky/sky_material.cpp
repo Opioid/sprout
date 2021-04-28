@@ -63,7 +63,7 @@ static int2 constexpr Bake_dimensions(256);
 Sky_baked_material::Sky_baked_material(Sky& sky)
     : Material(sky),
       cache_(image::Description(Bake_dimensions)),
-      cache_texture_(image::texture::Float3(cache_)) {
+      cache_texture_(image::texture::Float3(cache_), 0xFFFFFFFF) {
     properties_.set(Property::Emission_map);
 }
 

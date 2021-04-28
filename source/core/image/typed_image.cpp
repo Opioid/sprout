@@ -105,6 +105,22 @@ T Typed_image<T>::at(int32_t x, int32_t y) const {
 }
 
 template <typename T>
+void Typed_image<T>::gather(int4_p xy_xy1, T c[4]) const {
+    int32_t const width = description_.dimensions_[0];
+
+    int32_t const y0 = width * xy_xy1[1];
+
+    c[0] = data_[y0 + xy_xy1[0]];
+    c[1] = data_[y0 + xy_xy1[2]];
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    c[2] = data_[y1 + xy_xy1[0]];
+    c[3] = data_[y1 + xy_xy1[2]];
+
+}
+
+template <typename T>
 T* Typed_image<T>::data() const {
     return data_;
 }

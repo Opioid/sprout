@@ -162,36 +162,8 @@ inline Description const& Turbotexture::description(Scene const& scene) const {
     return scene.image(image_id_)->description();
 }
 
-inline float3 Turbotexture::sample_3(Scene const& scene, Sampler_2D const& sampler, float2 uv) const {
-    return sampler.sample_3(*this, scale_ * uv, scene);
-}
-
-inline float3 Turbotexture::at_3(int32_t x, int32_t y, Scene const& scene) const {
-    Image const* image = scene.image(image_id_);
-
-    switch (type_) {
-    case Type::Byte3_sRGB: {
-        byte3 const value = image->byte3().at(x, y);
-#ifdef SU_ACESCG
-    return spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value));
-#else
-    return encoding::cached_srgb_to_float(value);
-#endif
-    }
-    }
-
-    return float3(0.f);
-}
-
-inline void Turbotexture::gather_3(int4_p xy_xy1, float3 c[4], Scene const& scene) const {
-    Image const* image = scene.image(image_id_);
-
-    switch (type_) {
-    case Type::Byte3_sRGB:
-        return;
-    }
-
-
+inline float2 Turbotexture::scale() const {
+    return scale_;
 }
 
 }  // namespace image::texture

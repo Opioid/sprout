@@ -4,7 +4,7 @@
 #include "base/spectrum/aces.hpp"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
-
+#include "image/texture/texture.inl"
 #include "scene/scene_renderstate.hpp"
 
 namespace scene::material {
@@ -31,6 +31,10 @@ void Material::set_mask(Texture_adapter const& mask) {
 
 void Material::set_color_map(Texture_adapter const& color_map) {
     color_map_ = color_map;
+}
+
+void Material::set_color_maply(uint32_t image) {
+    color_maply_ = Turbotexture(Turbotexture::Type::Byte3_sRGB, image);
 }
 
 void Material::set_emission(float3_p emission) {

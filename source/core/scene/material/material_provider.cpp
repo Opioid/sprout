@@ -43,6 +43,7 @@
 namespace scene::material {
 
 using Texture   = image::texture::Texture;
+using Turbotexture = image::texture::Turbotexture;
 using Tex_usage = image::texture::Provider::Usage;
 using Resources = resource::Manager;
 using Variants  = memory::Variant_map;
@@ -81,6 +82,8 @@ struct Mapped_value {
 
     Texture_adapter texture;
 
+    uint32_t image_id;
+
     Value value;
 };
 
@@ -93,6 +96,9 @@ static void read_sampler_settings(json::Value const& value, Sampler_settings& se
 
 static Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
                                       Resources& resources);
+
+static Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
+                               Resources& resources, uint32_t& image_id);
 
 static float3 read_color(json::Value const& value);
 
@@ -903,6 +909,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
 
     material->set_mask(mask);
     material->set_color_map(color.texture);
+    material->set_color_maply(color.image_id);
     material->set_normal_map(normal_map);
     material->set_surface_map(roughness.texture);
     material->set_emission_map(emission_map);
@@ -1129,6 +1136,30 @@ Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
     return Texture_adapter(resources.load<Texture>(desc.filename, options).id, desc.scale);
 }
 
+Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
+                               Resources& resources, uint32_t& image_id) {
+    Variants options;
+    options.set("usage", usage);
+
+    if (desc.num_elements > 1) {
+        options.set("num_elements", desc.num_elements);
+    }
+
+    if (image::Swizzle::Undefined != desc.swizzle) {
+        options.set("swizzle", desc.swizzle);
+    }
+
+    if (desc.invert) {
+        options.set("invert", desc.invert);
+    }
+
+    auto const r = resources.load<Texture>(desc.filename, options);
+
+    image_id = r.ptr->image_id_;
+
+    return Texture_adapter(r.id, desc.scale);
+}
+
 void read_coating_description(json::Value const& value, bool no_tex_dwim,
                               Coating_description& coating) {
     if (!value.IsObject()) {
@@ -1266,7 +1297,7 @@ void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usa
         Texture_description const desc = read_texture_description(value, no_tex_dwim);
 
         if (!desc.filename.empty()) {
-            result.texture = create_texture(desc, usage, resources);
+            result.texture = create_texture(desc, usage, resources, result.image_id);
         }
     }
 }
@@ -1279,7 +1310,7 @@ void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usa
         Texture_description const desc = read_texture_description(value, no_tex_dwim);
 
         if (!desc.filename.empty()) {
-            result.texture = create_texture(desc, usage, resources);
+            result.texture = create_texture(desc, usage, resources, result.image_id);
         }
     }
 }

@@ -3,6 +3,7 @@
 
 #include "base/math/vector3.inl"
 #include "image/texture/texture_adapter.inl"
+#include "image/texture/texture.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_helper.hpp"
@@ -35,7 +36,9 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     float3 color;
     if (color_map_.is_valid()) {
-        color = color_map_.sample_3(worker, sampler, rs.uv);
+     //   color = color_map_.sample_3(worker, sampler, rs.uv);
+
+        color = sampler.sample_3(color_maply_, rs.uv, worker.scene());
     } else {
         color = color_;
     }

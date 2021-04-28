@@ -33,6 +33,8 @@ class alignas(16) Typed_image {
 
     T at(int32_t x, int32_t y) const;
 
+    void gather(int4_p xy_xy1, T c[4]) const;
+
     T* data() const;
 
     void copy(Typed_image& destination) const;
