@@ -106,7 +106,7 @@ inline bool Material::has_emission_map() const {
 }
 
 inline bool Material::is_pure_emissive() const {
-    return properties_.is(Property::Pure_emisive);
+    return properties_.is(Property::Pure_emissive);
 }
 
 inline bool Material::is_scattering_volume() const {

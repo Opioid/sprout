@@ -167,7 +167,7 @@ class Material {
         Caustic              = 1 << 2,
         Tinted_shadow        = 1 << 3,
         Emission_map         = 1 << 4,
-        Pure_emisive         = 1 << 5,
+        Pure_emissive        = 1 << 5,
         Scattering_volume    = 1 << 6,
         Textured_volume      = 1 << 7,
         Heterogeneous_volume = 1 << 8
