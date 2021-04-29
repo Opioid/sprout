@@ -32,7 +32,9 @@ std::vector<T*> const& Typed_cache<T>::resources() const {
 }
 
 template <typename T>
-void Typed_cache<T>::reload_frame_dependant(Manager& resources) {
+bool Typed_cache<T>::reload_frame_dependant(Manager& resources) {
+    bool deprecated = false;
+
     for (auto const& kv : entries_) {
         if (std::string const& filename = kv.first.first;
             file::System::frame_dependant_name(filename)) {
@@ -44,9 +46,13 @@ void Typed_cache<T>::reload_frame_dependant(Manager& resources) {
 
                 delete resources_[id];
                 resources_[id] = resource;
+
+                deprecated = true;
             }
         }
     }
+
+    return deprecated;
 }
 
 template <typename T>

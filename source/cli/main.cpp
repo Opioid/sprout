@@ -173,6 +173,10 @@ int main(int argc, char* argv[]) {
 
         resources.increment_generation();
         image_provider.increment_generation();
+
+        if (args.num_frames > 1) {
+            resources.deprecate_frame_dependant<image::Image>();
+        }
     }
 
     return 0;
@@ -213,15 +217,13 @@ static bool reload_frame_dependant(scene::Loader& scene_loader, resource::Manage
 
     filesystem.set_frame(frame);
 
-    if (!resources.deprecate_frame_dependant<image::Image>()) {
+    if (!resources.reload_frame_dependant<image::Image>()) {
         return true;
     }
 
     logging::info("Loading...");
 
     auto const loading_start = std::chrono::high_resolution_clock::now();
-
-    resources.reload_frame_dependant<image::texture::Texture>();
 
     scene.commit_materials(resources.threads());
 

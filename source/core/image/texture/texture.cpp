@@ -53,6 +53,15 @@ float3 Texture::average_3(int32_t element) const {
 }
 
 float Turbotexture::at_1(int32_t x, int32_t y, Scene const& scene) const {
+    Image const* image = scene.image(image_id_);
+
+    switch (type_) {
+    case Type::Byte1_unorm: {
+        uint8_t const value = image->byte1().at(x, y);
+        return encoding::cached_unorm_to_float(value);
+    }
+    }
+
     return 0.f;
 }
 
@@ -98,7 +107,20 @@ float4 Turbotexture::at_4(int32_t x, int32_t y, Scene const& scene) const {
 }
 
 void Turbotexture::gather_1(int4_p xy_xy1, Scene const& scene, float c[4]) const {
+    Image const* image = scene.image(image_id_);
 
+    switch (type_) {
+    case Type::Byte1_unorm: {
+        uint8_t values[4];
+        image->byte1().gather(xy_xy1, values);
+
+    c[0] = encoding::cached_unorm_to_float(values[0]);
+    c[1] = encoding::cached_unorm_to_float(values[1]);
+    c[2] = encoding::cached_unorm_to_float(values[2]);
+    c[3] = encoding::cached_unorm_to_float(values[3]);
+
+    }
+    }
 }
 
 void Turbotexture::gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const {
@@ -176,10 +198,32 @@ float3 Turbotexture::at_element_3(int32_t x, int32_t y, int32_t element, Scene c
 }
 
 float Turbotexture::at_1(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
+    Image const* image = scene.image(image_id_);
+
+    switch (type_) {
+    case Type::Float1: {
+        return image->float1().at(x, y, z);
+    }
+    case Type::Float1_sparse: {
+        return image->float1_sparse().at(x, y, z);
+    }
+    case Type::Float2: {
+        return image->float2().at(x, y, z)[0];
+    }
+    }
+
     return 0.f;
 }
 
 float2 Turbotexture::at_2(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
+    Image const* image = scene.image(image_id_);
+
+    switch (type_) {
+    case Type::Float2: {
+        return image->float2().at(x, y, z);
+    }
+    }
+
     return float2(0.f);
 }
 
@@ -192,11 +236,42 @@ float4 Turbotexture::at_4(int32_t x, int32_t y, int32_t z, Scene const& scene) c
 }
 
 void Turbotexture::gather_1(int3_p xyz, int3_p xyz1, Scene const& scene, float c[8]) const {
+    Image const* image = scene.image(image_id_);
 
+    switch (type_) {
+    case Type::Float1: {
+        image->float1().gather(xyz, xyz1, c);
+        break;
+    }
+    case Type::Float1_sparse: {
+        image->float1_sparse().gather(xyz, xyz1, c);
+        break;
+    }
+    case Type::Float2: {
+        float2 values[8];
+        image->float2().gather(xyz, xyz1, values);
+        c[0] = values[0][0];
+        c[1] = values[1][0];
+        c[2] = values[2][0];
+        c[3] = values[3][0];
+        c[4] = values[4][0];
+        c[5] = values[5][0];
+        c[6] = values[6][0];
+        c[7] = values[7][0];
+        break;
+    }
+    }
 }
 
 void Turbotexture::gather_2(int3_p xyz, int3_p xyz1, Scene const& scene, float2 c[8]) const {
+    Image const* image = scene.image(image_id_);
 
+    switch (type_) {
+    case Type::Float2: {
+        image->float2().gather(xyz, xyz1, c);
+        break;
+    }
+    }
 }
 
 float Turbotexture::average_1(Scene const& scene) const {

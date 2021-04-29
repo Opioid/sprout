@@ -33,10 +33,12 @@ bool Manager::deprecate_frame_dependant() {
 }
 
 template <typename T>
-void Manager::reload_frame_dependant() {
+bool Manager::reload_frame_dependant() {
     if (Typed_cache<T>* cache = typed_cache<T>(); cache) {
-        cache->reload_frame_dependant(*this);
+        return cache->reload_frame_dependant(*this);
     }
+
+    return false;
 }
 
 template <typename T>

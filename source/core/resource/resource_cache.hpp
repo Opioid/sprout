@@ -60,7 +60,7 @@ class Typed_cache final : public Cache {
 
     std::vector<T*> const& resources() const;
 
-    void reload_frame_dependant(Manager& resources);
+    bool reload_frame_dependant(Manager& resources);
 
     Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources);
 
