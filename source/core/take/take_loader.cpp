@@ -15,6 +15,7 @@
 #include "image/encoding/png/png_writer.hpp"
 #include "image/encoding/rgbe/rgbe_writer.hpp"
 #include "image/texture/texture.inl"
+#include "image/texture/texture_provider.hpp"
 #include "logging/logging.hpp"
 #include "rendering/integrator/particle/lighttracer.hpp"
 #include "rendering/integrator/surface/ao.hpp"
@@ -809,12 +810,12 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto const backplate_res = resources.load<image::texture::Texture>(name);
-            if (!backplate_res.ptr) {
+            auto const backplate_res = image::texture::Provider::load(name, memory::Variant_map(), float2(1.f), resources);
+            if (!backplate_res.is_valid()) {
                 continue;
             }
 
-            pipeline.add(new Backplate(backplate_res.ptr));
+            pipeline.add(new Backplate(backplate_res));
         } else if ("Bloom" == n->name) {
             float const angle     = json::read_float(n->value, "angle", 0.00002f);
             float const alpha     = json::read_float(n->value, "alpha", 0.005f);

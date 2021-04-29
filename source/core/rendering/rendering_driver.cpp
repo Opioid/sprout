@@ -161,9 +161,9 @@ void Driver::postprocess() {
     auto& camera = *view_->camera;
 
     if (ranges_.size() > 0 && view_->num_samples_per_pixel > 0) {
-        view_->pipeline.apply_accumulate(camera.sensor(), target_, threads_);
+        view_->pipeline.apply_accumulate(camera.sensor(), target_, *scene_, threads_);
     } else {
-        view_->pipeline.apply(camera.sensor(), target_, threads_);
+        view_->pipeline.apply(camera.sensor(), target_, *scene_, threads_);
     }
 }
 

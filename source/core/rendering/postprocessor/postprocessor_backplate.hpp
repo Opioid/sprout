@@ -1,14 +1,14 @@
 #ifndef SU_CORE_RENDERING_POSTPROCESSOR_BACKPLATE_HPP
 #define SU_CORE_RENDERING_POSTPROCESSOR_BACKPLATE_HPP
 
-#include "image/texture/texture_types.hpp"
+#include "image/texture/texture.hpp"
 #include "postprocessor.hpp"
 
 namespace rendering::postprocessor {
 
 class Backplate : public Postprocessor {
   public:
-    Backplate(image::texture::Texture const* backplate);
+    Backplate(image::texture::Turbotexture const& backplate);
 
     void init(scene::camera::Camera const& camera, Threads& threads) final;
 
@@ -16,9 +16,9 @@ class Backplate : public Postprocessor {
 
   private:
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
-               image::Float4& destination) final;
+               image::Float4& destination, Scene const& scene) final;
 
-    image::texture::Texture const* backplate_;
+    image::texture::Turbotexture backplate_;
 };
 
 }  // namespace rendering::postprocessor

@@ -3,6 +3,10 @@
 
 #include "scene/material/material.hpp"
 
+namespace image::texture {
+class Sampler_2D;
+}
+
 namespace scene::material::substitute {
 
 class Material_base : public material::Material {
