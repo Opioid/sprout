@@ -1127,7 +1127,7 @@ Turbotexture create_texture(Texture_description const& desc, Tex_usage usage,
         options.set("invert", desc.invert);
     }
 
-    return image::texture::Provider::loadly(desc.filename, options, float2(desc.scale), resources);
+    return image::texture::Provider::load(desc.filename, options, float2(desc.scale), resources);
 }
 
 void read_coating_description(json::Value const& value, bool no_tex_dwim,

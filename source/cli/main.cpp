@@ -106,9 +106,6 @@ int main(int argc, char* argv[]) {
     image::Provider image_provider;
     auto const&     image_resources = resources.register_provider(image_provider);
 
-    image::texture::Provider texture_provider(args.no_textures);
-    auto const&              texture_resources = resources.register_provider(texture_provider);
-
     shape::triangle::Provider mesh_provider;
     auto const&               shape_resources = resources.register_provider(mesh_provider);
 
@@ -120,7 +117,7 @@ int main(int argc, char* argv[]) {
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    Scene scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources, image_resources);
+    Scene scene(scene_loader.null_shape(), shape_resources, material_resources, image_resources);
 
     std::string take_name;
 

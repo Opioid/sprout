@@ -131,6 +131,7 @@ void Turbotexture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) cons
     c[1] = encoding::cached_snorm_to_float(values[1]);
     c[2] = encoding::cached_snorm_to_float(values[2]);
     c[3] = encoding::cached_snorm_to_float(values[3]);
+    break;
     }
 
     case Type::Byte3_sRGB: {
@@ -147,7 +148,7 @@ void Turbotexture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) cons
     c[2] = encoding::cached_srgb_to_float(values[2]);
     c[3] = encoding::cached_srgb_to_float(values[3]);
 #endif
-        return;
+        break;
     }
     case Type::Float3: {
         packed_float3 values[4];
@@ -156,6 +157,7 @@ void Turbotexture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) cons
         c[1] = float3(values[1]);
         c[2] = float3(values[2]);
         c[3] = float3(values[3]);
+        break;
     }
     }
 

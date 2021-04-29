@@ -89,7 +89,7 @@ class Scene {
 
     Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
           std::vector<Material*> const& material_resources,
-          std::vector<Texture*> const&  texture_resources, std::vector<Image*> const&  image_resources);
+          std::vector<Image*> const&  image_resources);
 
     ~Scene();
 
@@ -122,8 +122,6 @@ class Scene {
     Shape const* shape(uint32_t index) const;
 
     Material const* material(uint32_t index) const;
-
-    Texture const* texture(uint32_t id) const;
 
     Image const* image(uint32_t id) const;
 
@@ -301,7 +299,6 @@ class Scene {
 
     std::vector<Shape*> const&    shape_resources_;
     std::vector<Material*> const& material_resources_;
-    std::vector<Texture*> const&  texture_resources_;
     std::vector<Image*> const& image_resources_;
 
     std::vector<uint32_t> finite_props_;

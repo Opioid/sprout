@@ -64,9 +64,6 @@ int main(int argc, char* argv[]) {
     image::Provider image_provider;
     resources.register_provider(image_provider);
 
-    texture::Provider texture_provider(false);
-    resources.register_provider(texture_provider);
-
     Pipeline pipeline;
 
     if (!args.take.empty()) {

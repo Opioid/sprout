@@ -66,13 +66,11 @@ struct Engine {
         : threads(Threads::num_threads(0)),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
-          texture_provider(false),
-          texture_resources(resources.register_provider(texture_provider)),
           material_provider(false, false),
           material_resources(resources.register_provider(material_provider)),
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),
-          scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources, image_resources),
+          scene(scene_loader.null_shape(), shape_resources, material_resources, image_resources),
           driver(threads, progressor),
           frame(0),
           frame_iteration(0),
@@ -84,9 +82,6 @@ struct Engine {
 
     image::Provider                   image_provider;
     std::vector<image::Image*> const& image_resources;
-
-    image::texture::Provider                     texture_provider;
-    std::vector<image::texture::Texture*> const& texture_resources;
 
     material::Provider                      material_provider;
     std::vector<material::Material*> const& material_resources;

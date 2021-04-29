@@ -30,8 +30,6 @@ class Adapter {
 
     bool is_valid() const;
 
-    Texture const& texture(Scene const& scene) const;
-
     float  sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
     float2 sample_2(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;
     float3 sample_3(Worker const& worker, Sampler_2D const& sampler, float2 uv) const;

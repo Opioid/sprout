@@ -25,10 +25,6 @@ inline bool Adapter::is_valid() const {
     return texture_ != 0xFFFFFFFF;
 }
 
-inline Texture const& Adapter::texture(Scene const& scene) const {
-    return *scene.texture(texture_);
-}
-
 inline float Adapter::sample_1(Worker const& worker, Sampler_2D const& sampler, float2 uv) const {
     return sampler.sample_1(*worker.texture(texture_), scale_ * uv);
 }

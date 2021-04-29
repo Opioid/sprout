@@ -52,10 +52,6 @@ inline material::Sample_cache& Worker::sample_cache() {
     return sample_cache_;
 }
 
-inline image::texture::Texture const* Worker::texture(uint32_t id) const {
-    return scene_->texture(id);
-}
-
 inline prop::Interface_stack& Worker::interface_stack() {
     return interface_stack_;
 }

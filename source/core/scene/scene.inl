@@ -200,10 +200,6 @@ inline material::Material const* Scene::material(uint32_t index) const {
     return material_resources_[index];
 }
 
-inline image::texture::Texture const* Scene::texture(uint32_t id) const {
-    return texture_resources_[id];
-}
-
 inline image::Image const* Scene::image(uint32_t id) const {
     return image_resources_[id];
 }
