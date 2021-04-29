@@ -5,7 +5,6 @@
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
 #include "collision_coefficients.hpp"
-#include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture.hpp"
 #include "sampler_settings.hpp"
 

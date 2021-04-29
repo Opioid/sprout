@@ -3,7 +3,6 @@
 
 #include "base/math/distribution/distribution_3d.hpp"
 #include "base/math/interpolated_function_1d.hpp"
-#include "image/texture/texture_adapter.hpp"
 #include "volumetric_material.hpp"
 #include "volumetric_octree.hpp"
 

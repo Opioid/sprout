@@ -1,7 +1,7 @@
 #include "glass_thin_material.hpp"
 #include "base/math/vector3.inl"
 #include "glass_thin_sample.hpp"
-#include "image/texture/texture_adapter.inl"
+
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"

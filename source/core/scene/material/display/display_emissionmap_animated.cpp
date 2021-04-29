@@ -1,6 +1,5 @@
 #include "display_emissionmap_animated.hpp"
 #include "display_sample.hpp"
-#include "image/texture/texture_adapter.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material.inl"

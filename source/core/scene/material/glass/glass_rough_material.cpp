@@ -1,7 +1,7 @@
 #include "glass_rough_material.hpp"
 #include "base/math/vector4.inl"
 #include "glass_rough_sample.hpp"
-#include "image/texture/texture_adapter.inl"
+
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material.inl"

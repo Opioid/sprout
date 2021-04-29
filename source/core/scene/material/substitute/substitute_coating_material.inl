@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_INL
 #define SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_INL
 
-#include "image/texture/texture_adapter.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "substitute_base_material.inl"

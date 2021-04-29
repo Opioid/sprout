@@ -18,7 +18,7 @@
 #include "glass/glass_thin_material.hpp"
 #include "image/channels.hpp"
 #include "image/texture/texture.inl"
-#include "image/texture/texture_adapter.inl"
+
 #include "image/texture/texture_provider.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"

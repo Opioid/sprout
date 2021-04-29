@@ -2,7 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_MATERIAL_INL
 
 #include "base/math/vector3.inl"
-#include "image/texture/texture_adapter.inl"
+
 #include "image/texture/texture.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"

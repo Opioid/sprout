@@ -1,6 +1,6 @@
 #include "metal_material.hpp"
 #include "base/math/vector4.inl"
-#include "image/texture/texture_adapter.inl"
+
 #include "metal_sample.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material.inl"

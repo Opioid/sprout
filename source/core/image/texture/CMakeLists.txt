@@ -2,8 +2,6 @@ target_sources(core
     PRIVATE
     "address_mode.hpp"
     "bilinear.hpp"
-    "texture_adapter.hpp"
-    "texture_adapter.inl"
     "texture_byte1_unorm.cpp"
     "texture_byte1_unorm.hpp"
     "texture_byte2_snorm.cpp"

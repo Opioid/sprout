@@ -10,7 +10,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.inl"
-#include "image/texture/texture_adapter.inl"
+
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"

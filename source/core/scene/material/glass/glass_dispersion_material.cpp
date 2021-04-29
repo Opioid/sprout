@@ -1,7 +1,7 @@
 #include "glass_dispersion_material.hpp"
 #include "base/math/vector4.inl"
 #include "glass_dispersion_sample.hpp"
-#include "image/texture/texture_adapter.inl"
+
 #include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
