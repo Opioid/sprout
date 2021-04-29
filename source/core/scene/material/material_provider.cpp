@@ -80,9 +80,7 @@ template <typename Value>
 struct Mapped_value {
     Mapped_value(Value v) : value(v){};
 
-    Texture_adapter texture;
-
-    uint32_t image_id;
+    Turbotexture texture;
 
     Value value;
 };
@@ -94,15 +92,12 @@ static void read_coating_description(json::Value const& value, bool no_tex_dwim,
 
 static void read_sampler_settings(json::Value const& value, Sampler_settings& settings);
 
-static Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
+static Turbotexture create_texture(Texture_description const& desc, Tex_usage usage,
                                       Resources& resources);
-
-static Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
-                               Resources& resources, uint32_t& image_id);
 
 static float3 read_color(json::Value const& value);
 
-static Texture_adapter read_texture(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
+static Turbotexture read_texture(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
                                     Resources& resources);
 
 static void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
@@ -210,7 +205,7 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
 Material* Provider::load_debug(json::Value const& debug_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
-    Texture_adapter mask;
+    Turbotexture mask;
 
     for (auto const& n : debug_value.GetObject()) {
         if ("mask" == n.name) {
@@ -242,8 +237,8 @@ Material* Provider::load_debug(json::Value const& debug_value, Resources& resour
 Material* Provider::load_display(json::Value const& display_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
-    Texture_adapter mask;
-    Texture_adapter emission_map;
+    Turbotexture mask;
+    Turbotexture emission_map;
 
     bool two_sided = false;
 
@@ -322,8 +317,8 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
 
     Mapped_value<float> roughness(0.f);
 
-    Texture_adapter mask;
-    Texture_adapter normal_map;
+    Turbotexture mask;
+    Turbotexture normal_map;
 
     float3 refraction_color(1.f);
     float3 attenuation_color(1.f);
@@ -427,7 +422,7 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
 
     uint64_t animation_duration = 0;
 
-    Texture_adapter mask;
+    Turbotexture mask;
 
     bool two_sided = false;
 
@@ -509,10 +504,10 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
 Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
-    Texture_adapter normal_map;
+    Turbotexture normal_map;
     //	Texture_ptr surface_map;
-    Texture_adapter direction_map;
-    Texture_adapter mask;
+    Turbotexture direction_map;
+    Turbotexture mask;
 
     bool two_sided = false;
 
@@ -592,7 +587,7 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
 Material* Provider::load_mix(json::Value const& mix_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
-    Texture_adapter mask;
+    Turbotexture mask;
 
     bool two_sided = false;
 
@@ -657,10 +652,10 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
     Mapped_value<float3> color(float3(0.5f));
     Mapped_value<float>  roughness(0.8f);
 
-    Texture_adapter normal_map;
-    Texture_adapter emission_map;
-    Texture_adapter mask;
-    Texture_adapter density_map;
+    Turbotexture normal_map;
+    Turbotexture emission_map;
+    Turbotexture mask;
+    Turbotexture density_map;
 
     bool two_sided = false;
 
@@ -780,8 +775,8 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
     }
 
     if (coating.thickness > 0.f) {
-        Texture_adapter coating_thickness_map;
-        Texture_adapter coating_normal_map;
+        Turbotexture coating_thickness_map;
+        Turbotexture coating_normal_map;
 
         if (!coating.thickness_map_description.filename.empty()) {
             coating_thickness_map = create_texture(coating.thickness_map_description,
@@ -909,7 +904,6 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
 
     material->set_mask(mask);
     material->set_color_map(color.texture);
-    material->set_color_maply(color.image_id);
     material->set_normal_map(normal_map);
     material->set_surface_map(roughness.texture);
     material->set_emission_map(emission_map);
@@ -930,8 +924,8 @@ Material* Provider::load_volumetric(json::Value const& value, Resources& resourc
 
     Mapped_value<float3> color(float3(0.5f));
 
-    Texture_adapter density_map;
-    Texture_adapter temperature_map;
+    Turbotexture density_map;
+    Turbotexture temperature_map;
 
     float3 attenuation_color(0.f);
     float3 subsurface_color(0.f);
@@ -1116,7 +1110,7 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
     return desc;
 }
 
-Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
+Turbotexture create_texture(Texture_description const& desc, Tex_usage usage,
                                Resources& resources) {
     Variants options;
     options.set("usage", usage);
@@ -1133,31 +1127,7 @@ Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
         options.set("invert", desc.invert);
     }
 
-    return Texture_adapter(resources.load<Texture>(desc.filename, options).id, desc.scale);
-}
-
-Texture_adapter create_texture(Texture_description const& desc, Tex_usage usage,
-                               Resources& resources, uint32_t& image_id) {
-    Variants options;
-    options.set("usage", usage);
-
-    if (desc.num_elements > 1) {
-        options.set("num_elements", desc.num_elements);
-    }
-
-    if (image::Swizzle::Undefined != desc.swizzle) {
-        options.set("swizzle", desc.swizzle);
-    }
-
-    if (desc.invert) {
-        options.set("invert", desc.invert);
-    }
-
-    auto const r = resources.load<Texture>(desc.filename, options);
-
-    image_id = r.ptr->image_id_;
-
-    return Texture_adapter(r.id, desc.scale);
+    return image::texture::Provider::loadly(desc.filename, options, float2(desc.scale), resources);
 }
 
 void read_coating_description(json::Value const& value, bool no_tex_dwim,
@@ -1278,7 +1248,7 @@ float3 read_color(json::Value const& value) {
     return map_color(read_hex_RGB(hex_string));
 }
 
-Texture_adapter read_texture(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
+Turbotexture read_texture(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
                              Resources& resources) {
     Texture_description const desc = read_texture_description(value, no_tex_dwim);
 
@@ -1286,7 +1256,7 @@ Texture_adapter read_texture(json::Value const& value, bool no_tex_dwim, Tex_usa
         return create_texture(desc, usage, resources);
     }
 
-    return Texture_adapter();
+    return Turbotexture();
 }
 
 void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
@@ -1297,7 +1267,7 @@ void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usa
         Texture_description const desc = read_texture_description(value, no_tex_dwim);
 
         if (!desc.filename.empty()) {
-            result.texture = create_texture(desc, usage, resources, result.image_id);
+            result.texture = create_texture(desc, usage, resources);
         }
     }
 }
@@ -1310,7 +1280,7 @@ void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usa
         Texture_description const desc = read_texture_description(value, no_tex_dwim);
 
         if (!desc.filename.empty()) {
-            result.texture = create_texture(desc, usage, resources, result.image_id);
+            result.texture = create_texture(desc, usage, resources);
         }
     }
 }

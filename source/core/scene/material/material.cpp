@@ -25,16 +25,12 @@ Material::Material(Sampler_settings sampler_settings, bool two_sided)
 
 Material::~Material() = default;
 
-void Material::set_mask(Texture_adapter const& mask) {
+void Material::set_mask(Turbotexture const& mask) {
     mask_ = mask;
 }
 
-void Material::set_color_map(Texture_adapter const& color_map) {
+void Material::set_color_map(Turbotexture const& color_map) {
     color_map_ = color_map;
-}
-
-void Material::set_color_maply(uint32_t image) {
-    color_maply_ = Turbotexture(Turbotexture::Type::Byte3_sRGB, image);
 }
 
 void Material::set_emission(float3_p emission) {

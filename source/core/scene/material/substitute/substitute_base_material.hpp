@@ -16,9 +16,9 @@ class Material_base : public material::Material {
 
     float3 average_radiance(float area) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
-    void set_surface_map(Texture_adapter const& surface_map);
-    void set_emission_map(Texture_adapter const& emission_map);
+    void set_normal_map(Turbotexture const& normal_map);
+    void set_surface_map(Turbotexture const& surface_map);
+    void set_emission_map(Turbotexture const& emission_map);
 
     void set_color(float3_p color);
 
@@ -33,9 +33,9 @@ class Material_base : public material::Material {
     void set_sample(float3_p wo, Renderstate const& rs, float ior_outside,
                     Texture_sampler_2D const& sampler, Worker const& worker, Sample& sample) const;
 
-    Texture_adapter normal_map_;
-    Texture_adapter surface_map_;
-    Texture_adapter emission_map_;
+    Turbotexture normal_map_;
+    Turbotexture surface_map_;
+    Turbotexture emission_map_;
 
     float3 color_;
     float3 average_emission_;

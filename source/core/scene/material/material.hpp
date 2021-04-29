@@ -56,7 +56,6 @@ class Material {
     using Shape           = shape::Shape;
     using Transformation  = entity::Composed_transformation;
     using Sampler         = sampler::Sampler;
-    using Texture_adapter = image::texture::Adapter;
     using Turbotexture = image::texture::Turbotexture;
 
     static char const* identifier();
@@ -65,10 +64,9 @@ class Material {
 
     virtual ~Material();
 
-    void set_mask(Texture_adapter const& mask);
+    void set_mask(Turbotexture const& mask);
 
-    void set_color_map(Texture_adapter const& color_map);
-    void set_color_maply(uint32_t image);
+    void set_color_map(Turbotexture const& color_map);
 
     void set_emission(float3_p emission);
 
@@ -175,10 +173,8 @@ class Material {
 
     flags::Flags<Property> properties_;
 
-    Texture_adapter mask_;
-    Texture_adapter color_map_;
-
-    Turbotexture color_maply_;
+    Turbotexture mask_;
+    Turbotexture color_map_;
 
     CC cc_;
 

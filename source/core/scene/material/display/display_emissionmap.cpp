@@ -23,7 +23,7 @@ material::Sample const& Emissionmap::sample(float3_p wo, Ray const& /*ray*/, Ren
 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    float3 const radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
+    float3 const radiance = emission_factor_ * sampler.sample_3(emission_map_, rs.uv, worker.scene());
 
     sample.set_common(rs, wo, radiance, radiance, alpha_);
 

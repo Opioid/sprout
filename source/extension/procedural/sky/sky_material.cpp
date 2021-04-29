@@ -14,6 +14,7 @@
 #include "core/scene/material/material.inl"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/prop/prop.hpp"
+#include "core/resource/resource_manager.inl"
 #include "core/scene/scene_renderstate.hpp"
 #include "core/scene/scene_worker.inl"
 #include "core/scene/shape/shape.hpp"
@@ -60,10 +61,13 @@ void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
 
 static int2 constexpr Bake_dimensions(256);
 
-Sky_baked_material::Sky_baked_material(Sky* sky)
+Sky_baked_material::Sky_baked_material(Sky* sky, Resources& resources)
     : Material(sky),
-      cache_(image::Description(Bake_dimensions)),
-      cache_texture_(image::texture::Float3(cache_), 0xFFFFFFFF) {
+      cache_(new image::Image(image::Float3(image::Description(Bake_dimensions))))
+
+{
+    texture_ = image::texture::Turbotexture(image::texture::Turbotexture::Type::Float3, resources.store<image::Image>(cache_));
+
     properties_.set(Property::Emission_map);
 }
 
@@ -78,7 +82,7 @@ material::Sample const& Sky_baked_material::sample(float3_p           wo, scene:
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    float3 const radiance = sampler.sample_3(cache_texture_, rs.uv);
+    float3 const radiance = sampler.sample_3(texture_, rs.uv, worker.scene());
 
     sample.set_common(rs, wo, radiance, radiance, 0.f);
 
@@ -89,9 +93,7 @@ float3 Sky_baked_material::evaluate_radiance(float3_p /*wi*/, float3_p uvw, floa
                                              Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    return sampler.sample_3(cache_texture_, uvw.xy());
-
-    //    return emission_map_.sample_3(worker, sampler, uvw.xy());
+    return sampler.sample_3(texture_, uvw.xy(), worker.scene());
 }
 
 float3 Sky_baked_material::average_radiance(float /*area*/) const {
@@ -134,7 +136,7 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
         threads.run_range(
             [this, &trafo, &conditional, &artws, &shape](uint32_t id, int32_t begin,
                                                          int32_t end) noexcept {
-                image::Float3& cache = cache_;
+                image::Float3& cache = cache_->float3();
 
                 float2 const idf = 1.f / float2(Bake_dimensions);
 

@@ -20,7 +20,7 @@ Emissionmap_animated::~Emissionmap_animated() = default;
 
 void Emissionmap_animated::simulate(uint64_t start, uint64_t /*end*/, uint64_t /*frame_length*/,
                                     Threads& /*threads*/, Scene const& scene) {
-    uint64_t const num_elements = uint64_t(emission_map_.texture(scene).num_elements());
+    uint64_t const num_elements = uint64_t(emission_map_.description(scene).num_elements());
 
     int32_t const element = int32_t((start / (animation_duration_ / num_elements)) % num_elements);
 
@@ -37,7 +37,7 @@ material::Sample const& Emissionmap_animated::sample(float3_p           wo, Ray 
 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    float3 const radiance  = emission_map_.sample_3(worker, sampler, rs.uv, element_);
+    float3 const radiance  = sampler.sample_3(emission_map_, rs.uv, element_, worker.scene());
     float3 const fradiance = emission_factor_ * radiance;
 
     sample.set_common(rs, wo, fradiance, fradiance, 0.f);
@@ -48,10 +48,10 @@ material::Sample const& Emissionmap_animated::sample(float3_p           wo, Ray 
 float3 Emissionmap_animated::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
                                                Filter filter, Worker const& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
-    return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy(), element_);
+    return emission_factor_ * sampler.sample_3(emission_map_, uvw.xy(), element_, worker.scene());
 }
 
-void Emissionmap_animated::set_emission_map(Texture_adapter const& emission_map,
+void Emissionmap_animated::set_emission_map(Turbotexture const& emission_map,
                                             uint64_t               animation_duration) {
     Emissionmap::set_emission_map(emission_map);
 

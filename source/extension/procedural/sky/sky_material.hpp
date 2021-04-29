@@ -7,6 +7,10 @@
 #include "core/image/typed_image.hpp"
 #include "sky_material_base.hpp"
 
+namespace resource {
+class Manager;
+}
+
 namespace procedural::sky {
 
 class Sky_material : public Material {
@@ -29,7 +33,9 @@ class Sky_material : public Material {
 
 class Sky_baked_material : public Material {
   public:
-    Sky_baked_material(Sky* sky);
+    using Resources = resource::Manager;
+
+    Sky_baked_material(Sky* sky, Resources& resources);
 
     ~Sky_baked_material() override;
 
@@ -53,9 +59,8 @@ class Sky_baked_material : public Material {
   private:
     static float3 unclipped_canopy_mapping(Transformation const& trafo, float2 uv);
 
-    image::Float3 cache_;
-
-    image::texture::Texture cache_texture_;
+    image::Image* cache_;
+    image::texture::Turbotexture texture_;
 
     float3 average_emission_;
 

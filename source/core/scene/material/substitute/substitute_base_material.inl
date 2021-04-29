@@ -28,7 +28,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
                                Texture_sampler_2D const& sampler, Worker const& worker,
                                Sample& sample) const {
     if (normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -36,9 +36,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     float3 color;
     if (color_map_.is_valid()) {
-     //   color = color_map_.sample_3(worker, sampler, rs.uv);
-
-        color = sampler.sample_3(color_maply_, rs.uv, worker.scene());
+        color = sampler.sample_3(color_map_, rs.uv, worker.scene());
     } else {
         color = color_;
     }
@@ -46,7 +44,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
     float alpha;
     float metallic;
     if (surface_map_.is_valid()) {
-        float2 const surface = surface_map_.sample_2(worker, sampler, rs.uv);
+        float2 const surface = sampler.sample_2(surface_map_, rs.uv, worker.scene());
 
         float const r = ggx::map_roughness(surface[0]);
 
@@ -59,7 +57,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     float3 radiance;
     if (emission_map_.is_valid()) {
-        radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
+        radiance = emission_factor_ * sampler.sample_3(emission_map_, rs.uv, worker.scene());
     } else {
         radiance = float3(0.f);
     }

@@ -2,8 +2,8 @@
 #define SU_CORE_SCENE_MATERIAL_HELPER_HPP
 
 #include "base/math/vector3.inl"
-#include "image/texture/texture_adapter.hpp"
-#include "image/texture/texture_types.hpp"
+#include "image/texture/texture.hpp"
+#include "image/texture/texture_sampler.hpp"
 #include "material_sample_helper.hpp"
 #include "scene/scene_renderstate.hpp"
 
@@ -14,13 +14,13 @@
 
 namespace scene::material {
 
-using Texture_adapter    = image::texture::Adapter;
+using Turbotexture    = image::texture::Turbotexture;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 
 static inline float3 sample_normal(float3_p wo, Renderstate const& rs, float2 const uv,
-                                   Texture_adapter const& map, Texture_sampler_2D const& sampler,
-                                   scene::Worker const& worker) {
-    float3 const nm = map.sample_3(worker, sampler, uv);
+                                   Turbotexture const& map, Texture_sampler_2D const& sampler,
+                                   scene::Scene const& scene) {
+    float3 const nm = sampler.sample_3(map, uv, scene);
     float3 const n  = normalize(rs.tangent_to_world(nm));
 
     SOFT_ASSERT(testing::check_normal_map(n, nm, uv));
@@ -36,9 +36,9 @@ static inline float3 sample_normal(float3_p wo, Renderstate const& rs, float2 co
     return n;
 }
 
-static inline float3 sample_normal(float3_p wo, Renderstate const& rs, Texture_adapter const& map,
-                                   Texture_sampler_2D const& sampler, scene::Worker const& worker) {
-    return sample_normal(wo, rs, rs.uv, map, sampler, worker);
+static inline float3 sample_normal(float3_p wo, Renderstate const& rs, Turbotexture const& map,
+                                   Texture_sampler_2D const& sampler, scene::Scene const& scene) {
+    return sample_normal(wo, rs, rs.uv, map, sampler, scene);
 }
 
 static inline float non_symmetry_compensation(float3_p wi, float3_p wo, float3_p geo_n,

@@ -24,7 +24,7 @@ material::Sample const& Emissionmap_animated::sample(float3_p           wo, Ray 
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
     float3 const radiance = emission_factor_ *
-                            emission_map_.sample_3(worker, sampler, rs.uv, element_);
+                            sampler.sample_3(emission_map_, rs.uv, element_, worker.scene());
 
     sample.set_common(rs, wo, radiance, radiance, alpha_);
     sample.set(fresnel::schlick_f0(ior_, rs.ior));

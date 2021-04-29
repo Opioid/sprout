@@ -43,9 +43,9 @@ inline float Material::opacity(float2 uv, Filter filter, Worker const& worker) c
         auto const& sampler = worker.sampler_2D(sampler_key_, filter);
 
         if (element_ < 0) {
-            return mask_.sample_1(worker, sampler, uv);
+            return sampler.sample_1(mask_, uv, worker.scene());
         } else {
-            return mask_.sample_1(worker, sampler, uv, element_);
+            return sampler.sample_1(mask_, uv, element_, worker.scene());
         }
     }
 
@@ -69,7 +69,7 @@ inline CC Material::collision_coefficients() const {
 inline CC Material::collision_coefficients(float2 uv, Filter filter, Worker const& worker) const {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const color   = color_map_.sample_3(worker, sampler, uv);
+        float3 const color   = sampler.sample_3(color_map_, uv, worker.scene());
 
         return scattering(cc_.a, color, volumetric_anisotropy_);
     }

@@ -25,10 +25,8 @@ Material_subsurface::Material_subsurface(Sampler_settings sampler_settings)
 
 void Material_subsurface::commit(Threads& threads, Scene const& scene) {
     if (density_map_.is_valid()) {
-        auto const& texture = density_map_.texture(scene);
-
         volumetric::Octree_builder builder;
-        builder.build(tree_, texture, &cc_, threads);
+        builder.build(tree_, density_map_, &cc_, scene, threads);
     }
 
     properties_.set(Property::Scattering_volume, color_map_.is_valid() || any_greater_zero(cc_.s));
@@ -60,7 +58,7 @@ material::Sample const& Material_subsurface::sample(float3_p           wo, Ray c
     return sample;
 }
 
-void Material_subsurface::set_density_map(Texture_adapter const& density_map) {
+void Material_subsurface::set_density_map(Turbotexture const& density_map) {
     density_map_ = density_map;
 }
 
@@ -101,7 +99,7 @@ float Material_subsurface::density(float3_p p, Filter filter, Worker const& work
 
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
-    return density_map_.sample_1(worker, sampler, p_g);
+    return sampler.sample_1(density_map_, p_g, worker.scene());
 }
 
 float3 Material_subsurface::color(float3_p p, Filter /*filter*/, Worker const& /*worker*/) const {

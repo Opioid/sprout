@@ -11,7 +11,7 @@ namespace scene::material::volumetric {
 
 class Grid : public Material {
   public:
-    Grid(Sampler_settings sampler_settings, Texture_adapter const& density);
+    Grid(Sampler_settings sampler_settings, Turbotexture const& density);
 
     ~Grid() override;
 
@@ -32,14 +32,14 @@ class Grid : public Material {
   protected:
     float density(float3_p uvw, Filter filter, Worker const& worker) const;
 
-    Texture_adapter density_;
+    Turbotexture density_;
 
     Gridtree tree_;
 };
 
 class Grid_emission : public Grid {
   public:
-    Grid_emission(Sampler_settings sampler_settings, Texture_adapter const& grid);
+    Grid_emission(Sampler_settings sampler_settings, Turbotexture const& grid);
 
     ~Grid_emission() override;
 
@@ -61,10 +61,10 @@ class Grid_emission : public Grid {
                           float area, bool importance_sampling, Threads& threads,
                           Scene const& scene) final;
 
-    void set_temperature_map(Texture_adapter const& temperature_map);
+    void set_temperature_map(Turbotexture const& temperature_map);
 
   private:
-    Texture_adapter temperature_;
+    Turbotexture temperature_;
 
     Interpolated_function_1D<float3> blackbody_;
 
@@ -83,7 +83,7 @@ class Grid_color : public Material {
 
     ~Grid_color() override;
 
-    void set_color(Texture_adapter const& color);
+    void set_color(Turbotexture const& color);
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
@@ -102,7 +102,7 @@ class Grid_color : public Material {
   protected:
     float4 color(float3_p uvw, Filter filter, Worker const& worker) const;
 
-    Texture_adapter color_;
+    Turbotexture color_;
 
     Gridtree tree_;
 

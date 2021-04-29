@@ -18,11 +18,11 @@ float3 Material_clearcoat::evaluate_radiance(float3_p /*wi*/, float3_p uvw, floa
         float2 const uv = uvw.xy();
 
         auto const&  sampler  = worker.sampler_2D(sampler_key(), filter);
-        float3 const radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, uv);
+        float3 const radiance = emission_factor_ * sampler.sample_3(emission_map_, uv, worker.scene());
 
         float thickness;
         if (coating_thickness_map_.is_valid()) {
-            float const relative_thickness = coating_thickness_map_.sample_1(worker, sampler, uv);
+            float const relative_thickness = sampler.sample_1(coating_thickness_map_, uv, worker.scene());
 
             thickness = coating_.thickness * relative_thickness;
         } else {
@@ -49,7 +49,7 @@ material::Sample const& Material_clearcoat::sample(float3_p           wo, Ray co
     float thickness;
     float weight;
     if (coating_thickness_map_.is_valid()) {
-        float const relative_thickness = coating_thickness_map_.sample_1(worker, sampler, rs.uv);
+        float const relative_thickness = sampler.sample_1(coating_thickness_map_, rs.uv, worker.scene());
 
         thickness = coating_.thickness * relative_thickness;
         weight    = relative_thickness > 0.1f ? 1.f : relative_thickness;
