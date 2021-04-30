@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     uint32_t num_workers;
     if (args.threads <= 0) {
-        int32_t const num_threads = static_cast<int32_t>(available_threads) + args.threads;
+        int32_t const num_threads = int32_t(available_threads) + args.threads;
 
         num_workers = uint32_t(std::max(num_threads, 1));
     } else {

@@ -248,11 +248,16 @@ class Scene {
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
 
-    uint64_t const tick_duration_ = Units_per_second / 60;
-
     uint32_t num_interpolation_frames_ = 0;
 
+    uint32_t null_shape_;
+
     uint64_t current_time_start_;
+
+    std::vector<Shape*> const&    shape_resources_;
+    std::vector<Material*> const& material_resources_;
+    std::vector<Image*> const& image_resources_;
+
 
     bvh::Builder bvh_builder_;
 
@@ -263,7 +268,7 @@ class Scene {
 
     AABB caustic_aabb_;
 
-    uint32_t null_shape_;
+
 
     bool has_masked_material_;
     bool has_tinted_shadow_;
@@ -296,10 +301,6 @@ class Scene {
     Distribution_1D light_distribution_;
 
     light::Tree light_tree_;
-
-    std::vector<Shape*> const&    shape_resources_;
-    std::vector<Material*> const& material_resources_;
-    std::vector<Image*> const& image_resources_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;
