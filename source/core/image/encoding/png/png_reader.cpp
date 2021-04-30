@@ -60,11 +60,11 @@ bool Reader::Info::allocate() {
 
         buffer = memory::allocate_aligned<uint8_t>(num_bytes);
 
-        current_row_data  = buffer + buffer_size;
-        previous_row_data = current_row_data + row_size;
-
         capacity = num_bytes;
     }
+
+    current_row_data  = buffer + buffer_size;
+    previous_row_data = current_row_data + row_size;
 
     if (!stream.zalloc) {
         if (MZ_OK != mz_inflateInit(&stream)) {
@@ -431,15 +431,13 @@ bool parse_data(Chunk const& chunk, Info& info) {
                 info.filter_byte    = false;
             } else {
                 uint8_t const raw = filter(buffer[i], info.current_filter, info);
-                info.current_row_data[info.current_byte] = raw;
-                info.buffer[info.current_byte_total++]   = raw;
+                info.current_row_data[info.current_byte++] = raw;
+                info.buffer[info.current_byte_total++]     = raw;
 
-                if (row_size - 1 == info.current_byte) {
+                if (row_size == info.current_byte) {
                     info.current_byte = 0;
                     std::swap(info.current_row_data, info.previous_row_data);
                     info.filter_byte = true;
-                } else {
-                    ++info.current_byte;
                 }
             }
         }
