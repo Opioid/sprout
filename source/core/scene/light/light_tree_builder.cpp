@@ -480,7 +480,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
         bool      two_sided = false;
         float     total_power(0.f);
 
-        for (uint32_t i = 0; i < num_finite_lights; ++i) {
+        for (uint32_t i = num_infinite_lights; i < num_total_lights; ++i) {
             uint32_t const l = tree.light_mapping_[i];
 
             tbounds.merge_assign(scene.light_aabb(l));
