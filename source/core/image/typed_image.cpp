@@ -307,14 +307,6 @@ T Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const {
 }
 
 template <typename T>
-T Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t /*element*/) const {
-    //    int32_t const i = (element * description_.dimensions[1] + y) * description_.dimensions[0]
-    //    + x; return data_[i];
-
-    return T(0);
-}
-
-template <typename T>
 T Typed_sparse_image<T>::at(int32_t x, int32_t y, int32_t z) const {
     int3 const c(x, y, z);
     int3 const cc = c >> Log2_cell_dim;

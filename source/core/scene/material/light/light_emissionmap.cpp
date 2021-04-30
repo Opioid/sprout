@@ -122,7 +122,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const radiance = texture.at_element_3(x, y, element, scene);
+                        float3 const radiance = texture.at_3(x, y, element, scene);
 
                         float3 const wr = uv_weight * radiance;
 

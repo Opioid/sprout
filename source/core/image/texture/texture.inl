@@ -8,8 +8,7 @@
 #include "scene/scene.inl"
 #include "image/image.hpp"
 #include "texture_sampler.hpp"
-#include "base/spectrum/aces.hpp"
-#include "texture_encoding.inl"
+
 
 namespace image::texture {
 

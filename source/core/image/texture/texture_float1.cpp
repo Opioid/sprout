@@ -261,15 +261,15 @@ void Float1_sparse::gather_3(int4_p xy_xy1, float3 c[4]) const {
 }
 
 float Float1_sparse::at_element_1(int32_t x, int32_t y, int32_t element) const {
-    return image_.at_element(x, y, element);
+    return image_.at(x, y, element);
 }
 
 float2 Float1_sparse::at_element_2(int32_t x, int32_t y, int32_t element) const {
-    return float2(image_.at_element(x, y, element), 0.f);
+    return float2(image_.at(x, y, element), 0.f);
 }
 
 float3 Float1_sparse::at_element_3(int32_t x, int32_t y, int32_t element) const {
-    return float3(image_.at_element(x, y, element), 0.f, 0.f);
+    return float3(image_.at(x, y, element), 0.f, 0.f);
 }
 
 float Float1_sparse::at_1(int32_t x, int32_t y, int32_t z) const {

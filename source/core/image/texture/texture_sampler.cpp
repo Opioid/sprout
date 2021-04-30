@@ -39,7 +39,7 @@ float Nearest_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, fl
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
-    return texture.at_element_1(xy[0], xy[1], min_element, scene);
+    return texture.at_1(xy[0], xy[1], min_element, scene);
 }
 
 template <typename Address_U, typename Address_V>
@@ -50,7 +50,7 @@ float2 Nearest_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, f
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
-    return texture.at_element_2(xy[0], xy[1], min_element, scene);
+    return texture.at_2(xy[0], xy[1], min_element, scene);
 }
 
 template <typename Address_U, typename Address_V>
@@ -61,7 +61,7 @@ float3 Nearest_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, f
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
-    return texture.at_element_3(xy[0], xy[1], min_element, scene);
+    return texture.at_3(xy[0], xy[1], min_element, scene);
 }
 
 template <typename Address_U, typename Address_V>
@@ -124,10 +124,10 @@ float Linear_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, flo
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
-    float const c00 = texture.at_element_1(xy_xy1[0], xy_xy1[1], min_element, scene);
-    float const c01 = texture.at_element_1(xy_xy1[2], xy_xy1[1], min_element, scene);
-    float const c10 = texture.at_element_1(xy_xy1[0], xy_xy1[3], min_element, scene);
-    float const c11 = texture.at_element_1(xy_xy1[2], xy_xy1[3], min_element, scene);
+    float const c00 = texture.at_1(xy_xy1[0], xy_xy1[1], min_element, scene);
+    float const c01 = texture.at_1(xy_xy1[2], xy_xy1[1], min_element, scene);
+    float const c10 = texture.at_1(xy_xy1[0], xy_xy1[3], min_element, scene);
+    float const c11 = texture.at_1(xy_xy1[2], xy_xy1[3], min_element, scene);
 
     return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
@@ -142,10 +142,10 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, fl
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
-    float2 const c00 = texture.at_element_2(xy_xy1[0], xy_xy1[1], min_element, scene);
-    float2 const c01 = texture.at_element_2(xy_xy1[2], xy_xy1[1], min_element, scene);
-    float2 const c10 = texture.at_element_2(xy_xy1[0], xy_xy1[3], min_element, scene);
-    float2 const c11 = texture.at_element_2(xy_xy1[2], xy_xy1[3], min_element, scene);
+    float2 const c00 = texture.at_2(xy_xy1[0], xy_xy1[1], min_element, scene);
+    float2 const c01 = texture.at_2(xy_xy1[2], xy_xy1[1], min_element, scene);
+    float2 const c10 = texture.at_2(xy_xy1[0], xy_xy1[3], min_element, scene);
+    float2 const c11 = texture.at_2(xy_xy1[2], xy_xy1[3], min_element, scene);
 
     return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
@@ -160,10 +160,10 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, fl
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
-    float3 const c00 = texture.at_element_3(xy_xy1[0], xy_xy1[1], min_element, scene);
-    float3 const c01 = texture.at_element_3(xy_xy1[2], xy_xy1[1], min_element, scene);
-    float3 const c10 = texture.at_element_3(xy_xy1[0], xy_xy1[3], min_element, scene);
-    float3 const c11 = texture.at_element_3(xy_xy1[2], xy_xy1[3], min_element, scene);
+    float3 const c00 = texture.at_3(xy_xy1[0], xy_xy1[1], min_element, scene);
+    float3 const c01 = texture.at_3(xy_xy1[2], xy_xy1[1], min_element, scene);
+    float3 const c10 = texture.at_3(xy_xy1[0], xy_xy1[3], min_element, scene);
+    float3 const c11 = texture.at_3(xy_xy1[2], xy_xy1[3], min_element, scene);
 
     return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }

@@ -53,10 +53,6 @@ public:
     void gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const;
     void gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) const;
 
-    float  at_element_1(int32_t x, int32_t y, int32_t element, Scene const& scene) const;
-    float2 at_element_2(int32_t x, int32_t y, int32_t element, Scene const& scene) const;
-    float3 at_element_3(int32_t x, int32_t y, int32_t element, Scene const& scene) const;
-
     float  at_1(int32_t x, int32_t y, int32_t z, Scene const& scene) const;
     float2 at_2(int32_t x, int32_t y, int32_t z, Scene const& scene) const;
     float3 at_3(int32_t x, int32_t y, int32_t z, Scene const& scene) const;

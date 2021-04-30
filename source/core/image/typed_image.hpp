@@ -68,8 +68,6 @@ class Typed_sparse_image {
 
     T at(int32_t x, int32_t y) const;
 
-    T at_element(int32_t x, int32_t y, int32_t element) const;
-
     T at(int32_t x, int32_t y, int32_t z) const;
 
     void gather(int4_p xy_xy1, T c[4]) const;
