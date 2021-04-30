@@ -94,7 +94,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
         result.wi         = -wo_;
         result.pdf        = 1.f;
         result.wavelength = 0.f;
-        result.type.clear(bxdf::Type::Straight_transmission);
+        result.type.clear(bxdf::Type::Specular_transmission);
         return;
     }
 
