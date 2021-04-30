@@ -7,6 +7,12 @@
 #include <cstdint>
 #include <vector>
 
+namespace scene {
+class Scene;
+}
+
+using Scene = scene::Scene;
+
 namespace rendering::postprocessor {
 class Pipeline;
 }
@@ -32,7 +38,7 @@ struct Pipeline {
 };
 
 uint32_t concatenate(std::vector<Item> const& items, it::options::Options const& options,
-                     Pipeline& pipeline, Threads& threads);
+                     Pipeline& pipeline, Scene const& scene, Threads& threads);
 }  // namespace op
 
 #endif

@@ -14,22 +14,23 @@
 #include <fstream>
 #include <sstream>
 
+namespace op {
+
+using namespace scene;
 using namespace image;
 
 using Texture = texture::Texture;
 
-namespace op {
-
 uint32_t difference(std::vector<Item> const& items, it::options::Options const& options,
-                    Threads& threads) {
+                    Scene const& scene, Threads& threads) {
     if (items.size() < 2) {
         logging::error("Need at least 2 images for diff.");
         return 0;
     }
 
-    Texture const* reference = items[0].image;
+    Texture const reference = items[0].image;
 
-    int2 const dimensions = reference->dimensions().xy();
+    int2 const dimensions = reference.description(scene).dimensions().xy();
 
     std::vector<Difference_item> candidates;
     candidates.reserve(items.size() - 1);
@@ -37,12 +38,12 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     for (size_t i = 1, len = items.size(); i < len; ++i) {
         Item const& item = items[i];
 
-        if (item.image->dimensions().xy() != dimensions) {
+        if (item.image.description(scene).dimensions().xy() != dimensions) {
             logging::error("%S does not match reference resolution", item.name);
             continue;
         }
 
-        candidates.emplace_back(item);
+        candidates.emplace_back(item, scene);
     }
 
     memory::Array<Scratch> scratch(threads.num_threads(), Scratch{0.f, 0.f, 0.f});
@@ -50,7 +51,8 @@ uint32_t difference(std::vector<Item> const& items, it::options::Options const& 
     float max_dif = 0.f;
 
     for (auto& c : candidates) {
-        c.calculate_difference(reference, scratch.data(), options.clamp, options.clip, threads);
+        c.calculate_difference(reference, scratch.data(), options.clamp, options.clip, scene,
+                               threads);
 
         max_dif = std::max(c.max_dif(), max_dif);
     }

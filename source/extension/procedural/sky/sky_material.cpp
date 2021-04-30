@@ -9,12 +9,12 @@
 #include "base/thread/thread_pool.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_sampler.hpp"
+#include "core/resource/resource_manager.inl"
 #include "core/scene/entity/composed_transformation.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "core/scene/material/material.inl"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/prop/prop.hpp"
-#include "core/resource/resource_manager.inl"
 #include "core/scene/scene_renderstate.hpp"
 #include "core/scene/scene_worker.inl"
 #include "core/scene/shape/shape.hpp"
@@ -66,7 +66,8 @@ Sky_baked_material::Sky_baked_material(Sky* sky, Resources& resources)
       cache_(new image::Image(image::Float3(image::Description(Bake_dimensions))))
 
 {
-    texture_ = image::texture::Turbotexture(image::texture::Turbotexture::Type::Float3, resources.store<image::Image>(cache_));
+    texture_ = image::texture::Texture(image::texture::Texture::Type::Float3,
+                                       resources.store<image::Image>(cache_));
 
     properties_.set(Property::Emission_map);
 }

@@ -34,7 +34,7 @@ material::Sample const& Glass::sample(float3_p wo, Ray const& /*ray*/, Rendersta
     return sample;
 }
 
-void Glass::set_normal_map(Turbotexture const& normal_map) {
+void Glass::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 

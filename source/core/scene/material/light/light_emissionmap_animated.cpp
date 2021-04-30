@@ -51,8 +51,8 @@ float3 Emissionmap_animated::evaluate_radiance(float3_p /*wi*/, float3_p uvw, fl
     return emission_factor_ * sampler.sample_3(emission_map_, uvw.xy(), element_, worker.scene());
 }
 
-void Emissionmap_animated::set_emission_map(Turbotexture const& emission_map,
-                                            uint64_t               animation_duration) {
+void Emissionmap_animated::set_emission_map(Texture const& emission_map,
+                                            uint64_t       animation_duration) {
     Emissionmap::set_emission_map(emission_map);
 
     animation_duration_ = animation_duration;

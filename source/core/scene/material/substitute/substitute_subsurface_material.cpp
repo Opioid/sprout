@@ -58,7 +58,7 @@ material::Sample const& Material_subsurface::sample(float3_p           wo, Ray c
     return sample;
 }
 
-void Material_subsurface::set_density_map(Turbotexture const& density_map) {
+void Material_subsurface::set_density_map(Texture const& density_map) {
     density_map_ = density_map;
 }
 

@@ -10,7 +10,7 @@ class Scene;
 namespace camera {
 class Camera;
 }
-}
+}  // namespace scene
 
 namespace thread {
 class Pool;
@@ -52,9 +52,11 @@ class Pipeline {
 
     void apply(image::Float4& target, Scene const& scene, Threads& threads);
 
-    void apply(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene, Threads& threads);
+    void apply(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene,
+               Threads& threads);
 
-    void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene, Threads& threads);
+    void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene,
+                          Threads& threads);
 
   private:
     image::Float4 scratch_;

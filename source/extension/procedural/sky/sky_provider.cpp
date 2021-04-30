@@ -54,7 +54,8 @@ uint32_t Provider::create_extension(json::Value const& value, Scene& scene, Reso
         static_cast<Material*>(resource.ptr)->set_sky(sky);
     } else {
         if (Bake) {
-            sky_mat = resources.store<material::Material>(Sky_name, new Sky_baked_material(sky, resources));
+            sky_mat = resources.store<material::Material>(Sky_name,
+                                                          new Sky_baked_material(sky, resources));
         } else {
             sky_mat = resources.store<material::Material>(Sky_name, new Sky_material(sky));
         }

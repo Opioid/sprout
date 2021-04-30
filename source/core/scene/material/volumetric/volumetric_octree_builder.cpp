@@ -10,8 +10,8 @@ Octree_builder::Build_node::~Build_node() {
     delete[] children;
 }
 
-void Octree_builder::build(Gridtree& tree, Turbotexture const& texture, CC const* ccs, Scene const& scene,
-                           Threads& threads) {
+void Octree_builder::build(Gridtree& tree, Texture const& texture, CC const* ccs,
+                           Scene const& scene, Threads& threads) {
     threads.wait_async();
 
     int3 const d = texture.description(scene).dimensions();
@@ -28,35 +28,36 @@ void Octree_builder::build(Gridtree& tree, Turbotexture const& texture, CC const
 
     current_task_ = 0;
 
-    threads.run_parallel([this, splitters, grid, &texture, ccs, &num_cells, &scene](uint32_t id) noexcept {
-        Splitter& splitter = splitters[id];
+    threads.run_parallel(
+        [this, splitters, grid, &texture, ccs, &num_cells, &scene](uint32_t id) noexcept {
+            Splitter& splitter = splitters[id];
 
-        int32_t const area = num_cells[0] * num_cells[1];
+            int32_t const area = num_cells[0] * num_cells[1];
 
-        uint32_t const cell_len = uint32_t(area * num_cells[2]);
+            uint32_t const cell_len = uint32_t(area * num_cells[2]);
 
-        for (;;) {
-            uint32_t const i = current_task_.fetch_add(1, std::memory_order_relaxed);
+            for (;;) {
+                uint32_t const i = current_task_.fetch_add(1, std::memory_order_relaxed);
 
-            if (i >= cell_len) {
-                return;
+                if (i >= cell_len) {
+                    return;
+                }
+
+                int3 c;
+                c[2] = i / area;
+
+                int32_t const t = c[2] * area;
+
+                c[1] = (i - t) / num_cells[0];
+                c[0] = i - (t + c[1] * num_cells[0]);
+
+                int3 const min = c << Gridtree::Log2_cell_dim;
+                int3 const max = min + Gridtree::Cell_dim;
+
+                Box const box{{min, max}};
+                splitter.split(&grid[i], box, texture, ccs, 0, scene);
             }
-
-            int3 c;
-            c[2] = i / area;
-
-            int32_t const t = c[2] * area;
-
-            c[1] = (i - t) / num_cells[0];
-            c[0] = i - (t + c[1] * num_cells[0]);
-
-            int3 const min = c << Gridtree::Log2_cell_dim;
-            int3 const max = min + Gridtree::Cell_dim;
-
-            Box const box{{min, max}};
-            splitter.split(&grid[i], box, texture, ccs, 0, scene);
-        }
-    });
+        });
 
     uint32_t num_nodes = cell_len;
     uint32_t num_data  = 0;
@@ -84,7 +85,7 @@ void Octree_builder::build(Gridtree& tree, Turbotexture const& texture, CC const
     delete[] grid;
 }
 
-void Octree_builder::Splitter::split(Build_node* node, Box const& box, Turbotexture const& texture,
+void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture const& texture,
                                      CC const* ccs, uint32_t depth, Scene const& scene) {
     static int32_t constexpr w = (Gridtree::Cell_dim >> (Gridtree::Log2_cell_dim - 3)) + 1;
 

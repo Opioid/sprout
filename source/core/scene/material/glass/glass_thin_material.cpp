@@ -67,7 +67,7 @@ float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, Filter fi
     return (1.f - f) * ta;
 }
 
-void Glass_thin::set_normal_map(Turbotexture const& normal_map) {
+void Glass_thin::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 

@@ -13,12 +13,12 @@ Material_coating<Coating>::Material_coating(Sampler_settings sampler_settings, b
     : Material_base(sampler_settings, two_sided) {}
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_thickness_map(Turbotexture const& thickness_map) {
+void Material_coating<Coating>::set_coating_thickness_map(Texture const& thickness_map) {
     coating_thickness_map_ = thickness_map;
 }
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_normal_map(Turbotexture const& normal_map) {
+void Material_coating<Coating>::set_coating_normal_map(Texture const& normal_map) {
     coating_normal_map_ = normal_map;
 }
 

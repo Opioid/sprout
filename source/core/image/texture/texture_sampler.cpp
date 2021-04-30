@@ -11,31 +11,35 @@ namespace image::texture {
 Sampler_2D::~Sampler_2D() = default;
 
 template <typename Address_U, typename Address_V>
-float Nearest_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, float2 uv, Scene const& scene) const {
+float Nearest_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 uv,
+                                                 Scene const& scene) const {
     int2 const xy = map(texture.description(scene).dimensions().xy(), texture.scale() * uv);
 
     return texture.at_1(xy[0], xy[1], scene);
 }
 
 template <typename Address_U, typename Address_V>
-float2 Nearest_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, float2 uv, Scene const& scene) const {
+float2 Nearest_2D<Address_U, Address_V>::sample_2(Texture const& texture, float2 uv,
+                                                  Scene const& scene) const {
     int2 const xy = map(texture.description(scene).dimensions().xy(), texture.scale() * uv);
 
     return texture.at_2(xy[0], xy[1], scene);
 }
 
 template <typename Address_U, typename Address_V>
-float3 Nearest_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const {
+float3 Nearest_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 uv,
+                                                  Scene const& scene) const {
     int2 const xy = map(texture.description(scene).dimensions().xy(), texture.scale() * uv);
 
     return texture.at_3(xy[0], xy[1], scene);
 }
 
 template <typename Address_U, typename Address_V>
-float Nearest_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const {
+float Nearest_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 uv, int32_t element,
+                                                 Scene const& scene) const {
     auto const& desc = texture.description(scene);
 
-    int2 const xy = map(desc.dimensions().xy(), texture.scale() *uv);
+    int2 const xy = map(desc.dimensions().xy(), texture.scale() * uv);
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
@@ -43,10 +47,11 @@ float Nearest_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, fl
 }
 
 template <typename Address_U, typename Address_V>
-float2 Nearest_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const {
+float2 Nearest_2D<Address_U, Address_V>::sample_2(Texture const& texture, float2 uv,
+                                                  int32_t element, Scene const& scene) const {
     auto const& desc = texture.description(scene);
 
-    int2 const xy = map(desc.dimensions().xy(), texture.scale() *uv);
+    int2 const xy = map(desc.dimensions().xy(), texture.scale() * uv);
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
@@ -54,10 +59,11 @@ float2 Nearest_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, f
 }
 
 template <typename Address_U, typename Address_V>
-float3 Nearest_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const {
+float3 Nearest_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 uv,
+                                                  int32_t element, Scene const& scene) const {
     auto const& desc = texture.description(scene);
 
-    int2 const xy = map(desc.dimensions().xy(), texture.scale() *uv);
+    int2 const xy = map(desc.dimensions().xy(), texture.scale() * uv);
 
     int32_t const min_element = std::min(desc.num_elements() - 1, element);
 
@@ -82,9 +88,11 @@ int2 Nearest_2D<Address_U, Address_V>::map(int2 d, float2 uv) {
 }
 
 template <typename Address_U, typename Address_V>
-float Linear_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, float2 uv, Scene const& scene) const {
+float Linear_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 uv,
+                                                Scene const& scene) const {
     int4         xy_xy1;
-    float2 const st = map(texture.description(scene).dimensions().xy(), texture.scale() * uv, xy_xy1);
+    float2 const st = map(texture.description(scene).dimensions().xy(), texture.scale() * uv,
+                          xy_xy1);
 
     float c[4];
     texture.gather_1(xy_xy1, scene, c);
@@ -93,9 +101,11 @@ float Linear_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, flo
 }
 
 template <typename Address_U, typename Address_V>
-float2 Linear_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, float2 uv, Scene const& scene) const {
+float2 Linear_2D<Address_U, Address_V>::sample_2(Texture const& texture, float2 uv,
+                                                 Scene const& scene) const {
     int4         xy_xy1;
-    float2 const st = map(texture.description(scene).dimensions().xy(), texture.scale() * uv, xy_xy1);
+    float2 const st = map(texture.description(scene).dimensions().xy(), texture.scale() * uv,
+                          xy_xy1);
 
     float2 c[4];
     texture.gather_2(xy_xy1, scene, c);
@@ -104,9 +114,11 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, fl
 }
 
 template <typename Address_U, typename Address_V>
-float3 Linear_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const {
+float3 Linear_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 uv,
+                                                 Scene const& scene) const {
     int4         xy_xy1;
-    float2 const st = map(texture.description(scene).dimensions().xy(), texture.scale() * uv, xy_xy1);
+    float2 const st = map(texture.description(scene).dimensions().xy(), texture.scale() * uv,
+                          xy_xy1);
 
     float3 c[4];
     texture.gather_3(xy_xy1, scene, c);
@@ -115,9 +127,9 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, fl
 }
 
 template <typename Address_U, typename Address_V>
-float Linear_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, float2 uv,
-                                                int32_t element, Scene const& scene) const {
-        auto const& desc = texture.description(scene);
+float Linear_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 uv, int32_t element,
+                                                Scene const& scene) const {
+    auto const& desc = texture.description(scene);
 
     int4         xy_xy1;
     float2 const st = map(desc.dimensions().xy(), uv, xy_xy1);
@@ -133,9 +145,9 @@ float Linear_2D<Address_U, Address_V>::sample_1(Turbotexture const& texture, flo
 }
 
 template <typename Address_U, typename Address_V>
-float2 Linear_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, float2 uv,
-                                                int32_t element, Scene const& scene) const {
-        auto const& desc = texture.description(scene);
+float2 Linear_2D<Address_U, Address_V>::sample_2(Texture const& texture, float2 uv, int32_t element,
+                                                 Scene const& scene) const {
+    auto const& desc = texture.description(scene);
 
     int4         xy_xy1;
     float2 const st = map(desc.dimensions().xy(), uv, xy_xy1);
@@ -151,9 +163,9 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(Turbotexture const& texture, fl
 }
 
 template <typename Address_U, typename Address_V>
-float3 Linear_2D<Address_U, Address_V>::sample_3(Turbotexture const& texture, float2 uv,
-                                                int32_t element, Scene const& scene) const {
-        auto const& desc = texture.description(scene);
+float3 Linear_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 uv, int32_t element,
+                                                 Scene const& scene) const {
+    auto const& desc = texture.description(scene);
 
     int4         xy_xy1;
     float2 const st = map(desc.dimensions().xy(), uv, xy_xy1);
@@ -199,28 +211,32 @@ float2 Linear_2D<Address_U, Address_V>::map(int2 d, float2 uv, int4& xy_xy1) {
 Sampler_3D::~Sampler_3D() = default;
 
 template <typename Address_mode>
-float Nearest_3D<Address_mode>::sample_1(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float Nearest_3D<Address_mode>::sample_1(Texture const& texture, float3_p uvw,
+                                         Scene const& scene) const {
     int3 const xyz = map(texture.description(scene).dimensions(), uvw);
 
     return texture.at_1(xyz[0], xyz[1], xyz[2], scene);
 }
 
 template <typename Address_mode>
-float2 Nearest_3D<Address_mode>::sample_2(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float2 Nearest_3D<Address_mode>::sample_2(Texture const& texture, float3_p uvw,
+                                          Scene const& scene) const {
     int3 const xyz = map(texture.description(scene).dimensions(), uvw);
 
     return texture.at_2(xyz[0], xyz[1], xyz[2], scene);
 }
 
 template <typename Address_mode>
-float3 Nearest_3D<Address_mode>::sample_3(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float3 Nearest_3D<Address_mode>::sample_3(Texture const& texture, float3_p uvw,
+                                          Scene const& scene) const {
     int3 const xyz = map(texture.description(scene).dimensions(), uvw);
 
     return texture.at_3(xyz[0], xyz[1], xyz[2], scene);
 }
 
 template <typename Address_mode>
-float4 Nearest_3D<Address_mode>::sample_4(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float4 Nearest_3D<Address_mode>::sample_4(Texture const& texture, float3_p uvw,
+                                          Scene const& scene) const {
     int3 const xyz = map(texture.description(scene).dimensions(), uvw);
 
     return texture.at_4(xyz[0], xyz[1], xyz[2], scene);
@@ -246,7 +262,8 @@ int3 Nearest_3D<Address_mode>::map(int3 d, float3_p uvw) {
 }
 
 template <typename Address_mode>
-float Linear_3D<Address_mode>::sample_1(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float Linear_3D<Address_mode>::sample_1(Texture const& texture, float3_p uvw,
+                                        Scene const& scene) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture.description(scene).dimensions(), uvw, xyz, xyz1);
@@ -261,7 +278,8 @@ float Linear_3D<Address_mode>::sample_1(Turbotexture const& texture, float3_p uv
 }
 
 template <typename Address_mode>
-float2 Linear_3D<Address_mode>::sample_2(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float2 Linear_3D<Address_mode>::sample_2(Texture const& texture, float3_p uvw,
+                                         Scene const& scene) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture.description(scene).dimensions(), uvw, xyz, xyz1);
@@ -276,7 +294,8 @@ float2 Linear_3D<Address_mode>::sample_2(Turbotexture const& texture, float3_p u
 }
 
 template <typename Address_mode>
-float3 Linear_3D<Address_mode>::sample_3(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float3 Linear_3D<Address_mode>::sample_3(Texture const& texture, float3_p uvw,
+                                         Scene const& scene) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture.description(scene).dimensions(), uvw, xyz, xyz1);
@@ -297,7 +316,8 @@ float3 Linear_3D<Address_mode>::sample_3(Turbotexture const& texture, float3_p u
 }
 
 template <typename Address_mode>
-float4 Linear_3D<Address_mode>::sample_4(Turbotexture const& texture, float3_p uvw, Scene const& scene) const {
+float4 Linear_3D<Address_mode>::sample_4(Texture const& texture, float3_p uvw,
+                                         Scene const& scene) const {
     int3         xyz;
     int3         xyz1;
     float3 const stu = map(texture.description(scene).dimensions(), uvw, xyz, xyz1);

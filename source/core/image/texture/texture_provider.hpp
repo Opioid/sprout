@@ -13,12 +13,12 @@ class Manager;
 namespace image::texture {
 
 class Texture;
-class Turbotexture;
+class Texture;
 
 class Provider {
   public:
     using Resources = resource::Manager;
-    using Variants = memory::Variant_map;
+    using Variants  = memory::Variant_map;
 
     enum class Usage {
         Undefined,
@@ -31,13 +31,14 @@ class Provider {
         Mask
     };
 
-    static Turbotexture load(std::string const& filename, Variants const& options, float2 scale, Resources& resources);
+    static Texture load(std::string const& filename, Variants const& options, float2 scale,
+                        Resources& resources);
 
     static std::string encode_name(uint32_t image_id);
 
     static uint32_t decode_name(std::string_view name);
 };
 
-}  // namespace image
+}  // namespace image::texture
 
 #endif

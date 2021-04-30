@@ -3,28 +3,27 @@
 
 #include "base/math/vector3.inl"
 #include "base/math/vector4.inl"
-#include "image/typed_image.hpp"
-#include "texture.hpp"
-#include "scene/scene.inl"
 #include "image/image.hpp"
+#include "image/typed_image.hpp"
+#include "scene/scene.inl"
+#include "texture.hpp"
 #include "texture_sampler.hpp"
-
 
 namespace image::texture {
 
-inline Turbotexture::Turbotexture() : type_(Type::Byte3_sRGB), image_id_(0xFFFFFFFF) {}
+inline Texture::Texture() : type_(Type::Byte3_sRGB), image_(0xFFFFFFFF) {}
 
-inline Turbotexture::Turbotexture(Type type, uint32_t image) : type_(type), image_id_(image), scale_(1.f) {}
+inline Texture::Texture(Type type, uint32_t image) : type_(type), image_(image), scale_(1.f) {}
 
-inline bool Turbotexture::operator==(Turbotexture const& other) const {
-    return type_ == other.type_ && image_id_ == other.image_id_ && scale_ == other.scale_;
+inline bool Texture::operator==(Texture const& other) const {
+    return type_ == other.type_ && image_ == other.image_ && scale_ == other.scale_;
 }
 
-inline bool Turbotexture::is_valid() const {
-    return 0xFFFFFFFF != image_id_;
+inline bool Texture::is_valid() const {
+    return 0xFFFFFFFF != image_;
 }
 
-inline int32_t Turbotexture::num_channels() const {
+inline int32_t Texture::num_channels() const {
     switch (type_) {
         case Type::Byte1_unorm:
         case Type::Float1:
@@ -45,11 +44,11 @@ inline int32_t Turbotexture::num_channels() const {
     }
 }
 
-inline Description const& Turbotexture::description(Scene const& scene) const {
-    return scene.image(image_id_)->description();
+inline Description const& Texture::description(Scene const& scene) const {
+    return scene.image(image_)->description();
 }
 
-inline float2 Turbotexture::scale() const {
+inline float2 Texture::scale() const {
     return scale_;
 }
 

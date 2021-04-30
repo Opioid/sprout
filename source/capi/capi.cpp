@@ -70,7 +70,7 @@ struct Engine {
           material_resources(resources.register_provider(material_provider)),
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),
-          scene(scene_loader.null_shape(), shape_resources, material_resources, image_resources),
+          scene(image_resources, material_resources, shape_resources, scene_loader.null_shape()),
           driver(threads, progressor),
           frame(0),
           frame_iteration(0),

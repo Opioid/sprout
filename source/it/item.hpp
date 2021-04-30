@@ -1,14 +1,12 @@
 #ifndef SU_IT_ITEM_HPP
 #define SU_IT_ITEM_HPP
 
-#include "base/math/vector2.hpp"
+#include "core/image/texture/texture.hpp"
 
 #include <string>
 #include <vector>
 
-namespace image::texture {
-class Texture;
-}
+using Scene = scene::Scene;
 
 using namespace image;
 
@@ -18,12 +16,12 @@ struct Item {
     std::string name;
     std::string name_out;
 
-    Texture const* image;
+    Texture image;
 };
 
 bool any_has_alpha_channel(std::vector<Item> const& items);
 
-int2 max_dimensions_2(std::vector<Item> const& items);
+int2 max_dimensions_2(std::vector<Item> const& items, Scene const& scene);
 
 std::string name_out(std::vector<Item> const& items, std::string const& default_name);
 

@@ -22,7 +22,8 @@ namespace image {
 class Image;
 namespace texture {
 class Texture;
-}}
+}
+}  // namespace image
 
 namespace scene {
 
@@ -87,9 +88,9 @@ class Scene {
     using Texture        = image::texture::Texture;
     using Image          = image::Image;
 
-    Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
+    Scene(std::vector<Image*> const&    image_resources,
           std::vector<Material*> const& material_resources,
-          std::vector<Image*> const&  image_resources);
+          std::vector<Shape*> const& shape_resources, uint32_t null_shape);
 
     ~Scene();
 
@@ -248,16 +249,15 @@ class Scene {
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
 
-    uint32_t num_interpolation_frames_ = 0;
+    std::vector<Image*> const&    image_resources_;
+    std::vector<Material*> const& material_resources_;
+    std::vector<Shape*> const&    shape_resources_;
 
     uint32_t null_shape_;
 
+    uint32_t num_interpolation_frames_ = 0;
+
     uint64_t current_time_start_;
-
-    std::vector<Shape*> const&    shape_resources_;
-    std::vector<Material*> const& material_resources_;
-    std::vector<Image*> const& image_resources_;
-
 
     bvh::Builder bvh_builder_;
 
@@ -267,8 +267,6 @@ class Scene {
     prop::BVH_wrapper volume_bvh_;
 
     AABB caustic_aabb_;
-
-
 
     bool has_masked_material_;
     bool has_tinted_shadow_;

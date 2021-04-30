@@ -2,7 +2,6 @@
 #include "base/math/vector3.inl"
 #include "image/image.hpp"
 #include "image/texture/texture.hpp"
-#include "image/texture/texture_byte3_srgb.hpp"
 #include "image/typed_image.hpp"
 #include "rendering/integrator/particle/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
@@ -141,9 +140,7 @@ void size() {
 
     print_size<image::Byte3>("image::Byte3", 48);
 
-    print_size<image::texture::Turbotexture>("texture::Texture", 16);
-
-    print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 32);
+    print_size<image::texture::Texture>("texture::Texture", 16);
 
     print_size<scene::bvh::Split_candidate>("Split_candidate", 96);
 

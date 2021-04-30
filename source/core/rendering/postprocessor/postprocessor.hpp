@@ -8,7 +8,7 @@ class Scene;
 namespace camera {
 class Camera;
 }
-}
+}  // namespace scene
 
 namespace thread {
 class Pool;
@@ -20,7 +20,7 @@ namespace rendering::postprocessor {
 
 class Postprocessor {
   public:
-    using Scene = scene::Scene;
+    using Scene  = scene::Scene;
     using Camera = scene::camera::Camera;
 
     Postprocessor(uint32_t num_passes = 1);
@@ -31,14 +31,16 @@ class Postprocessor {
 
     virtual bool alpha_out(bool alpha_in) const;
 
-    void apply(image::Float4 const& source, image::Float4& destination, Scene const& scene, Threads& threads);
+    void apply(image::Float4 const& source, image::Float4& destination, Scene const& scene,
+               Threads& threads);
 
   private:
     virtual void pre_apply(image::Float4 const& source, image::Float4& destination,
                            Threads& threads);
 
     virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
-                       image::Float4 const& source, image::Float4& destination, Scene const& scene) = 0;
+                       image::Float4 const& source, image::Float4& destination,
+                       Scene const& scene) = 0;
 
     virtual void post_pass(uint32_t pass);
 

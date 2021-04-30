@@ -1,8 +1,8 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
-#include "image/typed_image_fwd.hpp"
 #include "base/math/vector2.hpp"
+#include "image/typed_image_fwd.hpp"
 
 namespace scene {
 class Scene;
@@ -10,9 +10,8 @@ class Scene;
 
 namespace image::texture {
 
-class Turbotexture {
-public:
-
+class Texture {
+  public:
     using Scene = scene::Scene;
 
     enum class Type {
@@ -30,11 +29,11 @@ public:
         Float3,
     };
 
-    Turbotexture();
+    Texture();
 
-    Turbotexture(Type type, uint32_t image);
+    Texture(Type type, uint32_t image);
 
-    bool operator==(Turbotexture const& other) const;
+    bool operator==(Texture const& other) const;
 
     bool is_valid() const;
 
@@ -49,7 +48,7 @@ public:
     float3 at_3(int32_t x, int32_t y, Scene const& scene) const;
     float4 at_4(int32_t x, int32_t y, Scene const& scene) const;
 
-    void gather_1(int4_p xy_xy1, Scene const& scene, float  c[4]) const;
+    void gather_1(int4_p xy_xy1, Scene const& scene, float c[4]) const;
     void gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const;
     void gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) const;
 
@@ -61,14 +60,13 @@ public:
     void gather_1(int3_p xyz, int3_p xyz1, Scene const& scene, float c[8]) const;
     void gather_2(int3_p xyz, int3_p xyz1, Scene const& scene, float2 c[8]) const;
 
-    float average_1(Scene const& scene) const;
+    float  average_1(Scene const& scene) const;
     float3 average_3(Scene const& scene) const;
 
-private:
-
+  private:
     Type type_;
 
-    uint32_t image_id_;
+    uint32_t image_;
 
     float2 scale_;
 };

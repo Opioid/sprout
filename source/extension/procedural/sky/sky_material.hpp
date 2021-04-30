@@ -3,7 +3,6 @@
 
 #include "base/math/distribution/distribution_2d.hpp"
 #include "core/image/texture/texture.hpp"
-#include "core/image/texture/texture_float3.hpp"
 #include "core/image/typed_image.hpp"
 #include "sky_material_base.hpp"
 
@@ -59,8 +58,8 @@ class Sky_baked_material : public Material {
   private:
     static float3 unclipped_canopy_mapping(Transformation const& trafo, float2 uv);
 
-    image::Image* cache_;
-    image::texture::Turbotexture texture_;
+    image::Image*           cache_;
+    image::texture::Texture texture_;
 
     float3 average_emission_;
 

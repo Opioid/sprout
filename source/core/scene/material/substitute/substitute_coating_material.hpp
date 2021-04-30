@@ -10,9 +10,9 @@ class Material_coating : public Material_base {
   public:
     Material_coating(Sampler_settings sampler_settings, bool two_sided);
 
-    void set_coating_thickness_map(Turbotexture const& thickness_map);
+    void set_coating_thickness_map(Texture const& thickness_map);
 
-    void set_coating_normal_map(Turbotexture const& normal_map);
+    void set_coating_normal_map(Texture const& normal_map);
 
     void set_coating_thickness(float thickness);
 
@@ -21,8 +21,8 @@ class Material_coating : public Material_base {
     void set_coating_basis(float3_p wo, Renderstate const& rs, Texture_sampler_2D const& sampler,
                            Worker const& worker, Sample& sample) const;
 
-    Turbotexture coating_thickness_map_;
-    Turbotexture coating_normal_map_;
+    Texture coating_thickness_map_;
+    Texture coating_normal_map_;
 
     Coating coating_;
 };

@@ -14,12 +14,12 @@
 
 namespace scene::material {
 
-using Turbotexture    = image::texture::Turbotexture;
+using Texture            = image::texture::Texture;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 
 static inline float3 sample_normal(float3_p wo, Renderstate const& rs, float2 const uv,
-                                   Turbotexture const& map, Texture_sampler_2D const& sampler,
-                                   scene::Scene const& scene) {
+                                   Texture const& map, Texture_sampler_2D const& sampler,
+                                   Scene const& scene) {
     float3 const nm = sampler.sample_3(map, uv, scene);
     float3 const n  = normalize(rs.tangent_to_world(nm));
 
@@ -36,8 +36,8 @@ static inline float3 sample_normal(float3_p wo, Renderstate const& rs, float2 co
     return n;
 }
 
-static inline float3 sample_normal(float3_p wo, Renderstate const& rs, Turbotexture const& map,
-                                   Texture_sampler_2D const& sampler, scene::Scene const& scene) {
+static inline float3 sample_normal(float3_p wo, Renderstate const& rs, Texture const& map,
+                                   Texture_sampler_2D const& sampler, Scene const& scene) {
     return sample_normal(wo, rs, rs.uv, map, sampler, scene);
 }
 

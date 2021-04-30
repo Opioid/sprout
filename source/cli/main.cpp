@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
     procedural::mesh::init(scene_loader);
     procedural::sky::init(scene_loader, material_provider);
 
-    Scene scene(scene_loader.null_shape(), shape_resources, material_resources, image_resources);
+    Scene scene(image_resources, material_resources, shape_resources, scene_loader.null_shape());
 
     std::string take_name;
 

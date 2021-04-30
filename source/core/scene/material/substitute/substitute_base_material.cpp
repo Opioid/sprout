@@ -40,15 +40,15 @@ float3 Material_base::average_radiance(float /*area*/) const {
     return float3(0.f);
 }
 
-void Material_base::set_normal_map(Turbotexture const& normal_map) {
+void Material_base::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Material_base::set_surface_map(Turbotexture const& surface_map) {
+void Material_base::set_surface_map(Texture const& surface_map) {
     surface_map_ = surface_map;
 }
 
-void Material_base::set_emission_map(Turbotexture const& emission_map) {
+void Material_base::set_emission_map(Texture const& emission_map) {
     emission_map_ = emission_map;
 
     properties_.set(Property::Emission_map, emission_map.is_valid());

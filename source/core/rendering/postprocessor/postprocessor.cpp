@@ -13,8 +13,8 @@ bool Postprocessor::alpha_out(bool alpha_in) const {
     return alpha_in;
 }
 
-void Postprocessor::apply(image::Float4 const& source, image::Float4& destination, Scene const& scene,
-                          Threads& threads) {
+void Postprocessor::apply(image::Float4 const& source, image::Float4& destination,
+                          Scene const& scene, Threads& threads) {
     pre_apply(source, destination, threads);
 
     for (uint32_t p = 0; p < num_passes_; ++p) {

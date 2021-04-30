@@ -8,7 +8,7 @@ namespace rendering::postprocessor {
 
 class Backplate : public Postprocessor {
   public:
-    Backplate(image::texture::Turbotexture const& backplate);
+    Backplate(image::texture::Texture const& backplate);
 
     void init(scene::camera::Camera const& camera, Threads& threads) final;
 
@@ -18,7 +18,7 @@ class Backplate : public Postprocessor {
     void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end, image::Float4 const& source,
                image::Float4& destination, Scene const& scene) final;
 
-    image::texture::Turbotexture backplate_;
+    image::texture::Texture backplate_;
 };
 
 }  // namespace rendering::postprocessor

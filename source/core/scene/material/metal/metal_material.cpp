@@ -37,7 +37,7 @@ material::Sample const& Material_isotropic::sample(float3_p           wo, Ray co
     return sample;
 }
 
-void Material_isotropic::set_normal_map(Turbotexture const& normal_map) {
+void Material_isotropic::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
@@ -94,11 +94,11 @@ material::Sample const& Material_anisotropic::sample(float3_p           wo, Ray 
     return sample;
 }
 
-void Material_anisotropic::set_normal_map(Turbotexture const& normal_map) {
+void Material_anisotropic::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(Turbotexture const& direction_map) {
+void Material_anisotropic::set_direction_map(Texture const& direction_map) {
     direction_map_ = direction_map;
 }
 

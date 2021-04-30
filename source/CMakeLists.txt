@@ -127,12 +127,10 @@ elseif (MSVC)
     add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
 endif ()
 
-
-
 add_subdirectory(base)
 add_subdirectory(core)
 add_subdirectory(extension)
 add_subdirectory(capi)
 add_subdirectory(capi-test)
 add_subdirectory(cli)
-# add_subdirectory(it)
+add_subdirectory(it)

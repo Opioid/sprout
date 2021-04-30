@@ -81,7 +81,7 @@ void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
                               scene);
 }
 
-void Emissionmap::set_emission_map(Turbotexture const& emission_map) {
+void Emissionmap::set_emission_map(Texture const& emission_map) {
     emission_map_ = emission_map;
 
     properties_.set(Property::Emission_map, emission_map.is_valid());
@@ -105,7 +105,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         threads.run_range(
             [&luminance, &avgs, &shape, &texture, &scene, element](uint32_t id, int32_t begin,
-                                                           int32_t end) noexcept {
+                                                                   int32_t end) noexcept {
                 auto const d = texture.description(scene).dimensions().xy();
 
                 float2 const idf = 1.f / float2(d);

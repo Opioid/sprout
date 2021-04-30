@@ -47,11 +47,11 @@ material::Sample const& Glass_rough::sample(float3_p wo, Ray const& /*ray*/, Ren
     return sample;
 }
 
-void Glass_rough::set_normal_map(Turbotexture const& normal_map) {
+void Glass_rough::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Glass_rough::set_roughness_map(Turbotexture const& roughness_map) {
+void Glass_rough::set_roughness_map(Texture const& roughness_map) {
     roughness_map_ = roughness_map;
 }
 

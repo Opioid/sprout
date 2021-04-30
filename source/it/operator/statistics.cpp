@@ -2,12 +2,15 @@
 #include "base/spectrum/rgb.hpp"
 #include "core/image/texture/texture.inl"
 #include "core/logging/logging.hpp"
+#include "core/scene/scene.hpp"
 #include "item.hpp"
 #include "options/options.hpp"
 
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+
+using namespace scene;
 
 namespace op {
 
@@ -18,9 +21,9 @@ struct Luminance {
     float max;
 };
 
-Luminance average_and_max_luminance(Texture const* image);
+Luminance average_and_max_luminance(Texture const& image);
 
-void write_histogram(Item const& item, std::ostream& stream);
+void write_histogram(Item const& item, Scene const& scene, std::ostream& stream);
 
 class Histogram {
   public:
@@ -79,7 +82,7 @@ class Histogram {
 };
 
 uint32_t statistics(std::vector<Item> const& items, it::options::Options const& options,
-                    Threads& /*threads*/) {
+                    Scene const& scene, Threads& /*threads*/) {
     std::ostringstream stream;
 
     for (auto const& i : items) {
@@ -87,7 +90,7 @@ uint32_t statistics(std::vector<Item> const& items, it::options::Options const& 
             stream << i.name << "\n";
         }
 
-        write_histogram(i, stream);
+        write_histogram(i, scene, stream);
 
         if (items.size() > 1) {
             stream << "\n";
@@ -105,8 +108,8 @@ uint32_t statistics(std::vector<Item> const& items, it::options::Options const& 
     return 1;
 }
 
-Luminance average_and_max_luminance(Texture const* image) {
-    auto const d = image->dimensions();
+Luminance average_and_max_luminance(Texture const& image, Scene const& scene) {
+    auto const d = image.description(scene).dimensions();
 
     int32_t const len = d[0] * d[1] * d[2];
 
@@ -118,7 +121,7 @@ Luminance average_and_max_luminance(Texture const* image) {
     for (int32_t z = 0; z < d[2]; ++z) {
         for (int32_t y = 0; y < d[1]; ++y) {
             for (int32_t x = 0; x < d[0]; ++x) {
-                float const luminance = luminance_gamma_sRGB(image->at_3(x, y, z));
+                float const luminance = luminance_gamma_sRGB(image.at_3(x, y, z, scene));
 
                 average += ilen * luminance;
 
@@ -130,21 +133,23 @@ Luminance average_and_max_luminance(Texture const* image) {
     return {average, max};
 }
 
-void write_histogram(Item const& item, std::ostream& stream) {
-    Texture const* image = item.image;
+void write_histogram(Item const& item, Scene const& scene, std::ostream& stream) {
+    Texture const& image = item.image;
 
-    auto const [avg_l, max_l] = average_and_max_luminance(image);
+    auto const [avg_l, max_l] = average_and_max_luminance(image, scene);
 
     Histogram hist(max_l);
 
-    auto const d = image->dimensions();
+    auto const d = image.description(scene).dimensions();
 
-    for (int32_t z = 0; z < d[2]; ++z) {
-        for (int32_t y = 0; y < d[1]; ++y) {
-            for (int32_t x = 0; x < d[0]; ++x) {
-                float const luminance = luminance_gamma_sRGB(image->at_3(x, y, z));
+    if (max_l > 0.f) {
+        for (int32_t z = 0; z < d[2]; ++z) {
+            for (int32_t y = 0; y < d[1]; ++y) {
+                for (int32_t x = 0; x < d[0]; ++x) {
+                    float const luminance = luminance_gamma_sRGB(image.at_3(x, y, z, scene));
 
-                hist.insert(luminance);
+                    hist.insert(luminance);
+                }
             }
         }
     }

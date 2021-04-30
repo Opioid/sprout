@@ -19,7 +19,7 @@
 
 namespace scene::material::volumetric {
 
-Grid::Grid(Sampler_settings sampler_settings, Turbotexture const& density)
+Grid::Grid(Sampler_settings sampler_settings, Texture const& density)
     : Material(sampler_settings), density_(density) {
     properties_.set(Property::Heterogeneous_volume);
 }
@@ -69,7 +69,7 @@ float Grid::density(float3_p uvw, Filter filter, Worker const& worker) const {
     return sampler.sample_1(density_, uvw, worker.scene());
 }
 
-Grid_emission::Grid_emission(Sampler_settings sampler_settings, Turbotexture const& grid)
+Grid_emission::Grid_emission(Sampler_settings sampler_settings, Texture const& grid)
     : Grid(sampler_settings, grid), average_emission_(float3(-1.f)) {
     properties_.set(Property::Emission_map);
 }
@@ -209,7 +209,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
         if (temperature_.is_valid()) {
             threads.run_range(
                 [this, &luminance, &ars, d, &scene](uint32_t id, int32_t begin,
-                                                           int32_t end) noexcept {
+                                                    int32_t end) noexcept {
                     float3 ar(0.f);
 
                     if (2 == density_.num_channels()) {
@@ -265,7 +265,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
 
             threads.run_range(
                 [this, &emission, &luminance, &ars, d, &scene](uint32_t id, int32_t begin,
-                                                           int32_t end) noexcept {
+                                                               int32_t end) noexcept {
                     float3 ar(0.f);
 
                     for (int32_t z = begin; z < end; ++z) {
@@ -348,7 +348,7 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
     }
 }
 
-void Grid_emission::set_temperature_map(Turbotexture const& temperature_map) {
+void Grid_emission::set_temperature_map(Texture const& temperature_map) {
     temperature_ = temperature_map;
 }
 
@@ -359,7 +359,7 @@ Grid_color::Grid_color(Sampler_settings sampler_settings) : Material(sampler_set
 
 Grid_color::~Grid_color() = default;
 
-void Grid_color::set_color(Turbotexture const& color) {
+void Grid_color::set_color(Texture const& color) {
     color_ = color;
 }
 

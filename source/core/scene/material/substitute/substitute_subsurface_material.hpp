@@ -15,7 +15,7 @@ class Material_subsurface final : public Material_base {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_density_map(Turbotexture const& density_map);
+    void set_density_map(Texture const& density_map);
 
     CC collision_coefficients(float3_p p, Filter filter, Worker const& worker) const final;
 
@@ -28,7 +28,7 @@ class Material_subsurface final : public Material_base {
 
     float3 color(float3_p p, Filter filter, Worker const& worker) const;
 
-    Turbotexture density_map_;
+    Texture density_map_;
 
     volumetric::Gridtree tree_;
 };

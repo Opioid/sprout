@@ -1,10 +1,13 @@
 #include "item.hpp"
 #include "base/string/string.hpp"
 #include "core/image/texture/texture.inl"
+#include "core/scene/scene.hpp"
+
+using namespace scene;
 
 bool any_has_alpha_channel(std::vector<Item> const& items) {
     for (auto const& i : items) {
-        if (4 == i.image->num_channels()) {
+        if (4 == i.image.num_channels()) {
             return true;
         }
     }
@@ -12,11 +15,11 @@ bool any_has_alpha_channel(std::vector<Item> const& items) {
     return false;
 }
 
-int2 max_dimensions_2(std::vector<Item> const& items) {
+int2 max_dimensions_2(std::vector<Item> const& items, Scene const& scene) {
     int2 dm(0);
 
     for (auto const& i : items) {
-        dm = max(dm, i.image->dimensions().xy());
+        dm = max(dm, i.image.description(scene).dimensions().xy());
     }
 
     return dm;

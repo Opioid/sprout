@@ -172,7 +172,8 @@ Piecewise::Piecewise(bool auto_expose, float exposure, float toe_strength, float
 }
 
 void Piecewise::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
-                      image::Float4 const& source, image::Float4& destination, Scene const& /*scene*/) {
+                      image::Float4 const& source, image::Float4& destination,
+                      Scene const& /*scene*/) {
     float const factor = exposure_factor_;
 
     for (int32_t i = begin; i < end; ++i) {

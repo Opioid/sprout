@@ -117,7 +117,6 @@ void Typed_image<T>::gather(int4_p xy_xy1, T c[4]) const {
 
     c[2] = data_[y1 + xy_xy1[0]];
     c[3] = data_[y1 + xy_xy1[2]];
-
 }
 
 template <typename T>
@@ -131,43 +130,43 @@ T Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
 template <typename T>
 void Typed_image<T>::gather(int3_p xyz, int3_p xyz1, T c[8]) const {
     int64_t const w = int64_t(description_.dimensions_[0]);
-        int64_t const h = int64_t(description_.dimensions_[1]);
+    int64_t const h = int64_t(description_.dimensions_[1]);
 
-        int64_t const x = int64_t(xyz[0]);
-        int64_t const y = int64_t(xyz[1]);
-        int64_t const z = int64_t(xyz[2]);
+    int64_t const x = int64_t(xyz[0]);
+    int64_t const y = int64_t(xyz[1]);
+    int64_t const z = int64_t(xyz[2]);
 
-        int64_t const x1 = int64_t(xyz1[0]);
-        int64_t const y1 = int64_t(xyz1[1]);
-        int64_t const z1 = int64_t(xyz1[2]);
+    int64_t const x1 = int64_t(xyz1[0]);
+    int64_t const y1 = int64_t(xyz1[1]);
+    int64_t const z1 = int64_t(xyz1[2]);
 
-        int64_t const d = z * h;
+    int64_t const d = z * h;
 
-        int64_t const c0 = (d + y) * w + x;
-        c[0]             = data_[c0];
+    int64_t const c0 = (d + y) * w + x;
+    c[0]             = data_[c0];
 
-        int64_t const c1 = (d + y) * w + x1;
-        c[1]             = data_[c1];
+    int64_t const c1 = (d + y) * w + x1;
+    c[1]             = data_[c1];
 
-        int64_t const c2 = (d + y1) * w + x;
-        c[2]             = data_[c2];
+    int64_t const c2 = (d + y1) * w + x;
+    c[2]             = data_[c2];
 
-        int64_t const c3 = (d + y1) * w + x1;
-        c[3]             = data_[c3];
+    int64_t const c3 = (d + y1) * w + x1;
+    c[3]             = data_[c3];
 
-        int64_t const d1 = z1 * h;
+    int64_t const d1 = z1 * h;
 
-        int64_t const c4 = (d1 + y) * w + x;
-        c[4]             = data_[c4];
+    int64_t const c4 = (d1 + y) * w + x;
+    c[4]             = data_[c4];
 
-        int64_t const c5 = (d1 + y) * w + x1;
-        c[5]             = data_[c5];
+    int64_t const c5 = (d1 + y) * w + x1;
+    c[5]             = data_[c5];
 
-        int64_t const c6 = (d1 + y1) * w + x;
-        c[6]             = data_[c6];
+    int64_t const c6 = (d1 + y1) * w + x;
+    c[6]             = data_[c6];
 
-        int64_t const c7 = (d1 + y1) * w + x1;
-        c[7]             = data_[c7];
+    int64_t const c7 = (d1 + y1) * w + x1;
+    c[7]             = data_[c7];
 }
 
 template <typename T>

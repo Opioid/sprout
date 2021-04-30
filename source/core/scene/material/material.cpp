@@ -25,11 +25,11 @@ Material::Material(Sampler_settings sampler_settings, bool two_sided)
 
 Material::~Material() = default;
 
-void Material::set_mask(Turbotexture const& mask) {
+void Material::set_mask(Texture const& mask) {
     mask_ = mask;
 }
 
-void Material::set_color_map(Turbotexture const& color_map) {
+void Material::set_color_map(Texture const& color_map) {
     color_map_ = color_map;
 }
 

@@ -81,7 +81,8 @@ void Pipeline::apply(image::Float4& target, Scene const& scene, Threads& threads
     }
 }
 
-void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene, Threads& threads) {
+void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene,
+                     Threads& threads) {
     image::Float4* targets[2];
 
     if (0 == postprocessors_.size() % 2) {
@@ -100,8 +101,8 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, Scene 
     }
 }
 
-void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene,
-                                Threads& threads) {
+void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
+                                Scene const& scene, Threads& threads) {
     image::Float4* targets[2];
 
     if (0 == postprocessors_.size() % 2) {

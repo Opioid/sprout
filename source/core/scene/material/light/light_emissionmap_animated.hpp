@@ -22,7 +22,7 @@ class Emissionmap_animated : public Emissionmap {
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const final;
 
-    void set_emission_map(Turbotexture const& emission_map, uint64_t animation_duration);
+    void set_emission_map(Texture const& emission_map, uint64_t animation_duration);
 
   protected:
     uint64_t animation_duration_;

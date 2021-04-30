@@ -56,7 +56,8 @@ material::Sample const& Material_coating_subsurface::sample(float3_p wo, Ray con
     float thickness;
     float weight;
     if (coating_thickness_map_.is_valid()) {
-        float const relative_thickness = sampler.sample_1(coating_thickness_map_, rs.uv, worker.scene());
+        float const relative_thickness = sampler.sample_1(coating_thickness_map_, rs.uv,
+                                                          worker.scene());
 
         thickness = coating_.thickness * relative_thickness;
         weight    = relative_thickness > 0.1f ? 1.f : relative_thickness;
@@ -83,7 +84,7 @@ material::Sample const& Material_coating_subsurface::sample(float3_p wo, Ray con
     return sample;
 }
 
-void Material_coating_subsurface::set_density_map(Turbotexture const& density_map) {
+void Material_coating_subsurface::set_density_map(Texture const& density_map) {
     density_map_ = density_map;
 }
 

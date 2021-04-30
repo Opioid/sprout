@@ -15,7 +15,7 @@ class Glass_thin : public Material {
     float3 thin_absorption(float3_p wi, float3_p n, float2 uv, Filter filter,
                            Worker const& worker) const final;
 
-    void set_normal_map(Turbotexture const& normal_map);
+    void set_normal_map(Texture const& normal_map);
 
     void set_refraction_color(float3_p color);
 
@@ -24,7 +24,7 @@ class Glass_thin : public Material {
     static size_t sample_size();
 
   private:
-    Turbotexture normal_map_;
+    Texture normal_map_;
 
     float3 refraction_color_;
 

@@ -51,11 +51,11 @@ class Sample;
 
 class Material {
   public:
-    using Filter          = Sampler_settings::Filter;
-    using Shape           = shape::Shape;
-    using Transformation  = entity::Composed_transformation;
-    using Sampler         = sampler::Sampler;
-    using Turbotexture = image::texture::Turbotexture;
+    using Filter         = Sampler_settings::Filter;
+    using Shape          = shape::Shape;
+    using Transformation = entity::Composed_transformation;
+    using Sampler        = sampler::Sampler;
+    using Texture        = image::texture::Texture;
 
     static char const* identifier();
 
@@ -63,9 +63,9 @@ class Material {
 
     virtual ~Material();
 
-    void set_mask(Turbotexture const& mask);
+    void set_mask(Texture const& mask);
 
-    void set_color_map(Turbotexture const& color_map);
+    void set_color_map(Texture const& color_map);
 
     void set_emission(float3_p emission);
 
@@ -172,8 +172,8 @@ class Material {
 
     flags::Flags<Property> properties_;
 
-    Turbotexture mask_;
-    Turbotexture color_map_;
+    Texture mask_;
+    Texture color_map_;
 
     CC cc_;
 

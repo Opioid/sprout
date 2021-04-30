@@ -21,7 +21,7 @@ class Constant : public Material {
     static size_t sample_size();
 
   private:
-    Turbotexture emission_map_;
+    Texture emission_map_;
 
     float alpha_;
 };

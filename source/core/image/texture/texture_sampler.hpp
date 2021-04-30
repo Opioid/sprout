@@ -10,7 +10,7 @@ class Scene;
 namespace image::texture {
 
 class Texture;
-class Turbotexture;
+class Texture;
 
 class Sampler_2D {
   public:
@@ -18,13 +18,16 @@ class Sampler_2D {
 
     virtual ~Sampler_2D();
 
-    virtual float  sample_1(Turbotexture const& texture, float2 uv, Scene const& scene) const = 0;
-    virtual float2 sample_2(Turbotexture const& texture, float2 uv, Scene const& scene) const = 0;
-    virtual float3 sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const = 0;
+    virtual float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const = 0;
+    virtual float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const = 0;
+    virtual float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const = 0;
 
-    virtual float  sample_1(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const = 0;
-    virtual float2 sample_2(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const = 0;
-    virtual float3 sample_3(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const = 0;
+    virtual float  sample_1(Texture const& texture, float2 uv, int32_t element,
+                            Scene const& scene) const = 0;
+    virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element,
+                            Scene const& scene) const = 0;
+    virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element,
+                            Scene const& scene) const = 0;
 
     virtual float2 address(float2 uv) const = 0;
 };
@@ -32,13 +35,16 @@ class Sampler_2D {
 template <typename Address_U, typename Address_V>
 class Nearest_2D final : public Sampler_2D {
   public:
-    float  sample_1(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
-    float2 sample_2(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
-    float3 sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
+    float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const final;
 
-    float  sample_1(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const final;
-    float2 sample_2(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const final;
-    float3 sample_3(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const final;
+    float  sample_1(Texture const& texture, float2 uv, int32_t element,
+                    Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float2 uv, int32_t element,
+                    Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float2 uv, int32_t element,
+                    Scene const& scene) const final;
 
     float2 address(float2 uv) const final;
 
@@ -49,13 +55,16 @@ class Nearest_2D final : public Sampler_2D {
 template <typename Address_U, typename Address_V>
 class Linear_2D : public Sampler_2D {
   public:
-    float  sample_1(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
-    float2 sample_2(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
-    float3 sample_3(Turbotexture const& texture, float2 uv, Scene const& scene) const final;
+    float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const final;
 
-    float  sample_1(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const final;
-    float2 sample_2(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const final;
-    float3 sample_3(Turbotexture const& texture, float2 uv, int32_t element, Scene const& scene) const final;
+    float  sample_1(Texture const& texture, float2 uv, int32_t element,
+                    Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float2 uv, int32_t element,
+                    Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float2 uv, int32_t element,
+                    Scene const& scene) const final;
 
     float2 address(float2 uv) const final;
 
@@ -69,10 +78,10 @@ class Sampler_3D {
 
     virtual ~Sampler_3D();
 
-    virtual float  sample_1(Turbotexture const& texture, float3_p uvw, Scene const& scene) const = 0;
-    virtual float2 sample_2(Turbotexture const& texture, float3_p uvw, Scene const& scene) const = 0;
-    virtual float3 sample_3(Turbotexture const& texture, float3_p uvw, Scene const& scene) const = 0;
-    virtual float4 sample_4(Turbotexture const& texture, float3_p uvw, Scene const& scene) const = 0;
+    virtual float  sample_1(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
+    virtual float2 sample_2(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
+    virtual float3 sample_3(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
+    virtual float4 sample_4(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
 
     virtual float3 address(float3_p uvw) const = 0;
 };
@@ -80,10 +89,10 @@ class Sampler_3D {
 template <typename Address_mode>
 class Nearest_3D : public Sampler_3D {
   public:
-    float  sample_1(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
-    float2 sample_2(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
-    float3 sample_3(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
-    float4 sample_4(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
+    float  sample_1(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float4 sample_4(Texture const& texture, float3_p uvw, Scene const& scene) const final;
 
     float3 address(float3_p uvw) const final;
 
@@ -94,10 +103,10 @@ class Nearest_3D : public Sampler_3D {
 template <typename Address_mode>
 class Linear_3D : public Sampler_3D {
   public:
-    float  sample_1(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
-    float2 sample_2(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
-    float3 sample_3(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
-    float4 sample_4(Turbotexture const& texture, float3_p uvw, Scene const& scene) const final;
+    float  sample_1(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float4 sample_4(Texture const& texture, float3_p uvw, Scene const& scene) const final;
 
     float3 address(float3_p uvw) const final;
 

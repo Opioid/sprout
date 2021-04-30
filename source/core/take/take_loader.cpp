@@ -810,7 +810,8 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto const backplate_res = image::texture::Provider::load(name, memory::Variant_map(), float2(1.f), resources);
+            auto const backplate_res = image::texture::Provider::load(name, memory::Variant_map(),
+                                                                      float2(1.f), resources);
             if (!backplate_res.is_valid()) {
                 continue;
             }
