@@ -62,7 +62,7 @@ float3 Turbotexture::at_3(int32_t x, int32_t y, Scene const& scene) const {
 }
 
 float4 Turbotexture::at_4(int32_t x, int32_t y, Scene const& scene) const {
-    std::cout << "at_4 " << uint32_t(type_) << std::endl;
+    SOFT_ASSERT(false);
 
     return float4(0.f);
 }
