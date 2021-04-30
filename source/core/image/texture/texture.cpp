@@ -1,6 +1,8 @@
 #include "texture.hpp"
 #include "texture.inl"
 
+#include "debug/assert.hpp"
+
 namespace image::texture {
 
 float Turbotexture::at_1(int32_t x, int32_t y, Scene const& scene) const {
@@ -12,6 +14,8 @@ float Turbotexture::at_1(int32_t x, int32_t y, Scene const& scene) const {
         return encoding::cached_unorm_to_float(value);
     }
     }
+
+    SOFT_ASSERT(false);
 
     return 0.f;
 }
@@ -25,6 +29,8 @@ float2 Turbotexture::at_2(int32_t x, int32_t y, Scene const& scene) const {
         return encoding::cached_unorm_to_float(value);
     }
     }
+
+    SOFT_ASSERT(false);
 
     return float2(0.f);
 }
@@ -50,10 +56,14 @@ float3 Turbotexture::at_3(int32_t x, int32_t y, Scene const& scene) const {
     }
     }
 
+    SOFT_ASSERT(false);
+
     return float3(0.f);
 }
 
 float4 Turbotexture::at_4(int32_t x, int32_t y, Scene const& scene) const {
+    std::cout << "at_4 " << uint32_t(type_) << std::endl;
+
     return float4(0.f);
 }
 
@@ -69,9 +79,11 @@ void Turbotexture::gather_1(int4_p xy_xy1, Scene const& scene, float c[4]) const
     c[1] = encoding::cached_unorm_to_float(values[1]);
     c[2] = encoding::cached_unorm_to_float(values[2]);
     c[3] = encoding::cached_unorm_to_float(values[3]);
+        return;
+    }
+    }
 
-    }
-    }
+    SOFT_ASSERT(false);
 }
 
 void Turbotexture::gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const {
@@ -86,9 +98,11 @@ void Turbotexture::gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) cons
     c[1] = encoding::cached_unorm_to_float(values[1]);
     c[2] = encoding::cached_unorm_to_float(values[2]);
     c[3] = encoding::cached_unorm_to_float(values[3]);
+    return;
+    }
+    }
 
-    }
-    }
+    SOFT_ASSERT(false);
 
 }
 
@@ -104,7 +118,7 @@ void Turbotexture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) cons
     c[1] = encoding::cached_snorm_to_float(values[1]);
     c[2] = encoding::cached_snorm_to_float(values[2]);
     c[3] = encoding::cached_snorm_to_float(values[3]);
-    break;
+    return;
     }
 
     case Type::Byte3_sRGB: {
@@ -121,7 +135,7 @@ void Turbotexture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) cons
     c[2] = encoding::cached_srgb_to_float(values[2]);
     c[3] = encoding::cached_srgb_to_float(values[3]);
 #endif
-        break;
+        return;
     }
     case Type::Float3: {
         packed_float3 values[4];
@@ -130,21 +144,28 @@ void Turbotexture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) cons
         c[1] = float3(values[1]);
         c[2] = float3(values[2]);
         c[3] = float3(values[3]);
-        break;
+        return;
     }
     }
 
+    SOFT_ASSERT(false);
 }
 
 float Turbotexture::at_element_1(int32_t x, int32_t y, int32_t element, Scene const& scene) const {
+    SOFT_ASSERT(false);
+
     return 0.f;
 }
 
 float2 Turbotexture::at_element_2(int32_t x, int32_t y, int32_t element, Scene const& scene) const {
+    SOFT_ASSERT(false);
+
     return float2(0.f);
 }
 
 float3 Turbotexture::at_element_3(int32_t x, int32_t y, int32_t element, Scene const& scene) const {
+    SOFT_ASSERT(false);
+
     return float3(0.f);
 }
 
@@ -163,6 +184,8 @@ float Turbotexture::at_1(int32_t x, int32_t y, int32_t z, Scene const& scene) co
     }
     }
 
+    SOFT_ASSERT(false);
+
     return 0.f;
 }
 
@@ -175,14 +198,20 @@ float2 Turbotexture::at_2(int32_t x, int32_t y, int32_t z, Scene const& scene) c
     }
     }
 
+    SOFT_ASSERT(false);
+
     return float2(0.f);
 }
 
 float3 Turbotexture::at_3(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
+    SOFT_ASSERT(false);
+
     return float3(0.f);
 }
 
 float4 Turbotexture::at_4(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
+    SOFT_ASSERT(false);
+
     return float4(0.f);
 }
 
@@ -192,11 +221,11 @@ void Turbotexture::gather_1(int3_p xyz, int3_p xyz1, Scene const& scene, float c
     switch (type_) {
     case Type::Float1: {
         image->float1().gather(xyz, xyz1, c);
-        break;
+        return;
     }
     case Type::Float1_sparse: {
         image->float1_sparse().gather(xyz, xyz1, c);
-        break;
+        return;
     }
     case Type::Float2: {
         float2 values[8];
@@ -209,9 +238,11 @@ void Turbotexture::gather_1(int3_p xyz, int3_p xyz1, Scene const& scene, float c
         c[5] = values[5][0];
         c[6] = values[6][0];
         c[7] = values[7][0];
-        break;
+        return;
     }
     }
+
+    SOFT_ASSERT(false);
 }
 
 void Turbotexture::gather_2(int3_p xyz, int3_p xyz1, Scene const& scene, float2 c[8]) const {
@@ -220,9 +251,11 @@ void Turbotexture::gather_2(int3_p xyz, int3_p xyz1, Scene const& scene, float2 
     switch (type_) {
     case Type::Float2: {
         image->float2().gather(xyz, xyz1, c);
-        break;
+        return;
     }
     }
+
+    SOFT_ASSERT(false);
 }
 
 float Turbotexture::average_1(Scene const& scene) const {
