@@ -16,11 +16,13 @@ float Texture::at_1(int32_t x, int32_t y, Scene const& scene) const {
             uint8_t const value = image->byte1().at(x, y);
             return encoding::cached_unorm_to_float(value);
         }
+        case Type::Float1: {
+            return image->float1().at(x, y);
+        }
+        default:
+            SOFT_ASSERT(false);
+            return 0.f;
     }
-
-    SOFT_ASSERT(false);
-
-    return 0.f;
 }
 
 float2 Texture::at_2(int32_t x, int32_t y, Scene const& scene) const {
@@ -35,11 +37,13 @@ float2 Texture::at_2(int32_t x, int32_t y, Scene const& scene) const {
             byte2 const value = image->byte2().at(x, y);
             return encoding::cached_unorm_to_float(value);
         }
+        case Type::Float2: {
+            return image->float2().at(x, y);
+        }
+        default:
+            SOFT_ASSERT(false);
+            return float2(0.f);
     }
-
-    SOFT_ASSERT(false);
-
-    return float2(0.f);
 }
 
 float3 Texture::at_3(int32_t x, int32_t y, Scene const& scene) const {
@@ -64,17 +68,48 @@ float3 Texture::at_3(int32_t x, int32_t y, Scene const& scene) const {
         case Type::Float3: {
             return float3(image->float3().at(x, y));
         }
+        default:
+            SOFT_ASSERT(false);
+            return float3(0.f);
     }
-
-    SOFT_ASSERT(false);
-
-    return float3(0.f);
 }
 
 float4 Texture::at_4(int32_t x, int32_t y, Scene const& scene) const {
-    SOFT_ASSERT(false);
+    Image const* image = scene.image(image_);
 
-    return float4(0.f);
+    switch (type_) {
+        case Type::Byte3_snorm: {
+            byte3 const value = image->byte3().at(x, y);
+            return float4(encoding::cached_snorm_to_float(value));
+        }
+        case Type::Byte3_sRGB: {
+            byte3 const value = image->byte3().at(x, y);
+#ifdef SU_ACESCG
+            return float4(spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value)));
+#else
+            return encoding::cached_srgb_to_float(value);
+#endif
+        }
+        case Type::Byte4_sRGB: {
+            byte4 const value = image->byte4().at(x, y);
+#ifdef SU_ACESCG
+            return float4(spectrum::sRGB_to_AP1(encoding::cached_srgb_to_float(value.xyz())),
+                          encoding::cached_unorm_to_float(value[3]));
+#else
+            return float4(encoding::cached_srgb_to_float(value),
+                          encoding::cached_unorm_to_float(value[3]));
+#endif
+        }
+        case Type::Half3: {
+            return float4(half_to_float(image->short3().at(x, y)));
+        }
+        case Type::Float3: {
+            return float4(image->float3().at(x, y));
+        }
+        default:
+            SOFT_ASSERT(false);
+            return float4(0.f);
+    }
 }
 
 void Texture::gather_1(int4_p xy_xy1, Scene const& scene, float c[4]) const {
@@ -91,9 +126,10 @@ void Texture::gather_1(int4_p xy_xy1, Scene const& scene, float c[4]) const {
             c[3] = encoding::cached_unorm_to_float(values[3]);
             return;
         }
+        default:
+            SOFT_ASSERT(false);
+            return;
     }
-
-    SOFT_ASSERT(false);
 }
 
 void Texture::gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const {
@@ -120,9 +156,10 @@ void Texture::gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const {
             c[3] = encoding::cached_unorm_to_float(values[3]);
             return;
         }
+        default:
+            SOFT_ASSERT(false);
+            return;
     }
-
-    SOFT_ASSERT(false);
 }
 
 void Texture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) const {
@@ -173,9 +210,10 @@ void Texture::gather_3(int4_p xy_xy1, Scene const& scene, float3 c[4]) const {
             c[3] = float3(values[3]);
             return;
         }
+        default:
+            SOFT_ASSERT(false);
+            return;
     }
-
-    SOFT_ASSERT(false);
 }
 
 float Texture::at_1(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
@@ -191,11 +229,10 @@ float Texture::at_1(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
         case Type::Float2: {
             return image->float2().at(x, y, z)[0];
         }
+        default:
+            SOFT_ASSERT(false);
+            return 0.f;
     }
-
-    SOFT_ASSERT(false);
-
-    return 0.f;
 }
 
 float2 Texture::at_2(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
@@ -205,11 +242,10 @@ float2 Texture::at_2(int32_t x, int32_t y, int32_t z, Scene const& scene) const 
         case Type::Float2: {
             return image->float2().at(x, y, z);
         }
+        default:
+            SOFT_ASSERT(false);
+            return float2(0.f);
     }
-
-    SOFT_ASSERT(false);
-
-    return float2(0.f);
 }
 
 float3 Texture::at_3(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
@@ -242,11 +278,10 @@ float3 Texture::at_3(int32_t x, int32_t y, int32_t z, Scene const& scene) const 
         case Type::Float3: {
             return float3(image->float3().at(x, y, z));
         }
+        default:
+            SOFT_ASSERT(false);
+            return float3(0.f);
     }
-
-    SOFT_ASSERT(false);
-
-    return float3(0.f);
 }
 
 float4 Texture::at_4(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
@@ -263,11 +298,10 @@ float4 Texture::at_4(int32_t x, int32_t y, int32_t z, Scene const& scene) const 
                           encoding::cached_unorm_to_float(value[3]));
 #endif
         }
+        default:
+            SOFT_ASSERT(false);
+            return float4(0.f);
     }
-
-    SOFT_ASSERT(false);
-
-    return float4(0.f);
 }
 
 void Texture::gather_1(int3_p xyz, int3_p xyz1, Scene const& scene, float c[8]) const {
@@ -295,9 +329,10 @@ void Texture::gather_1(int3_p xyz, int3_p xyz1, Scene const& scene, float c[8]) 
             c[7] = values[7][0];
             return;
         }
+        default:
+            SOFT_ASSERT(false);
+            return;
     }
-
-    SOFT_ASSERT(false);
 }
 
 void Texture::gather_2(int3_p xyz, int3_p xyz1, Scene const& scene, float2 c[8]) const {
@@ -308,9 +343,10 @@ void Texture::gather_2(int3_p xyz, int3_p xyz1, Scene const& scene, float2 c[8])
             image->float2().gather(xyz, xyz1, c);
             return;
         }
+        default:
+            SOFT_ASSERT(false);
+            return;
     }
-
-    SOFT_ASSERT(false);
 }
 
 float Texture::average_1(Scene const& scene) const {

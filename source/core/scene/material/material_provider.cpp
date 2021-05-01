@@ -1098,7 +1098,7 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
                 desc.scale = json::read_float2(n.value);
             } else {
                 float const s = json::read_float(n.value);
-                desc.scale = float2(s, s);
+                desc.scale    = float2(s, s);
             }
         } else if ("num_elements" == n.name) {
             desc.num_elements = json::read_int(n.value);
