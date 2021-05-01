@@ -5,7 +5,7 @@
 #include "core/file/file_system.hpp"
 #include "core/image/image.hpp"
 #include "core/image/image_provider.hpp"
-#include "core/image/texture/texture.hpp"
+#include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/log_std_out.hpp"
 #include "core/logging/logging.hpp"

@@ -5,9 +5,10 @@
 #include "base/math/vector2.inl"
 #include "collision_coefficients.inl"
 #include "fresnel/fresnel.inl"
+#include "image/texture/texture.inl"
 #include "image/texture/texture_sampler.hpp"
 #include "material.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 
 namespace scene::material {
 

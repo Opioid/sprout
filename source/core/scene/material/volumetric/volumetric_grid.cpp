@@ -10,11 +10,10 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.inl"
-
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "volumetric_octree_builder.hpp"
 
 namespace scene::material::volumetric {

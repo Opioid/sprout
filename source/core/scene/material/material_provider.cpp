@@ -18,7 +18,6 @@
 #include "glass/glass_thin_material.hpp"
 #include "image/channels.hpp"
 #include "image/texture/texture.inl"
-
 #include "image/texture/texture_provider.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
@@ -55,7 +54,7 @@ struct Texture_description {
 
     image::Swizzle swizzle = image::Swizzle::Undefined;
 
-    float scale = 1.f;
+    float2 scale = float2(1.f);
 
     int32_t num_elements = 1;
 
@@ -1095,7 +1094,12 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
                 desc.swizzle = Swizzle::YXZW;
             }
         } else if ("scale" == n.name) {
-            desc.scale = json::read_float(n.value);
+            if (n.value.IsArray()) {
+                desc.scale = json::read_float2(n.value);
+            } else {
+                float const s = json::read_float(n.value);
+                desc.scale = float2(s, s);
+            }
         } else if ("num_elements" == n.name) {
             desc.num_elements = json::read_int(n.value);
         } else if ("invert" == n.name) {
@@ -1126,7 +1130,7 @@ Texture create_texture(Texture_description const& desc, Tex_usage usage, Resourc
         options.set("invert", desc.invert);
     }
 
-    return image::texture::Provider::load(desc.filename, options, float2(desc.scale), resources);
+    return image::texture::Provider::load(desc.filename, options, desc.scale, resources);
 }
 
 void read_coating_description(json::Value const& value, bool no_tex_dwim,

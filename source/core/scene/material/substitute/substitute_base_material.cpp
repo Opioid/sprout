@@ -1,7 +1,6 @@
 #include "substitute_base_material.hpp"
 #include "base/math/vector4.inl"
 #include "image/texture/texture.inl"
-
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material.inl"
