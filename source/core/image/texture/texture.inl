@@ -6,11 +6,10 @@
 #include "image/image.hpp"
 #include "scene/scene.inl"
 #include "texture.hpp"
-#include "texture_sampler.hpp"
 
 namespace image::texture {
 
-inline Texture::Texture() : type_(Type::Byte3_sRGB), image_(0xFFFFFFFF) {}
+inline Texture::Texture() : type_(Type::Invalid), image_(0xFFFFFFFF) {}
 
 inline Texture::Texture(Type type, uint32_t image, float2 scale)
     : type_(type), image_(image), scale_(scale) {}
@@ -25,6 +24,8 @@ inline bool Texture::is_valid() const {
 
 inline int32_t Texture::num_channels() const {
     switch (type_) {
+        case Type::Invalid:
+            return 0;
         case Type::Byte1_unorm:
         case Type::Float1:
         case Type::Float1_sparse:

@@ -43,13 +43,20 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     float alpha;
     float metallic;
-    if (surface_map_.is_valid()) {
+
+    uint32_t const nc = surface_map_.num_channels();
+    if (nc >= 2) {
         float2 const surface = sampler.sample_2(surface_map_, rs.uv, worker.scene());
 
         float const r = ggx::map_roughness(surface[0]);
 
         alpha    = r * r;
         metallic = surface[1];
+    } else if (1 == nc) {
+        float const r = ggx::map_roughness(sampler.sample_1(surface_map_, rs.uv, worker.scene()));
+
+        alpha    = r * r;
+        metallic = metallic_;
     } else {
         alpha    = alpha_;
         metallic = metallic_;

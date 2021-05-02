@@ -18,6 +18,7 @@ class Texture {
     using Scene = scene::Scene;
 
     enum class Type {
+        Invalid,
         Byte1_unorm,
         Byte2_snorm,
         Byte2_unorm,
