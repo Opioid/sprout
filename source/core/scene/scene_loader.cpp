@@ -23,6 +23,7 @@
 #include "shape/disk.hpp"
 #include "shape/distant_sphere.hpp"
 #include "shape/infinite_sphere.hpp"
+#include "shape/null.hpp"
 #include "shape/plane.hpp"
 #include "shape/rectangle.hpp"
 #include "shape/shape.inl"

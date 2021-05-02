@@ -4,7 +4,6 @@
 #include "base/math/vector3.inl"
 #include "base/math/vector4.inl"
 #include "image/image.hpp"
-#include "image/typed_image.hpp"
 #include "scene/scene.inl"
 #include "texture.hpp"
 #include "texture_sampler.hpp"
@@ -13,7 +12,8 @@ namespace image::texture {
 
 inline Texture::Texture() : type_(Type::Byte3_sRGB), image_(0xFFFFFFFF) {}
 
-inline Texture::Texture(Type type, uint32_t image) : type_(type), image_(image), scale_(1.f) {}
+inline Texture::Texture(Type type, uint32_t image, float2 scale)
+    : type_(type), image_(image), scale_(scale) {}
 
 inline bool Texture::operator==(Texture const& other) const {
     return type_ == other.type_ && image_ == other.image_ && scale_ == other.scale_;

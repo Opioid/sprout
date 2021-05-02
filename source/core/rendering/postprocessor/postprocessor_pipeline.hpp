@@ -3,7 +3,6 @@
 
 #include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
-#include "image/typed_image_fwd.hpp"
 
 namespace scene {
 class Scene;

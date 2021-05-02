@@ -7,12 +7,13 @@
 #include "light/light.hpp"
 #include "light/light_tree.hpp"
 #include "light/light_tree_builder.hpp"
-#include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
-#include "scene_constants.hpp"
-#include "shape/null.hpp"
 
 #include <vector>
+
+namespace math {
+struct Transformation;
+}
 
 namespace thread {
 class Pool;
@@ -26,6 +27,10 @@ class Texture;
 }  // namespace image
 
 namespace scene {
+
+namespace material {
+class Material;
+}
 
 namespace shape {
 class Shape;

@@ -80,49 +80,49 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
     }
 
     if (Image::Type::Byte1 == image->type()) {
-        return Texture(Texture::Type::Byte1_unorm, image_id);
+        return Texture(Texture::Type::Byte1_unorm, image_id, scale);
     }
 
     if (Image::Type::Byte2 == image->type()) {
         if (Usage::Anisotropy == usage) {
-            return Texture(Texture::Type::Byte2_snorm, image_id);
+            return Texture(Texture::Type::Byte2_snorm, image_id, scale);
         }
 
-        return Texture(Texture::Type::Byte2_unorm, image_id);
+        return Texture(Texture::Type::Byte2_unorm, image_id, scale);
     }
 
     if (Image::Type::Byte3 == image->type()) {
         if (Usage::Normal == usage) {
             SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
 
-            return Texture(Texture::Type::Byte3_snorm, image_id);
+            return Texture(Texture::Type::Byte3_snorm, image_id, scale);
         }
 
-        return Texture(Texture::Type::Byte3_sRGB, image_id);
+        return Texture(Texture::Type::Byte3_sRGB, image_id, scale);
     }
 
     if (Image::Type::Byte4 == image->type()) {
-        return Texture(Texture::Type::Byte4_sRGB, image_id);
+        return Texture(Texture::Type::Byte4_sRGB, image_id, scale);
     }
 
     if (Image::Type::Short3 == image->type()) {
-        return Texture(Texture::Type::Half3, image_id);
+        return Texture(Texture::Type::Half3, image_id, scale);
     }
 
     if (Image::Type::Float1 == image->type()) {
-        return Texture(Texture::Type::Float1, image_id);
+        return Texture(Texture::Type::Float1, image_id, scale);
     }
 
     if (Image::Type::Float1_sparse == image->type()) {
-        return Texture(Texture::Type::Float1_sparse, image_id);
+        return Texture(Texture::Type::Float1_sparse, image_id, scale);
     }
 
     if (Image::Type::Float2 == image->type()) {
-        return Texture(Texture::Type::Float2, image_id);
+        return Texture(Texture::Type::Float2, image_id, scale);
     }
 
     if (Image::Type::Float3 == image->type()) {
-        return Texture(Texture::Type::Float3, image_id);
+        return Texture(Texture::Type::Float3, image_id, scale);
     }
 
     return Texture();

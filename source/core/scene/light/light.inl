@@ -5,6 +5,7 @@
 #include "light.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene.hpp"
+#include "scene/shape/shape.hpp"
 
 namespace scene::light {
 

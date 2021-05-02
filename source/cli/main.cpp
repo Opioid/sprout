@@ -15,6 +15,7 @@
 #include "core/rendering/rendering_driver.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/scene/camera/camera.hpp"
+#include "core/scene/material/material.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "core/scene/scene.hpp"

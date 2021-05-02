@@ -2,13 +2,16 @@
 #define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
 #include "base/math/vector2.hpp"
-#include "image/typed_image_fwd.hpp"
 
 namespace scene {
 class Scene;
 }  // namespace scene
 
-namespace image::texture {
+namespace image {
+
+struct Description;
+
+namespace texture {
 
 class Texture {
   public:
@@ -31,7 +34,7 @@ class Texture {
 
     Texture();
 
-    Texture(Type type, uint32_t image);
+    Texture(Type type, uint32_t image, float2 scale);
 
     bool operator==(Texture const& other) const;
 
@@ -71,6 +74,7 @@ class Texture {
     float2 scale_;
 };
 
+}
 }  // namespace image::texture
 
 #endif

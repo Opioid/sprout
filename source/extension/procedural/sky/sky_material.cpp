@@ -27,6 +27,8 @@
 
 namespace procedural::sky {
 
+using namespace image;
+using namespace texture;
 using namespace scene;
 
 Sky_material::Sky_material(Sky* sky) : Material(sky) {}
@@ -63,11 +65,10 @@ static int2 constexpr Bake_dimensions(256);
 
 Sky_baked_material::Sky_baked_material(Sky* sky, Resources& resources)
     : Material(sky),
-      cache_(new image::Image(image::Float3(image::Description(Bake_dimensions))))
+      cache_(new Image(Float3(Description(Bake_dimensions))))
 
 {
-    texture_ = image::texture::Texture(image::texture::Texture::Type::Float3,
-                                       resources.store<image::Image>(cache_));
+    texture_ = Texture(Texture::Type::Float3, resources.store<Image>(cache_), float2(1.f));
 
     properties_.set(Property::Emission_map);
 }

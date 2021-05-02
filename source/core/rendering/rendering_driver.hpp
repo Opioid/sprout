@@ -6,7 +6,6 @@
 
 #include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
-#include "image/typed_image_fwd.hpp"
 #include "integrator/particle/particle_importance.hpp"
 #include "integrator/particle/photon/photon_map.hpp"
 #include "tile_queue.hpp"

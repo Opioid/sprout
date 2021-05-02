@@ -59,8 +59,8 @@ static Animation* load_keyframes(json::Value const& value, Transformation const&
     return animation;
 }
 
-static Animation* load_sequence(json::Value const& value, Transformation const& default_trafo,
-                                Scene& scene) {
+Animation* load_sequence(json::Value const& value, Transformation const& default_trafo,
+                         Scene& scene) {
     uint32_t start_frame       = 0;
     uint32_t num_frames        = 0;
     uint32_t frames_per_second = 0;
@@ -98,7 +98,7 @@ static Animation* load_sequence(json::Value const& value, Transformation const& 
     return animation;
 }
 
-static void read_morphing(json::Value const& value, entity::Morphing& morphing) {
+void read_morphing(json::Value const& value, entity::Morphing& morphing) {
     for (auto& n : value.GetObject()) {
         if ("targets" == n.name) {
             if (n.value.IsArray() && n.value.Size() >= 2) {

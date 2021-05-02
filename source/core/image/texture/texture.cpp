@@ -1,6 +1,7 @@
 #include "texture.hpp"
 #include "base/math/half.inl"
 #include "base/spectrum/aces.hpp"
+#include "image/typed_image.hpp"
 #include "texture.inl"
 #include "texture_encoding.inl"
 
