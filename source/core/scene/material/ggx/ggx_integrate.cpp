@@ -21,7 +21,7 @@ float integrate_f_ss(float alpha, float n_dot_wo, uint32_t num_samples) {
 
     fresnel::Schlick const schlick(1.f);
 
-    Layer layer{float3(1.f, 0.f, 0.f), float3(0.f, 1.f, 0.f), float3(0.f, 0.f, 1.f)};
+    Layer const layer{float3(1.f, 0.f, 0.f), float3(0.f, 1.f, 0.f), float3(0.f, 0.f, 1.f)};
 
     n_dot_wo = clamp(n_dot_wo);
 
@@ -48,8 +48,7 @@ float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_sa
         return 1.f;
     }
 
-    Layer layer;
-    layer.set_tangent_frame(float3(1.f, 0.f, 0.f), float3(0.f, 1.f, 0.f), float3(0.f, 0.f, 1.f));
+    Layer const layer{float3(1.f, 0.f, 0.f), float3(0.f, 1.f, 0.f), float3(0.f, 0.f, 1.f)};
 
     n_dot_wo = clamp(n_dot_wo);
 
