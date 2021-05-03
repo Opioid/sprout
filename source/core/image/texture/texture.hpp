@@ -75,7 +75,7 @@ class Texture {
     float2 scale_;
 };
 
-}
-}  // namespace image::texture
+}  // namespace texture
+}  // namespace image
 
 #endif

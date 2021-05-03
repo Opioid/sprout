@@ -2,7 +2,7 @@
 #define SU_CORE_RENDERING_SENSOR_FILTER_MITCHELL_HPP
 
 #include "base/math/interpolated_function_1d.hpp"
-#include "base/math/vector3.hpp"
+#include "base/math/vector.hpp"
 
 namespace rendering::sensor::filter {
 
