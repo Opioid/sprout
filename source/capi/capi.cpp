@@ -235,7 +235,7 @@ uint32_t su_create_camera(char const* string) {
 
     engine->take.view.clear();
 
-    take::Loader::load_camera(root, &engine->scene, engine->take.view.camera);
+    take::Loader::load_camera(root, engine->scene, engine->take.view.camera);
 
     engine->valid = engine->take.view.valid();
 

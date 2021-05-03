@@ -36,7 +36,7 @@ using Pipeline  = op::Pipeline;
 using Resources = resource::Manager;
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   Resources& resources);
+                   Scene& scene, Resources& resources);
 
 int main(int argc, char* argv[]) {
     auto const total_start = std::chrono::high_resolution_clock::now();
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
                               : filesystem.read_stream(args.take, take_name);
 
         if (stream) {
-            load_pipeline(*stream, take_name, pipeline, resources);
+            load_pipeline(*stream, take_name, pipeline, scene, resources);
         } else {
             logging::error("Loading take %S: ", args.take);
         }
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
 }
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   Resources& resources) {
+                   Scene& scene, Resources& resources) {
     std::string error;
     auto const  root = json::parse(stream, error);
     if (!root.HasParseError()) {
@@ -165,7 +165,7 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
 
     for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
-            take::Loader::load_camera(n.value, nullptr, pipeline.camera);
+            take::Loader::load_camera(n.value, scene, pipeline.camera);
         } else if ("post" == n.name) {
             std::string_view const take_mount_folder = string::parent_directory(take_name);
 

@@ -37,7 +37,7 @@ class Loader {
     static bool load(Take& take, std::istream& stream, bool progressive, Scene& scene,
                      Resources& resources);
 
-    static bool load_camera(json::Value const& camera_value, Scene* scene, Camera*& camera);
+    static bool load_camera(json::Value const& camera_value, Scene& scene, Camera*& camera);
 
     static void load_integrators(json::Value const& integrator_value, uint32_t num_workers,
                                  bool progressive, View& view);

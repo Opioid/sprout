@@ -116,7 +116,7 @@ bool Loader::load(Take& take, std::istream& stream, bool progressive, Scene& sce
 
     for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
-            load_camera(n.value, &scene, take.view.camera);
+            load_camera(n.value, scene, take.view.camera);
         } else if ("export" == n.name) {
             exporter_value = &n.value;
         } else if ("integrator" == n.name) {
@@ -197,7 +197,7 @@ bool Loader::load(Take& take, std::istream& stream, bool progressive, Scene& sce
     return true;
 }
 
-bool Loader::load_camera(json::Value const& camera_value, Scene* scene, Camera*& camera) {
+bool Loader::load_camera(json::Value const& camera_value, Scene& scene, Camera*& camera) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -307,25 +307,22 @@ bool Loader::load_camera(json::Value const& camera_value, Scene* scene, Camera*&
         camera->set_parameters(*parameters_value);
     }
 
-    if (scene) {
-        if (!camera->has_sensor() && sensor_value) {
-            auto sensor = load_sensor(*sensor_value);
+    if (!camera->has_sensor() && sensor_value) {
+        auto sensor = load_sensor(*sensor_value);
 
-            camera->set_sensor(sensor);
+        camera->set_sensor(sensor);
+    }
+
+    uint32_t const prop_id = scene.create_entity();
+
+    camera->set_entity(prop_id);
+
+    if (animation_value) {
+        if (auto animation = scene::animation::load(*animation_value, trafo, scene); animation) {
+            scene.create_animation_stage(prop_id, animation);
         }
-
-        uint32_t const prop_id = scene->create_entity();
-
-        camera->set_entity(prop_id);
-
-        if (animation_value) {
-            if (auto animation = scene::animation::load(*animation_value, trafo, *scene);
-                animation) {
-                scene->create_animation_stage(prop_id, animation);
-            }
-        } else {
-            scene->prop_set_world_transformation(prop_id, trafo);
-        }
+    } else {
+        scene.prop_set_world_transformation(prop_id, trafo);
     }
 
     return true;
