@@ -13,9 +13,7 @@ namespace rendering {
 class Worker;
 enum class Event;
 
-namespace integrator {
-
-namespace volume {
+namespace integrator::volume {
 
 class Integrator : public integrator::Integrator {
   public:
@@ -35,10 +33,6 @@ using Pool = integrator::Pool<Integrator>;
 
 template <typename T>
 using Typed_pool = Typed_pool<T, Integrator>;
-
-}  // namespace volume
-
-extern template class Pool<volume::Integrator>;
 
 }  // namespace integrator
 }  // namespace rendering

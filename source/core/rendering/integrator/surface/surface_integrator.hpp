@@ -14,9 +14,7 @@ namespace sensor::aov {
 class Value;
 }
 
-namespace integrator {
-
-namespace surface {
+namespace integrator::surface {
 
 class Integrator : public integrator::Integrator {
   public:
@@ -39,10 +37,6 @@ using Pool = integrator::Pool<Integrator>;
 
 template <typename T>
 using Typed_pool = Typed_pool<T, Integrator>;
-
-}  // namespace surface
-
-extern template class Pool<surface::Integrator>;
 
 }  // namespace integrator
 }  // namespace rendering

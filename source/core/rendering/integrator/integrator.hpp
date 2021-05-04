@@ -80,14 +80,12 @@ class Integrator {
 template <typename B>
 class Pool {
   public:
-    Pool(uint32_t num_integrators);
-
     virtual ~Pool();
 
     virtual B* create(uint32_t id, uint32_t max_samples_per_pixel) const = 0;
 
   protected:
-    uint32_t num_integrators_;
+
 };
 
 template <typename T, typename B>
@@ -98,6 +96,8 @@ class Typed_pool : public Pool<B> {
     ~Typed_pool() override;
 
   protected:
+    uint32_t num_integrators_;
+
     T* integrators_;
 };
 
