@@ -17,8 +17,11 @@ View::~View() {
 }
 
 void View::clear() {
-    delete camera;
+    pipeline.clear();
 
+    aovs.clear();
+
+    delete camera;
     camera = nullptr;
 
     delete samplers;
@@ -32,8 +35,6 @@ void View::clear() {
 
     delete surface_integrators;
     surface_integrators = nullptr;
-
-    pipeline.clear();
 }
 
 void View::init(Threads& threads) {

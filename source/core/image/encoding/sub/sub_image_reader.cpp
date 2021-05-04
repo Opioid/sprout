@@ -104,7 +104,7 @@ Image* Reader::read(std::istream& stream) {
 
     uint64_t const binary_start = json_size + 4u + sizeof(uint64_t);
 
-    Description const description(dimensions, 1, offset);
+    Description const description(dimensions, offset);
 
     if (topology_node->value.MemberEnd() != topology_node) {
         uint64_t topology_offset = 0;

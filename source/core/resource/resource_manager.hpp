@@ -47,6 +47,12 @@ class Manager {
     std::vector<T*> const& register_provider(Provider<T>& provider);
 
     template <typename T>
+    bool deprecate_frame_dependant();
+
+    template <typename T>
+    bool reload_frame_dependant();
+
+    template <typename T>
     Resource_ptr<T> load(std::string const& filename, Variants const& options = Variants());
 
     template <typename T>

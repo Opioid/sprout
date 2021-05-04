@@ -13,6 +13,5 @@ target_sources(core
     "pm.cpp"
     "pm.hpp"
     "surface_integrator.cpp"
-    "surface_integrator.inl"
     "surface_integrator.hpp"
 	) 

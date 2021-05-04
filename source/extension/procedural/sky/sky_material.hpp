@@ -3,18 +3,21 @@
 
 #include "base/math/distribution/distribution_2d.hpp"
 #include "core/image/texture/texture.hpp"
-#include "core/image/texture/texture_float3.hpp"
 #include "core/image/typed_image.hpp"
 #include "sky_material_base.hpp"
+
+namespace resource {
+class Manager;
+}
 
 namespace procedural::sky {
 
 class Sky_material : public Material {
   public:
-    Sky_material(Sky& sky);
+    Sky_material(Sky* sky);
 
     scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
-                                          const scene::Renderstate& rs, Filter filter,
+                                          scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
@@ -29,12 +32,14 @@ class Sky_material : public Material {
 
 class Sky_baked_material : public Material {
   public:
-    Sky_baked_material(Sky& sky);
+    using Resources = resource::Manager;
+
+    Sky_baked_material(Sky* sky, Resources& resources);
 
     ~Sky_baked_material() override;
 
     scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
-                                          const scene::Renderstate& rs, Filter filter,
+                                          scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
@@ -53,9 +58,8 @@ class Sky_baked_material : public Material {
   private:
     static float3 unclipped_canopy_mapping(Transformation const& trafo, float2 uv);
 
-    image::Float3 cache_;
-
-    image::texture::Texture cache_texture_;
+    image::Image*           cache_;
+    image::texture::Texture texture_;
 
     float3 average_emission_;
 

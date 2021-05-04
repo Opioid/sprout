@@ -1,6 +1,6 @@
 #include "sensor_mitchell.hpp"
 #include "base/math/interpolated_function_1d.inl"
-#include "math/vector3.inl"
+#include "math/vector2.inl"
 
 #include <algorithm>
 

@@ -28,17 +28,20 @@ namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
 
+static uint64_t constexpr Tick_duration = Units_per_second / 60;
+
 static uint32_t constexpr Num_steps = 4;
 
 static float constexpr Interval = 1.f / float(Num_steps);
 
-Scene::Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
+Scene::Scene(std::vector<Image*> const&    image_resources,
              std::vector<Material*> const& material_resources,
-             std::vector<Texture*> const&  texture_resources)
-    : null_shape_(null_shape),
-      shape_resources_(shape_resources),
+             std::vector<Shape*> const& shape_resources, uint32_t null_shape)
+    : image_resources_(image_resources),
       material_resources_(material_resources),
-      texture_resources_(texture_resources) {
+      shape_resources_(shape_resources),
+
+      null_shape_(null_shape) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);
     prop_world_positions_.reserve(Num_reserved_props);
@@ -205,22 +208,18 @@ void Scene::random_light(float3_p p0, float3_p p1, float random, bool split, Lig
 }
 
 void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Threads& threads) {
-    uint64_t const frames_start = start - (start % tick_duration_);
-    uint64_t const end_rem      = end % tick_duration_;
-    uint64_t const frames_end   = end + (end_rem ? tick_duration_ - end_rem : 0);
+    uint64_t const frames_start = start - (start % Tick_duration);
+    uint64_t const end_rem      = end % Tick_duration;
+    uint64_t const frames_end   = end + (end_rem ? Tick_duration - end_rem : 0);
 
     current_time_start_ = frames_start;
 
     for (auto a : animations_) {
-        a->resample(frames_start, frames_end, tick_duration_);
+        a->resample(frames_start, frames_end, Tick_duration);
     }
 
     for (auto& s : animation_stages_) {
         s.update(*this, threads);
-    }
-
-    for (auto m : material_resources_) {
-        m->simulate(start, end, tick_duration_, threads, *this);
     }
 
     compile(camera_pos, start, threads);
@@ -279,6 +278,12 @@ void Scene::compile(float3_p camera_pos, uint64_t time, Threads& threads) {
     }
 
     caustic_aabb_ = caustic_aabb;
+}
+
+void Scene::commit_materials(Threads& threads) const {
+    for (auto m : material_resources_) {
+        m->commit(threads, *this);
+    }
 }
 
 void Scene::calculate_num_interpolation_frames(uint64_t frame_step, uint64_t frame_duration) {
@@ -622,15 +627,15 @@ Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t    
                                                                     Transformation& trafo) const {
     entity::Keyframe const* frames = &keyframes_[frames_id];
 
-    uint64_t const i = (time - current_time_start_) / tick_duration_;
+    uint64_t const i = (time - current_time_start_) / Tick_duration;
 
     auto const& a = frames[i];
     auto const& b = frames[i + 1];
 
-    uint64_t const a_time = current_time_start_ + i * tick_duration_;
+    uint64_t const a_time = current_time_start_ + i * Tick_duration;
     uint64_t const delta  = time - a_time;
 
-    float const t = float(delta) / float(tick_duration_);
+    float const t = float(delta) / float(Tick_duration);
 
     trafo.set(lerp(a.trafo, b.trafo, t));
 
@@ -700,9 +705,9 @@ static inline bool matching(uint64_t a, uint64_t b) {
 }
 
 uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const {
-    uint32_t const a = std::max(uint32_t(frame_duration / tick_duration_), 1u);
-    uint32_t const b = matching(frame_step, tick_duration_) ? 0 : 1;
-    uint32_t const c = matching(frame_duration, tick_duration_) ? 0 : 1;
+    uint32_t const a = std::max(uint32_t(frame_duration / Tick_duration), 1u);
+    uint32_t const b = matching(frame_step, Tick_duration) ? 0 : 1;
+    uint32_t const c = matching(frame_duration, Tick_duration) ? 0 : 1;
 
     return a + b + c;
 }

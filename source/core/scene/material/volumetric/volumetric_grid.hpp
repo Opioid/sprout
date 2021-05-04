@@ -3,7 +3,6 @@
 
 #include "base/math/distribution/distribution_3d.hpp"
 #include "base/math/interpolated_function_1d.hpp"
-#include "image/texture/texture_adapter.hpp"
 #include "volumetric_material.hpp"
 #include "volumetric_octree.hpp"
 
@@ -11,7 +10,7 @@ namespace scene::material::volumetric {
 
 class Grid : public Material {
   public:
-    Grid(Sampler_settings sampler_settings, Texture_adapter const& density);
+    Grid(Sampler_settings sampler_settings, Texture const& density);
 
     ~Grid() override;
 
@@ -20,8 +19,7 @@ class Grid : public Material {
 
     CC collision_coefficients(float3_p uvw, Filter filter, Worker& worker) const final;
 
-    CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                        Worker& worker) const override;
+    CCE collision_coefficients_emission(float3_p uvw, Filter filter, Worker& worker) const override;
 
     void commit(Threads& threads, Scene const& scene) override;
 
@@ -32,14 +30,14 @@ class Grid : public Material {
   protected:
     float density(float3_p uvw, Filter filter, Worker& worker) const;
 
-    Texture_adapter density_;
+    Texture density_;
 
     Gridtree tree_;
 };
 
 class Grid_emission : public Grid {
   public:
-    Grid_emission(Sampler_settings sampler_settings, Texture_adapter const& grid);
+    Grid_emission(Sampler_settings sampler_settings, Texture const& grid);
 
     ~Grid_emission() override;
 
@@ -52,8 +50,7 @@ class Grid_emission : public Grid {
 
     float emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const final;
 
-    CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                        Worker& worker) const final;
+    CCE collision_coefficients_emission(float3_p uvw, Filter filter, Worker& worker) const final;
 
     void commit(Threads& threads, Scene const& scene) final;
 
@@ -61,10 +58,10 @@ class Grid_emission : public Grid {
                           float area, bool importance_sampling, Threads& threads,
                           Scene const& scene) final;
 
-    void set_temperature_map(Texture_adapter const& temperature_map);
+    void set_temperature_map(Texture const& temperature_map);
 
   private:
-    Texture_adapter temperature_;
+    Texture temperature_;
 
     Interpolated_function_1D<float3> blackbody_;
 
@@ -83,15 +80,14 @@ class Grid_color : public Material {
 
     ~Grid_color() override;
 
-    void set_color(Texture_adapter const& color);
+    void set_color(Texture const& color);
 
     float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
                              Worker& worker) const final;
 
     CC collision_coefficients(float3_p uvw, Filter filter, Worker& worker) const final;
 
-    CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                        Worker& worker) const final;
+    CCE collision_coefficients_emission(float3_p uvw, Filter filter, Worker& worker) const final;
 
     void set_volumetric(float scattering_factor, float distance, float anisotropy);
 
@@ -102,7 +98,7 @@ class Grid_color : public Material {
   protected:
     float4 color(float3_p uvw, Filter filter, Worker const& worker) const;
 
-    Texture_adapter color_;
+    Texture color_;
 
     Gridtree tree_;
 

@@ -18,7 +18,7 @@ struct Ray : public ray {
     uint64_t time;
 };
 
-struct Ray_differential {
+struct Ray_dif {
     float3 origin;
     float3 direction;
     float3 x_origin;

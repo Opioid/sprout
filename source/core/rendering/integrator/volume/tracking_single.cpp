@@ -4,8 +4,8 @@
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/volume/volume_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/entity/composed_transformation.inl"
@@ -170,22 +170,37 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
         return Event::Abort;
     }
 
+    SOFT_ASSERT(!worker.interface_stack().empty());
+
+    auto stack = worker.interface_stack();
+
+    auto const interface = worker.interface_stack().top();
+
     float const d = ray.max_t();
 
-    // Not sure wether the first test still makes sense.
-    // The second test avoids falsely reporting very long volume sections,
-    // when in fact a very close isec was missed.
-    // However, this might cause problems if we ever want to support "infinite" volumes.
+    // This test is intended to catch corner cases where we actually left the scattering medium,
+    // but the intersection point was too close to detect.
+    bool missed = false;
 
-    if (scene::offset_f(ray.min_t()) >= d || scene::Almost_ray_max_t <= d) {
+    if (scene::Almost_ray_max_t <= d) {
+        missed = true;
+    } else if (!interface->matches(isec) || !isec.same_hemisphere(ray.direction)) {
+        float3 const v = -ray.direction;
+
+        Ray tray(isec.offset_p(v), v, 0.f, scene::Ray_max_t, 0, 0.f, ray.time);
+        if (Normals normals; worker.intersect(interface->prop, tray, normals)) {
+            if (dot(normals.geo_n, v) <= 0.f) {
+                missed = true;
+            }
+        }
+    }
+
+    if (missed) {
+        stack.pop();
         li = float3(0.f);
         tr = float3(1.f);
         return Event::Pass;
     }
-
-    SOFT_ASSERT(!worker.interface_stack().empty());
-
-    auto const interface = worker.interface_stack().top();
 
     auto const& material = *interface->material(worker);
 
@@ -510,7 +525,7 @@ sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) {
 }
 
 Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progressive)
-    : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
+    : Typed_pool<Tracking_single, Integrator>(num_integrators), progressive_(progressive) {}
 
 Integrator* Tracking_single_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
     return new (&integrators_[id]) Tracking_single(max_samples_per_pixel, progressive_);

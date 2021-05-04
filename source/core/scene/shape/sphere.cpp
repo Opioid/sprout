@@ -5,7 +5,6 @@
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
-#include "scene/material/material.hpp"
 #include "scene/material/material.inl"
 #include "scene/ray_offset.inl"
 #include "scene/scene.inl"
@@ -25,6 +24,8 @@
 // but so far I didn't encounter any.
 
 namespace scene::shape {
+
+static float constexpr Delta = 1.e-20f;
 
 Sphere::Sphere() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
@@ -344,7 +345,7 @@ bool Sphere::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformatio
     float const il            = rlength(v);
     float const radius        = trafo.scale_x();
     float const sin_theta_max = std::min(il * radius, 1.f);
-    float const cos_theta_max = std::sqrt(1.f - sin_theta_max * sin_theta_max);
+    float const cos_theta_max = std::sqrt(std::max(1.f - sin_theta_max * sin_theta_max, Delta));
 
     float3 const z = il * v;
 
@@ -364,6 +365,10 @@ bool Sphere::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformatio
         float const t    = offset_b(b - dist);
 
         sample = Sample_to(dir, float3(0.f), cone_pdf_uniform(cos_theta_max), t);
+
+        if (!std::isfinite(sample.pdf())) {
+            return false;
+        }
 
         return true;
     }
@@ -399,7 +404,7 @@ float Sphere::pdf(Ray const&            ray, float3_p /*n*/, Intersection const&
     float const il            = rlength(axis);
     float const radius        = trafo.scale_x();
     float const sin_theta_max = std::min(il * radius, 1.f);
-    float const cos_theta_max = std::sqrt(1.f - sin_theta_max * sin_theta_max);
+    float const cos_theta_max = std::sqrt(std::max(1.f - sin_theta_max * sin_theta_max, Delta));
 
     return cone_pdf_uniform(cos_theta_max);
 }

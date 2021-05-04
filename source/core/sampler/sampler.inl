@@ -4,16 +4,24 @@
 #include "base/memory/align.hpp"
 #include "sampler.hpp"
 
+#include <cstring>
+
 namespace sampler {
 
 template <typename T>
 Typed_pool<T>::Typed_pool(uint32_t num_samplers)
-    : Pool(num_samplers), samplers_(memory::allocate_aligned<T>(num_samplers)) {}
+    : Pool(num_samplers), samplers_(memory::allocate_aligned<T>(num_samplers)) {
+    std::memset(samplers_, 0, sizeof(T) * num_samplers);
+}
 
 template <typename T>
 Typed_pool<T>::~Typed_pool() {
+    static uint64_t constexpr Zero = 0;
+
     for (uint32_t i = 0, len = num_samplers_; i < len; ++i) {
-        samplers_[i].~T();
+        if (std::memcmp(&samplers_[i], &Zero, sizeof(uint64_t)) != 0) {
+            samplers_[i].~T();
+        }
     }
 
     memory::free_aligned(samplers_);

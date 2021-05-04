@@ -5,7 +5,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/mapping.hpp"
 #include "base/spectrum/rgb.hpp"
-#include "rendering/integrator/surface/surface_integrator.inl"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/sensor/aov/value.inl"
 #include "scene/material/material.hpp"
@@ -116,7 +116,7 @@ float3 Debug::light_id(Ray& ray, Intersection& isec, Worker& worker) {
 }
 
 Debug_pool::Debug_pool(uint32_t num_integrators, Debug::Settings::Value vector)
-    : Typed_pool<Debug>(num_integrators) {
+    : Typed_pool<Debug, Integrator>(num_integrators) {
     settings_.value = vector;
 }
 

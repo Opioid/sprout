@@ -3,12 +3,10 @@ language: cpp
 os: linux
 dist: focal
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-11
+before_install:
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get -q update
+  - sudo apt-get -y install g++-11
       
 script:
  - mkdir build

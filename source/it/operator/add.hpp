@@ -4,6 +4,12 @@
 #include <cstdint>
 #include <vector>
 
+namespace scene {
+class Scene;
+}
+
+using Scene = scene::Scene;
+
 namespace thread {
 class Pool;
 }
@@ -19,9 +25,11 @@ struct Item;
 using Items = std::vector<Item>;
 
 namespace op {
-uint32_t add(Items const& items, it::options::Options const& options, Threads& threads);
+uint32_t add(Items const& items, it::options::Options const& options, Scene const& scene,
+             Threads& threads);
 
-uint32_t sub(Items const& items, it::options::Options const& options, Threads& threads);
+uint32_t sub(Items const& items, it::options::Options const& options, Scene const& scene,
+             Threads& threads);
 }  // namespace op
 
 #endif

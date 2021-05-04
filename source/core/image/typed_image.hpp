@@ -33,6 +33,12 @@ class alignas(16) Typed_image {
 
     T at(int32_t x, int32_t y) const;
 
+    void gather(int4_p xy_xy1, T c[4]) const;
+
+    T at(int32_t x, int32_t y, int32_t z) const;
+
+    void gather(int3_p xyz, int3_p xyz1, T c[8]) const;
+
     T* data() const;
 
     void copy(Typed_image& destination) const;
@@ -61,8 +67,6 @@ class Typed_sparse_image {
     void store(int32_t x, int32_t y, T v);
 
     T at(int32_t x, int32_t y) const;
-
-    T at_element(int32_t x, int32_t y, int32_t element) const;
 
     T at(int32_t x, int32_t y, int32_t z) const;
 

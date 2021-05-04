@@ -66,6 +66,8 @@ class Worker {
 
     bool intersect(Ray& ray, shape::Normals& normals);
 
+    bool intersect(uint32_t prop, Ray& ray, shape::Normals& normals);
+
     bool resolve_mask(Ray& ray, Intersection& isec, Filter filter);
 
     bool intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter);
@@ -90,8 +92,6 @@ class Worker {
     Texture_sampler_3D const& sampler_3D(uint32_t key, Filter filter) const;
 
     Texture_sampler_3D const& stochastic_3D(uint32_t key, float3_p r);
-
-    Texture const* texture(uint32_t id) const;
 
     Interface_stack& interface_stack();
 

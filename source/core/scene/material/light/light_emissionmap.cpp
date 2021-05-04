@@ -7,7 +7,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.inl"
-#include "image/texture/texture_adapter.inl"
+
 #include "light_material_sample.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
@@ -23,7 +23,7 @@ namespace scene::material::light {
 
 Emissionmap::Emissionmap(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided), average_emission_(float3(-1.f)) {
-    properties_.set(Property::Pure_emisive);
+    properties_.set(Property::Pure_emissive);
 }
 
 Emissionmap::~Emissionmap() = default;
@@ -37,7 +37,7 @@ material::Sample const& Emissionmap::sample(float3_p wo, Ray const& /*ray*/, Ren
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-    float3 const radiance  = emission_map_.sample_3(worker, sampler, rs.uv);
+    float3 const radiance  = sampler.sample_3(emission_map_, rs.uv, worker.scene());
     float3 const fradiance = emission_factor_ * radiance;
 
     sample.set_common(rs, wo, fradiance, fradiance, 0.f);
@@ -49,7 +49,7 @@ float3 Emissionmap::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*ext
                                       Filter filter, Worker& worker) const {
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-    return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy());
+    return emission_factor_ * sampler.sample_3(emission_map_, uvw.xy(), worker.scene());
 }
 
 float3 Emissionmap::average_radiance(float /*area*/) const {
@@ -77,36 +77,19 @@ void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
         return;
     }
 
-    prepare_sampling_internal(shape, element_ < 0 ? 0 : element_, importance_sampling, threads,
-                              scene);
-}
-
-void Emissionmap::set_emission_map(Texture_adapter const& emission_map) {
-    emission_map_ = emission_map;
-
-    properties_.set(Property::Emission_map, emission_map.is_valid());
-}
-
-void Emissionmap::set_emission_factor(float emission_factor) {
-    emission_factor_ = emission_factor;
-}
-
-void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
-                                            bool importance_sampling, Threads& threads,
-                                            Scene const& scene) {
-    auto const& texture = emission_map_.texture(scene);
+    auto const& texture = emission_map_;
 
     if (importance_sampling) {
-        auto const d = texture.dimensions().xy();
+        auto const d = texture.description(scene).dimensions().xy();
 
         memory::Buffer<float> luminance(d[0] * d[1]);
 
         memory::Array<float4> avgs(threads.num_threads(), float4(0.f));
 
         threads.run_range(
-            [&luminance, &avgs, &shape, &texture, element](uint32_t id, int32_t begin,
-                                                           int32_t end) noexcept {
-                auto const d = texture.dimensions().xy();
+            [&luminance, &avgs, &shape, &texture, &scene](uint32_t id, int32_t begin,
+                                                          int32_t end) noexcept {
+                auto const d = texture.description(scene).dimensions().xy();
 
                 float2 const idf = 1.f / float2(d);
 
@@ -122,7 +105,7 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
                         float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const radiance = texture.at_element_3(x, y, element);
+                        float3 const radiance = texture.at_3(x, y, scene);
 
                         float3 const wr = uv_weight * radiance;
 
@@ -175,12 +158,18 @@ void Emissionmap::prepare_sampling_internal(Shape const& shape, int32_t element,
 
         distribution_.init();
     } else {
-        average_emission_ = emission_factor_ * texture.average_3();
+        average_emission_ = emission_factor_ * texture.average_3(scene);
     }
+}
 
-    if (is_two_sided()) {
-        average_emission_ *= 2.f;
-    }
+void Emissionmap::set_emission_map(Texture const& emission_map) {
+    emission_map_ = emission_map;
+
+    properties_.set(Property::Emission_map, emission_map.is_valid());
+}
+
+void Emissionmap::set_emission_factor(float emission_factor) {
+    emission_factor_ = emission_factor;
 }
 
 }  // namespace scene::material::light

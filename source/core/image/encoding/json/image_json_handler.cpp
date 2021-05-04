@@ -166,13 +166,13 @@ bool Json_handler::EndObject(size_t /*memberCount*/) {
         expected_object_ = Object::Undefined;
 
         if (Image::Type::Byte1 == type_) {
-            Description description(dimensions_, 1, int3(0));
+            Description description(dimensions_, int3(0));
 
             image_ = new Image(Byte1(description));
 
             image_handler_ = new Byte1_handler(image_->byte1());
         } else if (Image::Type::Float1 == type_) {
-            Description description(dimensions_, 1, int3(0));
+            Description description(dimensions_, int3(0));
 
             image_ = new Image(Float1(description));
 

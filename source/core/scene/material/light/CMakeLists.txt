@@ -1,11 +1,9 @@
 target_sources(core
-  PRIVATE
-  "light_constant.cpp"
-  "light_constant.hpp"
-  "light_emissionmap_animated.cpp"
-  "light_emissionmap_animated.hpp"
-  "light_emissionmap.cpp"
-  "light_emissionmap.hpp"
-  "light_material_sample.cpp"
-  "light_material_sample.hpp"
-)  
+    PRIVATE
+    "light_constant.cpp"
+    "light_constant.hpp"
+    "light_emissionmap.cpp"
+    "light_emissionmap.hpp"
+    "light_material_sample.cpp"
+    "light_material_sample.hpp"
+    )  

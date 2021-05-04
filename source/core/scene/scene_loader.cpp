@@ -23,6 +23,7 @@
 #include "shape/disk.hpp"
 #include "shape/distant_sphere.hpp"
 #include "shape/infinite_sphere.hpp"
+#include "shape/null.hpp"
 #include "shape/plane.hpp"
 #include "shape/rectangle.hpp"
 #include "shape/shape.inl"
@@ -51,11 +52,10 @@ Loader::Loader(Resources& resources, Material* fallback_material)
 
 Loader::~Loader() = default;
 
-bool Loader::load(std::string const& filename, std::string_view take_name, take::Take const& take,
-                  Scene& scene) {
+bool Loader::load(std::string const& filename, take::Take const& take, Scene& scene) {
     LOGGING_VERBOSE("Loading scene %S...", filename);
 
-    std::string_view const take_mount_folder = string::parent_directory(take_name);
+    std::string_view const take_mount_folder = string::parent_directory(take.resolved_name);
 
     auto const camera = take.view.camera;
 
@@ -68,7 +68,7 @@ bool Loader::load(std::string const& filename, std::string_view take_name, take:
                                                      quaternion::Identity};
 
     bool const success = load(filename, take_mount_folder, parent_id, parent_transformation, scene,
-                              false);
+                              camera, false);
 
     resource_manager_.threads().wait_async();
 
@@ -110,7 +110,7 @@ uint32_t Loader::fallback_material() const {
 
 bool Loader::load(std::string const& filename, std::string_view take_mount_folder,
                   uint32_t parent_id, math::Transformation const& parent_transformation,
-                  Scene& scene, bool nested) {
+                  Scene& scene, Camera* camera, bool nested) {
     auto& filesystem = resource_manager_.filesystem();
 
     if (!take_mount_folder.empty()) {
@@ -166,7 +166,8 @@ bool Loader::load(std::string const& filename, std::string_view take_mount_folde
 
     for (auto const& n : root.GetObject()) {
         if ("entities" == n.name) {
-            load_entities(n.value, parent_id, parent_transformation, local_materials, scene);
+            load_entities(n.value, parent_id, parent_transformation, local_materials, scene,
+                          camera);
         }
     }
 
@@ -197,7 +198,7 @@ void Loader::read_materials(json::Value const& materials_value, std::string cons
 
 void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id,
                            math::Transformation const& parent_transformation,
-                           Local_materials const& local_materials, Scene& scene) {
+                           Local_materials const& local_materials, Scene& scene, Camera* camera) {
     if (!entities_value.IsArray()) {
         return;
     }
@@ -205,7 +206,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
     for (auto const& e : entities_value.GetArray()) {
         if (auto const file_node = e.FindMember("file"); e.MemberEnd() != file_node) {
             std::string const filename = file_node->value.GetString();
-            load(filename, "", parent_id, parent_transformation, scene, true);
+            load(filename, "", parent_id, parent_transformation, scene, camera, true);
             continue;
         }
 
@@ -232,6 +233,13 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             entity_id = prop_id;
         } else if ("Dummy" == type_name) {
             entity_id = scene.create_entity();
+        } else if ("Camera" == type_name && camera) {
+            entity_id = camera->entity();
+
+            if (prop::Null == entity_id) {
+                entity_id = scene.create_entity();
+                camera->set_entity(entity_id);
+            }
         } else {
             entity_id = load_extension(type_name, e, scene);
         }
@@ -305,7 +313,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
         }
 
         if (children) {
-            load_entities(*children, entity_id, trafo, local_materials, scene);
+            load_entities(*children, entity_id, trafo, local_materials, scene, camera);
         }
     }
 }

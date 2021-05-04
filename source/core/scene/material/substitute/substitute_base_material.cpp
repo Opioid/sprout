@@ -1,7 +1,6 @@
 #include "substitute_base_material.hpp"
 #include "base/math/vector4.inl"
 #include "image/texture/texture.inl"
-#include "image/texture/texture_adapter.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material.inl"
@@ -18,7 +17,9 @@ void Material_base::commit(Threads& /*threads*/, Scene const& scene) {
     properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 
     if (emission_map_.is_valid()) {
-        average_emission_ = emission_map_.texture(scene).average_3();
+        average_emission_ = emission_factor_ * emission_map_.average_3(scene);
+    } else {
+        average_emission_ = emission_factor_ * emission_;
     }
 }
 
@@ -26,29 +27,25 @@ float3 Material_base::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*e
                                         Filter filter, Worker& worker) const {
     if (emission_map_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
-        return emission_factor_ * emission_map_.sample_3(worker, sampler, uvw.xy());
+        return emission_factor_ * sampler.sample_3(emission_map_, uvw.xy(), worker.scene());
     }
 
-    return float3(0.f);
+    return average_emission_;
 }
 
 float3 Material_base::average_radiance(float /*area*/) const {
-    if (emission_map_.is_valid()) {
-        return emission_factor_ * average_emission_;
-    }
-
-    return float3(0.f);
+    return average_emission_;
 }
 
-void Material_base::set_normal_map(Texture_adapter const& normal_map) {
+void Material_base::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Material_base::set_surface_map(Texture_adapter const& surface_map) {
+void Material_base::set_surface_map(Texture const& surface_map) {
     surface_map_ = surface_map;
 }
 
-void Material_base::set_emission_map(Texture_adapter const& emission_map) {
+void Material_base::set_emission_map(Texture const& emission_map) {
     emission_map_ = emission_map;
 
     properties_.set(Property::Emission_map, emission_map.is_valid());

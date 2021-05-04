@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_DISPLAY_CONSTANT_HPP
+#define SU_CORE_SCENE_MATERIAL_DISPLAY_CONSTANT_HPP
 
 #include "scene/material/material.hpp"
 
@@ -21,9 +22,9 @@ class Constant : public Material {
     static size_t sample_size();
 
   private:
-    Texture_adapter emission_map_;
-
     float alpha_;
 };
 
 }  // namespace scene::material::display
+
+#endif

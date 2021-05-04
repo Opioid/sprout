@@ -67,7 +67,7 @@ material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstat
     auto const& sampler = worker.sampler_2D(sampler_key(), filter);
 
     if (normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -81,7 +81,7 @@ material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstat
 
     float2 surface;
     if (surface_map_.is_valid()) {
-        surface = surface_map_.sample_2(worker, sampler, rs.uv);
+        surface = sampler.sample_2(surface_map_, rs.uv, worker.scene());
 
         float const r = ggx::map_roughness(surface[0]);
 
@@ -93,7 +93,7 @@ material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstat
 
     float3 radiance;
     if (emission_map_.is_valid()) {
-        radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
+        radiance = emission_factor_ * sampler.sample_3(emission_map_, rs.uv, worker.scene());
     } else {
         radiance = float3(0.f);
     }

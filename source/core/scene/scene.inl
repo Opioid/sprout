@@ -139,10 +139,6 @@ inline prop::Prop_topology const& Scene::prop_topology(uint32_t entity) const {
     return prop_topology_[entity];
 }
 
-inline image::texture::Texture const* Scene::texture(uint32_t id) const {
-    return texture_resources_[id];
-}
-
 inline uint32_t Scene::prop_light_id(uint32_t entity, uint32_t part) const {
     uint32_t const p = prop_parts_[entity] + part;
     return light_ids_[p];
@@ -202,6 +198,10 @@ inline material::Material const* Scene::material(uint32_t index) const {
     SOFT_ASSERT(index < material_resources_.size());
 
     return material_resources_[index];
+}
+
+inline image::Image const* Scene::image(uint32_t id) const {
+    return image_resources_[id];
 }
 
 inline uint32_t Scene::num_lights() const {

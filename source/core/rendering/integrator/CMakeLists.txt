@@ -6,5 +6,6 @@ target_sources(core
     PRIVATE
     "integrator_helper.hpp"
     "integrator.cpp"
+    "integrator.inl"
     "integrator.hpp"
     ) 

@@ -2,8 +2,6 @@
 #include "base/math/vector3.inl"
 #include "image/image.hpp"
 #include "image/texture/texture.hpp"
-#include "image/texture/texture_adapter.hpp"
-#include "image/texture/texture_byte3_srgb.hpp"
 #include "image/typed_image.hpp"
 #include "rendering/integrator/particle/photon/photon.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
@@ -90,29 +88,29 @@ void size() {
 
     print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
-    print_size<scene::material::Material>("material::Material", 96);
+    print_size<scene::material::Material>("material::Material", 128);
     print_size<scene::material::bxdf::Sample>("bxdf::Sample", 64);
 
-    print_size<scene::material::debug::Material>("debug::Material", 96);
+    print_size<scene::material::debug::Material>("debug::Material", 128);
     print_size<scene::material::debug::Sample>("debug::Sample", 160);
 
-    print_size<scene::material::glass::Glass>("glass::Glass", 128);
-    print_size<scene::material::glass::Sample>("glass::Sample", 160);
+    print_size<scene::material::glass::Glass>("glass::Glass", 160);
+    print_size<scene::material::glass::Sample>("glass::Sample", 176);
 
-    print_size<scene::material::light::Constant>("light::Constant", 128);
-    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 176);
+    print_size<scene::material::light::Constant>("light::Constant", 160);
+    print_size<scene::material::light::Emissionmap>("light::Emissionmap", 224);
     print_size<scene::material::light::Sample>("light::Sample", 160);
 
-    print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 160);
-    print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 160);
+    print_size<scene::material::metal::Material_isotropic>("metal::Material_isotropic", 192);
+    print_size<scene::material::metal::Material_anisotropic>("metal::Material_anisotropic", 208);
     print_size<scene::material::metal::Sample_isotropic>("metal::Sample_isotropic", 192);
     print_size<scene::material::metal::Sample_anisotropic>("metal::Sample_anisotropic", 208);
 
-    print_size<scene::material::substitute::Material>("substitute::Material", 176);
+    print_size<scene::material::substitute::Material>("substitute::Material", 224);
     print_size<scene::material::substitute::Sample>("substitute::Sample", 208);
 
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);
-    print_size<scene::material::volumetric::Grid>("volumetric::Grid", 192);
+    print_size<scene::material::volumetric::Grid>("volumetric::Grid", 256);
 
     print_size<scene::prop::Prop>("prop::Prop", 8);
     print_size<scene::light::Light>("light::Light", 16);
@@ -142,18 +140,14 @@ void size() {
 
     print_size<image::Byte3>("image::Byte3", 48);
 
-    print_size<image::texture::Texture>("texture::Texture", 48);
-
-    print_size<image::texture::Byte3_sRGB>("texture::Byte_sRGB", 32);
-
-    print_size<image::texture::Adapter>("texture::Adapter", 8);
+    print_size<image::texture::Texture>("texture::Texture", 16);
 
     print_size<scene::bvh::Split_candidate>("Split_candidate", 96);
 
     print_size<scene::shape::Node_stack>("scene::shape::Node_stack", 512);
 
-    print_size<scene::Worker>("scene::Worker", 1536);
-    print_size<rendering::Worker>("rendering::Worker", 1600);
+    print_size<scene::Worker>("scene::Worker", 1472);
+    print_size<rendering::Worker>("rendering::Worker", 1536);
 
     print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 64);
 }

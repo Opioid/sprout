@@ -3,11 +3,13 @@
 
 #include "base/memory/array.hpp"
 #include "image/typed_image.hpp"
-#include "image/typed_image_fwd.hpp"
 
-namespace scene::camera {
+namespace scene {
+class Scene;
+namespace camera {
 class Camera;
 }
+}  // namespace scene
 
 namespace thread {
 class Pool;
@@ -27,6 +29,8 @@ class Postprocessor;
 
 class Pipeline {
   public:
+    using Scene = scene::Scene;
+
     Pipeline();
 
     ~Pipeline();
@@ -45,11 +49,13 @@ class Pipeline {
 
     void seed(sensor::Sensor const& sensor, image::Float4& target, Threads& threads);
 
-    void apply(image::Float4& target, Threads& threads);
+    void apply(image::Float4& target, Scene const& scene, Threads& threads);
 
-    void apply(sensor::Sensor const& sensor, image::Float4& target, Threads& threads);
+    void apply(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene,
+               Threads& threads);
 
-    void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target, Threads& threads);
+    void apply_accumulate(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene,
+                          Threads& threads);
 
   private:
     image::Float4 scratch_;

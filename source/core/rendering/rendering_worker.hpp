@@ -33,6 +33,9 @@ class Value_pool;
 
 namespace integrator {
 
+template <typename B>
+class Pool;
+
 namespace particle {
 
 class Lighttracer;
@@ -48,17 +51,11 @@ class Mapper;
 }  // namespace particle
 
 namespace surface {
-
 class Integrator;
-class Pool;
-
 }  // namespace surface
 
 namespace volume {
-
 class Integrator;
-class Pool;
-
 }  // namespace volume
 }  // namespace integrator
 
@@ -66,8 +63,8 @@ class alignas(64) Worker : public scene::Worker {
   public:
     using Ray                 = scene::Ray;
     using Scene               = scene::Scene;
-    using Surface_pool        = integrator::surface::Pool;
-    using Volume_pool         = integrator::volume::Pool;
+    using Surface_pool        = integrator::Pool<integrator::surface::Integrator>;
+    using Volume_pool         = integrator::Pool<integrator::volume::Integrator>;
     using Lighttracer_pool    = integrator::particle::Lighttracer_pool;
     using Photon_map          = integrator::particle::photon::Map;
     using Photon_mapper       = integrator::particle::photon::Mapper;

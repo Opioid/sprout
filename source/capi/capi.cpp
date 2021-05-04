@@ -66,13 +66,11 @@ struct Engine {
         : threads(Threads::num_threads(0)),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
-          texture_provider(false),
-          texture_resources(resources.register_provider(texture_provider)),
           material_provider(false, false),
           material_resources(resources.register_provider(material_provider)),
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),
-          scene(scene_loader.null_shape(), shape_resources, material_resources, texture_resources),
+          scene(image_resources, material_resources, shape_resources, scene_loader.null_shape()),
           driver(threads, progressor),
           frame(0),
           frame_iteration(0),
@@ -84,9 +82,6 @@ struct Engine {
 
     image::Provider                   image_provider;
     std::vector<image::Image*> const& image_resources;
-
-    image::texture::Provider                     texture_provider;
-    std::vector<image::texture::Texture*> const& texture_resources;
 
     material::Provider                      material_provider;
     std::vector<material::Material*> const& material_resources;
@@ -182,18 +177,18 @@ int32_t su_load_take(char const* string) {
 
     bool success = true;
 
-    std::string take_name;
-
     std::string const take(string);
 
     {
         bool const is_json = string::is_json(take);
 
-        auto stream = is_json ? engine->resources.filesystem().string_stream(take)
-                              : engine->resources.filesystem().read_stream(take, take_name);
+        auto& filesystem = engine->resources.filesystem();
 
-        if (!stream || !take::Loader::load(engine->take, *stream, take_name, 0xFFFFFFFF,
-                                           engine->progressive, engine->scene, engine->resources)) {
+        auto stream = is_json ? filesystem.string_stream(take)
+                              : filesystem.read_stream(take, engine->take.resolved_name);
+
+        if (!stream || !take::Loader::load(engine->take, *stream, engine->progressive,
+                                           engine->scene, engine->resources)) {
             logging::error("Loading take %S: ", string);
             success = false;
         }
@@ -201,8 +196,8 @@ int32_t su_load_take(char const* string) {
         engine->valid = success && engine->take.view.valid();
     }
 
-    if (success && !engine->scene_loader.load(engine->take.scene_filename, take_name, engine->take,
-                                              engine->scene)) {
+    if (success &&
+        !engine->scene_loader.load(engine->take.scene_filename, engine->take, engine->scene)) {
         logging::error("Loading scene %S: ", engine->take.scene_filename);
         success = false;
     }
@@ -238,17 +233,13 @@ uint32_t su_create_camera(char const* string) {
 
     ASSERT_PARSE(string, prop::Null)
 
-    if (auto camera = take::Loader::load_camera(root, &engine->scene); camera) {
-        engine->take.view.clear();
+    engine->take.view.clear();
 
-        engine->take.view.camera = camera;
+    take::Loader::load_camera(root, engine->scene, engine->take.view.camera);
 
-        engine->valid = engine->take.view.valid();
+    engine->valid = engine->take.view.valid();
 
-        return camera->entity();
-    }
-
-    return prop::Null;
+    return engine->take.view.camera ? engine->take.view.camera->entity() : prop::Null;
 }
 
 uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov) {
@@ -277,7 +268,7 @@ uint32_t su_create_camera_perspective(uint32_t width, uint32_t height, float fov
 
     uint32_t const prop_id = engine->scene.create_entity();
 
-    camera->init(prop_id);
+    camera->set_entity(prop_id);
 
     engine->take.view.camera = camera;
 
@@ -582,7 +573,8 @@ int32_t su_render() {
 
     engine->driver.init(engine->take.view, engine->scene, engine->progressive);
 
-    engine->driver.render(engine->take.exporters);
+    engine->driver.render(0);
+    engine->driver.export_frame(0, engine->take.exporters);
 
     return 0;
 }

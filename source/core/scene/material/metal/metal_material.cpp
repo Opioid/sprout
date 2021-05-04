@@ -1,6 +1,6 @@
 #include "metal_material.hpp"
 #include "base/math/vector4.inl"
-#include "image/texture/texture_adapter.inl"
+
 #include "metal_sample.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material.inl"
@@ -25,7 +25,7 @@ material::Sample const& Material_isotropic::sample(float3_p           wo, Ray co
 
     if (normal_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker);
+        float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -37,7 +37,7 @@ material::Sample const& Material_isotropic::sample(float3_p           wo, Ray co
     return sample;
 }
 
-void Material_isotropic::set_normal_map(Texture_adapter const& normal_map) {
+void Material_isotropic::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
@@ -77,10 +77,10 @@ material::Sample const& Material_anisotropic::sample(float3_p           wo, Ray 
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     if (normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else if (direction_map_.is_valid()) {
-        float2 tm = direction_map_.sample_2(worker, sampler, rs.uv);
+        float2 tm = sampler.sample_2(direction_map_, rs.uv, worker.scene());
         float3 t  = normalize(rs.tangent_to_world(tm));
         float3 b  = cross(rs.n, t);
 
@@ -94,11 +94,11 @@ material::Sample const& Material_anisotropic::sample(float3_p           wo, Ray 
     return sample;
 }
 
-void Material_anisotropic::set_normal_map(Texture_adapter const& normal_map) {
+void Material_anisotropic::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(Texture_adapter const& direction_map) {
+void Material_anisotropic::set_direction_map(Texture const& direction_map) {
     direction_map_ = direction_map;
 }
 

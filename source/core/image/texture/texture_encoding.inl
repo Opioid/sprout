@@ -15,11 +15,11 @@ static inline float2 cached_srgb_to_float(byte2 byte) {
     return float2(SRGB_FLOAT[byte[0]], SRGB_FLOAT[byte[1]]);
 }
 
-static inline float3 cached_srgb_to_float(byte3 const& byte) {
+static inline float3 cached_srgb_to_float(byte3 byte) {
     return float3(SRGB_FLOAT[byte[0]], SRGB_FLOAT[byte[1]], SRGB_FLOAT[byte[2]]);
 }
 
-static inline float4 cached_srgb_to_float(byte4 const& byte) {
+static inline float4 cached_srgb_to_float(byte4 byte) {
     return float4(SRGB_FLOAT[byte[0]], SRGB_FLOAT[byte[1]], SRGB_FLOAT[byte[2]],
                   UNORM_FLOAT[byte[3]]);
 }
@@ -28,7 +28,7 @@ static inline float cached_snorm_to_float(uint8_t byte) {
     return SNORM_FLOAT[byte];
 }
 
-static inline float3 cached_snorm_to_float(byte3 const& byte) {
+static inline float3 cached_snorm_to_float(byte3 byte) {
     return float3(SNORM_FLOAT[byte[0]], SNORM_FLOAT[byte[1]], SNORM_FLOAT[byte[2]]);
 }
 

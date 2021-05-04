@@ -5,11 +5,12 @@
 #include "core/file/file_system.hpp"
 #include "core/image/image.hpp"
 #include "core/image/image_provider.hpp"
-#include "core/image/texture/texture.hpp"
+#include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/logging/log_std_out.hpp"
 #include "core/logging/logging.hpp"
 #include "core/resource/resource_manager.inl"
+#include "core/scene/scene.hpp"
 #include "core/take/take_loader.hpp"
 #include "item.hpp"
 #include "operator/add.hpp"
@@ -19,13 +20,23 @@
 #include "operator/statistics.hpp"
 #include "options/options.hpp"
 
+namespace scene {
+namespace material {
+class Material;
+}
+namespace shape {
+class Shape;
+}
+}  // namespace scene
+
 using namespace it::options;
+using namespace scene;
 
 using Pipeline  = op::Pipeline;
 using Resources = resource::Manager;
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   Resources& resources);
+                   Scene& scene, Resources& resources);
 
 int main(int argc, char* argv[]) {
     auto const total_start = std::chrono::high_resolution_clock::now();
@@ -46,7 +57,7 @@ int main(int argc, char* argv[]) {
 
     uint32_t num_workers;
     if (args.threads <= 0) {
-        int32_t const num_threads = static_cast<int32_t>(available_threads) + args.threads;
+        int32_t const num_threads = int32_t(available_threads) + args.threads;
 
         num_workers = uint32_t(std::max(num_threads, 1));
     } else {
@@ -62,10 +73,12 @@ int main(int argc, char* argv[]) {
     file::System& filesystem = resources.filesystem();
 
     image::Provider image_provider;
-    resources.register_provider(image_provider);
+    auto const&     image_resources = resources.register_provider(image_provider);
 
-    texture::Provider texture_provider(false);
-    resources.register_provider(texture_provider);
+    std::vector<scene::material::Material*> material_resources;
+    std::vector<scene::shape::Shape*>       shape_resources;
+
+    Scene scene(image_resources, material_resources, shape_resources, 0xFFFFFFFF);
 
     Pipeline pipeline;
 
@@ -78,7 +91,7 @@ int main(int argc, char* argv[]) {
                               : filesystem.read_stream(args.take, take_name);
 
         if (stream) {
-            load_pipeline(*stream, take_name, pipeline, resources);
+            load_pipeline(*stream, take_name, pipeline, scene, resources);
         } else {
             logging::error("Loading take %S: ", args.take);
         }
@@ -92,7 +105,8 @@ int main(int argc, char* argv[]) {
 
     uint32_t slot = Options::Operator::Diff == args.op ? 0xFFFFFFFF : 0;
     for (auto& i : args.images) {
-        if (Texture const* image = resources.load<Texture>(i, options).ptr; image) {
+        if (Texture const image = texture::Provider::load(i, options, float2(1.f), resources);
+            image.is_valid()) {
             std::string const name_out = slot < args.outputs.size() ? args.outputs[slot] : "";
 
             items.emplace_back(Item{i, name_out, image});
@@ -106,31 +120,32 @@ int main(int argc, char* argv[]) {
     }
 
     if (Options::Operator::Undefined == args.op || !args.statistics.empty()) {
-        op::statistics(items, args, resources.threads());
+        op::statistics(items, args, scene, resources.threads());
     }
 
     if (Options::Operator::Add == args.op) {
-        if (uint32_t const num = op::add(items, args, resources.threads()); num) {
+        if (uint32_t const num = op::add(items, args, scene, resources.threads()); num) {
             logging::info("add " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Average == args.op) {
-        if (uint32_t const num = op::average(items, args, resources.threads()); num) {
+        if (uint32_t const num = op::average(items, args, scene, resources.threads()); num) {
             logging::info("average " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Diff == args.op) {
-        if (uint32_t const num = op::difference(items, args, resources.threads()); num) {
+        if (uint32_t const num = op::difference(items, args, scene, resources.threads()); num) {
             logging::info("diff " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Cat == args.op) {
-        if (uint32_t const num = op::concatenate(items, args, pipeline, resources.threads()); num) {
+        if (uint32_t const num = op::concatenate(items, args, pipeline, scene, resources.threads());
+            num) {
             logging::info("cat " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
     } else if (Options::Operator::Sub == args.op) {
-        if (uint32_t const num = op::sub(items, args, resources.threads()); num) {
+        if (uint32_t const num = op::sub(items, args, scene, resources.threads()); num) {
             logging::info("subtract " + string::to_string(num) + " images in " +
                           string::to_string(chrono::seconds_since(total_start)) + " s");
         }
@@ -140,7 +155,7 @@ int main(int argc, char* argv[]) {
 }
 
 void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& pipeline,
-                   Resources& resources) {
+                   Scene& scene, Resources& resources) {
     std::string error;
     auto const  root = json::parse(stream, error);
     if (!root.HasParseError()) {
@@ -150,8 +165,8 @@ void load_pipeline(std::istream& stream, std::string_view take_name, Pipeline& p
 
     for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
-            pipeline.camera = take::Loader::load_camera(n.value, nullptr);
-        } else if ("post" == n.name || "postprocessors" == n.name) {
+            take::Loader::load_camera(n.value, scene, pipeline.camera);
+        } else if ("post" == n.name) {
             std::string_view const take_mount_folder = string::parent_directory(take_name);
 
             auto& filesystem = resources.filesystem();

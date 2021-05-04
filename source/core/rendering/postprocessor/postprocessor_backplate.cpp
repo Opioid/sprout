@@ -5,7 +5,7 @@
 
 namespace rendering::postprocessor {
 
-Backplate::Backplate(image::texture::Texture const* backplate)
+Backplate::Backplate(image::texture::Texture const& backplate)
     : Postprocessor(1), backplate_(backplate) {}
 
 void Backplate::init(scene::camera::Camera const& /*camera*/, Threads& /*threads*/) {}
@@ -15,8 +15,8 @@ bool Backplate::alpha_out(bool /*alpha_in*/) const {
 }
 
 void Backplate::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t end,
-                      image::Float4 const& source, image::Float4& destination) {
-    int2 const d = backplate_->dimensions().xy();
+                      image::Float4 const& source, image::Float4& destination, Scene const& scene) {
+    int2 const d = backplate_.description(scene).dimensions().xy();
 
     for (int32_t i = begin; i < end; ++i) {
         float4 const foreground = source.at(i);
@@ -25,7 +25,7 @@ void Backplate::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t begin, int32_t
 
         bool const contained = c[0] < d[0] && c[1] < d[1];
 
-        float3 const background = contained ? backplate_->at_3(c[0], c[1]) : float3(0.f);
+        float3 const background = contained ? backplate_.at_3(c[0], c[1], scene) : float3(0.f);
 
         float const alpha = foreground[3];
 

@@ -6,18 +6,7 @@
 #include "image/image_provider.hpp"
 #include "logging/logging.hpp"
 #include "resource/resource_manager.inl"
-#include "resource/resource_provider.inl"
 #include "texture.inl"
-#include "texture_byte1_unorm.hpp"
-#include "texture_byte2_snorm.hpp"
-#include "texture_byte2_unorm.hpp"
-#include "texture_byte3_snorm.hpp"
-#include "texture_byte3_srgb.hpp"
-#include "texture_byte3_unorm.hpp"
-#include "texture_byte4_srgb.hpp"
-#include "texture_float1.hpp"
-#include "texture_float2.hpp"
-#include "texture_float3.hpp"
 
 #include "base/debug/assert.hpp"
 #include "texture_test.hpp"
@@ -26,14 +15,8 @@
 
 namespace image::texture {
 
-Provider::Provider(bool no_textures) : no_textures_(no_textures) {}
-
-Texture* Provider::load(std::string const& filename, Variants const& options, Resources& resources,
-                        std::string& resolved_name) {
-    if (no_textures_) {
-        return nullptr;
-    }
-
+Texture Provider::load(std::string const& filename, Variants const& options, float2 scale,
+                       Resources& resources) {
     Swizzle swizzle = options.query("swizzle", Swizzle::Undefined);
 
     Usage const usage = options.query("usage", Usage::Undefined);
@@ -87,70 +70,62 @@ Texture* Provider::load(std::string const& filename, Variants const& options, Re
 
     bool const is_id = resource::Null != decoded;
 
-    uint32_t const image_id =
-        is_id ? decoded : resources.load<Image>(filename, image_options, resolved_name).id;
+    uint32_t const image_id = is_id ? decoded : resources.load<Image>(filename, image_options).id;
 
     auto const image = resources.get<Image>(image_id);
 
     if (!image) {
         logging::error("Loading texture %S: ", filename);
-        return nullptr;
+        return Texture();
     }
 
     if (Image::Type::Byte1 == image->type()) {
-        return new Texture(Byte1_unorm(image->byte1()));
+        return Texture(Texture::Type::Byte1_unorm, image_id, scale);
     }
 
     if (Image::Type::Byte2 == image->type()) {
         if (Usage::Anisotropy == usage) {
-            return new Texture(Byte2_snorm(image->byte2()));
+            return Texture(Texture::Type::Byte2_snorm, image_id, scale);
         }
 
-        return new Texture(Byte2_unorm(image->byte2()));
+        return Texture(Texture::Type::Byte2_unorm, image_id, scale);
     }
 
     if (Image::Type::Byte3 == image->type()) {
         if (Usage::Normal == usage) {
             SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
 
-            return new Texture(Byte3_snorm(image->byte3()));
+            return Texture(Texture::Type::Byte3_snorm, image_id, scale);
         }
 
-        return new Texture(Byte3_sRGB(image->byte3()));
+        return Texture(Texture::Type::Byte3_sRGB, image_id, scale);
     }
 
     if (Image::Type::Byte4 == image->type()) {
-        return new Texture(Byte4_sRGB(image->byte4()));
+        return Texture(Texture::Type::Byte4_sRGB, image_id, scale);
     }
 
     if (Image::Type::Short3 == image->type()) {
-        return new Texture(Half3(image->short3()));
+        return Texture(Texture::Type::Half3, image_id, scale);
     }
 
     if (Image::Type::Float1 == image->type()) {
-        return new Texture(Float1(image->float1()));
+        return Texture(Texture::Type::Float1, image_id, scale);
     }
 
     if (Image::Type::Float1_sparse == image->type()) {
-        return new Texture(Float1_sparse(image->float1_sparse()));
+        return Texture(Texture::Type::Float1_sparse, image_id, scale);
     }
 
     if (Image::Type::Float2 == image->type()) {
-        return new Texture(Float2(image->float2()));
+        return Texture(Texture::Type::Float2, image_id, scale);
     }
 
     if (Image::Type::Float3 == image->type()) {
-        return new Texture(Float3(image->float3()));
+        return Texture(Texture::Type::Float3, image_id, scale);
     }
 
-    // We should never come here...
-
-    return nullptr;
-}
-
-Texture* Provider::load(void const* /*data*/, std::string const& /*source_name*/,
-                        Variants const& /*options*/, resource::Manager& /*resources*/) {
-    return nullptr;
+    return Texture();
 }
 
 std::string Provider::encode_name(uint32_t image_id) {

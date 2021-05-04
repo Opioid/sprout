@@ -1,7 +1,6 @@
 #ifndef SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_INL
 #define SU_CORE_SCENE_MATERIAL_COATING_MATERIAL_INL
 
-#include "image/texture/texture_adapter.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "substitute_base_material.inl"
@@ -14,12 +13,12 @@ Material_coating<Coating>::Material_coating(Sampler_settings sampler_settings, b
     : Material_base(sampler_settings, two_sided) {}
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_thickness_map(Texture_adapter const& thickness_map) {
+void Material_coating<Coating>::set_coating_thickness_map(Texture const& thickness_map) {
     coating_thickness_map_ = thickness_map;
 }
 
 template <typename Coating>
-void Material_coating<Coating>::set_coating_normal_map(Texture_adapter const& normal_map) {
+void Material_coating<Coating>::set_coating_normal_map(Texture const& normal_map) {
     coating_normal_map_ = normal_map;
 }
 
@@ -36,7 +35,7 @@ void Material_coating<Coating>::set_coating_basis(float3_p wo, Renderstate const
     if (Material_base::normal_map_ == coating_normal_map_) {
         sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
     } else if (coating_normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, coating_normal_map_, sampler, worker);
+        float3 const n = sample_normal(wo, rs, coating_normal_map_, sampler, worker.scene());
         sample.coating_.set_tangent_frame(n);
     } else {
         sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);

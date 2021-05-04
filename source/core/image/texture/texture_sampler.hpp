@@ -3,21 +3,24 @@
 
 #include "base/math/vector.hpp"
 
+namespace scene {
+class Scene;
+}
+
 namespace image::texture {
 
+class Texture;
 class Texture;
 
 class Sampler_2D {
   public:
+    using Scene = scene::Scene;
+
     virtual ~Sampler_2D();
 
-    virtual float  sample_1(Texture const& texture, float2 uv) const = 0;
-    virtual float2 sample_2(Texture const& texture, float2 uv) const = 0;
-    virtual float3 sample_3(Texture const& texture, float2 uv) const = 0;
-
-    virtual float  sample_1(Texture const& texture, float2 uv, int32_t element) const = 0;
-    virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element) const = 0;
-    virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element) const = 0;
+    virtual float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const = 0;
+    virtual float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const = 0;
+    virtual float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const = 0;
 
     virtual float2 address(float2 uv) const = 0;
 };
@@ -25,50 +28,48 @@ class Sampler_2D {
 template <typename Address_U, typename Address_V>
 class Nearest_2D final : public Sampler_2D {
   public:
-    float  sample_1(Texture const& texture, float2 uv) const final;
-    float2 sample_2(Texture const& texture, float2 uv) const final;
-    float3 sample_3(Texture const& texture, float2 uv) const final;
-
-    float  sample_1(Texture const& texture, float2 uv, int32_t element) const final;
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
+    float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const final;
 
     float2 address(float2 uv) const final;
 
   private:
-    static int2 map(Texture const& texture, float2 uv);
+    static int2 map(int2 d, float2 uv);
 };
 
 template <typename Address_U, typename Address_V>
 class Linear_2D : public Sampler_2D {
   public:
-    float  sample_1(Texture const& texture, float2 uv) const final;
-    float2 sample_2(Texture const& texture, float2 uv) const final;
-    float3 sample_3(Texture const& texture, float2 uv) const final;
-
-    float  sample_1(Texture const& texture, float2 uv, int32_t element) const final;
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element) const final;
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element) const final;
+    float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const final;
 
     float2 address(float2 uv) const final;
 
   private:
-    static float2 map(Texture const& texture, float2 uv, int4& xy_xy1);
+    static float2 map(int2 d, float2 uv, int4& xy_xy1);
 };
 
 class Sampler_3D {
   public:
+    using Scene = scene::Scene;
+
     virtual ~Sampler_3D();
 
-    virtual float  sample_1(Texture const& texture, float3_p uvw) const = 0;
-    virtual float2 sample_2(Texture const& texture, float3_p uvw) const = 0;
-    virtual float3 sample_3(Texture const& texture, float3_p uvw) const = 0;
-    virtual float4 sample_4(Texture const& texture, float3_p uvw) const = 0;
+    virtual float  sample_1(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
+    virtual float2 sample_2(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
+    virtual float3 sample_3(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
+    virtual float4 sample_4(Texture const& texture, float3_p uvw, Scene const& scene) const = 0;
 
-    virtual float  stochastic_1(Texture const& texture, float3_p uvw, float3_p r) const = 0;
-    virtual float2 stochastic_2(Texture const& texture, float3_p uvw, float3_p r) const = 0;
-    virtual float3 stochastic_3(Texture const& texture, float3_p uvw, float3_p r) const = 0;
-    virtual float4 stochastic_4(Texture const& texture, float3_p uvw, float3_p r) const = 0;
+    virtual float  stochastic_1(Texture const& texture, float3_p uvw, float3_p r,
+                                Scene const& scene) const = 0;
+    virtual float2 stochastic_2(Texture const& texture, float3_p uvw, float3_p r,
+                                Scene const& scene) const = 0;
+    virtual float3 stochastic_3(Texture const& texture, float3_p uvw, float3_p r,
+                                Scene const& scene) const = 0;
+    virtual float4 stochastic_4(Texture const& texture, float3_p uvw, float3_p r,
+                                Scene const& scene) const = 0;
 
     virtual float3 address(float3_p uvw) const = 0;
 };
@@ -76,42 +77,49 @@ class Sampler_3D {
 template <typename Address_mode>
 class Stochastic_3D : public Sampler_3D {
   public:
-
     virtual ~Stochastic_3D();
 
-    float  stochastic_1(Texture const& texture, float3_p uvw, float3_p r) const final;
-    float2 stochastic_2(Texture const& texture, float3_p uvw, float3_p r) const final;
-    float3 stochastic_3(Texture const& texture, float3_p uvw, float3_p r) const final;
-    float4 stochastic_4(Texture const& texture, float3_p uvw, float3_p r) const final;
+    float  stochastic_1(Texture const& texture, float3_p uvw, float3_p r,
+                        Scene const& scene) const final;
+    float2 stochastic_2(Texture const& texture, float3_p uvw, float3_p r,
+                        Scene const& scene) const final;
+    float3 stochastic_3(Texture const& texture, float3_p uvw, float3_p r,
+                        Scene const& scene) const final;
+    float4 stochastic_4(Texture const& texture, float3_p uvw, float3_p r,
+                        Scene const& scene) const final;
 
     float3 address(float3_p uvw) const final;
 
   private:
-    static int3 map(Texture const& texture, float3_p uvw, float3_p r);
+    static int3 map(int3 d, float3_p uvw, float3_p r);
 };
 
 template <typename Address_mode>
 class Nearest_3D : public Stochastic_3D<Address_mode> {
   public:
-    float  sample_1(Texture const& texture, float3_p uvw) const final;
-    float2 sample_2(Texture const& texture, float3_p uvw) const final;
-    float3 sample_3(Texture const& texture, float3_p uvw) const final;
-    float4 sample_4(Texture const& texture, float3_p uvw) const final;
+    using Scene = scene::Scene;
 
-private:
-  static int3 map(Texture const& texture, float3_p uvw);
+    float  sample_1(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float4 sample_4(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+
+  private:
+    static int3 map(int3 d, float3_p uvw);
 };
 
 template <typename Address_mode>
 class Linear_3D : public Stochastic_3D<Address_mode> {
   public:
-    float  sample_1(Texture const& texture, float3_p uvw) const final;
-    float2 sample_2(Texture const& texture, float3_p uvw) const final;
-    float3 sample_3(Texture const& texture, float3_p uvw) const final;
-    float4 sample_4(Texture const& texture, float3_p uvw) const final;
+    using Scene = scene::Scene;
+
+    float  sample_1(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float2 sample_2(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float3 sample_3(Texture const& texture, float3_p uvw, Scene const& scene) const final;
+    float4 sample_4(Texture const& texture, float3_p uvw, Scene const& scene) const final;
 
   private:
-    static float3 map(Texture const& texture, float3_p uvw, int3& xyz, int3& xyz1);
+    static float3 map(int3 d, float3_p uvw, int3& xyz, int3& xyz1);
 };
 
 struct Address_mode_clamp;

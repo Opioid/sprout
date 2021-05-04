@@ -4,6 +4,10 @@
 #include "base/math/vector4.hpp"
 #include "rendering/integrator/integrator.hpp"
 
+namespace scene::shape {
+struct Normals;
+}
+
 namespace rendering {
 
 class Worker;
@@ -13,6 +17,8 @@ namespace integrator::volume {
 
 class Integrator : public integrator::Integrator {
   public:
+    using Normals = scene::shape::Normals;
+
     Integrator();
 
     virtual ~Integrator();
@@ -23,28 +29,10 @@ class Integrator : public integrator::Integrator {
                             float3& tr) = 0;
 };
 
-class Pool {
-  public:
-    Pool(uint32_t num_integrators);
-
-    virtual ~Pool();
-
-    virtual Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const = 0;
-
-  protected:
-    uint32_t num_integrators_;
-};
+using Pool = integrator::Pool<Integrator>;
 
 template <typename T>
-class Typed_pool : public Pool {
-  public:
-    Typed_pool(uint32_t num_integrators);
-
-    ~Typed_pool() override;
-
-  protected:
-    T* integrators_;
-};
+using Typed_pool = Typed_pool<T, Integrator>;
 
 }  // namespace integrator::volume
 }  // namespace rendering

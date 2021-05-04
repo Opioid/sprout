@@ -4,6 +4,12 @@
 #include <cstdint>
 #include <vector>
 
+namespace scene {
+class Scene;
+}
+
+using Scene = scene::Scene;
+
 namespace thread {
 class Pool;
 }
@@ -18,7 +24,7 @@ struct Item;
 
 namespace op {
 uint32_t difference(std::vector<Item> const& items, it::options::Options const& options,
-                    Threads& threads);
+                    Scene const& scene, Threads& threads);
 }
 
 #endif

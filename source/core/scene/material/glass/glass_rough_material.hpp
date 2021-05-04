@@ -14,8 +14,8 @@ class Glass_rough : public Material {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
-    void set_roughness_map(Texture_adapter const& roughness_map);
+    void set_normal_map(Texture const& normal_map);
+    void set_roughness_map(Texture const& roughness_map);
 
     void set_refraction_color(float3_p color);
     void set_roughness(float roughness);
@@ -23,8 +23,8 @@ class Glass_rough : public Material {
     static size_t sample_size();
 
   protected:
-    Texture_adapter normal_map_;
-    Texture_adapter roughness_map_;
+    Texture normal_map_;
+    Texture roughness_map_;
 
     float3 refraction_color_;
 

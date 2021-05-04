@@ -3,8 +3,8 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -126,7 +126,7 @@ float4 PM::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
                 ++ray.depth;
             }
         } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
             ++ray.depth;
 
@@ -168,7 +168,7 @@ sampler::Sampler& PM::material_sampler(uint32_t bounce) {
 
 PM_pool::PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces,
                  uint32_t max_bounces, bool photons_only_through_specular)
-    : Typed_pool<PM>(num_integrators),
+    : Typed_pool<PM, Integrator>(num_integrators),
       settings_{min_bounces, max_bounces, !photons_only_through_specular},
       progressive_(progressive) {}
 

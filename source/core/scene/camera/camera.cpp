@@ -23,7 +23,7 @@ Camera::~Camera() {
     delete sensor_;
 }
 
-void Camera::init(uint32_t entity) {
+void Camera::set_entity(uint32_t entity) {
     entity_ = entity;
 }
 
@@ -39,7 +39,7 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
         Transformation temp;
         auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-        Ray ray(trafo.position, normalize(float3(1.f, 1.f, 1.f)), 0.f, Ray_max_t, 0, 0.f, time);
+        Ray ray(trafo.position, normalize(float3(1.f)), 0.f, Ray_max_t, 0, 0.f, time);
 
         prop::Intersection isec;
 
@@ -64,9 +64,9 @@ void Camera::update(Scene& scene, uint64_t time, Worker& worker) {
     on_update(time, worker);
 }
 
-Ray_differential Camera::calculate_ray_differential(float3_p /*p*/, uint64_t /*time*/,
-                                                    Scene const& /*scene*/) const {
-    return Ray_differential();
+Ray_dif Camera::calculate_ray_differential(float3_p /*p*/, uint64_t /*time*/,
+                                           Scene const& /*scene*/) const {
+    return Ray_dif();
 }
 
 Frustum Camera::frustum() const {
@@ -111,6 +111,10 @@ void Camera::set_resolution(int2 resolution, int4_p crop) {
     crop_[1] = std::max(0, crop[1]);
     crop_[2] = std::min(resolution[0], crop[2]);
     crop_[3] = std::min(resolution[1], crop[3]);
+}
+
+bool Camera::has_sensor() const {
+    return nullptr != sensor_;
 }
 
 rendering::sensor::Sensor& Camera::sensor() const {

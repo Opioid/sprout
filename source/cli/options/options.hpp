@@ -14,7 +14,8 @@ struct Options {
 
     int32_t threads = 0;
 
-    uint32_t start_frame = 0xFFFFFFFF;
+    uint32_t start_frame = 0;
+    uint32_t num_frames  = 1;
 
     bool no_textures    = false;
     bool no_tex_dwim    = false;

@@ -66,13 +66,13 @@ void Pipeline::seed(sensor::Sensor const& sensor, image::Float4& target, Threads
     }
 }
 
-void Pipeline::apply(image::Float4& target, Threads& threads) {
+void Pipeline::apply(image::Float4& target, Scene const& scene, Threads& threads) {
     image::Float4* targets[2] = {&scratch_, &target};
 
     target.copy(scratch_);
 
     for (auto pp : postprocessors_) {
-        pp->apply(*targets[0], *targets[1], threads);
+        pp->apply(*targets[0], *targets[1], scene, threads);
         std::swap(targets[0], targets[1]);
     }
 
@@ -81,7 +81,8 @@ void Pipeline::apply(image::Float4& target, Threads& threads) {
     }
 }
 
-void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, Threads& threads) {
+void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, Scene const& scene,
+                     Threads& threads) {
     image::Float4* targets[2];
 
     if (0 == postprocessors_.size() % 2) {
@@ -95,13 +96,13 @@ void Pipeline::apply(sensor::Sensor const& sensor, image::Float4& target, Thread
     sensor.resolve(threads, *targets[0]);
 
     for (auto pp : postprocessors_) {
-        pp->apply(*targets[0], *targets[1], threads);
+        pp->apply(*targets[0], *targets[1], scene, threads);
         std::swap(targets[0], targets[1]);
     }
 }
 
 void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& target,
-                                Threads& threads) {
+                                Scene const& scene, Threads& threads) {
     image::Float4* targets[2];
 
     if (0 == postprocessors_.size() % 2) {
@@ -115,7 +116,7 @@ void Pipeline::apply_accumulate(sensor::Sensor const& sensor, image::Float4& tar
     sensor.resolve_accumulate(threads, *targets[0]);
 
     for (auto pp : postprocessors_) {
-        pp->apply(*targets[0], *targets[1], threads);
+        pp->apply(*targets[0], *targets[1], scene, threads);
         std::swap(targets[0], targets[1]);
     }
 }

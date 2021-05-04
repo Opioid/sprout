@@ -22,6 +22,10 @@ struct Take;
 
 namespace scene {
 
+namespace camera {
+class Camera;
+}
+
 namespace material {
 class Material;
 }
@@ -44,6 +48,7 @@ class Scene;
 
 class Loader {
   public:
+    using Camera    = camera::Camera;
     using Shape     = shape::Shape;
     using Material  = material::Material;
     using Materials = memory::Array<uint32_t>;
@@ -53,8 +58,7 @@ class Loader {
 
     ~Loader();
 
-    bool load(std::string const& filename, std::string_view take_name, take::Take const& take,
-              Scene& scene);
+    bool load(std::string const& filename, take::Take const& take, Scene& scene);
 
     void register_extension_provider(std::string const& name, Extension_provider* provider);
 
@@ -77,14 +81,15 @@ class Loader {
     };
 
     bool load(std::string const& filename, std::string_view take_mount_folder, uint32_t parent_id,
-              math::Transformation const& parent_transformation, Scene& scene, bool nested);
+              math::Transformation const& parent_transformation, Scene& scene, Camera* camera,
+              bool nested);
 
     void read_materials(json::Value const& materials_value, std::string const& source_name,
                         Local_materials& local_materials) const;
 
     void load_entities(json::Value const& entities_value, uint32_t parent_id,
                        math::Transformation const& parent_transformation,
-                       Local_materials const& local_materials, Scene& scene);
+                       Local_materials const& local_materials, Scene& scene, Camera* camera);
 
     static void set_visibility(uint32_t prop, json::Value const& visibility_value, Scene& scene);
 

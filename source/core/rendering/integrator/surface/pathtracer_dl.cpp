@@ -4,8 +4,8 @@
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -118,23 +118,23 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
             }
 
             treat_as_singular = true;
+        } else if (sample_result.type.no(Bxdf_type::Straight)) {
+            treat_as_singular = false;
+            primary_ray       = false;
+        }
+
+        if (sample_result.type != Bxdf_type::Straight_transmission) {
+            ++ray.depth;
         }
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = offset_f(ray.max_t());
-
-            if (sample_result.type.no(Bxdf_type::Transmission)) {
-                ++ray.depth;
-            }
         } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
-            ++ray.depth;
 
-            primary_ray       = false;
-            treat_as_singular = false;
-            transparent       = false;
-            from_subsurface   = false;
+            transparent     = false;
+            from_subsurface = false;
         }
 
         ray.max_t() = Ray_max_t;
@@ -206,7 +206,7 @@ float3 Pathtracer_DL::direct_light(Ray const& ray, Intersection const& isec,
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const p = isec.offset_p(translucent);
     float3 const n = mat_sample.geometric_normal();
 
     Ray shadow_ray;
@@ -279,7 +279,7 @@ Pathtracer_DL_pool::Pathtracer_DL_pool(uint32_t num_integrators, bool progressiv
                                        uint32_t num_samples, uint32_t min_bounces,
                                        uint32_t max_bounces, Light_sampling light_sampling,
                                        bool enable_caustics)
-    : Typed_pool<Pathtracer_DL>(num_integrators),
+    : Typed_pool<Pathtracer_DL, Integrator>(num_integrators),
       settings_{
           num_samples, min_bounces, max_bounces, light_sampling, !enable_caustics,
       },

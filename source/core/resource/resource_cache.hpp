@@ -29,6 +29,8 @@ class Cache {
 
     void increment_generation();
 
+    bool deprecate_frame_dependant();
+
   protected:
     struct Entry {
         uint32_t id;
@@ -42,18 +44,23 @@ class Cache {
     bool check_up_to_date(Entry& entry) const;
 
     uint32_t generation_;
+
+    using Variants = memory::Variant_map;
+    using Key      = std::pair<std::string, Variants>;
+
+    std::map<Key, Entry> entries_;
 };
 
 template <typename T>
 class Typed_cache final : public Cache {
   public:
-    using Variants = memory::Variant_map;
-
     Typed_cache(Provider<T>& provider);
 
     ~Typed_cache() final;
 
     std::vector<T*> const& resources() const;
+
+    bool reload_frame_dependant(Manager& resources);
 
     Resource_ptr<T> load(std::string const& filename, Variants const& options, Manager& resources);
 
@@ -75,11 +82,7 @@ class Typed_cache final : public Cache {
   private:
     Provider<T>& provider_;
 
-    using Key = std::pair<std::string, Variants>;
-
     std::vector<T*> resources_;
-
-    std::map<Key, Entry> entries_;
 };
 
 }  // namespace resource

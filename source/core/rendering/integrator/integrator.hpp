@@ -77,6 +77,29 @@ class Integrator {
     virtual void start_pixel(RNG& rng) = 0;
 };
 
+template <typename B>
+class Pool {
+  public:
+    virtual ~Pool();
+
+    virtual B* create(uint32_t id, uint32_t max_samples_per_pixel) const = 0;
+
+  protected:
+};
+
+template <typename T, typename B>
+class Typed_pool : public Pool<B> {
+  public:
+    Typed_pool(uint32_t num_integrators);
+
+    ~Typed_pool() override;
+
+  protected:
+    uint32_t num_integrators_;
+
+    T* integrators_;
+};
+
 }  // namespace integrator
 }  // namespace rendering
 

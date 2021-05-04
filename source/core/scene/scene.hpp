@@ -7,22 +7,30 @@
 #include "light/light.hpp"
 #include "light/light_tree.hpp"
 #include "light/light_tree_builder.hpp"
-#include "material/material.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
-#include "scene_constants.hpp"
-#include "shape/null.hpp"
 
 #include <vector>
+
+namespace math {
+struct Transformation;
+}
 
 namespace thread {
 class Pool;
 }
 
-namespace image::texture {
+namespace image {
+class Image;
+namespace texture {
 class Texture;
 }
+}  // namespace image
 
 namespace scene {
+
+namespace material {
+class Material;
+}
 
 namespace shape {
 class Shape;
@@ -83,10 +91,11 @@ class Scene {
     using Material       = material::Material;
     using Shape          = shape::Shape;
     using Texture        = image::texture::Texture;
+    using Image          = image::Image;
 
-    Scene(uint32_t null_shape, std::vector<Shape*> const& shape_resources,
+    Scene(std::vector<Image*> const&    image_resources,
           std::vector<Material*> const& material_resources,
-          std::vector<Texture*> const&  texture_resources);
+          std::vector<Shape*> const& shape_resources, uint32_t null_shape);
 
     ~Scene();
 
@@ -120,6 +129,8 @@ class Scene {
 
     Material const* material(uint32_t index) const;
 
+    Image const* image(uint32_t id) const;
+
     uint32_t num_lights() const;
 
     light::Light const& light(uint32_t id) const;
@@ -138,6 +149,8 @@ class Scene {
     void simulate(float3_p camera_pos, uint64_t start, uint64_t end, Threads& threads);
 
     void compile(float3_p camera_pos, uint64_t time, Threads& threads);
+
+    void commit_materials(Threads& threads) const;
 
     uint32_t num_interpolation_frames() const;
 
@@ -197,8 +210,6 @@ class Scene {
 
     prop::Prop_topology const& prop_topology(uint32_t entity) const;
 
-    Texture const* texture(uint32_t id) const;
-
     uint32_t prop_light_id(uint32_t entity, uint32_t part) const;
 
     float light_area(uint32_t entity, uint32_t part) const;
@@ -243,7 +254,11 @@ class Scene {
 
     uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
 
-    uint64_t const tick_duration_ = Units_per_second / 60;
+    std::vector<Image*> const&    image_resources_;
+    std::vector<Material*> const& material_resources_;
+    std::vector<Shape*> const&    shape_resources_;
+
+    uint32_t null_shape_;
 
     uint32_t num_interpolation_frames_ = 0;
 
@@ -257,8 +272,6 @@ class Scene {
     prop::BVH_wrapper volume_bvh_;
 
     AABB caustic_aabb_;
-
-    uint32_t null_shape_;
 
     bool has_masked_material_;
     bool has_tinted_shadow_;
@@ -291,10 +304,6 @@ class Scene {
     Distribution_1D light_distribution_;
 
     light::Tree light_tree_;
-
-    std::vector<Shape*> const&    shape_resources_;
-    std::vector<Material*> const& material_resources_;
-    std::vector<Texture*> const&  texture_resources_;
 
     std::vector<uint32_t> finite_props_;
     std::vector<uint32_t> infinite_props_;

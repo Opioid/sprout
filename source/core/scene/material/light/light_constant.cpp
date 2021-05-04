@@ -12,7 +12,7 @@ namespace scene::material::light {
 
 Constant::Constant(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {
-    properties_.set(Property::Pure_emisive);
+    properties_.set(Property::Pure_emissive);
 }
 
 material::Sample const& Constant::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
@@ -35,13 +35,7 @@ float3 Constant::evaluate_radiance(float3_p /*wi*/, float3_p /*uvw*/, float exte
 }
 
 float3 Constant::average_radiance(float area) const {
-    float3 const radiance = emittance_.radiance(area);
-
-    if (is_two_sided()) {
-        return 2.f * radiance;
-    }
-
-    return radiance;
+    return emittance_.radiance(area);
 }
 
 ::light::Emittance& Constant::emittance() {

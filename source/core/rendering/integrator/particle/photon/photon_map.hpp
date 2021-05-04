@@ -31,8 +31,7 @@ class Map {
 
     void compile_finalize();
 
-    float3 li(Intersection const& isec, Material_sample const& sample,
-              scene::Worker& worker) const;
+    float3 li(Intersection const& isec, Material_sample const& sample, scene::Worker& worker) const;
 
     bool caustics_only() const;
 

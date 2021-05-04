@@ -15,9 +15,9 @@ namespace encoding::png {
 
 class Reader {
   public:
-    Image* read(std::istream& stream, Swizzle swizzle, int32_t num_elements, bool invert);
+    Image* read(std::istream& stream, Swizzle swizzle, bool invert);
 
-    Image* create_from_buffer(Swizzle swizzle, int32_t num_elements, bool invert) const;
+    Image* create_from_buffer(Swizzle swizzle, bool invert) const;
 
     struct Chunk {
         ~Chunk();

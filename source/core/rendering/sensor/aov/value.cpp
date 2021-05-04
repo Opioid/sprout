@@ -39,8 +39,17 @@ void Value::clear() {
 Value_pool::Value_pool() : num_slots_(0), descriptors_(nullptr), values_(nullptr) {}
 
 Value_pool::~Value_pool() {
+    clear();
+}
+
+void Value_pool::clear() {
+    num_slots_ = 0;
+
     delete[] descriptors_;
+    descriptors_ = nullptr;
+
     delete[] values_;
+    values_ = nullptr;
 }
 
 void Value_pool::configure(uint32_t num_slots, Descriptor const* descriptors) {

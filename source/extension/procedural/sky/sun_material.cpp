@@ -2,8 +2,6 @@
 #include "base/math/interpolated_function_1d.inl"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
-#include "core/image/texture/texture_adapter.inl"
-#include "core/image/texture/texture_float3.hpp"
 #include "core/image/typed_image.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "core/scene/material/material_sample.inl"
@@ -21,14 +19,14 @@ namespace procedural::sky {
 
 using namespace scene;
 
-Sun_material::Sun_material(Sky& sky) : Material(sky) {}
+Sun_material::Sun_material(Sky* sky) : Material(sky) {}
 
 material::Sample const& Sun_material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
                                              Filter /*filter*/, Sampler& /*sampler*/,
                                              Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
-    float3 const radiance = sky_.model().evaluate_sky_and_sun(-wo);
+    float3 const radiance = sky_->model().evaluate_sky_and_sun(-wo);
 
     sample.set_common(rs, wo, radiance, radiance, 0.f);
 
@@ -37,21 +35,21 @@ material::Sample const& Sun_material::sample(float3_p wo, Ray const& /*ray*/, Re
 
 float3 Sun_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, float /*extent*/,
                                        Filter /*filter*/, Worker& /*worker*/) const {
-    return sky_.model().evaluate_sky_and_sun(wi);
+    return sky_->model().evaluate_sky_and_sun(wi);
 }
 
 float3 Sun_material::average_radiance(float /*area*/) const {
-    return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
+    return sky_->model().evaluate_sky_and_sun(-sky_->model().sun_direction());
 }
 
-Sun_baked_material::Sun_baked_material(Sky& sky) : Material(sky) {}
+Sun_baked_material::Sun_baked_material(Sky* sky) : Material(sky) {}
 
 material::Sample const& Sun_baked_material::sample(float3_p           wo, Ray const& /*ray*/,
                                                    Renderstate const& rs, Filter /*filter*/,
                                                    Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
-    float3 const radiance = emission_(sky_.sun_v(-wo));
+    float3 const radiance = emission_(sky_->sun_v(-wo));
 
     SOFT_ASSERT(all_finite_and_positive(radiance));
 
@@ -62,7 +60,7 @@ material::Sample const& Sun_baked_material::sample(float3_p           wo, Ray co
 
 float3 Sun_baked_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, float /*extent*/,
                                              Filter /*filter*/, Worker& /*worker*/) const {
-    float3 const radiance = emission_(sky_.sun_v(wi));
+    float3 const radiance = emission_(sky_->sun_v(wi));
 
     SOFT_ASSERT(all_finite_and_positive(radiance));
 
@@ -70,7 +68,7 @@ float3 Sun_baked_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, floa
 }
 
 float3 Sun_baked_material::average_radiance(float /*area*/) const {
-    return sky_.model().evaluate_sky_and_sun(-sky_.model().sun_direction());
+    return sky_->model().evaluate_sky_and_sun(-sky_->model().sun_direction());
 }
 
 void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
@@ -79,7 +77,7 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
                                           Scene const& /*scene*/) {
     using namespace image;
 
-    if (!sky_.sun_changed_since_last_check()) {
+    if (!sky_->sun_changed_since_last_check()) {
         return;
     }
 
@@ -90,7 +88,7 @@ void Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*par
     for (uint32_t i = 0; i < num_samples; ++i) {
         float const v = float(i) / float(num_samples - 1);
 
-        float3 const radiance = sky_.model().evaluate_sky_and_sun(sky_.sun_wi(v));
+        float3 const radiance = sky_->model().evaluate_sky_and_sun(sky_->sun_wi(v));
 
         SOFT_ASSERT(all_finite_and_positive(radiance));
 

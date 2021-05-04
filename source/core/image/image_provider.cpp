@@ -53,15 +53,13 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
     if (file::Type::PNG == type) {
         Swizzle const swizzle = options.query("swizzle", Swizzle::XYZW);
 
-        int32_t const num_elements = options.query("num_elements", 1);
-
         bool const invert = options.query("invert", false);
 
         if (previous_name == resolved_name) {
-            return png_reader_.create_from_buffer(swizzle, num_elements, invert);
+            return png_reader_.create_from_buffer(swizzle, invert);
         }
 
-        return png_reader_.read(*stream, swizzle, num_elements, invert);
+        return png_reader_.read(*stream, swizzle, invert);
     }
 
     if (file::Type::RGBE == type) {
@@ -94,7 +92,7 @@ Image* Provider::load(void const* data, std::string const& /*source_name*/,
 
     uint32_t pixel_width = 0;
 
-    image::Description const image_desc(desc.dimensions, desc.num_elements, int3(0));
+    image::Description const image_desc(desc.dimensions, int3(0));
 
     if (Description::Pixel_type::Byte == desc.pixel_type) {
         switch (desc.num_channels) {

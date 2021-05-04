@@ -6,8 +6,8 @@
 #include "material/material.inl"
 #include "material/material_helper.hpp"
 #include "material/material_sample.inl"
-#include "material/sampler_cache.hpp"
 #include "material/null/null_sample.hpp"
+#include "material/sampler_cache.hpp"
 #include "prop/interface_stack.inl"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.inl"
@@ -42,10 +42,8 @@ void Worker::init_rng(uint64_t sequence) {
 bool Worker::resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
     float const start_min_t = ray.min_t();
 
-    float opacity = isec.opacity(filter, *this);
-
-    while (opacity < 1.f) {
-        if (opacity > 0.f && opacity > rng_.random_float()) {
+    for (float o = isec.opacity(filter, *this); o < 1.f; o = isec.opacity(filter, *this)) {
+        if (o > 0.f && o > rng_.random_float()) {
             ray.min_t() = start_min_t;
             return true;
         }
@@ -57,8 +55,6 @@ bool Worker::resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
             ray.min_t() = start_min_t;
             return false;
         }
-
-        opacity = isec.opacity(filter, *this);
     }
 
     ray.min_t() = start_min_t;
@@ -141,7 +137,7 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3_p wo, floa
 }
 
 // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
-static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_differential const& rd,
+static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_dif const& rd,
                                                  float3_p dpdu, float3_p dpdv) {
     // Compute offset-ray isec points with tangent plane
     float const d = dot(n, p);
@@ -185,7 +181,7 @@ static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_dif
 }
 
 float4 Worker::screenspace_differential(Intersection const& isec, uint64_t time) const {
-    Ray_differential const rd = camera_->calculate_ray_differential(isec.geo.p, time, *scene_);
+    Ray_dif const rd = camera_->calculate_ray_differential(isec.geo.p, time, *scene_);
 
     Transformation temp;
     auto const&    trafo = scene_->prop_transformation_at(isec.prop, time, temp);
@@ -199,7 +195,7 @@ float4 Worker::screenspace_differential(Intersection const& isec, uint64_t time)
 }
 
 float4 Worker::screenspace_differential(Renderstate const& rs, uint64_t time) const {
-    Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
+    Ray_dif const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
 
     Transformation temp;
     auto const&    trafo = scene_->prop_transformation_at(rs.prop, time, temp);

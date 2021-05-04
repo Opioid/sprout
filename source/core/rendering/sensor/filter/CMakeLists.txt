@@ -1,7 +1,9 @@
 target_sources(core
     PRIVATE
-    "${CMAKE_CURRENT_LIST_DIR}/sensor_gaussian.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/sensor_gaussian.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/sensor_mitchell.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/sensor_mitchell.hpp"
+    "sensor_blackman.cpp"
+    "sensor_blackman.hpp"
+    "sensor_gaussian.cpp"
+    "sensor_gaussian.hpp"
+    "sensor_mitchell.cpp"
+    "sensor_mitchell.hpp"
 ) 

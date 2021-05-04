@@ -41,7 +41,7 @@ void Bloom::init(Camera const& camera, Threads& /*threads*/) {
 }
 
 void Bloom::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
-                  image::Float4 const& source, image::Float4& destination) {
+                  image::Float4 const& source, image::Float4& destination, Scene const& /*scene*/) {
     float threshold = threshold_;
     float intensity = intensity_;
 

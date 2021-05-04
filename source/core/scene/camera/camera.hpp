@@ -35,7 +35,7 @@ struct Composed_transformation;
 }  // namespace entity
 
 struct Ray;
-struct Ray_differential;
+struct Ray_dif;
 class Scene;
 class Worker;
 
@@ -55,7 +55,7 @@ class Camera {
 
     virtual ~Camera();
 
-    void init(uint32_t entity);
+    void set_entity(uint32_t entity);
 
     uint32_t entity() const;
 
@@ -76,8 +76,7 @@ class Camera {
                         RNG& rng, uint32_t sampler_d, Scene const& scene,
                         Sample_to& sample) const = 0;
 
-    virtual Ray_differential calculate_ray_differential(float3_p p, uint64_t time,
-                                                        Scene const& scene) const;
+    virtual Ray_dif calculate_ray_differential(float3_p p, uint64_t time, Scene const& scene) const;
 
     virtual Frustum frustum() const;
 
@@ -88,6 +87,8 @@ class Camera {
     int4_p crop() const;
 
     void set_resolution(int2 resolution, int4_p crop);
+
+    bool has_sensor() const;
 
     Sensor& sensor() const;
 
@@ -112,7 +113,7 @@ class Camera {
 
     uint32_t entity_ = 0xFFFFFFFF;
 
-    int32_t filter_radius_ = 0;
+    float sample_spacing_;
 
     int2 resolution_ = int2(0);
 
@@ -125,8 +126,6 @@ class Camera {
 
     uint64_t frame_step_     = scene::Units_per_second / 60;
     uint64_t frame_duration_ = frame_step_;
-
-    float sample_spacing_;
 };
 
 }  // namespace camera

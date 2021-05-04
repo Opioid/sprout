@@ -3,8 +3,8 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -147,20 +147,20 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
                 break;
             }
 #endif
+        } else if (sample_result.type.no(Bxdf_type::Straight)) {
+            primary_ray = false;
+        }
+
+        if (sample_result.type != Bxdf_type::Straight_transmission) {
+            ++ray.depth;
         }
 
         if (sample_result.type.is(Bxdf_type::Straight)) {
             ray.min_t() = offset_f(ray.max_t());
-
-            if (sample_result.type.no(Bxdf_type::Transmission)) {
-                ++ray.depth;
-            }
         } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
+            ray.origin = isec.offset_p(sample_result.wi);
             ray.set_direction(sample_result.wi);
-            ++ray.depth;
 
-            primary_ray     = false;
             transparent     = false;
             from_subsurface = false;
         }
@@ -210,7 +210,7 @@ sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {
 
 Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
                                  uint32_t min_bounces, uint32_t max_bounces, bool enable_caustics)
-    : Typed_pool<Pathtracer>(num_integrators),
+    : Typed_pool<Pathtracer, Integrator>(num_integrators),
       settings_{num_samples, min_bounces, max_bounces, !enable_caustics},
       progressive_(progressive) {}
 

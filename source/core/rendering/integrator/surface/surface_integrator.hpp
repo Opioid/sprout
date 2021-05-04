@@ -33,28 +33,10 @@ class Integrator : public integrator::Integrator {
                      Material_sample const& mat_sample, bool primary_ray, Worker& worker, AOV& aov);
 };
 
-class Pool {
-  public:
-    Pool(uint32_t num_integrators);
-
-    virtual ~Pool();
-
-    virtual Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const = 0;
-
-  protected:
-    uint32_t num_integrators_;
-};
+using Pool = integrator::Pool<Integrator>;
 
 template <typename T>
-class Typed_pool : public Pool {
-  public:
-    Typed_pool(uint32_t num_integrators);
-
-    ~Typed_pool() override;
-
-  protected:
-    T* integrators_;
-};
+using Typed_pool = Typed_pool<T, Integrator>;
 
 }  // namespace integrator::surface
 }  // namespace rendering

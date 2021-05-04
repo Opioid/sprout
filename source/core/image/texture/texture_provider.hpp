@@ -1,19 +1,24 @@
 #ifndef SU_CORE_IMAGE_TEXTURE_PROVIDER_HPP
 #define SU_CORE_IMAGE_TEXTURE_PROVIDER_HPP
 
-#include "resource/resource_provider.hpp"
+#include "base/math/vector.hpp"
+#include "base/memory/variant_map.hpp"
 
-namespace image {
+#include <string>
 
-class Image;
+namespace resource {
+class Manager;
+}
 
-namespace texture {
+namespace image::texture {
 
 class Texture;
+class Texture;
 
-class Provider final : public resource::Provider<Texture> {
+class Provider {
   public:
-    Provider(bool no_textures);
+    using Resources = resource::Manager;
+    using Variants  = memory::Variant_map;
 
     enum class Usage {
         Undefined,
@@ -26,21 +31,14 @@ class Provider final : public resource::Provider<Texture> {
         Mask
     };
 
-    Texture* load(std::string const& filename, Variants const& options, Resources& resources,
-                  std::string& resolved_name) final;
-
-    Texture* load(void const* data, std::string const& source_name, Variants const& options,
-                  Resources& resources) final;
+    static Texture load(std::string const& filename, Variants const& options, float2 scale,
+                        Resources& resources);
 
     static std::string encode_name(uint32_t image_id);
 
     static uint32_t decode_name(std::string_view name);
-
-  private:
-    bool no_textures_;
 };
 
-}  // namespace texture
-}  // namespace image
+}  // namespace image::texture
 
 #endif

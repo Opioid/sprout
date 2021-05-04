@@ -8,7 +8,7 @@ namespace procedural::sky {
 
 class Sun_material : public Material {
   public:
-    Sun_material(Sky& sky);
+    Sun_material(Sky* sky);
 
     scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,
@@ -22,7 +22,7 @@ class Sun_material : public Material {
 
 class Sun_baked_material : public Material {
   public:
-    Sun_baked_material(Sky& sky);
+    Sun_baked_material(Sky* sky);
 
     scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
                                           scene::Renderstate const& rs, Filter filter,

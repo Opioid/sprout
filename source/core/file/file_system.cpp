@@ -35,7 +35,8 @@ void System::Stream_ptr::close() {
     }
 }
 
-System::System() : read_buffer_size_(0), buffer_size_(0), read_buffer_(nullptr), buffer_(nullptr) {}
+System::System()
+    : read_buffer_size_(0), buffer_size_(0), read_buffer_(nullptr), buffer_(nullptr), frame_(0) {}
 
 System::~System() {
     delete[] read_buffer_;
@@ -147,14 +148,26 @@ void System::pop_mount() {
     mount_folders_.pop_back();
 }
 
+uint32_t System::frame() const {
+    return frame_;
+}
+
 void System::set_frame(uint32_t frame) {
+    frame_ = frame;
+
     frame_string_ = string::to_string(frame);
+}
+
+static char const* const FRAME_MARKER = "{FRAME}";
+
+bool System::frame_dependant_name(std::string_view name) {
+    return name.find(FRAME_MARKER) != std::string::npos;
 }
 
 std::istream& System::open_read_stream(std::string_view name, std::string& resolved_name) {
     std::string modified_name = std::string(name);
 
-    if (size_t const pos = modified_name.find("{FRAME}"); std::string::npos != pos) {
+    if (size_t const pos = modified_name.find(FRAME_MARKER); std::string::npos != pos) {
         modified_name.replace(pos, 7, frame_string_);
     }
 

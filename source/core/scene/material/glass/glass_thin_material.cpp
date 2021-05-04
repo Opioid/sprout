@@ -1,7 +1,7 @@
 #include "glass_thin_material.hpp"
 #include "base/math/vector3.inl"
 #include "glass_thin_sample.hpp"
-#include "image/texture/texture_adapter.inl"
+
 #include "rendering/integrator/integrator_helper.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"
@@ -25,7 +25,7 @@ material::Sample const& Glass_thin::sample(float3_p wo, Ray const& /*ray*/, Rend
 
     if (normal_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker);
+        float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -67,7 +67,7 @@ float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, Filter fi
     return (1.f - f) * ta;
 }
 
-void Glass_thin::set_normal_map(Texture_adapter const& normal_map) {
+void Glass_thin::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 

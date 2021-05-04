@@ -51,7 +51,7 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
 
     if (aov.active(Property::AO)) {
         Ray occlusion_ray;
-        occlusion_ray.origin  = mat_sample.offset_p(isec.geo.p, false, false);
+        occlusion_ray.origin  = isec.offset_p(false);
         occlusion_ray.max_t() = aov.param(Property::AO);
         occlusion_ray.time    = ray.time;
 
@@ -71,9 +71,5 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
         aov.insert(result, Property::AO);
     }
 }
-
-Pool::Pool(uint32_t num_integrators) : num_integrators_(num_integrators) {}
-
-Pool::~Pool() = default;
 
 }  // namespace rendering::integrator::surface

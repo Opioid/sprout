@@ -15,7 +15,7 @@ class Material_coating_subsurface final : public Material_clearcoat {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_density_map(Texture_adapter const& density_map);
+    void set_density_map(Texture const& density_map);
 
     CC collision_coefficients(float3_p p, Filter filter, Worker& worker) const final;
 
@@ -28,7 +28,7 @@ class Material_coating_subsurface final : public Material_clearcoat {
 
     float3 color(float3_p p, Filter filter, Worker const& worker) const;
 
-    Texture_adapter density_map_;
+    Texture density_map_;
 
     volumetric::Gridtree tree_;
 };

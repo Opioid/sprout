@@ -3,8 +3,8 @@
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -161,18 +161,8 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
             }
 
             state.set(State::Treat_as_singular);
-        }
-
-        if (sample_result.type.is(Bxdf_type::Straight)) {
-            ray.min_t() = offset_f(ray.max_t());
-
-            if (sample_result.type.no(Bxdf_type::Transmission)) {
-                ++ray.depth;
-            }
-        } else {
-            ray.origin = mat_sample.offset_p(isec.geo.p, sample_result.wi, isec.subsurface);
-            ray.set_direction(sample_result.wi);
-            ++ray.depth;
+        } else if (sample_result.type.no(Bxdf_type::Straight)) {
+            state.unset(State::Treat_as_singular);
 
             effective_bxdf_pdf = sample_result.pdf;
 
@@ -185,8 +175,18 @@ Pathtracer_MIS::Result Pathtracer_MIS::integrate(Ray& ray, Intersection& isec, W
                     state.set(State::Split_photon, indirect);
                 }
             }
+        }
 
-            state.unset(State::Treat_as_singular);
+        if (sample_result.type != Bxdf_type::Straight_transmission) {
+            ++ray.depth;
+        }
+
+        if (sample_result.type.is(Bxdf_type::Straight)) {
+            ray.min_t() = offset_f(ray.max_t());
+        } else {
+            ray.origin = isec.offset_p(sample_result.wi);
+            ray.set_direction(sample_result.wi);
+
             state.unset(State::Direct);
             state.unset(State::From_subsurface);
         }
@@ -287,7 +287,7 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = mat_sample.offset_p(isec.geo.p, isec.subsurface, translucent);
+    float3 const p = isec.offset_p(translucent);
     float3 const n = mat_sample.geometric_normal();
 
     auto& rng = worker.rng();
@@ -425,7 +425,7 @@ Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progress
                                          uint32_t num_samples, uint32_t min_bounces,
                                          uint32_t max_bounces, Light_sampling light_sampling,
                                          bool enable_caustics, bool photons_only_through_specular)
-    : Typed_pool<Pathtracer_MIS>(num_integrators),
+    : Typed_pool<Pathtracer_MIS, Integrator>(num_integrators),
       settings_{num_samples,    min_bounces,      max_bounces,
                 light_sampling, !enable_caustics, !photons_only_through_specular},
       progressive_(progressive) {}

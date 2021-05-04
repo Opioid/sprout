@@ -14,7 +14,7 @@ class Material_isotropic : public Material {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
+    void set_normal_map(Texture const& normal_map);
 
     void set_ior(float3_p ior);
     void set_absorption(float3_p absorption);
@@ -23,7 +23,7 @@ class Material_isotropic : public Material {
     static size_t sample_size();
 
   protected:
-    Texture_adapter normal_map_;
+    Texture normal_map_;
 
     float3 ior3_;
     float3 absorption_;
@@ -40,8 +40,8 @@ class Material_anisotropic : public Material {
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                    Filter filter, Sampler& sampler, Worker& worker) const final;
 
-    void set_normal_map(Texture_adapter const& normal_map);
-    void set_direction_map(Texture_adapter const& direction_map);
+    void set_normal_map(Texture const& normal_map);
+    void set_direction_map(Texture const& direction_map);
 
     void set_ior(float3_p ior);
     void set_absorption(float3_p absorption);
@@ -50,8 +50,8 @@ class Material_anisotropic : public Material {
     static size_t sample_size();
 
   protected:
-    Texture_adapter normal_map_;
-    Texture_adapter direction_map_;
+    Texture normal_map_;
+    Texture direction_map_;
 
     float3 ior3_;
     float3 absorption_;

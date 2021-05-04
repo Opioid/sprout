@@ -5,9 +5,10 @@
 #include "base/math/vector2.inl"
 #include "collision_coefficients.inl"
 #include "fresnel/fresnel.inl"
-#include "image/texture/texture_adapter.inl"
+#include "image/texture/texture.inl"
+#include "image/texture/texture_sampler.hpp"
 #include "material.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 
 namespace scene::material {
 
@@ -42,11 +43,7 @@ inline float Material::opacity(float2 uv, Filter filter, Worker const& worker) c
     if (mask_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key_, filter);
 
-        if (element_ < 0) {
-            return mask_.sample_1(worker, sampler, uv);
-        } else {
-            return mask_.sample_1(worker, sampler, uv, element_);
-        }
+        return sampler.sample_1(mask_, uv, worker.scene());
     }
 
     return 1.f;
@@ -69,7 +66,7 @@ inline CC Material::collision_coefficients() const {
 inline CC Material::collision_coefficients(float2 uv, Filter filter, Worker const& worker) const {
     if (color_map_.is_valid()) {
         auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
-        float3 const color   = color_map_.sample_3(worker, sampler, uv);
+        float3 const color   = sampler.sample_3(color_map_, uv, worker.scene());
 
         return scattering(cc_.a, color, volumetric_anisotropy_);
     }
@@ -106,7 +103,7 @@ inline bool Material::has_emission_map() const {
 }
 
 inline bool Material::is_pure_emissive() const {
-    return properties_.is(Property::Pure_emisive);
+    return properties_.is(Property::Pure_emissive);
 }
 
 inline bool Material::is_scattering_volume() const {

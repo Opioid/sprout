@@ -10,79 +10,67 @@
 
 namespace scene::animation {
 
-Animation* load_keyframes(json::Value const&    keyframes_value,
-                          Transformation const& default_transformation, Scene& scene);
+static Animation* load_keyframes(json::Value const& value, Transformation const& default_trafo,
+                                 Scene& scene);
 
-Animation* load_sequence(json::Value const&    sequence_value,
-                         Transformation const& default_transformation, Scene& scene);
+static Animation* load_sequence(json::Value const& value, Transformation const& default_trafo,
+                                Scene& scene);
 
-void read_morphing(json::Value const& value, entity::Morphing& morphing);
+static void read_morphing(json::Value const& value, entity::Morphing& morphing);
 
-Animation* load(json::Value const& animation_value, Transformation const& default_transformation,
-                Scene& scene) {
-    for (auto& n : animation_value.GetObject()) {
-        std::string const       node_name  = n.name.GetString();
-        rapidjson::Value const& node_value = n.value;
-
-        if ("keyframes" == node_name) {
-            return load_keyframes(node_value, default_transformation, scene);
+Animation* load(json::Value const& value, Transformation const& default_trafo, Scene& scene) {
+    for (auto& n : value.GetObject()) {
+        if ("keyframes" == n.name) {
+            return load_keyframes(n.value, default_trafo, scene);
         }
 
-        if ("morph_sequence" == node_name) {
-            return load_sequence(node_value, default_transformation, scene);
+        if ("morph_sequence" == n.name) {
+            return load_sequence(n.value, default_trafo, scene);
         }
     }
 
     return nullptr;
 }
 
-Animation* load_keyframes(json::Value const&    keyframes_value,
-                          Transformation const& default_transformation, Scene& scene) {
-    if (!keyframes_value.IsArray()) {
+static Animation* load_keyframes(json::Value const& value, Transformation const& default_trafo,
+                                 Scene& scene) {
+    if (!value.IsArray()) {
         return nullptr;
     }
 
-    auto animation = scene.create_animation(keyframes_value.Size());
+    auto animation = scene.create_animation(value.Size());
 
-    auto const& keyframes = keyframes_value.GetArray();
-
-    for (uint32_t i = 0, len = keyframes.Size(); i < len; ++i) {
-        auto const& k = keyframes[i];
-
-        Keyframe keyframe{{default_transformation}, {{0, 0}, 0.f}, 0};
+    for (uint32_t i = 0; auto const& k : value.GetArray()) {
+        Keyframe keyframe{{default_trafo}, {{0, 0}, 0.f}, 0};
 
         for (auto& n : k.GetObject()) {
-            std::string const node_name = n.name.GetString();
-
-            if ("time" == node_name) {
+            if ("time" == n.name) {
                 keyframe.time = time(json::read_double(n.value));
-            } else if ("transformation" == node_name) {
+            } else if ("transformation" == n.name) {
                 json::read_transformation(n.value, keyframe.k.trafo);
-            } else if ("morphing" == node_name) {
+            } else if ("morphing" == n.name) {
                 read_morphing(n.value, keyframe.m);
             }
         }
 
-        animation->set(i, keyframe);
+        animation->set(i++, keyframe);
     }
 
     return animation;
 }
 
-Animation* load_sequence(json::Value const&    sequence_value,
-                         Transformation const& default_transformation, Scene& scene) {
+Animation* load_sequence(json::Value const& value, Transformation const& default_trafo,
+                         Scene& scene) {
     uint32_t start_frame       = 0;
     uint32_t num_frames        = 0;
     uint32_t frames_per_second = 0;
 
-    for (auto& n : sequence_value.GetObject()) {
-        std::string const node_name = n.name.GetString();
-
-        if ("start_frame" == node_name) {
+    for (auto& n : value.GetObject()) {
+        if ("start_frame" == n.name) {
             start_frame = json::read_uint(n.value);
-        } else if ("num_frames" == node_name) {
+        } else if ("num_frames" == n.name) {
             num_frames = json::read_uint(n.value);
-        } else if ("frames_per_second" == node_name) {
+        } else if ("frames_per_second" == n.name) {
             frames_per_second = json::read_uint(n.value);
         }
     }
@@ -100,7 +88,7 @@ Animation* load_sequence(json::Value const&    sequence_value,
     for (uint32_t i = 0; i < num_frames; ++i) {
         uint32_t const target = start_frame + i;
 
-        Keyframe const keyframe{{default_transformation}, {{target, target}, 0.f}, time};
+        Keyframe const keyframe{{default_trafo}, {{target, target}, 0.f}, time};
 
         animation->set(i, keyframe);
 
@@ -112,14 +100,12 @@ Animation* load_sequence(json::Value const&    sequence_value,
 
 void read_morphing(json::Value const& value, entity::Morphing& morphing) {
     for (auto& n : value.GetObject()) {
-        std::string const node_name = n.name.GetString();
-
-        if ("targets" == node_name) {
+        if ("targets" == n.name) {
             if (n.value.IsArray() && n.value.Size() >= 2) {
                 morphing.targets[0] = n.value[0].GetUint();
                 morphing.targets[1] = n.value[1].GetUint();
             }
-        } else if ("weight" == node_name) {
+        } else if ("weight" == n.name) {
             morphing.weight = json::read_float(n.value);
         }
     }

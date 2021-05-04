@@ -4,7 +4,7 @@
 #include "base/spectrum/aces.hpp"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
-
+#include "image/texture/texture.inl"
 #include "scene/scene_renderstate.hpp"
 
 namespace scene::material {
@@ -20,16 +20,15 @@ Material::Material(Sampler_settings sampler_settings, bool two_sided)
       emission_(0.f),
       ior_(1.5f),
       attenuation_distance_(0.f),
-      volumetric_anisotropy_(0.f),
-      element_(-1) {}
+      volumetric_anisotropy_(0.f) {}
 
 Material::~Material() = default;
 
-void Material::set_mask(Texture_adapter const& mask) {
+void Material::set_mask(Texture const& mask) {
     mask_ = mask;
 }
 
-void Material::set_color_map(Texture_adapter const& color_map) {
+void Material::set_color_map(Texture const& color_map) {
     color_map_ = color_map;
 }
 
@@ -53,9 +52,6 @@ void Material::set_volumetric(float3_p attenuation_color, float3_p subsurface_co
 
 void Material::commit(Threads& /*threads*/, Scene const& /*scene*/) {}
 
-void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
-                        Threads& /*threads*/, Scene const& /*scene*/) {}
-
 float3 Material::average_radiance(float /*extent*/) const {
     return float3(0.f);
 }
@@ -78,8 +74,7 @@ float3 Material::thin_absorption(float3_p /*wi*/, float3_p /*n*/, float2 uv, Fil
     return float3(1.f - opacity(uv, filter, worker));
 }
 
-CC Material::collision_coefficients(float3_p /*uvw*/, Filter /*filter*/,
-                                    Worker& /*worker*/) const {
+CC Material::collision_coefficients(float3_p /*uvw*/, Filter /*filter*/, Worker& /*worker*/) const {
     return cc_;
 }
 

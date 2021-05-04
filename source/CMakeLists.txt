@@ -127,8 +127,6 @@ elseif (MSVC)
     add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
 endif ()
 
-
-
 add_subdirectory(base)
 add_subdirectory(core)
 add_subdirectory(extension)

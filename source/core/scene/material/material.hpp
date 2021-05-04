@@ -5,7 +5,7 @@
 #include "base/math/vector3.hpp"
 #include "base/spectrum/discrete.hpp"
 #include "collision_coefficients.hpp"
-#include "image/texture/texture_adapter.hpp"
+#include "image/texture/texture.hpp"
 #include "sampler_settings.hpp"
 
 namespace math {
@@ -51,11 +51,11 @@ class Sample;
 
 class Material {
   public:
-    using Filter          = Sampler_settings::Filter;
-    using Shape           = shape::Shape;
-    using Transformation  = entity::Composed_transformation;
-    using Sampler         = sampler::Sampler;
-    using Texture_adapter = image::texture::Adapter;
+    using Filter         = Sampler_settings::Filter;
+    using Shape          = shape::Shape;
+    using Transformation = entity::Composed_transformation;
+    using Sampler        = sampler::Sampler;
+    using Texture        = image::texture::Texture;
 
     static char const* identifier();
 
@@ -63,9 +63,9 @@ class Material {
 
     virtual ~Material();
 
-    void set_mask(Texture_adapter const& mask);
+    void set_mask(Texture const& mask);
 
-    void set_color_map(Texture_adapter const& color_map);
+    void set_color_map(Texture const& color_map);
 
     void set_emission(float3_p emission);
 
@@ -75,9 +75,6 @@ class Material {
                         float anisotropy);
 
     virtual void commit(Threads& threads, Scene const& scene);
-
-    virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length, Threads& threads,
-                          Scene const& scene);
 
     virtual Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs, Filter filter,
                                  Sampler& sampler, Worker& worker) const = 0;
@@ -115,8 +112,7 @@ class Material {
 
     CCE collision_coefficients_emission() const;
 
-    virtual CCE collision_coefficients_emission(float3_p uvw, Filter filter,
-                                                Worker& worker) const;
+    virtual CCE collision_coefficients_emission(float3_p uvw, Filter filter, Worker& worker) const;
 
     virtual volumetric::Gridtree const* volume_tree() const;
 
@@ -164,7 +160,7 @@ class Material {
         Caustic              = 1 << 2,
         Tinted_shadow        = 1 << 3,
         Emission_map         = 1 << 4,
-        Pure_emisive         = 1 << 5,
+        Pure_emissive        = 1 << 5,
         Scattering_volume    = 1 << 6,
         Textured_volume      = 1 << 7,
         Heterogeneous_volume = 1 << 8
@@ -172,8 +168,8 @@ class Material {
 
     flags::Flags<Property> properties_;
 
-    Texture_adapter mask_;
-    Texture_adapter color_map_;
+    Texture mask_;
+    Texture color_map_;
 
     CC cc_;
 
@@ -182,8 +178,6 @@ class Material {
     float ior_;
     float attenuation_distance_;
     float volumetric_anisotropy_;
-
-    int32_t element_;
 
   public:
     static void init_rainbow();

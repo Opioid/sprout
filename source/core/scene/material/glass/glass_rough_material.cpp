@@ -1,7 +1,7 @@
 #include "glass_rough_material.hpp"
 #include "base/math/vector4.inl"
 #include "glass_rough_sample.hpp"
-#include "image/texture/texture_adapter.inl"
+
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material.inl"
@@ -26,7 +26,7 @@ material::Sample const& Glass_rough::sample(float3_p wo, Ray const& /*ray*/, Ren
     auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
     if (normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -34,7 +34,7 @@ material::Sample const& Glass_rough::sample(float3_p wo, Ray const& /*ray*/, Ren
 
     float alpha;
     if (roughness_map_.is_valid()) {
-        float const r = ggx::map_roughness(roughness_map_.sample_1(worker, sampler, rs.uv));
+        float const r = ggx::map_roughness(sampler.sample_1(roughness_map_, rs.uv, worker.scene()));
 
         alpha = r * r;
     } else {
@@ -47,11 +47,11 @@ material::Sample const& Glass_rough::sample(float3_p wo, Ray const& /*ray*/, Ren
     return sample;
 }
 
-void Glass_rough::set_normal_map(Texture_adapter const& normal_map) {
+void Glass_rough::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
-void Glass_rough::set_roughness_map(Texture_adapter const& roughness_map) {
+void Glass_rough::set_roughness_map(Texture const& roughness_map) {
     roughness_map_ = roughness_map;
 }
 

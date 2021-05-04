@@ -15,6 +15,7 @@
 #include "image/encoding/png/png_writer.hpp"
 #include "image/encoding/rgbe/rgbe_writer.hpp"
 #include "image/texture/texture.inl"
+#include "image/texture/texture_provider.hpp"
 #include "logging/logging.hpp"
 #include "rendering/integrator/particle/lighttracer.hpp"
 #include "rendering/integrator/surface/ao.hpp"
@@ -33,6 +34,7 @@
 #include "rendering/postprocessor/tonemapping/linear.hpp"
 #include "rendering/postprocessor/tonemapping/piecewise.hpp"
 #include "rendering/sensor/clamp.inl"
+#include "rendering/sensor/filter/sensor_blackman.hpp"
 #include "rendering/sensor/filter/sensor_gaussian.hpp"
 #include "rendering/sensor/filter/sensor_mitchell.hpp"
 #include "rendering/sensor/filtered.inl"
@@ -62,13 +64,13 @@ using Scene          = scene::Scene;
 using Camera         = scene::camera::Camera;
 using Sensor_filter  = rendering::sensor::filter::Filter;
 using Sensor         = rendering::sensor::Sensor;
-using Surface_pool   = rendering::integrator::surface::Pool;
-using Volume_pool    = rendering::integrator::volume::Pool;
+using Surface_pool   = rendering::integrator::Surface_pool;
+using Volume_pool    = rendering::integrator::Volume_pool;
 using Particle_pool  = rendering::integrator::particle::Lighttracer_pool;
 using Postprocessor  = rendering::postprocessor::Postprocessor;
 using Light_sampling = rendering::integrator::Light_sampling;
 
-static Sensor* load_sensor(json::Value const& sensor_value);
+static Sensor* load_sensor(json::Value const& value);
 
 static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers,
                                         bool progressive, uint32_t& num_samples_per_pixel);
@@ -85,9 +87,9 @@ static Particle_pool* load_particle_integrator(json::Value const& value, uint32_
 
 static void load_photon_settings(json::Value const& value, Photon_settings& settings);
 
-static Postprocessor* load_tonemapper(json::Value const& tonemapper_value);
+static Postprocessor* load_tonemapper(json::Value const& value);
 
-static bool peek_stereoscopic(json::Value const& parameters_value);
+static bool peek_stereoscopic(json::Value const& value);
 
 static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, View const& view);
 
@@ -95,8 +97,8 @@ static void load_light_sampling(json::Value const& value, Light_sampling& sampli
 
 static void load_AOVs(json::Value const& value, rendering::sensor::aov::Value_pool& aovs);
 
-bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
-                  uint32_t start_frame, bool progressive, Scene& scene, Resources& resources) {
+bool Loader::load(Take& take, std::istream& stream, bool progressive, Scene& scene,
+                  Resources& resources) {
     uint32_t const num_threads = resources.threads().num_threads();
 
     std::string error;
@@ -114,18 +116,14 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
 
     for (auto& n : root.GetObject()) {
         if ("camera" == n.name) {
-            take.view.camera = load_camera(n.value, &scene);
+            load_camera(n.value, scene, take.view.camera);
         } else if ("export" == n.name) {
             exporter_value = &n.value;
-        } else if ("start_frame" == n.name) {
-            take.view.start_frame = json::read_uint(n.value);
-        } else if ("num_frames" == n.name) {
-            take.view.num_frames = json::read_uint(n.value);
         } else if ("integrator" == n.name) {
             integrator_value = &n.value;
         } else if ("aov" == n.name) {
             load_AOVs(n.value, take.view.aovs);
-        } else if ("post" == n.name || "postprocessors" == n.name) {
+        } else if ("post" == n.name) {
             postprocessors_value = &n.value;
         } else if ("sampler" == n.name) {
             sampler_value = &n.value;
@@ -148,7 +146,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         load_integrators(*integrator_value, num_threads, progressive, take.view);
     }
 
-    if (sampler_value) {
+    if (!take.view.samplers && sampler_value) {
         bool const potential_surface_integrator = nullptr != take.view.surface_integrators ||
                                                   nullptr == take.view.lighttracers;
 
@@ -160,14 +158,8 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         }
     }
 
-    if (start_frame != 0xFFFFFFFF) {
-        take.view.start_frame = start_frame;
-    }
-
-    resources.filesystem().set_frame(take.view.start_frame);
-
-    if (postprocessors_value) {
-        std::string_view const take_mount_folder = string::parent_directory(take_name);
+    if (take.view.pipeline.empty() && postprocessors_value) {
+        std::string_view const take_mount_folder = string::parent_directory(take.resolved_name);
 
         auto& filesystem = resources.filesystem();
 
@@ -180,7 +172,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
         set_default_postprocessor(take);
     }
 
-    if (exporter_value) {
+    if (take.exporters.empty() && exporter_value) {
         take.exporters = load_exporters(*exporter_value, take.view);
     }
 
@@ -205,7 +197,7 @@ bool Loader::load(Take& take, std::istream& stream, std::string_view take_name,
     return true;
 }
 
-Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
+bool Loader::load_camera(json::Value const& camera_value, Scene& scene, Camera*& camera) {
     using namespace scene::camera;
 
     std::string type_name;
@@ -213,7 +205,10 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
     json::Value const* type_value = nullptr;
 
     for (auto& n : camera_value.GetObject()) {
-        type_name  = n.name.GetString();
+        if (!camera) {
+            type_name = n.name.GetString();
+        }
+
         type_value = &n.value;
 
         if ("Cubic" == type_name) {
@@ -224,7 +219,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
     if (!type_value) {
         // Can this happen at all!
         logging::push_error("Empty camera object");
-        return nullptr;
+        return false;
     }
 
     math::Transformation trafo{float3(0.f), float3(1.f), quaternion::Identity};
@@ -259,16 +254,14 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         resolution = max(resolution, int2(0));
         if (int2(0) == resolution) {
             logging::push_error("Sensor resolution must be greater than zero");
-            return nullptr;
+            return false;
         }
 
         crop = json::read_int4(*sensor_value, "crop", int4(int2(0), resolution));
     } else {
         logging::push_error("No sensor configuration included");
-        return nullptr;
+        return false;
     }
-
-    Camera* camera;
 
     if ("Cubic" == type_name) {
         if (stereo) {
@@ -305,7 +298,7 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         camera = new Hemispherical();
     } else {
         logging::push_error("Camera type \"" + type_name + "\" not recognized");
-        return nullptr;
+        return false;
     }
 
     camera->set_resolution(resolution, crop);
@@ -314,39 +307,51 @@ Camera* Loader::load_camera(json::Value const& camera_value, Scene* scene) {
         camera->set_parameters(*parameters_value);
     }
 
-    if (scene) {
-        if (sensor_value) {
-            auto sensor = load_sensor(*sensor_value);
+    if (!camera->has_sensor() && sensor_value) {
+        auto sensor = load_sensor(*sensor_value);
 
-            camera->set_sensor(sensor);
-        }
-
-        uint32_t const prop_id = scene->create_entity();
-
-        camera->init(prop_id);
-
-        if (animation_value) {
-            if (auto animation = scene::animation::load(*animation_value, trafo, *scene);
-                animation) {
-                scene->create_animation_stage(prop_id, animation);
-            }
-        } else {
-            scene->prop_set_world_transformation(prop_id, trafo);
-        }
+        camera->set_sensor(sensor);
     }
 
-    return camera;
+    uint32_t const prop_id = scene.create_entity();
+
+    camera->set_entity(prop_id);
+
+    if (animation_value) {
+        if (auto animation = scene::animation::load(*animation_value, trafo, scene); animation) {
+            scene.create_animation_stage(prop_id, animation);
+        }
+    } else {
+        scene.prop_set_world_transformation(prop_id, trafo);
+    }
+
+    return true;
 }
 
 template <typename Filter>
-Filter load_filter(json::Value const& /*filter_value*/, float& radius);
+Filter load_filter(json::Value const& /*value*/, float& radius);
 
 template <>
-rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value, float& radius) {
+rendering::sensor::filter::Blackman load_filter(json::Value const& value, float& radius) {
+    radius = 2.f;
+
+    for (auto& n : value.GetObject()) {
+        if ("Blackman" == n.name) {
+            radius = json::read_float(n.value, "radius", radius);
+
+            break;
+        }
+    }
+
+    return rendering::sensor::filter::Blackman(radius);
+}
+
+template <>
+rendering::sensor::filter::Gaussian load_filter(json::Value const& value, float& radius) {
     radius      = 2.f;
     float alpha = 1.8f;
 
-    for (auto& n : filter_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         if ("Gaussian" == n.name) {
             radius = json::read_float(n.value, "radius", radius);
             alpha  = json::read_float(n.value, "alpha", alpha);
@@ -359,12 +364,12 @@ rendering::sensor::filter::Gaussian load_filter(json::Value const& filter_value,
 }
 
 template <>
-rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value, float& radius) {
+rendering::sensor::filter::Mitchell load_filter(json::Value const& value, float& radius) {
     radius  = 2.f;
     float b = 1.f / 3.f;
     float c = 1.f / 3.f;
 
-    for (auto& n : filter_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         if ("Mitchell" == n.name) {
             radius = json::read_float(n.value, "radius", radius);
             b      = json::read_float(n.value, "b", b);
@@ -378,7 +383,7 @@ rendering::sensor::filter::Mitchell load_filter(json::Value const& filter_value,
 }
 
 template <typename Base, typename Filter>
-static Sensor* make_filtered_sensor(float3_p clamp_max, json::Value const& filter_value) {
+static Sensor* make_filtered_sensor(float3_p clamp_max, json::Value const& value) {
     using namespace rendering::sensor;
 
     bool const clamp = clamp_max[0] >= 0.f;
@@ -386,7 +391,7 @@ static Sensor* make_filtered_sensor(float3_p clamp_max, json::Value const& filte
     bool const clamp_luminance = clamp && clamp_max[1] < 0.f;
 
     float  radius;
-    Filter filter = load_filter<Filter>(filter_value, radius);
+    Filter filter = load_filter<Filter>(value, radius);
 
     if (clamp) {
         if (clamp_luminance) {
@@ -434,10 +439,14 @@ static Sensor* make_filtered_sensor(float3_p clamp_max, json::Value const& filte
                                                            radius);
 }
 
-enum class Sensor_filter_type { Undefined, Gaussian, Mitchell };
+enum class Sensor_filter_type { Undefined, Blackman, Gaussian, Mitchell };
 
-static Sensor_filter_type read_filter_type(json::Value const& filter_value) {
-    for (auto& n : filter_value.GetObject()) {
+Sensor_filter_type read_filter_type(json::Value const& value) {
+    for (auto& n : value.GetObject()) {
+        if ("Blackman" == n.name) {
+            return Sensor_filter_type::Blackman;
+        }
+
         if ("Gaussian" == n.name) {
             return Sensor_filter_type::Gaussian;
         }
@@ -454,7 +463,7 @@ static Sensor_filter_type read_filter_type(json::Value const& filter_value) {
     return Sensor_filter_type::Undefined;
 }
 
-static Sensor* load_sensor(json::Value const& sensor_value) {
+Sensor* load_sensor(json::Value const& value) {
     using namespace rendering::sensor;
     using namespace rendering::sensor::filter;
 
@@ -466,7 +475,7 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
 
     Sensor_filter_type filter_type = Sensor_filter_type::Undefined;
 
-    for (auto& n : sensor_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         if ("alpha_transparency" == n.name) {
             alpha_transparency = json::read_bool(n.value);
         } else if ("clamp" == n.name) {
@@ -483,11 +492,19 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
 
     if (filter_value && Sensor_filter_type::Undefined != filter_type) {
         if (alpha_transparency) {
+            if (Sensor_filter_type::Blackman == filter_type) {
+                return make_filtered_sensor<Transparent, Blackman>(clamp_max, *filter_value);
+            }
+
             if (Sensor_filter_type::Gaussian == filter_type) {
                 return make_filtered_sensor<Transparent, Gaussian>(clamp_max, *filter_value);
             }
 
             return make_filtered_sensor<Transparent, Mitchell>(clamp_max, *filter_value);
+        }
+
+        if (Sensor_filter_type::Blackman == filter_type) {
+            return make_filtered_sensor<Opaque, Blackman>(clamp_max, *filter_value);
         }
 
         if (Sensor_filter_type::Gaussian == filter_type) {
@@ -514,8 +531,8 @@ static Sensor* load_sensor(json::Value const& sensor_value) {
     return new Unfiltered<Opaque, clamp::Identity>(clamp::Identity());
 }
 
-static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers,
-                                        bool progressive, uint32_t& num_samples_per_pixel) {
+sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_workers, bool progressive,
+                                 uint32_t& num_samples_per_pixel) {
     if (progressive) {
         num_samples_per_pixel = 1;
         return new sampler::Random_pool(num_workers);
@@ -540,8 +557,8 @@ static sampler::Pool* load_sampler_pool(json::Value const& value, uint32_t num_w
     return nullptr;
 }
 
-static bool peek_surface_integrator(json::Value const& integrator_value) {
-    for (auto& n : integrator_value.GetObject()) {
+static bool peek_surface_integrator(json::Value const& value) {
+    for (auto& n : value.GetObject()) {
         if ("surface" == n.name) {
             for (auto& s : n.value.GetObject()) {
                 if ("AO" == s.name) {
@@ -578,27 +595,21 @@ static bool peek_surface_integrator(json::Value const& integrator_value) {
     return false;
 }
 
-void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_workers,
-                              bool progressive, View& view) {
-    if (auto const particle_node = integrator_value.FindMember("particle");
-        integrator_value.MemberEnd() != particle_node) {
-        bool const surface_integrator = peek_surface_integrator(integrator_value);
-
-        delete view.lighttracers;
+void Loader::load_integrators(json::Value const& value, uint32_t num_workers, bool progressive,
+                              View& view) {
+    if (auto const particle_node = value.FindMember("particle");
+        value.MemberEnd() != particle_node && !view.lighttracers) {
+        bool const surface_integrator = peek_surface_integrator(value);
 
         view.lighttracers = load_particle_integrator(
             particle_node->value, num_workers, surface_integrator, view.num_particles_per_pixel);
     }
 
-    for (auto& n : integrator_value.GetObject()) {
-        if ("surface" == n.name) {
-            delete view.surface_integrators;
-
+    for (auto& n : value.GetObject()) {
+        if ("surface" == n.name && !view.surface_integrators) {
             view.surface_integrators = load_surface_integrator(n.value, num_workers, progressive,
                                                                nullptr != view.lighttracers);
-        } else if ("volume" == n.name) {
-            delete view.volume_integrators;
-
+        } else if ("volume" == n.name && !view.volume_integrators) {
             view.volume_integrators = load_volume_integrator(n.value, num_workers, progressive);
         } else if ("photon" == n.name) {
             load_photon_settings(n.value, view.photon_settings);
@@ -606,8 +617,8 @@ void Loader::load_integrators(json::Value const& integrator_value, uint32_t num_
     }
 }
 
-static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
-                                             bool progressive, bool lighttracer) {
+Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
+                                      bool progressive, bool lighttracer) {
     using namespace rendering::integrator::surface;
 
     uint32_t constexpr Default_min_bounces = 4;
@@ -730,8 +741,8 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
     return nullptr;
 }
 
-static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
-                                           bool progressive) {
+Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
+                                    bool progressive) {
     using namespace rendering::integrator::volume;
 
     for (auto& n : value.GetObject()) {
@@ -755,9 +766,9 @@ static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t nu
     return nullptr;
 }
 
-static Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
-                                               bool      surface_integrator,
-                                               uint32_t& num_particles_per_pixel) {
+Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
+                                        bool      surface_integrator,
+                                        uint32_t& num_particles_per_pixel) {
     using namespace rendering::integrator::particle;
 
     bool const full_light_path = json::read_bool(value, "full_light_path", !surface_integrator);
@@ -824,12 +835,13 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto const backplate_res = resources.load<image::texture::Texture>(name);
-            if (!backplate_res.ptr) {
+            auto const backplate_res = image::texture::Provider::load(name, memory::Variant_map(),
+                                                                      float2(1.f), resources);
+            if (!backplate_res.is_valid()) {
                 continue;
             }
 
-            pipeline.add(new Backplate(backplate_res.ptr));
+            pipeline.add(new Backplate(backplate_res));
         } else if ("Bloom" == n->name) {
             float const angle     = json::read_float(n->value, "angle", 0.00002f);
             float const alpha     = json::read_float(n->value, "alpha", 0.005f);
@@ -859,10 +871,10 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
     }
 }
 
-static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
+Postprocessor* load_tonemapper(json::Value const& value) {
     using namespace rendering::postprocessor::tonemapping;
 
-    for (auto& n : tonemapper_value.GetObject()) {
+    for (auto& n : value.GetObject()) {
         bool const auto_expose = json::read_bool(n.value, "auto_expose", false);
 
         float const exposure = json::read_float(n.value, "exposure", 0.f);
@@ -900,12 +912,12 @@ static Postprocessor* load_tonemapper(json::Value const& tonemapper_value) {
     return nullptr;
 }
 
-static bool peek_stereoscopic(json::Value const& parameters_value) {
-    auto const export_node = parameters_value.FindMember("stereo");
-    return parameters_value.MemberEnd() != export_node;
+bool peek_stereoscopic(json::Value const& value) {
+    auto const export_node = value.FindMember("stereo");
+    return value.MemberEnd() != export_node;
 }
 
-static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, View const& view) {
+memory::Array<exporting::Sink*> load_exporters(json::Value const& value, View const& view) {
     if (!view.camera) {
         return {};
     }
@@ -950,7 +962,7 @@ static memory::Array<exporting::Sink*> load_exporters(json::Value const& value, 
 
             bool const error_diffusion = json::read_bool(n.value, "error_diffusion", false);
 
-            exporters.push_back(new exporting::Ffmpeg("output", camera.sensor().dimensions(),
+            exporters.push_back(new exporting::Ffmpeg("output", camera.sensor_dimensions(),
                                                       error_diffusion, framerate));
         } else if ("Stats" == n.name || "Statistics" == n.name) {
             exporters.push_back(new exporting::Statistics);
@@ -990,7 +1002,7 @@ void Loader::set_default_exporter(Take& take) {
     }
 }
 
-static void load_light_sampling(json::Value const& value, Light_sampling& sampling) {
+void load_light_sampling(json::Value const& value, Light_sampling& sampling) {
     auto const light_sampling_node = value.FindMember("light_sampling");
     if (value.MemberEnd() == light_sampling_node) {
         return;

@@ -5,25 +5,19 @@
 
 namespace image {
 
-Description::Description() : dimensions_(0), num_elements_(0), offset_() {}
+Description::Description() : dimensions_(0), offset_() {}
 
-Description::Description(int2 dimensions, int32_t num_elements)
-    : dimensions_(dimensions, 1), num_elements_(num_elements), offset_(0) {}
+Description::Description(int2 dimensions) : dimensions_(dimensions, 1), offset_(0) {}
 
-Description::Description(int3_p dimensions, int32_t num_elements, int3_p offset)
-    : dimensions_(dimensions), num_elements_(num_elements), offset_(offset) {}
+Description::Description(int3_p dimensions, int3_p offset)
+    : dimensions_(dimensions), offset_(offset) {}
 
 uint64_t Description::num_pixels() const {
-    return uint64_t(dimensions_[0]) * uint64_t(dimensions_[1]) * uint64_t(dimensions_[2]) *
-           uint64_t(num_elements_);
+    return uint64_t(dimensions_[0]) * uint64_t(dimensions_[1]) * uint64_t(dimensions_[2]);
 }
 
 int3 Description::dimensions() const {
     return dimensions_;
-}
-
-int32_t Description::num_elements() const {
-    return num_elements_;
 }
 
 int3 Description::offset() const {
@@ -69,8 +63,7 @@ void Typed_image<T>::resize(Description const& description) {
 
     delete[] data_;
 
-    description_.dimensions_   = description.dimensions_;
-    description_.num_elements_ = description.num_elements_;
+    description_.dimensions_ = description.dimensions_;
 
     data_ = new T[description_.num_pixels()];
 }
@@ -102,6 +95,71 @@ template <typename T>
 T Typed_image<T>::at(int32_t x, int32_t y) const {
     int32_t const i = y * description_.dimensions_[0] + x;
     return data_[i];
+}
+
+template <typename T>
+void Typed_image<T>::gather(int4_p xy_xy1, T c[4]) const {
+    int32_t const width = description_.dimensions_[0];
+
+    int32_t const y0 = width * xy_xy1[1];
+
+    c[0] = data_[y0 + xy_xy1[0]];
+    c[1] = data_[y0 + xy_xy1[2]];
+
+    int32_t const y1 = width * xy_xy1[3];
+
+    c[2] = data_[y1 + xy_xy1[0]];
+    c[3] = data_[y1 + xy_xy1[2]];
+}
+
+template <typename T>
+T Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
+    int2 const d = description_.dimensions_.xy();
+
+    int64_t const i = (int64_t(z) * int64_t(d[1]) + int64_t(y)) * int64_t(d[0]) + int64_t(x);
+    return data_[i];
+}
+
+template <typename T>
+void Typed_image<T>::gather(int3_p xyz, int3_p xyz1, T c[8]) const {
+    int64_t const w = int64_t(description_.dimensions_[0]);
+    int64_t const h = int64_t(description_.dimensions_[1]);
+
+    int64_t const x = int64_t(xyz[0]);
+    int64_t const y = int64_t(xyz[1]);
+    int64_t const z = int64_t(xyz[2]);
+
+    int64_t const x1 = int64_t(xyz1[0]);
+    int64_t const y1 = int64_t(xyz1[1]);
+    int64_t const z1 = int64_t(xyz1[2]);
+
+    int64_t const d = z * h;
+
+    int64_t const c0 = (d + y) * w + x;
+    c[0]             = data_[c0];
+
+    int64_t const c1 = (d + y) * w + x1;
+    c[1]             = data_[c1];
+
+    int64_t const c2 = (d + y1) * w + x;
+    c[2]             = data_[c2];
+
+    int64_t const c3 = (d + y1) * w + x1;
+    c[3]             = data_[c3];
+
+    int64_t const d1 = z1 * h;
+
+    int64_t const c4 = (d1 + y) * w + x;
+    c[4]             = data_[c4];
+
+    int64_t const c5 = (d1 + y) * w + x1;
+    c[5]             = data_[c5];
+
+    int64_t const c6 = (d1 + y1) * w + x;
+    c[6]             = data_[c6];
+
+    int64_t const c7 = (d1 + y1) * w + x1;
+    c[7]             = data_[c7];
 }
 
 template <typename T>
@@ -236,14 +294,6 @@ template <typename T>
 T Typed_sparse_image<T>::at(int32_t /*x*/, int32_t /*y*/) const {
     //    int32_t const i = y * description_.dimensions[0] + x;
     //    return data_[i];
-
-    return T(0);
-}
-
-template <typename T>
-T Typed_sparse_image<T>::at_element(int32_t /*x*/, int32_t /*y*/, int32_t /*element*/) const {
-    //    int32_t const i = (element * description_.dimensions[1] + y) * description_.dimensions[0]
-    //    + x; return data_[i];
 
     return T(0);
 }

@@ -32,11 +32,35 @@ std::vector<T*> const& Typed_cache<T>::resources() const {
 }
 
 template <typename T>
+bool Typed_cache<T>::reload_frame_dependant(Manager& resources) {
+    bool deprecated = false;
+
+    for (auto const& kv : entries_) {
+        if (std::string const& filename = kv.first.first;
+            file::System::frame_dependant_name(filename)) {
+            std::string resolved_name;
+            auto resource = provider_.load(filename, kv.first.second, resources, resolved_name);
+
+            if (resource) {
+                uint32_t const id = kv.second.id;
+
+                delete resources_[id];
+                resources_[id] = resource;
+
+                deprecated = true;
+            }
+        }
+    }
+
+    return deprecated;
+}
+
+template <typename T>
 Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const& options,
-                                     Manager& manager) {
+                                     Manager& resources) {
     std::string resolved_name;
 
-    return load(filename, options, manager, resolved_name);
+    return load(filename, options, resources, resolved_name);
 }
 
 template <typename T>
@@ -54,9 +78,6 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
         if (check_up_to_date(entry)) {
             return {resources_[id], id};
         }
-
-        delete resources_[id];
-        resources_[id] = nullptr;
     }
 
     auto resource = provider_.load(filename, options, resources, resolved_name);
@@ -68,11 +89,13 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& filename, Variants const
     auto const      last_write = std::filesystem::last_write_time(resolved_name, ec);
 
     if (id != resource::Null) {
+        delete resources_[id];
+
         resources_[id] = resource;
     } else {
-        resources_.push_back(resource);
+        id = uint32_t(resources_.size());
 
-        id = uint32_t(resources_.size()) - 1;
+        resources_.push_back(resource);
     }
 
     entries_.insert_or_assign(key, Entry{id, generation_, resolved_name, last_write});
@@ -95,13 +118,27 @@ Resource_ptr<T> Typed_cache<T>::load(std::string const& name, void const* const 
         return Resource_ptr<T>::Null();
     }
 
-    resources_.push_back(resource);
+    uint32_t id = resource::Null;
 
-    uint32_t const id = uint32_t(resources_.size()) - 1;
+    auto const key = std::make_pair(name, options);
+
+    if (auto cached = entries_.find(key); entries_.end() != cached) {
+        auto& entry = cached->second;
+
+        id = entry.id;
+    }
+
+    if (resource::Null == id) {
+        id = uint32_t(resources_.size());
+
+        resources_.push_back(resource);
+    } else {
+        delete resources_[id];
+
+        resources_[id] = resource;
+    }
 
     if (!name.empty()) {
-        auto const key = std::make_pair(name, options);
-
         std::error_code ec;
         auto const      last_write = std::filesystem::last_write_time(source_name, ec);
 
@@ -123,9 +160,6 @@ Resource_ptr<T> Typed_cache<T>::get(std::string const& name, Variants const& opt
         if (check_up_to_date(entry)) {
             return {resources_[id], id};
         }
-
-        delete resources_[id];
-        resources_[id] = nullptr;
 
         return Resource_ptr<T>::Null();
     }

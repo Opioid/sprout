@@ -7,20 +7,16 @@ namespace image {
 
 struct Description {
     Description();
-    Description(int2 dimensions, int32_t num_elements = 1);
-    Description(int3_p dimensions, int32_t num_elements, int3_p offset);
+    Description(int2 dimensions);
+    Description(int3_p dimensions, int3_p offset);
 
     uint64_t num_pixels() const;
 
     int3_p dimensions() const;
 
-    int32_t num_elements() const;
-
     int3 offset() const;
 
     int3 dimensions_;
-
-    int32_t num_elements_;
 
     int3 offset_;
 };

@@ -337,8 +337,8 @@ void Sparse_grid::set_num_paths(uint64_t num_paths) {
     volume_normalization_ = 1.f / (((4.f / 3.f) * Pi) * (radius_3 * float(num_paths)));
 }
 
-float3 Sparse_grid::li(Intersection const& isec, Material_sample const&  sample,
-                       Photon_ref* /*photon_refs*/, scene::Worker& worker) const {
+float3 Sparse_grid::li(Intersection const& isec, Material_sample const& sample,
+                       Photon_ref* /*photon_refs*/, scene::Worker&      worker) const {
     if (0 == num_photons_) {
         return float3(0.f);
     }

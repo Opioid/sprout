@@ -6,6 +6,8 @@
 #include "scene/scene.inl"
 #include "scene_worker.hpp"
 
+#include <bit>
+
 namespace scene {
 
 inline bool Worker::intersect(Ray& ray, Intersection& isec) {
@@ -14,6 +16,10 @@ inline bool Worker::intersect(Ray& ray, Intersection& isec) {
 
 inline bool Worker::intersect(Ray& ray, shape::Normals& normals) {
     return scene_->intersect(ray, *this, normals);
+}
+
+inline bool Worker::intersect(uint32_t prop, Ray& ray, shape::Normals& normals) {
+    return scene_->prop(prop)->intersect(prop, ray, *this, normals);
 }
 
 inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
@@ -46,10 +52,6 @@ inline shape::Node_stack& Worker::node_stack() {
 
 inline material::Sample_cache& Worker::sample_cache() {
     return sample_cache_;
-}
-
-inline image::texture::Texture const* Worker::texture(uint32_t id) const {
-    return scene_->texture(id);
 }
 
 inline prop::Interface_stack& Worker::interface_stack() {

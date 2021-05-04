@@ -17,15 +17,24 @@ class Sink;
 
 namespace rendering::integrator {
 
+template <typename B>
+class Pool;
+
 namespace particle {
 class Lighttracer_pool;
 }
 namespace surface {
-class Pool;
-}
+class Integrator;
+
+using Surface_pool = integrator::Pool<Integrator>;
+}  // namespace surface
 namespace volume {
-class Pool;
+class Integrator;
+
 }
+
+using Surface_pool = Pool<surface::Integrator>;
+using Volume_pool  = Pool<volume::Integrator>;
 
 }  // namespace rendering::integrator
 
@@ -60,9 +69,9 @@ struct View {
 
     uint32_t num_particle_samples_per_pixel() const;
 
-    rendering::integrator::surface::Pool* surface_integrators = nullptr;
+    rendering::integrator::Surface_pool* surface_integrators = nullptr;
 
-    rendering::integrator::volume::Pool* volume_integrators = nullptr;
+    rendering::integrator::Volume_pool* volume_integrators = nullptr;
 
     rendering::integrator::particle::Lighttracer_pool* lighttracers = nullptr;
 
@@ -77,9 +86,6 @@ struct View {
     uint32_t num_samples_per_pixel   = 1;
     uint32_t num_particles_per_pixel = 0;
 
-    uint32_t start_frame = 0;
-    uint32_t num_frames  = 1;
-
     Photon_settings photon_settings;
 };
 
@@ -90,6 +96,7 @@ struct Take {
 
     void clear();
 
+    std::string resolved_name;
     std::string scene_filename;
 
     View view;

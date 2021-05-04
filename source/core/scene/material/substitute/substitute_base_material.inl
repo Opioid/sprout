@@ -2,7 +2,8 @@
 #define SU_CORE_SCENE_MATERIAL_SUBSTITUTE_BASE_MATERIAL_INL
 
 #include "base/math/vector3.inl"
-#include "image/texture/texture_adapter.inl"
+
+#include "image/texture/texture.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_helper.hpp"
@@ -27,7 +28,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
                                Texture_sampler_2D const& sampler, Worker const& worker,
                                Sample& sample) const {
     if (normal_map_.is_valid()) {
-        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker);
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -35,20 +36,27 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     float3 color;
     if (color_map_.is_valid()) {
-        color = color_map_.sample_3(worker, sampler, rs.uv);
+        color = sampler.sample_3(color_map_, rs.uv, worker.scene());
     } else {
         color = color_;
     }
 
     float alpha;
     float metallic;
-    if (surface_map_.is_valid()) {
-        float2 const surface = surface_map_.sample_2(worker, sampler, rs.uv);
+
+    uint32_t const nc = surface_map_.num_channels();
+    if (nc >= 2) {
+        float2 const surface = sampler.sample_2(surface_map_, rs.uv, worker.scene());
 
         float const r = ggx::map_roughness(surface[0]);
 
         alpha    = r * r;
         metallic = surface[1];
+    } else if (1 == nc) {
+        float const r = ggx::map_roughness(sampler.sample_1(surface_map_, rs.uv, worker.scene()));
+
+        alpha    = r * r;
+        metallic = metallic_;
     } else {
         alpha    = alpha_;
         metallic = metallic_;
@@ -56,9 +64,9 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     float3 radiance;
     if (emission_map_.is_valid()) {
-        radiance = emission_factor_ * emission_map_.sample_3(worker, sampler, rs.uv);
+        radiance = emission_factor_ * sampler.sample_3(emission_map_, rs.uv, worker.scene());
     } else {
-        radiance = float3(0.f);
+        radiance = average_emission_;
     }
 
     //    if (alpha > ggx::Min_alpha) {
