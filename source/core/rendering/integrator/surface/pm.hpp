@@ -36,7 +36,7 @@ class alignas(64) PM final : public Integrator {
     static uint32_t constexpr Num_dedicated_samplers = 3;
 };
 
-class PM_pool final : public Typed_pool<PM> {
+class PM_pool final : public Typed_pool<PM, Integrator> {
   public:
     PM_pool(uint32_t num_integrators, bool progressive, uint32_t min_bounces, uint32_t max_bounces,
             bool photons_only_through_specular);

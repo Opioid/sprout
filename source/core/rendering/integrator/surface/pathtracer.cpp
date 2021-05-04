@@ -3,8 +3,8 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -210,7 +210,7 @@ sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {
 
 Pathtracer_pool::Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
                                  uint32_t min_bounces, uint32_t max_bounces, bool enable_caustics)
-    : Typed_pool<Pathtracer>(num_integrators),
+    : Typed_pool<Pathtracer, Integrator>(num_integrators),
       settings_{num_samples, min_bounces, max_bounces, !enable_caustics},
       progressive_(progressive) {}
 

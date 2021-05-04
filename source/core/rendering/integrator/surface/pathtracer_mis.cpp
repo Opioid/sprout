@@ -3,8 +3,8 @@
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/surface/surface_integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -425,7 +425,7 @@ Pathtracer_MIS_pool::Pathtracer_MIS_pool(uint32_t num_integrators, bool progress
                                          uint32_t num_samples, uint32_t min_bounces,
                                          uint32_t max_bounces, Light_sampling light_sampling,
                                          bool enable_caustics, bool photons_only_through_specular)
-    : Typed_pool<Pathtracer_MIS>(num_integrators),
+    : Typed_pool<Pathtracer_MIS, Integrator>(num_integrators),
       settings_{num_samples,    min_bounces,      max_bounces,
                 light_sampling, !enable_caustics, !photons_only_through_specular},
       progressive_(progressive) {}

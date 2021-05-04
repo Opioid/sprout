@@ -1,13 +1,16 @@
 #include "volume_integrator.hpp"
+#include "rendering/integrator/integrator.inl"
 
-namespace rendering::integrator::volume {
+namespace rendering::integrator {
+
+namespace volume {
 
 Integrator::Integrator() = default;
 
 Integrator::~Integrator() = default;
 
-Pool::Pool(uint32_t num_integrators) : num_integrators_(num_integrators) {}
+}  // namespace volume
 
-Pool::~Pool() = default;
+template class Pool<volume::Integrator>;
 
-}  // namespace rendering::integrator::volume
+}  // namespace rendering::integrator

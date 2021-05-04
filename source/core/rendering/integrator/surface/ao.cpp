@@ -3,7 +3,7 @@
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-#include "rendering/integrator/surface/surface_integrator.inl"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/sensor/aov/value.inl"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -75,7 +75,7 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
 }
 
 AO_pool::AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius)
-    : Typed_pool<AO>(num_integrators), progressive_(progressive) {
+    : Typed_pool<AO, Integrator>(num_integrators), progressive_(progressive) {
     settings_.num_samples = num_samples;
     settings_.radius      = radius;
 }

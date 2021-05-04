@@ -14,7 +14,9 @@ namespace sensor::aov {
 class Value;
 }
 
-namespace integrator::surface {
+namespace integrator {
+
+namespace surface {
 
 class Integrator : public integrator::Integrator {
   public:
@@ -33,30 +35,13 @@ class Integrator : public integrator::Integrator {
                      Material_sample const& mat_sample, bool primary_ray, Worker& worker, AOV& aov);
 };
 
-class Pool {
-  public:
-    Pool(uint32_t num_integrators);
+using Pool = integrator::Pool<Integrator>;
 
-    virtual ~Pool();
+}  // namespace surface
 
-    virtual Integrator* create(uint32_t id, uint32_t max_samples_per_pixel) const = 0;
+extern template class Pool<surface::Integrator>;
 
-  protected:
-    uint32_t num_integrators_;
-};
-
-template <typename T>
-class Typed_pool : public Pool {
-  public:
-    Typed_pool(uint32_t num_integrators);
-
-    ~Typed_pool() override;
-
-  protected:
-    T* integrators_;
-};
-
-}  // namespace integrator::surface
+}  // namespace integrator
 }  // namespace rendering
 
 #endif

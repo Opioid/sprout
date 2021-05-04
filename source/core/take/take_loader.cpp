@@ -64,8 +64,8 @@ using Scene          = scene::Scene;
 using Camera         = scene::camera::Camera;
 using Sensor_filter  = rendering::sensor::filter::Filter;
 using Sensor         = rendering::sensor::Sensor;
-using Surface_pool   = rendering::integrator::surface::Pool;
-using Volume_pool    = rendering::integrator::volume::Pool;
+using Surface_pool   = rendering::integrator::Surface_pool;
+using Volume_pool    = rendering::integrator::Volume_pool;
 using Particle_pool  = rendering::integrator::particle::Lighttracer_pool;
 using Postprocessor  = rendering::postprocessor::Postprocessor;
 using Light_sampling = rendering::integrator::Light_sampling;
@@ -617,8 +617,8 @@ void Loader::load_integrators(json::Value const& value, uint32_t num_workers, bo
     }
 }
 
-static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
-                                             bool progressive, bool lighttracer) {
+Surface_pool* load_surface_integrator(json::Value const& value, uint32_t num_workers,
+                                      bool progressive, bool lighttracer) {
     using namespace rendering::integrator::surface;
 
     uint32_t constexpr Default_min_bounces = 4;
@@ -741,8 +741,8 @@ static Surface_pool* load_surface_integrator(json::Value const& value, uint32_t 
     return nullptr;
 }
 
-static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
-                                           bool progressive) {
+Volume_pool* load_volume_integrator(json::Value const& value, uint32_t num_workers,
+                                    bool progressive) {
     using namespace rendering::integrator::volume;
 
     for (auto& n : value.GetObject()) {
@@ -766,9 +766,9 @@ static Volume_pool* load_volume_integrator(json::Value const& value, uint32_t nu
     return nullptr;
 }
 
-static Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
-                                               bool      surface_integrator,
-                                               uint32_t& num_particles_per_pixel) {
+Particle_pool* load_particle_integrator(json::Value const& value, uint32_t num_workers,
+                                        bool      surface_integrator,
+                                        uint32_t& num_particles_per_pixel) {
     using namespace rendering::integrator::particle;
 
     bool const full_light_path = json::read_bool(value, "full_light_path", !surface_integrator);
@@ -871,7 +871,7 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
     }
 }
 
-static Postprocessor* load_tonemapper(json::Value const& value) {
+Postprocessor* load_tonemapper(json::Value const& value) {
     using namespace rendering::postprocessor::tonemapping;
 
     for (auto& n : value.GetObject()) {

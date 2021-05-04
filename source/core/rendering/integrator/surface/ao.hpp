@@ -31,7 +31,7 @@ class alignas(64) AO final : public Integrator {
     sampler::Sampler* sampler_;
 };
 
-class AO_pool final : public Typed_pool<AO> {
+class AO_pool final : public Typed_pool<AO, Integrator> {
   public:
     AO_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples, float radius);
 

@@ -41,7 +41,7 @@ class alignas(64) Debug final : public Integrator {
     sampler::Random sampler_;
 };
 
-class Debug_pool final : public Typed_pool<Debug> {
+class Debug_pool final : public Typed_pool<Debug, Integrator> {
   public:
     Debug_pool(uint32_t num_integrators, Debug::Settings::Value value);
 

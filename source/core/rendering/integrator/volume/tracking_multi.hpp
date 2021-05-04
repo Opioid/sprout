@@ -21,7 +21,7 @@ class alignas(64) Tracking_multi final : public Integrator {
                     float3& tr) final;
 };
 
-class Tracking_multi_pool final : public Typed_pool<Tracking_multi> {
+class Tracking_multi_pool final : public Typed_pool<Tracking_multi, Integrator> {
   public:
     Tracking_multi_pool(uint32_t num_integrators);
 

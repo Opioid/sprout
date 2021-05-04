@@ -3,8 +3,8 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/volume/volume_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/material/collision_coefficients.inl"
@@ -236,7 +236,7 @@ Event Tracking_multi::integrate(Ray& ray, Intersection& isec, Filter filter, Wor
 }
 
 Tracking_multi_pool::Tracking_multi_pool(uint32_t num_integrators)
-    : Typed_pool<Tracking_multi>(num_integrators) {}
+    : Typed_pool<Tracking_multi, Integrator>(num_integrators) {}
 
 Integrator* Tracking_multi_pool::create(uint32_t id, uint32_t /*max_samples_per_pixel*/) const {
     return new (&integrators_[id]) Tracking_multi();

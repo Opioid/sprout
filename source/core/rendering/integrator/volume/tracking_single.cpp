@@ -4,8 +4,8 @@
 #include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/random/generator.inl"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
-#include "rendering/integrator/volume/volume_integrator.inl"
 #include "rendering/rendering_worker.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "scene/entity/composed_transformation.inl"
@@ -525,7 +525,7 @@ sampler::Sampler& Tracking_single::light_sampler(uint32_t bounce) {
 }
 
 Tracking_single_pool::Tracking_single_pool(uint32_t num_integrators, bool progressive)
-    : Typed_pool<Tracking_single>(num_integrators), progressive_(progressive) {}
+    : Typed_pool<Tracking_single, Integrator>(num_integrators), progressive_(progressive) {}
 
 Integrator* Tracking_single_pool::create(uint32_t id, uint32_t max_samples_per_pixel) const {
     return new (&integrators_[id]) Tracking_single(max_samples_per_pixel, progressive_);

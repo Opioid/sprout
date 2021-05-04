@@ -1,13 +1,16 @@
 #include "surface_integrator.hpp"
 #include "base/math/sampling.inl"
 #include "base/random/generator.inl"
+#include "rendering/integrator/integrator.inl"
 #include "rendering/rendering_worker.inl"
 #include "rendering/sensor/aov/value.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/scene_ray.inl"
 
-namespace rendering::integrator::surface {
+namespace rendering::integrator {
+
+namespace surface {
 
 Integrator::Integrator() = default;
 
@@ -72,8 +75,8 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
     }
 }
 
-Pool::Pool(uint32_t num_integrators) : num_integrators_(num_integrators) {}
+}  // namespace surface
 
-Pool::~Pool() = default;
+template class Pool<surface::Integrator>;
 
-}  // namespace rendering::integrator::surface
+}  // namespace rendering::integrator
