@@ -5,7 +5,7 @@
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.hpp"
-#include "scene/material/material.hpp"
+#include "scene/material/material.inl"
 #include "scene/ray_offset.inl"
 #include "scene/scene.inl"
 #include "scene/scene_ray.inl"
