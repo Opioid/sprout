@@ -42,7 +42,7 @@ class alignas(64) Tracking_single final : public Integrator {
     static uint32_t constexpr Num_dedicated_samplers = 2;
 };
 
-class Tracking_single_pool final : public Typed_pool<Tracking_single, Integrator> {
+class Tracking_single_pool final : public Typed_pool<Tracking_single> {
   public:
     Tracking_single_pool(uint32_t num_integrators, bool progressive);
 

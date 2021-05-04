@@ -39,7 +39,7 @@ class alignas(64) Pathtracer final : public Integrator {
     static uint32_t constexpr Num_dedicated_samplers = 3;
 };
 
-class Pathtracer_pool final : public Typed_pool<Pathtracer, Integrator> {
+class Pathtracer_pool final : public Typed_pool<Pathtracer> {
   public:
     Pathtracer_pool(uint32_t num_integrators, bool progressive, uint32_t num_samples,
                     uint32_t min_bounces, uint32_t max_bounces, bool enable_caustics);

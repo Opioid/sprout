@@ -37,6 +37,9 @@ class Integrator : public integrator::Integrator {
 
 using Pool = integrator::Pool<Integrator>;
 
+template<typename T>
+using Typed_pool = Typed_pool<T, Integrator>;
+
 }  // namespace surface
 
 extern template class Pool<surface::Integrator>;
