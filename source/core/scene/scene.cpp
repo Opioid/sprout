@@ -222,10 +222,6 @@ void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Threads&
         s.update(*this, threads);
     }
 
-    for (auto m : material_resources_) {
-        m->simulate(start, end, Tick_duration, threads, *this);
-    }
-
     compile(camera_pos, start, threads);
 }
 

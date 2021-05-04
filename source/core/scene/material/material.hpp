@@ -76,9 +76,6 @@ class Material {
 
     virtual void commit(Threads& threads, Scene const& scene);
 
-    virtual void simulate(uint64_t start, uint64_t end, uint64_t frame_length, Threads& threads,
-                          Scene const& scene);
-
     virtual Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs, Filter filter,
                                  Sampler& sampler, Worker& worker) const = 0;
 

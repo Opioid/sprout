@@ -52,9 +52,6 @@ void Material::set_volumetric(float3_p attenuation_color, float3_p subsurface_co
 
 void Material::commit(Threads& /*threads*/, Scene const& /*scene*/) {}
 
-void Material::simulate(uint64_t /*start*/, uint64_t /*end*/, uint64_t /*frame_length*/,
-                        Threads& /*threads*/, Scene const& /*scene*/) {}
-
 float3 Material::average_radiance(float /*extent*/) const {
     return float3(0.f);
 }
