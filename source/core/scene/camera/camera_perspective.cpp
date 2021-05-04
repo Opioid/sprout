@@ -151,8 +151,8 @@ bool Perspective::sample(uint32_t /*view*/, int4_p bounds, uint64_t time, float3
     return true;
 }
 
-Ray_differential Perspective::calculate_ray_differential(float3_p p, uint64_t time,
-                                                         Scene const& scene) const {
+Ray_dif Perspective::calculate_ray_differential(float3_p p, uint64_t time,
+                                                Scene const& scene) const {
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 

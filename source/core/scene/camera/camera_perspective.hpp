@@ -39,8 +39,7 @@ class Perspective final : public Camera {
     bool sample(uint32_t view, int4_p bounds, uint64_t time, float3_p p, Sampler& sampler, RNG& rng,
                 uint32_t sampler_d, Scene const& scene, Sample_to& sample) const final;
 
-    Ray_differential calculate_ray_differential(float3_p p, uint64_t time,
-                                                Scene const& scene) const final;
+    Ray_dif calculate_ray_differential(float3_p p, uint64_t time, Scene const& scene) const final;
 
     Frustum frustum() const final;
 

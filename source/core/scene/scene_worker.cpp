@@ -137,7 +137,7 @@ Material_sample const& Worker::sample_material(Ray const& ray, float3_p wo, floa
 }
 
 // https://blog.yiningkarlli.com/2018/10/bidirectional-mipmap.html
-static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_differential const& rd,
+static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_dif const& rd,
                                                  float3_p dpdu, float3_p dpdv) {
     // Compute offset-ray isec points with tangent plane
     float const d = dot(n, p);
@@ -181,7 +181,7 @@ static float4 calculate_screenspace_differential(float3_p p, float3_p n, Ray_dif
 }
 
 float4 Worker::screenspace_differential(Intersection const& isec, uint64_t time) const {
-    Ray_differential const rd = camera_->calculate_ray_differential(isec.geo.p, time, *scene_);
+    Ray_dif const rd = camera_->calculate_ray_differential(isec.geo.p, time, *scene_);
 
     Transformation temp;
     auto const&    trafo = scene_->prop_transformation_at(isec.prop, time, temp);
@@ -195,7 +195,7 @@ float4 Worker::screenspace_differential(Intersection const& isec, uint64_t time)
 }
 
 float4 Worker::screenspace_differential(Renderstate const& rs, uint64_t time) const {
-    Ray_differential const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
+    Ray_dif const rd = camera_->calculate_ray_differential(rs.p, time, *scene_);
 
     Transformation temp;
     auto const&    trafo = scene_->prop_transformation_at(rs.prop, time, temp);
