@@ -14,7 +14,7 @@ class alignas(64) Sample_cache {
     template <typename T>
     T& get();
 
-    static uint32_t constexpr Max_sample_size = 384;
+    static uint32_t constexpr Max_sample_size = 320;
 
   private:
     char buffer_[Max_sample_size];
