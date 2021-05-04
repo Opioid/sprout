@@ -149,7 +149,9 @@ static inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max
 }
 
 static inline float cone_pdf_uniform(float cos_theta_max) {
-    return 1.f / ((2.f * Pi) * (1.f - cos_theta_max));
+    static float constexpr Delta = 1.e-20f;
+
+    return 1.f / ((2.f * Pi) * std::max(1.f - cos_theta_max, Delta));
 }
 
 }  // namespace math
