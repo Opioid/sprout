@@ -20,8 +20,7 @@ Material::Material(Sampler_settings sampler_settings, bool two_sided)
       emission_(0.f),
       ior_(1.5f),
       attenuation_distance_(0.f),
-      volumetric_anisotropy_(0.f),
-      element_(-1) {}
+      volumetric_anisotropy_(0.f) {}
 
 Material::~Material() = default;
 

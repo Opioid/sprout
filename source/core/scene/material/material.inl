@@ -43,11 +43,7 @@ inline float Material::opacity(float2 uv, Filter filter, Worker const& worker) c
     if (mask_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key_, filter);
 
-        if (element_ < 0) {
-            return sampler.sample_1(mask_, uv, worker.scene());
-        } else {
-            return sampler.sample_1(mask_, uv, element_, worker.scene());
-        }
+        return sampler.sample_1(mask_, uv, worker.scene());
     }
 
     return 1.f;

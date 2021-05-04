@@ -183,8 +183,6 @@ class Material {
     float attenuation_distance_;
     float volumetric_anisotropy_;
 
-    int32_t element_;
-
   public:
     static void init_rainbow();
 

@@ -22,13 +22,6 @@ class Sampler_2D {
     virtual float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const = 0;
     virtual float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const = 0;
 
-    virtual float  sample_1(Texture const& texture, float2 uv, int32_t element,
-                            Scene const& scene) const = 0;
-    virtual float2 sample_2(Texture const& texture, float2 uv, int32_t element,
-                            Scene const& scene) const = 0;
-    virtual float3 sample_3(Texture const& texture, float2 uv, int32_t element,
-                            Scene const& scene) const = 0;
-
     virtual float2 address(float2 uv) const = 0;
 };
 
@@ -38,13 +31,6 @@ class Nearest_2D final : public Sampler_2D {
     float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const final;
     float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const final;
     float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const final;
-
-    float  sample_1(Texture const& texture, float2 uv, int32_t element,
-                    Scene const& scene) const final;
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element,
-                    Scene const& scene) const final;
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element,
-                    Scene const& scene) const final;
 
     float2 address(float2 uv) const final;
 
@@ -58,13 +44,6 @@ class Linear_2D : public Sampler_2D {
     float  sample_1(Texture const& texture, float2 uv, Scene const& scene) const final;
     float2 sample_2(Texture const& texture, float2 uv, Scene const& scene) const final;
     float3 sample_3(Texture const& texture, float2 uv, Scene const& scene) const final;
-
-    float  sample_1(Texture const& texture, float2 uv, int32_t element,
-                    Scene const& scene) const final;
-    float2 sample_2(Texture const& texture, float2 uv, int32_t element,
-                    Scene const& scene) const final;
-    float3 sample_3(Texture const& texture, float2 uv, int32_t element,
-                    Scene const& scene) const final;
 
     float2 address(float2 uv) const final;
 

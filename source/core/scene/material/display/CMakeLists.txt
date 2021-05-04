@@ -1,11 +1,9 @@
 target_sources(core
-  PRIVATE
-  "${CMAKE_CURRENT_LIST_DIR}/display_constant.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/display_constant.hpp"
-  "${CMAKE_CURRENT_LIST_DIR}/display_emissionmap_animated.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/display_emissionmap_animated.hpp"
-  "${CMAKE_CURRENT_LIST_DIR}/display_emissionmap.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/display_emissionmap.hpp"
-  "${CMAKE_CURRENT_LIST_DIR}/display_sample.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/display_sample.hpp"
-) 
+    PRIVATE
+    "display_constant.cpp"
+    "display_constant.hpp"
+    "display_emissionmap.cpp"
+    "display_emissionmap.hpp"
+    "display_sample.cpp"
+    "display_sample.hpp"
+    ) 

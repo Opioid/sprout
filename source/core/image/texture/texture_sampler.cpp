@@ -35,42 +35,6 @@ float3 Nearest_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2
 }
 
 template <typename Address_U, typename Address_V>
-float Nearest_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 uv, int32_t element,
-                                                 Scene const& scene) const {
-    auto const& desc = texture.description(scene);
-
-    int2 const xy = map(desc.dimensions().xy(), texture.scale() * uv);
-
-    int32_t const min_element = std::min(desc.num_elements() - 1, element);
-
-    return texture.at_1(xy[0], xy[1], min_element, scene);
-}
-
-template <typename Address_U, typename Address_V>
-float2 Nearest_2D<Address_U, Address_V>::sample_2(Texture const& texture, float2 uv,
-                                                  int32_t element, Scene const& scene) const {
-    auto const& desc = texture.description(scene);
-
-    int2 const xy = map(desc.dimensions().xy(), texture.scale() * uv);
-
-    int32_t const min_element = std::min(desc.num_elements() - 1, element);
-
-    return texture.at_2(xy[0], xy[1], min_element, scene);
-}
-
-template <typename Address_U, typename Address_V>
-float3 Nearest_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 uv,
-                                                  int32_t element, Scene const& scene) const {
-    auto const& desc = texture.description(scene);
-
-    int2 const xy = map(desc.dimensions().xy(), texture.scale() * uv);
-
-    int32_t const min_element = std::min(desc.num_elements() - 1, element);
-
-    return texture.at_3(xy[0], xy[1], min_element, scene);
-}
-
-template <typename Address_U, typename Address_V>
 float2 Nearest_2D<Address_U, Address_V>::address(float2 uv) const {
     return float2(Address_U::f(uv[0]), Address_V::f(uv[1]));
 }
@@ -124,60 +88,6 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 
     texture.gather_3(xy_xy1, scene, c);
 
     return bilinear(c, st[0], st[1]);
-}
-
-template <typename Address_U, typename Address_V>
-float Linear_2D<Address_U, Address_V>::sample_1(Texture const& texture, float2 uv, int32_t element,
-                                                Scene const& scene) const {
-    auto const& desc = texture.description(scene);
-
-    int4         xy_xy1;
-    float2 const st = map(desc.dimensions().xy(), uv, xy_xy1);
-
-    int32_t const min_element = std::min(desc.num_elements() - 1, element);
-
-    float const c00 = texture.at_1(xy_xy1[0], xy_xy1[1], min_element, scene);
-    float const c01 = texture.at_1(xy_xy1[2], xy_xy1[1], min_element, scene);
-    float const c10 = texture.at_1(xy_xy1[0], xy_xy1[3], min_element, scene);
-    float const c11 = texture.at_1(xy_xy1[2], xy_xy1[3], min_element, scene);
-
-    return bilinear(c00, c01, c10, c11, st[0], st[1]);
-}
-
-template <typename Address_U, typename Address_V>
-float2 Linear_2D<Address_U, Address_V>::sample_2(Texture const& texture, float2 uv, int32_t element,
-                                                 Scene const& scene) const {
-    auto const& desc = texture.description(scene);
-
-    int4         xy_xy1;
-    float2 const st = map(desc.dimensions().xy(), uv, xy_xy1);
-
-    int32_t const min_element = std::min(desc.num_elements() - 1, element);
-
-    float2 const c00 = texture.at_2(xy_xy1[0], xy_xy1[1], min_element, scene);
-    float2 const c01 = texture.at_2(xy_xy1[2], xy_xy1[1], min_element, scene);
-    float2 const c10 = texture.at_2(xy_xy1[0], xy_xy1[3], min_element, scene);
-    float2 const c11 = texture.at_2(xy_xy1[2], xy_xy1[3], min_element, scene);
-
-    return bilinear(c00, c01, c10, c11, st[0], st[1]);
-}
-
-template <typename Address_U, typename Address_V>
-float3 Linear_2D<Address_U, Address_V>::sample_3(Texture const& texture, float2 uv, int32_t element,
-                                                 Scene const& scene) const {
-    auto const& desc = texture.description(scene);
-
-    int4         xy_xy1;
-    float2 const st = map(desc.dimensions().xy(), uv, xy_xy1);
-
-    int32_t const min_element = std::min(desc.num_elements() - 1, element);
-
-    float3 const c00 = texture.at_3(xy_xy1[0], xy_xy1[1], min_element, scene);
-    float3 const c01 = texture.at_3(xy_xy1[2], xy_xy1[1], min_element, scene);
-    float3 const c10 = texture.at_3(xy_xy1[0], xy_xy1[3], min_element, scene);
-    float3 const c11 = texture.at_3(xy_xy1[2], xy_xy1[3], min_element, scene);
-
-    return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
 
 template <typename Address_U, typename Address_V>

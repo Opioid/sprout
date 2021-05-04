@@ -5,25 +5,19 @@
 
 namespace image {
 
-Description::Description() : dimensions_(0), num_elements_(0), offset_() {}
+Description::Description() : dimensions_(0), offset_() {}
 
-Description::Description(int2 dimensions, int32_t num_elements)
-    : dimensions_(dimensions, 1), num_elements_(num_elements), offset_(0) {}
+Description::Description(int2 dimensions) : dimensions_(dimensions, 1), offset_(0) {}
 
-Description::Description(int3_p dimensions, int32_t num_elements, int3_p offset)
-    : dimensions_(dimensions), num_elements_(num_elements), offset_(offset) {}
+Description::Description(int3_p dimensions, int3_p offset)
+    : dimensions_(dimensions), offset_(offset) {}
 
 uint64_t Description::num_pixels() const {
-    return uint64_t(dimensions_[0]) * uint64_t(dimensions_[1]) * uint64_t(dimensions_[2]) *
-           uint64_t(num_elements_);
+    return uint64_t(dimensions_[0]) * uint64_t(dimensions_[1]) * uint64_t(dimensions_[2]);
 }
 
 int3 Description::dimensions() const {
     return dimensions_;
-}
-
-int32_t Description::num_elements() const {
-    return num_elements_;
 }
 
 int3 Description::offset() const {
@@ -69,8 +63,7 @@ void Typed_image<T>::resize(Description const& description) {
 
     delete[] data_;
 
-    description_.dimensions_   = description.dimensions_;
-    description_.num_elements_ = description.num_elements_;
+    description_.dimensions_ = description.dimensions_;
 
     data_ = new T[description_.num_pixels()];
 }

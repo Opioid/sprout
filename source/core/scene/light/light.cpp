@@ -49,15 +49,17 @@ static inline float3 volume_power(uint32_t prop, uint32_t part, float volume, Sc
 }
 
 float3 Light::power(AABB const& scene_bb, Scene const& scene) const {
+    float const extent = two_sided_ ? 2.f * extent_ : extent_;
+
     switch (type_) {
         case Type::Prop:
-            return prop_power(prop_, part_, extent_, scene_bb, scene);
+            return prop_power(prop_, part_, extent, scene_bb, scene);
         case Type::Prop_image:
-            return prop_power(prop_, part_, extent_, scene_bb, scene);
+            return prop_power(prop_, part_, extent, scene_bb, scene);
         case Type::Volume:
-            return volume_power(prop_, part_, extent_, scene);
+            return volume_power(prop_, part_, extent, scene);
         case Type::Volume_image:
-            return volume_power(prop_, part_, extent_, scene);
+            return volume_power(prop_, part_, extent, scene);
     }
 
     return float3(0.);

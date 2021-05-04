@@ -33,9 +33,6 @@ class Emissionmap : public Material {
     void set_emission_factor(float emission_factor);
 
   protected:
-    void prepare_sampling_internal(Shape const& shape, int32_t element, bool importance_sampling,
-                                   Threads& threads, Scene const& scene);
-
     Texture emission_map_;
 
     Distribution_2D distribution_;

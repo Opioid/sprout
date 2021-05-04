@@ -35,13 +35,7 @@ float3 Constant::evaluate_radiance(float3_p /*wi*/, float3_p /*uvw*/, float exte
 }
 
 float3 Constant::average_radiance(float area) const {
-    float3 const radiance = emittance_.radiance(area);
-
-    if (is_two_sided()) {
-        return 2.f * radiance;
-    }
-
-    return radiance;
+    return emittance_.radiance(area);
 }
 
 ::light::Emittance& Constant::emittance() {

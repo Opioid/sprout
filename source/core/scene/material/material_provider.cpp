@@ -11,7 +11,6 @@
 #include "debug/debug_material.hpp"
 #include "display/display_constant.hpp"
 #include "display/display_emissionmap.hpp"
-#include "display/display_emissionmap_animated.hpp"
 #include "glass/glass_dispersion_material.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_rough_material.hpp"
@@ -21,7 +20,6 @@
 #include "image/texture/texture_provider.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
-#include "light/light_emissionmap_animated.hpp"
 #include "logging/logging.hpp"
 #include "material_sample_cache.inl"
 #include "metal/metal_material.hpp"
@@ -42,7 +40,6 @@
 namespace scene::material {
 
 using Texture   = image::texture::Texture;
-using Texture   = image::texture::Texture;
 using Tex_usage = image::texture::Provider::Usage;
 using Resources = resource::Manager;
 using Variants  = memory::Variant_map;
@@ -55,8 +52,6 @@ struct Texture_description {
     image::Swizzle swizzle = image::Swizzle::Undefined;
 
     float2 scale = float2(1.f);
-
-    int32_t num_elements = 1;
 
     bool invert = false;
 };
@@ -247,8 +242,6 @@ Material* Provider::load_display(json::Value const& display_value, Resources& re
     float roughness       = 1.f;
     float ior             = 1.5;
 
-    uint64_t animation_duration = 0;
-
     for (auto const& n : display_value.GetObject()) {
         if ("mask" == n.name) {
             mask = read_texture(n.value, no_tex_dwim_, Tex_usage::Mask, resources);
@@ -262,8 +255,6 @@ Material* Provider::load_display(json::Value const& display_value, Resources& re
             ior = json::read_float(n.value);
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
-        } else if ("animation_duration" == n.name) {
-            animation_duration = scene::time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
                 Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
@@ -284,16 +275,6 @@ Material* Provider::load_display(json::Value const& display_value, Resources& re
     }
 
     if (emission_map.is_valid()) {
-        if (animation_duration > 0) {
-            auto material = new display::Emissionmap_animated(sampler_settings, two_sided);
-            material->set_mask(mask);
-            material->set_emission_map(emission_map, animation_duration);
-            material->set_emission_factor(emission_factor);
-            material->set_roughness(roughness);
-            material->set_ior(ior);
-            return material;
-        }
-
         auto material = new display::Emissionmap(sampler_settings, two_sided);
         material->set_mask(mask);
         material->set_emission_map(emission_map);
@@ -419,8 +400,6 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
     float value           = 1.f;
     float emission_factor = 1.f;
 
-    uint64_t animation_duration = 0;
-
     Texture mask;
 
     bool two_sided = false;
@@ -443,8 +422,6 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
             emission_factor = json::read_float(n.value);
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
-        } else if ("animation_duration" == n.name) {
-            animation_duration = time(json::read_double(n.value));
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
                 Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
@@ -465,14 +442,6 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
     }
 
     if (emission.texture.is_valid()) {
-        if (animation_duration > 0) {
-            auto material = new light::Emissionmap_animated(sampler_settings, two_sided);
-            material->set_mask(mask);
-            material->set_emission_map(emission.texture, animation_duration);
-            material->set_emission_factor(emission_factor);
-            return material;
-        }
-
         auto material = new light::Emissionmap(sampler_settings, two_sided);
         material->set_mask(mask);
         material->set_emission_map(emission.texture);
@@ -1107,8 +1076,6 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
                 float const s = json::read_float(n.value);
                 desc.scale    = float2(s, s);
             }
-        } else if ("num_elements" == n.name) {
-            desc.num_elements = json::read_int(n.value);
         } else if ("invert" == n.name) {
             desc.invert = json::read_bool(n.value);
         }
@@ -1124,10 +1091,6 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
 Texture create_texture(Texture_description const& desc, Tex_usage usage, Resources& resources) {
     Variants options;
     options.set("usage", usage);
-
-    if (desc.num_elements > 1) {
-        options.set("num_elements", desc.num_elements);
-    }
 
     if (image::Swizzle::Undefined != desc.swizzle) {
         options.set("swizzle", desc.swizzle);

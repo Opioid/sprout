@@ -79,13 +79,11 @@ bool Reader::Info::allocate() {
     return true;
 }
 
-using Info = Reader::Info;
-
-using Chunk = Reader::Chunk;
-
+using Info   = Reader::Info;
+using Chunk  = Reader::Chunk;
 using Filter = Reader::Filter;
 
-static Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, bool invert);
+static Image* create_image(Info const& info, Swizzle swizzle, bool invert);
 
 static bool read_chunk(std::istream& stream, Chunk& chunk);
 
@@ -112,7 +110,7 @@ static uint32_t constexpr Signature_size = 8;
 static uint8_t constexpr Signature[Signature_size] = {0x89, 0x50, 0x4E, 0x47,
                                                       0x0D, 0x0A, 0x1A, 0x0A};
 
-Image* Reader::read(std::istream& stream, Swizzle swizzle, int32_t num_elements, bool invert) {
+Image* Reader::read(std::istream& stream, Swizzle swizzle, bool invert) {
     uint8_t signature[Signature_size];
 
     stream.read(reinterpret_cast<char*>(signature), Signature_size);
@@ -125,14 +123,14 @@ Image* Reader::read(std::istream& stream, Swizzle swizzle, int32_t num_elements,
     for (; handle_chunk(stream, chunk_, info_);) {
     }
 
-    return create_image(info_, swizzle, num_elements, invert);
+    return create_image(info_, swizzle, invert);
 }
 
-Image* Reader::create_from_buffer(Swizzle swizzle, int32_t num_elements, bool invert) const {
-    return create_image(info_, swizzle, num_elements, invert);
+Image* Reader::create_from_buffer(Swizzle swizzle, bool invert) const {
+    return create_image(info_, swizzle, invert);
 }
 
-Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, bool invert) {
+Image* create_image(Info const& info, Swizzle swizzle, bool invert) {
     if (0 == info.num_channels || Swizzle::Undefined == swizzle) {
         return nullptr;
     }
@@ -175,18 +173,10 @@ Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, boo
 
     num_channels = std::min(num_channels, info.num_channels);
 
-    int2 dimensions;
-
-    if (1 == num_elements) {
-        dimensions[0] = info.width;
-        dimensions[1] = info.height;
-    } else {
-        dimensions[0] = info.width;
-        dimensions[1] = info.height / num_elements;
-    }
+    int2 const dimensions(info.width, info.height);
 
     if (1 == num_channels) {
-        Byte1 image(Description(dimensions, num_elements));
+        Byte1 image(Description{dimensions});
 
         if (byte_compatible) {
             std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
@@ -230,7 +220,7 @@ Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, boo
     }
 
     if (2 == num_channels) {
-        Byte2 image(Description(dimensions, num_elements));
+        Byte2 image(Description{dimensions});
 
         if (byte_compatible) {
             std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
@@ -251,7 +241,7 @@ Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, boo
     }
 
     if (3 == num_channels) {
-        Byte3 image(Description(dimensions, num_elements));
+        Byte3 image(Description{dimensions});
 
         if (byte_compatible) {
             std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
@@ -276,7 +266,7 @@ Image* create_image(Info const& info, Swizzle swizzle, int32_t num_elements, boo
     }
 
     if (4 == num_channels) {
-        Byte4 image(Description(dimensions, num_elements));
+        Byte4 image(Description{dimensions});
 
         if (byte_compatible) {
             std::memcpy(image.data(), info.buffer, info.width * info.height * num_channels);
