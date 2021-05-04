@@ -66,7 +66,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
     if (emission_map_.is_valid()) {
         radiance = emission_factor_ * sampler.sample_3(emission_map_, rs.uv, worker.scene());
     } else {
-        radiance = float3(0.f);
+        radiance = average_emission_;
     }
 
     //    if (alpha > ggx::Min_alpha) {

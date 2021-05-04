@@ -17,7 +17,9 @@ void Material_base::commit(Threads& /*threads*/, Scene const& scene) {
     properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 
     if (emission_map_.is_valid()) {
-        average_emission_ = emission_map_.average_3(scene);
+        average_emission_ = emission_factor_ * emission_map_.average_3(scene);
+    } else {
+        average_emission_ = emission_factor_ * emission_;
     }
 }
 
@@ -28,15 +30,11 @@ float3 Material_base::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*e
         return emission_factor_ * sampler.sample_3(emission_map_, uvw.xy(), worker.scene());
     }
 
-    return float3(0.f);
+    return average_emission_;
 }
 
 float3 Material_base::average_radiance(float /*area*/) const {
-    if (emission_map_.is_valid()) {
-        return emission_factor_ * average_emission_;
-    }
-
-    return float3(0.f);
+    return average_emission_;
 }
 
 void Material_base::set_normal_map(Texture const& normal_map) {

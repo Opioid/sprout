@@ -649,10 +649,10 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
     Sampler_settings sampler_settings;
 
     Mapped_value<float3> color(float3(0.5f));
+    Mapped_value<float3> emission(float3(0.f));
     Mapped_value<float>  roughness(0.8f);
 
     Texture normal_map;
-    Texture emission_map;
     Texture mask;
     Texture density_map;
 
@@ -681,7 +681,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         } else if ("color" == n.name) {
             read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Color, resources, color);
         } else if ("emission" == n.name) {
-            emission_map = read_texture(n.value, no_tex_dwim_, Tex_usage::Color, resources);
+            read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Color, resources, emission);
         } else if ("surface" == n.name) {
             roughness.texture = read_texture(n.value, no_tex_dwim_, Tex_usage::Surface, resources);
         } else if ("checkers" == n.name) {
@@ -742,7 +742,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
                 } else if ("Roughness" == desc.usage) {
                     roughness.texture = create_texture(desc, Tex_usage::Roughness, resources);
                 } else if ("Emission" == desc.usage) {
-                    emission_map = create_texture(desc, Tex_usage::Color, resources);
+                    emission.texture = create_texture(desc, Tex_usage::Color, resources);
                 } else if ("Mask" == desc.usage) {
                     mask = create_texture(desc, Tex_usage::Mask, resources);
                 } else if ("Density" == desc.usage) {
@@ -761,9 +761,10 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color_map(color.texture);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
-        material->set_emission_map(emission_map);
+        material->set_emission_map(emission.texture);
 
         material->set_color(color.value);
+        material->set_emission(emission.value);
         material->set_ior(ior);
         material->set_roughness(roughness.value);
         material->set_metallic(metallic);
@@ -794,9 +795,10 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_color_map(color.texture);
             material->set_normal_map(normal_map);
             material->set_surface_map(roughness.texture);
-            material->set_emission_map(emission_map);
+            material->set_emission_map(emission.texture);
 
             material->set_color(color.value);
+            material->set_emission(emission.value);
             material->set_ior(ior);
             material->set_roughness(roughness.value);
             material->set_metallic(metallic);
@@ -816,10 +818,11 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_color_map(color.texture);
             material->set_normal_map(normal_map);
             material->set_surface_map(roughness.texture);
-            material->set_emission_map(emission_map);
+            material->set_emission_map(emission.texture);
             material->set_density_map(density_map);
 
             material->set_color(color.value);
+            material->set_emission(emission.value);
             material->set_volumetric(attenuation_color, subsurface_color, attenuation_distance,
                                      volumetric_anisotropy);
             material->set_ior(ior);
@@ -843,9 +846,10 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color_map(color.texture);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
-        material->set_emission_map(emission_map);
+        material->set_emission_map(emission.texture);
 
         material->set_color(color.value);
+        material->set_emission(emission.value);
         material->set_ior(ior);
         material->set_roughness(roughness.value);
         material->set_metallic(metallic);
@@ -868,10 +872,11 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color_map(color.texture);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
-        material->set_emission_map(emission_map);
+        material->set_emission_map(emission.texture);
         material->set_density_map(density_map);
 
         material->set_color(color.value);
+        material->set_emission(emission.value);
         material->set_volumetric(attenuation_color, subsurface_color, attenuation_distance,
                                  volumetric_anisotropy);
         material->set_ior(ior);
@@ -888,9 +893,10 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_mask(mask);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
-        material->set_emission_map(emission_map);
+        material->set_emission_map(emission.texture);
 
         material->set_checkers(checkers[0], checkers[1], checkers_scale);
+        material->set_emission(emission.value);
         material->set_ior(ior);
         material->set_roughness(roughness.value);
         material->set_metallic(metallic);
@@ -905,9 +911,10 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
     material->set_color_map(color.texture);
     material->set_normal_map(normal_map);
     material->set_surface_map(roughness.texture);
-    material->set_emission_map(emission_map);
+    material->set_emission_map(emission.texture);
 
     material->set_color(color.value);
+    material->set_emission(emission.value);
     material->set_ior(ior);
     material->set_roughness(roughness.value);
     material->set_metallic(metallic);

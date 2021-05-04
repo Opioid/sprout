@@ -14,31 +14,32 @@ Material_clearcoat::Material_clearcoat(Sampler_settings sampler_settings, bool t
 
 float3 Material_clearcoat::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
                                              Filter filter, Worker const& worker) const {
+    auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
+    float2 const uv      = uvw.xy();
+
+    float3 radiance;
+
     if (emission_map_.is_valid()) {
-        float2 const uv = uvw.xy();
-
-        auto const&  sampler  = worker.sampler_2D(sampler_key(), filter);
-        float3 const radiance = emission_factor_ *
-                                sampler.sample_3(emission_map_, uv, worker.scene());
-
-        float thickness;
-        if (coating_thickness_map_.is_valid()) {
-            float const relative_thickness = sampler.sample_1(coating_thickness_map_, uv,
-                                                              worker.scene());
-
-            thickness = coating_.thickness * relative_thickness;
-        } else {
-            thickness = coating_.thickness;
-        }
-
-        coating::Clearcoat clearcoat;
-
-        clearcoat.set(coating_.absorption_coef, thickness, 1.f, 1.f, coating_.alpha, 1.f);
-
-        return clearcoat.attenuation(1.f) * radiance;
+        radiance = emission_factor_ * sampler.sample_3(emission_map_, uv, worker.scene());
+    } else {
+        radiance = average_emission_;
     }
 
-    return float3(0.f);
+    float thickness;
+    if (coating_thickness_map_.is_valid()) {
+        float const relative_thickness = sampler.sample_1(coating_thickness_map_, uv,
+                                                          worker.scene());
+
+        thickness = coating_.thickness * relative_thickness;
+    } else {
+        thickness = coating_.thickness;
+    }
+
+    coating::Clearcoat clearcoat;
+
+    clearcoat.set(coating_.absorption_coef, thickness, 1.f, 1.f, coating_.alpha, 1.f);
+
+    return clearcoat.attenuation(1.f) * radiance;
 }
 
 material::Sample const& Material_clearcoat::sample(float3_p           wo, Ray const& /*ray*/,
