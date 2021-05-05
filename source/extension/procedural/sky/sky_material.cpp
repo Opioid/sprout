@@ -47,7 +47,7 @@ material::Sample const& Sky_material::sample(float3_p           wo, scene::Ray c
     return sample;
 }
 
-float3 Sky_material::evaluate_radiance(float3_p wi, float3_p n, float3_p /*uvw*/, float /*extent*/,
+float3 Sky_material::evaluate_radiance(float3_p wi, float3_p /*n*/, float3_p /*uvw*/, float /*extent*/,
                                        Filter /*filter*/, Worker const& /*worker*/) const {
     return sky_->model().evaluate_sky(wi);
 }

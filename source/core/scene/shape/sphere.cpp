@@ -362,9 +362,12 @@ bool Sphere::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformatio
 
     if (discriminant >= 0.f) {
         float const dist = std::sqrt(discriminant);
-        float const t    = offset_b(b - dist);
+        float const t    = b - dist;
 
-        sample = Sample_to(dir, -z, float3(0.f), cone_pdf_uniform(cos_theta_max), t);
+        float3 const sp = p + t * dir;
+        float3 const sn = normalize(sp - trafo.position);
+
+        sample = Sample_to(dir, sn, float3(0.f), cone_pdf_uniform(cos_theta_max), offset_b(t));
 
         return true;
     }
