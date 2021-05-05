@@ -1,7 +1,6 @@
 add_subdirectory(coating)
 add_subdirectory(debug)
 add_subdirectory(disney)
-add_subdirectory(display)
 add_subdirectory(fresnel)
 add_subdirectory(ggx)
 add_subdirectory(glass)

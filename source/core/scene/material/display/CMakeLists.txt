@@ -1,9 +1,0 @@
-target_sources(core
-    PRIVATE
-    "display_constant.cpp"
-    "display_constant.hpp"
-    "display_emissionmap.cpp"
-    "display_emissionmap.hpp"
-    "display_sample.cpp"
-    "display_sample.hpp"
-    ) 

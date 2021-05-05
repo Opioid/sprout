@@ -9,8 +9,6 @@
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "debug/debug_material.hpp"
-#include "display/display_constant.hpp"
-#include "display/display_emissionmap.hpp"
 #include "glass/glass_dispersion_material.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_rough_material.hpp"
@@ -162,8 +160,6 @@ Material* Provider::load(json::Value const& value, std::string_view mount_folder
         } else {
             if ("Debug" == n.name) {
                 material = load_debug(n.value, resources);
-            } else if ("Display" == n.name) {
-                material = load_display(n.value, resources);
             } else if ("Glass" == n.name) {
                 material = load_glass(n.value, resources);
             } else if ("Light" == n.name) {
@@ -225,70 +221,6 @@ Material* Provider::load_debug(json::Value const& debug_value, Resources& resour
 
     material->set_mask(mask);
 
-    return material;
-}
-
-Material* Provider::load_display(json::Value const& display_value, Resources& resources) const {
-    Sampler_settings sampler_settings;
-
-    Texture mask;
-    Texture emission_map;
-
-    bool two_sided = false;
-
-    float3 radiance(10.f);
-
-    float emission_factor = 1.f;
-    float roughness       = 1.f;
-    float ior             = 1.5;
-
-    for (auto const& n : display_value.GetObject()) {
-        if ("mask" == n.name) {
-            mask = read_texture(n.value, no_tex_dwim_, Tex_usage::Mask, resources);
-        } else if ("radiance" == n.name) {
-            radiance = read_color(n.value);
-        } else if ("emission_factor" == n.name) {
-            emission_factor = json::read_float(n.value);
-        } else if ("roughness" == n.name) {
-            roughness = json::read_float(n.value);
-        } else if ("ior" == n.name) {
-            ior = json::read_float(n.value);
-        } else if ("two_sided" == n.name) {
-            two_sided = json::read_bool(n.value);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
-
-                if (desc.filename.empty()) {
-                    continue;
-                }
-
-                if ("Emission" == desc.usage) {
-                    emission_map = create_texture(desc, Tex_usage::Color, resources);
-                } else if ("Mask" == desc.usage) {
-                    mask = create_texture(desc, Tex_usage::Mask, resources);
-                }
-            }
-        } else if ("sampler" == n.name) {
-            read_sampler_settings(n.value, sampler_settings);
-        }
-    }
-
-    if (emission_map.is_valid()) {
-        auto material = new display::Emissionmap(sampler_settings, two_sided);
-        material->set_mask(mask);
-        material->set_emission_map(emission_map);
-        material->set_emission_factor(emission_factor);
-        material->set_roughness(roughness);
-        material->set_ior(ior);
-        return material;
-    }
-
-    auto material = new display::Constant(sampler_settings, two_sided);
-    material->set_mask(mask);
-    material->set_emission(radiance);
-    material->set_roughness(roughness);
-    material->set_ior(ior);
     return material;
 }
 
@@ -1261,7 +1193,6 @@ void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usa
 uint32_t Provider::max_sample_size() {
     size_t num_bytes = 0;
 
-    num_bytes = std::max(display::Constant::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass_dispersion::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass_rough::sample_size(), num_bytes);
