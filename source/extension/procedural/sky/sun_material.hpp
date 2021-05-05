@@ -11,8 +11,8 @@ class Sun_material : public Material {
     Sun_material(Sky* sky);
 
     scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
-                                          scene::Renderstate const& rs, Filter filter,
-                                          Sampler& sampler, scene::Worker& worker) const final;
+                                          scene::Renderstate const& rs, Sampler& sampler,
+                                          scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
@@ -25,8 +25,8 @@ class Sun_baked_material : public Material {
     Sun_baked_material(Sky* sky);
 
     scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
-                                          scene::Renderstate const& rs, Filter filter,
-                                          Sampler& sampler, scene::Worker& worker) const final;
+                                          scene::Renderstate const& rs, Sampler& sampler,
+                                          scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;

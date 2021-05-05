@@ -13,7 +13,7 @@ class Material_subsurface final : public Material_base {
     void commit(Threads& threads, Scene const& scene) final;
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker& worker) const final;
+                                   Sampler& sampler, Worker& worker) const final;
 
     void set_density_map(Texture const& density_map);
 

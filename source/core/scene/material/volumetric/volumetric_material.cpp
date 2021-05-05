@@ -17,8 +17,7 @@ Material::Material(Sampler_settings sampler_settings) : material::Material(sampl
 Material::~Material() = default;
 
 material::Sample const& Material::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                         Filter /*filter*/, Sampler& /*sampler*/,
-                                         Worker& worker) const {
+                                         Sampler& /*sampler*/, Worker& worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>();
 

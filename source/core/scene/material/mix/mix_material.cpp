@@ -11,16 +11,16 @@ Material::Material(Sampler_settings sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                         Filter filter, Sampler& sampler, Worker& worker) const {
-    auto& texture_sampler = worker.sampler_2D(sampler_key(), filter);
+                                         Sampler& sampler, Worker& worker) const {
+    auto& texture_sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     float const mask = texture_sampler.sample_1(mask_, rs.uv, worker.scene());
 
     if (mask > sampler.sample_1D(worker.rng(), 1)) {
-        return material_a_->sample(wo, ray, rs, filter, sampler, worker);
+        return material_a_->sample(wo, ray, rs, sampler, worker);
     }
 
-    return material_b_->sample(wo, ray, rs, filter, sampler, worker);
+    return material_b_->sample(wo, ray, rs, sampler, worker);
 }
 
 void Material::set_materials(material::Material const* a, material::Material const* b) {

@@ -29,11 +29,10 @@ Emissionmap::Emissionmap(Sampler_settings sampler_settings, bool two_sided)
 Emissionmap::~Emissionmap() = default;
 
 material::Sample const& Emissionmap::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                            Filter  filter, Sampler& /*sampler*/,
-                                            Worker& worker) const {
+                                            Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

@@ -79,8 +79,9 @@ float3 Grid_emission::average_radiance(float /*volume*/) const {
     return average_emission_;
 }
 
-float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw, float /*volume*/,
-                                        Filter filter, Worker const& worker) const {
+float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw,
+                                        float /*volume*/, Filter filter,
+                                        Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
     float3 const emission = temperature_.is_valid()
@@ -362,8 +363,8 @@ void Grid_color::set_color(Texture const& color) {
     color_ = color;
 }
 
-float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw, float /*volume*/,
-                                     Filter filter, Worker const& worker) const {
+float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw,
+                                     float /*volume*/, Filter filter, Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 
     CC const cc = c[3] * attenuation(c.xyz(), scattering_factor_ * c.xyz(), attenuation_distance_,

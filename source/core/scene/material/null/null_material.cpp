@@ -14,8 +14,7 @@ Material::Material(Sampler_settings sampler_settings)
     : material::Material(sampler_settings, true) {}
 
 material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                         Filter /*filter*/, Sampler& /*sampler*/,
-                                         Worker& worker) const {
+                                         Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.set_common(rs, wo, float3(0.f), float3(0.f), 1.f);

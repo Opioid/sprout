@@ -2,10 +2,13 @@
 #define SU_CORE_SCENE_RENDERSTATE_HPP
 
 #include "base/math/vector3.inl"
+#include "material/sampler_settings.hpp"
 
 namespace scene {
 
 struct Renderstate {
+    using Filter = material::Sampler_settings::Filter;
+
     float3 tangent_to_world(float3_p v) const {
         return float3(v[0] * t[0] + v[1] * b[0] + v[2] * n[0],
                       v[0] * t[1] + v[1] * b[1] + v[2] * n[1],
@@ -30,6 +33,8 @@ struct Renderstate {
     uint32_t prop;
     uint32_t part;
     uint32_t primitive;
+
+    Filter filter;
 
     bool subsurface;
     bool avoid_caustics;

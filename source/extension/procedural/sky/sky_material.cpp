@@ -34,8 +34,8 @@ using namespace scene;
 Sky_material::Sky_material(Sky* sky) : Material(sky) {}
 
 material::Sample const& Sky_material::sample(float3_p           wo, scene::Ray const& /*ray*/,
-                                             Renderstate const& rs, Filter /*filter*/,
-                                             Sampler& /*sampler*/, Worker& worker) const {
+                                             Renderstate const& rs, Sampler& /*sampler*/,
+                                             Worker&            worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -77,11 +77,11 @@ Sky_baked_material::Sky_baked_material(Sky* sky, Resources& resources)
 Sky_baked_material::~Sky_baked_material() = default;
 
 material::Sample const& Sky_baked_material::sample(float3_p           wo, scene::Ray const& /*ray*/,
-                                                   Renderstate const& rs, Filter filter,
-                                                   Sampler& /*sampler*/, Worker& worker) const {
+                                                   Renderstate const& rs, Sampler& /*sampler*/,
+                                                   Worker&            worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
-    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto const& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

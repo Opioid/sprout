@@ -16,8 +16,7 @@ Constant::Constant(Sampler_settings sampler_settings, bool two_sided)
 }
 
 material::Sample const& Constant::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                         Filter /*filter*/, Sampler& /*sampler*/,
-                                         Worker& worker) const {
+                                         Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

@@ -19,12 +19,12 @@ void Material_isotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
 }
 
 material::Sample const& Material_isotropic::sample(float3_p           wo, Ray const& /*ray*/,
-                                                   Renderstate const& rs, Filter filter,
-                                                   Sampler& /*sampler*/, Worker& worker) const {
+                                                   Renderstate const& rs, Sampler& /*sampler*/,
+                                                   Worker&            worker) const {
     auto& sample = worker.sample<Sample_isotropic>();
 
     if (normal_map_.is_valid()) {
-        auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
+        auto const&  sampler = worker.sampler_2D(sampler_key(), rs.filter);
         float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
@@ -68,13 +68,13 @@ void Material_anisotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) 
 }
 
 material::Sample const& Material_anisotropic::sample(float3_p           wo, Ray const& /*ray*/,
-                                                     Renderstate const& rs, Filter filter,
-                                                     Sampler& /*sampler*/, Worker& worker) const {
+                                                     Renderstate const& rs, Sampler& /*sampler*/,
+                                                     Worker&            worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
 
     sample.set_common(rs, wo, ior3_, float3(0.f), alpha_[0]);
 
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());

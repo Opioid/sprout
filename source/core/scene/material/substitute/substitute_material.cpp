@@ -17,13 +17,12 @@ Material::Material(Sampler_settings sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
 material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                         Filter  filter, Sampler& /*sampler*/,
-                                         Worker& worker) const {
+                                         Sampler& /*sampler*/, Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>();
 
-    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto const& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     set_sample(wo, rs, rs.ior, sampler, worker, sample);
 
@@ -58,13 +57,12 @@ static inline float checkers_grad(float2 uv, float2 ddx, float2 ddy) {
 }
 
 material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                         Filter  filter, Sampler& /*sampler*/,
-                                         Worker& worker) const {
+                                         Sampler& /*sampler*/, Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>();
 
-    auto const& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto const& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());

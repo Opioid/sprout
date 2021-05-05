@@ -65,10 +65,12 @@ inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray,
     rs.part      = geo.part;
     rs.primitive = geo.primitive;
 
+    rs.filter = filter;
+
     rs.subsurface     = subsurface;
     rs.avoid_caustics = avoid_caustics;
 
-    return material->sample(wo, ray, rs, filter, sampler, worker);
+    return material->sample(wo, ray, rs, sampler, worker);
 }
 
 inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& worker,

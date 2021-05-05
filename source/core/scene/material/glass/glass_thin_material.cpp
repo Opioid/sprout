@@ -19,12 +19,11 @@ Glass_thin::Glass_thin(Sampler_settings sampler_settings) : Material(sampler_set
 }
 
 material::Sample const& Glass_thin::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                           Filter  filter, Sampler& /*sampler*/,
-                                           Worker& worker) const {
+                                           Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_thin>();
 
     if (normal_map_.is_valid()) {
-        auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
+        auto const&  sampler = worker.sampler_2D(sampler_key(), rs.filter);
         float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {

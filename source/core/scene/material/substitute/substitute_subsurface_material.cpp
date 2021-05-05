@@ -35,8 +35,8 @@ void Material_subsurface::commit(Threads& threads, Scene const& scene) {
 }
 
 material::Sample const& Material_subsurface::sample(float3_p           wo, Ray const& /*ray*/,
-                                                    Renderstate const& rs, Filter filter,
-                                                    Sampler& /*sampler*/, Worker& worker) const {
+                                                    Renderstate const& rs, Sampler& /*sampler*/,
+                                                    Worker&            worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<volumetric::Sample>();
 
@@ -49,7 +49,7 @@ material::Sample const& Material_subsurface::sample(float3_p           wo, Ray c
 
     auto& sample = worker.sample<Sample_subsurface>();
 
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     set_sample(wo, rs, rs.ior, sampler, worker, sample);
 

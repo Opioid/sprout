@@ -13,7 +13,7 @@ class Emissionmap : public Material {
     ~Emissionmap() override;
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Filter filter, Sampler& sampler, Worker& worker) const override;
+                                   Sampler& sampler, Worker& worker) const override;
 
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const override;

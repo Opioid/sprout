@@ -76,7 +76,7 @@ class Material {
 
     virtual void commit(Threads& threads, Scene const& scene);
 
-    virtual Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs, Filter filter,
+    virtual Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
                                  Sampler& sampler, Worker& worker) const = 0;
 
     virtual float3 average_radiance(float extent) const;

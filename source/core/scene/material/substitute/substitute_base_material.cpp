@@ -23,8 +23,9 @@ void Material_base::commit(Threads& /*threads*/, Scene const& scene) {
     }
 }
 
-float3 Material_base::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw, float /*extent*/,
-                                        Filter filter, Worker const& worker) const {
+float3 Material_base::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw,
+                                        float /*extent*/, Filter filter,
+                                        Worker const& worker) const {
     if (emission_map_.is_valid()) {
         auto const& sampler = worker.sampler_2D(sampler_key(), filter);
         return emission_factor_ * sampler.sample_3(emission_map_, uvw.xy(), worker.scene());

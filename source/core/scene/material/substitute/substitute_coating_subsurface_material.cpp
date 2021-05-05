@@ -36,7 +36,7 @@ void Material_coating_subsurface::commit(Threads& threads, Scene const& scene) {
 }
 
 material::Sample const& Material_coating_subsurface::sample(float3_p wo, Ray const& /*ray*/,
-                                                            Renderstate const& rs, Filter filter,
+                                                            Renderstate const& rs,
                                                             Sampler& /*sampler*/,
                                                             Worker& worker) const {
     if (rs.subsurface) {
@@ -51,7 +51,7 @@ material::Sample const& Material_coating_subsurface::sample(float3_p wo, Ray con
 
     auto& sample = worker.sample<Sample_coating_subsurface>();
 
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     float thickness;
     float weight;

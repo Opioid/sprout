@@ -19,11 +19,10 @@ void Glass_rough::commit(Threads& /*threads*/, Scene const& /*scene*/) {
 }
 
 material::Sample const& Glass_rough::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                            Filter  filter, Sampler& /*sampler*/,
-                                            Worker& worker) const {
+                                            Sampler& /*sampler*/, Worker& worker) const {
     auto& sample = worker.sample<Sample_rough>();
 
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+    auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     if (normal_map_.is_valid()) {
         float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
