@@ -112,7 +112,7 @@ uint32_t Mapper::trace_photon(uint32_t frame, AABB const& bounds, Frustum const&
         auto const& light = worker.scene().light(light_id);
 
         float3 radiance = light.evaluate(light_sample, Filter::Nearest, worker) /
-                          (light_sample.pdf);
+                          light_sample.pdf();
 
         float3 wo1(0.f);
 
@@ -276,7 +276,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
             return false;
         }
 
-        light_sample.pdf *= importance.denormalization_factor();
+        light_sample.pdf() *= importance.denormalization_factor();
     } else {
         if (!light.ref.sample(time, sampler_, 0, bounds, worker, light_sample)) {
             return false;
@@ -293,7 +293,7 @@ bool Mapper::generate_light_ray(uint32_t frame, AABB const& bounds, Worker& work
 
     light_id = light.offset;
 
-    light_sample.pdf *= light.pdf;
+    light_sample.pdf() *= light.pdf;
 
     return true;
 }

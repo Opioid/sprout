@@ -276,10 +276,8 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& trafo, float area, bo
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, trafo.rotation);
 
-    sample.p   = offset_ray(ws, wn);
-    sample.dir = dir;
-    sample.xy  = importance_uv;
-    sample.pdf = 1.f / (Pi * area);
+    sample = Sample_from(offset_ray(ws, wn), wn, dir, float2(0.f), importance_uv,
+                         1.f / (Pi * area));
 
     return true;
 }

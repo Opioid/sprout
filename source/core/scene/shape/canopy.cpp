@@ -184,8 +184,8 @@ bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float2 uv, Transformation
 
     float3 const dir = disk_to_hemisphere_equidistant(disk);
 
-    sample = Sample_to(transform_vector(trafo.rotation, dir), float3(0.f), float3(uv), 1.f / (2.f * Pi),
-                       Ray_max_t);
+    sample = Sample_to(transform_vector(trafo.rotation, dir), float3(0.f), float3(uv),
+                       1.f / (2.f * Pi), Ray_max_t);
 
     return true;
 }
@@ -202,7 +202,7 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& trafo, f
     float2 const disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
     if (float const z = dot(disk, disk); z > 1.f) {
-        sample.pdf = 0.f;
+        sample.pdf() = 0.f;
         return false;
     }
 
@@ -220,11 +220,8 @@ bool Canopy::sample(uint32_t /*part*/, float2 uv, Transformation const& trafo, f
 
     float3 const p = bounds.position() + bounds_radius * (receciver_disk - ws);
 
-    sample.dir = ws;
-    sample.p   = p;
-    sample.uv  = uv;
-    sample.xy  = importance_uv;
-    sample.pdf = 1.f / ((2.f * Pi) * (1.f * Pi) * bounds_radius_2);
+    sample = Sample_from(p, float3(0.f), ws, uv, importance_uv,
+                         1.f / ((2.f * Pi) * (1.f * Pi) * bounds_radius_2));
 
     return true;
 }

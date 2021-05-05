@@ -80,7 +80,7 @@ void Lighttracer::li(uint32_t frame, Worker& worker, Interface_stack const& /*in
     auto const& light = worker.scene().light(light_id);
 
     float3 const radiance = light.evaluate(light_sample, Filter::Nearest, worker) /
-                            (light_sample.pdf);
+                            light_sample.pdf();
 
     for (uint32_t i = settings_.num_samples; i > 0; --i) {
         worker.interface_stack().clear();
@@ -216,7 +216,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
             return false;
         }
 
-        light_sample.pdf *= importance.denormalization_factor();
+        light_sample.pdf() *= importance.denormalization_factor();
     } else {
         if (!light.ref.sample(time, light_sampler_, 1, bounds, worker, light_sample)) {
             return false;
@@ -233,7 +233,7 @@ bool Lighttracer::generate_light_ray(uint32_t frame, AABB const& bounds, Worker&
 
     light_id = light.offset;
 
-    light_sample.pdf *= light.pdf;
+    light_sample.pdf() *= light.pdf;
 
     return true;
 }

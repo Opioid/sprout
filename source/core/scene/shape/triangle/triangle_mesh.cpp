@@ -455,11 +455,7 @@ bool Mesh::sample(uint32_t part, Transformation const& trafo, float area, bool /
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, x, y, wn);
 
-    sample.p   = offset_ray(ws, wn);
-    sample.dir = dir;
-    sample.uv  = tc;
-    sample.xy  = importance_uv;
-    sample.pdf = 1.f / (Pi * area);
+    sample = Sample_from(offset_ray(ws, wn), wn, dir, tc, importance_uv, 1.f / (Pi * area));
 
     return true;
 }

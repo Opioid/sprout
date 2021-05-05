@@ -227,7 +227,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
         return false;
     }
 
-    result.pdf *= rs.pdf();
+    result.pdf() *= rs.pdf();
 
     return true;
 }
@@ -272,7 +272,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
         return false;
     }
 
-    result.pdf *= importance_uv.pdf;
+    result.pdf() *= importance_uv.pdf;
 
     SOFT_ASSERT(result.pdf > 0.f);
 
@@ -309,7 +309,7 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
         return false;
     }
 
-    result.pdf *= rs.pdf() * importance_uv.pdf;
+    result.pdf() *= rs.pdf() * importance_uv.pdf;
 
     return true;
 }
@@ -336,8 +336,8 @@ bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampl
 float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const {
     auto const material = worker.scene().prop_material(prop_, part_);
 
-    return material->evaluate_radiance(-sample.dir, sample.n, float3(sample.uv, 0.f), extent_, filter,
-                                       worker);
+    return material->evaluate_radiance(-sample.dir, sample.n, float3(sample.uv, 0.f), extent_,
+                                       filter, worker);
 }
 
 bool Light::sample(float3_p p, float3_p n, uint64_t time, bool total_sphere, Sampler& sampler,

@@ -85,7 +85,6 @@ class Pool {
     virtual B* create(uint32_t id, uint32_t max_samples_per_pixel) const = 0;
 
   protected:
-
 };
 
 template <typename T, typename B>

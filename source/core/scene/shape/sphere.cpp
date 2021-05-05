@@ -380,17 +380,16 @@ bool Sphere::sample(uint32_t /*part*/, Transformation const& trafo, float area, 
                     AABB const& /*bounds*/, Sample_from& sample) const {
     float2 const r0 = sampler.sample_2D(rng, sampler_d);
     float3 const ls = sample_sphere_uniform(r0);
+    float3 const ws = trafo.object_to_world_point(ls);
 
-    float3 const ws = trafo.position + (trafo.scale_x() * ls);
+    float3 const wn = normalize(ws - trafo.position);
 
     auto const [x, y] = orthonormal_basis(ls);
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, x, y, ls);
 
-    sample.p   = offset_ray(ws, ls);
-    sample.dir = dir;
-    sample.xy  = importance_uv;
-    sample.pdf = 1.f / ((1.f * Pi) * area);
+    sample = Sample_from(offset_ray(ws, wn), wn, dir, float2(0.f), importance_uv,
+                         1.f / ((1.f * Pi) * area));
 
     return true;
 }
@@ -423,8 +422,8 @@ bool Sphere::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation con
     float sin_phi   = std::sin(phi);
     float cos_phi   = std::cos(phi);
 
-    float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-    float3 ws = trafo.object_to_world_point(ls);
+    float3 const ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+    float3 const ws = trafo.object_to_world_point(ls);
 
     float3 axis = ws - p;
     float  sl   = squared_length(axis);

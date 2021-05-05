@@ -72,4 +72,4 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
     }
 }
 
-}  // namespace rendering::integrator
+}  // namespace rendering::integrator::surface

@@ -13,7 +13,8 @@ Pool<B>::~Pool() = default;
 
 template <typename T, typename B>
 Typed_pool<T, B>::Typed_pool(uint32_t num_integrators)
-    : num_integrators_(num_integrators), integrators_(memory::allocate_aligned<T>(num_integrators)) {
+    : num_integrators_(num_integrators),
+      integrators_(memory::allocate_aligned<T>(num_integrators)) {
     std::memset(integrators_, 0, sizeof(T) * num_integrators);
 }
 

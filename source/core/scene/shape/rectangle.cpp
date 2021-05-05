@@ -332,11 +332,7 @@ bool Rectangle::sample(uint32_t /*part*/, float2 uv, Transformation const& trafo
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, trafo.rotation);
 
-    sample.p   = offset_ray(ws, wn);
-    sample.dir = dir;
-    sample.uv  = uv;
-    sample.xy  = importance_uv;
-    sample.pdf = 1.f / (Pi * area);
+    sample = Sample_from(offset_ray(ws, wn), wn, dir, uv, importance_uv, 1.f / (Pi * area));
 
     return true;
 }

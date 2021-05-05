@@ -38,7 +38,7 @@ using Pool = integrator::Pool<Integrator>;
 template <typename T>
 using Typed_pool = Typed_pool<T, Integrator>;
 
-}  // namespace integrator
+}  // namespace integrator::surface
 }  // namespace rendering
 
 #endif

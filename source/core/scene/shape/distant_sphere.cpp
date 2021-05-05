@@ -202,10 +202,8 @@ bool Distant_sphere::sample(uint32_t /*part*/, Transformation const& trafo, floa
 
     float3 const p = ls_bounds.position() - offset + photon_rect;
 
-    sample.dir = dir;
-    sample.p   = p;
-    sample.xy  = importance_uv;
-    sample.pdf = 1.f / (area * ls_rect[0] * ls_rect[1]);
+    sample = Sample_from(p, trafo.rotation.r[2], dir, float2(0.f), importance_uv,
+                         1.f / (area * ls_rect[0] * ls_rect[1]));
 
     return true;
 }

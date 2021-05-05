@@ -6,5 +6,4 @@ Integrator::Integrator() = default;
 
 Integrator::~Integrator() = default;
 
-
-}  // namespace rendering::integrator
+}  // namespace rendering::integrator::volume

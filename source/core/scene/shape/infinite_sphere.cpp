@@ -262,12 +262,8 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float2 uv, Transformation const&
 
     float3 const p = bounds.position() + radius * (disk - ws);
 
-    sample.dir = ws;
-    sample.p   = pli;
-    sample.uv  = uv;
-    sample.xy  = importance_uv;
-    // sin_theta because of the uv weight
-    sample.pdf = 1.f / ((4.f * Pi) * (sin_theta * pe[0] * pe[1]));
+    sample = Sample_from(pli, float3(0.f), ws, uv, importance_uv,
+                         1.f / ((4.f * Pi) * (sin_theta * pe[0] * pe[1])));
 
     return true;
 }

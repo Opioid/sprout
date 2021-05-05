@@ -30,12 +30,24 @@ struct Sample_to {
 };
 
 struct Sample_from {
+    inline Sample_from() = default;
+
+    inline Sample_from(float3_p p, float3_p n, float3_p dir, float2 uv, float2 xy, float pdf)
+        : p(p[0], p[1], p[2], pdf), n(n), dir(dir), uv(uv), xy(xy){};
+
+    inline float pdf() const {
+        return p[3];
+    }
+
+    inline float& pdf() {
+        return p[3];
+    }
+
     float3 p;
     float3 n;
     float3 dir;
     float2 uv;
     float2 xy;
-    float  pdf;
 };
 
 }  // namespace scene::shape
