@@ -366,10 +366,6 @@ bool Sphere::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformatio
 
         sample = Sample_to(dir, float3(0.f), cone_pdf_uniform(cos_theta_max), t);
 
-        if (!std::isfinite(sample.pdf())) {
-            return false;
-        }
-
         return true;
     }
 
