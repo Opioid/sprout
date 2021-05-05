@@ -21,7 +21,7 @@ struct Sample_to {
     }
 
     inline float t() const {
-        return uvw[3];
+        return n[3];
     }
 
     float3 wi;
