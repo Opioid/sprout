@@ -39,7 +39,7 @@ class Material_clearcoat : public Material_coating<Clearcoat_data> {
   public:
     Material_clearcoat(Sampler_settings sampler_settings, bool two_sided);
 
-    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
     material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,

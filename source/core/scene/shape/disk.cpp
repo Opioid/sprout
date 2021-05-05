@@ -259,7 +259,7 @@ bool Disk::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation 
 
     float const pdf = sl / (c * area);
 
-    sample = Sample_to(wi, float3(0.f), pdf, t);
+    sample = Sample_to(wi, wn, float3(0.f), pdf, t);
 
     return true;
 }

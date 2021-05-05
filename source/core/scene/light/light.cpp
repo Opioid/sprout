@@ -180,7 +180,7 @@ bool Light::sample(float3_p p, float3_p n, Transformation const& trafo, bool tot
 float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const {
     auto const material = worker.scene().prop_material(prop_, part_);
 
-    return material->evaluate_radiance(sample.wi, sample.uvw, extent_, filter, worker);
+    return material->evaluate_radiance(sample.wi, sample.n, sample.uvw, extent_, filter, worker);
 }
 
 static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
@@ -336,7 +336,7 @@ bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampl
 float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const {
     auto const material = worker.scene().prop_material(prop_, part_);
 
-    return material->evaluate_radiance(-sample.dir, float3(sample.uv, 0.f), extent_, filter,
+    return material->evaluate_radiance(-sample.dir, sample.n, float3(sample.uv, 0.f), extent_, filter,
                                        worker);
 }
 

@@ -416,7 +416,7 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
 
     float const pdf = sl / (c * area);
 
-    sample = Sample_to(dir, float3(tc), pdf * s.pdf, d);
+    sample = Sample_to(dir, wn, float3(tc), pdf * s.pdf, d);
 
 #ifdef SU_DEBUG
     uint32_t const pm = primitive_mapping_[s.offset];

@@ -20,7 +20,7 @@ class Sky_material : public Material {
                                           scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
-    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
     float3 average_radiance(float area) const final;
@@ -42,7 +42,7 @@ class Sky_baked_material : public Material {
                                           scene::Renderstate const& rs, Filter filter,
                                           Sampler& sampler, scene::Worker& worker) const final;
 
-    float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
     float3 average_radiance(float area) const final;

@@ -9,8 +9,8 @@ namespace scene::shape {
 struct Sample_to {
     inline Sample_to() = default;
 
-    inline Sample_to(float3_p wi, float3_p uvw, float pdf, float t)
-        : wi(wi[0], wi[1], wi[2], pdf), uvw(uvw[0], uvw[1], uvw[2], t){};
+    inline Sample_to(float3_p wi, float3_p n, float3_p uvw, float pdf, float t)
+        : wi(wi[0], wi[1], wi[2], pdf), n(n[0], n[1], n[2], t), uvw(uvw){};
 
     inline float pdf() const {
         return wi[3];
@@ -25,11 +25,13 @@ struct Sample_to {
     }
 
     float3 wi;
+    float3 n;
     float3 uvw;
 };
 
 struct Sample_from {
     float3 p;
+    float3 n;
     float3 dir;
     float2 uv;
     float2 xy;

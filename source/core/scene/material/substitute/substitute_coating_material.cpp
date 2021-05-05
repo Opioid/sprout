@@ -12,7 +12,7 @@ namespace scene::material::substitute {
 Material_clearcoat::Material_clearcoat(Sampler_settings sampler_settings, bool two_sided)
     : Material_coating<Clearcoat_data>(sampler_settings, two_sided) {}
 
-float3 Material_clearcoat::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*extent*/,
+float3 Material_clearcoat::evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float /*extent*/,
                                              Filter filter, Worker const& worker) const {
     auto const&  sampler = worker.sampler_2D(sampler_key(), filter);
     float2 const uv      = uvw.xy();
@@ -37,9 +37,9 @@ float3 Material_clearcoat::evaluate_radiance(float3_p /*wi*/, float3_p uvw, floa
 
     coating::Clearcoat clearcoat;
 
-    clearcoat.set(coating_.absorption_coef, thickness, 1.f, 1.f, coating_.alpha, 1.f);
+    clearcoat.set(coating_.absorption_coef, thickness, 1.f, 1.f, 1.f, 1.f);
 
-    return clearcoat.attenuation(1.f) * radiance;
+    return clearcoat.attenuation(clamp_abs_dot(wi, n)) * radiance;
 }
 
 material::Sample const& Material_clearcoat::sample(float3_p           wo, Ray const& /*ray*/,

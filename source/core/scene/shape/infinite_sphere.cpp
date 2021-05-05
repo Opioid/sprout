@@ -147,7 +147,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float3_p n,
 
     float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, dir));
 
-    sample = Sample_to(dir,
+    sample = Sample_to(dir, float3(0.f),
                        float3(std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
                               std::acos(xyz[1]) * Pi_inv, 0.f),
                        pdf, Ray_max_t);
@@ -209,7 +209,7 @@ bool Infinite_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float2 uv,
 
     float3 const dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-    sample = Sample_to(transform_vector(trafo.rotation, dir), float3(uv),
+    sample = Sample_to(transform_vector(trafo.rotation, dir), float3(0.f), float3(uv),
                        1.f / ((4.f * Pi) * sin_theta), Ray_max_t);
 
     SOFT_ASSERT(testing::check(sample));

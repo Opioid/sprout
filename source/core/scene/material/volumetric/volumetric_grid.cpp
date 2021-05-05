@@ -25,7 +25,7 @@ Grid::Grid(Sampler_settings sampler_settings, Texture const& density)
 
 Grid::~Grid() = default;
 
-float3 Grid::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/, Filter filter,
+float3 Grid::evaluate_radiance(float3_p /*wi*/, float3_p n, float3_p uvw, float /*volume*/, Filter filter,
                                Worker const& worker) const {
     float const d = density(uvw, filter, worker);
 
@@ -79,7 +79,7 @@ float3 Grid_emission::average_radiance(float /*volume*/) const {
     return average_emission_;
 }
 
-float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/,
+float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p n, float3_p uvw, float /*volume*/,
                                         Filter filter, Worker const& worker) const {
     auto const& sampler = worker.sampler_3D(sampler_key(), filter);
 
@@ -362,7 +362,7 @@ void Grid_color::set_color(Texture const& color) {
     color_ = color;
 }
 
-float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p uvw, float /*volume*/, Filter filter,
+float3 Grid_color::evaluate_radiance(float3_p /*wi*/, float3_p n, float3_p uvw, float /*volume*/, Filter filter,
                                      Worker const& worker) const {
     float4 const c = color(uvw, filter, worker);
 

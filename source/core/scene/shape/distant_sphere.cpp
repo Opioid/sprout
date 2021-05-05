@@ -167,7 +167,7 @@ bool Distant_sphere::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
 
     float3 const ws = radius * transform_vector(trafo.rotation, ls);
 
-    sample = Sample_to(normalize(ws - trafo.rotation.r[2]), float3(0.f), 1.f / area,
+    sample = Sample_to(normalize(ws - trafo.rotation.r[2]), float3(0.f), float3(0.f), 1.f / area,
                        Almost_ray_max_t);
 
     return true;

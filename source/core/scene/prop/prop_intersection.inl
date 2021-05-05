@@ -83,7 +83,7 @@ inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& 
 
     float const extent = worker.scene().light_area(prop, geo.part);
 
-    radiance = material->evaluate_radiance(wo, float3(geo.uv), extent, filter, worker);
+    radiance = material->evaluate_radiance(wo, geo.geo_n, float3(geo.uv), extent, filter, worker);
 
     return true;
 }

@@ -56,7 +56,7 @@ float3 Material::average_radiance(float /*extent*/) const {
     return float3(0.f);
 }
 
-float3 Material::evaluate_radiance(float3_p /*wi*/, float3_p /*uvw*/, float /*extent*/,
+float3 Material::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p /*uvw*/, float /*extent*/,
                                    Filter /*filter*/, Worker const& /*worker*/) const {
     return float3(0.f);
 }

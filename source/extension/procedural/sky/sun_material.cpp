@@ -33,7 +33,7 @@ material::Sample const& Sun_material::sample(float3_p wo, Ray const& /*ray*/, Re
     return sample;
 }
 
-float3 Sun_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, float /*extent*/,
+float3 Sun_material::evaluate_radiance(float3_p wi, float3_p n, float3_p /*uvw*/, float /*extent*/,
                                        Filter /*filter*/, const Worker& /*worker*/) const {
     return sky_->model().evaluate_sky_and_sun(wi);
 }
@@ -58,7 +58,7 @@ material::Sample const& Sun_baked_material::sample(float3_p           wo, Ray co
     return sample;
 }
 
-float3 Sun_baked_material::evaluate_radiance(float3_p wi, float3_p /*uvw*/, float /*extent*/,
+float3 Sun_baked_material::evaluate_radiance(float3_p wi, float3_p n, float3_p /*uvw*/, float /*extent*/,
                                              Filter /*filter*/, const Worker& /*worker*/) const {
     float3 const radiance = emission_(sky_->sun_v(wi));
 

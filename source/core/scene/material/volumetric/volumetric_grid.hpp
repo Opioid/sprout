@@ -14,7 +14,7 @@ class Grid : public Material {
 
     ~Grid() override;
 
-    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const override;
 
     CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const final;
@@ -44,7 +44,7 @@ class Grid_emission : public Grid {
 
     float3 average_radiance(float volume) const final;
 
-    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
     Radiance_sample radiance_sample(float3_p r3) const final;
@@ -84,7 +84,7 @@ class Grid_color : public Material {
 
     void set_color(Texture const& color);
 
-    float3 evaluate_radiance(float3_p wi, float3_p uvw, float volume, Filter filter,
+    float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
     CC collision_coefficients(float3_p uvw, Filter filter, Worker const& worker) const final;

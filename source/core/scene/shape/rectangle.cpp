@@ -312,7 +312,7 @@ bool Rectangle::sample(uint32_t /*part*/, float3_p p, float2 uv, Transformation 
         return false;
     }
 
-    sample = Sample_to(dir, float3(uv), sl / (c * area), t);
+    sample = Sample_to(dir, wn, float3(uv), sl / (c * area), t);
 
     return true;
 }

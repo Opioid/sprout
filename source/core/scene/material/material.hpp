@@ -81,7 +81,7 @@ class Material {
 
     virtual float3 average_radiance(float extent) const;
 
-    virtual float3 evaluate_radiance(float3_p wi, float3_p uvw, float extent, Filter filter,
+    virtual float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                                      Worker const& worker) const;
 
     struct Radiance_sample {

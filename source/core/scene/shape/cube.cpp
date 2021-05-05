@@ -208,7 +208,7 @@ bool Cube::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation 
 
     float const d = axis_length - radius;  // this is not accurate
 
-    sample = Sample_to(dir, float3(0.f), math::cone_pdf_uniform(cos_theta_max), offset_b(d));
+    sample = Sample_to(dir, z, float3(0.f), math::cone_pdf_uniform(cos_theta_max), offset_b(d));
 
     return true;
 }
@@ -233,7 +233,7 @@ bool Cube::sample_volume(uint32_t /*part*/, float3_p p, Transformation const& tr
     float const sl = squared_length(axis);
     float const t  = std::sqrt(sl);
 
-    sample = Sample_to(axis / t, r3, sl / volume, t);
+    sample = Sample_to(axis / t, float3(0.f), r3, sl / volume, t);
 
     return true;
 }
@@ -272,7 +272,7 @@ bool Cube::sample(uint32_t /*part*/, float3_p p, float3_p uvw, Transformation co
     float const sl = squared_length(axis);
     float const t  = std::sqrt(sl);
 
-    sample = Sample_to(axis / t, uvw, sl / volume, t);
+    sample = Sample_to(axis / t, float3(0.f), uvw, sl / volume, t);
 
     return true;
 }
