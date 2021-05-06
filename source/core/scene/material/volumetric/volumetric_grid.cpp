@@ -75,10 +75,6 @@ Grid_emission::Grid_emission(Sampler_settings sampler_settings, Texture const& g
 
 Grid_emission::~Grid_emission() = default;
 
-float3 Grid_emission::average_radiance(float /*volume*/) const {
-    return average_emission_;
-}
-
 float3 Grid_emission::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw,
                                         float /*volume*/, Filter filter,
                                         Worker const& worker) const {
@@ -187,14 +183,15 @@ void Grid_emission::commit(Threads& threads, Scene const& scene) {
     //    std::cout << max_t << std::endl;
 }
 
-void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
-                                     Transformation const& /*trafo*/, float /*area*/,
-                                     bool importance_sampling, Threads& threads,
-                                     Scene const& scene) {
+float3 Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
+                                       Transformation const& /*trafo*/, float /*area*/,
+                                       bool importance_sampling, Threads& threads,
+                                       Scene const& scene) {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
-        //   return;
+
+        return average_emission_;
     }
 
     if (importance_sampling) {
@@ -346,6 +343,8 @@ void Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
 
         average_emission_ = density_.average_1(scene) * emission;
     }
+
+    return average_emission_;
 }
 
 void Grid_emission::set_temperature_map(Texture const& temperature_map) {

@@ -33,7 +33,10 @@ float3 Constant::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p /*u
     return emittance_.radiance(extent);
 }
 
-float3 Constant::average_radiance(float area) const {
+float3 Constant::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
+                                  Transformation const& /*trafo*/, float area,
+                                  bool /*importance_sampling*/, Threads& /*threads*/,
+                                  Scene const& /*scene*/) {
     return emittance_.radiance(area);
 }
 

@@ -51,10 +51,6 @@ float3 Emissionmap::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p 
     return emission_factor_ * sampler.sample_3(emission_map_, uvw.xy(), worker.scene());
 }
 
-float3 Emissionmap::average_radiance(float /*area*/) const {
-    return average_emission_;
-}
-
 Material::Radiance_sample Emissionmap::radiance_sample(float3_p r3) const {
     auto const result = distribution_.sample_continuous(r3.xy());
 
@@ -67,13 +63,14 @@ float Emissionmap::emission_pdf(float3_p uvw, Filter filter, Worker const& worke
     return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
-                                   Transformation const& /*trafo*/, float /*area*/,
-                                   bool importance_sampling, Threads& threads, Scene const& scene) {
+float3 Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
+                                     Transformation const& /*trafo*/, float /*area*/,
+                                     bool importance_sampling, Threads& threads,
+                                     Scene const& scene) {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
-        return;
+        return average_emission_;
     }
 
     auto const& texture = emission_map_;
@@ -159,6 +156,8 @@ void Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
     } else {
         average_emission_ = emission_factor_ * texture.average_3(scene);
     }
+
+    return average_emission_;
 }
 
 void Emissionmap::set_emission_map(Texture const& emission_map) {

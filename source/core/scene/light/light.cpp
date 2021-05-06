@@ -31,24 +31,17 @@ void Light::set_extent(float extent) {
     extent_ = extent;
 }
 
-float3 Light::power(AABB const& scene_bb, Scene const& scene) const {
+float3 Light::power(float3 const& average_radiance, AABB const& scene_bb,
+                    Scene const& scene) const {
     float const extent = two_sided_ ? 2.f * extent_ : extent_;
 
-    float3 const radiance = scene.prop_material(prop_, part_)->average_radiance(extent);
+    float3 const radiance = extent * average_radiance;
 
-    switch (type_) {
-        case Type::Prop:
-        case Type::Prop_image: {
-            if (scene.prop_shape(prop_)->is_finite()) {
-                return extent * radiance;
-            }
-
-            return squared_length(scene_bb.extent()) * extent * radiance;
-        }
-        case Type::Volume:
-        case Type::Volume_image:
-            return extent * radiance;
+    if (scene.prop_shape(prop_)->is_finite()) {
+        return radiance;
     }
+
+    return squared_length(scene_bb.extent()) * radiance;
 }
 
 void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,

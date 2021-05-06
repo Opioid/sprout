@@ -14,11 +14,11 @@ class Material : public material::Material {
     material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
                                    Worker& worker) const final;
 
-    float3 average_radiance(float volume) const override;
+    float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
+                            float area, bool importance_sampling, Threads& threads,
+                            Scene const& scene) override;
 
     static size_t sample_size();
-
-  protected:
 };
 
 }  // namespace scene::material::volumetric

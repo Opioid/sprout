@@ -457,8 +457,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
-    material->prepare_sampling(*shape, part, trafo, extent, material_importance_sampling, threads,
-                               *this);
+    float3 const average_radiance = material->prepare_sampling(
+        *shape, part, trafo, extent, material_importance_sampling, threads, *this);
 
     lights_[light].set_extent(extent);
 
@@ -510,7 +510,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
         light_cones_[light] = cone;
     }
 
-    light_aabbs_[light].bounds[1][3] = max_component(lights_[light].power(aabb(), *this));
+    light_aabbs_[light].bounds[1][3] = max_component(
+        lights_[light].power(average_radiance, aabb(), *this));
 }
 
 animation::Animation* Scene::create_animation(uint32_t count) {

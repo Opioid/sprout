@@ -31,7 +31,9 @@ using namespace image;
 using namespace texture;
 using namespace scene;
 
-Sky_material::Sky_material(Sky* sky) : Material(sky) {}
+Sky_material::Sky_material(Sky* sky) : Material(sky) {
+    emission_ = float3(1.f);
+}
 
 material::Sample const& Sky_material::sample(float3_p wo, Renderstate const& rs,
                                              Sampler& /*sampler*/, Worker&   worker) const {
@@ -52,14 +54,12 @@ float3 Sky_material::evaluate_radiance(float3_p wi, float3_p /*n*/, float3_p /*u
     return sky_->model().evaluate_sky(wi);
 }
 
-float3 Sky_material::average_radiance(float /*area*/) const {
+float3 Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
+                                      Transformation const& /*trafo*/, float /*area*/,
+                                      bool /*importance_sampling*/, Threads& /*threads*/,
+                                      Scene const& /*scene*/) {
     return sky_->model().evaluate_sky(Model::zenith());
 }
-
-void Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
-                                    Transformation const& /*trafo*/, float /*area*/,
-                                    bool /*importance_sampling*/, Threads& /*threads*/,
-                                    Scene const& /*scene*/) {}
 
 static int2 constexpr Bake_dimensions(256);
 
@@ -98,10 +98,6 @@ float3 Sky_baked_material::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, fl
     return sampler.sample_3(texture_, uvw.xy(), worker.scene());
 }
 
-float3 Sky_baked_material::average_radiance(float /*area*/) const {
-    return average_emission_;
-}
-
 Material::Radiance_sample Sky_baked_material::radiance_sample(float3_p r3) const {
     auto const result = distribution_.sample_continuous(r3.xy());
 
@@ -114,14 +110,14 @@ float Sky_baked_material::emission_pdf(float3_p uvw, Filter filter, Worker const
     return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }
 
-void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t /*part*/,
-                                          Transformation const& trafo, float /*area*/,
-                                          bool importance_sampling, Threads& threads,
-                                          Scene const& /*scene*/) {
+float3 Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t /*part*/,
+                                            Transformation const& trafo, float /*area*/,
+                                            bool importance_sampling, Threads& threads,
+                                            Scene const& /*scene*/) {
     using namespace image;
 
     if (!sky_->sky_changed_since_last_check()) {
-        return;
+        return average_emission_;
     }
 
     //	std::ofstream stream("sky.png", std::ios::binary);
@@ -190,6 +186,8 @@ void Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t 
         // average_emission_ = cache_texture->average_3();
         average_emission_ = sky_->model().evaluate_sky(Model::zenith());
     }
+
+    return average_emission_;
 }
 
 float3 Sky_baked_material::unclipped_canopy_mapping(Transformation const& trafo, float2 uv) {

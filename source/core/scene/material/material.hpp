@@ -79,8 +79,6 @@ class Material {
     virtual Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
                                  Worker& worker) const = 0;
 
-    virtual float3 average_radiance(float extent) const;
-
     virtual float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent,
                                      Filter filter, Worker const& worker) const;
 
@@ -129,9 +127,9 @@ class Material {
 
     float similarity_relation_scale(uint32_t depth) const;
 
-    virtual void prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                                  float extent, bool importance_sampling, Threads& threads,
-                                  Scene const& scene);
+    virtual float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
+                                    float extent, bool importance_sampling, Threads& threads,
+                                    Scene const& scene);
 
     uint32_t sampler_key() const;
 

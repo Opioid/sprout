@@ -42,8 +42,6 @@ class Grid_emission : public Grid {
 
     ~Grid_emission() override;
 
-    float3 average_radiance(float volume) const final;
-
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float volume, Filter filter,
                              Worker const& worker) const final;
 
@@ -56,9 +54,9 @@ class Grid_emission : public Grid {
 
     void commit(Threads& threads, Scene const& scene) final;
 
-    void prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                          float area, bool importance_sampling, Threads& threads,
-                          Scene const& scene) final;
+    float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
+                            float area, bool importance_sampling, Threads& threads,
+                            Scene const& scene) final;
 
     void set_temperature_map(Texture const& temperature_map);
 

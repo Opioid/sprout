@@ -52,10 +52,6 @@ void Material::set_volumetric(float3_p attenuation_color, float3_p subsurface_co
 
 void Material::commit(Threads& /*threads*/, Scene const& /*scene*/) {}
 
-float3 Material::average_radiance(float /*extent*/) const {
-    return float3(0.f);
-}
-
 float3 Material::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p /*uvw*/,
                                    float /*extent*/, Filter /*filter*/,
                                    Worker const& /*worker*/) const {
@@ -103,18 +99,19 @@ float Material::similarity_relation_scale(uint32_t depth) const {
     return van_de_hulst(volumetric_anisotropy_, gs);
 }
 
-void Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
-                                Transformation const& /*trafo*/, float /*extent*/,
-                                bool /*importance_sampling*/, Threads& /*threads*/,
-                                Scene const& /*scene*/) {}
+float3 Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
+                                  Transformation const& /*trafo*/, float /*extent*/,
+                                  bool /*importance_sampling*/, Threads& /*threads*/,
+                                  Scene const& /*scene*/) {
+    return float3(0.f);
+}
 
 bool Material::is_emissive() const {
     if (properties_.is(Property::Emission_map)) {
         return true;
     }
 
-    float3 const e = average_radiance(1.f);
-    return any_greater_zero(e);
+    return any_greater_zero(emission_);
 }
 
 float Material::van_de_hulst_anisotropy(uint32_t depth) const {

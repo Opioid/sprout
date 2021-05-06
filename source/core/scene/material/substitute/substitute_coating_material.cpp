@@ -24,7 +24,7 @@ float3 Material_clearcoat::evaluate_radiance(float3_p wi, float3_p n, float3_p u
     if (emission_map_.is_valid()) {
         radiance = emission_factor_ * sampler.sample_3(emission_map_, uv, worker.scene());
     } else {
-        radiance = average_emission_;
+        radiance = emission_factor_ * emission_;
     }
 
     float thickness;

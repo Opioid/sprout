@@ -16,7 +16,9 @@ class Constant : public Material {
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const final;
 
-    float3 average_radiance(float area) const final;
+    float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
+                            float area, bool importance_sampling, Threads& threads,
+                            Scene const& scene) final;
 
     ::light::Emittance& emittance();
 
