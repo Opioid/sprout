@@ -13,8 +13,8 @@ inline float3 constexpr Color_back(0.9f, 0.1f, 0.4f);
 Material::Material(Sampler_settings sampler_settings)
     : material::Material(sampler_settings, true) {}
 
-material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                         Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
+                                         Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     sample.set_common(rs, wo, float3(0.f), float3(0.f), 1.f);

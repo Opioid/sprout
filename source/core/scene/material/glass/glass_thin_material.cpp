@@ -18,8 +18,8 @@ Glass_thin::Glass_thin(Sampler_settings sampler_settings) : Material(sampler_set
     properties_.set(Property::Tinted_shadow);
 }
 
-material::Sample const& Glass_thin::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                           Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Glass_thin::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
+                                           Worker& worker) const {
     auto& sample = worker.sample<Sample_thin>();
 
     if (normal_map_.is_valid()) {
@@ -30,8 +30,8 @@ material::Sample const& Glass_thin::sample(float3_p wo, Ray const& /*ray*/, Rend
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha);
-    sample.set(cc_.a, ior_, rs.ior, thickness_);
+    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha());
+    sample.set(cc_.a, ior_, rs.ior(), thickness_);
 
     return sample;
 }

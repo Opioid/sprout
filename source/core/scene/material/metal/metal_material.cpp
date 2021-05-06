@@ -18,9 +18,8 @@ void Material_isotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
 }
 
-material::Sample const& Material_isotropic::sample(float3_p           wo, Ray const& /*ray*/,
-                                                   Renderstate const& rs, Sampler& /*sampler*/,
-                                                   Worker&            worker) const {
+material::Sample const& Material_isotropic::sample(float3_p wo, Renderstate const& rs,
+                                                   Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<Sample_isotropic>();
 
     if (normal_map_.is_valid()) {
@@ -67,9 +66,8 @@ void Material_anisotropic::commit(Threads& /*threads*/, Scene const& /*scene*/) 
     properties_.set(Property::Caustic, alpha_[0] <= ggx::Min_alpha || alpha_[1] <= ggx::Min_alpha);
 }
 
-material::Sample const& Material_anisotropic::sample(float3_p           wo, Ray const& /*ray*/,
-                                                     Renderstate const& rs, Sampler& /*sampler*/,
-                                                     Worker&            worker) const {
+material::Sample const& Material_anisotropic::sample(float3_p wo, Renderstate const& rs,
+                                                     Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
 
     sample.set_common(rs, wo, ior3_, float3(0.f), alpha_[0]);

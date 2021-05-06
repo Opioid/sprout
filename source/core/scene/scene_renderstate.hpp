@@ -20,6 +20,18 @@ struct Renderstate {
                       v[0] * t[2] + v[1] * b[2]);
     }
 
+    float ior() const {
+        return p[3];
+    }
+
+    float alpha() const {
+        return t[3];
+    }
+
+    float wavelength() const {
+        return b[3];
+    }
+
     float3 p;      // position in world space
     float3 geo_n;  // geometry normal in world space
     float3 t;      // interpolated tangent frame in world space
@@ -27,12 +39,12 @@ struct Renderstate {
     float3 n;      // ...
     float2 uv;     // texture coordinates
 
-    float ior;
-    float alpha;
-
     uint32_t prop;
     uint32_t part;
     uint32_t primitive;
+    uint32_t depth;
+
+    uint64_t time;
 
     Filter filter;
 

@@ -11,8 +11,8 @@ class Glass_rough : public Material {
 
     void commit(Threads& threads, Scene const& scene) final;
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 
     void set_normal_map(Texture const& normal_map);
     void set_roughness_map(Texture const& roughness_map);

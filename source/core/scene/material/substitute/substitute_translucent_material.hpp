@@ -9,8 +9,8 @@ class Material_translucent : public Material_base {
   public:
     Material_translucent(Sampler_settings sampler_settings);
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 
     void set_volumetric(float thickness, float attenuation_distance);
 

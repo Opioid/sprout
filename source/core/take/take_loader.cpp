@@ -27,7 +27,6 @@
 #include "rendering/integrator/volume/tracking_multi.hpp"
 #include "rendering/integrator/volume/tracking_single.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
-#include "rendering/postprocessor/postprocessor_bloom.hpp"
 #include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
@@ -835,20 +834,13 @@ void Loader::load_postprocessors(json::Value const& pp_value, Resources& resourc
         } else if ("Backplate" == n->name) {
             std::string const name = json::read_string(n->value, "file");
 
-            auto const backplate_res = image::texture::Provider::load(name, memory::Variant_map(),
-                                                                      float2(1.f), resources);
-            if (!backplate_res.is_valid()) {
+            auto const backplate = image::texture::Provider::load(name, memory::Variant_map(),
+                                                                  float2(1.f), resources);
+            if (!backplate.is_valid()) {
                 continue;
             }
 
-            pipeline.add(new Backplate(backplate_res));
-        } else if ("Bloom" == n->name) {
-            float const angle     = json::read_float(n->value, "angle", 0.00002f);
-            float const alpha     = json::read_float(n->value, "alpha", 0.005f);
-            float const threshold = json::read_float(n->value, "threshold", 2.f);
-            float const intensity = json::read_float(n->value, "intensity", 0.1f);
-
-            pipeline.add(new Bloom(angle, alpha, threshold, intensity));
+            pipeline.add(new Backplate(backplate));
         } else if ("Glare" == n->name) {
             Glare::Adaption adaption = Glare::Adaption::Scotopic;
 

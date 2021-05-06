@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_SCENE_HPP
 #define SU_CORE_SCENE_SCENE_HPP
 
-#include "base/math/distribution/distribution_1d.hpp"
+#include "base/math/distribution_1d.hpp"
 #include "base/memory/array.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "light/light.hpp"

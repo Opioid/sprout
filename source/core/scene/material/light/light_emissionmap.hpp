@@ -1,7 +1,7 @@
 #ifndef SU_SCENE_MATERIAL_LIGHT_EMISSIONMAP_HPP
 #define SU_SCENE_MATERIAL_LIGHT_EMISSIONMAP_HPP
 
-#include "base/math/distribution/distribution_2d.hpp"
+#include "base/math/distribution_2d.hpp"
 #include "scene/material/material.hpp"
 
 namespace scene::material::light {
@@ -12,8 +12,8 @@ class Emissionmap : public Material {
 
     ~Emissionmap() override;
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const override;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const override;
 
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              Worker const& worker) const override;

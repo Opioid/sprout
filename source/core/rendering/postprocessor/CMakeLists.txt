@@ -4,8 +4,6 @@ target_sources(core
 	PRIVATE
 	"postprocessor_backplate.cpp"
 	"postprocessor_backplate.hpp"
-	"postprocessor_bloom.cpp"
-	"postprocessor_bloom.hpp"
 	"postprocessor_glare.cpp"
 	"postprocessor_glare.hpp"
 	"postprocessor_pipeline.cpp"

@@ -1,9 +1,0 @@
-target_sources(base
-    PRIVATE
-    "distribution_1d.hpp"
-    "distribution_1d.inl"
-    "distribution_2d.cpp"
-    "distribution_2d.hpp"
-    "distribution_3d.cpp"
-    "distribution_3d.hpp"
-    )

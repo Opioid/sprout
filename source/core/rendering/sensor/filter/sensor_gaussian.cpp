@@ -1,12 +1,41 @@
 #include "sensor_gaussian.hpp"
-#include "base/math/filter/gaussian.hpp"
 #include "base/math/interpolated_function_1d.inl"
 #include "math/vector2.inl"
 
 namespace rendering::sensor::filter {
 
+class Functor {
+  public:
+    Functor(float squared_radius, float alpha)
+        : exp_(std::exp(-alpha * squared_radius)), alpha_(alpha) {}
+
+    float operator()(float squared_d) const {
+        return std::max(0.f, std::exp(-alpha_ * squared_d) - exp_);
+    }
+
+  private:
+    float exp_;
+    float alpha_;
+};
+
+/*
+class Gaussian_functor_1 {
+  public:
+    Gaussian_functor_1(float squared_radius, float alpha)
+        : exp_(std::exp(-alpha * squared_radius)), alpha_(alpha) {}
+
+    float operator()(float d) const {
+        return std::max(0.f, std::exp(-alpha_ * d * d) - exp_);
+    }
+
+  private:
+    float exp_;
+    float alpha_;
+};
+*/
+
 Gaussian::Gaussian(float radius, float alpha)
-    : gaussian_(0.f, radius * radius, math::filter::Gaussian_functor(radius * radius, alpha)) {
+    : gaussian_(0.f, radius * radius, Functor(radius * radius, alpha)) {
     float const i = integral(64, radius);
     gaussian_.scale(1.f / i);
 }

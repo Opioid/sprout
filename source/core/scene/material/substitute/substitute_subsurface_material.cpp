@@ -34,13 +34,12 @@ void Material_subsurface::commit(Threads& threads, Scene const& scene) {
     properties_.set(Property::Heterogeneous_volume, density_map_.is_valid());
 }
 
-material::Sample const& Material_subsurface::sample(float3_p           wo, Ray const& /*ray*/,
-                                                    Renderstate const& rs, Sampler& /*sampler*/,
-                                                    Worker&            worker) const {
+material::Sample const& Material_subsurface::sample(float3_p wo, Renderstate const& rs,
+                                                    Sampler& /*sampler*/, Worker&   worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<volumetric::Sample>();
 
-        sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha);
+        sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha());
 
         sample.set(volumetric_anisotropy_);
 
@@ -51,9 +50,9 @@ material::Sample const& Material_subsurface::sample(float3_p           wo, Ray c
 
     auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
-    set_sample(wo, rs, rs.ior, sampler, worker, sample);
+    set_sample(wo, rs, rs.ior(), sampler, worker, sample);
 
-    sample.set_volumetric(ior_, rs.ior);
+    sample.set_volumetric(ior_, rs.ior());
 
     return sample;
 }

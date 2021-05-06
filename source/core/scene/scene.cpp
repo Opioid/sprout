@@ -2,7 +2,7 @@
 #include "animation/animation.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/cone.inl"
-#include "base/math/distribution/distribution_1d.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/vector3.inl"

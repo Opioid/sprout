@@ -9,8 +9,8 @@ class Glass_thin : public Material {
   public:
     Glass_thin(Sampler_settings sampler_settings);
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 
     float3 thin_absorption(float3_p wi, float3_p n, float2 uv, Filter filter,
                            Worker const& worker) const final;

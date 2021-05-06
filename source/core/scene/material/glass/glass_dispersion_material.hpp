@@ -9,8 +9,8 @@ class Glass_dispersion final : public Glass {
   public:
     Glass_dispersion(Sampler_settings sampler_settings);
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 
     void set_abbe(float abbe);
 

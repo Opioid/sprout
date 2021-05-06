@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_LIGHT_TREE_HPP
 #define SU_CORE_SCENE_LIGHT_TREE_HPP
 
-#include "base/math/distribution/distribution_1d.hpp"
+#include "base/math/distribution_1d.hpp"
 #include "base/math/vector4.hpp"
 #include "base/memory/array.hpp"
 

@@ -44,9 +44,9 @@ inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray,
     material::Material const* material = Intersection::material(worker);
 
     Renderstate rs;
-    rs.p = geo.p;
-    rs.t = geo.t;
-    rs.b = geo.b;
+    rs.p = float3(geo.p, worker.ior_outside(wo, *this));
+    rs.t = float3(geo.t, alpha);
+    rs.b = float3(geo.b, ray.wavelength);
 
     if (material->is_two_sided() && !same_hemisphere(wo)) {
         rs.n     = -geo.n;
@@ -56,21 +56,17 @@ inline material::Sample const& Intersection::sample(float3_p wo, Ray const& ray,
         rs.geo_n = geo.geo_n;
     }
 
-    rs.uv = geo.uv;
-
-    rs.ior   = worker.ior_outside(wo, *this);
-    rs.alpha = alpha;
-
-    rs.prop      = prop;
-    rs.part      = geo.part;
-    rs.primitive = geo.primitive;
-
-    rs.filter = filter;
-
+    rs.uv             = geo.uv;
+    rs.prop           = prop;
+    rs.part           = geo.part;
+    rs.primitive      = geo.primitive;
+    rs.depth          = ray.depth;
+    rs.time           = ray.time;
+    rs.filter         = filter;
     rs.subsurface     = subsurface;
     rs.avoid_caustics = avoid_caustics;
 
-    return material->sample(wo, ray, rs, sampler, worker);
+    return material->sample(wo, rs, sampler, worker);
 }
 
 inline bool Intersection::evaluate_radiance(float3_p wo, Filter filter, Worker& worker,

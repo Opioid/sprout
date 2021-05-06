@@ -44,9 +44,8 @@ float3 Material_clearcoat::evaluate_radiance(float3_p wi, float3_p n, float3_p u
     return clearcoat.attenuation(clamp_abs_dot(wi, n)) * radiance;
 }
 
-material::Sample const& Material_clearcoat::sample(float3_p           wo, Ray const& /*ray*/,
-                                                   Renderstate const& rs, Sampler& /*sampler*/,
-                                                   Worker&            worker) const {
+material::Sample const& Material_clearcoat::sample(float3_p wo, Renderstate const& rs,
+                                                   Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<Sample_clearcoat>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
@@ -64,14 +63,14 @@ material::Sample const& Material_clearcoat::sample(float3_p           wo, Ray co
         weight    = 1.f;
     }
 
-    float const coating_ior = lerp(rs.ior, coating_.ior, weight);
+    float const coating_ior = lerp(rs.ior(), coating_.ior, weight);
 
     set_sample(wo, rs, coating_ior, sampler, worker, sample);
 
     set_coating_basis(wo, rs, sampler, worker, sample);
 
     sample.coating_.set(coating_.absorption_coef, thickness, coating_ior,
-                        fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
+                        fresnel::schlick_f0(coating_ior, rs.ior()), coating_.alpha, weight);
 
     float const n_dot_wo = sample.coating_.clamp_abs_n_dot(wo);
 
@@ -101,9 +100,8 @@ size_t Material_clearcoat::sample_size() {
 Material_thinfilm::Material_thinfilm(Sampler_settings sampler_settings, bool two_sided)
     : Material_coating<Thinfilm_data>(sampler_settings, two_sided) {}
 
-material::Sample const& Material_thinfilm::sample(float3_p           wo, Ray const& /*ray*/,
-                                                  Renderstate const& rs, Sampler& /*sampler*/,
-                                                  Worker&            worker) const {
+material::Sample const& Material_thinfilm::sample(float3_p wo, Renderstate const& rs,
+                                                  Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<Sample_thinfilm>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);

@@ -1,6 +1,6 @@
 #include "triangle_mesh.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/distribution/distribution_1d.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling.inl"

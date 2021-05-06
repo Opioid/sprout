@@ -1,6 +1,6 @@
 #include "light.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/distribution/distribution_2d.hpp"
+#include "base/math/distribution_2d.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"

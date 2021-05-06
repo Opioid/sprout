@@ -13,8 +13,8 @@ namespace scene::material::glass {
 
 Glass_dispersion::Glass_dispersion(Sampler_settings sampler_settings) : Glass(sampler_settings) {}
 
-material::Sample const& Glass_dispersion::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                                 Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Glass_dispersion::sample(float3_p wo, Renderstate const& rs,
+                                                 Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<Sample_dispersion>();
 
     if (normal_map_.is_valid()) {
@@ -26,9 +26,9 @@ material::Sample const& Glass_dispersion::sample(float3_p wo, Ray const& ray, Re
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha);
-    sample.set(ior_, rs.ior);
-    sample.set_dispersion(abbe_, ray.wavelength);
+    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha());
+    sample.set(ior_, rs.ior());
+    sample.set_dispersion(abbe_, rs.wavelength());
 
     return sample;
 }

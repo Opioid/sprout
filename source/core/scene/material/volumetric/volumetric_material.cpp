@@ -16,14 +16,14 @@ Material::Material(Sampler_settings sampler_settings) : material::Material(sampl
 
 Material::~Material() = default;
 
-material::Sample const& Material::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                         Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
+                                         Worker& worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<Sample>();
 
-        sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha);
+        sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha());
 
-        float const gs = van_de_hulst_anisotropy(ray.depth);
+        float const gs = van_de_hulst_anisotropy(rs.depth);
 
         sample.set(gs);
 
@@ -32,7 +32,7 @@ material::Sample const& Material::sample(float3_p wo, Ray const& ray, Renderstat
 
     auto& sample = worker.sample<null::Sample>();
 
-    sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha);
+    sample.set_common(rs, wo, float3(0.f), float3(0.f), rs.alpha());
 
     return sample;
 }

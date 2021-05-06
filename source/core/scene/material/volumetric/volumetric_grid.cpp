@@ -1,5 +1,5 @@
 #include "volumetric_grid.hpp"
-#include "base/math/distribution/distribution_1d.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/math/interpolated_function_1d.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/ray.inl"

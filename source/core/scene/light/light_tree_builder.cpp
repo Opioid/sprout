@@ -1,6 +1,6 @@
 #include "light_tree_builder.hpp"
 #include "base/math/cone.inl"
-#include "base/math/distribution/distribution_1d.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/memory/array.inl"
 #include "base/memory/buffer.hpp"
 #include "base/thread/thread_pool.hpp"

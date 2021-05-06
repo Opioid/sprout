@@ -11,8 +11,8 @@ class Material_isotropic : public Material {
 
     void commit(Threads& threads, Scene const& scene) final;
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 
     void set_normal_map(Texture const& normal_map);
 
@@ -37,8 +37,8 @@ class Material_anisotropic : public Material {
 
     void commit(Threads& threads, Scene const& scene) final;
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 
     void set_normal_map(Texture const& normal_map);
     void set_direction_map(Texture const& direction_map);

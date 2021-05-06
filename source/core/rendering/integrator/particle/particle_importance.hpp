@@ -1,7 +1,7 @@
 #ifndef SU_RENDERING_INTEGRATOR_PARTICLE_IMPORTANCE_HPP
 #define SU_RENDERING_INTEGRATOR_PARTICLE_IMPORTANCE_HPP
 
-#include "base/math/distribution/distribution_2d.hpp"
+#include "base/math/distribution_2d.hpp"
 #include "base/math/vector3.hpp"
 
 #include <vector>

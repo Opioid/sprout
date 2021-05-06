@@ -15,8 +15,8 @@ Glass::Glass(Sampler_settings sampler_settings) : Material(sampler_settings, fal
     properties_.set(Property::Caustic);
 }
 
-material::Sample const& Glass::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                      Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Glass::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
+                                      Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
     if (normal_map_.is_valid()) {
@@ -28,8 +28,8 @@ material::Sample const& Glass::sample(float3_p wo, Ray const& /*ray*/, Rendersta
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha);
-    sample.set(ior_, rs.ior);
+    sample.set_common(rs, wo, refraction_color_, float3(0.f), rs.alpha());
+    sample.set(ior_, rs.ior());
 
     return sample;
 }

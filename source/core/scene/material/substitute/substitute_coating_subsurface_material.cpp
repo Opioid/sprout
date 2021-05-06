@@ -35,14 +35,13 @@ void Material_coating_subsurface::commit(Threads& threads, Scene const& scene) {
     properties_.set(Property::Heterogeneous_volume, density_map_.is_valid());
 }
 
-material::Sample const& Material_coating_subsurface::sample(float3_p wo, Ray const& /*ray*/,
-                                                            Renderstate const& rs,
+material::Sample const& Material_coating_subsurface::sample(float3_p wo, Renderstate const& rs,
                                                             Sampler& /*sampler*/,
                                                             Worker& worker) const {
     if (rs.subsurface) {
         auto& sample = worker.sample<volumetric::Sample>();
 
-        sample.set_common(rs, wo, float3(0.f), float3(0.), rs.alpha);
+        sample.set_common(rs, wo, float3(0.f), float3(0.), rs.alpha());
 
         sample.set(volumetric_anisotropy_);
 
@@ -66,20 +65,20 @@ material::Sample const& Material_coating_subsurface::sample(float3_p wo, Ray con
         weight    = 1.f;
     }
 
-    float const coating_ior = lerp(rs.ior, coating_.ior, weight);
+    float const coating_ior = lerp(rs.ior(), coating_.ior, weight);
 
     set_sample(wo, rs, coating_ior, sampler, worker, sample);
 
     set_coating_basis(wo, rs, sampler, worker, sample);
 
     sample.coating_.set(coating_.absorption_coef, thickness, coating_ior,
-                        fresnel::schlick_f0(coating_ior, rs.ior), coating_.alpha, weight);
+                        fresnel::schlick_f0(coating_ior, rs.ior()), coating_.alpha, weight);
 
     float const n_dot_wo = sample.coating_.clamp_abs_n_dot(wo);
 
     sample.set_radiance(sample.radiance() * sample.coating_.attenuation(n_dot_wo));
 
-    sample.set_volumetric(ior_, rs.ior);
+    sample.set_volumetric(ior_, rs.ior());
 
     return sample;
 }

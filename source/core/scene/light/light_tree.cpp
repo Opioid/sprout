@@ -1,5 +1,5 @@
 #include "light_tree.hpp"
-#include "base/math/distribution/distribution_1d.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/memory/array.inl"
 #include "scene/material/material_sample_helper.hpp"
 #include "scene/scene.inl"

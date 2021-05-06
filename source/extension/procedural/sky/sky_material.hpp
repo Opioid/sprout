@@ -1,7 +1,7 @@
 #ifndef SU_EXTENSION_PROCEDURAL_SKY_SKY_MATERIAL_HPP
 #define SU_EXTENSION_PROCEDURAL_SKY_SKY_MATERIAL_HPP
 
-#include "base/math/distribution/distribution_2d.hpp"
+#include "base/math/distribution_2d.hpp"
 #include "core/image/texture/texture.hpp"
 #include "core/image/typed_image.hpp"
 #include "sky_material_base.hpp"
@@ -16,9 +16,8 @@ class Sky_material : public Material {
   public:
     Sky_material(Sky* sky);
 
-    scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
-                                          scene::Renderstate const& rs, Sampler& sampler,
-                                          scene::Worker& worker) const final;
+    scene::material::Sample const& sample(float3_p wo, scene::Renderstate const& rs,
+                                          Sampler& sampler, scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
@@ -38,9 +37,8 @@ class Sky_baked_material : public Material {
 
     ~Sky_baked_material() override;
 
-    scene::material::Sample const& sample(float3_p wo, scene::Ray const& ray,
-                                          scene::Renderstate const& rs, Sampler& sampler,
-                                          scene::Worker& worker) const final;
+    scene::material::Sample const& sample(float3_p wo, scene::Renderstate const& rs,
+                                          Sampler& sampler, scene::Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;

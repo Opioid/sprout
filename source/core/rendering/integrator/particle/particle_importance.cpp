@@ -1,6 +1,6 @@
 #include "particle_importance.hpp"
 #include "base/atomic/atomic.hpp"
-#include "base/math/distribution/distribution_1d.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/math/vector2.inl"
 #include "base/memory/array.inl"
 #include "base/memory/buffer.hpp"

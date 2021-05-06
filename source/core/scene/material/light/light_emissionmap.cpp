@@ -1,5 +1,5 @@
 #include "light_emissionmap.hpp"
-#include "base/math/distribution/distribution_1d.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/array.inl"
@@ -28,8 +28,8 @@ Emissionmap::Emissionmap(Sampler_settings sampler_settings, bool two_sided)
 
 Emissionmap::~Emissionmap() = default;
 
-material::Sample const& Emissionmap::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                            Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Emissionmap::sample(float3_p wo, Renderstate const& rs,
+                                            Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<Sample>();
 
     auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);

@@ -21,8 +21,8 @@ using namespace scene;
 
 Sun_material::Sun_material(Sky* sky) : Material(sky) {}
 
-material::Sample const& Sun_material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                             Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Sun_material::sample(float3_p wo, Renderstate const& rs,
+                                             Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     float3 const radiance = sky_->model().evaluate_sky_and_sun(-wo);
@@ -44,9 +44,8 @@ float3 Sun_material::average_radiance(float /*area*/) const {
 
 Sun_baked_material::Sun_baked_material(Sky* sky) : Material(sky) {}
 
-material::Sample const& Sun_baked_material::sample(float3_p           wo, Ray const& /*ray*/,
-                                                   Renderstate const& rs, Sampler& /*sampler*/,
-                                                   Worker&            worker) const {
+material::Sample const& Sun_baked_material::sample(float3_p wo, Renderstate const& rs,
+                                                   Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<material::light::Sample>();
 
     float3 const radiance = emission_(sky_->sun_v(-wo));

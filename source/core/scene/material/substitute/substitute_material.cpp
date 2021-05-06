@@ -16,15 +16,15 @@ namespace scene::material::substitute {
 Material::Material(Sampler_settings sampler_settings, bool two_sided)
     : Material_base(sampler_settings, two_sided) {}
 
-material::Sample const& Material::sample(float3_p wo, Ray const& /*ray*/, Renderstate const& rs,
-                                         Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
+                                         Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>();
 
     auto const& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
-    set_sample(wo, rs, rs.ior, sampler, worker, sample);
+    set_sample(wo, rs, rs.ior(), sampler, worker, sample);
 
     return sample;
 }
@@ -56,8 +56,8 @@ static inline float checkers_grad(float2 uv, float2 ddx, float2 ddy) {
     return 0.5f - 0.5f * i[0] * i[1];
 }
 
-material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                         Sampler& /*sampler*/, Worker& worker) const {
+material::Sample const& Checkers::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
+                                         Worker& worker) const {
     SOFT_ASSERT(!rs.subsurface);
 
     auto& sample = worker.sample<Sample>();
@@ -71,7 +71,7 @@ material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstat
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    float4 const dd = scale_ * worker.screenspace_differential(rs, ray.time);
+    float4 const dd = scale_ * worker.screenspace_differential(rs, rs.time);
 
     float const t = checkers_grad(scale_ * sampler.address(rs.uv), dd.xy(), dd.zw());
 
@@ -97,7 +97,7 @@ material::Sample const& Checkers::sample(float3_p wo, Ray const& ray, Renderstat
     }
 
     sample.set_common(rs, wo, color, radiance, surface[0]);
-    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior), surface[1]);
+    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior()), surface[1]);
 
     return sample;
 }

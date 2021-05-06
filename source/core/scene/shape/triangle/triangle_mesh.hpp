@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_MESH_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_MESH_HPP
 
-#include "base/math/distribution/distribution_1d.hpp"
+#include "base/math/distribution_1d.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
 #include "scene/light/light_tree.hpp"
 #include "scene/shape/shape.hpp"

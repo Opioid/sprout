@@ -11,8 +11,8 @@ class Material : public material::Material {
 
     ~Material() override;
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 
     float3 average_radiance(float volume) const override;
 

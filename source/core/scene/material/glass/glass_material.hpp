@@ -9,8 +9,8 @@ class Glass : public Material {
   public:
     Glass(Sampler_settings sampler_settings);
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const override;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const override;
 
     void set_normal_map(Texture const& normal_map);
 

@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 #define SU_CORE_SCENE_MATERIAL_VOLUMETRIC_GRID_HPP
 
-#include "base/math/distribution/distribution_3d.hpp"
+#include "base/math/distribution_3d.hpp"
 #include "base/math/interpolated_function_1d.hpp"
 #include "volumetric_material.hpp"
 #include "volumetric_octree.hpp"

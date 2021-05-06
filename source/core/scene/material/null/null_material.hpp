@@ -9,8 +9,8 @@ class alignas(16) Material : public material::Material {
   public:
     Material(Sampler_settings sampler_settings);
 
-    material::Sample const& sample(float3_p wo, Ray const& ray, Renderstate const& rs,
-                                   Sampler& sampler, Worker& worker) const final;
+    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
+                                   Worker& worker) const final;
 };
 
 }  // namespace scene::material::null

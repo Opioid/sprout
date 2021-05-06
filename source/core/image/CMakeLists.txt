@@ -1,5 +1,4 @@
 add_subdirectory("encoding")
-add_subdirectory("filter")
 add_subdirectory("procedural")
 add_subdirectory("testing")
 add_subdirectory("texture")
