@@ -102,9 +102,7 @@ class alignas(16) Light {
                 Sample_from& result) const;
 
     float pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere,
-              Filter filter, Worker const& worker) const;
-
-    float pdf(Ray const& ray, Intersection const& isec, Filter filter, Worker const& worker) const;
+              Worker const& worker) const;
 
     float3 power(float3 const& average_radiance, AABB const& scene_bb, Scene const& scene) const;
 

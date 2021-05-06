@@ -473,7 +473,7 @@ float3 Tracking_single::one_bounce(float3_p tr, float3_p scattering_tr, Ray cons
         return float3(0.f);
     }
 
-    float const ls_pdf    = light.ref.pdf(bounce_ray, isec, Filter::Nearest, worker);
+    float const ls_pdf    = light.ref.pdf(bounce_ray, float3(0.f), isec, true, worker);
     float const light_pdf = ls_pdf * light.pdf;
 
     // PDF for equi-angular sampling

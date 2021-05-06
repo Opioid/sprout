@@ -43,9 +43,9 @@ class Sky_baked_material : public Material {
 
     Radiance_sample radiance_sample(float3_p r3) const final;
 
-    float emission_pdf(float3_p uvw, Filter filter, scene::Worker const& worker) const final;
+    float emission_pdf(float3_p uvw, scene::Worker const& worker) const final;
 
-    float3 prepare_sampling(const Shape& shape, uint32_t part, Transformation const& trafo,
+    float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
                             float area, bool importance_sampling, Threads& threads,
                             scene::Scene const& scene) final;
 

@@ -360,13 +360,12 @@ static inline float prop_pdf(float area, Ray const& ray, float3_p n, Intersectio
 }
 
 static inline float prop_image_pdf(float area, Ray const& ray, Intersection const& isec,
-                                   Transformation const& trafo, Filter filter,
-                                   Worker const& worker) {
+                                   Transformation const& trafo, Worker const& worker) {
     auto const material = isec.material(worker);
 
     bool const two_sided = material->is_two_sided();
 
-    float const material_pdf = material->emission_pdf(float3(isec.geo.uv, 0.f), filter, worker);
+    float const material_pdf = material->emission_pdf(float3(isec.geo.uv, 0.f), worker);
 
     // this pdf includes the uv weight which adjusts for texture distortion by the shape
     float const shape_pdf = isec.shape(worker)->pdf_uv(ray, isec.geo, trafo, area, two_sided);
@@ -380,17 +379,16 @@ static float volume_pdf(float volume, Ray const& ray, Intersection const& isec,
 }
 
 static inline float volume_image_pdf(float volume, Ray const& ray, Intersection const& isec,
-                                     Transformation const& trafo, Filter filter,
-                                     Worker const& worker) {
+                                     Transformation const& trafo, Worker const& worker) {
     float const shape_pdf = isec.shape(worker)->pdf_volume(ray, isec.geo, trafo, volume);
 
-    float const material_pdf = isec.material(worker)->emission_pdf(isec.geo.p, filter, worker);
+    float const material_pdf = isec.material(worker)->emission_pdf(isec.geo.p, worker);
 
     return shape_pdf * material_pdf;
 }
 
 float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere,
-                 Filter filter, Worker const& worker) const {
+                 Worker const& worker) const {
     SOFT_ASSERT(isec.prop == prop_ && isec.geo.part == part_);
 
     Transformation temp;
@@ -400,32 +398,11 @@ float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool tota
         case Type::Prop:
             return prop_pdf(extent_, ray, n, isec, trafo, total_sphere, worker);
         case Type::Prop_image:
-            return prop_image_pdf(extent_, ray, isec, trafo, filter, worker);
+            return prop_image_pdf(extent_, ray, isec, trafo, worker);
         case Type::Volume:
             return volume_pdf(extent_, ray, isec, trafo, worker);
         case Type::Volume_image:
-            return volume_image_pdf(extent_, ray, isec, trafo, filter, worker);
-    }
-
-    return 0.f;
-}
-
-float Light::pdf(Ray const& ray, Intersection const& isec, Filter filter,
-                 Worker const& worker) const {
-    SOFT_ASSERT(isec.prop == prop_ && isec.geo.part == part_);
-
-    Transformation temp;
-    auto const&    trafo = transformation_at(ray.time, temp, worker.scene());
-
-    switch (type_) {
-        case Type::Prop:
-            return prop_pdf(extent_, ray, float3(0.f), isec, trafo, true, worker);
-        case Type::Prop_image:
-            return prop_image_pdf(extent_, ray, isec, trafo, filter, worker);
-        case Type::Volume:
-            return volume_pdf(extent_, ray, isec, trafo, worker);
-        case Type::Volume_image:
-            return volume_image_pdf(extent_, ray, isec, trafo, filter, worker);
+            return volume_image_pdf(extent_, ray, isec, trafo, worker);
     }
 
     return 0.f;

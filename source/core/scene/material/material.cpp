@@ -62,7 +62,7 @@ Material::Radiance_sample Material::radiance_sample(float3_p r3) const {
     return {r3, 1.f};
 }
 
-float Material::emission_pdf(float3_p /*uvw*/, Filter /*filter*/, Worker const& /*worker*/) const {
+float Material::emission_pdf(float3_p /*uvw*/, Worker const& /*worker*/) const {
     return 1.f;
 }
 

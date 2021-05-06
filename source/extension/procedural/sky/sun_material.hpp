@@ -16,7 +16,7 @@ class Sun_material : public Material {
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
-    float3 prepare_sampling(const Shape& shape, uint32_t part, Transformation const& trafo,
+    float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
                             float area, bool importance_sampling, Threads& threads,
                             scene::Scene const& scene) final;
 };
@@ -31,7 +31,7 @@ class Sun_baked_material : public Material {
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
                              scene::Worker const& worker) const final;
 
-    float3 prepare_sampling(const Shape& shape, uint32_t part, Transformation const& trafo,
+    float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
                             float area, bool importance_sampling, Threads& threads,
                             scene::Scene const& scene) final;
 

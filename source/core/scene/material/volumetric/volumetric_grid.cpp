@@ -101,12 +101,10 @@ Grid_emission::Radiance_sample Grid_emission::radiance_sample(float3_p r3) const
     return {result.xyz(), result[3] * pdf_factor_};
 }
 
-float Grid_emission::emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const {
-    auto& sampler = worker.sampler_3D(sampler_key(), filter);
+float Grid_emission::emission_pdf(float3_p uvw, Worker const& worker) const {
+    auto& sampler = worker.sampler_3D(sampler_key(), Filter::Undefined);
 
-    float const pdf = distribution_.pdf(sampler.address(uvw)) * pdf_factor_;
-
-    return pdf;
+    return distribution_.pdf(sampler.address(uvw)) * pdf_factor_;
 }
 
 CCE Grid_emission::collision_coefficients_emission(float3_p uvw, Filter filter,

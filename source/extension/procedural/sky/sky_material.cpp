@@ -104,8 +104,8 @@ Material::Radiance_sample Sky_baked_material::radiance_sample(float3_p r3) const
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Sky_baked_material::emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const {
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+float Sky_baked_material::emission_pdf(float3_p uvw, Worker const& worker) const {
+    auto& sampler = worker.sampler_2D(sampler_key(), Filter::Undefined);
 
     return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }

@@ -57,8 +57,8 @@ Material::Radiance_sample Emissionmap::radiance_sample(float3_p r3) const {
     return {result.uv, result.pdf * total_weight_};
 }
 
-float Emissionmap::emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const {
-    auto& sampler = worker.sampler_2D(sampler_key(), filter);
+float Emissionmap::emission_pdf(float3_p uvw, Worker const& worker) const {
+    auto& sampler = worker.sampler_2D(sampler_key(), Filter::Undefined);
 
     return distribution_.pdf(sampler.address(uvw.xy())) * total_weight_;
 }

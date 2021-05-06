@@ -93,7 +93,7 @@ class Material {
     };
     virtual Radiance_sample radiance_sample(float3_p r3) const;
 
-    virtual float emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const;
+    virtual float emission_pdf(float3_p uvw, Worker const& worker) const;
 
     float opacity(float2 uv, Filter filter, Worker const& worker) const;
 

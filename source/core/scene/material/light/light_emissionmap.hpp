@@ -6,21 +6,21 @@
 
 namespace scene::material::light {
 
-class Emissionmap : public Material {
+class Emissionmap final : public Material {
   public:
     Emissionmap(Sampler_settings sampler_settings, bool two_sided);
 
     ~Emissionmap() override;
 
     material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
-                                   Worker& worker) const override;
+                                   Worker& worker) const final;
 
     float3 evaluate_radiance(float3_p wi, float3_p n, float3_p uvw, float extent, Filter filter,
-                             Worker const& worker) const override;
+                             Worker const& worker) const final;
 
     Radiance_sample radiance_sample(float3_p r3) const final;
 
-    float emission_pdf(float3_p uvw, Filter filter, Worker const& worker) const final;
+    float emission_pdf(float3_p uvw, Worker const& worker) const final;
 
     float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
                             float area, bool importance_sampling, Threads& threads,
