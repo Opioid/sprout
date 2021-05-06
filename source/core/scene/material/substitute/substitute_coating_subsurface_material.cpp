@@ -15,8 +15,6 @@
 #include "substitute_coating_sample.inl"
 #include "substitute_coating_subsurface_sample.hpp"
 
-#include "scene/material/null/null_sample.hpp"
-
 namespace scene::material::substitute {
 
 Material_coating_subsurface::Material_coating_subsurface(Sampler_settings sampler_settings)

@@ -258,7 +258,7 @@ void Scene::compile(float3_p camera_pos, uint64_t time, Threads& threads) {
 
     for (uint32_t i = 0; auto& l : lights_) {
         l.prepare_sampling(i, time, *this, threads);
-        light_temp_powers_[i] = std::sqrt(spectrum::luminance(l.power(prop_bvh_.aabb(), *this)));
+        light_temp_powers_[i] = light_power(i);
 
         ++i;
     }

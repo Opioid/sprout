@@ -14,8 +14,6 @@
 #include "substitute_base_sample.inl"
 #include "substitute_subsurface_sample.hpp"
 
-#include "scene/material/null/null_sample.hpp"
-
 namespace scene::material::substitute {
 
 Material_subsurface::Material_subsurface(Sampler_settings sampler_settings)

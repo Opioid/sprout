@@ -13,7 +13,6 @@ struct Intersection;
 }  // namespace prop
 
 class Scene;
-
 class Worker;
 
 }  // namespace scene
