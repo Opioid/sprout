@@ -9,8 +9,8 @@ namespace math {
 inline ray::ray() = default;
 
 inline ray::ray(float3_p origin, float3_p direction, float min_t, float max_t)
-    : origin(origin[0], origin[1], origin[2], min_t),
-      direction(direction[0], direction[1], direction[2], max_t),
+    : origin(origin, min_t),
+      direction(direction, max_t),
       inv_direction(reciprocal(direction)) {}
 
 inline void ray::set_direction(float3_p v) {

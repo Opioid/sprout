@@ -99,6 +99,8 @@ struct alignas(16) Vector3f_a {
 
     constexpr Vector3f_a(float x, float y, float z, float w) : v{x, y, z, w} {}
 
+    constexpr Vector3f_a(Vector3f_a o, float w) : v{o[0], o[1], o[2], w} {}
+
     explicit constexpr Vector3f_a(float const* a);
 
     explicit constexpr Vector3f_a(float s);

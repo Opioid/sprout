@@ -10,7 +10,7 @@ struct Sample_to {
     inline Sample_to() = default;
 
     inline Sample_to(float3_p wi, float3_p n, float3_p uvw, float pdf, float t)
-        : wi(wi[0], wi[1], wi[2], pdf), n(n[0], n[1], n[2], t), uvw(uvw){};
+        : wi(wi, pdf), n(n, t), uvw(uvw){};
 
     inline float pdf() const {
         return wi[3];
@@ -33,7 +33,7 @@ struct Sample_from {
     inline Sample_from() = default;
 
     inline Sample_from(float3_p p, float3_p n, float3_p dir, float2 uv, float2 xy, float pdf)
-        : p(p[0], p[1], p[2], pdf), n(n), dir(dir), uv(uv), xy(xy){};
+        : p(p, pdf), n(n), dir(dir), uv(uv), xy(xy){};
 
     inline float pdf() const {
         return p[3];
