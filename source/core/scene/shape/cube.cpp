@@ -22,11 +22,11 @@ namespace scene::shape {
 Cube::Cube() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
 float3 Cube::object_to_texture_point(float3_p p) const {
-    return (p - float3(-1.f)) * (1.f / float3(2.f));
+    return 0.5f * (p + 1.f);
 }
 
 float3 Cube::object_to_texture_vector(float3_p v) const {
-    return v * (1.f / float3(2.f));
+    return 0.5f * v;
 }
 
 AABB Cube::transformed_aabb(float4x4 const& m) const {

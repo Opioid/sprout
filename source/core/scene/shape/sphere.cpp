@@ -16,8 +16,7 @@
 #include "base/debug/assert.hpp"
 #include "shape_test.hpp"
 
-// Hearn and Baker sphere isec test as seen
-// in "Precision Improvements for Ray/Sphere Intersection"
+// Hearn and Baker sphere isec test as seen in "Precision Improvements for Ray/Sphere Intersection",
 // and
 // https://github.com/NVIDIAGameWorks/GettingStartedWithRTXRayTracing/blob/master/DXR-Sphereflake/Data/Sphereflake/sphereIntersect.hlsli
 // Note that the ray direction is not necessarily normalized, which might cause problems,
@@ -30,11 +29,11 @@ static float constexpr Delta = 1.e-20f;
 Sphere::Sphere() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
 float3 Sphere::object_to_texture_point(float3_p p) const {
-    return (p - float3(-1.f)) * (1.f / float3(2.f));
+    return 0.5f * (p + 1.f);
 }
 
 float3 Sphere::object_to_texture_vector(float3_p v) const {
-    return v * (1.f / float3(2.f));
+    return 0.5f * v;
 }
 
 AABB Sphere::transformed_aabb(float4x4 const& m) const {
@@ -43,10 +42,8 @@ AABB Sphere::transformed_aabb(float4x4 const& m) const {
 
 static inline void intersect(float hit_t, Ray const& ray, Shape::Transformation const& trafo,
                              Intersection& isec) {
-    float3 const p = ray.point(hit_t);
-
-    float3 const n = normalize(p - trafo.position);
-
+    float3 const p   = ray.point(hit_t);
+    float3 const n   = normalize(p - trafo.position);
     float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, n));
 
     float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
