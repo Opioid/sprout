@@ -39,8 +39,7 @@ material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sam
 
 float3 Material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                   Transformation const& /*trafo*/, float /*area*/,
-                                  bool /*importance_sampling*/, Threads& /*threads*/,
-                                  Scene const& /*scene*/) {
+                                  Scene const& /*scene*/, Threads& /*threads*/) {
     return cc_.a * emission_;
 }
 

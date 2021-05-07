@@ -15,8 +15,7 @@ class Material : public material::Material {
                                    Worker& worker) const final;
 
     float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                            float area, bool importance_sampling, Threads& threads,
-                            Scene const& scene) override;
+                            float area, Scene const& scene, Threads& threads) override;
 
     static size_t sample_size();
 };

@@ -17,8 +17,7 @@ class Constant : public Material {
                              Worker const& worker) const final;
 
     float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                            float area, bool importance_sampling, Threads& threads,
-                            Scene const& scene) final;
+                            float area, Scene const& scene, Threads& threads) final;
 
     ::light::Emittance& emittance();
 

@@ -92,13 +92,13 @@ void rough_refraction() {
     //   sample_rough.set_basis(n, wo);
     sample_rough.layer_.set_tangent_frame(t, b, n);
 
-    //float3 refraction_color(1.f, 1.f, 1.f);
+    // float3 refraction_color(1.f, 1.f, 1.f);
     //  float3 attenuation_color(1.f, 1.f, 1.f);
 
     //    float attenuation_distance = 1.f;
-    float ior       = 1.02f;
-    //float roughness = 0.5f;  // ggx::Min_roughness;
-    //float alpha     = roughness * roughness;
+    float ior = 1.02f;
+    // float roughness = 0.5f;  // ggx::Min_roughness;
+    // float alpha     = roughness * roughness;
 
     sample.set(ior, 1.f);
 

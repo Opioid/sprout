@@ -17,8 +17,7 @@ class Sun_material : public Material {
                              scene::Worker const& worker) const final;
 
     float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                            float area, bool importance_sampling, Threads& threads,
-                            scene::Scene const& scene) final;
+                            float area, scene::Scene const& scene, Threads& threads) final;
 };
 
 class Sun_baked_material : public Material {
@@ -32,8 +31,7 @@ class Sun_baked_material : public Material {
                              scene::Worker const& worker) const final;
 
     float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                            float area, bool importance_sampling, Threads& threads,
-                            scene::Scene const& scene) final;
+                            float area, scene::Scene const& scene, Threads& threads) final;
 
   private:
     math::Interpolated_function_1D<float3> sun_emission_;

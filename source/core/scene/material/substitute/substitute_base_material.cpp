@@ -30,8 +30,7 @@ float3 Material_base::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_
 
 float3 Material_base::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                        Transformation const& /*trafo*/, float /*area*/,
-                                       bool /*importance_sampling*/, Threads& /*threads*/,
-                                       Scene const& scene) {
+                                       Scene const& scene, Threads& /*threads*/) {
     if (emission_map_.is_valid()) {
         return emission_factor_ * emission_map_.average_3(scene);
     }

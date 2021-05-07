@@ -36,8 +36,7 @@ float3 Constant::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p /*u
 
 float3 Constant::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                   Transformation const& /*trafo*/, float area,
-                                  bool /*importance_sampling*/, Threads& /*threads*/,
-                                  Scene const& /*scene*/) {
+                                  Scene const& /*scene*/, Threads& /*threads*/) {
     return emittance_.radiance(area);
 }
 

@@ -56,8 +56,7 @@ float3 Sky_material::evaluate_radiance(float3_p wi, float3_p /*n*/, float3_p /*u
 
 float3 Sky_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                       Transformation const& /*trafo*/, float /*area*/,
-                                      bool /*importance_sampling*/, Threads& /*threads*/,
-                                      Scene const& /*scene*/) {
+                                      Scene const& /*scene*/, Threads& /*threads*/) {
     return sky_->model().evaluate_sky(Model::zenith());
 }
 
@@ -112,8 +111,7 @@ float Sky_baked_material::emission_pdf(float3_p uvw, Worker const& worker) const
 
 float3 Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_t /*part*/,
                                             Transformation const& trafo, float /*area*/,
-                                            bool importance_sampling, Threads& threads,
-                                            Scene const& /*scene*/) {
+                                            Scene const& /*scene*/, Threads& threads) {
     using namespace image;
 
     if (!sky_->sky_changed_since_last_check()) {
@@ -126,66 +124,59 @@ float3 Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_
     //		writer.write(stream, *cache, threads);
     //	}
 
-    if (importance_sampling) {
-        Distribution_1D* conditional = distribution_.allocate(Bake_dimensions[1]);
+    Distribution_1D* conditional = distribution_.allocate(Bake_dimensions[1]);
 
-        memory::Array<float4> artws(threads.num_threads(), float4(0.f));
+    memory::Array<float4> artws(threads.num_threads(), float4(0.f));
 
-        threads.run_range(
-            [this, &trafo, &conditional, &artws, &shape](uint32_t id, int32_t begin,
-                                                         int32_t end) noexcept {
-                image::Float3& cache = cache_->float3();
+    threads.run_range(
+        [this, &trafo, &conditional, &artws, &shape](uint32_t id, int32_t begin,
+                                                     int32_t end) noexcept {
+            image::Float3& cache = cache_->float3();
 
-                float2 const idf = 1.f / float2(Bake_dimensions);
+            float2 const idf = 1.f / float2(Bake_dimensions);
 
-                auto luminance = memory::Buffer<float>(Bake_dimensions[0]);
+            auto luminance = memory::Buffer<float>(Bake_dimensions[0]);
 
-                float4 artw(0.f);
+            float4 artw(0.f);
 
-                for (int32_t y = begin; y < end; ++y) {
-                    float const v = idf[1] * (y + 0.5f);
+            for (int32_t y = begin; y < end; ++y) {
+                float const v = idf[1] * (y + 0.5f);
 
-                    for (int32_t x = 0; x < Bake_dimensions[0]; ++x) {
-                        float const u = idf[0] * (x + 0.5f);
+                for (int32_t x = 0; x < Bake_dimensions[0]; ++x) {
+                    float const u = idf[0] * (x + 0.5f);
 
-                        float2 const uv = float2(u, v);
-                        float3 const wi = unclipped_canopy_mapping(trafo, uv);
-                        float3 const li = sky_->model().evaluate_sky(wi);
+                    float2 const uv = float2(u, v);
+                    float3 const wi = unclipped_canopy_mapping(trafo, uv);
+                    float3 const li = sky_->model().evaluate_sky(wi);
 
-                        cache.store(x, y, packed_float3(li));
+                    cache.store(x, y, packed_float3(li));
 
-                        float const uv_weight = shape.uv_weight(float2(u, v));
+                    float const uv_weight = shape.uv_weight(float2(u, v));
 
-                        float3 const wli = uv_weight * li;
+                    float3 const wli = uv_weight * li;
 
-                        luminance[x] = spectrum::luminance(wli);
+                    luminance[x] = spectrum::luminance(wli);
 
-                        artw += float4(wli, uv_weight);
-                    }
-
-                    conditional[y].init(luminance.data(), Bake_dimensions[0]);
+                    artw += float4(wli, uv_weight);
                 }
 
-                artws[id] += artw;
-            },
-            0, Bake_dimensions[1]);
+                conditional[y].init(luminance.data(), Bake_dimensions[0]);
+            }
 
-        float4 artw(0.f);
-        for (auto& a : artws) {
-            artw += a;
-        }
+            artws[id] += artw;
+        },
+        0, Bake_dimensions[1]);
 
-        average_emission_ = artw.xyz() / artw[3];
-
-        total_weight_ = artw[3];
-
-        distribution_.init();
-    } else {
-        // This controls how often the sky will be sampled,
-        // Zenith sample cause less variance in one test (favoring the sun)...
-        // average_emission_ = cache_texture->average_3();
-        average_emission_ = sky_->model().evaluate_sky(Model::zenith());
+    float4 artw(0.f);
+    for (auto& a : artws) {
+        artw += a;
     }
+
+    average_emission_ = artw.xyz() / artw[3];
+
+    total_weight_ = artw[3];
+
+    distribution_.init();
 
     return average_emission_;
 }

@@ -19,8 +19,7 @@ class Material_base : public material::Material {
                              Worker const& worker) const override;
 
     float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                            float area, bool importance_sampling, Threads& threads,
-                            Scene const& scene) final;
+                            float area, Scene const& scene, Threads& threads) final;
 
     void set_normal_map(Texture const& normal_map);
     void set_surface_map(Texture const& surface_map);

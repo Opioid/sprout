@@ -42,8 +42,7 @@ float3 Sun_material::evaluate_radiance(float3_p wi, float3_p /*n*/, float3_p /*u
 
 float3 Sun_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                       Transformation const& /*trafo*/, float /*area*/,
-                                      bool /*importance_sampling*/, Threads& /*threads*/,
-                                      Scene const& /*scene*/) {
+                                      Scene const& /*scene*/, Threads& /*threads*/) {
     return sky_->model().evaluate_sky_and_sun(-sky_->model().sun_direction());
 }
 
@@ -76,8 +75,8 @@ float3 Sun_baked_material::evaluate_radiance(float3_p wi, float3_p /*n*/, float3
 
 float3 Sun_baked_material::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                             Transformation const& /*trafo*/, float /*area*/,
-                                            bool /*importance_sampling*/, Threads& /*threads*/,
-                                            Scene const& /*scene*/) {
+                                            Scene const& /*scene*/, Threads& /*threads*/
+) {
     if (sky_->sun_changed_since_last_check()) {
         static uint32_t constexpr Num_samples = 1024;
 

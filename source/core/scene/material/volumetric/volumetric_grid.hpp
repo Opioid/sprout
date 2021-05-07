@@ -55,8 +55,7 @@ class Grid_emission : public Grid {
     void commit(Threads& threads, Scene const& scene) final;
 
     float3 prepare_sampling(Shape const& shape, uint32_t part, Transformation const& trafo,
-                            float area, bool importance_sampling, Threads& threads,
-                            Scene const& scene) final;
+                            float area, Scene const& scene, Threads& threads) final;
 
     void set_temperature_map(Texture const& temperature_map);
 

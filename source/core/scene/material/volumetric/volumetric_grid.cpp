@@ -183,8 +183,7 @@ void Grid_emission::commit(Threads& threads, Scene const& scene) {
 
 float3 Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/,
                                        Transformation const& /*trafo*/, float /*area*/,
-                                       bool importance_sampling, Threads& threads,
-                                       Scene const& scene) {
+                                       Scene const& scene, Threads& threads) {
     if (average_emission_[0] >= 0.f) {
         // Hacky way to check whether prepare_sampling has been called before
         // average_emission_ is initialized with negative values...
@@ -192,77 +191,41 @@ float3 Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/
         return average_emission_;
     }
 
-    if (importance_sampling) {
-        auto const& d = density_.description(scene).dimensions();
+    auto const& d = density_.description(scene).dimensions();
 
-        Distribution_2D* conditional_2d = distribution_.allocate(uint32_t(d[2]));
+    Distribution_2D* conditional_2d = distribution_.allocate(uint32_t(d[2]));
 
-        memory::Array<float3> ars(threads.num_threads());
+    memory::Array<float3> ars(threads.num_threads());
 
-        memory::Buffer<float> luminance(d[0] * d[1] * d[2]);
+    memory::Buffer<float> luminance(d[0] * d[1] * d[2]);
 
-        if (temperature_.is_valid()) {
-            threads.run_range(
-                [this, &luminance, &ars, d, &scene](uint32_t id, int32_t begin,
-                                                    int32_t end) noexcept {
-                    float3 ar(0.f);
+    if (temperature_.is_valid()) {
+        threads.run_range(
+            [this, &luminance, &ars, d, &scene](uint32_t id, int32_t begin, int32_t end) noexcept {
+                float3 ar(0.f);
 
-                    if (2 == density_.num_channels()) {
-                        for (int32_t z = begin; z < end; ++z) {
-                            int32_t const slice = z * (d[0] * d[1]);
+                if (2 == density_.num_channels()) {
+                    for (int32_t z = begin; z < end; ++z) {
+                        int32_t const slice = z * (d[0] * d[1]);
 
-                            for (int32_t y = 0; y < d[1]; ++y) {
-                                int32_t const row = y * d[0];
-                                for (int32_t x = 0; x < d[0]; ++x) {
-                                    float2 const density = density_.at_2(x, y, z, scene);
+                        for (int32_t y = 0; y < d[1]; ++y) {
+                            int32_t const row = y * d[0];
+                            for (int32_t x = 0; x < d[0]; ++x) {
+                                float2 const density = density_.at_2(x, y, z, scene);
 
-                                    float const t = temperature_.at_1(x, y, z, scene);
+                                float const t = temperature_.at_1(x, y, z, scene);
 
-                                    float3 const c = blackbody_(t);
+                                float3 const c = blackbody_(t);
 
-                                    float3 const radiance = density[0] * density[1] * c;
+                                float3 const radiance = density[0] * density[1] * c;
 
-                                    luminance[slice + row + x] = spectrum::luminance(radiance);
+                                luminance[slice + row + x] = spectrum::luminance(radiance);
 
-                                    ar += radiance;
-                                }
-                            }
-                        }
-                    } else {
-                        for (int32_t z = begin; z < end; ++z) {
-                            int32_t const slice = z * (d[0] * d[1]);
-
-                            for (int32_t y = 0; y < d[1]; ++y) {
-                                int32_t const row = y * d[0];
-                                for (int32_t x = 0; x < d[0]; ++x) {
-                                    float const density = density_.at_1(x, y, z, scene);
-
-                                    float const t = temperature_.at_1(x, y, z, scene);
-
-                                    float3 const c = blackbody_(t);
-
-                                    float3 const radiance = density * c;
-
-                                    luminance[slice + row + x] = spectrum::luminance(radiance);
-
-                                    ar += radiance;
-                                }
+                                ar += radiance;
                             }
                         }
                     }
-
-                    ars[id] = ar;
-                },
-                0, d[2]);
-
-        } else {
-            float3 const emission = emission_;
-
-            threads.run_range(
-                [this, &emission, &luminance, &ars, d, &scene](uint32_t id, int32_t begin,
-                                                               int32_t end) noexcept {
-                    float3 ar(0.f);
-
+                } else {
                     for (int32_t z = begin; z < end; ++z) {
                         int32_t const slice = z * (d[0] * d[1]);
 
@@ -271,7 +234,11 @@ float3 Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/
                             for (int32_t x = 0; x < d[0]; ++x) {
                                 float const density = density_.at_1(x, y, z, scene);
 
-                                float3 const radiance = density * emission;
+                                float const t = temperature_.at_1(x, y, z, scene);
+
+                                float3 const c = blackbody_(t);
+
+                                float3 const radiance = density * c;
 
                                 luminance[slice + row + x] = spectrum::luminance(radiance);
 
@@ -279,68 +246,92 @@ float3 Grid_emission::prepare_sampling(Shape const& /*shape*/, uint32_t /*part*/
                             }
                         }
                     }
-
-                    ars[id] = ar;
-                },
-                0, d[2]);
-        }
-
-        float3 ar(0.f);
-        for (auto const& a : ars) {
-            ar += a;
-        }
-
-        float const num_pixels = float(d[0] * d[1] * d[2]);
-
-        float3 const average_emission = ar / num_pixels;
-
-        float const al = 0.6f * spectrum::luminance(average_emission);
-
-        threads.run_range(
-            [&luminance, &conditional_2d, al, d](uint32_t /*id*/, int32_t begin,
-                                                 int32_t end) noexcept {
-                for (int32_t z = begin; z < end; ++z) {
-                    auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
-
-                    int32_t const slice = z * (d[0] * d[1]);
-
-                    for (int32_t y = 0; y < d[1]; ++y) {
-                        float* luminance_row = luminance.data() + (slice + y * d[0]);
-
-                        for (int32_t x = 0; x < d[0]; ++x) {
-                            float const l = luminance_row[x];
-
-#ifdef SU_IBL_MIS_COMPENSATION
-                            float const p = std::max(l - al, 0.f);
-#else
-                            float const p = l;
-#endif
-
-                            luminance_row[x] = p;
-                        }
-
-                        conditional[y].init(luminance_row, uint32_t(d[0]));
-                    }
-
-                    conditional_2d[z].init();
                 }
+
+                ars[id] = ar;
             },
             0, d[2]);
 
-        distribution_.init();
-
-        average_emission_ = average_emission;
-
-        float const majorant_a = max_component(cc_.a);
-
-        a_norm_ = majorant_a / cc_.a;
-
-        pdf_factor_ = num_pixels / majorant_a;
     } else {
-        float3 const emission = cc_.a * emission_;
+        float3 const emission = emission_;
 
-        average_emission_ = density_.average_1(scene) * emission;
+        threads.run_range(
+            [this, &emission, &luminance, &ars, d, &scene](uint32_t id, int32_t begin,
+                                                           int32_t end) noexcept {
+                float3 ar(0.f);
+
+                for (int32_t z = begin; z < end; ++z) {
+                    int32_t const slice = z * (d[0] * d[1]);
+
+                    for (int32_t y = 0; y < d[1]; ++y) {
+                        int32_t const row = y * d[0];
+                        for (int32_t x = 0; x < d[0]; ++x) {
+                            float const density = density_.at_1(x, y, z, scene);
+
+                            float3 const radiance = density * emission;
+
+                            luminance[slice + row + x] = spectrum::luminance(radiance);
+
+                            ar += radiance;
+                        }
+                    }
+                }
+
+                ars[id] = ar;
+            },
+            0, d[2]);
     }
+
+    float3 ar(0.f);
+    for (auto const& a : ars) {
+        ar += a;
+    }
+
+    float const num_pixels = float(d[0] * d[1] * d[2]);
+
+    float3 const average_emission = ar / num_pixels;
+
+    float const al = 0.6f * spectrum::luminance(average_emission);
+
+    threads.run_range(
+        [&luminance, &conditional_2d, al, d](uint32_t /*id*/, int32_t begin, int32_t end) noexcept {
+            for (int32_t z = begin; z < end; ++z) {
+                auto conditional = conditional_2d[z].allocate(uint32_t(d[1]));
+
+                int32_t const slice = z * (d[0] * d[1]);
+
+                for (int32_t y = 0; y < d[1]; ++y) {
+                    float* luminance_row = luminance.data() + (slice + y * d[0]);
+
+                    for (int32_t x = 0; x < d[0]; ++x) {
+                        float const l = luminance_row[x];
+
+#ifdef SU_IBL_MIS_COMPENSATION
+                        float const p = std::max(l - al, 0.f);
+#else
+                        float const p = l;
+#endif
+
+                        luminance_row[x] = p;
+                    }
+
+                    conditional[y].init(luminance_row, uint32_t(d[0]));
+                }
+
+                conditional_2d[z].init();
+            }
+        },
+        0, d[2]);
+
+    distribution_.init();
+
+    average_emission_ = average_emission;
+
+    float const majorant_a = max_component(cc_.a);
+
+    a_norm_ = majorant_a / cc_.a;
+
+    pdf_factor_ = num_pixels / majorant_a;
 
     return average_emission_;
 }

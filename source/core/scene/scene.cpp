@@ -438,8 +438,7 @@ void Scene::prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflect
 }
 
 void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light, uint64_t time,
-                                  bool material_importance_sampling, bool volume,
-                                  Threads& threads) {
+                                  bool volume, Threads& threads) {
     auto shape = prop_shape(entity);
 
     uint32_t const p = prop_parts_[entity] + part;
@@ -457,8 +456,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
-    float3 const average_radiance = material->prepare_sampling(
-        *shape, part, trafo, extent, material_importance_sampling, threads, *this);
+    float3 const average_radiance = material->prepare_sampling(*shape, part, trafo, extent, *this,
+                                                               threads);
 
     lights_[light].set_extent(extent);
 

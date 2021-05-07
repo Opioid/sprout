@@ -196,7 +196,7 @@ class Scene {
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection, bool in_shadow);
 
     void prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light_id, uint64_t time,
-                               bool material_importance_sampling, bool volume, Threads& threads);
+                               bool volume, Threads& threads);
 
     AABB const& prop_aabb(uint32_t entity) const;
 
