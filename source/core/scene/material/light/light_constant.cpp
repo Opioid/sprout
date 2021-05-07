@@ -13,6 +13,7 @@ namespace scene::material::light {
 Constant::Constant(Sampler_settings sampler_settings, bool two_sided)
     : Material(sampler_settings, two_sided) {
     properties_.set(Property::Pure_emissive);
+    emission_ = float3(1.f);
 }
 
 material::Sample const& Constant::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
