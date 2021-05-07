@@ -28,16 +28,8 @@ static float constexpr Delta = 1.e-20f;
 
 Sphere::Sphere() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
-float3 Sphere::object_to_texture_point(float3_p p) const {
-    return 0.5f * (p + 1.f);
-}
-
-float3 Sphere::object_to_texture_vector(float3_p v) const {
-    return 0.5f * v;
-}
-
-AABB Sphere::transformed_aabb(float4x4 const& m) const {
-    return AABB(float3(-1.f), float3(1.f)).transform(m);
+AABB Sphere::aabb() const {
+    return AABB(float3(-1.f), float3(1.f));
 }
 
 static inline void intersect(float hit_t, Ray const& ray, Shape::Transformation const& trafo,

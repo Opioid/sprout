@@ -20,15 +20,7 @@ static float constexpr Canopy_eps = -0.0005f;
 
 Canopy::Canopy() : Shape(Properties(Property::Analytical)) {}
 
-float3 Canopy::object_to_texture_point(float3_p p) const {
-    return p;
-}
-
-float3 Canopy::object_to_texture_vector(float3_p v) const {
-    return v;
-}
-
-AABB Canopy::transformed_aabb(float4x4 const& /*m*/) const {
+AABB Canopy::aabb() const {
     return Empty_AABB;
 }
 

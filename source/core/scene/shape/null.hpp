@@ -9,11 +9,7 @@ class Null final : public Shape {
   public:
     Null();
 
-    float3 object_to_texture_point(float3_p p) const final;
-
-    float3 object_to_texture_vector(float3_p v) const final;
-
-    AABB transformed_aabb(float4x4 const& m) const final;
+    AABB aabb() const final;
 
     uint32_t num_parts() const final;
 

@@ -464,8 +464,10 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     uint32_t const f = prop_frames_[entity];
 
+    AABB const part_aabb = shape->part_aabb(part);
+
     if (prop::Null == f) {
-        AABB bb = shape->transformed_part_aabb(part, trafo.object_to_world());
+        AABB bb = part_aabb.transform(trafo.object_to_world());
         bb.cache_radius();
 
         light_aabbs_[light] = bb;
@@ -476,7 +478,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     } else {
         entity::Keyframe const* frames = &keyframes_[f];
 
-        AABB bb = shape->transformed_part_aabb(part, float4x4(frames[0].trafo));
+        AABB bb = part_aabb.transform(float4x4(frames[0].trafo));
 
         float4 const part_cone = shape->cone(part);
 
@@ -493,14 +495,14 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
                 float3x3 const rotation = quaternion::create_matrix3x3(inter.rotation);
                 float4x4 const composed = compose(rotation, inter.scale, inter.position);
 
-                bb.merge_assign(shape->transformed_part_aabb(part, composed));
+                bb.merge_assign(part_aabb.transform(composed));
                 cone = cone::merge(cone, cone::transform(rotation, cone));
             }
 
             float3x3 const rotation = quaternion::create_matrix3x3(b.rotation);
             float4x4 const composed = compose(rotation, b.scale, b.position);
 
-            bb.merge_assign(shape->transformed_part_aabb(part, composed));
+            bb.merge_assign(part_aabb.transform(composed));
             cone = cone::merge(cone, cone::transform(rotation, cone));
         }
 
@@ -548,12 +550,14 @@ void Scene::prop_calculate_world_transformation(uint32_t entity, float3_p camera
 void Scene::prop_propagate_transformation(uint32_t entity, float3_p camera_pos) {
     uint32_t const f = prop_frames_[entity];
 
+    AABB const shape_aabb = prop_shape(entity)->aabb();
+
     if (prop::Null == f) {
         auto& trafo = prop_world_transformations_[entity];
 
         trafo.set_position(prop_world_positions_[entity] - camera_pos);
 
-        prop_aabbs_[entity] = prop_shape(entity)->transformed_aabb(trafo.object_to_world());
+        prop_aabbs_[entity] = shape_aabb.transform(trafo.object_to_world());
 
         for (uint32_t child = prop_topology(entity).child; prop::Null != child;) {
             prop_inherit_transformation(child, trafo, camera_pos);
@@ -563,9 +567,7 @@ void Scene::prop_propagate_transformation(uint32_t entity, float3_p camera_pos) 
     } else {
         entity::Keyframe const* frames = &keyframes_[f];
 
-        Shape const* shape = prop_shape(entity);
-
-        AABB aabb = shape->transformed_aabb(float4x4(frames[0].trafo));
+        AABB aabb = shape_aabb.transform(float4x4(frames[0].trafo));
 
         for (uint32_t i = 0, len = num_interpolation_frames_ - 1; i < len; ++i) {
             auto const& a = frames[i].trafo;
@@ -575,10 +577,10 @@ void Scene::prop_propagate_transformation(uint32_t entity, float3_p camera_pos) 
             for (uint32_t j = Num_steps - 1; j > 0; --j, t += Interval) {
                 math::Transformation const inter = lerp(a, b, t);
 
-                aabb.merge_assign(shape->transformed_aabb(float4x4(inter)));
+                aabb.merge_assign(shape_aabb.transform(float4x4(inter)));
             }
 
-            aabb.merge_assign(shape->transformed_aabb(float4x4(b)));
+            aabb.merge_assign(shape_aabb.transform(float4x4(b)));
         }
 
         prop_aabbs_[entity] = aabb;

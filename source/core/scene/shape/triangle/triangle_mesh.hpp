@@ -63,13 +63,9 @@ class alignas(64) Mesh final : public Shape {
 
     void set_material_for_part(uint32_t part, uint32_t material);
 
-    float3 object_to_texture_point(float3_p p) const final;
+    AABB aabb() const final;
 
-    float3 object_to_texture_vector(float3_p v) const final;
-
-    AABB transformed_aabb(float4x4 const& m) const final;
-
-    AABB transformed_part_aabb(uint32_t part, float4x4 const& m) const final;
+    AABB part_aabb(uint32_t part) const final;
 
     uint32_t num_parts() const final;
 

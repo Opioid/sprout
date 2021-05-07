@@ -183,21 +183,12 @@ void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
     parts_[part].material = material;
 }
 
-float3 Mesh::object_to_texture_point(float3_p p) const {
-    AABB const aabb = tree_.aabb();
-    return (p - aabb.bounds[0]) / aabb.extent();
+AABB Mesh::aabb() const {
+    return tree_.aabb();
 }
 
-float3 Mesh::object_to_texture_vector(float3_p v) const {
-    return v / tree_.aabb().extent();
-}
-
-AABB Mesh::transformed_aabb(float4x4 const& m) const {
-    return tree_.aabb().transform(m);
-}
-
-AABB Mesh::transformed_part_aabb(uint32_t part, float4x4 const& m) const {
-    return parts_[part].aabb.transform(m);
+AABB Mesh::part_aabb(uint32_t part) const {
+    return parts_[part].aabb;
 }
 
 uint32_t Mesh::num_parts() const {

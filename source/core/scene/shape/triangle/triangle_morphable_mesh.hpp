@@ -17,11 +17,7 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     ~Morphable_mesh() final;
 
-    float3 object_to_texture_point(float3_p p) const final;
-
-    float3 object_to_texture_vector(float3_p v) const final;
-
-    AABB transformed_aabb(float4x4 const& m) const final;
+    AABB aabb() const final;
 
     uint32_t num_parts() const final;
 

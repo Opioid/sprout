@@ -9,11 +9,7 @@ class Rectangle final : public Shape {
   public:
     Rectangle();
 
-    float3 object_to_texture_point(float3_p p) const final;
-
-    float3 object_to_texture_vector(float3_p v) const final;
-
-    AABB transformed_aabb(float4x4 const& m) const final;
+    AABB aabb() const final;
 
     bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
                    Intersection& isec) const final;

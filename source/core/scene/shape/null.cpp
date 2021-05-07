@@ -9,15 +9,7 @@ namespace scene::shape {
 
 Null::Null() : Shape(Properties(Property::Analytical)) {}
 
-float3 Null::object_to_texture_point(float3_p p) const {
-    return p;
-}
-
-float3 Null::object_to_texture_vector(float3_p v) const {
-    return v;
-}
-
-AABB Null::transformed_aabb(float4x4 const& /*m*/) const {
+AABB Null::aabb() const {
     return Empty_AABB;
 }
 

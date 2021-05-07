@@ -18,16 +18,8 @@ namespace scene::shape {
 
 Rectangle::Rectangle() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
-float3 Rectangle::object_to_texture_point(float3_p p) const {
-    return (p - float3(-1.f)) * (1.f / float3(2.f, 2.f, 0.2f));
-}
-
-float3 Rectangle::object_to_texture_vector(float3_p v) const {
-    return v * (1.f / float3(2.f, 2.f, 0.2f));
-}
-
-AABB Rectangle::transformed_aabb(float4x4 const& m) const {
-    return AABB(float3(-1.f, -1.f, -0.01f), float3(1.f, 1.f, 0.01f)).transform(m);
+AABB Rectangle::aabb() const {
+    return AABB(float3(-1.f, -1.f, -0.01f), float3(1.f, 1.f, 0.01f));
 }
 
 bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,

@@ -17,11 +17,11 @@ namespace procedural::mesh {
 using namespace scene::shape;
 using namespace scene::shape::triangle;
 
-Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/, Resources& resources) {
+Grass::Shape_ptr Grass::create_mesh(json::Value const& /*mesh_value*/, Resources& /*resources*/) {
     std::vector<Index_triangle> triangles;
     std::vector<Vertex>         vertices;
 
-    uint32_t num_parts = 1;
+    // uint32_t num_parts = 1;
 
     uint32_t const num_vertices = 16;
 

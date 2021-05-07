@@ -554,9 +554,9 @@ static float3 scattering_coefficient(prop::Intersection const& isec, Worker cons
 
         float3 const local_position = trafo.world_to_object_point(isec.geo.p);
 
-        auto const shape = scene.prop_shape(isec.prop);
+        AABB const aabb = worker.scene().prop_shape(isec.prop)->aabb();
 
-        float3 const uvw = shape->object_to_texture_point(local_position);
+        float3 const uvw = (local_position - aabb.bounds[0]) / aabb.extent();
 
         return material.collision_coefficients(uvw, Filter::Undefined, worker).s;
     }

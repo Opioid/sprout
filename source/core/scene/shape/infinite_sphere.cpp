@@ -18,15 +18,7 @@ namespace scene::shape {
 
 Infinite_sphere::Infinite_sphere() : Shape(Properties(Property::Analytical)) {}
 
-float3 Infinite_sphere::object_to_texture_point(float3_p p) const {
-    return p;
-}
-
-float3 Infinite_sphere::object_to_texture_vector(float3_p v) const {
-    return v;
-}
-
-AABB Infinite_sphere::transformed_aabb(float4x4 const& /*m*/) const {
+AABB Infinite_sphere::aabb() const {
     return Empty_AABB;
 }
 

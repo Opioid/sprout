@@ -21,16 +21,8 @@ namespace scene::shape {
 
 Cube::Cube() : Shape(Properties(Property::Finite, Property::Analytical)) {}
 
-float3 Cube::object_to_texture_point(float3_p p) const {
-    return 0.5f * (p + 1.f);
-}
-
-float3 Cube::object_to_texture_vector(float3_p v) const {
-    return 0.5f * v;
-}
-
-AABB Cube::transformed_aabb(float4x4 const& m) const {
-    return AABB(float3(-1.f), float3(1.f)).transform(m);
+AABB Cube::aabb() const {
+    return AABB(float3(-1.f), float3(1.f));
 }
 
 bool Cube::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,

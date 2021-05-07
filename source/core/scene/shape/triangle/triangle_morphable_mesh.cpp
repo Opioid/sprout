@@ -30,16 +30,8 @@ Morphable_mesh::~Morphable_mesh() {
     delete collection_;
 }
 
-float3 Morphable_mesh::object_to_texture_point(float3_p p) const {
-    return (p - tree_.aabb().bounds[0]) / tree_.aabb().extent();
-}
-
-float3 Morphable_mesh::object_to_texture_vector(float3_p v) const {
-    return v / tree_.aabb().extent();
-}
-
-AABB Morphable_mesh::transformed_aabb(float4x4 const& m) const {
-    return tree_.aabb().transform(m);
+AABB Morphable_mesh::aabb() const {
+    return tree_.aabb();
 }
 
 uint32_t Morphable_mesh::num_parts() const {

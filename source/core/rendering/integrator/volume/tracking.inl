@@ -19,8 +19,11 @@ inline math::ray texture_space_ray(scene::Ray const& ray, uint32_t entity,
 
     auto const shape = worker.scene().prop_shape(entity);
 
-    float3 const origin = shape->object_to_texture_point(local_origin);
-    float3 const dir    = shape->object_to_texture_vector(local_dir);
+    AABB const aabb = shape->aabb();
+
+    float3 const iextent = 1.f / aabb.extent();
+    float3 const origin  = (local_origin - aabb.bounds[0]) * iextent;
+    float3 const dir     = local_dir * iextent;
 
     return math::ray(origin, dir, ray.min_t(), ray.max_t());
 }

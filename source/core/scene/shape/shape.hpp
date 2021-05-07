@@ -70,13 +70,9 @@ class Shape {
 
     virtual ~Shape();
 
-    virtual float3 object_to_texture_point(float3_p p) const = 0;
+    virtual AABB aabb() const = 0;
 
-    virtual float3 object_to_texture_vector(float3_p v) const = 0;
-
-    virtual AABB transformed_aabb(float4x4 const& m) const = 0;
-
-    virtual AABB transformed_part_aabb(uint32_t part, float4x4 const& m) const;
+    virtual AABB part_aabb(uint32_t part) const;
 
     virtual uint32_t num_parts() const;
 
