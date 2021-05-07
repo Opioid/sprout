@@ -55,10 +55,6 @@ inline float Tree::triangle_area(uint32_t index) const {
     return data_.area(index);
 }
 
-inline float Tree::triangle_area(uint32_t index, float3_p scale) const {
-    return data_.area(index, scale);
-}
-
 inline float3 Tree::triangle_center(uint32_t index) const {
     return data_.center(index);
 }

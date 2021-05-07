@@ -56,8 +56,6 @@ class Indexed_data {
 
     float area(uint32_t index) const;
 
-    float area(uint32_t index, float3_p scale) const;
-
     float3 center(uint32_t index) const;
 
     void triangle(uint32_t index, float3& pa, float3& pb, float3& pc) const;

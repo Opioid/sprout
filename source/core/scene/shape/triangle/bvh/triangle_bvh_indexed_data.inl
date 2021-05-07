@@ -188,16 +188,6 @@ inline float Indexed_data::area(uint32_t index) const {
     return triangle::area(a, b, c);
 }
 
-inline float Indexed_data::area(uint32_t index, float3_p scale) const {
-    auto const tri = triangles_[index];
-
-    float3 const a = positions_[tri.a];
-    float3 const b = positions_[tri.b];
-    float3 const c = positions_[tri.c];
-
-    return triangle::area(a, b, c, scale);
-}
-
 inline float3 Indexed_data::center(uint32_t index) const {
     auto const tri = triangles_[index];
 
