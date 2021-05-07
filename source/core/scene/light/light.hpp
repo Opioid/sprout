@@ -74,25 +74,10 @@ class alignas(16) Light {
 
     bool is_finite(Scene const& scene) const;
 
-    bool sample(float3_p p, float3_p n, Transformation const& trafo, bool total_sphere,
-                Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const;
-
-    float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const;
-
-    bool sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
-                AABB const& bounds, Worker& worker, Sample_from& result) const;
-
-    bool sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
-                Distribution_2D const& importance, AABB const& bounds, Worker& worker,
-                Sample_from& result) const;
-
-    float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const;
-
     bool sample(float3_p p, float3_p n, uint64_t time, bool total_sphere, Sampler& sampler,
                 uint32_t sampler_d, Worker& worker, Sample_to& result) const;
 
-    bool sample(float3_p p, uint64_t time, Sampler& sampler, uint32_t sampler_d, Worker& worker,
-                Sample_to& result) const;
+    float3 evaluate(Sample_to const& sample, Filter filter, Worker const& worker) const;
 
     bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB const& bounds,
                 Worker& worker, Sample_from& result) const;
@@ -100,6 +85,8 @@ class alignas(16) Light {
     bool sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
                 Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                 Sample_from& result) const;
+
+    float3 evaluate(Sample_from const& sample, Filter filter, Worker const& worker) const;
 
     float pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere,
               Worker const& worker) const;

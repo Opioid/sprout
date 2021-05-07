@@ -173,8 +173,9 @@ bool Plane::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/,
     return false;
 }
 
-bool Plane::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
-                   Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
+bool Plane::sample_volume(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
+                          Transformation const& /*trafo*/, float /*volume*/,
+                          Sample_to& /*sample*/) const {
     return false;
 }
 

@@ -45,8 +45,8 @@ class Distant_sphere final : public Shape {
     bool sample(uint32_t part, float3_p p, float2 uv, Transformation const& trafo, float area,
                 bool two_sided, Sample_to& sample) const final;
 
-    bool sample(uint32_t part, float3_p p, float3_p uvw, Transformation const& trafo, float volume,
-                Sample_to& sample) const final;
+    bool sample_volume(uint32_t part, float3_p p, float3_p uvw, Transformation const& trafo,
+                       float volume, Sample_to& sample) const final;
 
     bool sample(uint32_t part, float2 uv, Transformation const& trafo, float area, bool two_sided,
                 float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;

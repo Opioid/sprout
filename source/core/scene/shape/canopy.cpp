@@ -182,9 +182,9 @@ bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float2 uv, Transformation
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
-                    Transformation const& /*trafo*/, float /*volume*/,
-                    Sample_to& /*sample*/) const {
+bool Canopy::sample_volume(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
+                           Transformation const& /*trafo*/, float /*volume*/,
+                           Sample_to& /*sample*/) const {
     return false;
 }
 

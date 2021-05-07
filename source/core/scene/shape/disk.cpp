@@ -299,8 +299,9 @@ bool Disk::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/, Transformati
     return false;
 }
 
-bool Disk::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
-                  Transformation const& /*trafo*/, float /*volume*/, Sample_to& /*sample*/) const {
+bool Disk::sample_volume(uint32_t /*part*/, float3_p /*p*/, float3_p /*uvw*/,
+                         Transformation const& /*trafo*/, float /*volume*/,
+                         Sample_to& /*sample*/) const {
     return false;
 }
 

@@ -365,8 +365,8 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, Ray co
                                      Intersection const& isec, Material const& material,
                                      Worker& worker) {
     shape::Sample_to light_sample;
-    if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_d, worker,
-                      light_sample)) {
+    if (!light.sample(position, float3(0.f), true, ray.time, light_sampler(ray.depth), sampler_d,
+                      worker, light_sample)) {
         return float3(0.f);
     }
 
@@ -392,8 +392,8 @@ float3 Tracking_single::direct_light(Light const& light, float light_pdf, float 
                                      uint32_t sampler_d, Intersection const& isec,
                                      Material const& material, Worker& worker) {
     shape::Sample_to light_sample;
-    if (!light.sample(position, ray.time, light_sampler(ray.depth), sampler_d, worker,
-                      light_sample)) {
+    if (!light.sample(position, float3(0.f), ray.time, true, light_sampler(ray.depth), sampler_d,
+                      worker, light_sample)) {
         return float3(0.f);
     }
 

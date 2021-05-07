@@ -255,8 +255,8 @@ bool Cube::sample(uint32_t /*part*/, float3_p /*p*/, float2 /*uv*/, Transformati
     return false;
 }
 
-bool Cube::sample(uint32_t /*part*/, float3_p p, float3_p uvw, Transformation const& trafo,
-                  float volume, Sample_to& sample) const {
+bool Cube::sample_volume(uint32_t /*part*/, float3_p p, float3_p uvw, Transformation const& trafo,
+                         float volume, Sample_to& sample) const {
     float3 const xyz  = 2.f * (uvw - 0.5f);
     float3 const wp   = trafo.object_to_world_point(xyz);
     float3 const axis = wp - p;

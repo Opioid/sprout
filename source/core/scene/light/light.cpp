@@ -127,7 +127,7 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
         return false;
     }
 
-    if (!worker.scene().prop_shape(prop)->sample(part, p, rs.uvw, trafo, volume, result)) {
+    if (!worker.scene().prop_shape(prop)->sample_volume(part, p, rs.uvw, trafo, volume, result)) {
         return false;
     }
 
@@ -136,8 +136,11 @@ static inline bool volume_image_sample(uint32_t prop, uint32_t part, float volum
     return (dot(result.wi, n) > 0.f) | total_sphere;
 }
 
-bool Light::sample(float3_p p, float3_p n, Transformation const& trafo, bool total_sphere,
-                   Sampler& sampler, uint32_t sampler_d, Worker& worker, Sample_to& result) const {
+bool Light::sample(float3_p p, float3_p n, uint64_t time, bool total_sphere, Sampler& sampler,
+                   uint32_t sampler_d, Worker& worker, Sample_to& result) const {
+    Transformation temp;
+    auto const&    trafo = transformation_at(time, temp, worker.scene());
+
     switch (type_) {
         case Type::Prop:
             return prop_sample(prop_, part_, extent_, p, n, trafo, two_sided_, total_sphere,
@@ -211,8 +214,11 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     return true;
 }
 
-bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
-                   AABB const& bounds, Worker& worker, Sample_from& result) const {
+bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB const& bounds,
+                   Worker& worker, Sample_from& result) const {
+    Transformation temp;
+    auto const&    trafo = transformation_at(time, temp, worker.scene());
+
     switch (type_) {
         case Type::Prop:
             return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, bounds, worker,
@@ -293,9 +299,12 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area,
     return true;
 }
 
-bool Light::sample(Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
+bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
                    Distribution_2D const& importance, AABB const& bounds, Worker& worker,
                    Sample_from& result) const {
+    Transformation temp;
+    auto const&    trafo = transformation_at(time, temp, worker.scene());
+
     switch (type_) {
         case Type::Prop:
             return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, importance, bounds,
@@ -317,39 +326,6 @@ float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& w
 
     return material->evaluate_radiance(-sample.dir, sample.n, float3(sample.uv, 0.f), extent_,
                                        filter, worker);
-}
-
-bool Light::sample(float3_p p, float3_p n, uint64_t time, bool total_sphere, Sampler& sampler,
-                   uint32_t sampler_d, Worker& worker, Sample_to& result) const {
-    Transformation temp;
-    auto const&    trafo = transformation_at(time, temp, worker.scene());
-
-    return sample(p, n, trafo, total_sphere, sampler, sampler_d, worker, result);
-}
-
-bool Light::sample(float3_p p, uint64_t time, Sampler& sampler, uint32_t sampler_d, Worker& worker,
-                   Sample_to& result) const {
-    Transformation temp;
-    auto const&    trafo = transformation_at(time, temp, worker.scene());
-
-    return sample(p, float3(0.f), trafo, true, sampler, sampler_d, worker, result);
-}
-
-bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB const& bounds,
-                   Worker& worker, Sample_from& result) const {
-    Transformation temp;
-    auto const&    trafo = transformation_at(time, temp, worker.scene());
-
-    return sample(trafo, sampler, sampler_d, bounds, worker, result);
-}
-
-bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
-                   Distribution_2D const& importance, AABB const& bounds, Worker& worker,
-                   Sample_from& result) const {
-    Transformation temp;
-    auto const&    trafo = transformation_at(time, temp, worker.scene());
-
-    return sample(trafo, sampler, sampler_d, importance, bounds, worker, result);
 }
 
 static inline float prop_pdf(float area, Ray const& ray, float3_p n, Intersection const& isec,
