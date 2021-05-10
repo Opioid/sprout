@@ -62,6 +62,8 @@ class Aniso {
     template <typename Fresnel>
     static float reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel, float2 xi,
                          Layer const& layer, bxdf::Sample& result);
+
+        static float3 sample(float3_p wo, float2 alpha, float2 xi, Layer const& layer, float& n_dot_h);
 };
 
 }  // namespace ggx
