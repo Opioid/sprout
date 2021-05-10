@@ -78,7 +78,7 @@ material::Sample const& Checkers::sample(float3_p wo, Renderstate const& rs, Sam
     float3 const color = lerp(checkers_[0], checkers_[1], t);
 
     float2 alpha;
-    float metallic;
+    float  metallic;
     if (surface_map_.is_valid()) {
         float2 const surface = sampler.sample_2(surface_map_, rs.uv, worker.scene());
 

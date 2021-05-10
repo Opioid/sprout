@@ -52,7 +52,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
     }
 
     float2 alpha;
-    float metallic;
+    float  metallic;
 
     uint32_t const nc = surface_map_.num_channels();
     if (nc >= 2) {
@@ -60,12 +60,12 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
         float const r = ggx::map_roughness(surface[0]);
 
-        alpha = anisotropic_alpha(r, anisotropy_);
+        alpha    = anisotropic_alpha(r, anisotropy_);
         metallic = surface[1];
     } else if (1 == nc) {
         float const r = ggx::map_roughness(sampler.sample_1(surface_map_, rs.uv, worker.scene()));
 
-        alpha = anisotropic_alpha(r, anisotropy_);
+        alpha    = anisotropic_alpha(r, anisotropy_);
         metallic = metallic_;
     } else {
         alpha    = alpha_;

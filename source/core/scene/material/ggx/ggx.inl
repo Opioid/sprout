@@ -106,8 +106,7 @@ static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float
 // https://google.github.io/filament/Filament.html#listing_approximatedspecularv
 static inline float masking_shadowing_and_denominator(float t_dot_wi, float t_dot_wo,
                                                       float b_dot_wi, float b_dot_wo,
-                                                      float n_dot_wi, float n_dot_wo,
-                                                      float2 a) {
+                                                      float n_dot_wi, float n_dot_wo, float2 a) {
     float const g_wo = n_dot_wi * length(float3(a[0] * t_dot_wo, a[1] * b_dot_wo, n_dot_wo));
     float const g_wi = n_dot_wo * length(float3(a[0] * t_dot_wi, a[1] * b_dot_wi, n_dot_wi));
 
@@ -457,7 +456,7 @@ float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel,
         return Iso::reflect(wo, n_dot_wo, alpha[0], fresnel, xi, layer, result);
     }
 
-    float const phi     = (2.f * Pi) * xi[0];
+    float const phi = (2.f * Pi) * xi[0];
 
     auto const [sin_phi, cos_phi] = sincos(phi);
 

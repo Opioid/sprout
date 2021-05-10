@@ -28,24 +28,23 @@ bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_
                                                Mat_sample const& sample) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    auto const d = Diff::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, albedo_);
+    auto const d = Diff::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha[0], albedo_);
 
-    if (sample.avoid_caustics() && alpha <= ggx::Min_alpha) {
+    if (sample.avoid_caustics() && alpha[0] <= ggx::Min_alpha) {
         return {n_dot_wi * d.reflection, d.pdf()};
     }
 
-    float const n_dot_h = saturate(layer.n_dot(h));
-
     fresnel::Schlick const schlick(f0_);
 
-    auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
+    auto ggx = ggx::Aniso::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h, alpha, schlick,
+                                      layer);
 
-    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 
     float const pdf = 0.5f * (d.pdf() + ggx.pdf());
 
@@ -60,24 +59,23 @@ bxdf::Result Base_closure<Diff>::base_evaluate(float3_p wi, float3_p wo, float3_
                                                Mat_sample const& sample, float diff_factor) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    auto const d = Diff::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha, diff_factor * albedo_);
+    auto const d = Diff::reflection(wo_dot_h, n_dot_wi, n_dot_wo, alpha[0], diff_factor * albedo_);
 
-    if (sample.avoid_caustics() && alpha <= ggx::Min_alpha) {
+    if (sample.avoid_caustics() && alpha[0] <= ggx::Min_alpha) {
         return {n_dot_wi * d.reflection, d.pdf()};
     }
 
-    float const n_dot_h = saturate(layer.n_dot(h));
-
     fresnel::Schlick const schlick(f0_);
 
-    auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
+    auto ggx = ggx::Aniso::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h, alpha, schlick,
+                                      layer);
 
-    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 
     float const pdf = 0.5f * (d.pdf() + ggx.pdf());
 
@@ -93,22 +91,21 @@ bxdf::Result Base_closure<Diff>::pure_gloss_evaluate(float3_p wi, float3_p wo, f
                                                      Mat_sample const& sample) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
-    if (sample.avoid_caustics() & (alpha <= ggx::Min_alpha)) {
+    if (sample.avoid_caustics() & (alpha[0] <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
-    float const n_dot_h = saturate(layer.n_dot(h));
-
     fresnel::Schlick const schlick(f0_);
 
-    auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha, schlick);
+    auto ggx = ggx::Aniso::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h, alpha, schlick,
+                                      layer);
 
-    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 
     // Apparently weight by (1 - fresnel) is not correct!
     // So here we assume diffuse has the proper fresnel built in - which Disney does (?)
@@ -121,26 +118,25 @@ void Base_closure<Diff>::diffuse_sample(float3_p wo, Mat_sample const& sample, S
                                         RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = Diff::reflect(wo, n_dot_wo, layer, alpha, albedo_, xi, result);
+    float const n_dot_wi = Diff::reflect(wo, n_dot_wo, layer, alpha[0], albedo_, xi, result);
 
-    if (sample.avoid_caustics() & (alpha <= ggx::Min_alpha)) {
+    if (sample.avoid_caustics() & (alpha[0] <= ggx::Min_alpha)) {
         result.reflection *= n_dot_wi;
         return;
     }
 
-    float const n_dot_h = saturate(layer.n_dot(result.h));
-
     fresnel::Schlick const schlick(f0_);
 
-    auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h, alpha, schlick);
+    auto ggx = ggx::Aniso::reflection(result.wi, wo, result.h, n_dot_wi, n_dot_wo, result.h_dot_wi,
+                                      alpha, schlick, layer);
 
-    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 
     result.reflection = n_dot_wi * (result.reflection + ggx.reflection);
     result.pdf        = 0.5f * (result.pdf + ggx.pdf());
@@ -151,27 +147,26 @@ void Base_closure<Diff>::diffuse_sample(float3_p wo, Mat_sample const& sample, f
                                         Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = Diff::reflect(wo, n_dot_wo, layer, alpha, diff_factor * albedo_, xi,
+    float const n_dot_wi = Diff::reflect(wo, n_dot_wo, layer, alpha[0], diff_factor * albedo_, xi,
                                          result);
 
-    if (sample.avoid_caustics() & (alpha <= ggx::Min_alpha)) {
+    if (sample.avoid_caustics() & (alpha[0] <= ggx::Min_alpha)) {
         result.reflection *= n_dot_wi;
         return;
     }
 
-    float const n_dot_h = saturate(layer.n_dot(result.h));
-
     fresnel::Schlick const schlick(f0_);
 
-    auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi, n_dot_h, alpha, schlick);
+    auto ggx = ggx::Aniso::reflection(result.wi, wo, result.h, n_dot_wi, n_dot_wo, result.h_dot_wi,
+                                      alpha, schlick, layer);
 
-    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    ggx.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 
     result.reflection = n_dot_wi * (result.reflection + ggx.reflection);
     result.pdf        = 0.5f * (result.pdf + ggx.pdf());
@@ -182,7 +177,7 @@ void Base_closure<Diff>::gloss_sample(float3_p wo, Mat_sample const& sample, Sam
                                       RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -190,11 +185,11 @@ void Base_closure<Diff>::gloss_sample(float3_p wo, Mat_sample const& sample, Sam
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Iso::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
+    float const n_dot_wi = ggx::Aniso::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
 
-    result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 
-    auto const d = Diff::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha, albedo_);
+    auto const d = Diff::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha[0], albedo_);
 
     result.reflection = n_dot_wi * (result.reflection + d.reflection);
     result.pdf        = 0.5f * (result.pdf + d.pdf());
@@ -205,7 +200,7 @@ void Base_closure<Diff>::gloss_sample(float3_p wo, Mat_sample const& sample, flo
                                       Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -213,11 +208,11 @@ void Base_closure<Diff>::gloss_sample(float3_p wo, Mat_sample const& sample, flo
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Iso::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
+    float const n_dot_wi = ggx::Aniso::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
 
-    result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    result.reflection *= ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 
-    auto const d = Diff::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha,
+    auto const d = Diff::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha[0],
                                     diff_factor * albedo_);
 
     result.reflection = n_dot_wi * (result.reflection + d.reflection);
@@ -229,7 +224,7 @@ void Base_closure<Diff>::pure_gloss_sample(float3_p wo, Mat_sample const& sample
                                            RNG& rng, bxdf::Sample& result) const {
     Layer const& layer = sample.layer_;
 
-    float const alpha = sample.alpha_[0];
+    float2 const alpha = sample.alpha_;
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -237,9 +232,9 @@ void Base_closure<Diff>::pure_gloss_sample(float3_p wo, Mat_sample const& sample
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Iso::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
+    float const n_dot_wi = ggx::Aniso::reflect(wo, n_dot_wo, alpha, schlick, xi, layer, result);
 
-    result.reflection *= n_dot_wi * ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha, metallic_);
+    result.reflection *= n_dot_wi * ggx::ilm_ep_conductor(f0_, n_dot_wo, alpha[0], metallic_);
 }
 
 template <typename Diff>
