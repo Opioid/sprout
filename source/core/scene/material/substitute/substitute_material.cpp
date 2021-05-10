@@ -84,10 +84,10 @@ material::Sample const& Checkers::sample(float3_p wo, Renderstate const& rs, Sam
 
         float const r = ggx::map_roughness(surface[0]);
 
-        alpha = r * r;
+        alpha    = r * r;
         metallic = surface[1];
     } else {
-        alpha = alpha_;
+        alpha    = alpha_;
         metallic = metallic_;
     }
 

@@ -17,20 +17,18 @@ void Material::commit(Threads& /*threads*/, Scene const& /*scene*/) {
     properties_.set(Property::Caustic, alpha_[0] <= ggx::Min_alpha);
 }
 
-material::Sample const& Material::sample(float3_p wo, Renderstate const& rs,
-                                                   Sampler& /*sampler*/, Worker&   worker) const {
+material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sampler& /*sampler*/,
+                                         Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    auto const&  sampler = worker.sampler_2D(sampler_key(), rs.filter);
+    auto const& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
     if (normal_map_.is_valid()) {
-
-        float3 const n       = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
+        float3 const n = sample_normal(wo, rs, normal_map_, sampler, worker.scene());
         sample.layer_.set_tangent_frame(n);
     } else {
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
-
 
     float rotation;
     if (rotation_map_.is_valid()) {
@@ -40,9 +38,8 @@ material::Sample const& Material::sample(float3_p wo, Renderstate const& rs,
     }
 
     if (rotation > 0.f) {
-    sample.layer_.rotate_tangent_frame(rotation);
+        sample.layer_.rotate_tangent_frame(rotation);
     }
-
 
     sample.set_common(rs, wo, ior3_, float3(0.f), alpha_);
     sample.set(ior3_, absorption_);
@@ -53,7 +50,6 @@ material::Sample const& Material::sample(float3_p wo, Renderstate const& rs,
 void Material::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
-
 
 void Material::set_rotation_map(Texture const& rotation_map) {
     rotation_map_ = rotation_map;

@@ -139,8 +139,8 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
 
             float3 const reflection = n_dot_wi * (f * result.reflection + d.reflection);
 
-            result.reflection = reflection *
-                                ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_[0], base_.metallic_);
+            result.reflection = reflection * ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_[0],
+                                                                   base_.metallic_);
             result.pdf *= f;
         } else {
             float const r_wo_dot_h = -wo_dot_h;

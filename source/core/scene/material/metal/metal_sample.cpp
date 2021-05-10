@@ -19,16 +19,12 @@ bxdf::Result Sample::evaluate(float3_p wi) const {
 
     float const wo_dot_h = clamp_dot(wo_, h);
 
-
     fresnel::Conductor const conductor(ior_, absorption_);
 
+    auto const ggx = ggx::Aniso::reflection(wi, wo_, h, n_dot_wi, n_dot_wo, wo_dot_h, alpha_,
+                                            conductor, layer_);
 
-        auto const ggx = ggx::Aniso::reflection(wi, wo_, h, n_dot_wi, n_dot_wo, wo_dot_h, alpha_,
-                                                conductor, layer_);
-
-        return {n_dot_wi * ggx.reflection, ggx.pdf()};
-
-
+    return {n_dot_wi * ggx.reflection, ggx.pdf()};
 }
 
 void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
@@ -43,10 +39,9 @@ void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
 
     float2 const xi = sampler.sample_2D(rng);
 
-
-            float const n_dot_wi = ggx::Aniso::reflect(wo_, n_dot_wo, alpha_, conductor, xi, layer_, result);
-            result.reflection *= n_dot_wi;
-
+    float const n_dot_wi = ggx::Aniso::reflect(wo_, n_dot_wo, alpha_, conductor, xi, layer_,
+                                               result);
+    result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
 }

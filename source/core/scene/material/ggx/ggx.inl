@@ -48,24 +48,23 @@ static inline float map_roughness(float roughness) {
     return roughness * (1.f - Min_roughness) + Min_roughness;
 }
 
-static inline float distribution_isotropic(float n_dot_h, float alpha2) {
-    float const d = (n_dot_h * n_dot_h) * (alpha2 - 1.f) + 1.f;
-    return alpha2 / (Pi * d * d);
+static inline float distribution_isotropic(float n_dot_h, float a2) {
+    float const d = (n_dot_h * n_dot_h) * (a2 - 1.f) + 1.f;
+    return a2 / (Pi * d * d);
 }
 
 static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
-                                             float2 alpha) {
-    float2 const alpha2 = alpha * alpha;
+                                             float2 a) {
+    float2 const a2 = a * a;
 
-    float const x = (x_dot_h * x_dot_h) / alpha2[0];
-    float const y = (y_dot_h * y_dot_h) / alpha2[1];
+    float const x = (x_dot_h * x_dot_h) / a2[0];
+    float const y = (y_dot_h * y_dot_h) / a2[1];
     float const d = (x + y) + (n_dot_h * n_dot_h);
 
-    return 1.f / ((Pi * alpha[0] * alpha[1]) * (d * d));
+    return 1.f / (Pi * (a[0] * a[1]) * (d * d));
 }
 
-static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_dot_wo,
-                                                      float alpha2) {
+static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
     // Un-correlated version
     // This is an optimized version that does the following in one step:
     //
@@ -82,8 +81,8 @@ static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_do
 
     // Optimized version
     // Caution: the "n_dot_wi *" and "n_dot_wo *" are explicitely inversed, this is not a mistake.
-    float const g_wo = n_dot_wi * std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
-    float const g_wi = n_dot_wo * std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
+    float const g_wo = n_dot_wi * std::sqrt(a2 + (1.f - a2) * (n_dot_wo * n_dot_wo));
+    float const g_wi = n_dot_wo * std::sqrt(a2 + (1.f - a2) * (n_dot_wi * n_dot_wi));
 
     return 0.5f / (g_wo + g_wi);
 }
@@ -106,17 +105,13 @@ static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float
 
 // https://google.github.io/filament/Filament.html#listing_approximatedspecularv
 static inline float masking_shadowing_and_denominator(float t_dot_wi, float t_dot_wo,
-                                                    float b_dot_wi, float b_dot_wo,
-                                                    float n_dot_wi, float n_dot_wo,
-                                                    float2 alpha) {
-//    float lambdaV = NoL * length(float3(at * ToV, ab * BoV, NoV));
-//    float lambdaL = NoV * length(float3(at * ToL, ab * BoL, NoL));
+                                                      float b_dot_wi, float b_dot_wo,
+                                                      float n_dot_wi, float n_dot_wo,
+                                                      float2 a) {
+    float const g_wo = n_dot_wi * length(float3(a[0] * t_dot_wo, a[1] * b_dot_wo, n_dot_wo));
+    float const g_wi = n_dot_wo * length(float3(a[0] * t_dot_wi, a[1] * b_dot_wi, n_dot_wi));
 
-    float lambdaV = n_dot_wi * length(float3(alpha[0] * t_dot_wo, alpha[1] * b_dot_wo, n_dot_wo));
-    float lambdaL = n_dot_wo * length(float3(alpha[0] * t_dot_wi, alpha[1] * b_dot_wi, n_dot_wi));
-
-
-    return 0.5f / (lambdaV + lambdaL);
+    return 0.5f / (g_wo + g_wi);
 }
 
 static inline float3 microfacet(float d, float g, float3_p f, float n_dot_wi, float n_dot_wo) {
@@ -422,8 +417,8 @@ inline float Iso::refract(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h
 }
 
 template <typename Fresnel>
-bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-                               float2 alpha, Fresnel fresnel, Layer const& layer) {
+bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot_wi, float n_dot_wo,
+                               float wo_dot_h, float2 alpha, Fresnel fresnel, Layer const& layer) {
     if (alpha[0] == alpha[1]) {
         float const n_dot_h = saturate(dot(layer.n_, h));
 
@@ -435,15 +430,15 @@ bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot
     float const x_dot_h = dot(layer.t_, h);
     float const y_dot_h = dot(layer.b_, h);
 
-
-    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha);
+    float const d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha);
 
     float const t_dot_wi = dot(layer.t_, wi);
-        float const t_dot_wo = dot(layer.t_, wo);
-        float const b_dot_wi = dot(layer.b_, wi);
-        float const b_dot_wo = dot(layer.b_, wo);
+    float const t_dot_wo = dot(layer.t_, wo);
+    float const b_dot_wi = dot(layer.b_, wi);
+    float const b_dot_wo = dot(layer.b_, wo);
 
-        float const  g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo, n_dot_wi, n_dot_wo, alpha);
+    float const g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo,
+                                                      n_dot_wi, n_dot_wo, alpha);
 
     float3 const f = fresnel(wo_dot_h);
 
@@ -456,16 +451,15 @@ bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot
 }
 
 template <typename Fresnel>
-float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel,
-                     float2 xi, Layer const& layer, bxdf::Sample& result) {
-        if (alpha[0] == alpha[1]) {
-
-            return Iso::reflect(wo, n_dot_wo, alpha[0], fresnel, xi, layer, result);
-        }
+float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel, float2 xi,
+                     Layer const& layer, bxdf::Sample& result) {
+    if (alpha[0] == alpha[1]) {
+        return Iso::reflect(wo, n_dot_wo, alpha[0], fresnel, xi, layer, result);
+    }
 
     float const phi     = (2.f * Pi) * xi[0];
-    float const sin_phi = std::sin(phi);
-    float const cos_phi = std::cos(phi);
+
+    auto const [sin_phi, cos_phi] = sincos(phi);
 
     float const  t0 = std::sqrt(xi[1] / (1.f - xi[1]));
     float3 const t1 = alpha[0] * cos_phi * layer.t_ + alpha[1] * sin_phi * layer.b_;
@@ -482,14 +476,15 @@ float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel,
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
-    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha);
+    float const d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha);
 
     float const t_dot_wi = dot(layer.t_, wi);
     float const t_dot_wo = dot(layer.t_, wo);
     float const b_dot_wi = dot(layer.b_, wi);
     float const b_dot_wo = dot(layer.b_, wo);
 
-    float const  g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo, n_dot_wi, n_dot_wo, alpha);
+    float const  g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo,
+                                                      n_dot_wi, n_dot_wo, alpha);
     float3 const f = fresnel(wo_dot_h);
 
     result.reflection = d * g * f;

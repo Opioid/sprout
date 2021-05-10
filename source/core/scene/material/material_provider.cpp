@@ -416,9 +416,8 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
     float3 ior(1.f, 1.f, 1.f);
     float3 absorption(0.75f, 0.75f, 0.75f);
 
-    float  roughness = 0.9f;
+    float roughness  = 0.9f;
     float anisotropy = 0.f;
-
 
     for (auto const& n : metal_value.GetObject()) {
         if ("mask" == n.name) {
@@ -432,11 +431,12 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
         } else if ("preset" == n.name) {
             metal::ior_and_absorption(n.value.GetString(), ior, absorption);
         } else if ("roughness" == n.name) {
-                roughness = json::read_float(n.value);
+            roughness = json::read_float(n.value);
         } else if ("anisotropy" == n.name) {
             anisotropy = json::read_float(n.value);
         } else if ("anisotropy_rotation" == n.name) {
-            read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, aniso_rotation);
+            read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources,
+                              aniso_rotation);
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {

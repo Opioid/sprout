@@ -55,12 +55,13 @@ class Iso {
 class Aniso {
   public:
     template <typename Fresnel>
-    static bxdf::Result reflection(float3_p wi, float3_p wo, float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-                                   float2 alpha, Fresnel fresnel, Layer const& layer);
+    static bxdf::Result reflection(float3_p wi, float3_p wo, float3_p h, float n_dot_wi,
+                                   float n_dot_wo, float wo_dot_h, float2 alpha, Fresnel fresnel,
+                                   Layer const& layer);
 
     template <typename Fresnel>
-    static float reflect(float3_p wo, float n_dot_wo, float2 alpha,
-                         Fresnel fresnel, float2 xi, Layer const& layer, bxdf::Sample& result);
+    static float reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel, float2 xi,
+                         Layer const& layer, bxdf::Sample& result);
 };
 
 }  // namespace ggx

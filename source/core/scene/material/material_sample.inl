@@ -1,12 +1,12 @@
 #ifndef SU_SCENE_MATERIAL_SAMPLE_INL
 #define SU_SCENE_MATERIAL_SAMPLE_INL
 
+#include "base/math/sincos.hpp"
 #include "base/math/vector3.inl"
 #include "material_sample.hpp"
 #include "material_sample_helper.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
-#include "base/math/sincos.hpp"
 
 namespace scene::material {
 
@@ -37,10 +37,10 @@ inline void Layer::set_tangent_frame(float3_p n) {
 }
 
 inline void Layer::rotate_tangent_frame(float a) {
-float3 const t = t_;
-float3 const b = b_;
+    float3 const t = t_;
+    float3 const b = b_;
 
- auto const [sin_a, cos_a] = math::sincos(a);
+    auto const [sin_a, cos_a] = sincos(a);
 
     t_ = cos_a * t + sin_a * b;
     b_ = -sin_a * t + cos_a * b;
