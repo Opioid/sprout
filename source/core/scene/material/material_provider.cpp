@@ -404,6 +404,8 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
 Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
+    Mapped_value<float> aniso_rotation(0.f);
+
     Texture normal_map;
     //	Texture_ptr surface_map;
     Texture direction_map;
@@ -413,8 +415,10 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
 
     float3 ior(1.f, 1.f, 1.f);
     float3 absorption(0.75f, 0.75f, 0.75f);
+
     float  roughness = 0.9f;
-    float2 roughness_aniso(0.f, 0.f);
+    float anisotropy = 0.f;
+
 
     for (auto const& n : metal_value.GetObject()) {
         if ("mask" == n.name) {
@@ -428,11 +432,11 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
         } else if ("preset" == n.name) {
             metal::ior_and_absorption(n.value.GetString(), ior, absorption);
         } else if ("roughness" == n.name) {
-            if (n.value.IsArray()) {
-                roughness_aniso = json::read_float2(n.value);
-            } else {
                 roughness = json::read_float(n.value);
-            }
+        } else if ("anisotropy" == n.name) {
+            anisotropy = json::read_float(n.value);
+        } else if ("anisotropy_rotation" == n.name) {
+            read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, aniso_rotation);
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
@@ -445,8 +449,6 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
 
                 if ("Normal" == desc.usage) {
                     normal_map = create_texture(desc, Tex_usage::Normal, resources);
-                } else if ("Anisotropy" == desc.usage) {
-                    direction_map = create_texture(desc, Tex_usage::Anisotropy, resources);
                 } else if ("Mask" == desc.usage) {
                     mask = create_texture(desc, Tex_usage::Mask, resources);
                 }
@@ -456,30 +458,16 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
         }
     }
 
-    if (roughness_aniso[0] > 0.f && roughness_aniso[1] > 0.f) {
-        auto material = new metal::Material_anisotropic(sampler_settings, two_sided);
-
-        material->set_mask(mask);
-        material->set_normal_map(normal_map);
-        //	material->set_surface_map(surface_map);
-        material->set_direction_map(direction_map);
-
-        material->set_ior(ior);
-        material->set_absorption(absorption);
-        material->set_roughness(roughness_aniso);
-
-        return material;
-    }
-
-    auto material = new metal::Material_isotropic(sampler_settings, two_sided);
+    auto material = new metal::Material(sampler_settings, two_sided);
 
     material->set_mask(mask);
     material->set_normal_map(normal_map);
-    //	material->set_surface_map(surface_map);
+    material->set_rotation_map(aniso_rotation.texture);
 
     material->set_ior(ior);
     material->set_absorption(absorption);
-    material->set_roughness(roughness);
+    material->set_roughness(roughness, anisotropy);
+    material->set_anisotropy_rotation(aniso_rotation.value);
 
     return material;
 }
@@ -1198,8 +1186,7 @@ uint32_t Provider::max_sample_size() {
     num_bytes = std::max(glass::Glass_rough::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass_thin::sample_size(), num_bytes);
     num_bytes = std::max(light::Constant::sample_size(), num_bytes);
-    num_bytes = std::max(metal::Material_anisotropic::sample_size(), num_bytes);
-    num_bytes = std::max(metal::Material_isotropic::sample_size(), num_bytes);
+    num_bytes = std::max(metal::Material::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_clearcoat::sample_size(), num_bytes);
     num_bytes = std::max(substitute::Material_coating_subsurface::sample_size(), num_bytes);

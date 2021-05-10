@@ -34,6 +34,8 @@ struct Layer {
     void set_tangent_frame(float3_p t, float3_p b, float3_p n);
     void set_tangent_frame(float3_p n);
 
+    void rotate_tangent_frame(float a);
+
     float n_dot(float3_p v) const;
 
     float abs_n_dot(float3_p v) const;

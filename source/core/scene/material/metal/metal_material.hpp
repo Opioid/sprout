@@ -5,9 +5,9 @@
 
 namespace scene::material::metal {
 
-class Material_isotropic : public Material {
+class Material : public material::Material {
   public:
-    Material_isotropic(Sampler_settings sampler_settings, bool two_sided);
+    Material(Sampler_settings sampler_settings, bool two_sided);
 
     void commit(Threads& threads, Scene const& scene) final;
 
@@ -15,48 +15,25 @@ class Material_isotropic : public Material {
                                    Worker& worker) const final;
 
     void set_normal_map(Texture const& normal_map);
+    void set_rotation_map(Texture const& rotation_map);
 
     void set_ior(float3_p ior);
     void set_absorption(float3_p absorption);
-    void set_roughness(float roughness);
+    void set_roughness(float roughness, float anisotropy);
+    void set_anisotropy_rotation(float angle);
 
     static size_t sample_size();
 
   protected:
     Texture normal_map_;
-
-    float3 ior3_;
-    float3 absorption_;
-
-    float alpha_;
-};
-
-class Material_anisotropic : public Material {
-  public:
-    Material_anisotropic(Sampler_settings sampler_settings, bool two_sided);
-
-    void commit(Threads& threads, Scene const& scene) final;
-
-    material::Sample const& sample(float3_p wo, Renderstate const& rs, Sampler& sampler,
-                                   Worker& worker) const final;
-
-    void set_normal_map(Texture const& normal_map);
-    void set_direction_map(Texture const& direction_map);
-
-    void set_ior(float3_p ior);
-    void set_absorption(float3_p absorption);
-    void set_roughness(float2 roughness);
-
-    static size_t sample_size();
-
-  protected:
-    Texture normal_map_;
-    Texture direction_map_;
+    Texture rotation_map_;
 
     float3 ior3_;
     float3 absorption_;
 
     float2 alpha_;
+
+    float anisotropy_rotation_;
 };
 
 }  // namespace scene::material::metal

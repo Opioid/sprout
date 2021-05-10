@@ -104,6 +104,7 @@ static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float
     return {0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi), t_wo + n_dot_wo};
 }
 
+// https://google.github.io/filament/Filament.html#listing_approximatedspecularv
 static inline float masking_shadowing_and_denominator(float t_dot_wi, float t_dot_wo,
                                                     float b_dot_wi, float b_dot_wo,
                                                     float n_dot_wi, float n_dot_wo,
@@ -422,7 +423,13 @@ inline float Iso::refract(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h
 
 template <typename Fresnel>
 bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-                               float2 alpha, Layer const& layer, Fresnel fresnel) {
+                               float2 alpha, Fresnel fresnel, Layer const& layer) {
+    if (alpha[0] == alpha[1]) {
+        float const n_dot_h = saturate(dot(layer.n_, h));
+
+        return Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha[0], fresnel);
+    }
+
     float const n_dot_h = saturate(dot(layer.n_, h));
 
     float const x_dot_h = dot(layer.t_, h);
@@ -449,8 +456,13 @@ bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot
 }
 
 template <typename Fresnel>
-float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Layer const& layer, Fresnel fresnel,
-                     float2 xi, bxdf::Sample& result) {
+float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel,
+                     float2 xi, Layer const& layer, bxdf::Sample& result) {
+        if (alpha[0] == alpha[1]) {
+
+            return Iso::reflect(wo, n_dot_wo, alpha[0], fresnel, xi, layer, result);
+        }
+
     float const phi     = (2.f * Pi) * xi[0];
     float const sin_phi = std::sin(phi);
     float const cos_phi = std::cos(phi);
