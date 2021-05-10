@@ -77,16 +77,18 @@ material::Sample const& Checkers::sample(float3_p wo, Renderstate const& rs, Sam
 
     float3 const color = lerp(checkers_[0], checkers_[1], t);
 
-    float2 surface;
+    float alpha;
+    float metallic;
     if (surface_map_.is_valid()) {
-        surface = sampler.sample_2(surface_map_, rs.uv, worker.scene());
+        float2 const surface = sampler.sample_2(surface_map_, rs.uv, worker.scene());
 
         float const r = ggx::map_roughness(surface[0]);
 
-        surface[0] = r * r;
+        alpha = r * r;
+        metallic = surface[1];
     } else {
-        surface[0] = alpha_;
-        surface[1] = metallic_;
+        alpha = alpha_;
+        metallic = metallic_;
     }
 
     float3 radiance;
@@ -96,8 +98,8 @@ material::Sample const& Checkers::sample(float3_p wo, Renderstate const& rs, Sam
         radiance = float3(0.f);
     }
 
-    sample.set_common(rs, wo, color, radiance, surface[0]);
-    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior()), surface[1]);
+    sample.set_common(rs, wo, color, radiance, float2(alpha));
+    sample.base_.set(color, fresnel::schlick_f0(ior_, rs.ior()), metallic);
 
     return sample;
 }

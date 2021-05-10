@@ -18,7 +18,7 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
         return {float3(0.f), 0.f};
     }
 
-    if (avoid_caustics() && alpha_ <= ggx::Min_alpha) {
+    if (avoid_caustics() && alpha_[0] <= ggx::Min_alpha) {
         return {float3(0.f), 0.f};
     }
 
@@ -47,10 +47,10 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
 
         fresnel::Schlick1 const schlick(f0_);
 
-        auto ggx = ggx::Iso::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h, alpha_,
+        auto ggx = ggx::Iso::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h, alpha_[0],
                                         ior, schlick);
 
-        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_[0], ior_.eta_t);
 
         return {std::min(n_dot_wi, n_dot_wo) * albedo_ * ggx.reflection, ggx.pdf()};
 
@@ -67,10 +67,10 @@ bxdf::Result Sample_rough::evaluate(float3_p wi) const {
 
         float3 fresnel;
 
-        auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick,
+        auto ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_[0], schlick,
                                         fresnel);
 
-        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_[0], ior_.eta_t);
 
         return {n_dot_wi * ggx.reflection, fresnel[0] * ggx.pdf()};
     }
@@ -95,7 +95,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
     float2 const xi = sampler.sample_2D(rng);
 
     float        n_dot_h;
-    float3 const h = ggx::Iso::sample(wo_, alpha_, xi, layer, n_dot_h);
+    float3 const h = ggx::Iso::sample(wo_, alpha_[0], xi, layer, n_dot_h);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
     float const wo_dot_h = clamp_dot(wo_, h);
@@ -119,7 +119,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
 
     if (sampler.sample_1D(rng) <= f) {
         float const n_dot_wi = ggx::Iso::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h,
-                                                 alpha_, layer, result);
+                                                 alpha_[0], layer, result);
 
         result.reflection *= f * n_dot_wi;
         result.pdf *= f;
@@ -127,7 +127,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
         float const r_wo_dot_h = same_side ? -wo_dot_h : wo_dot_h;
 
         float const n_dot_wi = ggx::Iso::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h, r_wo_dot_h,
-                                                 alpha_, ior, layer, result);
+                                                 alpha_[0], ior, layer, result);
 
         float const omf = 1.f - f;
 
@@ -135,7 +135,7 @@ void Sample_rough::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) cons
         result.pdf *= omf;
     }
 
-    result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
+    result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_[0], ior_.eta_t);
 
     result.wavelength = 0.f;
 }

@@ -43,7 +43,7 @@ material::Sample const& Sky_material::sample(float3_p wo, Renderstate const& rs,
 
     float3 const radiance = sky_->model().evaluate_sky(-wo);
 
-    sample.set_common(rs, wo, radiance, radiance, 0.f);
+    sample.set_common(rs, wo, radiance, radiance, float2(0.f));
 
     return sample;
 }
@@ -84,7 +84,7 @@ material::Sample const& Sky_baked_material::sample(float3_p wo, Renderstate cons
 
     float3 const radiance = sampler.sample_3(texture_, rs.uv, worker.scene());
 
-    sample.set_common(rs, wo, radiance, radiance, 0.f);
+    sample.set_common(rs, wo, radiance, radiance, float2(0.f));
 
     return sample;
 }

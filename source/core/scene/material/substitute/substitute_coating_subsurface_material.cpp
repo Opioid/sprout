@@ -39,7 +39,7 @@ material::Sample const& Material_coating_subsurface::sample(float3_p wo, Renders
     if (rs.subsurface) {
         auto& sample = worker.sample<volumetric::Sample>();
 
-        sample.set_common(rs, wo, float3(0.f), float3(0.), rs.alpha());
+        sample.set_common(rs, wo, float3(0.f), float3(0.), float2(rs.alpha()));
 
         sample.set(volumetric_anisotropy_);
 

@@ -39,7 +39,7 @@ material::Sample const& Emissionmap::sample(float3_p wo, Renderstate const& rs,
     float3 const radiance  = sampler.sample_3(emission_map_, rs.uv, worker.scene());
     float3 const fradiance = emission_factor_ * radiance;
 
-    sample.set_common(rs, wo, fradiance, fradiance, 0.f);
+    sample.set_common(rs, wo, fradiance, fradiance, float2(0.f));
 
     return sample;
 }

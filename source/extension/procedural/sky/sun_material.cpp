@@ -29,7 +29,7 @@ material::Sample const& Sun_material::sample(float3_p wo, Renderstate const& rs,
 
     float3 const radiance = sky_->model().evaluate_sky_and_sun(-wo);
 
-    sample.set_common(rs, wo, radiance, radiance, 0.f);
+    sample.set_common(rs, wo, radiance, radiance, float2(0.f));
 
     return sample;
 }
@@ -58,7 +58,7 @@ material::Sample const& Sun_baked_material::sample(float3_p wo, Renderstate cons
 
     SOFT_ASSERT(all_finite_and_positive(radiance));
 
-    sample.set_common(rs, wo, radiance, radiance, 0.f);
+    sample.set_common(rs, wo, radiance, radiance, float2(0.f));
 
     return sample;
 }

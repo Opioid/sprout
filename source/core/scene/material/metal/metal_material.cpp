@@ -30,7 +30,7 @@ material::Sample const& Material_isotropic::sample(float3_p wo, Renderstate cons
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs, wo, ior3_, float3(0.), alpha_);
+    sample.set_common(rs, wo, ior3_, float3(0.), float2(alpha_));
     sample.set(ior3_, absorption_);
 
     return sample;
@@ -70,7 +70,7 @@ material::Sample const& Material_anisotropic::sample(float3_p wo, Renderstate co
                                                      Sampler& /*sampler*/, Worker&   worker) const {
     auto& sample = worker.sample<Sample_anisotropic>();
 
-    sample.set_common(rs, wo, ior3_, float3(0.f), alpha_[0]);
+    sample.set_common(rs, wo, ior3_, float3(0.f), alpha_);
 
     auto& sampler = worker.sampler_2D(sampler_key(), rs.filter);
 
@@ -87,7 +87,7 @@ material::Sample const& Material_anisotropic::sample(float3_p wo, Renderstate co
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set(ior3_, absorption_, alpha_);
+    sample.set(ior3_, absorption_);
 
     return sample;
 }

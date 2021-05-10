@@ -2,6 +2,7 @@
 #define SU_SCENE_MATERIAL_SAMPLE_HPP
 
 #include "base/flags/flags.hpp"
+#include "base/math/vector2.hpp"
 #include "base/math/vector3.hpp"
 
 namespace sampler {
@@ -87,7 +88,7 @@ class Sample {
     bool same_hemisphere(float3_p v) const;
 
     void set_common(Renderstate const& rs, float3_p wo, float3_p albedo, float3_p radiance,
-                    float alpha);
+                    float2 alpha);
 
     void set_common(float3_p geo_n, float3_p n, float3_p wo, float alpha);
 
@@ -102,7 +103,7 @@ class Sample {
     float3 albedo_;
     float3 radiance_;
 
-    float alpha_;
+    float2 alpha_;
 
     enum class Property {
         None           = 0,

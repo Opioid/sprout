@@ -23,7 +23,7 @@ material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sam
 
     float3 const color = same_side ? Color_front : Color_back;
 
-    sample.set_common(rs, wo, color, float3(0.f), 1.f);
+    sample.set_common(rs, wo, color, float3(0.f), float2(1.f));
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

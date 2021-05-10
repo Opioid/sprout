@@ -38,10 +38,10 @@ bxdf::Result Sample_subsurface::evaluate(float3_p wi) const {
 
         fresnel::Schlick1 const schlick(base_.f0_[0]);
 
-        auto ggx = ggx::Iso::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h, alpha_,
+        auto ggx = ggx::Iso::refraction(n_dot_wi, n_dot_wo, wi_dot_h, wo_dot_h, n_dot_h, alpha_[0],
                                         ior, schlick);
 
-        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
+        ggx.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_[0], ior_.eta_t);
 
         return {std::min(n_dot_wi, n_dot_wo) * ggx.reflection, ggx.pdf()};
     }
@@ -56,7 +56,7 @@ bxdf::Result Sample_subsurface::evaluate(float3_p wi) const {
 
     Layer const& layer = layer_;
 
-    float const alpha = alpha_;
+    float const alpha = alpha_[0];
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
@@ -107,7 +107,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
     float2 const xi = sampler.sample_2D(rng);
 
     float        n_dot_h;
-    float3 const h = ggx::Iso::sample(wo_, alpha_, xi, layer, n_dot_h);
+    float3 const h = ggx::Iso::sample(wo_, alpha_[0], xi, layer, n_dot_h);
 
     float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
     float const wo_dot_h = clamp_dot(wo_, h);
@@ -132,21 +132,21 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
     if (float const p = sampler.sample_1D(rng); same_side) {
         if (p <= f) {
             float const n_dot_wi = ggx::Iso::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h,
-                                                     alpha_, layer, result);
+                                                     alpha_[0], layer, result);
 
-            auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_,
+            auto const d = Diffuse::reflection(result.h_dot_wi, n_dot_wi, n_dot_wo, alpha_[0],
                                                albedo_);
 
             float3 const reflection = n_dot_wi * (f * result.reflection + d.reflection);
 
             result.reflection = reflection *
-                                ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_, base_.metallic_);
+                                ggx::ilm_ep_conductor(base_.f0_, n_dot_wo, alpha_[0], base_.metallic_);
             result.pdf *= f;
         } else {
             float const r_wo_dot_h = -wo_dot_h;
 
             float const n_dot_wi = ggx::Iso::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                     r_wo_dot_h, alpha_, ior, layer, result);
+                                                     r_wo_dot_h, alpha_[0], ior, layer, result);
 
             float const omf = 1.f - f;
 
@@ -156,7 +156,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
     } else {
         if (p <= f) {
             float const n_dot_wi = ggx::Iso::reflect(wo_, h, n_dot_wo, n_dot_h, wi_dot_h, wo_dot_h,
-                                                     alpha_, layer, result);
+                                                     alpha_[0], layer, result);
 
             result.reflection *= f * n_dot_wi;
             result.pdf *= f;
@@ -164,7 +164,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             float const r_wo_dot_h = wo_dot_h;
 
             float const n_dot_wi = ggx::Iso::refract(wo_, h, n_dot_wo, n_dot_h, -wi_dot_h,
-                                                     r_wo_dot_h, alpha_, ior, layer, result);
+                                                     r_wo_dot_h, alpha_[0], ior, layer, result);
 
             float const omf = 1.f - f;
 
@@ -172,7 +172,7 @@ void Sample_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result)
             result.pdf *= omf;
         }
 
-        result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_.eta_t);
+        result.reflection *= ggx::ilm_ep_dielectric(n_dot_wo, alpha_[0], ior_.eta_t);
     }
 
     result.wavelength = 0.f;

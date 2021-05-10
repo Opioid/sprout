@@ -17,7 +17,7 @@ material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sam
                                          Worker& worker) const {
     auto& sample = worker.sample<Sample>();
 
-    sample.set_common(rs, wo, float3(0.f), float3(0.f), 1.f);
+    sample.set_common(rs, wo, float3(0.f), float3(0.f), float2(rs.alpha()));
 
     sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 

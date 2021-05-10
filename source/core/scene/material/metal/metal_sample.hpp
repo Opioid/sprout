@@ -24,11 +24,10 @@ class Sample_anisotropic : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const final;
 
-    void set(float3_p ior, float3_p absorption, float2 alpha);
+    void set(float3_p ior, float3_p absorption);
 
     float3 ior_;
     float3 absorption_;
-    float2 alpha_;
 };
 
 }  // namespace scene::material::metal

@@ -54,12 +54,14 @@ static inline float distribution_isotropic(float n_dot_h, float alpha2) {
 }
 
 static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
-                                             float2 alpha2, float axy) {
+                                             float2 alpha) {
+    float2 const alpha2 = alpha * alpha;
+
     float const x = (x_dot_h * x_dot_h) / alpha2[0];
     float const y = (y_dot_h * y_dot_h) / alpha2[1];
     float const d = (x + y) + (n_dot_h * n_dot_h);
 
-    return 1.f / ((Pi * axy) * (d * d));
+    return 1.f / ((Pi * alpha[0] * alpha[1]) * (d * d));
 }
 
 static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_dot_wo,
@@ -100,6 +102,20 @@ static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float
     float const t_wo = t.y();
 
     return {0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi), t_wo + n_dot_wo};
+}
+
+static inline float masking_shadowing_and_denominator(float t_dot_wi, float t_dot_wo,
+                                                    float b_dot_wi, float b_dot_wo,
+                                                    float n_dot_wi, float n_dot_wo,
+                                                    float2 alpha) {
+//    float lambdaV = NoL * length(float3(at * ToV, ab * BoV, NoV));
+//    float lambdaL = NoV * length(float3(at * ToL, ab * BoL, NoL));
+
+    float lambdaV = n_dot_wi * length(float3(alpha[0] * t_dot_wo, alpha[1] * b_dot_wo, n_dot_wo));
+    float lambdaL = n_dot_wo * length(float3(alpha[0] * t_dot_wi, alpha[1] * b_dot_wi, n_dot_wi));
+
+
+    return 0.5f / (lambdaV + lambdaL);
 }
 
 static inline float3 microfacet(float d, float g, float3_p f, float n_dot_wi, float n_dot_wo) {
@@ -405,19 +421,23 @@ inline float Iso::refract(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h
 }
 
 template <typename Fresnel>
-bxdf::Result Aniso::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
                                float2 alpha, Layer const& layer, Fresnel fresnel) {
     float const n_dot_h = saturate(dot(layer.n_, h));
 
     float const x_dot_h = dot(layer.t_, h);
     float const y_dot_h = dot(layer.b_, h);
 
-    float2 const alpha2 = alpha * alpha;
 
-    float const axy = alpha[0] * alpha[1];
+    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha);
 
-    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha2, axy);
-    float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, axy);
+    float const t_dot_wi = dot(layer.t_, wi);
+        float const t_dot_wo = dot(layer.t_, wo);
+        float const b_dot_wi = dot(layer.b_, wi);
+        float const b_dot_wo = dot(layer.b_, wo);
+
+        float const  g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo, n_dot_wi, n_dot_wo, alpha);
+
     float3 const f = fresnel(wo_dot_h);
 
     float const  pdf        = (d * n_dot_h) / (4.f * wo_dot_h);
@@ -450,12 +470,14 @@ float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Layer const& lay
 
     float const n_dot_wi = layer.clamp_n_dot(wi);
 
-    float2 const alpha2 = alpha * alpha;
+    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha);
 
-    float const axy = alpha[0] * alpha[1];
+    float const t_dot_wi = dot(layer.t_, wi);
+    float const t_dot_wo = dot(layer.t_, wo);
+    float const b_dot_wi = dot(layer.b_, wi);
+    float const b_dot_wo = dot(layer.b_, wo);
 
-    float const  d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, alpha2, axy);
-    float const  g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, axy);
+    float const  g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo, n_dot_wi, n_dot_wo, alpha);
     float3 const f = fresnel(wo_dot_h);
 
     result.reflection = d * g * f;

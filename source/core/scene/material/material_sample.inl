@@ -120,7 +120,7 @@ inline float3 Sample::radiance() const {
 }
 
 inline float Sample::alpha() const {
-    return alpha_;
+    return alpha_[0];
 }
 
 inline float Sample::clamp_geo_n_dot(float3_p v) const {
@@ -132,7 +132,7 @@ inline bool Sample::same_hemisphere(float3_p v) const {
 }
 
 inline void Sample::set_common(Renderstate const& rs, float3_p wo, float3_p albedo,
-                               float3_p radiance, float alpha) {
+                               float3_p radiance, float2 alpha) {
     geo_n_    = rs.geo_n;
     n_        = rs.n;
     wo_       = wo;
@@ -149,7 +149,7 @@ inline void Sample::set_common(float3_p geo_n, float3_p n, float3_p wo, float al
     wo_       = wo;
     albedo_   = float3(0.f);
     radiance_ = float3(0.f);
-    alpha_    = alpha;
+    alpha_    = float2(alpha);
 }
 
 inline void Sample::set_radiance(float3_p radiance) {

@@ -8,7 +8,7 @@
 namespace scene::material::metal {
 
 bxdf::Result Sample_isotropic::evaluate(float3_p wi) const {
-    if (!same_hemisphere(wo_) || (avoid_caustics() && alpha_ <= ggx::Min_alpha)) {
+    if (!same_hemisphere(wo_) || (avoid_caustics() && alpha_[0] <= ggx::Min_alpha)) {
         return {float3(0.f), 0.f};
     }
 
@@ -23,7 +23,7 @@ bxdf::Result Sample_isotropic::evaluate(float3_p wi) const {
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, conductor);
+    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_[0], conductor);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf()};
 }
@@ -40,7 +40,7 @@ void Sample_isotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) 
 
     float2 const xi = sampler.sample_2D(rng);
 
-    float const n_dot_wi = ggx::Iso::reflect(wo_, n_dot_wo, alpha_, conductor, xi, layer_, result);
+    float const n_dot_wi = ggx::Iso::reflect(wo_, n_dot_wo, alpha_[0], conductor, xi, layer_, result);
     result.reflection *= n_dot_wi;
 
     result.wavelength = 0.f;
@@ -65,7 +65,7 @@ bxdf::Result Sample_anisotropic::evaluate(float3_p wi) const {
 
     fresnel::Conductor const conductor(ior_, absorption_);
 
-    auto const ggx = ggx::Aniso::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h, alpha_, layer_,
+    auto const ggx = ggx::Aniso::reflection(wi, wo_, h, n_dot_wi, n_dot_wo, wo_dot_h, alpha_, layer_,
                                             conductor);
 
     return {n_dot_wi * ggx.reflection, ggx.pdf()};
@@ -90,10 +90,9 @@ void Sample_anisotropic::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
     result.wavelength = 0.f;
 }
 
-void Sample_anisotropic::set(float3_p ior, float3_p absorption, float2 alpha) {
+void Sample_anisotropic::set(float3_p ior, float3_p absorption) {
     ior_        = ior;
     absorption_ = absorption;
-    alpha_      = alpha;
 }
 
 }  // namespace scene::material::metal

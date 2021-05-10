@@ -75,7 +75,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     // std::max(surface[0], std::min(float(depth * depth) * 0.025f, 1.f))
 
-    sample.set_common(rs, wo, color, radiance, alpha);
+    sample.set_common(rs, wo, color, radiance, float2(alpha));
 
     sample.base_.set(color, fresnel::schlick_f0(ior_, ior_outside), metallic);
 }

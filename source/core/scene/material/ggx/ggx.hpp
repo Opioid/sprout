@@ -55,7 +55,7 @@ class Iso {
 class Aniso {
   public:
     template <typename Fresnel>
-    static bxdf::Result reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+    static bxdf::Result reflection(float3_p wi, float3_p wo, float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
                                    float2 alpha, Layer const& layer, Fresnel fresnel);
 
     template <typename Fresnel>
