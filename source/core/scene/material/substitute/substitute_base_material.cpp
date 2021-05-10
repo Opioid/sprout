@@ -14,7 +14,7 @@ Material_base::Material_base(Sampler_settings sampler_settings, bool two_sided)
     : material::Material(sampler_settings, two_sided) {}
 
 void Material_base::commit(Threads& /*threads*/, Scene const& /*scene*/) {
-    properties_.set(Property::Caustic, alpha_ <= ggx::Min_alpha);
+    properties_.set(Property::Caustic, alpha_[0] <= ggx::Min_alpha);
 }
 
 float3 Material_base::evaluate_radiance(float3_p /*wi*/, float3_p /*n*/, float3_p uvw,
@@ -56,10 +56,18 @@ void Material_base::set_color(float3_p color) {
     color_ = color;
 }
 
-void Material_base::set_roughness(float roughness) {
+void Material_base::set_roughness(float roughness, float anisotropy) {
     float const r = ggx::clamp_roughness(roughness);
 
-    alpha_ = r * r;
+    if (anisotropy > 0.f) {
+        float const rv = ggx::clamp_roughness(roughness * (1.f - anisotropy));
+
+        alpha_ = float2(r * r, rv * rv);
+    } else {
+        alpha_ = float2(r * r);
+    }
+
+    anisotropy_ = anisotropy;
 }
 
 void Material_base::set_metallic(float metallic) {

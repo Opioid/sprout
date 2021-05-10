@@ -27,7 +27,7 @@ class Material_base : public material::Material {
 
     void set_color(float3_p color);
 
-    void set_roughness(float roughness);
+    void set_roughness(float roughness, float anisotropy);
     void set_metallic(float metallic);
     void set_emission_factor(float emission_factor);
 
@@ -44,7 +44,9 @@ class Material_base : public material::Material {
 
     float3 color_;
 
-    float alpha_;
+    float2 alpha_;
+
+    float anisotropy_;
     float metallic_;
     float emission_factor_;
 };

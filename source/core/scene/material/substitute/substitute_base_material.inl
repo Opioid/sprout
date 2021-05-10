@@ -23,6 +23,16 @@ static inline float3 f0_to_a_b(float3_p f0) {
     return 6.f * (1.f - f0);
 }
 
+static inline float2 anisotropic_alpha(float r, float anisotropy) {
+    if (anisotropy > 0.f) {
+        float const rv = ggx::clamp_roughness(r * (1.f - anisotropy));
+
+        return float2(r * r, rv * rv);
+    }
+
+    return float2(r * r);
+}
+
 template <typename Sample>
 void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_outside,
                                Texture_sampler_2D const& sampler, Worker const& worker,
@@ -41,7 +51,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
         color = color_;
     }
 
-    float alpha;
+    float2 alpha;
     float metallic;
 
     uint32_t const nc = surface_map_.num_channels();
@@ -50,12 +60,12 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
         float const r = ggx::map_roughness(surface[0]);
 
-        alpha    = r * r;
+        alpha = anisotropic_alpha(r, anisotropy_);
         metallic = surface[1];
     } else if (1 == nc) {
         float const r = ggx::map_roughness(sampler.sample_1(surface_map_, rs.uv, worker.scene()));
 
-        alpha    = r * r;
+        alpha = anisotropic_alpha(r, anisotropy_);
         metallic = metallic_;
     } else {
         alpha    = alpha_;
@@ -75,7 +85,7 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
 
     // std::max(surface[0], std::min(float(depth * depth) * 0.025f, 1.f))
 
-    sample.set_common(rs, wo, color, radiance, float2(alpha));
+    sample.set_common(rs, wo, color, radiance, alpha);
 
     sample.base_.set(color, fresnel::schlick_f0(ior_, ior_outside), metallic);
 }

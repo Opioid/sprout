@@ -555,6 +555,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
 
     float metallic              = 0.f;
     float ior                   = 1.46f;
+    float anisotropy            = 0.f;
     float emission_factor       = 1.f;
     float thickness             = 0.f;
     float attenuation_distance  = 0.f;
@@ -600,6 +601,8 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             ior = json::read_float(n.value);
         } else if ("roughness" == n.name) {
             read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, roughness);
+        } else if ("anisotropy" == n.name) {
+            anisotropy = json::read_float(n.value);
         } else if ("metallic" == n.name) {
             metallic = json::read_float(n.value);
         } else if ("emission_factor" == n.name) {
@@ -655,7 +658,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color(color.value);
         material->set_emission(emission.value);
         material->set_ior(ior);
-        material->set_roughness(roughness.value);
+        material->set_roughness(roughness.value, anisotropy);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
         material->set_volumetric(thickness, attenuation_distance);
@@ -689,7 +692,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_color(color.value);
             material->set_emission(emission.value);
             material->set_ior(ior);
-            material->set_roughness(roughness.value);
+            material->set_roughness(roughness.value, anisotropy);
             material->set_metallic(metallic);
             material->set_emission_factor(emission_factor);
 
@@ -715,7 +718,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_volumetric(attenuation_color, subsurface_color, attenuation_distance,
                                      volumetric_anisotropy);
             material->set_ior(ior);
-            material->set_roughness(roughness.value);
+            material->set_roughness(roughness.value, anisotropy);
             material->set_metallic(metallic);
             material->set_emission_factor(emission_factor);
 
@@ -740,7 +743,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color(color.value);
         material->set_emission(emission.value);
         material->set_ior(ior);
-        material->set_roughness(roughness.value);
+        material->set_roughness(roughness.value, anisotropy);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
 
@@ -769,7 +772,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_volumetric(attenuation_color, subsurface_color, attenuation_distance,
                                  volumetric_anisotropy);
         material->set_ior(ior);
-        material->set_roughness(roughness.value);
+        material->set_roughness(roughness.value, anisotropy);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
 
@@ -787,7 +790,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_checkers(checkers[0], checkers[1], checkers_scale);
         material->set_emission(emission.value);
         material->set_ior(ior);
-        material->set_roughness(roughness.value);
+        material->set_roughness(roughness.value, anisotropy);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
 
@@ -805,7 +808,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
     material->set_color(color.value);
     material->set_emission(emission.value);
     material->set_ior(ior);
-    material->set_roughness(roughness.value);
+    material->set_roughness(roughness.value, anisotropy);
     material->set_metallic(metallic);
     material->set_emission_factor(emission_factor);
 
