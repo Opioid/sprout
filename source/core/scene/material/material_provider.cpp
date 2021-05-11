@@ -138,7 +138,7 @@ Material* Provider::create_fallback_material() {
 
 Material* Provider::load(json::Value const& value, std::string_view mount_folder,
                          Resources& resources) const {
-    json::Value::ConstMemberIterator const rendering_node = value.FindMember("rendering");
+    auto const rendering_node = value.FindMember("rendering");
     if (value.MemberEnd() == rendering_node) {
         logging::push_error("Material has no render node.");
         return nullptr;
@@ -1170,6 +1170,10 @@ void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usa
 
         if (!desc.filename.empty()) {
             result.texture = create_texture(desc, usage, resources);
+        }
+
+        if (auto const n = value.FindMember("value"); value.MemberEnd() != n) {
+            result.value = read_color(n->value);
         }
     } else {
         result.value = read_color(value);
