@@ -54,20 +54,6 @@ struct Texture_description {
     bool invert = false;
 };
 
-struct Coating_description {
-    float3 color = float3(1.f);
-
-    float attenuation_distance = 0.1f;
-    float ior                  = 1.5f;
-    float roughness            = 0.2f;
-    float thickness            = 0.f;
-
-    bool in_nm = false;
-
-    Texture_description normal_map_description;
-    Texture_description thickness_map_description;
-};
-
 template <typename Value>
 struct Mapped_value {
     Mapped_value(Value v) : value(v){};
@@ -77,10 +63,24 @@ struct Mapped_value {
     Value value;
 };
 
+struct Coating_description {
+    Mapped_value<float> thickness = Mapped_value<float>(0.f);
+
+    Texture normal_map;
+
+    float3 color = float3(1.f);
+
+    float attenuation_distance = 0.1f;
+    float ior                  = 1.5f;
+    float roughness            = 0.2f;
+
+    bool in_nm = false;
+};
+
 static Texture_description read_texture_description(json::Value const& value, bool no_tex_dwim);
 
 static void read_coating_description(json::Value const& value, bool no_tex_dwim,
-                                     Coating_description& description);
+                                     Resources& resources, Coating_description& description);
 
 static void read_sampler_settings(json::Value const& value, Sampler_settings& settings);
 
@@ -617,7 +617,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
         } else if ("coating" == n.name) {
-            read_coating_description(n.value, no_tex_dwim_, coating);
+            read_coating_description(n.value, no_tex_dwim_, resources, coating);
         } else if ("textures" == n.name) {
             for (auto& tn : n.value.GetArray()) {
                 Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
@@ -669,20 +669,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         return material;
     }
 
-    if (coating.thickness > 0.f) {
-        Texture coating_thickness_map;
-        Texture coating_normal_map;
-
-        if (!coating.thickness_map_description.filename.empty()) {
-            coating_thickness_map = create_texture(coating.thickness_map_description,
-                                                   Tex_usage::Mask, resources);
-        }
-
-        if (!coating.normal_map_description.filename.empty()) {
-            coating_normal_map = create_texture(coating.normal_map_description, Tex_usage::Normal,
-                                                resources);
-        }
-
+    if (coating.thickness.value > 0.f) {
         if (coating.in_nm) {
             auto material = new substitute::Material_thinfilm(sampler_settings, two_sided);
 
@@ -701,9 +688,9 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_metallic(metallic);
             material->set_emission_factor(emission_factor);
 
-            material->set_coating_normal_map(coating_normal_map);
-            material->set_coating_thickness_map(coating_thickness_map);
-            material->set_thinfilm(coating.ior, coating.roughness, coating.thickness);
+            material->set_coating_normal_map(coating.normal_map);
+            material->set_coating_thickness_map(coating.thickness.texture);
+            material->set_thinfilm(coating.ior, coating.roughness, coating.thickness.value);
 
             return material;
         }
@@ -729,12 +716,12 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_metallic(metallic);
             material->set_emission_factor(emission_factor);
 
-            material->set_coating_normal_map(coating_normal_map);
-            material->set_coating_thickness_map(coating_thickness_map);
+            material->set_coating_normal_map(coating.normal_map);
+            material->set_coating_thickness_map(coating.thickness.texture);
             material->set_coating_attenuation(coating.color, coating.attenuation_distance);
             material->set_coating_ior(coating.ior);
             material->set_coating_roughness(coating.roughness);
-            material->set_coating_thickness(coating.thickness);
+            material->set_coating_thickness(coating.thickness.value);
 
             return material;
         }
@@ -756,12 +743,12 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
 
-        material->set_coating_normal_map(coating_normal_map);
-        material->set_coating_thickness_map(coating_thickness_map);
+        material->set_coating_normal_map(coating.normal_map);
+        material->set_coating_thickness_map(coating.thickness.texture);
         material->set_coating_attenuation(coating.color, coating.attenuation_distance);
         material->set_coating_ior(coating.ior);
         material->set_coating_roughness(coating.roughness);
-        material->set_coating_thickness(coating.thickness);
+        material->set_coating_thickness(coating.thickness.value);
 
         return material;
     }
@@ -1041,11 +1028,13 @@ Texture create_texture(Texture_description const& desc, Tex_usage usage, Resourc
     return image::texture::Provider::load(desc.filename, options, desc.scale, resources);
 }
 
-void read_coating_description(json::Value const& value, bool no_tex_dwim,
+void read_coating_description(json::Value const& value, bool no_tex_dwim, Resources& resources,
                               Coating_description& coating) {
     if (!value.IsObject()) {
         return;
     }
+
+    coating.thickness.value = 0.001f;
 
     for (auto& n : value.GetObject()) {
         if ("color" == n.name) {
@@ -1054,26 +1043,15 @@ void read_coating_description(json::Value const& value, bool no_tex_dwim,
             coating.attenuation_distance = json::read_float(n.value);
         } else if ("ior" == n.name) {
             coating.ior = json::read_float(n.value);
+        } else if ("normal" == n.name) {
+            coating.normal_map = read_texture(n.value, no_tex_dwim, Tex_usage::Normal, resources);
         } else if ("roughness" == n.name) {
             coating.roughness = json::read_float(n.value);
         } else if ("thickness" == n.name) {
-            coating.thickness = json::read_float(n.value);
+            read_mapped_value(n.value, no_tex_dwim, Tex_usage::Roughness, resources,
+                              coating.thickness);
         } else if ("unit" == n.name) {
             coating.in_nm = ("nm" == json::read_string(n.value));
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const desc = read_texture_description(tn, no_tex_dwim);
-
-                if (desc.filename.empty()) {
-                    continue;
-                }
-
-                if ("Normal" == desc.usage) {
-                    coating.normal_map_description = desc;
-                } else if ("Mask" == desc.usage) {
-                    coating.thickness_map_description = desc;
-                }
-            }
         }
     }
 }
@@ -1172,27 +1150,29 @@ Texture read_texture(json::Value const& value, bool no_tex_dwim, Tex_usage usage
 
 void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
                        Resources& resources, Mapped_value<float>& result) {
-    if (!value.IsObject() || value.MemberEnd() == value.FindMember("file")) {
-        result.value = json::read_float(value);
-    } else {
+    if (value.IsObject()) {
         Texture_description const desc = read_texture_description(value, no_tex_dwim);
 
         if (!desc.filename.empty()) {
             result.texture = create_texture(desc, usage, resources);
         }
+
+        result.value = json::read_float(value, "value", result.value);
+    } else {
+        result.value = json::read_float(value);
     }
 }
 
 void read_mapped_value(json::Value const& value, bool no_tex_dwim, Tex_usage usage,
                        Resources& resources, Mapped_value<float3>& result) {
-    if (!value.IsObject() || value.MemberEnd() == value.FindMember("file")) {
-        result.value = read_color(value);
-    } else {
+    if (value.IsObject()) {
         Texture_description const desc = read_texture_description(value, no_tex_dwim);
 
         if (!desc.filename.empty()) {
             result.texture = create_texture(desc, usage, resources);
         }
+    } else {
+        result.value = read_color(value);
     }
 }
 
