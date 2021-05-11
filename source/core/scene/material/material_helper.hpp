@@ -20,8 +20,9 @@ using Texture_sampler_2D = image::texture::Sampler_2D;
 static inline float3 sample_normal(float3_p wo, Renderstate const& rs, float2 const uv,
                                    Texture const& map, Texture_sampler_2D const& sampler,
                                    Scene const& scene) {
-    float3 const nm = sampler.sample_3(map, uv, scene);
-    float3 const n  = normalize(rs.tangent_to_world(nm));
+    float2 const nm  = sampler.sample_2(map, uv, scene);
+    float const  nmz = math::sqrt(std::max(1.f - dot(nm, nm), Dot_min));
+    float3 const n   = normalize(rs.tangent_to_world(float3(nm, nmz)));
 
     SOFT_ASSERT(testing::check_normal_map(n, nm, uv));
 

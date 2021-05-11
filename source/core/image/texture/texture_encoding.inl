@@ -28,6 +28,10 @@ static inline float cached_snorm_to_float(uint8_t byte) {
     return SNORM_FLOAT[byte];
 }
 
+static inline float2 cached_snorm_to_float(byte2 byte) {
+    return float2(SNORM_FLOAT[byte[0]], SNORM_FLOAT[byte[1]]);
+}
+
 static inline float3 cached_snorm_to_float(byte3 byte) {
     return float3(SNORM_FLOAT[byte[0]], SNORM_FLOAT[byte[1]], SNORM_FLOAT[byte[2]]);
 }

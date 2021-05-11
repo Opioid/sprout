@@ -34,9 +34,17 @@ float2 Texture::at_2(int32_t x, int32_t y, Scene const& scene) const {
             uint8_t const value = image->byte1().at(x, y);
             return float2(encoding::cached_unorm_to_float(value), 0.f);
         }
+        case Type::Byte2_snorm: {
+            byte2 const value = image->byte2().at(x, y);
+            return encoding::cached_snorm_to_float(value);
+        }
         case Type::Byte2_unorm: {
             byte2 const value = image->byte2().at(x, y);
             return encoding::cached_unorm_to_float(value);
+        }
+        case Type::Byte3_snorm: {
+            byte3 const value = image->byte3().at(x, y);
+            return encoding::cached_snorm_to_float(value.xy());
         }
         case Type::Float2: {
             return image->float2().at(x, y);
@@ -147,6 +155,16 @@ void Texture::gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const {
             c[3] = float2(encoding::cached_unorm_to_float(values[3]), 0.f);
             return;
         }
+        case Type::Byte2_snorm: {
+            byte2 values[4];
+            image->byte2().gather(xy_xy1, values);
+
+            c[0] = encoding::cached_snorm_to_float(values[0]);
+            c[1] = encoding::cached_snorm_to_float(values[1]);
+            c[2] = encoding::cached_snorm_to_float(values[2]);
+            c[3] = encoding::cached_snorm_to_float(values[3]);
+            return;
+        }
         case Type::Byte2_unorm: {
             byte2 values[4];
             image->byte2().gather(xy_xy1, values);
@@ -155,6 +173,16 @@ void Texture::gather_2(int4_p xy_xy1, Scene const& scene, float2 c[4]) const {
             c[1] = encoding::cached_unorm_to_float(values[1]);
             c[2] = encoding::cached_unorm_to_float(values[2]);
             c[3] = encoding::cached_unorm_to_float(values[3]);
+            return;
+        }
+        case Type::Byte3_snorm: {
+            byte3 values[4];
+            image->byte3().gather(xy_xy1, values);
+
+            c[0] = encoding::cached_snorm_to_float(values[0].xy());
+            c[1] = encoding::cached_snorm_to_float(values[1].xy());
+            c[2] = encoding::cached_snorm_to_float(values[2].xy());
+            c[3] = encoding::cached_snorm_to_float(values[3].xy());
             return;
         }
         default:

@@ -47,7 +47,7 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
         }
     } else if (Usage::Normal == usage) {
         if (Swizzle::Undefined == swizzle) {
-            swizzle = Swizzle::XYZ;
+            swizzle = Swizzle::XY;
         }
     }
 
@@ -80,17 +80,21 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
     }
 
     if (Image::Type::Byte2 == image->type()) {
+        if (Usage::Normal == usage) {
+            SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
+
+            return Texture(Texture::Type::Byte2_snorm, image_id, scale);
+        }
+
         return Texture(Texture::Type::Byte2_unorm, image_id, scale);
     }
 
     if (Image::Type::Byte3 == image->type()) {
-        if (Usage::Normal == usage) {
-            SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
-
-            return Texture(Texture::Type::Byte3_snorm, image_id, scale);
+        if (Usage::Color == usage) {
+            return Texture(Texture::Type::Byte3_sRGB, image_id, scale);
         }
 
-        return Texture(Texture::Type::Byte3_sRGB, image_id, scale);
+        return Texture(Texture::Type::Byte3_unorm, image_id, scale);
     }
 
     if (Image::Type::Byte4 == image->type()) {

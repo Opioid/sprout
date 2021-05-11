@@ -9,33 +9,32 @@
 namespace image::texture::testing {
 
 bool is_valid_normal_map(Image const& image, std::string const& filename) {
-    if (Image::Type::Byte3 != image.type()) {
-        std::cout << "\"" << filename << "\" is not Byte3" << std::endl;
+    if (Image::Type::Byte2 != image.type()) {
+        std::cout << "\"" << filename << "\" is not Byte2" << std::endl;
         return false;
     }
 
-    Byte3 const& typed_image = image.byte3();
+    Byte2 const& typed_image = image.byte2();
 
     auto const d = typed_image.description().dimensions();
     for (int32_t y = 0; y < d[1]; ++y) {
         for (int32_t x = 0; x < d[0]; ++x) {
             auto value = typed_image.at(x, y);
 
-            if (0 == value[0] + value[1] + value[2]) {
+            if (0 == value[0] + value[1]) {
                 std::cout << "\"" << filename << "\" [" << x << ", " << y << "] is zero."
                           << std::endl;
                 return false;
             }
 
-            float3 n(encoding::cached_snorm_to_float(value[0]),
-                     encoding::cached_snorm_to_float(value[1]),
-                     encoding::cached_snorm_to_float(value[2]));
+            float2 n(encoding::cached_snorm_to_float(value[0]),
+                     encoding::cached_snorm_to_float(value[1]));
 
-            if (0.f == n[0] && 0.f == n[1] && 0.f == n[2]) {
-                std::cout << "\"" << filename << "\" [" << x << ", " << y << "] is [0, 0, 0]."
+            if (0.f == n[0] && 0.f == n[1]) {
+                std::cout << "\"" << filename << "\" [" << x << ", " << y << "] is [0, 0]."
                           << std::endl;
 
-                std::cout << "rgb: " << value << std::endl;
+                std::cout << "rg: " << value << std::endl;
 
                 return false;
             }
