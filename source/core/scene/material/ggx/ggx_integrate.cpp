@@ -69,7 +69,7 @@ float integrate_f_s_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_sa
         float2 const xi = hammersley(i, num_samples, 0);
 
         float        n_dot_h;
-        float3 const h = ggx::Iso::sample(wo, alpha, xi, layer, n_dot_h);
+        float3 const h = ggx::Aniso::sample(wo, float2(alpha), xi, layer, n_dot_h);
 
         // float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 
@@ -143,7 +143,7 @@ float integrate_f_sd_ss(float alpha, float ior_t, float n_dot_wo, uint32_t num_s
         float2 const xi = hammersley(i, num_samples, 0);
 
         float        n_dot_h;
-        float3 const h = ggx::Iso::sample(wo, alpha, xi, layer, n_dot_h);
+        float3 const h = ggx::Aniso::sample(wo, float2(alpha), xi, layer, n_dot_h);
 
         // float const n_dot_wo = layer.clamp_abs_n_dot(wo);
 

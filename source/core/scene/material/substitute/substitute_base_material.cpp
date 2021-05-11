@@ -42,6 +42,10 @@ void Material_base::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
 }
 
+void Material_base::set_rotation_map(Texture const& rotation_map) {
+    rotation_map_ = rotation_map;
+}
+
 void Material_base::set_surface_map(Texture const& surface_map) {
     surface_map_ = surface_map;
 }
@@ -68,6 +72,10 @@ void Material_base::set_roughness(float roughness, float anisotropy) {
     }
 
     anisotropy_ = anisotropy;
+}
+
+void Material_base::set_rotation(float angle) {
+    rotation_ = (2.f * Pi) * angle;
 }
 
 void Material_base::set_metallic(float metallic) {

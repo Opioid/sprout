@@ -404,11 +404,10 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
 Material* Provider::load_metal(json::Value const& metal_value, Resources& resources) const {
     Sampler_settings sampler_settings;
 
-    Mapped_value<float> aniso_rotation(0.f);
+    Mapped_value<float> rotation(0.f);
 
     Texture normal_map;
     //	Texture_ptr surface_map;
-    Texture direction_map;
     Texture mask;
 
     bool two_sided = false;
@@ -435,8 +434,7 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
         } else if ("anisotropy" == n.name) {
             anisotropy = json::read_float(n.value);
         } else if ("anisotropy_rotation" == n.name) {
-            read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources,
-                              aniso_rotation);
+            read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, rotation);
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
         } else if ("textures" == n.name) {
@@ -462,12 +460,12 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
 
     material->set_mask(mask);
     material->set_normal_map(normal_map);
-    material->set_rotation_map(aniso_rotation.texture);
+    material->set_rotation_map(rotation.texture);
 
     material->set_ior(ior);
     material->set_absorption(absorption);
     material->set_roughness(roughness, anisotropy);
-    material->set_anisotropy_rotation(aniso_rotation.value);
+    material->set_rotation(rotation.value);
 
     return material;
 }
@@ -540,6 +538,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
     Mapped_value<float3> color(float3(0.5f));
     Mapped_value<float3> emission(float3(0.f));
     Mapped_value<float>  roughness(0.8f);
+    Mapped_value<float>  rotation(0.f);
 
     Texture normal_map;
     Texture mask;
@@ -601,6 +600,8 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             ior = json::read_float(n.value);
         } else if ("roughness" == n.name) {
             read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, roughness);
+        } else if ("anisotropy_rotation" == n.name) {
+            read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, rotation);
         } else if ("anisotropy" == n.name) {
             anisotropy = json::read_float(n.value);
         } else if ("metallic" == n.name) {
@@ -653,12 +654,14 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color_map(color.texture);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
+        material->set_rotation_map(rotation.texture);
         material->set_emission_map(emission.texture);
 
         material->set_color(color.value);
         material->set_emission(emission.value);
         material->set_ior(ior);
         material->set_roughness(roughness.value, anisotropy);
+        material->set_rotation(rotation.value);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
         material->set_volumetric(thickness, attenuation_distance);
@@ -687,12 +690,14 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_color_map(color.texture);
             material->set_normal_map(normal_map);
             material->set_surface_map(roughness.texture);
+            material->set_rotation_map(rotation.texture);
             material->set_emission_map(emission.texture);
 
             material->set_color(color.value);
             material->set_emission(emission.value);
             material->set_ior(ior);
             material->set_roughness(roughness.value, anisotropy);
+            material->set_rotation(rotation.value);
             material->set_metallic(metallic);
             material->set_emission_factor(emission_factor);
 
@@ -710,6 +715,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
             material->set_color_map(color.texture);
             material->set_normal_map(normal_map);
             material->set_surface_map(roughness.texture);
+            material->set_rotation_map(rotation.texture);
             material->set_emission_map(emission.texture);
             material->set_density_map(density_map);
 
@@ -719,6 +725,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
                                      volumetric_anisotropy);
             material->set_ior(ior);
             material->set_roughness(roughness.value, anisotropy);
+            material->set_rotation(rotation.value);
             material->set_metallic(metallic);
             material->set_emission_factor(emission_factor);
 
@@ -738,12 +745,14 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color_map(color.texture);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
+        material->set_rotation_map(rotation.texture);
         material->set_emission_map(emission.texture);
 
         material->set_color(color.value);
         material->set_emission(emission.value);
         material->set_ior(ior);
         material->set_roughness(roughness.value, anisotropy);
+        material->set_rotation(rotation.value);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
 
@@ -764,6 +773,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_color_map(color.texture);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
+        material->set_rotation_map(rotation.texture);
         material->set_emission_map(emission.texture);
         material->set_density_map(density_map);
 
@@ -773,6 +783,7 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
                                  volumetric_anisotropy);
         material->set_ior(ior);
         material->set_roughness(roughness.value, anisotropy);
+        material->set_rotation(rotation.value);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
 
@@ -785,12 +796,14 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
         material->set_mask(mask);
         material->set_normal_map(normal_map);
         material->set_surface_map(roughness.texture);
+        material->set_rotation_map(rotation.texture);
         material->set_emission_map(emission.texture);
 
         material->set_checkers(checkers[0], checkers[1], checkers_scale);
         material->set_emission(emission.value);
         material->set_ior(ior);
         material->set_roughness(roughness.value, anisotropy);
+        material->set_rotation(rotation.value);
         material->set_metallic(metallic);
         material->set_emission_factor(emission_factor);
 
@@ -803,12 +816,14 @@ Material* Provider::load_substitute(json::Value const& value, Resources& resourc
     material->set_color_map(color.texture);
     material->set_normal_map(normal_map);
     material->set_surface_map(roughness.texture);
+    material->set_rotation_map(rotation.texture);
     material->set_emission_map(emission.texture);
 
     material->set_color(color.value);
     material->set_emission(emission.value);
     material->set_ior(ior);
     material->set_roughness(roughness.value, anisotropy);
+    material->set_rotation(rotation.value);
     material->set_metallic(metallic);
     material->set_emission_factor(emission_factor);
 

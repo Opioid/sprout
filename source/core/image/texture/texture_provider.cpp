@@ -37,10 +37,6 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
         if (Swizzle::Undefined == swizzle) {
             swizzle = Swizzle::W;
         }
-    } else if (Usage::Anisotropy == usage) {
-        if (Swizzle::Undefined == swizzle) {
-            swizzle = Swizzle::XY;
-        }
     } else if (Usage::Surface == usage) {
         if (Swizzle::Undefined == swizzle) {
             swizzle = Swizzle::XY;
@@ -84,10 +80,6 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
     }
 
     if (Image::Type::Byte2 == image->type()) {
-        if (Usage::Anisotropy == usage) {
-            return Texture(Texture::Type::Byte2_snorm, image_id, scale);
-        }
-
         return Texture(Texture::Type::Byte2_unorm, image_id, scale);
     }
 

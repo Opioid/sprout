@@ -122,7 +122,7 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
             float2 const xi = sampler.sample_2D(rng);
 
             float        n_dot_h;
-            float3 const h = ggx::Iso::sample(wo_, alpha_[0], xi, layer, n_dot_h);
+            float3 const h = ggx::Aniso::sample(wo_, alpha_, xi, layer, n_dot_h);
 
             float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
             float const wo_dot_h = clamp_dot(wo_, h);
@@ -185,7 +185,7 @@ void Sample_coating_subsurface::sample(Sampler& sampler, RNG& rng, bxdf::Sample&
         float2 const xi = sampler.sample_2D(rng);
 
         float        n_dot_h;
-        float3 const h = ggx::Iso::sample(wo_, alpha_[0], xi, layer, n_dot_h);
+        float3 const h = ggx::Aniso::sample(wo_, alpha_, xi, layer, n_dot_h);
 
         float const n_dot_wo = layer.clamp_abs_n_dot(wo_);
         float const wo_dot_h = clamp_dot(wo_, h);

@@ -108,7 +108,7 @@ float Clearcoat::sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& 
                         bxdf::Sample& result) const {
     float2 const xi = sampler.sample_2D(rng, 1);
 
-    float3 const h = ggx::Iso::sample(wo, alpha_, xi, layer, n_dot_h);
+    float3 const h = ggx::Aniso::sample(wo, float2(alpha_), xi, layer, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -185,7 +185,7 @@ float Thinfilm::sample(float3_p wo, Layer const& layer, Sampler& sampler, RNG& r
                        bxdf::Sample& result) const {
     float2 const xi = sampler.sample_2D(rng, 1);
 
-    float3 const h = ggx::Iso::sample(wo, alpha_, xi, layer, n_dot_h);
+    float3 const h = ggx::Aniso::sample(wo, float2(alpha_), xi, layer, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 

@@ -42,8 +42,6 @@ class Iso {
     static float refract(float3_p wo, float n_dot_wo, float alpha, IoR ior, Fresnel fresnel,
                          float2 xi, Layer const& layer, bxdf::Sample& result);
 
-    static float3 sample(float3_p wo, float alpha, float2 xi, Layer const& layer, float& n_dot_h);
-
     static float reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
                          float wo_dot_h, float alpha, Layer const& layer, bxdf::Sample& result);
 
@@ -63,7 +61,7 @@ class Aniso {
     static float reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel, float2 xi,
                          Layer const& layer, bxdf::Sample& result);
 
-        static float3 sample(float3_p wo, float2 alpha, float2 xi, Layer const& layer, float& n_dot_h);
+    static float3 sample(float3_p wo, float2 alpha, float2 xi, Layer const& layer, float& n_dot_h);
 };
 
 }  // namespace ggx

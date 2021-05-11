@@ -20,7 +20,7 @@ class Material : public material::Material {
     void set_ior(float3_p ior);
     void set_absorption(float3_p absorption);
     void set_roughness(float roughness, float anisotropy);
-    void set_anisotropy_rotation(float angle);
+    void set_rotation(float angle);
 
     static size_t sample_size();
 
@@ -33,7 +33,7 @@ class Material : public material::Material {
 
     float2 alpha_;
 
-    float anisotropy_rotation_;
+    float rotation_;
 };
 
 }  // namespace scene::material::metal

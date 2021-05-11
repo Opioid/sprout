@@ -87,8 +87,7 @@ static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_do
     return 0.5f / (g_wo + g_wi);
 }
 
-static inline float2 optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float n_dot_wo,
-                                                           float alpha2) {
+static inline float2 visibility_and_g1_wo(float n_dot_wi, float n_dot_wo, float alpha2) {
     //    float const t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
     //    float const t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
 
@@ -113,13 +112,13 @@ static inline float masking_shadowing_and_denominator(float t_dot_wi, float t_do
     return 0.5f / (g_wo + g_wi);
 }
 
-static inline float2 optimized_masking_shadowing_and_g1_wo(float t_dot_wi, float t_dot_wo,
-                                                      float b_dot_wi, float b_dot_wo,
-                                                      float n_dot_wi, float n_dot_wo, float2 a) {
+static inline float2 visibility_and_g1_wo(float t_dot_wi, float t_dot_wo, float b_dot_wi,
+                                          float b_dot_wo, float n_dot_wi, float n_dot_wo,
+                                          float2 a) {
     float const t_wo = length(float3(a[0] * t_dot_wo, a[1] * b_dot_wo, n_dot_wo));
     float const t_wi = length(float3(a[0] * t_dot_wi, a[1] * b_dot_wi, n_dot_wi));
 
-    return {0.5f / (n_dot_wi * t_wo + n_dot_wo *  t_wi), t_wo + n_dot_wo};
+    return {0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi), t_wo + n_dot_wo};
 }
 
 static inline float3 microfacet(float d, float g, float3_p f, float n_dot_wi, float n_dot_wo) {
@@ -181,7 +180,7 @@ bxdf::Result Iso::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
     float const alpha2 = alpha * alpha;
 
     float const  d = distribution_isotropic(n_dot_h, alpha2);
-    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    float2 const g = visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
     float3 const f = fresnel(wo_dot_h);
 
     fresnel_result = f;
@@ -206,7 +205,7 @@ template <typename Fresnel>
 float Iso::reflect(float3_p wo, float n_dot_wo, float alpha, Fresnel fresnel, float2 xi,
                    Layer const& layer, float3& fresnel_result, bxdf::Sample& result) {
     float        n_dot_h;
-    float3 const h = sample(wo, alpha, xi, layer, n_dot_h);
+    float3 const h = Aniso::sample(wo, float2(alpha), xi, layer, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -217,7 +216,7 @@ float Iso::reflect(float3_p wo, float n_dot_wo, float alpha, Fresnel fresnel, fl
     float const alpha2 = alpha * alpha;
 
     float const  d = distribution_isotropic(n_dot_h, alpha2);
-    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    float2 const g = visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
     float3 const f = fresnel(wo_dot_h);
 
     fresnel_result = f;
@@ -274,7 +273,7 @@ template <typename Fresnel>
 float Iso::refract(float3_p wo, float n_dot_wo, float alpha, IoR ior, Fresnel fresnel, float2 xi,
                    Layer const& layer, bxdf::Sample& result) {
     float        n_dot_h;
-    float3 const h = sample(wo, alpha, xi, layer, n_dot_h);
+    float3 const h = Aniso::sample(wo, float2(alpha), xi, layer, n_dot_h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -326,41 +325,6 @@ float Iso::refract(float3_p wo, float n_dot_wo, float alpha, IoR ior, Fresnel fr
     return n_dot_wi;
 }
 
-inline float3 Iso::sample(float3_p wo, float alpha, float2 xi, Layer const& layer, float& n_dot_h) {
-    float3 const lwo = layer.world_to_tangent(wo);
-
-    // stretch view
-    float3 const v = normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
-
-    // orthonormal basis
-    float3 const cross_v_z = normalize(float3(v[1], -v[0], 0.f));  // == cross(v, [0, 0, 1])
-
-    float3 const t1 = (v[2] < 0.9999f) ? cross_v_z : float3(1.f, 0.f, 0.f);
-    float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
-
-    // sample point with polar coordinates (r, phi)
-    float const a   = 1.f / (1.f + v[2]);
-    float const r   = std::sqrt(xi[0]);
-    float const phi = (xi[1] < a) ? (xi[1] / a * Pi) : (Pi + (xi[1] - a) / (1.f - a) * Pi);
-
-    auto const [sin_phi, cos_phi] = sincos(phi);
-
-    float const p1 = r * cos_phi;
-    float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
-
-    // compute normal
-    float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
-
-    // unstretch
-    m = normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
-
-    n_dot_h = clamp(m[2]);
-
-    float3 const h = layer.tangent_to_world(m);
-
-    return h;
-}
-
 inline float Iso::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
                           float wo_dot_h, float alpha, Layer const& layer, bxdf::Sample& result) {
     float3 const wi = normalize(2.f * wo_dot_h * h - wo);
@@ -370,7 +334,7 @@ inline float Iso::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h
     float const alpha2 = alpha * alpha;
 
     float const  d = distribution_isotropic(n_dot_h, alpha2);
-    float2 const g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
+    float2 const g = visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2);
 
     result.reflection = float3(d * g[0]);
     result.wi         = wi;
@@ -445,15 +409,12 @@ bxdf::Result Aniso::reflection(float3_p wi, float3_p wo, float3_p h, float n_dot
     float const b_dot_wi = dot(layer.b_, wi);
     float const b_dot_wo = dot(layer.b_, wo);
 
-//    float const g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo,
-//                                                      n_dot_wi, n_dot_wo, alpha);
-
-    float2 const g = optimized_masking_shadowing_and_g1_wo(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo,
-                                                           n_dot_wi, n_dot_wo, alpha);
+    float2 const g = visibility_and_g1_wo(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo, n_dot_wi,
+                                          n_dot_wo, alpha);
 
     float3 const f = fresnel(wo_dot_h);
 
-    float const  pdf        = pdf_visible(d, g[1]);// pdf_visible(n_dot_wo, wo_dot_h, d, alpha[0] * alpha[1]) ;//(d * n_dot_h) / (4.f * wo_dot_h);
+    float const  pdf        = pdf_visible(d, g[1]);
     float3 const reflection = d * g[0] * f;
 
     SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
@@ -467,22 +428,13 @@ float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel,
     if (alpha[0] == alpha[1]) {
         return Iso::reflect(wo, n_dot_wo, alpha[0], fresnel, xi, layer, result);
     }
-/*
-    float const phi = (2.f * Pi) * xi[0];
 
-    auto const [sin_phi, cos_phi] = sincos(phi);
-
-    float const  t0 = std::sqrt(xi[1] / (1.f - xi[1]));
-    float3 const t1 = alpha[0] * cos_phi * layer.t_ + alpha[1] * sin_phi * layer.b_;
-
-    float3 const h = normalize(t0 * t1 + layer.n_);
-            */
-            float        n_dot_h;
-            float3 const h = sample(wo, alpha, xi, layer, n_dot_h);
+    float        n_dot_h;
+    float3 const h = sample(wo, alpha, xi, layer, n_dot_h);
 
     float const x_dot_h = dot(layer.t_, h);
     float const y_dot_h = dot(layer.b_, h);
- //   float const n_dot_h = dot(layer.n_, h);
+    //   float const n_dot_h = dot(layer.n_, h);
 
     float const wo_dot_h = clamp_dot(wo, h);
 
@@ -497,18 +449,15 @@ float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel,
     float const b_dot_wi = dot(layer.b_, wi);
     float const b_dot_wo = dot(layer.b_, wo);
 
-//    float const  g = masking_shadowing_and_denominator(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo,
-//                                                      n_dot_wi, n_dot_wo, alpha);
-
-    float2 const g = optimized_masking_shadowing_and_g1_wo(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo,
-                                                           n_dot_wi, n_dot_wo, alpha);
+    float2 const g = visibility_and_g1_wo(t_dot_wi, t_dot_wo, b_dot_wi, b_dot_wo, n_dot_wi,
+                                          n_dot_wo, alpha);
 
     float3 const f = fresnel(wo_dot_h);
 
     result.reflection = d * g[0] * f;
     result.wi         = wi;
     result.h          = h;
-    result.pdf        = pdf_visible(d, g[1]);//pdf_visible(n_dot_wo, wo_dot_h, d, alpha[0] * alpha[1]) ;// (d * n_dot_h) / (4.f * wo_dot_h);
+    result.pdf        = pdf_visible(d, g[1]);
     result.h_dot_wi   = wo_dot_h;
     result.type.clear(bxdf::Type::Glossy_reflection);
 
@@ -517,40 +466,41 @@ float Aniso::reflect(float3_p wo, float n_dot_wo, float2 alpha, Fresnel fresnel,
     return n_dot_wi;
 }
 
-            inline float3 Aniso::sample(float3_p wo, float2 alpha, float2 xi, Layer const& layer, float& n_dot_h) {
-                float3 const lwo = layer.world_to_tangent(wo);
+inline float3 Aniso::sample(float3_p wo, float2 alpha, float2 xi, Layer const& layer,
+                            float& n_dot_h) {
+    float3 const lwo = layer.world_to_tangent(wo);
 
-                // stretch view
-                float3 const v = normalize(float3(alpha[0] * lwo[0], alpha[1] * lwo[1], lwo[2]));
+    // stretch view
+    float3 const v = normalize(float3(alpha[0] * lwo[0], alpha[1] * lwo[1], lwo[2]));
 
-                // orthonormal basis
-                float3 const cross_v_z = normalize(float3(v[1], -v[0], 0.f));  // == cross(v, [0, 0, 1])
+    // orthonormal basis
+    float3 const cross_v_z = normalize(float3(v[1], -v[0], 0.f));  // == cross(v, [0, 0, 1])
 
-                float3 const t1 = (v[2] < 0.9999f) ? cross_v_z : float3(1.f, 0.f, 0.f);
-                float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
+    float3 const t1 = (v[2] < 0.9999f) ? cross_v_z : float3(1.f, 0.f, 0.f);
+    float3 const t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
-                // sample point with polar coordinates (r, phi)
-                float const a   = 1.f / (1.f + v[2]);
-                float const r   = std::sqrt(xi[0]);
-                float const phi = (xi[1] < a) ? (xi[1] / a * Pi) : (Pi + (xi[1] - a) / (1.f - a) * Pi);
+    // sample point with polar coordinates (r, phi)
+    float const a   = 1.f / (1.f + v[2]);
+    float const r   = std::sqrt(xi[0]);
+    float const phi = (xi[1] < a) ? (xi[1] / a * Pi) : (Pi + (xi[1] - a) / (1.f - a) * Pi);
 
-                auto const [sin_phi, cos_phi] = sincos(phi);
+    auto const [sin_phi, cos_phi] = sincos(phi);
 
-                float const p1 = r * cos_phi;
-                float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
+    float const p1 = r * cos_phi;
+    float const p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
 
-                // compute normal
-                float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
+    // compute normal
+    float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
 
-                // unstretch
-                m = normalize(float3(alpha[0] * m[0], alpha[1] * m[1], std::max(m[2], 0.f)));
+    // unstretch
+    m = normalize(float3(alpha[0] * m[0], alpha[1] * m[1], std::max(m[2], 0.f)));
 
-                n_dot_h = clamp(m[2]);
+    n_dot_h = clamp(m[2]);
 
-                float3 const h = layer.tangent_to_world(m);
+    float3 const h = layer.tangent_to_world(m);
 
-                return h;
-            }
+    return h;
+}
 
 }  // namespace scene::material::ggx
 

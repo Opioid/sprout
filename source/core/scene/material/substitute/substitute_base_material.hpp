@@ -22,12 +22,14 @@ class Material_base : public material::Material {
                             float area, Scene const& scene, Threads& threads) final;
 
     void set_normal_map(Texture const& normal_map);
+    void set_rotation_map(Texture const& rotation_map);
     void set_surface_map(Texture const& surface_map);
     void set_emission_map(Texture const& emission_map);
 
     void set_color(float3_p color);
 
     void set_roughness(float roughness, float anisotropy);
+    void set_rotation(float angle);
     void set_metallic(float metallic);
     void set_emission_factor(float emission_factor);
 
@@ -40,6 +42,7 @@ class Material_base : public material::Material {
 
     Texture normal_map_;
     Texture surface_map_;
+    Texture rotation_map_;
     Texture emission_map_;
 
     float3 color_;
@@ -47,6 +50,7 @@ class Material_base : public material::Material {
     float2 alpha_;
 
     float anisotropy_;
+    float rotation_;
     float metallic_;
     float emission_factor_;
 };

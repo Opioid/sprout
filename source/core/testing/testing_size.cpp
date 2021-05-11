@@ -104,7 +104,7 @@ void size() {
     print_size<scene::material::metal::Material>("metal::Material", 208);
     print_size<scene::material::metal::Sample>("metal::Sample", 192);
 
-    print_size<scene::material::substitute::Material>("substitute::Material", 208);
+    print_size<scene::material::substitute::Material>("substitute::Material", 240);
     print_size<scene::material::substitute::Sample>("substitute::Sample", 208);
 
     print_size<scene::material::volumetric::Gridtree>("volumetric::Gridtree", 64);

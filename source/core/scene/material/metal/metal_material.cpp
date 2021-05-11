@@ -34,7 +34,7 @@ material::Sample const& Material::sample(float3_p wo, Renderstate const& rs, Sam
     if (rotation_map_.is_valid()) {
         rotation = (2.f * Pi) * sampler.sample_1(rotation_map_, rs.uv, worker.scene());
     } else {
-        rotation = anisotropy_rotation_;
+        rotation = rotation_;
     }
 
     if (rotation > 0.f) {
@@ -76,8 +76,8 @@ void Material::set_roughness(float roughness, float anisotropy) {
     }
 }
 
-void Material::set_anisotropy_rotation(float angle) {
-    anisotropy_rotation_ = 2.f * Pi * angle;
+void Material::set_rotation(float angle) {
+    rotation_ = (2.f * Pi) * angle;
 }
 
 size_t Material::sample_size() {

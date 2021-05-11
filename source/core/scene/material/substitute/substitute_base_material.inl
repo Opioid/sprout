@@ -44,6 +44,17 @@ void Material_base::set_sample(float3_p wo, Renderstate const& rs, float ior_out
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
+    float rotation;
+    if (rotation_map_.is_valid()) {
+        rotation = (2.f * Pi) * sampler.sample_1(rotation_map_, rs.uv, worker.scene());
+    } else {
+        rotation = rotation_;
+    }
+
+    if (rotation > 0.f) {
+        sample.layer_.rotate_tangent_frame(rotation);
+    }
+
     float3 color;
     if (color_map_.is_valid()) {
         color = sampler.sample_3(color_map_, rs.uv, worker.scene());
