@@ -107,7 +107,7 @@ void Driver::render(uint32_t frame) {
 
     uint64_t const start = frame * camera.frame_step();
 
-    scene_->simulate(camera_pos, start, start + camera.frame_duration(), threads_);
+    scene_->simulate(camera_pos, start, start + camera.frame_duration(), workers_[0], threads_);
 
     camera.update(*scene_, start, workers_[0]);
 
@@ -142,7 +142,7 @@ void Driver::start_frame(uint32_t frame) {
 
     uint64_t const start = frame * camera.frame_step();
 
-    scene_->simulate(camera_pos, start, start + camera.frame_duration(), threads_);
+    scene_->simulate(camera_pos, start, start + camera.frame_duration(), workers_[0], threads_);
 
     camera.update(*scene_, start, workers_[0]);
 

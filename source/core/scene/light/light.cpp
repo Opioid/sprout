@@ -44,20 +44,16 @@ float3 Light::power(float3 const& average_radiance, AABB const& scene_bb,
     return squared_length(scene_bb.extent()) * radiance;
 }
 
-void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene,
+void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Worker& worker,
                              Threads& threads) const {
     switch (type_) {
         case Type::Prop:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, threads);
-            break;
         case Type::Prop_image:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, threads);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, false, worker, threads);
             break;
         case Type::Volume:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, threads);
-            break;
         case Type::Volume_image:
-            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, threads);
+            scene.prop_prepare_sampling(prop_, part_, light_id, time, true, worker, threads);
             break;
     }
 }

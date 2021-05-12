@@ -93,7 +93,7 @@ class alignas(16) Light {
 
     float3 power(float3 const& average_radiance, AABB const& scene_bb, Scene const& scene) const;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Threads& threads) const;
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Worker& worker, Threads& threads) const;
 
     bool equals(uint32_t prop, uint32_t part) const;
 

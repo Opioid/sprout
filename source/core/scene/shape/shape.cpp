@@ -35,8 +35,8 @@ bool Shape::sample_volume(uint32_t /*part*/, float3_p /*p*/, Transformation cons
     return false;
 }
 
-void Shape::prepare_sampling(uint32_t /*part*/, bool /*two_sided*/,
-                             light::Tree_builder& /*builder*/, Threads& /*threads*/) {}
+void Shape::prepare_sampling(uint32_t /*part*/, Material const& /*material*/,
+                             light::Tree_builder& /*builder*/, Worker& /*worker*/, Threads& /*threads*/) {}
 
 float4 Shape::cone(uint32_t /*part*/) const {
     return float4(0.f, 0.f, 1.f, -1.f);

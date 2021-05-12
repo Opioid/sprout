@@ -153,8 +153,8 @@ class Shape {
 
     bool is_analytical() const;
 
-    virtual void prepare_sampling(uint32_t part, bool two_sided, light::Tree_builder& builder,
-                                  Threads& threads);
+    virtual void prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
+                                  Worker& worker, Threads& threads);
 
     virtual float4 cone(uint32_t part) const;
 

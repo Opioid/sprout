@@ -310,7 +310,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     power_0_ = power_0;
     power_1_ = power_1;
 
-    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
+    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1 || 0.f == power_0 || 0.f == power_1; empty_side) {
         cost_ = 2.f * reg * (power_0 + power_1) * (4.f * Pi) * surface_area * float(end - begin);
 
         exhausted_ = true;

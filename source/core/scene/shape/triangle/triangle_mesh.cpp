@@ -1,6 +1,7 @@
 #include "triangle_mesh.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/distribution_1d.inl"
+#include "base/math/sample_distribution.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling.inl"
@@ -15,6 +16,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
+#include "scene/material/material.hpp"
 #include "triangle_intersection.hpp"
 #ifdef SU_DEBUG
 #include "scene/shape/shape_test.hpp"
@@ -29,8 +31,19 @@ Part::~Part() {
     delete[] triangle_mapping;
 }
 
-void Part::init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tree_builder& builder,
-                Threads& threads) {
+static float triangle_area(float2 a, float2 b, float2 c) {
+    float2 const x = b - a;
+    float2 const y = c - a;
+
+    return 0.5f * (x[0] * y[1] - x[1] * y[0]);
+}
+
+static float triangle_areal(float2 a, float2 b, float2 c) {
+    return 0.5f * length(cross(float3(b) - float3(a), float3(c) - float3(a)));
+}
+
+void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, light::Tree_builder& builder,
+                Worker& worker, Threads& threads) {
     if (nullptr != triangle_mapping) {
         return;
     }
@@ -40,6 +53,8 @@ void Part::init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tre
     memory::Buffer<float> areas(num);
 
     triangle_mapping = new uint32_t[num];
+
+    bool const emission_map = material.has_emission_map();
 
     for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_part(t) == part) {
@@ -63,13 +78,18 @@ void Part::init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tre
 
     float const a = 1.f / distribution.integral();
 
+    static float constexpr Num_texels = 2048.f * 2048.f;
+
     for (uint32_t i = 0; i < num; ++i) {
         uint32_t const t = triangle_mapping[i];
 
         float3 va;
         float3 vb;
         float3 vc;
-        tree.triangle(t, va, vb, vc);
+        float2 uva;
+        float2 uvb;
+        float2 uvc;
+        tree.triangle(t, va, vb, vc, uva, uvb, uvc);
 
         AABB box(Empty_AABB);
         box.insert(va);
@@ -80,9 +100,27 @@ void Part::init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tre
 
         box.cache_radius();
 
-        float const area = tree.triangle_area(t);
 
-        box.bounds[1][3] = area;
+        float const ta = triangle_area(uva, uvb, uvc);
+
+        float const approx_texels = ta * Num_texels;
+
+        float3 radiance(0.f);
+
+        static uint32_t constexpr Num_samples = 64;
+
+        for (uint32_t j = 0; j < Num_samples; ++j) {
+            float2 const xi = hammersley(j, Num_samples, 0);
+
+            float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
+            radiance += material.evaluate_radiance(float3(0.f, 1.f, 0.f), float3(0.f, 1.f, 0.f), float3(uv), 1.f, material::Sampler_settings::Filter::Undefined, worker);
+        }
+
+        float weight = max_component(radiance) / float(Num_samples);
+
+        float const power = weight * areas[i];
+
+        box.bounds[1][3] = power;
 
         aabbs[i] = box;
 
@@ -90,7 +128,7 @@ void Part::init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tre
 
         cones[i] = float4(n, 1.f);
 
-        dominant_axis += a * area * n;
+        dominant_axis += a * power * n;
     }
 
     dominant_axis = normalize(dominant_axis);
@@ -111,7 +149,7 @@ void Part::init(uint32_t part, bool two_sided, bvh::Tree const& tree, light::Tre
     aabb = bb;
     cone = float4(dominant_axis, std::cos(angle));
 
-    two_sided_ = two_sided;
+    two_sided_ = material.is_two_sided();
 
     builder.build(light_tree, *this, threads);
 }
@@ -553,8 +591,8 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     return {dpdu, dpdv};
 }
 
-void Mesh::prepare_sampling(uint32_t part, bool two_sided, light::Tree_builder& builder,
-                            Threads& threads) {
+void Mesh::prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
+                            Worker& worker, Threads& threads) {
     auto& p = parts_[part];
 
     // This counts the triangles for _every_ part as an optimization
@@ -572,7 +610,7 @@ void Mesh::prepare_sampling(uint32_t part, bool two_sided, light::Tree_builder& 
         }
     }
 
-    p.init(part, two_sided, tree_, builder, threads);
+    p.init(part, material, tree_, builder, worker, threads);
 }
 
 float4 Mesh::cone(uint32_t part) const {
