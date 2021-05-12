@@ -90,7 +90,7 @@ static float variance(uint32_t* const lights, uint32_t begin, uint32_t end, Set 
     for (uint32_t i = begin, n = 0; i < end; ++i) {
         uint32_t const l = lights[i];
 
-        if (float const p  = set.light_power(l); p > 0.f) {
+        if (float const p = set.light_power(l); p > 0.f) {
             float const in = 1.f / float(++n);
 
             ap += (p - ap) * in;
@@ -271,7 +271,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
             box_1.merge_assign(box);
             power_1 += power;
 
-            dominant_axis_1 +=  power * n;
+            dominant_axis_1 += power * n;
         }
     }
 

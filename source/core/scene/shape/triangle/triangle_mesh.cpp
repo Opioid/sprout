@@ -1,9 +1,9 @@
 #include "triangle_mesh.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/distribution_1d.inl"
-#include "base/math/sample_distribution.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/matrix4x4.inl"
+#include "base/math/sample_distribution.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/buffer.hpp"
@@ -12,11 +12,11 @@
 #include "scene/entity/composed_transformation.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_tree_builder.hpp"
+#include "scene/material/material.inl"
 #include "scene/ray_offset.inl"
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
-#include "scene/material/material.hpp"
 #include "triangle_intersection.hpp"
 #ifdef SU_DEBUG
 #include "scene/shape/shape_test.hpp"
@@ -25,7 +25,18 @@
 
 namespace scene::shape::triangle {
 
+Part::Variant::Variant() : cones(nullptr) {}
+
+Part::Variant::Variant(Variant&& other) : cones(other.cones), distribution(std::move(other.distribution)), light_tree(std::move(other.light_tree)), cone(other.cone), two_sided_(other.two_sided_) {
+    other.cones = nullptr;
+}
+
+Part::Variant::~Variant() {
+    delete[] cones;
+}
+
 Part::~Part() {
+    delete[] relative_areas_;
     delete[] cones;
     delete[] aabbs;
     delete[] triangle_mapping;
@@ -38,14 +49,10 @@ static float triangle_area(float2 a, float2 b, float2 c) {
     return 0.5f * (x[0] * y[1] - x[1] * y[0]);
 }
 
-static float triangle_areal(float2 a, float2 b, float2 c) {
-    return 0.5f * length(cross(float3(b) - float3(a), float3(c) - float3(a)));
-}
-
-void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, light::Tree_builder& builder,
-                Worker& worker, Threads& threads) {
+uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tree,
+                light::Tree_builder& builder, Worker& worker, Threads& threads) {
     if (nullptr != triangle_mapping) {
-        return;
+        return 0;
     }
 
     uint32_t const num = num_triangles;
@@ -54,16 +61,32 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
 
     triangle_mapping = new uint32_t[num];
 
+    relative_areas_ = new float[num];
+
     bool const emission_map = material.has_emission_map();
+
+    float total_area = 0.f;
 
     for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_part(t) == part) {
-            areas[mt] = tree.triangle_area(t);
+            float const area = tree.triangle_area(t);
+
+            areas[mt] = area;
+
+            relative_areas_[mt] = area;
+
+            total_area += area;
 
             triangle_mapping[mt] = t;
 
             ++mt;
         }
+    }
+
+    float const ita = 1.f / total_area;
+
+    for (uint32_t i = 0; i < num; ++i) {
+        relative_areas_[i] *= ita;
     }
 
     distribution.init(areas, num);
@@ -76,11 +99,9 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
 
     float3 dominant_axis(0.f);
 
-    float const a = 1.f / distribution.integral();
-
     float total_power = 0.f;
 
-    static float constexpr Num_texels = 1024.f * 1024.f;// 2048.f * 2048.f;
+    static float constexpr Num_texels = 1024.f * 1024.f;  // 2048.f * 2048.f;
 
     for (uint32_t i = 0; i < num; ++i) {
         uint32_t const t = triangle_mapping[i];
@@ -101,28 +122,26 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
 
         float power;
         if (emission_map) {
+            float const ta = triangle_area(uva, uvb, uvc);
 
-        float const ta = triangle_area(uva, uvb, uvc);
+            float3 radiance(0.f);
 
-        float const approx_texels = ta * Num_texels;
+            // static uint32_t constexpr Num_samples = 64;
 
-        float3 radiance(0.f);
+            uint32_t const num_samples = 1024;  // uint32_t(approx_texels);
 
-        //static uint32_t constexpr Num_samples = 64;
+            for (uint32_t j = 0; j < num_samples; ++j) {
+                float2 const xi = hammersley(j, num_samples, 0);
 
-        uint32_t const num_samples = 1024;//uint32_t(approx_texels);
+                float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
+                radiance += material.evaluate_radiance(
+                    float3(0.f, 1.f, 0.f), float3(0.f, 1.f, 0.f), float3(uv), 1.f,
+                    material::Sampler_settings::Filter::Undefined, worker);
+            }
 
-        for (uint32_t j = 0; j < num_samples; ++j) {
-            float2 const xi = hammersley(j, num_samples, 0);
+            float weight = max_component(radiance) / float(num_samples);
 
-            float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
-            radiance += material.evaluate_radiance(float3(0.f, 1.f, 0.f), float3(0.f, 1.f, 0.f), float3(uv), 1.f, material::Sampler_settings::Filter::Undefined, worker);
-        }
-
-        float weight = max_component(radiance) / float(num_samples);
-
-        power = weight * areas[i];
-
+            power = weight * areas[i];
 
         } else {
             power = areas[i];
@@ -166,22 +185,26 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
     two_sided_ = material.is_two_sided();
 
     builder.build(light_tree, *this, threads);
+
+  //  variants_.push_back(std::move(variant));
+
+    return 0;
 }
 
 light::Pick Part::sample(float3_p p, float3_p n, bool total_sphere, float r) const {
     auto const pick = light_tree.random_light(p, n, total_sphere, r, *this);
 
-    float const relative_primitive_area = distribution.pdf(pick.offset);
+    float const relative_area = relative_areas_[pick.offset];
 
-    return {triangle_mapping[pick.offset], pick.pdf / relative_primitive_area};
+    return {triangle_mapping[pick.offset], pick.pdf / relative_area};
 }
 
 float Part::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
     float const pdf = light_tree.pdf(p, n, total_sphere, id, *this);
 
-    float const relative_primitive_area = distribution.pdf(id);
+    float const relative_area = relative_areas_[id];
 
-    return pdf / relative_primitive_area;
+    return pdf / relative_area;
 }
 
 math::Distribution_1D::Discrete Part::sample(float r) const {
@@ -232,7 +255,7 @@ void Mesh::allocate_parts(uint32_t num_parts) {
 }
 
 void Mesh::set_material_for_part(uint32_t part, uint32_t material) {
-    parts_[part].material = material;
+    parts_[part].material_ = material;
 }
 
 AABB Mesh::aabb() const {
@@ -251,14 +274,14 @@ uint32_t Mesh::num_materials() const {
     uint32_t id = 0;
 
     for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
-        id = std::max(id, parts_[i].material);
+        id = std::max(id, parts_[i].material_);
     }
 
     return id + 1;
 }
 
 uint32_t Mesh::part_id_to_material_id(uint32_t part) const {
-    return parts_[part].material;
+    return parts_[part].material_;
 }
 
 bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
@@ -609,17 +632,11 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     return {dpdu, dpdv};
 }
 
-void Mesh::prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
+uint32_t Mesh::prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
                             Worker& worker, Threads& threads) {
-    auto& p = parts_[part];
-
     // This counts the triangles for _every_ part as an optimization
     if (!primitive_mapping_) {
         primitive_mapping_ = new uint32_t[tree_.num_triangles()];
-
-        for (uint32_t i = 0, len = num_parts(); i < len; ++i) {
-            parts_[i].num_triangles = 0;
-        }
 
         for (uint32_t i = 0, len = tree_.num_triangles(); i < len; ++i) {
             uint32_t const pm = parts_[tree_.triangle_part(i)].num_triangles++;
@@ -628,7 +645,8 @@ void Mesh::prepare_sampling(uint32_t part, Material const& material, light::Tree
         }
     }
 
-    p.init(part, material, tree_, builder, worker, threads);
+
+    return parts_[part].init(part, material, tree_, builder, worker, threads);
 }
 
 float4 Mesh::cone(uint32_t part) const {

@@ -55,6 +55,10 @@ class Histogram {
 
 Importance::Importance() : importance_(new Weight[Dimensions * Dimensions]), valid_(false) {}
 
+Importance::Importance(Importance&& other) : importance_(other.importance_), distribution_(std::move(other.distribution_)), weight_norm_(other.weight_norm_), valid_(other.valid_) {
+    other.importance_ = nullptr;
+}
+
 Importance::~Importance() {
     delete[] importance_;
 }

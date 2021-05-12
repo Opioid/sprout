@@ -29,6 +29,8 @@ class Importance {
   public:
     Importance();
 
+    Importance(Importance&& other);
+
     ~Importance();
 
     void clear(uint32_t num_expected_particles);

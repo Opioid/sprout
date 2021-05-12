@@ -207,7 +207,8 @@ void Scene::random_light(float3_p p0, float3_p p1, float random, bool split, Lig
 #endif
 }
 
-void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Worker& worker, Threads& threads) {
+void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Worker& worker,
+                     Threads& threads) {
     uint64_t const frames_start = start - (start % Tick_duration);
     uint64_t const end_rem      = end % Tick_duration;
     uint64_t const frames_end   = end + (end_rem ? Tick_duration - end_rem : 0);
@@ -445,7 +446,9 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     Material& material = *material_resources_[materials_[p]];
 
-    shape->prepare_sampling(part, material, light_tree_builder_, worker, threads);
+    uint32_t const variant = shape->prepare_sampling(part, material, light_tree_builder_, worker, threads);
+
+    lights_[light].set_variant(variant);
 
     Transformation temp;
     auto const&    trafo = prop_transformation_at(entity, time, temp);
@@ -457,7 +460,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
 
     float3 const average_radiance = material.prepare_sampling(*shape, part, trafo, extent, *this,
-                                                               threads);
+                                                              threads);
 
     lights_[light].set_extent(extent);
 

@@ -10,6 +10,8 @@ class Distribution_2D {
   public:
     Distribution_2D();
 
+    Distribution_2D(Distribution_2D&& other);
+
     ~Distribution_2D();
 
     Distribution_1D* allocate(uint32_t num);

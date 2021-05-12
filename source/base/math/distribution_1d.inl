@@ -16,6 +16,11 @@ namespace math {
 inline Distribution_1D::Distribution_1D()
     : size_(0), lut_size_(0), integral_(-1.f), lut_range_(0.f), cdf_(nullptr), lut_(nullptr) {}
 
+inline Distribution_1D::Distribution_1D(Distribution_1D&& other) : size_(other.size_), lut_size_(other.lut_size_), integral_(other.integral_), lut_range_(other.lut_range_), cdf_(other.cdf_), lut_(other.lut_)  {
+    other.cdf_ = nullptr;
+    other.lut_ = nullptr;
+}
+
 inline Distribution_1D::~Distribution_1D() {
     delete[] lut_;
     delete[] cdf_;

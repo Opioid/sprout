@@ -63,6 +63,8 @@ class alignas(16) Light {
 
     Light(Type type, bool two_sided, uint32_t prop, uint32_t part);
 
+    void set_variant(uint32_t variant);
+
     bool is_two_sided() const;
 
     float area() const;
@@ -91,9 +93,10 @@ class alignas(16) Light {
     float pdf(Ray const& ray, float3_p n, Intersection const& isec, bool total_sphere,
               Worker const& worker) const;
 
-    float3 power(float3 const& average_radiance, AABB const& scene_bb, Scene const& scene) const;
+    float3 power(float3_p average_radiance, AABB const& scene_bb, Scene const& scene) const;
 
-    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Worker& worker, Threads& threads) const;
+    void prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Worker& worker,
+                          Threads& threads) const;
 
     bool equals(uint32_t prop, uint32_t part) const;
 
@@ -112,6 +115,7 @@ class alignas(16) Light {
 
     uint32_t prop_;
     uint32_t part_;
+    uint32_t variant_;
 
     float extent_;
 };

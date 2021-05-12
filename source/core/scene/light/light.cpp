@@ -25,14 +25,17 @@ using Sampler      = sampler::Sampler;
 Light::Light() = default;
 
 Light::Light(Type type, bool two_sided, uint32_t prop, uint32_t part)
-    : type_(type), two_sided_(two_sided), prop_(prop), part_(part), extent_(0.f) {}
+    : type_(type), two_sided_(two_sided), prop_(prop), part_(part), variant_(0), extent_(0.f) {}
+
+void Light::set_variant(uint32_t variant) {
+    variant_ = variant;
+}
 
 void Light::set_extent(float extent) {
     extent_ = extent;
 }
 
-float3 Light::power(float3 const& average_radiance, AABB const& scene_bb,
-                    Scene const& scene) const {
+float3 Light::power(float3_p average_radiance, AABB const& scene_bb, Scene const& scene) const {
     float const extent = two_sided_ ? 2.f * extent_ : extent_;
 
     float3 const radiance = extent * average_radiance;

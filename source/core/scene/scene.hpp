@@ -146,7 +146,8 @@ class Scene {
 
     void random_light(float3_p p0, float3_p p1, float random, bool split, Lights& lights) const;
 
-    void simulate(float3_p camera_pos, uint64_t start, uint64_t end, Worker& worker, Threads& threads);
+    void simulate(float3_p camera_pos, uint64_t start, uint64_t end, Worker& worker,
+                  Threads& threads);
 
     void compile(float3_p camera_pos, uint64_t time, Worker& worker, Threads& threads);
 

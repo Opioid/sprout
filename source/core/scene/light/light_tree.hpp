@@ -125,6 +125,8 @@ class Primitive_tree {
 
     Primitive_tree();
 
+    Primitive_tree(Primitive_tree&& other);
+
     ~Primitive_tree();
 
     Pick random_light(float3_p p, float3_p n, bool total_sphere, float random,

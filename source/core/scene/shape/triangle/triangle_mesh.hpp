@@ -6,16 +6,38 @@
 #include "scene/light/light_tree.hpp"
 #include "scene/shape/shape.hpp"
 
+#include <vector>
+
 namespace scene::shape::triangle {
 
 struct Part {
     using Distribution_1D = math::Distribution_1D;
-    using Material = material::Material;
+    using Material        = material::Material;
+
+
+    struct Variant {
+        Variant();
+
+        Variant(Variant&& other);
+
+        ~Variant();
+
+        float4* cones;
+
+        Distribution_1D distribution;
+
+        light::Primitive_tree light_tree;
+
+        float4 cone;
+
+        bool two_sided_;
+    };
+
 
     ~Part();
 
-    void init(uint32_t part, Material const& material, bvh::Tree const& tree, light::Tree_builder& builder,
-              Worker& worker, Threads& threads);
+    uint32_t init(uint32_t part, Material const& material, bvh::Tree const& tree,
+              light::Tree_builder& builder, Worker& worker, Threads& threads);
 
     light::Pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
 
@@ -31,15 +53,19 @@ struct Part {
 
     float light_power(uint32_t light) const;
 
-    uint32_t material;
+    uint32_t material_;
 
-    uint32_t num_triangles;
+    uint32_t num_triangles = 0;
 
     uint32_t* triangle_mapping = nullptr;
 
     AABB* aabbs = nullptr;
 
     float4* cones = nullptr;
+
+    float* relative_areas_ = nullptr;
+
+    std::vector<Variant> variants_;
 
     Distribution_1D distribution;
 
@@ -131,7 +157,7 @@ class alignas(64) Mesh final : public Shape {
 
     Differential_surface differential_surface(uint32_t primitive) const final;
 
-    void prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
+    uint32_t prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
                           Worker& worker, Threads& threads) final;
 
     float4 cone(uint32_t part) const final;

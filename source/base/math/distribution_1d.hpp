@@ -10,6 +10,8 @@ class Distribution_1D {
   public:
     Distribution_1D();
 
+    Distribution_1D(Distribution_1D&& other);
+
     ~Distribution_1D();
 
     void init(float const* data, uint32_t len, uint32_t lut_bucket_size = 0);
