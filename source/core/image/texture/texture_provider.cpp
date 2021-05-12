@@ -9,7 +9,6 @@
 #include "texture.inl"
 
 #include "base/debug/assert.hpp"
-#include "texture_test.hpp"
 
 #include <charconv>
 
@@ -81,8 +80,6 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
 
     if (Image::Type::Byte2 == image->type()) {
         if (Usage::Normal == usage) {
-            SOFT_ASSERT(testing::is_valid_normal_map(*image, filename));
-
             return Texture(Texture::Type::Byte2_snorm, image_id, scale);
         }
 

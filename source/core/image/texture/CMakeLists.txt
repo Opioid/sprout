@@ -9,8 +9,6 @@ target_sources(core
     "texture_provider.hpp"
     "texture_sampler.cpp"
     "texture_sampler.hpp"
-    "texture_test.cpp"
-    "texture_test.hpp"
     "texture.cpp"
     "texture.hpp"
     "texture.inl"
