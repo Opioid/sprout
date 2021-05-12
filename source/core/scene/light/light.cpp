@@ -259,7 +259,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 
     result.pdf() *= importance_uv.pdf;
 
-    SOFT_ASSERT(result.pdf > 0.f);
+    SOFT_ASSERT(result.pdf() > 0.f);
 
     return true;
 }

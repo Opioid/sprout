@@ -1,5 +1,5 @@
 #include "texture_test.hpp"
-#include "base/math/print.hpp"
+#include "base/math/print.inl"
 #include "base/math/vector3.inl"
 #include "image/image.hpp"
 #include "texture_encoding.inl"

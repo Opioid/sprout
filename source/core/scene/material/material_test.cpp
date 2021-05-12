@@ -11,7 +11,7 @@ static void print_vector(float2 v) {
     std::cout << v << " |" << length(v) << "|" << std::endl;
 }
 
-static void print_vector(float3_p v) {
+void print_vector(float3_p v) {
     std::cout << v << " |" << length(v) << "|" << std::endl;
 }
 
