@@ -78,7 +78,9 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
 
     float const a = 1.f / distribution.integral();
 
-    static float constexpr Num_texels = 2048.f * 2048.f;
+    float total_power = 0.f;
+
+    static float constexpr Num_texels = 1024.f * 1024.f;// 2048.f * 2048.f;
 
     for (uint32_t i = 0; i < num; ++i) {
         uint32_t const t = triangle_mapping[i];
@@ -97,6 +99,8 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
         box.insert(vc);
         box.cache_radius();
 
+        float power;
+        if (emission_map) {
 
         float const ta = triangle_area(uva, uvb, uvc);
 
@@ -104,18 +108,27 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
 
         float3 radiance(0.f);
 
-        static uint32_t constexpr Num_samples = 64;
+        //static uint32_t constexpr Num_samples = 64;
 
-        for (uint32_t j = 0; j < Num_samples; ++j) {
-            float2 const xi = hammersley(j, Num_samples, 0);
+        uint32_t const num_samples = 1024;//uint32_t(approx_texels);
+
+        for (uint32_t j = 0; j < num_samples; ++j) {
+            float2 const xi = hammersley(j, num_samples, 0);
 
             float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
             radiance += material.evaluate_radiance(float3(0.f, 1.f, 0.f), float3(0.f, 1.f, 0.f), float3(uv), 1.f, material::Sampler_settings::Filter::Undefined, worker);
         }
 
-        float weight = max_component(radiance) / float(Num_samples);
+        float weight = max_component(radiance) / float(num_samples);
 
-        float const power = weight * areas[i];
+        power = weight * areas[i];
+
+
+        } else {
+            power = areas[i];
+        }
+
+        total_power += power;
 
         box.bounds[1][3] = power;
 
@@ -125,14 +138,14 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
 
         cones[i] = float4(n, 1.f);
 
-        dominant_axis += a * power * n;
-
         if (power > 0.f) {
+            dominant_axis += power * n;
+
             bb.merge_assign(box);
         }
     }
 
-    dominant_axis = normalize(dominant_axis);
+    dominant_axis = normalize(dominant_axis / total_power);
 
     float angle = 0.f;
 

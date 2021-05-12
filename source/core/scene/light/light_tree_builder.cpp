@@ -87,14 +87,15 @@ static float variance(uint32_t* const lights, uint32_t begin, uint32_t end, Set 
     float ap  = 0.f;
     float aps = 0.f;
 
-    for (uint32_t i = begin, n = 0; i < end; ++i, ++n) {
+    for (uint32_t i = begin, n = 0; i < end; ++i) {
         uint32_t const l = lights[i];
 
-        float const p  = set.light_power(l);
-        float const in = 1.f / float(n + 1);
+        if (float const p  = set.light_power(l); p > 0.f) {
+            float const in = 1.f / float(++n);
 
-        ap += (p - ap) * in;
-        aps += (p * p - aps) * in;
+            ap += (p - ap) * in;
+            aps += (p * p - aps) * in;
+        }
     }
 
     return std::abs(aps - ap * ap);
@@ -244,8 +245,6 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     float3 dominant_axis_0(0.f);
     float3 dominant_axis_1(0.f);
 
-    float const a = 1.f / part.distribution.integral();
-
     for (uint32_t i = begin; i < end; ++i) {
         uint32_t const l = lights[i];
 
@@ -265,25 +264,29 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
             box_0.merge_assign(box);
             power_0 += power;
 
-            dominant_axis_0 += a * power * n;
+            dominant_axis_0 += power * n;
         } else {
             ++num_side_1;
 
             box_1.merge_assign(box);
             power_1 += power;
 
-            dominant_axis_1 += a * power * n;
+            dominant_axis_1 +=  power * n;
         }
     }
 
-    dominant_axis_0 = normalize(dominant_axis_0);
-    dominant_axis_1 = normalize(dominant_axis_1);
+    dominant_axis_0 = normalize(dominant_axis_0 / power_0);
+    dominant_axis_1 = normalize(dominant_axis_1 / power_1);
 
     float angle_0 = 0.f;
     float angle_1 = 0.f;
 
     for (uint32_t i = begin; i < end; ++i) {
         uint32_t const l = lights[i];
+
+        if (float const power = part.light_power(l); 0.f == power) {
+            continue;
+        }
 
         AABB const box(part.light_aabb(l));
 
