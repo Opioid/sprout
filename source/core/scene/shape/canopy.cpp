@@ -130,9 +130,10 @@ bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/
     return true;
 }
 
-bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/, Transformation const& trafo,
-                    float /*area*/, bool /*two_sided*/, bool /*total_sphere*/, Sampler& sampler,
-                    RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
+bool Canopy::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /*p*/, float3_p /*n*/,
+                    Transformation const& trafo, float /*area*/, bool /*two_sided*/,
+                    bool /*total_sphere*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                    Sample_to& sample) const {
     float2 const uv  = sampler.sample_2D(rng, sampler_d);
     float3 const dir = sample_oriented_hemisphere_uniform(uv, trafo.rotation);
 
@@ -148,8 +149,8 @@ bool Canopy::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/, Transform
 }
 
 bool Canopy::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
-                    bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                    uint32_t /*sampler_d*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                    bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
+                    float2 /*importance_uv*/, AABB const& /*bounds*/,
                     Sample_from& /*sample*/) const {
     return false;
 }

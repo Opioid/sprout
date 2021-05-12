@@ -248,9 +248,10 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
     return true;
 }
 
-bool Rectangle::sample(uint32_t part, float3_p p, float3_p /*n*/, Transformation const& trafo,
-                       float area, bool two_sided, bool /*total_sphere*/, Sampler& sampler,
-                       RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
+bool Rectangle::sample(uint32_t part, uint32_t /*variant*/, float3_p p, float3_p /*n*/,
+                       Transformation const& trafo, float area, bool two_sided,
+                       bool /*total_sphere*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                       Sample_to& sample) const {
     float2 const r2 = sampler.sample_2D(rng, sampler_d);
 
     return Rectangle::sample(part, p, r2, trafo, area, two_sided, sample);

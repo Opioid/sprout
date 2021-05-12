@@ -6,7 +6,11 @@ namespace math {
 
 Distribution_2D::Distribution_2D() : conditional_size_(0), conditional_(nullptr) {}
 
-Distribution_2D::Distribution_2D(Distribution_2D&& other) : marginal_(std::move(other.marginal_)), conditional_size_(other.conditional_size_), conditional_sizef_(other.conditional_sizef_), conditional_(other.conditional_) {
+Distribution_2D::Distribution_2D(Distribution_2D&& other)
+    : marginal_(std::move(other.marginal_)),
+      conditional_size_(other.conditional_size_),
+      conditional_sizef_(other.conditional_sizef_),
+      conditional_(other.conditional_) {
     other.conditional_ = nullptr;
 }
 

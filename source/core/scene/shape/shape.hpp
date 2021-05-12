@@ -98,9 +98,10 @@ class Shape {
     virtual bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                                  Filter filter, Worker& worker, float3& ta) const = 0;
 
-    virtual bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo,
-                        float area, bool two_sided, bool total_sphere, Sampler& sampler, RNG& rng,
-                        uint32_t sampler_d, Sample_to& sample) const = 0;
+    virtual bool sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,
+                        Transformation const& trafo, float area, bool two_sided, bool total_sphere,
+                        Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                        Sample_to& sample) const = 0;
 
     virtual bool sample_volume(uint32_t part, float3_p p, Transformation const& trafo, float volume,
                                Sampler& sampler, RNG& rng, uint32_t sampler_d,
@@ -154,7 +155,8 @@ class Shape {
     bool is_analytical() const;
 
     virtual uint32_t prepare_sampling(uint32_t part, Material const& material,
-                                  light::Tree_builder& builder, Worker& worker, Threads& threads);
+                                      light::Tree_builder& builder, Worker& worker,
+                                      Threads& threads);
 
     virtual float4 cone(uint32_t part) const;
 

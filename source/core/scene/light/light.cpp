@@ -61,14 +61,14 @@ void Light::prepare_sampling(uint32_t light_id, uint64_t time, Scene& scene, Wor
     }
 }
 
-static inline bool prop_sample(uint32_t prop, uint32_t part, float area, float3_p p, float3_p n,
-                               Transformation const& trafo, bool two_sided, bool total_sphere,
-                               Sampler& sampler, uint32_t sampler_d, Worker& worker,
-                               Sample_to& result) {
+static inline bool prop_sample(uint32_t prop, uint32_t part, uint32_t variant, float area,
+                               float3_p p, float3_p n, Transformation const& trafo, bool two_sided,
+                               bool total_sphere, Sampler& sampler, uint32_t sampler_d,
+                               Worker& worker, Sample_to& result) {
     shape::Shape const* shape = worker.scene().prop_shape(prop);
 
-    if (!shape->sample(part, p, n, trafo, area, two_sided, total_sphere, sampler, worker.rng(),
-                       sampler_d, result)) {
+    if (!shape->sample(part, variant, p, n, trafo, area, two_sided, total_sphere, sampler,
+                       worker.rng(), sampler_d, result)) {
         return false;
     }
 
@@ -142,8 +142,8 @@ bool Light::sample(float3_p p, float3_p n, uint64_t time, bool total_sphere, Sam
 
     switch (type_) {
         case Type::Prop:
-            return prop_sample(prop_, part_, extent_, p, n, trafo, two_sided_, total_sphere,
-                               sampler, sampler_d, worker, result);
+            return prop_sample(prop_, part_, variant_, extent_, p, n, trafo, two_sided_,
+                               total_sphere, sampler, sampler_d, worker, result);
         case Type::Prop_image:
             return prop_image_sample(prop_, part_, extent_, p, n, trafo, two_sided_, total_sphere,
                                      sampler, sampler_d, worker, result);

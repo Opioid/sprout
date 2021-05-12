@@ -52,7 +52,7 @@ bool Null::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, 
     return true;
 }
 
-bool Null::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+bool Null::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /*p*/, float3_p /*n*/,
                   Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                   bool /*total_sphere*/, Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
                   Sample_to& /*sample*/) const {
@@ -60,9 +60,8 @@ bool Null::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
 }
 
 bool Null::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
-                  bool /*two_sided*/, Sampler& /*sampler*/, rnd::Generator& /*rng*/,
-                  uint32_t /*sampler_d*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
-                  Sample_from& /*sample*/) const {
+                  bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
+                  float2 /*importance_uv*/, AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 

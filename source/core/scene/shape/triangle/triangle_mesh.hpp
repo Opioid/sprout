@@ -14,7 +14,6 @@ struct Part {
     using Distribution_1D = math::Distribution_1D;
     using Material        = material::Material;
 
-
     struct Variant {
         Variant();
 
@@ -33,17 +32,20 @@ struct Part {
         bool two_sided_;
     };
 
-
     ~Part();
 
     uint32_t init(uint32_t part, Material const& material, bvh::Tree const& tree,
-              light::Tree_builder& builder, Worker& worker, Threads& threads);
+                  light::Tree_builder& builder, Worker& worker, Threads& threads);
 
-    light::Pick sample(float3_p p, float3_p n, bool total_sphere, float r) const;
+    light::Pick sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere, float r) const;
 
-    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id) const;
+    float pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uint32_t id) const;
 
-    Distribution_1D::Discrete sample(float r) const;
+    Distribution_1D::Discrete sample(uint32_t variant, float r) const;
+
+    float power(uint32_t variant) const;
+
+    float4_p cone(uint32_t variant) const;
 
     AABB const& light_aabb(uint32_t light) const;
 
@@ -61,21 +63,13 @@ struct Part {
 
     AABB* aabbs = nullptr;
 
-    float4* cones = nullptr;
-
     float* relative_areas_ = nullptr;
 
     std::vector<Variant> variants_;
 
-    Distribution_1D distribution;
-
-    light::Primitive_tree light_tree;
-
     AABB aabb;
 
-    float4 cone;
-
-    bool two_sided_;
+    float area_;
 };
 
 class alignas(64) Mesh final : public Shape {
@@ -117,9 +111,9 @@ class alignas(64) Mesh final : public Shape {
     bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 
-    bool sample(uint32_t part, float3_p p, float3_p n, Transformation const& trafo, float area,
-                bool two_sided, bool total_sphere, Sampler& sampler, RNG& rng, uint32_t sampler_d,
-                Sample_to& sample) const final;
+    bool sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,
+                Transformation const& trafo, float area, bool two_sided, bool total_sphere,
+                Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
 
     //    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool
     //    two_sided,
@@ -158,7 +152,7 @@ class alignas(64) Mesh final : public Shape {
     Differential_surface differential_surface(uint32_t primitive) const final;
 
     uint32_t prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
-                          Worker& worker, Threads& threads) final;
+                              Worker& worker, Threads& threads) final;
 
     float4 cone(uint32_t part) const final;
 

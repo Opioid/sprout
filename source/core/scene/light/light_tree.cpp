@@ -749,10 +749,17 @@ Primitive_tree::Primitive_tree()
       light_mapping_(nullptr),
       distributions_(nullptr) {}
 
-Primitive_tree::Primitive_tree(Primitive_tree&& other) : num_lights_(other.num_lights_), num_nodes_(other.num_nodes_), nodes_(other.nodes_), node_middles_(other.node_middles_), light_orders_(other.light_orders_), light_mapping_(other.light_mapping_), distributions_(other.distributions_) {
-    other.nodes_ = nullptr;
-    other.node_middles_ = nullptr;
-    other.light_orders_ = nullptr;
+Primitive_tree::Primitive_tree(Primitive_tree&& other)
+    : num_lights_(other.num_lights_),
+      num_nodes_(other.num_nodes_),
+      nodes_(other.nodes_),
+      node_middles_(other.node_middles_),
+      light_orders_(other.light_orders_),
+      light_mapping_(other.light_mapping_),
+      distributions_(other.distributions_) {
+    other.nodes_         = nullptr;
+    other.node_middles_  = nullptr;
+    other.light_orders_  = nullptr;
     other.light_mapping_ = nullptr;
     other.distributions_ = nullptr;
 }

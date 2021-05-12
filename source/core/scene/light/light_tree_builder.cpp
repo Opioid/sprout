@@ -552,11 +552,10 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, Threads& thread
 
     current_node_ = 1;
 
-    // In this case the surface area of the shape part
-    float const total_power = part.distribution.integral();
+    float const total_power = part.power(0);
 
-    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 64, 4u), part.aabb, part.cone,
-          total_power, part, threads);
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 64, 4u), part.aabb,
+          part.cone(0), total_power, part, threads);
 
     tree.allocate_nodes(current_node_);
 

@@ -193,19 +193,17 @@ bool Morphable_mesh::thin_absorption(Ray const& ray, Transformation const& trafo
     return tree_.absorption(tray, entity, filter, worker, ta);
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, float3_p /*p*/, float3_p /*n*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /*p*/, float3_p /*n*/,
                             Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
-                            bool /*total_sphere*/, sampler::Sampler& /*sampler*/,
-                            rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
-                            Sample_to& /*sample*/) const {
+                            bool /*total_sphere*/, sampler::Sampler& /*sampler*/, RNG& /*rng*/,
+                            uint32_t /*sampler_d*/, Sample_to& /*sample*/) const {
     return false;
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
-                            bool /*two_sided*/, sampler::Sampler& /*sampler*/,
-                            rnd::Generator& /*rng*/, uint32_t /*sampler_d*/,
-                            float2 /*importance_uv*/, AABB const& /*bounds*/,
-                            Sample_from& /*sample*/) const {
+                            bool /*two_sided*/, sampler::Sampler& /*sampler*/, RNG& /*rng*/,
+                            uint32_t /*sampler_d*/, float2 /*importance_uv*/,
+                            AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 

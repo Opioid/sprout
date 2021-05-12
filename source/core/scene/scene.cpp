@@ -446,7 +446,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     Material& material = *material_resources_[materials_[p]];
 
-    uint32_t const variant = shape->prepare_sampling(part, material, light_tree_builder_, worker, threads);
+    uint32_t const variant = shape->prepare_sampling(part, material, light_tree_builder_, worker,
+                                                     threads);
 
     lights_[light].set_variant(variant);
 

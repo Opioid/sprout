@@ -326,9 +326,10 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32
     return true;
 }
 
-bool Sphere::sample(uint32_t /*part*/, float3_p p, float3_p /*n*/, Transformation const& trafo,
-                    float /*area*/, bool /*two_sided*/, bool /*total_sphere*/, Sampler&  sampler,
-                    RNG& rng, uint32_t sampler_d, Sample_to& sample) const {
+bool Sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p p, float3_p /*n*/,
+                    Transformation const& trafo, float /*area*/, bool /*two_sided*/,
+                    bool /*total_sphere*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                    Sample_to& sample) const {
     float3 const v = trafo.position - p;
 
     float const il            = rlength(v);
