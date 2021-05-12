@@ -95,9 +95,6 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
         box.insert(va);
         box.insert(vb);
         box.insert(vc);
-
-        bb.merge_assign(box);
-
         box.cache_radius();
 
 
@@ -129,6 +126,10 @@ void Part::init(uint32_t part, Material const& material, bvh::Tree const& tree, 
         cones[i] = float4(n, 1.f);
 
         dominant_axis += a * power * n;
+
+        if (power > 0.f) {
+            bb.merge_assign(box);
+        }
     }
 
     dominant_axis = normalize(dominant_axis);
@@ -421,6 +422,10 @@ bool Mesh::sample(uint32_t part, float3_p p, float3_p n, Transformation const& t
     float3 const op = trafo.world_to_object_point(p);
     float3 const on = trafo.world_to_object_normal(n);
     auto const   s  = parts_[part].sample(op, on, total_sphere, r);
+
+    if (0.f == s.pdf) {
+        return false;
+    }
 
     float3 sv;
     float2 tc;

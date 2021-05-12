@@ -173,6 +173,10 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         float const power = scene.light_power(l);
 
+        if (0.f == power) {
+            continue;
+        }
+
         if (behind(box.max().v)) {
             ++num_side_0;
 
@@ -214,7 +218,6 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     } else {
         float const cone_weight_a = cone_cost(cone_0[3]) * (two_sided_0 ? 2.f : 1.f);
         float const cone_weight_b = cone_cost(cone_1[3]) * (two_sided_1 ? 2.f : 1.f);
-        ;
 
         float const surface_area_a = AABB(box_0).surface_area();
         float const surface_area_b = AABB(box_1).surface_area();
@@ -251,6 +254,10 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
         float3 const n = part.light_cone(l).xyz();
 
         float const power = part.light_power(l);
+
+        if (0.f == power) {
+            continue;
+        }
 
         if (behind(box.max().v)) {
             ++num_side_0;
@@ -310,7 +317,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
     power_0_ = power_0;
     power_1_ = power_1;
 
-    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1 || 0.f == power_0 || 0.f == power_1; empty_side) {
+    if (bool const empty_side = 0 == num_side_0 || 0 == num_side_1; empty_side) {
         cost_ = 2.f * reg * (power_0 + power_1) * (4.f * Pi) * surface_area * float(end - begin);
 
         exhausted_ = true;
