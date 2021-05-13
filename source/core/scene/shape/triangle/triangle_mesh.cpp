@@ -43,7 +43,6 @@ Part::Variant::~Variant() {
 }
 
 Part::~Part() {
-    delete[] relative_areas_;
     delete[] aabbs_;
     delete[] triangle_mapping_;
 }
@@ -64,15 +63,11 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
 
         aabbs_ = new AABB[num];
 
-        relative_areas_ = new float[num];
-
         float total_area = 0.f;
 
         for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
             if (tree.triangle_part(t) == part) {
                 float const area = tree.triangle_area(t);
-
-                relative_areas_[mt] = area;
 
                 total_area += area;
 
@@ -88,6 +83,7 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
                 box.insert(vb);
                 box.insert(vc);
                 box.cache_radius();
+                box.bounds[1][3] = area;
 
                 aabbs_[mt] = box;
 
@@ -97,10 +93,8 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
 
         area_ = total_area;
 
-        float const ita = 1.f / total_area;
-
         for (uint32_t i = 0; i < num; ++i) {
-            relative_areas_[i] *= ita;
+            aabbs_[i].bounds[1][3] = total_area / aabbs_[i].bounds[1][3];
         }
     }
 
@@ -211,17 +205,17 @@ light::Pick Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sp
                          float r) const {
     auto const pick = variants_[variant].light_tree.random_light(p, n, total_sphere, r, *this, variant);
 
-    float const relative_area = relative_areas_[pick.offset];
+    float const relative_area = aabbs_[pick.offset].bounds[1][3];
 
-    return {triangle_mapping_[pick.offset], pick.pdf / relative_area};
+    return {triangle_mapping_[pick.offset], pick.pdf * relative_area};
 }
 
 float Part::pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
     float const pdf = variants_[variant].light_tree.pdf(p, n, total_sphere, id, *this, variant);
 
-    float const relative_area = relative_areas_[id];
+    float const relative_area = aabbs_[id].bounds[1][3];
 
-    return pdf / relative_area;
+    return pdf * relative_area;
 }
 
 math::Distribution_1D::Discrete Part::sample(uint32_t variant, float r) const {

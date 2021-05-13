@@ -67,8 +67,6 @@ struct Part {
 
     AABB* aabbs_ = nullptr;
 
-    float* relative_areas_ = nullptr;
-
     std::vector<Variant> variants_;
 
     float area_;
