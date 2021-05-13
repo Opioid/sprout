@@ -107,7 +107,7 @@ void Importance::prepare_sampling(uint32_t id, float* buffer, scene::Scene const
         return;
     }
 
-    float4 const cone = scene.light_cone(id);
+    float4 const cone = scene.light_cone(0, id);
 
     if (cone[3] < 0.5f) {
         return;

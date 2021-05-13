@@ -259,7 +259,7 @@ void Scene::compile(float3_p camera_pos, uint64_t time, Worker& worker, Threads&
 
     for (uint32_t i = 0; auto& l : lights_) {
         l.prepare_sampling(i, time, *this, worker, threads);
-        light_temp_powers_[i] = light_power(i);
+        light_temp_powers_[i] = light_power(0, i);
 
         ++i;
     }

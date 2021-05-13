@@ -21,6 +21,8 @@ struct Part {
 
         ~Variant();
 
+        float* powers;
+
         float4* cones;
 
         Distribution_1D distribution;
@@ -49,11 +51,11 @@ struct Part {
 
     AABB const& light_aabb(uint32_t light) const;
 
-    float4_p light_cone(uint32_t light) const;
+    float4_p light_cone(uint32_t variant, uint32_t light) const;
 
-    bool light_two_sided(uint32_t light) const;
+    bool light_two_sided(uint32_t variant) const;
 
-    float light_power(uint32_t light) const;
+    float light_power(uint32_t variant, uint32_t light) const;
 
     uint32_t material_;
 

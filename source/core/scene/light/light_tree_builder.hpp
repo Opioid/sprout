@@ -43,7 +43,7 @@ class Tree_builder {
 
     void build(Tree& tree, Scene const& scene, Threads& threads);
 
-    void build(Primitive_tree& tree, Part const& part, Threads& threads);
+    void build(Primitive_tree& tree, Part const& part, uint32_t variant, Threads& threads);
 
   private:
     void allocate(uint32_t num_lights, uint32_t sweep_threshold);
@@ -54,13 +54,13 @@ class Tree_builder {
 
     uint32_t split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
                    uint32_t max_primitives, AABB const& bounds, float4_p cone, float total_power,
-                   Part const& part, Threads& threads);
+                   Part const& part, uint32_t variant, Threads& threads);
 
     uint32_t assign(Build_node& node, Primitive_tree& tree, uint32_t begin, uint32_t end,
-                    AABB const& bounds, float4_p cone, float total_power, Part const& part);
+                    AABB const& bounds, float4_p cone, float total_power, Part const& part, uint32_t variant);
 
     void serialize(Node* nodes, uint32_t* node_middles);
-    void serialize(Primitive_tree& tree, Part const& part);
+    void serialize(Primitive_tree& tree, Part const& part, uint32_t variant);
 
     uint32_t build_nodes_capacity_;
     uint32_t candidates_capacity_;

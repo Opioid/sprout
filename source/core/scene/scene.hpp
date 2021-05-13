@@ -217,11 +217,11 @@ class Scene {
 
     bool light_two_sided(uint32_t entity) const;
 
-    float light_power(uint32_t light) const;
+    float light_power(uint32_t variant, uint32_t light) const;
 
     AABB light_aabb(uint32_t light) const;
 
-    float4 light_cone(uint32_t light) const;
+    float4 light_cone(uint32_t variant, uint32_t light) const;
 
     animation::Animation* create_animation(uint32_t count);
 

@@ -23,12 +23,15 @@
 #endif
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace scene::shape::triangle {
 
 Part::Variant::Variant() : cones(nullptr) {}
 
 Part::Variant::Variant(Variant&& other)
-    : cones(other.cones),
+    : powers(other.powers),
+      cones(other.cones),
       distribution(std::move(other.distribution)),
       light_tree(std::move(other.light_tree)),
       cone(other.cone),
@@ -97,7 +100,11 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
 
     aabbs = new AABB[num];
 
+    variant.powers =new float[num];
+
     variant.cones = new float4[num];
+
+
 
     AABB bb(Empty_AABB);
 
@@ -106,8 +113,6 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
     float total_power = 0.f;
 
     static float constexpr Num_texels = 1024.f * 1024.f;  // 2048.f * 2048.f;
-
-    memory::Buffer<float> powers(num);
 
     for (uint32_t i = 0; i < num; ++i) {
         uint32_t const t = triangle_mapping[i];
@@ -155,7 +160,7 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
             power = area;
         }
 
-        powers[i] = power;
+        variant.powers[i] = power;
 
         total_power += power;
 
@@ -174,7 +179,7 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
         }
     }
 
-    variant.distribution.init(powers, num);
+    variant.distribution.init(variant.powers, num);
 
     dominant_axis = normalize(dominant_axis / total_power);
 
@@ -196,14 +201,18 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
 
     variant.two_sided_ = material.is_two_sided();
 
-    builder.build(variant.light_tree, *this, threads);
+    builder.build(variant.light_tree, *this, 0, threads);
 
     return 0;
 }
 
 light::Pick Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere,
                          float r) const {
-    auto const pick = variants_[variant].light_tree.random_light(p, n, total_sphere, r, *this);
+    if (0 != variant) {
+        std::cout << "sample" << std::endl;
+    }
+
+    auto const pick = variants_[0].light_tree.random_light(p, n, total_sphere, r, *this, variant);
 
     float const relative_area = relative_areas_[pick.offset];
 
@@ -211,7 +220,11 @@ light::Pick Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sp
 }
 
 float Part::pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
-    float const pdf = variants_[variant].light_tree.pdf(p, n, total_sphere, id, *this);
+    if (0 != variant) {
+        std::cout << "pdf" << std::endl;
+    }
+
+    float const pdf = variants_[0].light_tree.pdf(p, n, total_sphere, id, *this, variant);
 
     float const relative_area = relative_areas_[id];
 
@@ -219,16 +232,28 @@ float Part::pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uin
 }
 
 math::Distribution_1D::Discrete Part::sample(uint32_t variant, float r) const {
-    auto const result = variants_[variant].distribution.sample_discrete(r);
+    if (0 != variant) {
+        std::cout << "sample" << std::endl;
+    }
+
+    auto const result = variants_[0].distribution.sample_discrete(r);
     return {triangle_mapping[result.offset], result.pdf};
 }
 
 float Part::power(uint32_t variant) const {
-    return variants_[variant].distribution.integral();
+    if (0 != variant) {
+        std::cout << "power" << std::endl;
+    }
+
+    return variants_[0].distribution.integral();
 }
 
 float4_p Part::cone(uint32_t variant) const {
-    return variants_[variant].cone;
+    if (0 != variant) {
+        std::cout << "cone" << std::endl;
+    }
+
+    return variants_[0].cone;
 }
 
 AABB const& Part::light_aabb(uint32_t light) const {
@@ -237,20 +262,36 @@ AABB const& Part::light_aabb(uint32_t light) const {
     return aabbs[light];
 }
 
-float4_p Part::light_cone(uint32_t light) const {
+float4_p Part::light_cone(uint32_t variant, uint32_t light) const {
     SOFT_ASSERT(light < num_triangles);
+
+    if (0 != variant) {
+        std::cout << "light_cone" << std::endl;
+    }
 
     return variants_[0].cones[light];
 }
 
-bool Part::light_two_sided(uint32_t /*light*/) const {
+bool Part::light_two_sided(uint32_t variant) const {
+    if (0 != variant) {
+        std::cout << "light_two_sided" << std::endl;
+    }
+
     return variants_[0].two_sided_;
 }
 
-float Part::light_power(uint32_t light) const {
+float Part::light_power(uint32_t variant, uint32_t light) const {
+    if (0 != variant) {
+        std::cout << "light_power" << std::endl;
+    }
+
+ //   std::cout << variants_[0].distribution.pdf(light) << " " << variants_[0].powerlys[light] << std::endl;
+
     SOFT_ASSERT(light < num_triangles);
 
-    return aabbs[light].bounds[1][3];
+//    return variants_[0].distribution.pdf(light);
+
+    return variants_[0].powers[light];
 }
 
 Mesh::Mesh()

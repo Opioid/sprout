@@ -40,14 +40,14 @@ struct Node {
 
     template <typename Set>
     Pick random_light(float3_p p, float3_p n, bool total_sphere, float random, UInts light_mapping,
-                      Set const& set) const;
+                      Set const& set, uint32_t variant) const;
 
     Pick random_light(float3_p p0, float3_p p1, float3_p dir, float random, UInts light_mapping,
                       Scene const& scene) const;
 
     template <typename Set>
     float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, UInts light_mapping,
-              Set const& set) const;
+              Set const& set, uint32_t variant) const;
 
     float pdf(float3_p p0, float3_p p1, float3_p dir, uint32_t id, UInts light_mapping,
               Scene const& scene) const;
@@ -130,9 +130,9 @@ class Primitive_tree {
     ~Primitive_tree();
 
     Pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                      Part const& part) const;
+                      Part const& part, uint32_t variant) const;
 
-    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, Part const& part) const;
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, Part const& part, uint32_t variant) const;
 
     void allocate_light_mapping(uint32_t num_lights);
 

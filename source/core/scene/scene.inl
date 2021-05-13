@@ -160,7 +160,7 @@ inline bool Scene::light_two_sided(uint32_t entity) const {
     return lights_[entity].is_two_sided();
 }
 
-inline float Scene::light_power(uint32_t light) const {
+inline float Scene::light_power(uint32_t /*variant*/, uint32_t light) const {
     return light_aabbs_[light].bounds[1][3];
 }
 
@@ -168,7 +168,7 @@ inline AABB Scene::light_aabb(uint32_t light) const {
     return light_aabbs_[light];
 }
 
-inline float4 Scene::light_cone(uint32_t light) const {
+inline float4 Scene::light_cone(uint32_t /*variant*/, uint32_t light) const {
     return light_cones_[light];
 }
 
