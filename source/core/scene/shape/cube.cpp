@@ -206,9 +206,10 @@ bool Cube::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p p, float3_p 
     return true;
 }
 
-bool Cube::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& /*trafo*/, float /*area*/,
-                  bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
-                  float2 /*importance_uv*/, AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+bool Cube::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& /*trafo*/,
+                  float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/,
+                  uint32_t /*sampler_d*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
@@ -230,7 +231,7 @@ bool Cube::sample_volume(uint32_t /*part*/, float3_p p, Transformation const& tr
     return true;
 }
 
-float Cube::pdf(uint32_t /*variant*/, Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+float Cube::pdf(uint32_t /*variant*/, Ray const& ray, float3_p /*n*/, Intersection const& /*isec*/,
                 Transformation const& trafo, float /*area*/, bool /*two_sided*/,
                 bool /*total_sphere*/) const {
     float3 const axis                = trafo.position - ray.origin;

@@ -124,9 +124,9 @@ static inline float importance(float3_p p0, float3_p p1, float3_p dir, float3_p 
 }
 
 template <typename Set>
-static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t light,
-                          Set const& set, uint32_t variant) {
-    bool const   two_sided = set.light_two_sided(variant);
+static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t light, Set const& set,
+                          uint32_t variant) {
+    bool const   two_sided = set.light_two_sided(variant, light);
     AABB const   aabb      = set.light_aabb(light);
     float3 const center    = aabb.position();
     float4 const cone      = set.light_cone(variant, light);
@@ -138,7 +138,7 @@ static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t li
 
 static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light,
                           Scene const& scene) {
-    bool const   two_sided = scene.light_two_sided(0);
+    bool const   two_sided = scene.light_two_sided(0, light);
     AABB const   aabb      = scene.light_aabb(light);
     float3 const center    = aabb.position();
     float4 const cone      = scene.light_cone(0, light);
@@ -243,7 +243,8 @@ Pick Node::random_light(float3_p p, float3_p n, bool total_sphere, float random,
     float weights[4] = {0.f, 0.f, 0.f, 0.f};
 
     for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], set, variant);
+        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], set,
+                                  variant);
     }
 
     auto const l = distribution_sample_discrete<4>(weights, num_lights, random);
@@ -278,7 +279,8 @@ float Node::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
     float weights[4] = {0.f, 0.f, 0.f, 0.f};
 
     for (uint32_t i = 0, len = num_lights; i < len; ++i) {
-        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], set, variant);
+        weights[i] = light_weight(p, n, total_sphere, light_mapping[children_or_light + i], set,
+                                  variant);
     }
 
     return distribution_pdf<4>(weights, id - children_or_light);
@@ -820,8 +822,8 @@ Pick Primitive_tree::random_light(float3_p p, float3_p n, bool total_sphere, flo
     }
 }
 
-float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id,
-                          Part const& part, uint32_t variant) const {
+float Primitive_tree::pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, Part const& part,
+                          uint32_t variant) const {
     uint32_t const lo = light_orders_[id];
 
     float pdf = 1.f;

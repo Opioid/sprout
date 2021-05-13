@@ -83,7 +83,8 @@ static float cone_cost(float cos) {
 }
 
 template <typename Set>
-static float variance(uint32_t* const lights, uint32_t begin, uint32_t end, Set const& set, uint32_t variant) {
+static float variance(uint32_t* const lights, uint32_t begin, uint32_t end, Set const& set,
+                      uint32_t variant) {
     float ap  = 0.f;
     float aps = 0.f;
 
@@ -170,7 +171,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         float4 const cone = scene.light_cone(0, l);
 
-        bool const two_sided = scene.light_two_sided(l);
+        bool const two_sided = scene.light_two_sided(0, l);
 
         float const power = scene.light_power(0, l);
 
@@ -325,7 +326,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         exhausted_ = true;
     } else {
-        bool const two_sided = part.light_two_sided(variant);
+        bool const two_sided = part.light_two_sided(variant, 0);
 
         float const cone_weight_a = cone_cost(cone_0[3]) * (two_sided ? 2.f : 1.f);
         float const cone_weight_b = cone_cost(cone_1[3]) * (two_sided ? 2.f : 1.f);
@@ -396,7 +397,8 @@ static Split_candidate evaluate_splits(uint32_t* const lights, uint32_t begin, u
             [candidates, lights, begin, end, &bounds, cone_weight, &set, variant](
                 uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) noexcept {
                 for (int32_t i = sc_begin; i < sc_end; ++i) {
-                    candidates[uint32_t(i)].evaluate(begin, end, lights, bounds, cone_weight, set, variant);
+                    candidates[uint32_t(i)].evaluate(begin, end, lights, bounds, cone_weight, set,
+                                                     variant);
                 }
             },
             0, int32_t(num_candidates));
@@ -495,7 +497,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
 
             tbounds.merge_assign(scene.light_aabb(l));
             cone = cone::merge(cone, scene.light_cone(0, l));
-            two_sided |= scene.light_two_sided(l);
+            two_sided |= scene.light_two_sided(0, l);
             total_power += scene.light_power(0, l);
         }
 
@@ -535,7 +537,8 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
                                                   : infinite_weight;
 }
 
-void Tree_builder::build(Primitive_tree& tree, Part const& part, uint32_t variant, Threads& threads) {
+void Tree_builder::build(Primitive_tree& tree, Part const& part, uint32_t variant,
+                         Threads& threads) {
     uint32_t const num_finite_lights = part.num_triangles;
 
     tree.allocate_light_mapping(num_finite_lights);
@@ -603,7 +606,7 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
             tree.light_orders_[l] = light_order_++;
 
-            node_two_sided |= scene.light_two_sided(l);
+            node_two_sided |= scene.light_two_sided(0, l);
         }
 
         node.bounds            = bounds;
@@ -625,7 +628,8 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
     float const cone_weight = cone_cost(cone[3]);
 
     Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight,
-                                               Scene_sweep_threshold, candidates_, scene, 0, threads);
+                                               Scene_sweep_threshold, candidates_, scene, 0,
+                                               threads);
 
     SOFT_ASSERT(!sc.exhausted_);
 
@@ -656,7 +660,8 @@ uint32_t Tree_builder::split(Tree& tree, uint32_t node_id, uint32_t begin, uint3
 
 uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t begin, uint32_t end,
                              uint32_t max_primitives, AABB const& bounds, float4_p cone,
-                             float total_power, Part const& part, uint32_t variant, Threads& threads) {
+                             float total_power, Part const& part, uint32_t variant,
+                             Threads& threads) {
     uint32_t* const lights = tree.light_mapping_;
 
     Build_node& node = build_nodes_[node_id];
@@ -672,7 +677,8 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     float const cone_weight = cone_cost(cone[3]);
 
     Split_candidate const sc = evaluate_splits(lights, begin, end, bounds, cone_weight,
-                                               Part_sweep_threshold, candidates_, part, variant, threads);
+                                               Part_sweep_threshold, candidates_, part, variant,
+                                               threads);
 
     if (sc.exhausted_) {
         return assign(node, tree, begin, end, bounds, cone, total_power, part, variant);
@@ -700,7 +706,7 @@ uint32_t Tree_builder::split(Primitive_tree& tree, uint32_t node_id, uint32_t be
     node.middle            = c0_end;
     node.children_or_light = child0;
     node.num_lights        = len;
-    node.two_sided         = part.light_two_sided(variant);
+    node.two_sided         = part.light_two_sided(variant, 0);
 
     return c1_end;
 }
@@ -725,7 +731,7 @@ uint32_t Tree_builder::assign(Build_node& node, Primitive_tree& tree, uint32_t b
     node.middle            = 0;
     node.children_or_light = begin;
     node.num_lights        = len;
-    node.two_sided         = part.light_two_sided(variant);
+    node.two_sided         = part.light_two_sided(variant, 0);
 
     return begin + len;
 }

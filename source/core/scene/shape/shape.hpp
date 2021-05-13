@@ -107,9 +107,9 @@ class Shape {
                                Sampler& sampler, RNG& rng, uint32_t sampler_d,
                                Sample_to& sample) const;
 
-    virtual bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area, bool two_sided,
-                        Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
-                        AABB const& bounds, Sample_from& sample) const = 0;
+    virtual bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area,
+                        bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                        float2 importance_uv, AABB const& bounds, Sample_from& sample) const = 0;
 
     // All pdf functions implicitely assume that the passed
     // ray/isec/trafo combination actually lead to a hit.

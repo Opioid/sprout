@@ -149,16 +149,17 @@ bool Infinite_sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /
     return true;
 }
 
-bool Infinite_sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& /*trafo*/, float /*area*/,
-                             bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/,
-                             uint32_t /*sampler_d*/, float2 /*importance_uv*/,
-                             AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+bool Infinite_sphere::sample(uint32_t /*part*/, uint32_t /*variant*/,
+                             Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                             Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
+                             float2 /*importance_uv*/, AABB const& /*bounds*/,
+                             Sample_from& /*sample*/) const {
     return false;
 }
 
-float Infinite_sphere::pdf(uint32_t /*variant*/, Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
-                           Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
-                           bool total_sphere) const {
+float Infinite_sphere::pdf(uint32_t /*variant*/, Ray const& /*ray*/, float3_p /*n*/,
+                           Intersection const& /*isec*/, Transformation const& /*trafo*/,
+                           float /*area*/, bool /*two_sided*/, bool total_sphere) const {
     if (total_sphere) {
         return 1.f / (4.f * Pi);
     }

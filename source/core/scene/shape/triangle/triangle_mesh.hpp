@@ -59,7 +59,7 @@ struct Part {
 
     float4_p light_cone(uint32_t variant, uint32_t light) const;
 
-    bool light_two_sided(uint32_t variant) const;
+    bool light_two_sided(uint32_t variant, uint32_t light) const;
 
     float light_power(uint32_t variant, uint32_t light) const;
 
@@ -119,9 +119,9 @@ class alignas(64) Mesh final : public Shape {
                 Transformation const& trafo, float area, bool two_sided, bool total_sphere,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
 
-    bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area, bool two_sided,
-                Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
-                AABB const& bounds, Sample_from& sample) const final;
+    bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area,
+                bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;
 
     float pdf(uint32_t variant, Ray const& ray, float3_p n, shape::Intersection const& isec,
               Transformation const& trafo, float area, bool two_sided,

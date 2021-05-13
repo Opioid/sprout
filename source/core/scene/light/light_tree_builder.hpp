@@ -57,7 +57,8 @@ class Tree_builder {
                    Part const& part, uint32_t variant, Threads& threads);
 
     uint32_t assign(Build_node& node, Primitive_tree& tree, uint32_t begin, uint32_t end,
-                    AABB const& bounds, float4_p cone, float total_power, Part const& part, uint32_t variant);
+                    AABB const& bounds, float4_p cone, float total_power, Part const& part,
+                    uint32_t variant);
 
     void serialize(Node* nodes, uint32_t* node_middles);
     void serialize(Primitive_tree& tree, Part const& part, uint32_t variant);

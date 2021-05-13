@@ -215,7 +215,7 @@ class Scene {
 
     float light_area(uint32_t entity, uint32_t part) const;
 
-    bool light_two_sided(uint32_t entity) const;
+    bool light_two_sided(uint32_t variant, uint32_t light) const;
 
     float light_power(uint32_t variant, uint32_t light) const;
 

@@ -32,12 +32,13 @@ class Canopy final : public Shape {
                 Transformation const& trafo, float area, bool two_sided, bool total_sphere,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
 
-    bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area, bool two_sided,
-                Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
-                AABB const& bounds, Sample_from& sample) const final;
+    bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area,
+                bool two_sided, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                float2 importance_uv, AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(uint32_t variant, Ray const& ray, float3_p n, Intersection const& isec, Transformation const& trafo,
-              float area, bool two_sided, bool total_sphere) const final;
+    float pdf(uint32_t variant, Ray const& ray, float3_p n, Intersection const& isec,
+              Transformation const& trafo, float area, bool two_sided,
+              bool total_sphere) const final;
 
     float pdf_volume(Ray const& ray, Intersection const& isec, Transformation const& trafo,
                      float area) const final;

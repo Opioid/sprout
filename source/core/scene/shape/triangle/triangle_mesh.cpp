@@ -41,7 +41,8 @@ Part::Variant::~Variant() {
     delete[] cones;
 }
 
-bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided, Scene const& scene) const {
+bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided,
+                            Scene const& scene) const {
     if (material == m) {
         return true;
     }
@@ -111,11 +112,10 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
         }
     }
 
-
     Material const& m = *worker.scene().material(material);
 
     bool const emission_map = m.has_emission_map();
-    bool const two_sided = m.is_two_sided();
+    bool const two_sided    = m.is_two_sided();
 
     for (uint32_t v = 0; auto const& variant : variants_) {
         if (variant.matches(material, emission_map, two_sided, worker.scene())) {
@@ -173,8 +173,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
                 float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
                 radiance += m.evaluate_radiance(
-                    Up, Up, float3(uv), 1.f,
-                    material::Sampler_settings::Filter::Undefined, worker);
+                    Up, Up, float3(uv), 1.f, material::Sampler_settings::Filter::Undefined, worker);
             }
 
             float weight = max_component(radiance) / float(num_samples);
@@ -219,7 +218,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     variant.aabb = bb;
     variant.cone = float4(dominant_axis, std::cos(angle));
 
-    variant.material = material;
+    variant.material   = material;
     variant.two_sided_ = two_sided;
 
     builder.build(variant.light_tree, *this, v, threads);
@@ -229,7 +228,8 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
 light::Pick Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere,
                          float r) const {
-    auto const pick = variants_[variant].light_tree.random_light(p, n, total_sphere, r, *this, variant);
+    auto const pick = variants_[variant].light_tree.random_light(p, n, total_sphere, r, *this,
+                                                                 variant);
 
     float const relative_area = aabbs_[pick.offset].bounds[1][3];
 
@@ -276,7 +276,7 @@ float4_p Part::light_cone(uint32_t variant, uint32_t light) const {
     return variants_[variant].cones[light];
 }
 
-bool Part::light_two_sided(uint32_t variant) const {
+bool Part::light_two_sided(uint32_t variant, uint32_t /*light*/) const {
     return variants_[variant].two_sided_;
 }
 
@@ -559,9 +559,9 @@ bool Mesh::sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,
     return true;
 }
 
-bool Mesh::sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area, bool /*two_sided*/,
-                  Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
-                  AABB const& /*bounds*/, Sample_from& sample) const {
+bool Mesh::sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area,
+                  bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                  float2 importance_uv, AABB const& /*bounds*/, Sample_from& sample) const {
     float const r = sampler.sample_1D(rng, sampler_d);
     auto const  s = parts_[part].sample(variant, r);
 
@@ -686,8 +686,8 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     return {dpdu, dpdv};
 }
 
-uint32_t Mesh::prepare_sampling(uint32_t part, uint32_t material,
-                                light::Tree_builder& builder, Worker& worker, Threads& threads) {
+uint32_t Mesh::prepare_sampling(uint32_t part, uint32_t material, light::Tree_builder& builder,
+                                Worker& worker, Threads& threads) {
     // This counts the triangles for _every_ part as an optimization
     if (!primitive_mapping_) {
         primitive_mapping_ = new uint32_t[tree_.num_triangles()];

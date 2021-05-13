@@ -200,16 +200,17 @@ bool Morphable_mesh::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /*
     return false;
 }
 
-bool Morphable_mesh::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& /*trafo*/, float /*area*/,
-                            bool /*two_sided*/, sampler::Sampler& /*sampler*/, RNG& /*rng*/,
-                            uint32_t /*sampler_d*/, float2 /*importance_uv*/,
-                            AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+bool Morphable_mesh::sample(uint32_t /*part*/, uint32_t /*variant*/,
+                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
+                            sampler::Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
+                            float2 /*importance_uv*/, AABB const& /*bounds*/,
+                            Sample_from& /*sample*/) const {
     return false;
 }
 
-float Morphable_mesh::pdf(uint32_t /*variant*/, Ray const& /*ray*/, float3_p /*n*/, shape::Intersection const& /*isec*/,
-                          Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
-                          bool /*total_sphere*/) const {
+float Morphable_mesh::pdf(uint32_t /*variant*/, Ray const& /*ray*/, float3_p /*n*/,
+                          shape::Intersection const& /*isec*/, Transformation const& /*trafo*/,
+                          float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
     return 0.f;
 }
 

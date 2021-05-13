@@ -365,9 +365,9 @@ bool Sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p p, float3_
     return false;
 }
 
-bool Sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& trafo, float area, bool /*two_sided*/,
-                    Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
-                    AABB const& /*bounds*/, Sample_from& sample) const {
+bool Sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& trafo,
+                    float area, bool /*two_sided*/, Sampler& sampler, RNG& rng, uint32_t sampler_d,
+                    float2 importance_uv, AABB const& /*bounds*/, Sample_from& sample) const {
     float2 const r0 = sampler.sample_2D(rng, sampler_d);
     float3 const ls = sample_sphere_uniform(r0);
     float3 const ws = trafo.object_to_world_point(ls);
@@ -384,9 +384,9 @@ bool Sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation cons
     return true;
 }
 
-float Sphere::pdf(uint32_t /*variant*/, Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
-                  Transformation const& trafo, float /*area*/, bool /*two_sided*/,
-                  bool /*total_sphere*/) const {
+float Sphere::pdf(uint32_t /*variant*/, Ray const&                    ray, float3_p /*n*/,
+                  Intersection const& /*isec*/, Transformation const& trafo, float /*area*/,
+                  bool /*two_sided*/, bool /*total_sphere*/) const {
     float3 const axis = trafo.position - ray.origin;
 
     float const il            = rlength(axis);

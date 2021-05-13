@@ -59,15 +59,16 @@ bool Null::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /*p*/, float
     return false;
 }
 
-bool Null::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& /*trafo*/, float /*area*/,
-                  bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/, uint32_t /*sampler_d*/,
-                  float2 /*importance_uv*/, AABB const& /*bounds*/, Sample_from& /*sample*/) const {
+bool Null::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& /*trafo*/,
+                  float /*area*/, bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/,
+                  uint32_t /*sampler_d*/, float2 /*importance_uv*/, AABB const& /*bounds*/,
+                  Sample_from& /*sample*/) const {
     return false;
 }
 
-float Null::pdf(uint32_t /*variant*/, Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
-                Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
-                bool /*total_Null*/) const {
+float Null::pdf(uint32_t /*variant*/, Ray const& /*ray*/, float3_p /*n*/,
+                Intersection const& /*isec*/, Transformation const& /*trafo*/, float /*area*/,
+                bool /*two_sided*/, bool /*total_Null*/) const {
     return 0.f;
 }
 

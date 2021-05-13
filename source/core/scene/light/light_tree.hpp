@@ -129,10 +129,11 @@ class Primitive_tree {
 
     ~Primitive_tree();
 
-    Pick random_light(float3_p p, float3_p n, bool total_sphere, float random,
-                      Part const& part, uint32_t variant) const;
+    Pick random_light(float3_p p, float3_p n, bool total_sphere, float random, Part const& part,
+                      uint32_t variant) const;
 
-    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, Part const& part, uint32_t variant) const;
+    float pdf(float3_p p, float3_p n, bool total_sphere, uint32_t id, Part const& part,
+              uint32_t variant) const;
 
     void allocate_light_mapping(uint32_t num_lights);
 
