@@ -21,7 +21,7 @@ struct Part {
 
         ~Variant();
 
-        bool matches(uint32_t m, bool emission_map, bool two_sided) const;
+        bool matches(uint32_t m, bool emission_map, bool two_sided, Scene const& scene) const;
 
         float4* cones;
 

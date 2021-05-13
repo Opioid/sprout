@@ -23,8 +23,6 @@
 #endif
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace scene::shape::triangle {
 
 Part::Variant::Variant() : cones(nullptr) {}
@@ -34,6 +32,7 @@ Part::Variant::Variant(Variant&& other)
       distribution(std::move(other.distribution)),
       light_tree(std::move(other.light_tree)),
       cone(other.cone),
+      material(other.material),
       two_sided_(other.two_sided_) {
     other.cones = nullptr;
 }
@@ -42,12 +41,14 @@ Part::Variant::~Variant() {
     delete[] cones;
 }
 
-bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided) const {
+bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided, Scene const& scene) const {
     if (material == m) {
         return true;
     }
 
-    if (!emission_map) {
+    auto const& lm = scene.material(material);
+
+    if (!lm->has_emission_map() && !emission_map) {
         return two_sided_ == two_sided;
     }
 
@@ -117,7 +118,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     bool const two_sided = m.is_two_sided();
 
     for (uint32_t v = 0; auto const& variant : variants_) {
-        if (variant.matches(material, emission_map, two_sided)) {
+        if (variant.matches(material, emission_map, two_sided, worker.scene())) {
             return v;
         }
 
