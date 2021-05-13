@@ -149,32 +149,14 @@ bool Infinite_sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /
     return true;
 }
 
-// bool Infinite_sphere::sample(uint32_t /*part*/, float3_p /*p*/, Transformation const& trafo,
-//                             float /*area*/, bool /*two_sided*/, Sampler& sampler, RNG& rng,
-//                             uint32_t sampler_d, Sample_to& sample) const {
-//    float2 const uv  = sampler.sample_2D(rng, sampler_d);
-//    float3 const dir = sample_sphere_uniform(uv);
-
-//    float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, dir));
-
-//    sample = Sample_to(dir,
-//                       float3(std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
-//                              std::acos(xyz[1]) * Pi_inv, 0.f),
-//                       1.f / (2.f * Pi), Ray_max_t);
-
-//    SOFT_ASSERT(testing::check(sample));
-
-//    return true;
-//}
-
-bool Infinite_sphere::sample(uint32_t /*part*/, Transformation const& /*trafo*/, float /*area*/,
+bool Infinite_sphere::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& /*trafo*/, float /*area*/,
                              bool /*two_sided*/, Sampler& /*sampler*/, RNG& /*rng*/,
                              uint32_t /*sampler_d*/, float2 /*importance_uv*/,
                              AABB const& /*bounds*/, Sample_from& /*sample*/) const {
     return false;
 }
 
-float Infinite_sphere::pdf(Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
+float Infinite_sphere::pdf(uint32_t /*variant*/, Ray const& /*ray*/, float3_p /*n*/, Intersection const& /*isec*/,
                            Transformation const& /*trafo*/, float /*area*/, bool /*two_sided*/,
                            bool total_sphere) const {
     if (total_sphere) {

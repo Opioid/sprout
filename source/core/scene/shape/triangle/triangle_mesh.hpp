@@ -21,17 +21,17 @@ struct Part {
 
         ~Variant();
 
-        float* powers;
-
         float4* cones;
 
         Distribution_1D distribution;
 
         light::Primitive_tree light_tree;
 
+        AABB aabb;
+
         float4 cone;
 
-        bool two_sided_;
+        bool two_sided;
     };
 
     ~Part();
@@ -44,6 +44,8 @@ struct Part {
     float pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uint32_t id) const;
 
     Distribution_1D::Discrete sample(uint32_t variant, float r) const;
+
+    AABB const& aabb(uint32_t variant) const;
 
     float power(uint32_t variant) const;
 
@@ -61,15 +63,13 @@ struct Part {
 
     uint32_t num_triangles = 0;
 
-    uint32_t* triangle_mapping = nullptr;
+    uint32_t* triangle_mapping_ = nullptr;
 
-    AABB* aabbs = nullptr;
+    AABB* aabbs_ = nullptr;
 
     float* relative_areas_ = nullptr;
 
     std::vector<Variant> variants_;
-
-    AABB aabb;
 
     float area_;
 };
@@ -88,7 +88,7 @@ class alignas(64) Mesh final : public Shape {
 
     AABB aabb() const final;
 
-    AABB part_aabb(uint32_t part) const final;
+    AABB part_aabb(uint32_t part, uint32_t variant) const final;
 
     uint32_t num_parts() const final;
 
@@ -117,16 +117,11 @@ class alignas(64) Mesh final : public Shape {
                 Transformation const& trafo, float area, bool two_sided, bool total_sphere,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const final;
 
-    //    bool sample(uint32_t part, float3_p p, Transformation const& trafo, float area, bool
-    //    two_sided,
-    //                Sampler& sampler, RNG& rng, uint32_t sampler_d, Sample_to& sample) const
-    //                final;
-
-    bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
+    bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area, bool two_sided,
                 Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
+    float pdf(uint32_t variant, Ray const& ray, float3_p n, shape::Intersection const& isec,
               Transformation const& trafo, float area, bool two_sided,
               bool total_sphere) const final;
 

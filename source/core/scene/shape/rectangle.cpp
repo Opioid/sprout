@@ -257,7 +257,7 @@ bool Rectangle::sample(uint32_t part, uint32_t /*variant*/, float3_p p, float3_p
     return Rectangle::sample(part, p, r2, trafo, area, two_sided, sample);
 }
 
-bool Rectangle::sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
+bool Rectangle::sample(uint32_t part, uint32_t /*variant*/, Transformation const& trafo, float area, bool two_sided,
                        Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                        AABB const& bounds, Sample_from& sample) const {
     float2 const r0 = sampler.sample_2D(rng, sampler_d);
@@ -265,7 +265,7 @@ bool Rectangle::sample(uint32_t part, Transformation const& trafo, float area, b
     return Rectangle::sample(part, r0, trafo, area, two_sided, importance_uv, bounds, sample);
 }
 
-float Rectangle::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+float Rectangle::pdf(uint32_t /*variant*/, Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
                      Transformation const& trafo, float area, bool two_sided,
                      bool /*total_sphere*/) const {
     float3 const n = trafo.rotation.r[2];
@@ -332,7 +332,7 @@ bool Rectangle::sample(uint32_t /*part*/, float2 uv, Transformation const& trafo
 
 float Rectangle::pdf_uv(Ray const& ray, Intersection const& isec, Transformation const& trafo,
                         float area, bool two_sided) const {
-    return pdf(ray, float3(0.f), isec, trafo, area, two_sided, false);
+    return pdf(0, ray, float3(0.f), isec, trafo, area, two_sided, false);
 }
 
 float Rectangle::uv_weight(float2 /*uv*/) const {

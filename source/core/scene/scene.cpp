@@ -467,7 +467,7 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     uint32_t const f = prop_frames_[entity];
 
-    AABB const part_aabb = shape->part_aabb(part);
+    AABB const part_aabb = shape->part_aabb(part, variant);
 
     if (prop::Null == f) {
         AABB bb = part_aabb.transform(trafo.object_to_world());

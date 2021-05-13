@@ -554,7 +554,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, uint32_t varian
 
     float const total_power = part.power(variant);
 
-    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 64, 4u), part.aabb,
+    split(tree, 0, 0, num_finite_lights, std::max(num_finite_lights / 64, 4u), part.aabb(variant),
           part.cone(variant), total_power, part, variant, threads);
 
     tree.allocate_nodes(current_node_);

@@ -256,7 +256,7 @@ bool Disk::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p p, float3_p 
     return true;
 }
 
-bool Disk::sample(uint32_t /*part*/, Transformation const& trafo, float area, bool /*two_sided*/,
+bool Disk::sample(uint32_t /*part*/, uint32_t /*variant*/, Transformation const& trafo, float area, bool /*two_sided*/,
                   Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                   AABB const& /*bounds*/, Sample_from& sample) const {
     float2 const r0 = sampler.sample_2D(rng, sampler_d);
@@ -274,7 +274,7 @@ bool Disk::sample(uint32_t /*part*/, Transformation const& trafo, float area, bo
     return true;
 }
 
-float Disk::pdf(Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
+float Disk::pdf(uint32_t /*variant*/, Ray const&            ray, float3_p /*n*/, Intersection const& /*isec*/,
                 Transformation const& trafo, float area, bool two_sided,
                 bool /*total_sphere*/) const {
     float3 const n = trafo.rotation.r[2];

@@ -164,7 +164,7 @@ float3 Light::evaluate(Sample_to const& sample, Filter filter, Worker const& wor
     return material->evaluate_radiance(sample.wi, sample.n, sample.uvw, extent_, filter, worker);
 }
 
-static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
+static inline bool prop_sample(uint32_t prop, uint32_t part, uint32_t variant, float area,
                                Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
                                AABB const& bounds, Worker& worker, Sample_from& result) {
     auto const material = worker.scene().prop_material(prop, part);
@@ -175,7 +175,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
 
     float2 const importance_uv = sampler.sample_2D(rng);
 
-    if (!worker.scene().prop_shape(prop)->sample(part, trafo, area, two_sided, sampler, rng,
+    if (!worker.scene().prop_shape(prop)->sample(part, variant, trafo, area, two_sided, sampler, rng,
                                                  sampler_d, importance_uv, bounds, result)) {
         return false;
     }
@@ -220,7 +220,7 @@ bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB con
 
     switch (type_) {
         case Type::Prop:
-            return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, bounds, worker,
+            return prop_sample(prop_, part_, variant_, extent_, trafo, sampler, sampler_d, bounds, worker,
                                result);
         case Type::Prop_image:
             return prop_image_sample(prop_, part_, extent_, trafo, sampler, sampler_d, bounds,
@@ -234,7 +234,7 @@ bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d, AABB con
     return false;
 }
 
-static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
+static inline bool prop_sample(uint32_t prop, uint32_t part, uint32_t variant, float area,
                                Transformation const& trafo, Sampler& sampler, uint32_t sampler_d,
                                Distribution_2D const& importance, AABB const& bounds,
                                Worker& worker, Sample_from& result) {
@@ -251,7 +251,7 @@ static inline bool prop_sample(uint32_t prop, uint32_t part, float area,
         return false;
     }
 
-    if (!worker.scene().prop_shape(prop)->sample(part, trafo, area, two_sided, sampler, rng,
+    if (!worker.scene().prop_shape(prop)->sample(part, variant, trafo, area, two_sided, sampler, rng,
                                                  sampler_d, importance_uv.uv, bounds, result)) {
         return false;
     }
@@ -306,7 +306,7 @@ bool Light::sample(uint64_t time, Sampler& sampler, uint32_t sampler_d,
 
     switch (type_) {
         case Type::Prop:
-            return prop_sample(prop_, part_, extent_, trafo, sampler, sampler_d, importance, bounds,
+            return prop_sample(prop_, part_, variant_, extent_, trafo, sampler, sampler_d, importance, bounds,
                                worker, result);
         case Type::Prop_image:
             return prop_image_sample(prop_, part_, extent_, trafo, sampler, sampler_d, importance,
@@ -327,11 +327,11 @@ float3 Light::evaluate(Sample_from const& sample, Filter filter, Worker const& w
                                        filter, worker);
 }
 
-static inline float prop_pdf(float area, Ray const& ray, float3_p n, Intersection const& isec,
+static inline float prop_pdf(uint32_t variant, float area, Ray const& ray, float3_p n, Intersection const& isec,
                              Transformation const& trafo, bool total_sphere, Worker const& worker) {
     bool const two_sided = isec.material(worker)->is_two_sided();
 
-    return isec.shape(worker)->pdf(ray, n, isec.geo, trafo, area, two_sided, total_sphere);
+    return isec.shape(worker)->pdf(variant, ray, n, isec.geo, trafo, area, two_sided, total_sphere);
 }
 
 static inline float prop_image_pdf(float area, Ray const& ray, Intersection const& isec,
@@ -371,7 +371,7 @@ float Light::pdf(Ray const& ray, float3_p n, Intersection const& isec, bool tota
 
     switch (type_) {
         case Type::Prop:
-            return prop_pdf(extent_, ray, n, isec, trafo, total_sphere, worker);
+            return prop_pdf(variant_, extent_, ray, n, isec, trafo, total_sphere, worker);
         case Type::Prop_image:
             return prop_image_pdf(extent_, ray, isec, trafo, worker);
         case Type::Volume:

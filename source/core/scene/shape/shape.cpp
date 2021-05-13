@@ -13,7 +13,7 @@ Shape::Shape(Properties properties) : properties_(properties) {}
 
 Shape::~Shape() = default;
 
-AABB Shape::part_aabb(uint32_t /*part*/) const {
+AABB Shape::part_aabb(uint32_t /*part*/, uint32_t /*variant*/) const {
     return aabb();
 }
 

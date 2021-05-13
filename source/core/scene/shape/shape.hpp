@@ -72,7 +72,7 @@ class Shape {
 
     virtual AABB aabb() const = 0;
 
-    virtual AABB part_aabb(uint32_t part) const;
+    virtual AABB part_aabb(uint32_t part, uint32_t variant) const;
 
     virtual uint32_t num_parts() const;
 
@@ -107,13 +107,13 @@ class Shape {
                                Sampler& sampler, RNG& rng, uint32_t sampler_d,
                                Sample_to& sample) const;
 
-    virtual bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
+    virtual bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area, bool two_sided,
                         Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                         AABB const& bounds, Sample_from& sample) const = 0;
 
     // All pdf functions implicitely assume that the passed
     // ray/isec/trafo combination actually lead to a hit.
-    virtual float pdf(Ray const& ray, float3_p n, Intersection const& isec,
+    virtual float pdf(uint32_t variant, Ray const& ray, float3_p n, Intersection const& isec,
                       Transformation const& trafo, float area, bool two_sided,
                       bool total_sphere) const = 0;
 

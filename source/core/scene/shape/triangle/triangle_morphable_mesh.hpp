@@ -43,11 +43,11 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
                 sampler::Sampler& sampler, RNG& rng, uint32_t sampler_d,
                 Sample_to& sample) const final;
 
-    bool sample(uint32_t part, Transformation const& trafo, float area, bool two_sided,
+    bool sample(uint32_t part, uint32_t variant, Transformation const& trafo, float area, bool two_sided,
                 sampler::Sampler& sampler, RNG& rng, uint32_t sampler_d, float2 importance_uv,
                 AABB const& bounds, Sample_from& sample) const final;
 
-    float pdf(Ray const& ray, float3_p n, shape::Intersection const& isec,
+    float pdf(uint32_t variant, Ray const& ray, float3_p n, shape::Intersection const& isec,
               Transformation const& trafo, float area, bool two_sided,
               bool total_sphere) const final;
 
