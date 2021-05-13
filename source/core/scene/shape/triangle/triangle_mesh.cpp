@@ -70,6 +70,8 @@ static float triangle_area(float2 a, float2 b, float2 c) {
 
 uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                     light::Tree_builder& builder, Worker& worker, Threads& threads) {
+    using Filter = material::Sampler_settings::Filter;
+
     uint32_t const num = num_triangles;
 
     if (!triangle_mapping_) {
@@ -148,18 +150,18 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     for (uint32_t i = 0; i < num; ++i) {
         uint32_t const t = triangle_mapping_[i];
 
-        float3 va;
-        float3 vb;
-        float3 vc;
-        float2 uva;
-        float2 uvb;
-        float2 uvc;
-        tree.triangle(t, va, vb, vc, uva, uvb, uvc);
-
         float const area = tree.triangle_area(t);
 
         float power;
         if (emission_map) {
+            float3 va;
+            float3 vb;
+            float3 vc;
+            float2 uva;
+            float2 uvb;
+            float2 uvc;
+            tree.triangle(t, va, vb, vc, uva, uvb, uvc);
+
             float const ta = triangle_area(uva, uvb, uvc);
 
             float3 radiance(0.f);
@@ -173,7 +175,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
                 float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
                 radiance += m.evaluate_radiance(
-                    Up, Up, float3(uv), 1.f, material::Sampler_settings::Filter::Undefined, worker);
+                    Up, Up, float3(uv), 1.f, Filter::Undefined, worker);
             }
 
             float weight = max_component(radiance) / float(num_samples);
