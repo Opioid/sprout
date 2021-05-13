@@ -7,7 +7,6 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "image/texture/texture.inl"
-
 #include "light_material_sample.hpp"
 #include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"

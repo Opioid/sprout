@@ -6,7 +6,9 @@
 #include "base/math/sample_distribution.inl"
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/array.inl"
 #include "base/memory/buffer.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
@@ -69,7 +71,7 @@ static float triangle_area(float2 a, float2 b, float2 c) {
 }
 
 uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
-                    light::Tree_builder& builder, Worker& worker, Threads& threads) {
+                    light::Tree_builder& builder, Worker const& worker, Threads& threads) {
     using Filter = material::Sampler_settings::Filter;
 
     uint32_t const num = num_triangles;
@@ -135,74 +137,97 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
     variant.cones = new float4[num];
 
-    AABB bb(Empty_AABB);
-
-    float3 dominant_axis(0.f);
-
     memory::Buffer<float> powers(num);
 
-    float total_power = 0.f;
+    struct Temp {
+        AABB   bb            = Empty_AABB;
+        float3 dominant_axis = float3(0.f);
+        float  total_power   = 0.f;
+    };
+
+    memory::Array<Temp> temps(threads.num_threads());
 
     static float constexpr Num_texels = 1024.f * 1024.f;  // 2048.f * 2048.f;
 
     static float3 constexpr Up = float3(0.f, 1.f, 0.f);
 
-    for (uint32_t i = 0; i < num; ++i) {
-        uint32_t const t = triangle_mapping_[i];
+    threads.run_range(
+        [this, &variant, &tree, &m, &powers, &temps, &worker](uint32_t id, int32_t begin,
+                                                              int32_t end) noexcept {
+            bool const emission_map = m.has_emission_map();
 
-        float const area = tree.triangle_area(t);
+            Temp temp;
 
-        float power;
-        if (emission_map) {
-            float3 va;
-            float3 vb;
-            float3 vc;
-            float2 uva;
-            float2 uvb;
-            float2 uvc;
-            tree.triangle(t, va, vb, vc, uva, uvb, uvc);
+            for (int32_t i = begin; i < end; ++i) {
+                uint32_t const t = triangle_mapping_[i];
 
-            float const ta = triangle_area(uva, uvb, uvc);
+                float const area = tree.triangle_area(t);
 
-            float3 radiance(0.f);
+                float power;
+                if (emission_map) {
+                    float3 va;
+                    float3 vb;
+                    float3 vc;
+                    float2 uva;
+                    float2 uvb;
+                    float2 uvc;
+                    tree.triangle(t, va, vb, vc, uva, uvb, uvc);
 
-            // static uint32_t constexpr Num_samples = 64;
+                    float const ta = triangle_area(uva, uvb, uvc);
 
-            uint32_t const num_samples = 1024;  // uint32_t(approx_texels);
+                    float3 radiance(0.f);
 
-            for (uint32_t j = 0; j < num_samples; ++j) {
-                float2 const xi = hammersley(j, num_samples, 0);
+                    // static uint32_t constexpr Num_samples = 64;
 
-                float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
-                radiance += m.evaluate_radiance(
-                    Up, Up, float3(uv), 1.f, Filter::Undefined, worker);
+                    uint32_t const num_samples = 1024;  // uint32_t(approx_texels);
+
+                    for (uint32_t j = 0; j < num_samples; ++j) {
+                        float2 const xi = hammersley(j, num_samples, 0);
+                        float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]),
+                                                                       t);
+
+                        radiance += m.evaluate_radiance(Up, Up, float3(uv), 1.f, Filter::Undefined,
+                                                        worker);
+                    }
+
+                    float const weight = max_component(radiance) / float(num_samples);
+
+                    power = weight * area;
+                } else {
+                    power = area;
+                }
+
+                powers[i] = power;
+
+                float3 const n = tree.triangle_normal(t);
+
+                variant.cones[i] = float4(n, 1.f);
+
+                if (power > 0.f) {
+                    temp.dominant_axis += power * n;
+
+                    temp.bb.merge_assign(aabbs_[i]);
+
+                    temp.total_power += power;
+                }
             }
 
-            float weight = max_component(radiance) / float(num_samples);
-
-            power = weight * area;
-        } else {
-            power = area;
-        }
-
-        powers[i] = power;
-
-        total_power += power;
-
-        float3 const n = tree.triangle_normal(t);
-
-        variant.cones[i] = float4(n, 1.f);
-
-        if (power > 0.f) {
-            dominant_axis += power * n;
-
-            bb.merge_assign(aabbs_[i]);
-        }
-    }
+            temps[id] = temp;
+        },
+        0, int32_t(num));
 
     variant.distribution.init(powers, num);
 
-    dominant_axis = normalize(dominant_axis / total_power);
+    Temp temp;
+    for (auto const& t : temps) {
+        temp.bb.merge_assign(t.bb);
+
+        temp.dominant_axis += t.dominant_axis;
+
+        temp.total_power += t.total_power;
+    }
+
+    temp.dominant_axis = normalize(temp.dominant_axis / temp.total_power);
 
     float angle = 0.f;
 
@@ -210,15 +235,15 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
         uint32_t const t = triangle_mapping_[i];
 
         float3 const n = tree.triangle_normal(t);
-        float const  c = dot(dominant_axis, n);
+        float const  c = dot(temp.dominant_axis, n);
 
         SOFT_ASSERT(std::isfinite(c));
 
         angle = std::max(angle, std::acos(c));
     }
 
-    variant.aabb = bb;
-    variant.cone = float4(dominant_axis, std::cos(angle));
+    variant.aabb = temp.bb;
+    variant.cone = float4(temp.dominant_axis, std::cos(angle));
 
     variant.material   = material;
     variant.two_sided_ = two_sided;
@@ -689,7 +714,7 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
 }
 
 uint32_t Mesh::prepare_sampling(uint32_t part, uint32_t material, light::Tree_builder& builder,
-                                Worker& worker, Threads& threads) {
+                                Worker const& worker, Threads& threads) {
     // This counts the triangles for _every_ part as an optimization
     if (!primitive_mapping_) {
         primitive_mapping_ = new uint32_t[tree_.num_triangles()];
