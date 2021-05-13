@@ -35,7 +35,7 @@ bool Shape::sample_volume(uint32_t /*part*/, float3_p /*p*/, Transformation cons
     return false;
 }
 
-uint32_t Shape::prepare_sampling(uint32_t /*part*/, Material const& /*material*/,
+uint32_t Shape::prepare_sampling(uint32_t /*part*/, uint32_t /*material*/,
                                  light::Tree_builder& /*builder*/, Worker& /*worker*/,
                                  Threads& /*threads*/) {
     return 0;

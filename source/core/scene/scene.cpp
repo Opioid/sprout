@@ -444,9 +444,9 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
 
     uint32_t const p = prop_parts_[entity] + part;
 
-    Material& material = *material_resources_[materials_[p]];
+    uint32_t const m = materials_[p];
 
-    uint32_t const variant = shape->prepare_sampling(part, material, light_tree_builder_, worker,
+    uint32_t const variant = shape->prepare_sampling(part, m, light_tree_builder_, worker,
                                                      threads);
 
     lights_[light].set_variant(variant);
@@ -459,6 +459,8 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
     float const extent = volume ? shape->volume(part, scale) : shape->area(part, scale);
 
     light_ids_[p] = volume ? (light::Light::Volume_light_mask | light) : light;
+
+    Material& material = *material_resources_[m];
 
     float3 const average_radiance = material.prepare_sampling(*shape, part, trafo, extent, *this,
                                                               threads);

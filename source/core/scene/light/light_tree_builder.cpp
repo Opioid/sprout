@@ -170,7 +170,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         float4 const cone = scene.light_cone(0, l);
 
-        bool const two_sided = scene.light_two_sided(0);
+        bool const two_sided = scene.light_two_sided(l);
 
         float const power = scene.light_power(0, l);
 

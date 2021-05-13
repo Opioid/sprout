@@ -21,6 +21,8 @@ struct Part {
 
         ~Variant();
 
+        bool matches(uint32_t m, bool emission_map, bool two_sided) const;
+
         float4* cones;
 
         Distribution_1D distribution;
@@ -31,12 +33,14 @@ struct Part {
 
         float4 cone;
 
-        bool two_sided;
+        uint32_t material;
+
+        bool two_sided_;
     };
 
     ~Part();
 
-    uint32_t init(uint32_t part, Material const& material, bvh::Tree const& tree,
+    uint32_t init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                   light::Tree_builder& builder, Worker& worker, Threads& threads);
 
     light::Pick sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere, float r) const;
@@ -146,7 +150,7 @@ class alignas(64) Mesh final : public Shape {
 
     Differential_surface differential_surface(uint32_t primitive) const final;
 
-    uint32_t prepare_sampling(uint32_t part, Material const& material, light::Tree_builder& builder,
+    uint32_t prepare_sampling(uint32_t part, uint32_t material, light::Tree_builder& builder,
                               Worker& worker, Threads& threads) final;
 
     float4 cone(uint32_t part) const final;

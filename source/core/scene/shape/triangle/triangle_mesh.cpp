@@ -34,12 +34,24 @@ Part::Variant::Variant(Variant&& other)
       distribution(std::move(other.distribution)),
       light_tree(std::move(other.light_tree)),
       cone(other.cone),
-      two_sided(other.two_sided) {
+      two_sided_(other.two_sided_) {
     other.cones = nullptr;
 }
 
 Part::Variant::~Variant() {
     delete[] cones;
+}
+
+bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided) const {
+    if (material == m) {
+        return true;
+    }
+
+    if (!emission_map) {
+        return two_sided_ == two_sided;
+    }
+
+    return false;
 }
 
 Part::~Part() {
@@ -54,7 +66,7 @@ static float triangle_area(float2 a, float2 b, float2 c) {
     return 0.5f * (x[0] * y[1] - x[1] * y[0]);
 }
 
-uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tree,
+uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                     light::Tree_builder& builder, Worker& worker, Threads& threads) {
     uint32_t const num = num_triangles;
 
@@ -99,13 +111,24 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
     }
 
 
+    Material const& m = *worker.scene().material(material);
 
-        bool const emission_map = material.has_emission_map();
+    bool const emission_map = m.has_emission_map();
+    bool const two_sided = m.is_two_sided();
 
+    for (uint32_t v = 0; auto const& variant : variants_) {
+        if (variant.matches(material, emission_map, two_sided)) {
+            return v;
+        }
+
+        ++v;
+    }
+
+    uint32_t const v = uint32_t(variants_.size());
 
     variants_.emplace_back();
 
-    Variant& variant = variants_[0];
+    Variant& variant = variants_[v];
 
     variant.cones = new float4[num];
 
@@ -118,6 +141,8 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
     float total_power = 0.f;
 
     static float constexpr Num_texels = 1024.f * 1024.f;  // 2048.f * 2048.f;
+
+    static float3 constexpr Up = float3(0.f, 1.f, 0.f);
 
     for (uint32_t i = 0; i < num; ++i) {
         uint32_t const t = triangle_mapping_[i];
@@ -146,8 +171,8 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
                 float2 const xi = hammersley(j, num_samples, 0);
 
                 float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]), t);
-                radiance += material.evaluate_radiance(
-                    float3(0.f, 1.f, 0.f), float3(0.f, 1.f, 0.f), float3(uv), 1.f,
+                radiance += m.evaluate_radiance(
+                    Up, Up, float3(uv), 1.f,
                     material::Sampler_settings::Filter::Undefined, worker);
             }
 
@@ -194,11 +219,12 @@ uint32_t Part::init(uint32_t part, Material const& material, bvh::Tree const& tr
     variant.aabb = bb;
     variant.cone = float4(dominant_axis, std::cos(angle));
 
-    variant.two_sided = material.is_two_sided();
+    variant.material = material;
+    variant.two_sided_ = two_sided;
 
-    builder.build(variant.light_tree, *this, 0, threads);
+    builder.build(variant.light_tree, *this, v, threads);
 
-    return 0;
+    return v;
 }
 
 light::Pick Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere,
@@ -227,7 +253,6 @@ AABB const& Part::aabb(uint32_t variant) const {
     return variants_[variant].aabb;
 }
 
-
 float Part::power(uint32_t variant) const {
     return variants_[variant].distribution.integral();
 }
@@ -249,7 +274,7 @@ float4_p Part::light_cone(uint32_t variant, uint32_t light) const {
 }
 
 bool Part::light_two_sided(uint32_t variant) const {
-    return variants_[variant].two_sided;
+    return variants_[variant].two_sided_;
 }
 
 float Part::light_power(uint32_t variant, uint32_t light) const {
@@ -658,7 +683,7 @@ Shape::Differential_surface Mesh::differential_surface(uint32_t primitive) const
     return {dpdu, dpdv};
 }
 
-uint32_t Mesh::prepare_sampling(uint32_t part, Material const& material,
+uint32_t Mesh::prepare_sampling(uint32_t part, uint32_t material,
                                 light::Tree_builder& builder, Worker& worker, Threads& threads) {
     // This counts the triangles for _every_ part as an optimization
     if (!primitive_mapping_) {
