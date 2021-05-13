@@ -180,7 +180,6 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
             float weight = max_component(radiance) / float(num_samples);
 
             power = weight * area;
-
         } else {
             power = area;
         }
@@ -247,7 +246,10 @@ float Part::pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uin
 
 math::Distribution_1D::Discrete Part::sample(uint32_t variant, float r) const {
     auto const result = variants_[variant].distribution.sample_discrete(r);
-    return {triangle_mapping_[result.offset], result.pdf};
+
+    float const relative_area = aabbs_[result.offset].bounds[1][3];
+
+    return {triangle_mapping_[result.offset], result.pdf * relative_area};
 }
 
 AABB const& Part::aabb(uint32_t variant) const {
@@ -577,7 +579,7 @@ bool Mesh::sample(uint32_t part, uint32_t variant, Transformation const& trafo, 
 
     float3 const dir = sample_oriented_hemisphere_cosine(importance_uv, x, y, wn);
 
-    sample = Sample_from(offset_ray(ws, wn), wn, dir, tc, importance_uv, 1.f / (Pi * area));
+    sample = Sample_from(offset_ray(ws, wn), wn, dir, tc, importance_uv, s.pdf / (Pi * area));
 
     return true;
 }
