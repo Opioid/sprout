@@ -164,4 +164,8 @@ void Emissionmap::set_emission_factor(float emission_factor) {
     emission_factor_ = emission_factor;
 }
 
+image::Description Emissionmap::useful_texture_description(Scene const& scene) const {
+    return emission_map_.description(scene);
+}
+
 }  // namespace scene::material::light

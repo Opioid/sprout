@@ -29,6 +29,8 @@ class Emissionmap final : public Material {
 
     void set_emission_factor(float emission_factor);
 
+    image::Description useful_texture_description(Scene const& scene) const final;
+
   protected:
     Texture emission_map_;
 

@@ -115,11 +115,7 @@ class Material {
 
     virtual volumetric::Gridtree const* volume_tree() const;
 
-    struct Boxi {
-        int3 min;
-        int3 max;
-    };
-    virtual Boxi volume_texture_space_bounds(Scene const& scene) const;
+    virtual image::Description useful_texture_description(Scene const& scene) const;
 
     float phase(float3_p wo, float3_p wi) const;
 

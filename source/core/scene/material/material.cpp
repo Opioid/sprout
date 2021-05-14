@@ -89,8 +89,12 @@ volumetric::Gridtree const* Material::volume_tree() const {
     return nullptr;
 }
 
-Material::Boxi Material::volume_texture_space_bounds(Scene const& /*scene*/) const {
-    return {int3(0), int3(0)};
+image::Description Material::useful_texture_description(Scene const& scene) const {
+    if (color_map_.is_valid()) {
+        return color_map_.description(scene);
+    }
+
+    return image::Description();
 }
 
 float Material::similarity_relation_scale(uint32_t depth) const {

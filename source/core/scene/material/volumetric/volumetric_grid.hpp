@@ -26,7 +26,7 @@ class Grid : public Material {
 
     Gridtree const* volume_tree() const final;
 
-    Boxi volume_texture_space_bounds(Scene const& scene) const final;
+    image::Description useful_texture_description(Scene const& scene) const final;
 
   protected:
     float density(float3_p uvw, Filter filter, Worker const& worker) const;

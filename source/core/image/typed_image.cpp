@@ -5,7 +5,7 @@
 
 namespace image {
 
-Description::Description() : dimensions_(0), offset_() {}
+Description::Description() : dimensions_(0), offset_(0) {}
 
 Description::Description(int2 dimensions) : dimensions_(dimensions, 1), offset_(0) {}
 

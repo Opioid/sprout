@@ -273,13 +273,13 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             auto const material = scene.prop_material(entity_id, 0);
 
             if (material->is_heterogeneous_volume()) {
-                auto const bounds = material->volume_texture_space_bounds(scene);
+                auto const desc = material->useful_texture_description(scene);
 
                 float const voxel_scale = trafo.scale[0];
 
-                trafo.scale = 0.5f * voxel_scale * float3(bounds.max);
+                trafo.scale = 0.5f * voxel_scale * float3(desc.dimensions());
 
-                trafo.position += trafo.scale + voxel_scale * float3(bounds.min);
+                trafo.position += trafo.scale + voxel_scale * float3(desc.offset());
             }
         }
 

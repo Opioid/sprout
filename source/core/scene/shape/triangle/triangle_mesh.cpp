@@ -20,6 +20,7 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "triangle_intersection.hpp"
+
 #ifdef SU_DEBUG
 #include "scene/shape/shape_test.hpp"
 #endif
@@ -67,7 +68,7 @@ static float triangle_area(float2 a, float2 b, float2 c) {
     float2 const x = b - a;
     float2 const y = c - a;
 
-    return 0.5f * (x[0] * y[1] - x[1] * y[0]);
+    return 0.5f * std::abs(x[0] * y[1] - x[1] * y[0]);
 }
 
 uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
@@ -147,13 +148,15 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
     memory::Array<Temp> temps(threads.num_threads());
 
-    static float constexpr Num_texels = 1024.f * 1024.f;  // 2048.f * 2048.f;
+    int2 const dimensions = m.useful_texture_description(worker.scene()).dimensions().xy();
+
+    float const image_area = float(dimensions[0] * dimensions[1]);
 
     static float3 constexpr Up = float3(0.f, 1.f, 0.f);
 
     threads.run_range(
-        [this, &variant, &tree, &m, &powers, &temps, &worker](uint32_t id, int32_t begin,
-                                                              int32_t end) noexcept {
+        [this, &variant, &tree, &m, &powers, &temps, &worker, image_area](
+            uint32_t id, int32_t begin, int32_t end) noexcept {
             bool const emission_map = m.has_emission_map();
 
             Temp temp;
@@ -173,13 +176,13 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                     float2 uvc;
                     tree.triangle(t, va, vb, vc, uva, uvb, uvc);
 
-                    float const ta = triangle_area(uva, uvb, uvc);
+                    float const uv_area = triangle_area(uva, uvb, uvc);
 
                     float3 radiance(0.f);
 
                     // static uint32_t constexpr Num_samples = 64;
 
-                    uint32_t const num_samples = 1024;  // uint32_t(approx_texels);
+                    uint32_t const num_samples = std::lrint(uv_area * image_area + 0.5f);
 
                     for (uint32_t j = 0; j < num_samples; ++j) {
                         float2 const xi = hammersley(j, num_samples, 0);

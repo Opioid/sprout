@@ -33,6 +33,8 @@ class Material_base : public material::Material {
     void set_metallic(float metallic);
     void set_emission_factor(float emission_factor);
 
+    image::Description useful_texture_description(Scene const& scene) const final;
+
   protected:
     using Texture_sampler_2D = image::texture::Sampler_2D;
 

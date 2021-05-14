@@ -86,4 +86,12 @@ void Material_base::set_emission_factor(float emission_factor) {
     emission_factor_ = emission_factor;
 }
 
+image::Description Material_base::useful_texture_description(Scene const& scene) const {
+    if (emission_map_.is_valid()) {
+        return emission_map_.description(scene);
+    }
+
+    return material::Material::useful_texture_description(scene);
+}
+
 }  // namespace scene::material::substitute
