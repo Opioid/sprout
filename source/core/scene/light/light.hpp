@@ -113,9 +113,10 @@ class alignas(16) Light {
 
     bool two_sided_;
 
+    uint16_t variant_;
+
     uint32_t prop_;
     uint32_t part_;
-    uint32_t variant_;
 
     float extent_;
 };

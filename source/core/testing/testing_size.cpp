@@ -111,7 +111,7 @@ void size() {
     print_size<scene::material::volumetric::Grid>("volumetric::Grid", 256);
 
     print_size<scene::prop::Prop>("prop::Prop", 8);
-    print_size<scene::light::Light>("light::Light", 32);
+    print_size<scene::light::Light>("light::Light", 16);
 
     print_size<scene::Renderstate>("Renderstate", 128);
 

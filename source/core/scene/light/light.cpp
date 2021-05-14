@@ -25,10 +25,10 @@ using Sampler      = sampler::Sampler;
 Light::Light() = default;
 
 Light::Light(Type type, bool two_sided, uint32_t prop, uint32_t part)
-    : type_(type), two_sided_(two_sided), prop_(prop), part_(part), variant_(0), extent_(0.f) {}
+    : type_(type), two_sided_(two_sided), variant_(0), prop_(prop), part_(part), extent_(0.f) {}
 
 void Light::set_variant(uint32_t variant) {
-    variant_ = variant;
+    variant_ = uint16_t(variant);
 }
 
 void Light::set_extent(float extent) {
