@@ -77,7 +77,7 @@ float3 Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
 
     memory::Buffer<float> luminance(d[0] * d[1]);
 
-    memory::Array<float4> avgs(threads.num_threads(), float4(0.f));
+    memory::Array<float4> avgs(threads.num_threads());
 
     threads.run_range(
         [&luminance, &avgs, &shape, &texture, &scene](uint32_t id, int32_t begin,
@@ -108,7 +108,7 @@ float3 Emissionmap::prepare_sampling(Shape const& shape, uint32_t /*part*/,
                 }
             }
 
-            avgs[id] += avg;
+            avgs[id] = avg;
         },
         0, d[1]);
 

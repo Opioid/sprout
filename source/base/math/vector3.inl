@@ -856,7 +856,7 @@ static inline Simd3f& operator*=(Simd3f& a, Simd3f_p b) {
 }
 
 static inline Simd3f operator-(Simd3f_p v) {
-    return _mm_sub_ps(_mm_set1_ps(0.0), v.v);
+    return _mm_sub_ps(_mm_set1_ps(0.f), v.v);
 }
 
 static inline Simd3f dot(Simd3f_p a, Simd3f_p b) {
