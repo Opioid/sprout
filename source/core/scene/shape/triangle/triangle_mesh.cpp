@@ -394,10 +394,9 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
 
         Simd3f const geo_n_w = transform_vector(rotation, geo_n);
 
-        isec.p     = float3(p_w);
-        isec.geo_n = float3(geo_n_w);
-        isec.part  = tree_.triangle_part(pi.index);
-        ;
+        isec.p         = float3(p_w);
+        isec.geo_n     = float3(geo_n_w);
+        isec.part      = tree_.triangle_part(pi.index);
         isec.primitive = pi.index;
 
         if (Interpolation::All == ipo) {
@@ -412,10 +411,9 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
             Simd3f const t_w = transform_vector(rotation, t);
             Simd3f const b_w = bitangent_sign * cross(n_w, t_w);
 
-            isec.t = float3(t_w);
-            isec.b = float3(b_w);
-            isec.n = float3(n_w);
-
+            isec.t  = float3(t_w);
+            isec.b  = float3(b_w);
+            isec.n  = float3(n_w);
             isec.uv = uv;
         } else if (Interpolation::No_tangent_space == ipo) {
             float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
