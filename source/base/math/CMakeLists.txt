@@ -3,6 +3,7 @@ target_sources(base
     "aabb.hpp"
     "aabb.inl"
     "cone.inl"
+    "distribution_1d.cpp"
     "distribution_1d.hpp"
     "distribution_1d.inl"
     "distribution_2d.cpp"
