@@ -1,10 +1,12 @@
 #include "glass_sample.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
+#include "base/spectrum/discrete.inl"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/material.inl"
 #include "scene/material/material_sample.inl"
 
 #include "base/debug/assert.hpp"
@@ -26,16 +28,66 @@ bxdf::Result Sample::evaluate(float3_p /*wi*/) const {
 }
 
 void Sample::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const {
-    float const p = sampler.sample_1D(rng);
+    if (0.f == abbe_) {
+        float const p = sampler.sample_1D(rng);
 
-    sample(ior_, p, result);
+        sample(ior_, p, result);
 
-    result.wavelength = 0.f;
+        result.wavelength = 0.f;
+    } else {
+        float3 weight;
+        float  wavelength = wavelength_;
+
+        float2 const r = sampler.sample_2D(rng);
+
+        if (0.f == wavelength) {
+            float const start = Material::Spectrum::start_wavelength();
+            float const end   = Material::Spectrum::end_wavelength();
+
+            wavelength = start + (end - start) * r[1];
+
+            weight = Material::spectrum_at_wavelength(wavelength);
+            weight *= 3.f;
+
+            /*
+            if (i_C.m_Wavelength == 0.0f) {
+                    i_C.m_Wavelength = Spectrum::getStartWavelength() +
+            (Spectrum::getEndWavelength() - Spectrum::getStartWavelength())* i_r0; o_Weight =
+            Spectrum(0.0f); o_Weight.hack_SetAtWavelength(i_C.m_Wavelength, 1.0f); o_Weight *=
+            (float)Spectrum::getNumSamples();
+                    //o_Weight *= 1.0f/o_Weight.luminance();
+            }
+            //float hackOffset = (i_C.m_Wavelength - Spectrum::getStartWavelength()) /
+            (Spectrum::getEndWavelength() - Spectrum::getStartWavelength());
+            //hackOffset *= m_Abbe * 1.0f/100.0f;
+            //IoR += hackOffset;
+
+            //From understanding Reference Wavelengths by Carl Zeiss Vision
+            //http://www.opticampus.com/files/memo_on_reference_wavelengths.pdf
+            IoR += ((IoR - 1.0f)/m_Abbe) * (523655.0f/(i_C.m_Wavelength*i_C.m_Wavelength)
+            - 1.5168f);
+            */
+
+        } else {
+            weight = float3(1.f);
+        }
+
+        float const sqr_wl = wavelength * wavelength;
+
+        float const ior = ior_ + ((ior_ - 1.f) / abbe_) * (523655.f / sqr_wl - 1.5168f);
+
+        sample(ior, r[0], result);
+
+        result.reflection *= weight;
+        result.wavelength = wavelength;
+    }
 }
 
-void Sample::set(float ior, float ior_outside) {
+void Sample::set(float ior, float ior_outside, float abbe, float wavelength) {
     ior_         = ior;
     ior_outside_ = ior_outside;
+    abbe_        = abbe;
+    wavelength_  = wavelength;
 }
 
 void Sample::sample(float ior, float p, bxdf::Sample& result) const {

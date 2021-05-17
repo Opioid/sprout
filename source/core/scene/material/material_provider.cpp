@@ -9,7 +9,6 @@
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "debug/debug_material.hpp"
-#include "glass/glass_dispersion_material.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_rough_material.hpp"
 #include "glass/glass_thin_material.hpp"
@@ -259,22 +258,6 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
             read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, roughness);
         } else if ("thickness" == n.name) {
             thickness = json::read_float(n.value);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
-
-                if (desc.filename.empty()) {
-                    continue;
-                }
-
-                if ("Mask" == desc.usage) {
-                    mask = create_texture(desc, Tex_usage::Mask, resources);
-                } else if ("Normal" == desc.usage) {
-                    normal_map = create_texture(desc, Tex_usage::Normal, resources);
-                } else if ("Roughness" == desc.usage) {
-                    roughness.texture = create_texture(desc, Tex_usage::Roughness, resources);
-                }
-            }
         } else if ("sampler" == n.name) {
             read_sampler_settings(n.value, sampler_settings);
         }
@@ -302,21 +285,12 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         return material;
     }
 
-    if (abbe > 0.f) {
-        auto material = new glass::Glass_dispersion(sampler_settings);
-        material->set_normal_map(normal_map);
-        material->set_refraction_color(refraction_color);
-        material->set_volumetric(attenuation_color, float3(0.f), attenuation_distance, 0.f);
-        material->set_ior(ior);
-        material->set_abbe(abbe);
-        return material;
-    }
-
     auto material = new glass::Glass(sampler_settings);
     material->set_normal_map(normal_map);
     material->set_refraction_color(refraction_color);
     material->set_volumetric(attenuation_color, float3(0.f), attenuation_distance, 0.f);
     material->set_ior(ior);
+    material->set_abbe(abbe);
     return material;
 }
 
@@ -354,20 +328,6 @@ Material* Provider::load_light(json::Value const& light_value, Resources& resour
             emission_factor = json::read_float(n.value);
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
-
-                if (desc.filename.empty()) {
-                    continue;
-                }
-
-                if ("Emission" == desc.usage) {
-                    emission.texture = create_texture(desc, Tex_usage::Color, resources);
-                } else if ("Mask" == desc.usage) {
-                    mask = create_texture(desc, Tex_usage::Mask, resources);
-                }
-            }
         } else if ("sampler" == n.name) {
             read_sampler_settings(n.value, sampler_settings);
         }
@@ -437,20 +397,6 @@ Material* Provider::load_metal(json::Value const& metal_value, Resources& resour
             read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Roughness, resources, rotation);
         } else if ("two_sided" == n.name) {
             two_sided = json::read_bool(n.value);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
-
-                if (desc.filename.empty()) {
-                    continue;
-                }
-
-                if ("Normal" == desc.usage) {
-                    normal_map = create_texture(desc, Tex_usage::Normal, resources);
-                } else if ("Mask" == desc.usage) {
-                    mask = create_texture(desc, Tex_usage::Mask, resources);
-                }
-            }
         } else if ("sampler" == n.name) {
             read_sampler_settings(n.value, sampler_settings);
         }
@@ -844,6 +790,8 @@ Material* Provider::load_volumetric(json::Value const& value, Resources& resourc
             density_map = read_texture(n.value, no_tex_dwim_, Tex_usage::Roughness, resources);
         } else if ("color" == n.name) {
             read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Color, resources, color);
+        } else if ("temperature" == n.name) {
+            temperature_map = read_texture(n.value, no_tex_dwim_, Tex_usage::Roughness, resources);
         } else if ("attenuation_color" == n.name) {
             use_attenuation_color = true;
             attenuation_color     = read_color(n.value);
@@ -860,22 +808,6 @@ Material* Provider::load_volumetric(json::Value const& value, Resources& resourc
             a = json::read_float(n.value);
         } else if ("b" == n.name) {
             b = json::read_float(n.value);
-        } else if ("textures" == n.name) {
-            for (auto& tn : n.value.GetArray()) {
-                Texture_description const desc = read_texture_description(tn, no_tex_dwim_);
-
-                if (desc.filename.empty()) {
-                    continue;
-                }
-
-                if ("Density" == desc.usage) {
-                    density_map = create_texture(desc, Tex_usage::Roughness, resources);
-                } else if ("Color" == desc.usage) {
-                    color.texture = create_texture(desc, Tex_usage::Color, resources);
-                } else if ("Temperature" == desc.usage) {
-                    temperature_map = create_texture(desc, Tex_usage::Color, resources);
-                }
-            }
         } else if ("sampler" == n.name) {
             read_sampler_settings(n.value, sampler_settings);
         }
@@ -1184,7 +1116,6 @@ uint32_t Provider::max_sample_size() {
     size_t num_bytes = 0;
 
     num_bytes = std::max(glass::Glass::sample_size(), num_bytes);
-    num_bytes = std::max(glass::Glass_dispersion::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass_rough::sample_size(), num_bytes);
     num_bytes = std::max(glass::Glass_thin::sample_size(), num_bytes);
     num_bytes = std::max(light::Constant::sample_size(), num_bytes);

@@ -13,12 +13,16 @@ class Sample : public material::Sample {
 
     void sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const override;
 
-    void set(float ior, float ior_outside);
+    void set(float ior, float ior_outside, float abbe, float wavelength);
 
     void sample(float ior, float p, bxdf::Sample& result) const;
 
+  private:
     float ior_;
     float ior_outside_;
+
+    float abbe_;
+    float wavelength_;
 };
 
 }  // namespace scene::material::glass

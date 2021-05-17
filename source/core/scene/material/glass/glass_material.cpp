@@ -1,7 +1,6 @@
 #include "glass_material.hpp"
 #include "base/math/vector4.inl"
 #include "glass_sample.hpp"
-
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"
 #include "scene/material/material_helper.hpp"
@@ -29,7 +28,7 @@ material::Sample const& Glass::sample(float3_p wo, Renderstate const& rs, Sample
     }
 
     sample.set_common(rs, wo, refraction_color_, float3(0.f), float2(rs.alpha()));
-    sample.set(ior_, rs.ior());
+    sample.set(ior_, rs.ior(), abbe_, rs.wavelength());
 
     return sample;
 }
@@ -40,6 +39,10 @@ void Glass::set_normal_map(Texture const& normal_map) {
 
 void Glass::set_refraction_color(float3_p color) {
     refraction_color_ = color;
+}
+
+void Glass::set_abbe(float abbe) {
+    abbe_ = abbe;
 }
 
 size_t Glass::sample_size() {

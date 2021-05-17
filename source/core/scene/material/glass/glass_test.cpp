@@ -100,7 +100,7 @@ void rough_refraction() {
     // float roughness = 0.5f;  // ggx::Min_roughness;
     // float alpha     = roughness * roughness;
 
-    sample.set(ior, 1.f);
+    sample.set(ior, 1.f, 0.f, 0.f);
 
     sample_rough.set(ior, 1.f);
 
