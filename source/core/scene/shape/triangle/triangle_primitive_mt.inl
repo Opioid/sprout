@@ -127,13 +127,6 @@ inline float Triangle_MT::area() const {
     return 0.5f * length(cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(float3_p scale) const {
-    float3 sa = scale * a.p;
-    float3 sb = scale * b.p;
-    float3 sc = scale * c.p;
-    return 0.5f * length(cross(sb - sa, sc - sa));
-}
-
 static inline bool intersect(float3_p a, float3_p b, float3_p c, ray& ray, float2& uv) {
     float3 e1 = b - a;
     float3 e2 = c - a;

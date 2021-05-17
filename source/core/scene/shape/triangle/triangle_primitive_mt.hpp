@@ -42,7 +42,6 @@ struct Triangle_MT {
     float3 normal() const;
 
     float area() const;
-    float area(float3_p scale) const;
 };
 
 struct Shading_vertex_MT {
