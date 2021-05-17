@@ -1,4 +1,4 @@
-#include "distribution_1d.hpp"
+#include "distribution_1d.inl"
 
 #include <algorithm>
 #include <cmath>
