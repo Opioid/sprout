@@ -18,9 +18,8 @@ struct Intersection {
     uint32_t primitive;
 };
 
-struct Normals {
-    float3 geo_n;  // geometry normal in world space
-    float3 n;      // interpolated shading normal in world space
+enum class Interpolation {
+    All, No_tangent_space, Normal
 };
 
 }  // namespace scene::shape

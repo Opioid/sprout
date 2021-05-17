@@ -8,20 +8,20 @@
 
 namespace scene {
 
-inline bool Worker::intersect(Ray& ray, Intersection& isec) {
-    return scene_->intersect(ray, *this, isec);
+inline bool Worker::intersect(Ray& ray, Interpolation ipo, Intersection& isec) {
+    return scene_->intersect(ray, *this, ipo, isec);
 }
 
-inline bool Worker::intersect(Ray& ray, shape::Normals& normals) {
-    return scene_->intersect(ray, *this, normals);
+inline bool Worker::intersect_shadow(Ray& ray, Intersection& isec) {
+    return scene_->intersect_shadow(ray, *this, isec);
 }
 
-inline bool Worker::intersect(uint32_t prop, Ray& ray, shape::Normals& normals) {
-    return scene_->prop(prop)->intersect(prop, ray, *this, normals);
+inline bool Worker::intersect_shadow(uint32_t prop, Ray& ray, shape::Intersection& isec) {
+    return scene_->prop(prop)->intersect_shadow(prop, ray, *this, isec);
 }
 
 inline bool Worker::intersect_and_resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
-    if (!intersect(ray, isec)) {
+    if (!intersect(ray, Interpolation::All, isec)) {
         return false;
     }
 

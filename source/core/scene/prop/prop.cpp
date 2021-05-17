@@ -69,7 +69,7 @@ void Prop::configure_animated(bool local_animation, Scene const& scene) {
     properties_.set(Property::Local_animation, local_animation);
 }
 
-bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const {
+bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Interpolation ipo, shape::Intersection& isec) const {
     if (!visible(ray.depth)) {
         return false;
     }
@@ -85,29 +85,10 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Intersectio
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(), isec);
+    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(), ipo, isec);
 }
 
-bool Prop::intersect_nsf(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const {
-    if (!visible(ray.depth)) {
-        return false;
-    }
-
-    bool const is_static = properties_.is(Property::Static);
-
-    auto const& scene = worker.scene();
-
-    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
-        return false;
-    }
-
-    Transformation temp;
-    auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
-
-    return scene.prop_shape(self)->intersect_nsf(ray, trafo, worker.node_stack(), isec);
-}
-
-bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const {
+bool Prop::intersect_shadow(uint32_t self, Ray &ray, Worker &worker, shape::Intersection &isec) const {
     if (!visible_in_shadow()) {
         return false;
     }
@@ -123,7 +104,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& no
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(), normals);
+    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(), shape::Interpolation::Normal, isec);
 }
 
 bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker& worker) const {

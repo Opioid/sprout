@@ -9,7 +9,7 @@
 namespace scene {
 
 namespace shape {
-struct Normals;
+enum class Interpolation;
 class Node_stack;
 }  // namespace shape
 
@@ -28,6 +28,7 @@ struct Intersection;
 
 class BVH_wrapper {
   public:
+    using Interpolation = shape::Interpolation;
     using Filter = material::Sampler_settings::Filter;
 
     bvh::Tree& tree();
@@ -36,11 +37,9 @@ class BVH_wrapper {
 
     AABB aabb() const;
 
-    bool intersect(Ray& ray, Worker& worker, Intersection& isec) const;
+    bool intersect(Ray& ray, Worker& worker, Interpolation ipo, Intersection& isec) const;
 
-    bool intersect_nsf(Ray& ray, Worker& worker, Intersection& isec) const;
-
-    bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
+    bool intersect_shadow(Ray& ray, Worker& worker, Intersection& isec) const;
 
     bool intersect_p(Ray const& ray, Worker& worker) const;
 

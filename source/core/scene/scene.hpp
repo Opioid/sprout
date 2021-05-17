@@ -85,6 +85,7 @@ class Scene {
     using Transformation = entity::Composed_transformation;
     using Keyframe       = entity::Keyframe;
     using Lights         = light::Tree::Lights;
+    using Interpolation  = shape::Interpolation;
     using Intersection   = prop::Intersection;
     using Prop           = prop::Prop;
     using Prop_topology  = prop::Prop_topology;
@@ -109,9 +110,9 @@ class Scene {
 
     bool has_volumes() const;
 
-    bool intersect(Ray& ray, Worker& worker, Intersection& isec) const;
+    bool intersect(Ray& ray, Worker& worker, Interpolation ipo, Intersection& isec) const;
 
-    bool intersect(Ray& ray, Worker& worker, shape::Normals& normals) const;
+    bool intersect_shadow(Ray& ray, Worker& worker, Intersection& isec) const;
 
     bool intersect_volume(Ray& ray, Worker& worker, Intersection& isec) const;
 

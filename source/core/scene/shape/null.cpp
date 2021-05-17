@@ -22,17 +22,7 @@ uint32_t Null::num_materials() const {
 }
 
 bool Null::intersect(Ray& /*ray*/, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
-                     Intersection& /*isec*/) const {
-    return false;
-}
-
-bool Null::intersect_nsf(Ray& /*ray*/, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
-                         Intersection& /*isec*/) const {
-    return false;
-}
-
-bool Null::intersect(Ray& /*ray*/, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
-                     Normals& /*normals*/) const {
+                     Interpolation /*ipo*/, Intersection& /*isec*/) const {
     return false;
 }
 

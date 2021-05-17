@@ -46,7 +46,7 @@ struct Composed_transformation;
 namespace shape {
 
 struct Intersection;
-struct Normals;
+enum class Interpolation;
 struct Sample_to;
 struct Sample_from;
 class Node_stack;
@@ -81,13 +81,7 @@ class Shape {
     virtual uint32_t part_id_to_material_id(uint32_t part) const;
 
     virtual bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                           Intersection& isec) const = 0;
-
-    virtual bool intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                               Intersection& isec) const = 0;
-
-    virtual bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                           Normals& normals) const = 0;
+                           Interpolation ipo, Intersection& isec) const = 0;
 
     virtual bool intersect_p(Ray const& ray, Transformation const& trafo,
                              Node_stack& nodes) const = 0;

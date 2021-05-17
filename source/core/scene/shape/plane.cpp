@@ -19,7 +19,7 @@ AABB Plane::aabb() const {
 }
 
 bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                      Intersection& isec) const {
+                      Interpolation /*ipo*/, Intersection& isec) const {
     float3 const n = trafo.rotation.r[2];
 
     float const d     = dot(n, trafo.position);
@@ -48,51 +48,6 @@ bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes
     return false;
 }
 
-bool Plane::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                          Intersection& isec) const {
-    float3 const n = trafo.rotation.r[2];
-
-    float const d     = dot(n, trafo.position);
-    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 const p = ray.point(hit_t);
-        float3 const k = p - trafo.position;
-        float3 const t = -trafo.rotation.r[0];
-        float3 const b = -trafo.rotation.r[1];
-
-        isec.p     = p;
-        isec.geo_n = n;
-        isec.uv[0] = dot(t, k);
-        isec.uv[1] = dot(b, k);
-
-        isec.part = 0;
-
-        ray.max_t() = hit_t;
-        return true;
-    }
-
-    return false;
-}
-
-bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                      Normals& normals) const {
-    float3 const n = trafo.rotation.r[2];
-
-    float const d     = dot(n, trafo.position);
-    float const hit_t = -(dot(n, ray.origin) - d) / dot(n, ray.direction);
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        ray.max_t() = hit_t;
-
-        normals.geo_n = n;
-        normals.n     = n;
-
-        return true;
-    }
-
-    return false;
-}
 
 bool Plane::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
     float3 const n = trafo.rotation.r[2];

@@ -26,7 +26,7 @@ AABB Disk::aabb() const {
 }
 
 bool Disk::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                     Intersection& isec) const {
+                     Interpolation /*ipo*/, Intersection& isec) const {
     float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
@@ -62,75 +62,6 @@ bool Disk::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*
             SOFT_ASSERT(testing::check(isec, trafo, ray));
 
             ray.max_t() = hit_t;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Disk::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                         Intersection& isec) const {
-    float3_p normal = trafo.rotation.r[2];
-
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
-    float const hit_t = numer / denom;
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 const p = ray.point(hit_t);
-        float3 const k = p - trafo.position;
-        float const  l = dot(k, k);
-
-        float const radius = trafo.scale_x();
-
-        if (l <= radius * radius) {
-            isec.p     = p;
-            isec.geo_n = normal;
-
-            float3 const t = -trafo.rotation.r[0];
-            float3 const b = -trafo.rotation.r[1];
-
-            float3 const sk       = k / radius;
-            float const  uv_scale = 0.5f * trafo.scale_z();
-            isec.uv[0]            = (dot(t, sk) + 1.f) * uv_scale;
-            isec.uv[1]            = (dot(b, sk) + 1.f) * uv_scale;
-
-            isec.part = 0;
-
-            SOFT_ASSERT(testing::check(isec, trafo, ray));
-
-            ray.max_t() = hit_t;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Disk::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                     Normals& normals) const {
-    float3_p normal = trafo.rotation.r[2];
-
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
-    float const hit_t = numer / denom;
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 const p = ray.point(hit_t);
-        float3 const k = p - trafo.position;
-        float const  l = dot(k, k);
-
-        float const radius = trafo.scale_x();
-
-        if (l <= radius * radius) {
-            ray.max_t() = hit_t;
-
-            normals.geo_n = normal;
-            normals.n     = normal;
-
             return true;
         }
     }

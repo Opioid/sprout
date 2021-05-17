@@ -275,7 +275,7 @@ bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, 
     if (isec.subsurface & (material.ior() > 1.f)) {
         float const ray_max_t = ray.max_t();
 
-        if (scene::shape::Normals normals; intersect(ray, normals)) {
+        if (Intersection nisec; intersect_shadow(ray, nisec)) {
             if (float3 tr; volume_integrator_->transmittance(ray, filter, *this, tr)) {
                 SOFT_ASSERT(all_finite_and_positive(tr));
 
@@ -285,8 +285,8 @@ bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, 
                 if (scene_->tinted_visibility(ray, filter, *this, tv)) {
                     float3 const wi = ray.direction;
 
-                    float const vbh = material.border(wi, normals.n);
-                    float const nsc = non_symmetry_compensation(wi, wo, normals.geo_n, normals.n);
+                    float const vbh = material.border(wi, nisec.geo.n);
+                    float const nsc = non_symmetry_compensation(wi, wo, nisec.geo.geo_n, nisec.geo.n);
 
                     tv *= vbh * nsc * tr;
 

@@ -77,7 +77,7 @@ void test() {
         ray.set_direction(float3(0.f, -1.f, 0.f));
 
         Sphere sphere;
-        if (sphere.intersect(ray, composed_transformation, nodes, isec)) {
+        if (sphere.intersect(ray, composed_transformation, nodes, Interpolation::All, isec)) {
             print(isec);
         }
     }

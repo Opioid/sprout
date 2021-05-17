@@ -27,7 +27,7 @@ class Material;
 namespace shape {
 class Shape;
 struct Intersection;
-struct Normals;
+enum class Interpolation;
 }  // namespace shape
 
 namespace prop {
@@ -70,11 +70,9 @@ class Prop {
 
     void morph(uint32_t self, Threads& threads, Scene const& scene);
 
-    bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const;
+    bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Interpolation ipo, shape::Intersection& isec) const;
 
-    bool intersect_nsf(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const;
-
-    bool intersect(uint32_t self, Ray& ray, Worker& worker, shape::Normals& normals) const;
+    bool intersect_shadow(uint32_t self, Ray& ray, Worker& worker, shape::Intersection& isec) const;
 
     bool intersect_p(uint32_t self, Ray const& ray, Worker& worker) const;
 

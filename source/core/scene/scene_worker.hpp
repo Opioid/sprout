@@ -33,7 +33,8 @@ class Sample;
 }
 
 namespace shape {
-struct Normals;
+struct Intersection;
+enum class Interpolation;
 }  // namespace shape
 
 namespace prop {
@@ -49,6 +50,7 @@ class Worker {
     using Texture            = image::texture::Texture;
     using Texture_sampler_2D = image::texture::Sampler_2D;
     using Texture_sampler_3D = image::texture::Sampler_3D;
+    using Interpolation = shape::Interpolation;
     using Intersection       = prop::Intersection;
     using Interface_stack    = prop::Interface_stack;
     using Sampler            = sampler::Sampler;
@@ -62,11 +64,11 @@ class Worker {
 
     void init_rng(uint64_t sequence);
 
-    bool intersect(Ray& ray, Intersection& isec);
+    bool intersect(Ray& ray, Interpolation ipo, Intersection& isec);
 
-    bool intersect(Ray& ray, shape::Normals& normals);
+    bool intersect_shadow(Ray& ray, Intersection& isec);
 
-    bool intersect(uint32_t prop, Ray& ray, shape::Normals& normals);
+    bool intersect_shadow(uint32_t prop, Ray& ray, shape::Intersection& isec);
 
     bool resolve_mask(Ray& ray, Intersection& isec, Filter filter);
 

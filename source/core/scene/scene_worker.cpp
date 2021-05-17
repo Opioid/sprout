@@ -51,7 +51,7 @@ bool Worker::resolve_mask(Ray& ray, Intersection& isec, Filter filter) {
         // Slide along ray until opaque surface is found
         ray.min_t() = offset_f(ray.max_t());
         ray.max_t() = scene::Ray_max_t;
-        if (!intersect(ray, isec)) {
+        if (!intersect(ray, Interpolation::All, isec)) {
             ray.min_t() = start_min_t;
             return false;
         }

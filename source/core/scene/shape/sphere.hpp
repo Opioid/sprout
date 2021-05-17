@@ -12,13 +12,7 @@ class Sphere final : public Shape {
     AABB aabb() const final;
 
     bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                   Intersection& isec) const final;
-
-    bool intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                       Intersection& isec) const final;
-
-    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                   Normals& normals) const final;
+                   Interpolation ipo, Intersection& isec) const final;
 
     bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 

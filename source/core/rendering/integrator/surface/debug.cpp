@@ -98,7 +98,7 @@ float3 Debug::light_id(Ray& ray, Intersection& isec, Worker& worker) {
             ray.min_t() = offset_f(ray.max_t());
             ray.max_t() = scene::Ray_max_t;
 
-            if (!worker.intersect(ray, isec)) {
+            if (!worker.intersect(ray, shape::Interpolation::All, isec)) {
                 return float3(1.f);
             }
 

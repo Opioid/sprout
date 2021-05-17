@@ -33,9 +33,18 @@ AABB Sphere::aabb() const {
 }
 
 static inline void intersect(float hit_t, Ray const& ray, Shape::Transformation const& trafo,
-                             Intersection& isec) {
+                             Interpolation ipo, Intersection& isec) {
     float3 const p   = ray.point(hit_t);
     float3 const n   = normalize(p - trafo.position);
+
+
+        isec.p     = p;
+        isec.n     = n;
+        isec.geo_n = n;
+            isec.part  = 0;
+
+        if (Interpolation::Normal != ipo) {
+
     float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, n));
 
     float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
@@ -48,17 +57,16 @@ static inline void intersect(float hit_t, Ray const& ray, Shape::Transformation 
     float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
     t = normalize(transform_vector(trafo.rotation, t));
 
-    isec.p     = p;
+
     isec.t     = t;
     isec.b     = -cross(t, n);
-    isec.n     = n;
-    isec.geo_n = n;
     isec.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-    isec.part  = 0;
+
+        }
 }
 
 bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                       Intersection& isec) const {
+                       Interpolation ipo, Intersection& isec) const {
     float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
@@ -74,7 +82,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*node
         float const t0   = b - dist;
 
         if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
-            shape::intersect(t0, ray, trafo, isec);
+            shape::intersect(t0, ray, trafo, ipo, isec);
 
             SOFT_ASSERT(testing::check(isec, trafo, ray));
 
@@ -85,114 +93,11 @@ bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*node
         float const t1 = b + dist;
 
         if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
-            shape::intersect(t1, ray, trafo, isec);
+            shape::intersect(t1, ray, trafo, ipo, isec);
 
             SOFT_ASSERT(testing::check(isec, trafo, ray));
 
             ray.max_t() = t1;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-static inline void intersect_nsf(float hit_t, Ray const& ray, Shape::Transformation const& trafo,
-                                 Intersection& isec) {
-    float3 const p = ray.point(hit_t);
-
-    float3 const n = normalize(p - trafo.position);
-
-    float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, n));
-
-    float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
-    float const theta = std::acos(xyz[1]);
-
-    isec.p     = p;
-    isec.geo_n = n;
-    isec.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-    isec.part  = 0;
-}
-
-bool Sphere::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                           Intersection& isec) const {
-    float3 const v = trafo.position - ray.origin;
-
-    float const b = dot(ray.direction, v);
-
-    float3 const remedy_term = v - b * ray.direction;
-
-    float const radius = trafo.scale_x();
-
-    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
-
-    if (discriminant > 0.f) {
-        float const dist = std::sqrt(discriminant);
-        float const t0   = b - dist;
-
-        if ((t0 > ray.min_t()) & (t0 < ray.max_t())) {
-            shape::intersect_nsf(t0, ray, trafo, isec);
-
-            SOFT_ASSERT(testing::check(isec, trafo, ray));
-
-            ray.max_t() = t0;
-            return true;
-        }
-
-        float const t1 = b + dist;
-
-        if ((t1 > ray.min_t()) & (t1 < ray.max_t())) {
-            shape::intersect_nsf(t1, ray, trafo, isec);
-
-            SOFT_ASSERT(testing::check(isec, trafo, ray));
-
-            ray.max_t() = t1;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                       Normals& normals) const {
-    float3 const v = trafo.position - ray.origin;
-
-    float const b = dot(ray.direction, v);
-
-    float3 const remedy_term = v - b * ray.direction;
-
-    float const radius = trafo.scale_x();
-
-    float const discriminant = radius * radius - dot(remedy_term, remedy_term);
-
-    if (discriminant > 0.f) {
-        float const dist = std::sqrt(discriminant);
-        float const t0   = b - dist;
-
-        if (t0 > ray.min_t() && t0 < ray.max_t()) {
-            ray.max_t() = t0;
-
-            float3 const p = ray.point(t0);
-            float3 const n = normalize(p - trafo.position);
-
-            normals.geo_n = n;
-            normals.n     = n;
-
-            return true;
-        }
-
-        float const t1 = b + dist;
-
-        if (t1 > ray.min_t() && t1 < ray.max_t()) {
-            ray.max_t() = t1;
-
-            float3 const p = ray.point(t1);
-            float3 const n = normalize(p - trafo.position);
-
-            normals.geo_n = n;
-            normals.n     = n;
-
             return true;
         }
     }

@@ -6,6 +6,7 @@
 #include "entity/keyframe.hpp"
 #include "light/light.inl"
 #include "prop/prop.inl"
+#include "shape/shape_intersection.hpp"
 #include "scene.hpp"
 #include "scene_ray.hpp"
 
@@ -29,16 +30,16 @@ inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
 
-inline bool Scene::intersect(Ray& ray, Worker& worker, Intersection& isec) const {
-    return prop_bvh_.intersect(ray, worker, isec);
+inline bool Scene::intersect(Ray& ray, Worker& worker, Interpolation ipo, Intersection& isec) const {
+    return prop_bvh_.intersect(ray, worker, ipo, isec);
 }
 
-inline bool Scene::intersect(Ray& ray, Worker& worker, shape::Normals& normals) const {
-    return prop_bvh_.intersect(ray, worker, normals);
+inline bool Scene::intersect_shadow(Ray& ray, Worker& worker, Intersection& isec) const {
+    return prop_bvh_.intersect_shadow(ray, worker, isec);
 }
 
 inline bool Scene::intersect_volume(Ray& ray, Worker& worker, Intersection& isec) const {
-    return volume_bvh_.intersect_nsf(ray, worker, isec);
+    return volume_bvh_.intersect(ray, worker, Interpolation::No_tangent_space, isec);
 }
 
 inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker& worker) const {

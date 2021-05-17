@@ -25,7 +25,7 @@ AABB Canopy::aabb() const {
 }
 
 bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                       Intersection& isec) const {
+                       Interpolation /*ipo*/, Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, trafo.rotation.r[2]) < Canopy_eps) {
             return false;
@@ -51,58 +51,6 @@ bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*node
         ray.max_t() = Ray_max_t;
 
         SOFT_ASSERT(testing::check(isec, trafo, ray));
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Canopy::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                           Intersection& isec) const {
-    if (ray.max_t() >= Ray_max_t) {
-        if (dot(ray.direction, trafo.rotation.r[2]) < Canopy_eps) {
-            return false;
-        }
-
-        isec.p = ray.point(Ray_max_t);
-
-        float3 const n = -ray.direction;
-
-        isec.geo_n = n;
-        isec.part  = 0;
-
-        // paraboloid, so doesn't match hemispherical camera
-        float3 xyz = transform_vector_transposed(trafo.rotation, ray.direction);
-        xyz        = normalize(xyz);
-
-        float2 const disk = hemisphere_to_disk_equidistant(xyz);
-        isec.uv[0]        = 0.5f * disk[0] + 0.5f;
-        isec.uv[1]        = 0.5f * disk[1] + 0.5f;
-
-        ray.max_t() = Ray_max_t;
-
-        SOFT_ASSERT(testing::check(isec, trafo, ray));
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                       Normals& normals) const {
-    if (ray.max_t() >= Ray_max_t) {
-        if (dot(ray.direction, trafo.rotation.r[2]) < Canopy_eps) {
-            return false;
-        }
-
-        ray.max_t() = Ray_max_t;
-
-        float3 const n = -ray.direction;
-
-        normals.geo_n = n;
-        normals.n     = n;
 
         return true;
     }

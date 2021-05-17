@@ -23,7 +23,7 @@ AABB Rectangle::aabb() const {
 }
 
 bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                          Intersection& isec) const {
+                          Interpolation /*ipo*/, Intersection& isec) const {
     float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
@@ -60,85 +60,6 @@ bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*n
         isec.part = 0;
 
         ray.max_t() = hit_t;
-        return true;
-    }
-
-    return false;
-}
-
-bool Rectangle::intersect_nsf(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                              Intersection& isec) const {
-    float3_p normal = trafo.rotation.r[2];
-
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
-    float const hit_t = numer / denom;
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 const p = ray.point(hit_t);
-        float3 const k = p - trafo.position;
-
-        float3 const t = -trafo.rotation.r[0];
-
-        float const u = dot(t, k / trafo.scale_x());
-        if (u > 1.f || u < -1.f) {
-            return false;
-        }
-
-        float3 const b = -trafo.rotation.r[1];
-
-        float const v = dot(b, k / trafo.scale_y());
-        if (v > 1.f || v < -1.f) {
-            return false;
-        }
-
-        isec.p     = p;
-        isec.geo_n = normal;
-        isec.uv[0] = 0.5f * (u + 1.f);
-        isec.uv[1] = 0.5f * (v + 1.f);
-
-        isec.part = 0;
-
-        ray.max_t() = hit_t;
-        return true;
-    }
-
-    return false;
-}
-
-bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                          Normals& normals) const {
-    float3_p normal = trafo.rotation.r[2];
-
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
-    float const hit_t = numer / denom;
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 const p = ray.point(hit_t);
-        float3 const k = p - trafo.position;
-
-        float3 const t = -trafo.rotation.r[0];
-
-        float const u = dot(t, k / trafo.scale_x());
-        if (u > 1.f || u < -1.f) {
-            return false;
-        }
-
-        float3 const b = -trafo.rotation.r[1];
-
-        float const v = dot(b, k / trafo.scale_y());
-        if (v > 1.f || v < -1.f) {
-            return false;
-        }
-
-        ray.max_t() = hit_t;
-
-        normals.geo_n = normal;
-        normals.n     = normal;
-
         return true;
     }
 
