@@ -19,7 +19,6 @@
 #include "scene/scene_ray.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
-#include "triangle_intersection.hpp"
 
 #ifdef SU_DEBUG
 #include "scene/shape/shape_test.hpp"

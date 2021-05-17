@@ -3,6 +3,7 @@
 
 #include "base/math/quaternion.inl"
 #include "base/math/sampling.inl"
+#include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "triangle_bvh_indexed_data.hpp"
 

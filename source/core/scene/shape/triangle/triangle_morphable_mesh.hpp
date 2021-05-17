@@ -8,7 +8,6 @@
 
 namespace scene::shape::triangle {
 
-struct Triangle_MT;
 class Morph_target_collection;
 
 class alignas(64) Morphable_mesh final : public Shape, public Morphable {

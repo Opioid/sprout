@@ -12,7 +12,6 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/shape_vertex.hpp"
-#include "triangle_intersection.hpp"
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_primitive.hpp"
 

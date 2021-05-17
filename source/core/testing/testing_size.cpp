@@ -36,6 +36,7 @@
 #include "scene/shape/distant_sphere.hpp"
 #include "scene/shape/infinite_sphere.hpp"
 #include "scene/shape/shape_intersection.hpp"
+#include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_indexed_data.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"

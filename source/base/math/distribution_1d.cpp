@@ -115,4 +115,3 @@ void Distribution_1D::init_lut(uint32_t lut_size) {
 }
 
 }  // namespace math
-

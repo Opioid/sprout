@@ -9,7 +9,6 @@
 #include "scene/scene_worker.inl"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/shape_intersection.hpp"
-#include "scene/shape/triangle/triangle_intersection.hpp"
 #include "triangle_bvh_indexed_data.inl"
 
 namespace scene::shape::triangle::bvh {

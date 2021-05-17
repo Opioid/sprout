@@ -30,12 +30,17 @@ class Vertex_stream;
 
 namespace triangle {
 
-struct Intersection;
-struct Intersectioni;
 struct Index_triangle;
 struct Triangle;
 struct Position_triangle;
 struct Data_triangle;
+
+struct Intersection {
+    Simd3f u;
+    Simd3f v;
+
+    uint32_t index;
+};
 
 namespace bvh {
 

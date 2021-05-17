@@ -2,7 +2,6 @@ add_subdirectory(bvh)
 
 target_sources(core
     PRIVATE
-    "triangle_intersection.hpp"
     "triangle_json_handler.cpp"
     "triangle_json_handler.hpp"
     "triangle_mesh_exporter.cpp"
