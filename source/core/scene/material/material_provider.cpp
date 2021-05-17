@@ -841,7 +841,7 @@ Material* Provider::load_volumetric(json::Value const& value, Resources& resourc
 
     for (auto& n : value.GetObject()) {
         if ("density" == n.name) {
-            density_map = read_texture(n.value, no_tex_dwim_, Tex_usage::Mask, resources);
+            density_map = read_texture(n.value, no_tex_dwim_, Tex_usage::Roughness, resources);
         } else if ("color" == n.name) {
             read_mapped_value(n.value, no_tex_dwim_, Tex_usage::Color, resources, color);
         } else if ("attenuation_color" == n.name) {
@@ -869,7 +869,7 @@ Material* Provider::load_volumetric(json::Value const& value, Resources& resourc
                 }
 
                 if ("Density" == desc.usage) {
-                    density_map = create_texture(desc, Tex_usage::Mask, resources);
+                    density_map = create_texture(desc, Tex_usage::Roughness, resources);
                 } else if ("Color" == desc.usage) {
                     color.texture = create_texture(desc, Tex_usage::Color, resources);
                 } else if ("Temperature" == desc.usage) {

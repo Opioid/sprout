@@ -249,6 +249,10 @@ float Texture::at_1(int32_t x, int32_t y, int32_t z, Scene const& scene) const {
     Image const* image = scene.image(image_);
 
     switch (type_) {
+        case Type::Byte1_unorm: {
+            uint8_t const value = image->byte1().at(x, y, z);
+            return encoding::cached_unorm_to_float(value);
+        }
         case Type::Float1: {
             return image->float1().at(x, y, z);
         }
@@ -337,6 +341,20 @@ void Texture::gather_1(int3_p xyz, int3_p xyz1, Scene const& scene, float c[8]) 
     Image const* image = scene.image(image_);
 
     switch (type_) {
+        case Type::Byte1_unorm: {
+            uint8_t values[8];
+            image->byte1().gather(xyz, xyz1, values);
+
+            c[0] = encoding::cached_unorm_to_float(values[0]);
+            c[1] = encoding::cached_unorm_to_float(values[1]);
+            c[2] = encoding::cached_unorm_to_float(values[2]);
+            c[3] = encoding::cached_unorm_to_float(values[3]);
+            c[4] = encoding::cached_unorm_to_float(values[4]);
+            c[5] = encoding::cached_unorm_to_float(values[5]);
+            c[6] = encoding::cached_unorm_to_float(values[6]);
+            c[7] = encoding::cached_unorm_to_float(values[7]);
+            return;
+        }
         case Type::Float1: {
             image->float1().gather(xyz, xyz1, c);
             return;
