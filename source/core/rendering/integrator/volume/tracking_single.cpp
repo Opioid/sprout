@@ -188,7 +188,8 @@ Event Tracking_single::integrate(Ray& ray, Intersection& isec, Filter filter, Wo
         float3 const v = -ray.direction;
 
         Ray tray(isec.offset_p(v), v, 0.f, scene::Ray_max_t, 0, 0.f, ray.time);
-        if (scene::shape::Intersection nisec; worker.intersect_shadow(interface->prop, tray, nisec)) {
+        if (shape::Intersection nisec;
+            worker.intersect(interface->prop, tray, shape::Interpolation::Normal, nisec)) {
             if (dot(nisec.geo_n, v) <= 0.f) {
                 missed = true;
             }

@@ -22,7 +22,7 @@ AABB Infinite_sphere::aabb() const {
     return Empty_AABB;
 }
 
-bool Infinite_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+bool Infinite_sphere::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*nodes*/,
                                 Interpolation /*ipo*/, Intersection& isec) const {
     if (ray.max_t() < Ray_max_t) {
         return false;

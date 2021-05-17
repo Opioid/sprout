@@ -34,35 +34,31 @@ AABB Sphere::aabb() const {
 
 static inline void intersect(float hit_t, Ray const& ray, Shape::Transformation const& trafo,
                              Interpolation ipo, Intersection& isec) {
-    float3 const p   = ray.point(hit_t);
-    float3 const n   = normalize(p - trafo.position);
+    float3 const p = ray.point(hit_t);
+    float3 const n = normalize(p - trafo.position);
 
+    isec.p     = p;
+    isec.n     = n;
+    isec.geo_n = n;
+    isec.part  = 0;
 
-        isec.p     = p;
-        isec.n     = n;
-        isec.geo_n = n;
-            isec.part  = 0;
+    if (Interpolation::Normal != ipo) {
+        float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, n));
 
-        if (Interpolation::Normal != ipo) {
+        float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
+        float const theta = std::acos(xyz[1]);
 
-    float3 const xyz = normalize(transform_vector_transposed(trafo.rotation, n));
+        // avoid singularity at poles
+        float const sin_theta         = std::max(std::sin(theta), 0.00001f);
+        auto const [sin_phi, cos_phi] = sincos(phi);
 
-    float const phi   = -std::atan2(xyz[0], xyz[2]) + Pi;
-    float const theta = std::acos(xyz[1]);
+        float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
+        t = normalize(transform_vector(trafo.rotation, t));
 
-    // avoid singularity at poles
-    float const sin_theta         = std::max(std::sin(theta), 0.00001f);
-    auto const [sin_phi, cos_phi] = sincos(phi);
-
-    float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-    t = normalize(transform_vector(trafo.rotation, t));
-
-
-    isec.t     = t;
-    isec.b     = -cross(t, n);
-    isec.uv    = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
-
-        }
+        isec.t  = t;
+        isec.b  = -cross(t, n);
+        isec.uv = float2(phi * (0.5f * Pi_inv), theta * Pi_inv);
+    }
 }
 
 bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,

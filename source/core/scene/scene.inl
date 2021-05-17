@@ -6,9 +6,9 @@
 #include "entity/keyframe.hpp"
 #include "light/light.inl"
 #include "prop/prop.inl"
-#include "shape/shape_intersection.hpp"
 #include "scene.hpp"
 #include "scene_ray.hpp"
+#include "shape/shape_intersection.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -30,7 +30,8 @@ inline bool Scene::has_volumes() const {
     return has_volumes_;
 }
 
-inline bool Scene::intersect(Ray& ray, Worker& worker, Interpolation ipo, Intersection& isec) const {
+inline bool Scene::intersect(Ray& ray, Worker& worker, Interpolation ipo,
+                             Intersection& isec) const {
     return prop_bvh_.intersect(ray, worker, ipo, isec);
 }
 

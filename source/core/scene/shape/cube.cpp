@@ -28,50 +28,48 @@ AABB Cube::aabb() const {
 bool Cube::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
                      Interpolation ipo, Intersection& isec) const {
     float3 const local_origin = trafo.world_to_object_point(ray.origin);
-        float3 const local_dir    = trafo.world_to_object_vector(ray.direction);
+    float3 const local_dir    = trafo.world_to_object_vector(ray.direction);
 
-        math::ray const local_ray(local_origin, local_dir, ray.min_t(), ray.max_t());
+    math::ray const local_ray(local_origin, local_dir, ray.min_t(), ray.max_t());
 
-        AABB const aabb(float3(-1.f), float3(1.f));
+    AABB const aabb(float3(-1.f), float3(1.f));
 
-        float hit_t;
-        if (!aabb.intersect_p(local_ray, hit_t)) {
-            return false;
-        }
+    float hit_t;
+    if (!aabb.intersect_p(local_ray, hit_t)) {
+        return false;
+    }
 
-        if (hit_t > ray.max_t()) {
-            return false;
-        }
+    if (hit_t > ray.max_t()) {
+        return false;
+    }
 
-        ray.max_t() = hit_t;
+    ray.max_t() = hit_t;
 
-        isec.p = ray.point(hit_t);
+    isec.p = ray.point(hit_t);
 
-        float3 const local_p = local_ray.point(hit_t);
+    float3 const local_p  = local_ray.point(hit_t);
+    float3 const distance = abs(1.f - abs(local_p));
 
-        float3 const distance = abs(1.f - abs(local_p));
+    uint32_t const i = index_min_component(distance);
 
-        uint32_t const i = index_min_component(distance);
+    float const s = copysign1(local_p[i]);
 
-        float const s = copysign1(local_p[i]);
+    float3 const n = s * trafo.rotation.r[i];
 
-        float3 const n = s * trafo.rotation.r[i];
+    isec.part = 0;
 
-        isec.part = 0;
-
-        isec.geo_n = n;
-    isec.n = n;
+    isec.geo_n = n;
+    isec.n     = n;
 
     if (Interpolation::Normal != ipo) {
-    auto const tb = orthonormal_basis(n);
+        auto const tb = orthonormal_basis(n);
 
-    isec.t = tb.a;
-    isec.b = tb.b;
+        isec.t = tb.a;
+        isec.b = tb.b;
     }
 
     return true;
 }
-
 
 bool Cube::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
     float3 const local_origin = trafo.world_to_object_point(ray.origin);

@@ -105,7 +105,7 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Interpolation ipo, Interse
     return hit;
 }
 
-bool BVH_wrapper::intersect_shadow(Ray &ray, Worker &worker, Intersection &isec) const {
+bool BVH_wrapper::intersect_shadow(Ray& ray, Worker& worker, Intersection& isec) const {
     auto& stack = worker.node_stack();
 
     bool hit = false;

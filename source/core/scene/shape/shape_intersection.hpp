@@ -18,9 +18,7 @@ struct Intersection {
     uint32_t primitive;
 };
 
-enum class Interpolation {
-    All, No_tangent_space, Normal
-};
+enum class Interpolation { All, No_tangent_space, Normal };
 
 }  // namespace scene::shape
 

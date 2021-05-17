@@ -98,8 +98,8 @@ class alignas(64) Mesh final : public Shape {
 
     uint32_t part_id_to_material_id(uint32_t part) const final;
 
-    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                   Interpolation ipo, shape::Intersection& isec) const final;
+    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, Interpolation ipo,
+                   shape::Intersection& isec) const final;
 
     bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 

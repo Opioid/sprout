@@ -286,7 +286,8 @@ bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, 
                     float3 const wi = ray.direction;
 
                     float const vbh = material.border(wi, nisec.geo.n);
-                    float const nsc = non_symmetry_compensation(wi, wo, nisec.geo.geo_n, nisec.geo.n);
+                    float const nsc = non_symmetry_compensation(wi, wo, nisec.geo.geo_n,
+                                                                nisec.geo.n);
 
                     tv *= vbh * nsc * tr;
 

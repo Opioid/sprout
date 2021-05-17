@@ -24,7 +24,7 @@ AABB Canopy::aabb() const {
     return Empty_AABB;
 }
 
-bool Canopy::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+bool Canopy::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*nodes*/,
                        Interpolation /*ipo*/, Intersection& isec) const {
     if (ray.max_t() >= Ray_max_t) {
         if (dot(ray.direction, trafo.rotation.r[2]) < Canopy_eps) {

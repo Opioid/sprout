@@ -21,8 +21,8 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     uint32_t num_parts() const final;
 
-    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                   Interpolation ipo, shape::Intersection& isec) const final;
+    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, Interpolation ipo,
+                   shape::Intersection& isec) const final;
 
     bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 

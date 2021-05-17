@@ -29,7 +29,7 @@ struct Intersection;
 class BVH_wrapper {
   public:
     using Interpolation = shape::Interpolation;
-    using Filter = material::Sampler_settings::Filter;
+    using Filter        = material::Sampler_settings::Filter;
 
     bvh::Tree& tree();
 

@@ -11,8 +11,8 @@ class Disk final : public Shape {
 
     AABB aabb() const final;
 
-    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                   Interpolation ipo, Intersection& isec) const final;
+    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, Interpolation ipo,
+                   Intersection& isec) const final;
 
     bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 

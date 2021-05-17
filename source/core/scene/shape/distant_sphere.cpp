@@ -18,7 +18,7 @@ AABB Distant_sphere::aabb() const {
     return Empty_AABB;
 }
 
-bool Distant_sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+bool Distant_sphere::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*nodes*/,
                                Interpolation /*ipo*/, Intersection& isec) const {
     float3 const n = trafo.rotation.r[2];
 

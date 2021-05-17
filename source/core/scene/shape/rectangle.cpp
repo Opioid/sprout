@@ -22,7 +22,7 @@ AABB Rectangle::aabb() const {
     return AABB(float3(-1.f, -1.f, -0.01f), float3(1.f, 1.f, 0.01f));
 }
 
-bool Rectangle::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+bool Rectangle::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*nodes*/,
                           Interpolation /*ipo*/, Intersection& isec) const {
     float3_p normal = trafo.rotation.r[2];
 

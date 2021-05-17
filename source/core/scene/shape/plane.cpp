@@ -18,7 +18,7 @@ AABB Plane::aabb() const {
     return Empty_AABB;
 }
 
-bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
+bool Plane::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*nodes*/,
                       Interpolation /*ipo*/, Intersection& isec) const {
     float3 const n = trafo.rotation.r[2];
 
@@ -47,7 +47,6 @@ bool Plane::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes
 
     return false;
 }
-
 
 bool Plane::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
     float3 const n = trafo.rotation.r[2];

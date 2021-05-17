@@ -12,6 +12,11 @@ inline bool Worker::intersect(Ray& ray, Interpolation ipo, Intersection& isec) {
     return scene_->intersect(ray, *this, ipo, isec);
 }
 
+inline bool Worker::intersect(uint32_t prop, Ray& ray, Interpolation ipo,
+                              shape::Intersection& isec) {
+    return scene_->prop(prop)->intersect(prop, ray, *this, ipo, isec);
+}
+
 inline bool Worker::intersect_shadow(Ray& ray, Intersection& isec) {
     return scene_->intersect_shadow(ray, *this, isec);
 }
