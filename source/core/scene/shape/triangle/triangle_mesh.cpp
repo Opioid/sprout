@@ -149,12 +149,12 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
     int2 const dimensions = m.useful_texture_description(worker.scene()).dimensions().xy();
 
-    float const image_area = float(dimensions[0] * dimensions[1]);
+    float const estimate_area = float(dimensions[0] * dimensions[1]) / 4.f;
 
     static float3 constexpr Up = float3(0.f, 1.f, 0.f);
 
     threads.run_range(
-        [this, &variant, &tree, &m, &powers, &temps, &worker, image_area](
+        [this, &variant, &tree, &m, &powers, &temps, &worker, estimate_area](
             uint32_t id, int32_t begin, int32_t end) noexcept {
             bool const emission_map = m.has_emission_map();
 
@@ -177,15 +177,14 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
                     float const uv_area = triangle_area(uva, uvb, uvc);
 
+                    uint32_t const num_samples = std::lrint(uv_area * estimate_area + 0.5f);
+
                     float3 radiance(0.f);
-
-                    // static uint32_t constexpr Num_samples = 64;
-
-                    uint32_t const num_samples = std::lrint(uv_area * image_area + 0.5f);
 
                     for (uint32_t j = 0; j < num_samples; ++j) {
                         float2 const xi = hammersley(j, num_samples, 0);
-                        float2 const uv = tree.interpolate_triangle_uv(Simd3f(xi[0]), Simd3f(xi[1]),
+                        float2 const s2 = sample_triangle_uniform(xi);
+                        float2 const uv = tree.interpolate_triangle_uv(Simd3f(s2[0]), Simd3f(s2[1]),
                                                                        t);
 
                         radiance += m.evaluate_radiance(Up, Up, float3(uv), 1.f, Filter::Undefined,
