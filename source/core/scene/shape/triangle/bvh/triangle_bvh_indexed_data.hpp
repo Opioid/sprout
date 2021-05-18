@@ -1,10 +1,11 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_BVH_INDEXED_DATA_HPP
 
-#include "base/math/ray.hpp"
-#include "base/math/vector3.hpp"
-#include "base/simd/simd.hpp"
-#include "scene/shape/triangle/triangle_primitive_mt.hpp"
+#include "base/math/vector.hpp"
+
+namespace math {
+struct ray;
+}
 
 namespace scene::shape {
 
@@ -86,9 +87,9 @@ class Indexed_data {
 
     float3* positions_;
 
-    using SV = shape::triangle::Shading_vertex_MTC;
+    float4* frames_;
 
-    SV* shading_vertices_;
+    float2* uvs_;
 };
 
 }  // namespace triangle::bvh

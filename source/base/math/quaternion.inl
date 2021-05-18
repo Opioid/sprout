@@ -34,6 +34,31 @@ static inline Quaternion create(float3x3 const& m) {
     return (0.5f / std::sqrt(t)) * q;
 }
 
+static inline Quaternion create(float3_p t, float3_p n) {
+    float3 const b = cross(n, t);
+
+    float3x3 const tbn(t, b, n);
+
+    Quaternion q = quaternion::create(tbn);
+
+    static float constexpr Threshold   = 0.000001f;
+
+    static float const renormalization = std::sqrt(1.f - Threshold * Threshold);
+
+    if (std::abs(q[3]) < Threshold) {
+        q[0] *= renormalization;
+        q[1] *= renormalization;
+        q[2] *= renormalization;
+        q[3] = q[3] < 0.f ? -Threshold : Threshold;
+    }
+
+    if (q[3] < 0.f) {
+        q = -q;
+    }
+
+    return q;
+}
+
 // https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
 static inline float3x3 create_matrix3x3(Quaternion_p q) {
@@ -59,6 +84,50 @@ static inline float3x3 create_matrix3x3(Quaternion_p q) {
 
     return float3x3(t0 + t1, xy - wz, xz + wy, xy + wz, t0 - t1, yz - wx, xz - wy, yz + wx,
                     ww - xx - yy + zz);
+}
+
+static inline Vector3f_a_pair create_tangent_normal(Quaternion_p q) {
+    float const x  = q[0];
+    float const y  = q[1];
+    float const z  = q[2];
+    float const w  = q[3];
+    float const xx = x * x;
+    float const yy = y * y;
+    float const zz = z * z;
+    float const ww = w * w;
+    float const tx = x + x;
+    float const ty = y + y;
+    float const tz = z + z;
+    float const xy = ty * x;
+    float const xz = tz * x;
+    float const yz = ty * z;
+    float const wx = tx * w;
+    float const wy = ty * w;
+    float const wz = tz * w;
+    float const t0 = ww - zz;
+    float const t1 = xx - yy;
+
+    return { float3(t0 + t1, xy - wz, xz + wy), float3(xz - wy, yz + wx, ww - xx - yy + zz) };
+}
+
+static inline float3 create_normal(Quaternion_p q) {
+    float const x  = q[0];
+    float const y  = q[1];
+    float const z  = q[2];
+    float const w  = q[3];
+    float const xx = x * x;
+    float const yy = y * y;
+    float const zz = z * z;
+    float const ww = w * w;
+    float const tx = x + x;
+    float const ty = y + y;
+    float const tz = z + z;
+    float const xz = tz * x;
+    float const yz = ty * z;
+    float const wx = tx * w;
+    float const wy = ty * w;
+
+    return float3(xz - wy, yz + wx, ww - xx - yy + zz);
 }
 
 static inline Quaternion create_rotation_x(float a) {

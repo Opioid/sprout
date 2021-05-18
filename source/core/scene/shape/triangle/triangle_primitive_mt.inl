@@ -245,12 +245,7 @@ static inline float area(float3_p a, float3_p b, float3_p c) {
 inline Shading_vertex_MTC::Shading_vertex_MTC() = default;
 
 inline Shading_vertex_MTC::Shading_vertex_MTC(float3_p n, float3_p t, float2 uv)
-    : n_u(n, uv[0]), t_v(t, uv[1]) {
-    // Not too happy about handling degenerate tangents here (only one very special case even)
-    if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
-        t_v = float4(math::tangent(n_u.xyz()), uv[1]);
-    }
-}
+    : n_u(n, uv[0]), t_v(t, uv[1]) {}
 
 static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
                                     const Shading_vertex_MTC& c, float2 uv) {
@@ -258,6 +253,14 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_v
 
     return float2(w * a.n_u[3] + uv[0] * b.n_u[3] + uv[1] * c.n_u[3],
                   w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
+}
+
+static inline float2 interpolate_uv(float2 a,
+                                    float2 b, float2 c, float2 uv) {
+    float const w = 1.f - uv[0] - uv[1];
+
+    return float2(w * a[0] + uv[0] * b[0] + uv[1] * c[0],
+                  w * a[1] + uv[0] * b[1] + uv[1] * c[1]);
 }
 
 static inline float2 interpolate_uv(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,
@@ -272,6 +275,26 @@ static inline float2 interpolate_uv(Simd3f_p u, Simd3f_p v, const Shading_vertex
     va = va + vb;
 
     Simd3f vc(c.n_u[3], c.t_v[3], 0.f);
+
+    vc = v * vc;
+
+    Simd3f const uv = va + vc;
+
+    return float3(uv).xy();
+}
+
+static inline float2 interpolate_uv(Simd3f_p u, Simd3f_p v, float2 a,
+                                    float2 b, float2 c) {
+    Simd3f const w = simd::One - u - v;
+
+    Simd3f va(a[0], a[1], 0.f);
+    Simd3f vb(b[0], b[1], 0.f);
+
+    va = w * va;
+    vb = u * vb;
+    va = va + vb;
+
+    Simd3f vc(c[0], c[1], 0.f);
 
     vc = v * vc;
 
@@ -325,6 +348,21 @@ static inline void interpolate_data(Simd3f_p u, Simd3f_p v, const Shading_vertex
     tc[1] = r[1];
     //    tc[0] = v0.w();
     //    tc[1] = v1.w();
+}
+
+static inline Simd3f interpolate_normal(Simd3f_p u, Simd3f_p v, float3_p a,
+                                        float3_p b, float3_p c) {
+    Simd3f const w = simd::One - u - v;
+
+    Simd3f va = w * Simd3f(a.v);
+    Simd3f vb = u * Simd3f(b.v);
+
+    va = va + vb;
+
+    Simd3f vc = v * Simd3f(c.v);
+    Simd3f v0 = va + vc;
+
+    return normalize(v0);
 }
 
 static inline Simd3f interpolate_normal(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,

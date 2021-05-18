@@ -16,10 +16,12 @@ inline Indexed_data::Indexed_data()
       num_vertices_(0),
       triangles_(nullptr),
       positions_(nullptr),
-      shading_vertices_(nullptr) {}
+      frames_(nullptr),
+uvs_(nullptr){}
 
 inline Indexed_data::~Indexed_data() {
-    delete[] shading_vertices_;
+    delete[] uvs_;
+    delete[] frames_;
     delete[] positions_;
     delete[] triangles_;
 }
@@ -107,20 +109,34 @@ inline void Indexed_data::interpolate_data(Simd3f_p u, Simd3f_p v, uint32_t inde
                                            Simd3f& t, float2& tc) const {
     auto const tri = triangles_[index];
 
-    SV const& a = shading_vertices_[tri.a];
-    SV const& b = shading_vertices_[tri.b];
-    SV const& c = shading_vertices_[tri.c];
+    auto const tna = quaternion::create_tangent_normal(frames_[tri.a]);
+    auto const tnb = quaternion::create_tangent_normal(frames_[tri.b]);
+    auto const tnc = quaternion::create_tangent_normal(frames_[tri.c]);
 
-    triangle::interpolate_data(u, v, a, b, c, n, t, tc);
+ //   n = triangle::interpolate_normal(u, v, tna.b, tnb.b, tnc.b);
+ //   t = triangle::interpolate_normal(u, v, tna.a, tnb.a, tnc.a);
+
+    float2 const uva = uvs_[tri.a];
+    float2 const uvb = uvs_[tri.b];
+    float2 const uvc = uvs_[tri.c];
+
+ //   tc = triangle::interpolate_uv(u, v, uva, uvb, uvc);
+
+    Shading_vertex_MTC const sa(tna.b, tna.a, uva);
+    Shading_vertex_MTC const sb(tnb.b, tnb.a, uvb);
+    Shading_vertex_MTC const sc(tnc.b, tnc.a, uvc);
+
+
+    triangle::interpolate_data(u, v, sa, sb, sc, n, t, tc);
 }
 
 inline Simd3f Indexed_data::interpolate_shading_normal(Simd3f_p u, Simd3f_p v,
                                                        uint32_t index) const {
     auto const tri = triangles_[index];
 
-    SV const& a = shading_vertices_[tri.a];
-    SV const& b = shading_vertices_[tri.b];
-    SV const& c = shading_vertices_[tri.c];
+    float3 const a = quaternion::create_normal(frames_[tri.a]);
+    float3 const b = quaternion::create_normal(frames_[tri.b]);
+    float3 const c = quaternion::create_normal(frames_[tri.c]);
 
     return triangle::interpolate_normal(u, v, a, b, c);
 }
@@ -128,9 +144,9 @@ inline Simd3f Indexed_data::interpolate_shading_normal(Simd3f_p u, Simd3f_p v,
 inline float2 Indexed_data::interpolate_uv(uint32_t index, float2 uv) const {
     auto const tri = triangles_[index];
 
-    SV const& a = shading_vertices_[tri.a];
-    SV const& b = shading_vertices_[tri.b];
-    SV const& c = shading_vertices_[tri.c];
+    float2 const a = uvs_[tri.a];
+    float2 const b = uvs_[tri.b];
+    float2 const c = uvs_[tri.c];
 
     return triangle::interpolate_uv(a, b, c, uv);
 }
@@ -138,15 +154,16 @@ inline float2 Indexed_data::interpolate_uv(uint32_t index, float2 uv) const {
 inline float2 Indexed_data::interpolate_uv(Simd3f_p u, Simd3f_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
-    SV const& a = shading_vertices_[tri.a];
-    SV const& b = shading_vertices_[tri.b];
-    SV const& c = shading_vertices_[tri.c];
+    float2 const a = uvs_[tri.a];
+    float2 const b = uvs_[tri.b];
+    float2 const c = uvs_[tri.c];
 
     return triangle::interpolate_uv(u, v, a, b, c);
 }
 
 inline float Indexed_data::bitangent_sign(uint32_t index) const {
     return 0 == triangles_[index].bts ? 1.f : -1.f;
+    //return frames_[index][3] < 0.f ? -1.f : 1.f;
 }
 
 inline uint32_t Indexed_data::part(uint32_t index) const {
@@ -205,9 +222,9 @@ inline void Indexed_data::triangle(uint32_t index, float3& pa, float3& pb, float
     pb = positions_[tri.b];
     pc = positions_[tri.c];
 
-    uva = float2(shading_vertices_[tri.a].n_u[3], shading_vertices_[tri.a].t_v[3]);
-    uvb = float2(shading_vertices_[tri.b].n_u[3], shading_vertices_[tri.b].t_v[3]);
-    uvc = float2(shading_vertices_[tri.c].n_u[3], shading_vertices_[tri.c].t_v[3]);
+    uva = uvs_[tri.a];
+    uvb = uvs_[tri.b];
+    uvc = uvs_[tri.c];
 }
 
 inline void Indexed_data::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
@@ -223,9 +240,9 @@ inline void Indexed_data::sample(uint32_t index, float2 r2, float3& p, float2& t
 
     triangle::interpolate_p(ia, ib, ic, uv, p);
 
-    SV const& sa = shading_vertices_[tri.a];
-    SV const& sb = shading_vertices_[tri.b];
-    SV const& sc = shading_vertices_[tri.c];
+    float2 const sa = uvs_[tri.a];
+    float2 const sb = uvs_[tri.b];
+    float2 const sc = uvs_[tri.c];
 
     tc = triangle::interpolate_uv(sa, sb, sc, uv);
 }
@@ -237,21 +254,23 @@ inline void Indexed_data::allocate_triangles(uint32_t             num_triangles,
         num_triangles_ = num_triangles;
         num_vertices_  = num_vertices;
 
-        delete[] shading_vertices_;
+        delete[] uvs_;
+        delete[] frames_;
         delete[] positions_;
         delete[] triangles_;
 
         triangles_        = new Index_triangle[num_triangles];
         positions_        = new float3[num_vertices];
-        shading_vertices_ = new SV[num_vertices];
+        frames_ = new float4[num_vertices];
+        uvs_ = new float2[num_vertices];
     }
 
     for (uint32_t i = 0; i < num_vertices; ++i) {
         positions_[i] = vertices.p(i);
 
-        auto const [n, t] = vertices.nt(i);
+        frames_[i] = vertices.frame(i);
 
-        shading_vertices_[i] = SV(n, t, vertices.uv(i));
+        uvs_[i] = vertices.uv(i);
     }
 }
 

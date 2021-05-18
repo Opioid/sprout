@@ -27,8 +27,8 @@ float3 Vertex_stream_interleaved::p(uint32_t i) const {
     return float3(vertices_[i].p);
 }
 
-Vertex_stream::NT Vertex_stream_interleaved::nt(uint32_t i) const {
-    return {float3(vertices_[i].n), float3(vertices_[i].t)};
+Quaternion Vertex_stream_interleaved::frame(uint32_t i) const {
+    return quaternion::create(float3(vertices_[i].t), float3(vertices_[i].n));
 }
 
 float2 Vertex_stream_interleaved::uv(uint32_t i) const {
@@ -56,8 +56,8 @@ float3 Vertex_stream_separate::p(uint32_t i) const {
     return float3(p_[i]);
 }
 
-Vertex_stream::NT Vertex_stream_separate::nt(uint32_t i) const {
-    return {float3(n_[i]), float3(t_[i])};
+Quaternion Vertex_stream_separate::frame(uint32_t i) const {
+    return quaternion::create(float3(t_[i]), float3(n_[i]));
 }
 
 float2 Vertex_stream_separate::uv(uint32_t i) const {
@@ -82,16 +82,14 @@ float3 Vertex_stream_separate_ts::p(uint32_t i) const {
     return float3(p_[i]);
 }
 
-Vertex_stream::NT Vertex_stream_separate_ts::nt(uint32_t i) const {
+Quaternion Vertex_stream_separate_ts::frame(uint32_t i) const {
     Quaternion ts = ts_[i];
 
     if (ts[3] < 0.f) {
         ts[3] = -ts[3];
     }
 
-    float3x3 const tbn = quaternion::create_matrix3x3(ts);
-
-    return {tbn.r[2], tbn.r[0]};
+    return ts;
 }
 
 float2 Vertex_stream_separate_ts::uv(uint32_t i) const {
@@ -116,8 +114,8 @@ float3 Vertex_stream_separate_compact::p(uint32_t i) const {
     return float3(p_[i]);
 }
 
-Vertex_stream::NT Vertex_stream_separate_compact::nt(uint32_t i) const {
-    return {float3(n_[i]), tangent(float3(n_[i]))};
+Quaternion Vertex_stream_separate_compact::frame(uint32_t i) const {
+    return quaternion::create(tangent(float3(n_[i])), float3(n_[i]));
 }
 
 float2 Vertex_stream_separate_compact::uv(uint32_t /*i*/) const {
@@ -149,8 +147,8 @@ float3 Vertex_stream_CAPI::p(uint32_t i) const {
     return float3(positions_ + i * positions_stride_);
 }
 
-Vertex_stream::NT Vertex_stream_CAPI::nt(uint32_t i) const {
-    return {float3(normals_ + i * normals_stride_), float3(tangents_ + i * tangents_stride_)};
+Quaternion Vertex_stream_CAPI::frame(uint32_t i) const {
+    return quaternion::create(float3(tangents_ + i * tangents_stride_), float3(normals_ + i * normals_stride_));
 }
 
 float2 Vertex_stream_CAPI::uv(uint32_t i) const {
