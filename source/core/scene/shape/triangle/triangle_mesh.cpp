@@ -177,7 +177,8 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
                     float const uv_area = triangle_area(uva, uvb, uvc);
 
-                    uint32_t const num_samples = std::lrint(uv_area * estimate_area + 0.5f);
+                    uint32_t const num_samples = std::max(
+                        std::lrint(uv_area * estimate_area + 0.5f), 1l);
 
                     float3 radiance(0.f);
 

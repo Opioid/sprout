@@ -917,6 +917,8 @@ Texture_description read_texture_description(json::Value const& value, bool no_t
                 desc.swizzle = Swizzle::XY;
             } else if ("YX" == swizzle) {
                 desc.swizzle = Swizzle::YX;
+            } else if ("YZ" == swizzle) {
+                desc.swizzle = Swizzle::YZ;
             } else if ("XYZ" == swizzle) {
                 desc.swizzle = Swizzle::XYZ;
             } else if ("YXZ" == swizzle) {
