@@ -62,28 +62,29 @@ static inline Quaternion create(float3_p t, float3_p n) {
 // https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
 static inline float3x3 create_matrix3x3(Quaternion_p q) {
-    float const x  = q[0];
-    float const y  = q[1];
-    float const z  = q[2];
-    float const w  = q[3];
-    float const xx = x * x;
-    float const yy = y * y;
-    float const zz = z * z;
-    float const ww = w * w;
+    float const x = q[0];
+    float const y = q[1];
+    float const z = q[2];
+    float const w = q[3];
+
     float const tx = x + x;
     float const ty = y + y;
     float const tz = z + z;
+
+    float const xx = tx * x;
+    float const yy = ty * y;
+    float const zz = tz * z;
+
     float const xy = ty * x;
     float const xz = tz * x;
     float const yz = ty * z;
+
     float const wx = tx * w;
     float const wy = ty * w;
     float const wz = tz * w;
-    float const t0 = ww - zz;
-    float const t1 = xx - yy;
 
-    return float3x3(t0 + t1, xy - wz, xz + wy, xy + wz, t0 - t1, yz - wx, xz - wy, yz + wx,
-                    ww - xx - yy + zz);
+    return float3x3(1.f - (yy + zz), xy - wz, xz + wy, xy + wz, 1.f - (xx + zz), yz - wx, xz - wy,
+                    yz + wx, 1.f - (xx + yy));
 }
 
 static inline Vector3f_a_pair create_tangent_normal(Quaternion_p q) {
