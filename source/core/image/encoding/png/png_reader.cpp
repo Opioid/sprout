@@ -154,6 +154,9 @@ Image* create_image(Info const& info, Swizzle swizzle, bool invert) {
             num_channels = 2;
             swap_xy      = true;
             break;
+        case Swizzle::YZ:
+            num_channels = 2;
+            break;
         case Swizzle::XYZ:
             num_channels = 3;
             break;
@@ -227,13 +230,24 @@ Image* create_image(Info const& info, Swizzle swizzle, bool invert) {
         } else {
             byte2 color(0, 0);
 
-            for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-                int32_t const o = i * info.num_channels;
-                for (int32_t c = 0; c < num_channels; ++c) {
-                    color.v[c] = info.buffer[o + c];
-                }
+            if (Swizzle::YZ == swizzle && info.num_channels > 2) {
+                for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+                    int32_t const o = i * info.num_channels;
 
-                image.store(i, color);
+                    color[0] = info.buffer[o + 1];
+                    color[1] = info.buffer[o + 2];
+
+                    image.store(i, color);
+                }
+            } else {
+                for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+                    int32_t const o = i * info.num_channels;
+
+                    color[0] = info.buffer[o + 0];
+                    color[1] = info.buffer[o + 1];
+
+                    image.store(i, color);
+                }
             }
         }
 
@@ -251,7 +265,7 @@ Image* create_image(Info const& info, Swizzle swizzle, bool invert) {
             for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
                 int32_t const o = i * info.num_channels;
                 for (int32_t c = 0; c < num_channels; ++c) {
-                    color.v[c] = info.buffer[o + c];
+                    color[c] = info.buffer[o + c];
                 }
 
                 if (swap_xy) {
@@ -276,7 +290,7 @@ Image* create_image(Info const& info, Swizzle swizzle, bool invert) {
             for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
                 int32_t const o = i * info.num_channels;
                 for (int32_t c = 0; c < num_channels; ++c) {
-                    color.v[c] = info.buffer[o + c];
+                    color[c] = info.buffer[o + c];
                 }
 
                 if (swap_xy) {

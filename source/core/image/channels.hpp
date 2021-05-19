@@ -5,7 +5,7 @@
 
 namespace image {
 
-enum class Swizzle { Undefined, X, Y, Z, W, XY, YX, XYZ, YXZ, XYZW, YXZW };
+enum class Swizzle { Undefined, X, Y, Z, W, XY, YX, YZ, XYZ, YXZ, XYZW, YXZW };
 
 enum class Encoding { Color, Depth, SNorm, UNorm, UInt };
 
