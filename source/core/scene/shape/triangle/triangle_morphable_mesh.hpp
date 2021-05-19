@@ -85,8 +85,8 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
     friend class Provider;
 };
 
-}
+}  // namespace triangle
 
-}  // namespace scene::shape::triangle
+}  // namespace scene::shape
 
 #endif

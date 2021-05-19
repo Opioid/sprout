@@ -17,7 +17,7 @@ inline Indexed_data::Indexed_data()
       triangles_(nullptr),
       positions_(nullptr),
       frames_(nullptr),
-uvs_(nullptr){}
+      uvs_(nullptr) {}
 
 inline Indexed_data::~Indexed_data() {
     delete[] uvs_;
@@ -113,19 +113,18 @@ inline void Indexed_data::interpolate_data(Simd3f_p u, Simd3f_p v, uint32_t inde
     auto const tnb = quaternion::create_tangent_normal(frames_[tri.b]);
     auto const tnc = quaternion::create_tangent_normal(frames_[tri.c]);
 
- //   n = triangle::interpolate_normal(u, v, tna.b, tnb.b, tnc.b);
- //   t = triangle::interpolate_normal(u, v, tna.a, tnb.a, tnc.a);
+    //   n = triangle::interpolate_normal(u, v, tna.b, tnb.b, tnc.b);
+    //   t = triangle::interpolate_normal(u, v, tna.a, tnb.a, tnc.a);
 
     float2 const uva = uvs_[tri.a];
     float2 const uvb = uvs_[tri.b];
     float2 const uvc = uvs_[tri.c];
 
- //   tc = triangle::interpolate_uv(u, v, uva, uvb, uvc);
+    //   tc = triangle::interpolate_uv(u, v, uva, uvb, uvc);
 
     Shading_vertex_MTC const sa(tna.b, tna.a, uva);
     Shading_vertex_MTC const sb(tnb.b, tnb.a, uvb);
     Shading_vertex_MTC const sc(tnc.b, tnc.a, uvc);
-
 
     triangle::interpolate_data(u, v, sa, sb, sc, n, t, tc);
 }
@@ -163,7 +162,7 @@ inline float2 Indexed_data::interpolate_uv(Simd3f_p u, Simd3f_p v, uint32_t inde
 
 inline float Indexed_data::bitangent_sign(uint32_t index) const {
     return 0 == triangles_[index].bts ? 1.f : -1.f;
-    //return frames_[index][3] < 0.f ? -1.f : 1.f;
+    // return frames_[index][3] < 0.f ? -1.f : 1.f;
 }
 
 inline uint32_t Indexed_data::part(uint32_t index) const {
@@ -259,10 +258,10 @@ inline void Indexed_data::allocate_triangles(uint32_t             num_triangles,
         delete[] positions_;
         delete[] triangles_;
 
-        triangles_        = new Index_triangle[num_triangles];
-        positions_        = new float3[num_vertices];
-        frames_ = new float4[num_vertices];
-        uvs_ = new float2[num_vertices];
+        triangles_ = new Index_triangle[num_triangles];
+        positions_ = new float3[num_vertices];
+        frames_    = new float4[num_vertices];
+        uvs_       = new float2[num_vertices];
     }
 
     for (uint32_t i = 0; i < num_vertices; ++i) {

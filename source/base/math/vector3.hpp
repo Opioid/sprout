@@ -150,6 +150,8 @@ struct Simd3f {
 
     Simd3f splat_x() const;
 
+    Simd3f splat_w() const;
+
     __m128 v;
 };
 

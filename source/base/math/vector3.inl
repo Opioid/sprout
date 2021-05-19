@@ -793,6 +793,10 @@ inline Simd3f Simd3f::splat_x() const {
     return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 }
 
+inline Simd3f Simd3f::splat_w() const {
+    return SU_PERMUTE_PS(v, _MM_SHUFFLE(3, 3, 3, 3));
+}
+
 static inline Simd3f operator+(float a, Simd3f_p b) {
     __m128 const s = _mm_set1_ps(a);
 

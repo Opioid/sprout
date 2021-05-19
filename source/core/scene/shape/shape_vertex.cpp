@@ -148,7 +148,8 @@ float3 Vertex_stream_CAPI::p(uint32_t i) const {
 }
 
 Quaternion Vertex_stream_CAPI::frame(uint32_t i) const {
-    return quaternion::create(float3(tangents_ + i * tangents_stride_), float3(normals_ + i * normals_stride_));
+    return quaternion::create(float3(tangents_ + i * tangents_stride_),
+                              float3(normals_ + i * normals_stride_));
 }
 
 float2 Vertex_stream_CAPI::uv(uint32_t i) const {
