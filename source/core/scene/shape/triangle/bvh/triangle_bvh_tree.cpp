@@ -82,14 +82,11 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
         n = nodes.pop();
     }
 
-    if (index != 0xFFFFFFFF) {
-        isec.u     = Simdf(u);
-        isec.v     = Simdf(v);
-        isec.index = index;
-        return true;
-    }
+    isec.u     = Simdf(u);
+    isec.v     = Simdf(v);
+    isec.index = index;
 
-    return false;
+    return index != 0xFFFFFFFF;
 }
 
 bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
@@ -133,11 +130,7 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
         n = nodes.pop();
     }
 
-    if (index != 0xFFFFFFFF) {
-        return true;
-    }
-
-    return false;
+    return index != 0xFFFFFFFF;
 }
 
 bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
