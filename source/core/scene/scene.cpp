@@ -34,6 +34,8 @@ static uint32_t constexpr Num_steps = 4;
 
 static float constexpr Interval = 1.f / float(Num_steps);
 
+static uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration);
+
 Scene::Scene(std::vector<Image*> const&    image_resources,
              std::vector<Material*> const& material_resources,
              std::vector<Shape*> const& shape_resources, uint32_t null_shape)
@@ -699,7 +701,7 @@ static inline bool matching(uint64_t a, uint64_t b) {
     return 0 == (a > b ? a % b : (0 == a ? 0 : b % a));
 }
 
-uint32_t Scene::count_frames(uint64_t frame_step, uint64_t frame_duration) const {
+uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) {
     uint32_t const a = std::max(uint32_t(frame_duration / Tick_duration), 1u);
     uint32_t const b = matching(frame_step, Tick_duration) ? 0 : 1;
     uint32_t const c = matching(frame_duration, Tick_duration) ? 0 : 1;

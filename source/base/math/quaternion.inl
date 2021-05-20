@@ -62,10 +62,10 @@ static inline Quaternion create(float3_p t, float3_p n) {
 // https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
 static inline float3x3 create_matrix3x3(Quaternion_p q) {
-    Simd3f const qv(q.v);
+    Simdf const qv(q.v);
 
-    Simd3f const tv = qv + qv;
-    Simd3f const vv = tv * qv;
+    Simdf const tv = qv + qv;
+    Simdf const vv = tv * qv;
 
     float3 const wv3(tv * qv.splat_w());
     float3 const vv3(vv);
@@ -84,10 +84,10 @@ static inline float3x3 create_matrix3x3(Quaternion_p q) {
 }
 
 static inline Vector3f_a_pair create_tangent_normal(Quaternion_p q) {
-    Simd3f const qv(q.v);
+    Simdf const qv(q);
 
-    Simd3f const tv = qv + qv;
-    Simd3f const vv = tv * qv;
+    Simdf const tv = qv + qv;
+    Simdf const vv = tv * qv;
 
     float3 const wv3(tv * qv.splat_w());
     float3 const vv3(vv);
@@ -105,10 +105,10 @@ static inline Vector3f_a_pair create_tangent_normal(Quaternion_p q) {
 }
 
 static inline float3 create_normal(Quaternion_p q) {
-    Simd3f const qv(q.v);
+    Simdf const qv(q);
 
-    Simd3f const tv = qv + qv;
-    Simd3f const vv = tv * qv;
+    Simdf const tv = qv + qv;
+    Simdf const vv = tv * qv;
 
     float3 const wv3(tv * qv.splat_w());
     float3 const vv3(vv);

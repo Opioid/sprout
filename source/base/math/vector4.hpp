@@ -66,6 +66,8 @@ struct alignas(16) Vector4f_a {
     template <typename T>
     explicit constexpr Vector4f_a(Vector4<T> const& a);
 
+    explicit Vector4f_a(Simdf_p o);
+
     Vector2<float> constexpr xy() const;
 
     Vector2<float> constexpr zw() const;

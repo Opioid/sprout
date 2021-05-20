@@ -58,24 +58,24 @@ static inline bool intersect(float3_p a, float3_p b, float3_p c, ray& ray, float
     return false;
 }
 
-static inline bool intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar& max_t,
+static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
                              float const* a, float const* b, float const* c, scalar& u_out,
                              scalar& v_out) {
-    Simd3f ap(a);
-    Simd3f bp(b);
-    Simd3f cp(c);
+    Simdf ap(a);
+    Simdf bp(b);
+    Simdf cp(c);
 
-    Simd3f e1   = bp - ap;
-    Simd3f e2   = cp - ap;
-    Simd3f tvec = origin - ap;
+    Simdf e1   = bp - ap;
+    Simdf e2   = cp - ap;
+    Simdf tvec = origin - ap;
 
-    Simd3f pvec = cross(direction, e2);
-    Simd3f qvec = cross(tvec, e1);
+    Simdf pvec = cross3(direction, e2);
+    Simdf qvec = cross3(tvec, e1);
 
-    scalar e1_d_pv = dot_scalar(e1, pvec);
-    scalar tv_d_pv = dot_scalar(tvec, pvec);
-    scalar di_d_qv = dot_scalar(direction, qvec);
-    scalar e2_d_qv = dot_scalar(e2, qvec);
+    scalar e1_d_pv = dot3_scalar(e1, pvec);
+    scalar tv_d_pv = dot3_scalar(tvec, pvec);
+    scalar di_d_qv = dot3_scalar(direction, qvec);
+    scalar e2_d_qv = dot3_scalar(e2, qvec);
 
     scalar inv_det = reciprocal(e1_d_pv);
 
@@ -97,23 +97,23 @@ static inline bool intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t
     return false;
 }
 
-static inline bool intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar& max_t,
+static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
                              float const* a, float const* b, float const* c) {
-    Simd3f ap(a);
-    Simd3f bp(b);
-    Simd3f cp(c);
+    Simdf ap(a);
+    Simdf bp(b);
+    Simdf cp(c);
 
-    Simd3f e1   = bp - ap;
-    Simd3f e2   = cp - ap;
-    Simd3f tvec = origin - ap;
+    Simdf e1   = bp - ap;
+    Simdf e2   = cp - ap;
+    Simdf tvec = origin - ap;
 
-    Simd3f pvec = cross(direction, e2);
-    Simd3f qvec = cross(tvec, e1);
+    Simdf pvec = cross3(direction, e2);
+    Simdf qvec = cross3(tvec, e1);
 
-    scalar e1_d_pv = dot_scalar(e1, pvec);
-    scalar tv_d_pv = dot_scalar(tvec, pvec);
-    scalar di_d_qv = dot_scalar(direction, qvec);
-    scalar e2_d_qv = dot_scalar(e2, qvec);
+    scalar e1_d_pv = dot3_scalar(e1, pvec);
+    scalar tv_d_pv = dot3_scalar(tvec, pvec);
+    scalar di_d_qv = dot3_scalar(direction, qvec);
+    scalar e2_d_qv = dot3_scalar(e2, qvec);
 
     scalar inv_det = reciprocal(e1_d_pv);
 
@@ -193,25 +193,25 @@ static inline bool intersect_p(float3_p a, float3_p b, float3_p c, ray const& ra
     return 0 != (ca & cb & cc & cd & ce & cf);
 }
 
-static inline bool intersect_p(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar_p max_t,
+static inline bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
                                float const* a, float const* b, float const* c) {
     // Implementation C
 
-    Simd3f ap(a);
-    Simd3f bp(b);
-    Simd3f cp(c);
+    Simdf ap(a);
+    Simdf bp(b);
+    Simdf cp(c);
 
-    Simd3f e1   = bp - ap;
-    Simd3f e2   = cp - ap;
-    Simd3f tvec = origin - ap;
+    Simdf e1   = bp - ap;
+    Simdf e2   = cp - ap;
+    Simdf tvec = origin - ap;
 
-    Simd3f pvec = cross(direction, e2);
-    Simd3f qvec = cross(tvec, e1);
+    Simdf pvec = cross3(direction, e2);
+    Simdf qvec = cross3(tvec, e1);
 
-    scalar e1_d_pv = dot_scalar(e1, pvec);
-    scalar tv_d_pv = dot_scalar(tvec, pvec);
-    scalar di_d_qv = dot_scalar(direction, qvec);
-    scalar e2_d_qv = dot_scalar(e2, qvec);
+    scalar e1_d_pv = dot3_scalar(e1, pvec);
+    scalar tv_d_pv = dot3_scalar(tvec, pvec);
+    scalar di_d_qv = dot3_scalar(direction, qvec);
+    scalar e2_d_qv = dot3_scalar(e2, qvec);
 
     scalar inv_det = reciprocal(e1_d_pv);
 
@@ -226,8 +226,8 @@ static inline bool intersect_p(Simd3f_p origin, Simd3f_p direction, scalar_p min
                  _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v));
 }
 
-static inline Simd3f interpolate_p(Simd3f_p a, Simd3f_p b, Simd3f_p c, Simd3f_p u, Simd3f_p v) {
-    Simd3f const w = simd::One - u - v;
+static inline Simdf interpolate_p(Simdf_p a, Simdf_p b, Simdf_p c, Simdf_p u, Simdf_p v) {
+    Simdf const w = simd::One - u - v;
 
     return w * a + u * b + v * c;
 }
@@ -261,41 +261,41 @@ static inline float2 interpolate_uv(float2 a, float2 b, float2 c, float2 uv) {
     return float2(w * a[0] + uv[0] * b[0] + uv[1] * c[0], w * a[1] + uv[0] * b[1] + uv[1] * c[1]);
 }
 
-static inline float2 interpolate_uv(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,
+static inline float2 interpolate_uv(Simdf_p u, Simdf_p v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
-    Simd3f const w = simd::One - u - v;
+    Simdf const w = simd::One - u - v;
 
-    Simd3f va(a.n_u[3], a.t_v[3], 0.f);
-    Simd3f vb(b.n_u[3], b.t_v[3], 0.f);
+    Simdf va(a.n_u[3], a.t_v[3], 0.f);
+    Simdf vb(b.n_u[3], b.t_v[3], 0.f);
 
     va = w * va;
     vb = u * vb;
     va = va + vb;
 
-    Simd3f vc(c.n_u[3], c.t_v[3], 0.f);
+    Simdf vc(c.n_u[3], c.t_v[3], 0.f);
 
     vc = v * vc;
 
-    Simd3f const uv = va + vc;
+    Simdf const uv = va + vc;
 
     return float3(uv).xy();
 }
 
-static inline float2 interpolate_uv(Simd3f_p u, Simd3f_p v, float2 a, float2 b, float2 c) {
-    Simd3f const w = simd::One - u - v;
+static inline float2 interpolate_uv(Simdf_p u, Simdf_p v, float2 a, float2 b, float2 c) {
+    Simdf const w = simd::One - u - v;
 
-    Simd3f va(a[0], a[1], 0.f);
-    Simd3f vb(b[0], b[1], 0.f);
+    Simdf va(a[0], a[1], 0.f);
+    Simdf vb(b[0], b[1], 0.f);
 
     va = w * va;
     vb = u * vb;
     va = va + vb;
 
-    Simd3f vc(c[0], c[1], 0.f);
+    Simdf vc(c[0], c[1], 0.f);
 
     vc = v * vc;
 
-    Simd3f const uv = va + vc;
+    Simdf const uv = va + vc;
 
     return float3(uv).xy();
 }
@@ -314,29 +314,29 @@ static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_v
     tc = float2(n_u[3], t_v[3]);
 }
 
-static inline void interpolate_data(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,
+static inline void interpolate_data(Simdf_p u, Simdf_p v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c,
-                                    Simd3f& n, Simd3f& t, float2& tc) {
-    Simd3f const w = simd::One - u - v;
+                                    Simdf& n, Simdf& t, float2& tc) {
+    Simdf const w = simd::One - u - v;
 
-    Simd3f va = w * Simd3f(a.n_u.v);
-    Simd3f vb = u * Simd3f(b.n_u.v);
+    Simdf va = w * Simdf(a.n_u.v);
+    Simdf vb = u * Simdf(b.n_u.v);
 
     va = va + vb;
 
-    Simd3f vc = v * Simd3f(c.n_u.v);
-    Simd3f v0 = va + vc;
+    Simdf vc = v * Simdf(c.n_u.v);
+    Simdf v0 = va + vc;
 
-    n = normalize(v0);
+    n = normalize3(v0);
 
-    va = w * Simd3f(a.t_v.v);
-    vb = u * Simd3f(b.t_v.v);
+    va = w * Simdf(a.t_v.v);
+    vb = u * Simdf(b.t_v.v);
     va = va + vb;
-    vc = v * Simd3f(c.t_v.v);
+    vc = v * Simdf(c.t_v.v);
 
-    Simd3f const v1 = va + vc;
+    Simdf const v1 = va + vc;
 
-    t = normalize(v1);
+    t = normalize3(v1);
 
     v0 = SU_MUX_HIGH(v0.v, v1.v);
     float4 r;
@@ -347,34 +347,33 @@ static inline void interpolate_data(Simd3f_p u, Simd3f_p v, const Shading_vertex
     //    tc[1] = v1.w();
 }
 
-static inline Simd3f interpolate_normal(Simd3f_p u, Simd3f_p v, float3_p a, float3_p b,
-                                        float3_p c) {
-    Simd3f const w = simd::One - u - v;
+static inline Simdf interpolate_normal(Simdf_p u, Simdf_p v, float3_p a, float3_p b, float3_p c) {
+    Simdf const w = simd::One - u - v;
 
-    Simd3f va = w * Simd3f(a.v);
-    Simd3f vb = u * Simd3f(b.v);
+    Simdf va = w * Simdf(a.v);
+    Simdf vb = u * Simdf(b.v);
 
     va = va + vb;
 
-    Simd3f vc = v * Simd3f(c.v);
-    Simd3f v0 = va + vc;
+    Simdf vc = v * Simdf(c.v);
+    Simdf v0 = va + vc;
 
-    return normalize(v0);
+    return normalize3(v0);
 }
 
-static inline Simd3f interpolate_normal(Simd3f_p u, Simd3f_p v, const Shading_vertex_MTC& a,
-                                        const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
-    Simd3f const w = simd::One - u - v;
+static inline Simdf interpolate_normal(Simdf_p u, Simdf_p v, const Shading_vertex_MTC& a,
+                                       const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
+    Simdf const w = simd::One - u - v;
 
-    Simd3f va = w * Simd3f(a.n_u.v);
-    Simd3f vb = u * Simd3f(b.n_u.v);
+    Simdf va = w * Simdf(a.n_u.v);
+    Simdf vb = u * Simdf(b.n_u.v);
 
     va = va + vb;
 
-    Simd3f vc = v * Simd3f(c.n_u.v);
-    Simd3f v0 = va + vc;
+    Simdf vc = v * Simdf(c.n_u.v);
+    Simdf v0 = va + vc;
 
-    return normalize(v0);
+    return normalize3(v0);
 }
 
 }  // namespace scene::shape::triangle

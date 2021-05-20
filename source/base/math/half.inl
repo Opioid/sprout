@@ -2,7 +2,7 @@
 #define SU_BASE_MATH_HALF_INL
 
 #include "half.hpp"
-#include "simd/simd.hpp"
+#include "simd.hpp"
 #include "vector3.inl"
 
 #include <bit>

@@ -210,28 +210,28 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
             }
         }
     } else {
-        Simd3f const intensity(intensity_);
+        Simdf const intensity(intensity_);
 
         int32_t const d0 = destination.description().dimensions()[0];
 
         for (int32_t i = begin; i < end; ++i) {
             int2 const kb = -destination.coordinates_2(i);
 
-            Simd3f glare(simd::Zero);
+            Simdf glare(simd::Zero);
             for (int2 hc : high_) {
                 int2 const kc = abs(kb + hc);
 
                 int32_t const ki = kc[1] * d0 + kc[0];
 
-                Simd3f const k(kernel_[ki].v);
-                Simd3f const h(source.at(hc[0], hc[1]).v);
+                Simdf const k(kernel_[ki].v);
+                Simdf const h(source.at(hc[0], hc[1]).v);
 
                 glare += k * h;
             }
 
             glare *= intensity;
 
-            Simd3f s(reinterpret_cast<float*>(source.data() + i));
+            Simdf s(reinterpret_cast<float*>(source.data() + i));
 
             s += glare;
 

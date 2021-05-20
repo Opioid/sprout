@@ -1,8 +1,8 @@
 #ifndef SU_CORE_SCENE_BVH_NODE_HPP
 #define SU_CORE_SCENE_BVH_NODE_HPP
 
+#include "base/math/simd.hpp"
 #include "base/math/vector3.hpp"
-#include "base/simd/simd.hpp"
 
 namespace math {
 struct ray;
@@ -43,7 +43,7 @@ class alignas(32) Node {
 
     void offset(uint32_t offset);
 
-    bool intersect_p(Simd3f_p origin, Simd3f_p inv_direction, scalar_p min_t, scalar_p max_t) const;
+    bool intersect_p(Simdf_p origin, Simdf_p inv_direction, scalar_p min_t, scalar_p max_t) const;
 
   private:
     struct alignas(16) Min {

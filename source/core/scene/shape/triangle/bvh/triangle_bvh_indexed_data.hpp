@@ -25,27 +25,27 @@ class Indexed_data {
 
     bool intersect_p(uint32_t index, ray const& ray) const;
 
-    bool intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar& max_t,
-                   uint32_t index, scalar& u, scalar& v) const;
+    bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t, uint32_t index,
+                   scalar& u, scalar& v) const;
 
-    bool intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar& max_t,
+    bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
                    uint32_t index) const;
 
-    bool intersect_p(Simd3f_p origin, Simd3f_p direction, scalar_p min_t, scalar_p max_t,
+    bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
                      uint32_t index) const;
 
     float3 interpolate_p(float2 uv, uint32_t index) const;
 
-    Simd3f interpolate_p(Simd3f_p u, Simd3f_p v, uint32_t index) const;
+    Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const;
 
-    void interpolate_data(Simd3f_p u, Simd3f_p v, uint32_t index, Simd3f& n, Simd3f& t,
+    void interpolate_data(Simdf_p u, Simdf_p v, uint32_t index, Simdf& n, Simdf& t,
                           float2& tc) const;
 
-    Simd3f interpolate_shading_normal(Simd3f_p u, Simd3f_p v, uint32_t index) const;
+    Simdf interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index) const;
 
     float2 interpolate_uv(uint32_t index, float2 uv) const;
 
-    float2 interpolate_uv(Simd3f_p u, Simd3f_p v, uint32_t index) const;
+    float2 interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index) const;
 
     float bitangent_sign(uint32_t index) const;
 
@@ -53,7 +53,7 @@ class Indexed_data {
 
     float3 normal(uint32_t index) const;
 
-    Simd3f normal_v(uint32_t index) const;
+    Simdf normal_v(uint32_t index) const;
 
     float area(uint32_t index) const;
 

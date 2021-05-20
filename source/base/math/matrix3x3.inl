@@ -140,9 +140,9 @@ static inline float determinant(Matrix3x3f_a const& m) {
 }
 
 inline Simd3x3f::Simd3x3f(Matrix3x3f_a const& source)
-    : r{Simd3f(source.r[0].v), Simd3f(source.r[1].v), Simd3f(source.r[2].v)} {}
+    : r{Simdf(source.r[0].v), Simdf(source.r[1].v), Simdf(source.r[2].v)} {}
 
-static inline Simd3f transform_vector(Simd3x3f const& m, Simd3f_p v) {
+static inline Simdf transform_vector(Simd3x3f const& m, Simdf_p v) {
     __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
     result        = _mm_mul_ps(result, m.r[0].v);
     __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));

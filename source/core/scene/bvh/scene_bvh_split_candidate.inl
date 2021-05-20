@@ -12,7 +12,7 @@ inline uint32_t Reference::primitive() const {
     return bounds[0].index;
 }
 
-inline void Reference::set(Simd3f_p min, Simd3f_p max, uint32_t primitive) {
+inline void Reference::set(Simdf_p min, Simdf_p max, uint32_t primitive) {
     float3 const tmp(min);
     bounds[0].v[0] = tmp[0];
     bounds[0].v[1] = tmp[1];

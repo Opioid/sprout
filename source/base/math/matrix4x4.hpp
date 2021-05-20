@@ -31,7 +31,7 @@ struct Matrix4x4f_a {
 };
 
 struct Simd4x4f {
-    Simd3f r[4];
+    Simdf r[4];
 
     Simd4x4f(Matrix4x4f_a const& source);
 };

@@ -117,6 +117,10 @@ inline constexpr Vector4f_a::Vector4f_a(Vector3<float> const& xyz, float w)
 
 inline constexpr Vector4f_a::Vector4f_a(float const* a, float w) : v{a[0], a[1], a[2], w} {}
 
+inline Vector4f_a::Vector4f_a(Simdf_p o) {
+    _mm_store_ps(v, o.v);
+}
+
 inline Vector2<float> constexpr Vector4f_a::xy() const {
     return Vector2<float>(v[0], v[1]);
 }

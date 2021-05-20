@@ -15,7 +15,7 @@ struct AABB {
     constexpr AABB(float3_p min, float3_p max);
 
     explicit AABB(Simd_AABB const& box);
-    AABB(Simd3f_p min, Simd3f_p max);
+    AABB(Simdf_p min, Simdf_p max);
 
     float3 min() const;
     float3 max() const;
@@ -72,14 +72,14 @@ struct Simd_AABB {
     Simd_AABB();
     Simd_AABB(AABB const& box);
     Simd_AABB(float const* min, float const* max);
-    Simd_AABB(Simd3f_p min, Simd3f_p max);
+    Simd_AABB(Simdf_p min, Simdf_p max);
 
     void merge_assign(Simd_AABB const& other);
 
-    void merge_assign(Simd3f_p other_min, Simd3f_p other_max);
+    void merge_assign(Simdf_p other_min, Simdf_p other_max);
 
-    Simd3f min;
-    Simd3f max;
+    Simdf min;
+    Simdf max;
 };
 
 }  // namespace math

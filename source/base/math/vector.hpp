@@ -25,15 +25,15 @@ struct alignas(16) Vector4i_a;
 using Vector3f_a_p = Vector3f_a;
 using Vector4f_a_p = Vector4f_a;
 
-struct Simd1f;
-using Simd1f_p = Simd1f;
+struct Scalar;
+using Scalar_p = Scalar;
 
-struct Simd3f;
-using Simd3f_p = Simd3f;
+struct Simdf;
+using Simdf_p = Simdf;
 
 }  // namespace math
 
-using scalar = math::Simd1f;
+using scalar = math::Scalar;
 
 using byte2   = math::Vector2<uint8_t>;
 using ushort2 = math::Vector2<uint16_t>;
@@ -63,6 +63,9 @@ using int3_p          = int3;           // const&;
 using uint3_p         = uint3;          // const&;
 using float4_p        = float4;         // const&;
 using int4_p          = int4;           // const&;
+
+using Simdf   = math::Simdf;
+using Simdf_p = math::Simdf_p;
 
 using namespace math;
 
