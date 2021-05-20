@@ -55,7 +55,6 @@ Scene::Scene(std::vector<Image*> const&    image_resources,
     lights_.reserve(Num_reserved_props);
     extensions_.reserve(Num_reserved_props);
     animations_.reserve(Num_reserved_props);
-    animation_stages_.reserve(Num_reserved_props);
     finite_props_.reserve(Num_reserved_props);
     infinite_props_.reserve(3);
     volumes_.reserve(Num_reserved_props);
@@ -84,14 +83,7 @@ void Scene::clear() {
     infinite_props_.clear();
     finite_props_.clear();
     props_.clear();
-
-    for (auto a : animations_) {
-        delete a;
-    }
-
     animations_.clear();
-
-    animation_stages_.clear();
 
     for (auto e : extensions_) {
         delete e;
@@ -215,12 +207,9 @@ void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Worker& 
 
     current_time_start_ = frames_start;
 
-    for (auto a : animations_) {
-        a->resample(frames_start, frames_end, Tick_duration);
-    }
-
-    for (auto& s : animation_stages_) {
-        s.update(*this, threads);
+    for (auto& a : animations_) {
+        a.resample(frames_start, frames_end, Tick_duration);
+        a.update(*this, threads);
     }
 
     compile(camera_pos, start, worker, threads);
@@ -520,18 +509,17 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
         lights_[light].power(average_radiance, aabb(), *this));
 }
 
-animation::Animation* Scene::create_animation(uint32_t count) {
-    animation::Animation* animation = new animation::Animation(count, num_interpolation_frames_);
-
-    animations_.push_back(animation);
-
-    return animation;
-}
-
-void Scene::create_animation_stage(uint32_t entity, animation::Animation* animation) {
-    animation_stages_.emplace_back(entity, animation);
+uint32_t Scene::create_animation(uint32_t entity, uint32_t count) {
+    animations_.emplace_back(entity, count, num_interpolation_frames_);
 
     prop_allocate_frames(entity, true);
+
+    return uint32_t(animations_.size() - 1);
+}
+
+void Scene::animation_set_frame(uint32_t animation, uint32_t index,
+                                animation::Keyframe const& keyframe) {
+    animations_[animation].set(index, keyframe);
 }
 
 void Scene::prop_calculate_world_transformation(uint32_t entity, float3_p camera_pos) {
@@ -658,7 +646,7 @@ Scene::Prop_ptr Scene::allocate_prop() {
     prop_topology_.emplace_back();
     prop_aabbs_.emplace_back();
 
-    uint32_t const prop_id = uint32_t(props_.size()) - 1;
+    uint32_t const prop_id = uint32_t(props_.size() - 1);
 
     prop::Prop* prop = &props_[prop_id];
 

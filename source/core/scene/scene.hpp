@@ -40,7 +40,6 @@ namespace animation {
 
 struct Keyframe;
 class Animation;
-class Stage;
 
 }  // namespace animation
 
@@ -224,9 +223,10 @@ class Scene {
 
     float4 light_cone(uint32_t variant, uint32_t light) const;
 
-    animation::Animation* create_animation(uint32_t count);
+    uint32_t create_animation(uint32_t entity, uint32_t count);
 
-    void create_animation_stage(uint32_t entity, animation::Animation* animation);
+    void animation_set_frame(uint32_t animation, uint32_t index,
+                             animation::Keyframe const& keyframe);
 
   private:
     void prop_calculate_world_transformation(uint32_t entity, float3_p camera_pos);
@@ -297,9 +297,7 @@ class Scene {
     std::vector<uint32_t> light_ids_;
     std::vector<Keyframe> keyframes_;
 
-    std::vector<animation::Animation*> animations_;
-
-    std::vector<animation::Stage> animation_stages_;
+    std::vector<animation::Animation> animations_;
 
     memory::Array<float> light_temp_powers_;
 

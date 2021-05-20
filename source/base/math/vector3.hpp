@@ -149,7 +149,6 @@ struct Simd3f {
     float w() const;
 
     Simd3f splat_x() const;
-
     Simd3f splat_w() const;
 
     __m128 v;

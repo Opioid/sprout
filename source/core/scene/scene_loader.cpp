@@ -283,14 +283,9 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
             }
         }
 
-        animation::Animation* animation = nullptr;
-
-        if (animation_value) {
-            animation = animation::load(*animation_value, trafo, scene);
-            if (animation) {
-                scene.create_animation_stage(entity_id, animation);
-            }
-        }
+        bool const animation = animation_value
+                                   ? animation::load(*animation_value, trafo, entity_id, scene)
+                                   : false;
 
         if (prop::Null != parent_id) {
             scene.prop_serialize_child(parent_id, entity_id);

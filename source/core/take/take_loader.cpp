@@ -317,9 +317,7 @@ bool Loader::load_camera(json::Value const& camera_value, Scene& scene, Camera*&
     camera->set_entity(prop_id);
 
     if (animation_value) {
-        if (auto animation = scene::animation::load(*animation_value, trafo, scene); animation) {
-            scene.create_animation_stage(prop_id, animation);
-        }
+        scene::animation::load(*animation_value, trafo, prop_id, scene);
     } else {
         scene.prop_set_world_transformation(prop_id, trafo);
     }

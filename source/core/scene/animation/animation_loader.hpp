@@ -3,6 +3,8 @@
 
 #include "base/json/json_types.hpp"
 
+#include <cstdint>
+
 namespace math {
 struct Transformation;
 }
@@ -13,10 +15,8 @@ class Scene;
 
 namespace animation {
 
-class Animation;
-
-Animation* load(json::Value const& animation_value, math::Transformation const& default_trafo,
-                Scene& scene);
+bool load(json::Value const& animation_value, math::Transformation const& default_trafo,
+          uint32_t entity, Scene& scene);
 
 }  // namespace animation
 }  // namespace scene
