@@ -1,16 +1,16 @@
 #ifndef SU_BASE_MATH_SCALAR_HPP
 #define SU_BASE_MATH_SCALAR_HPP
 
-#include "simd/simd.hpp"
+#include "simd.hpp"
 
 namespace math {
 
-struct Simd1f {
-    Simd1f();
+struct Scalar {
+    Scalar();
 
-    Simd1f(__m128 m);
+    Scalar(__m128 m);
 
-    explicit Simd1f(float s);
+    explicit Scalar(float s);
 
     float x() const;
 

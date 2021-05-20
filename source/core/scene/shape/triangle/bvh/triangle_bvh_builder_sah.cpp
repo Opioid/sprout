@@ -33,9 +33,9 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
                 Simd_AABB aabb(Empty_AABB);
 
                 for (int32_t i = begin; i < end; ++i) {
-                    auto const a = Simd3f(vertices.p(triangles[i].i[0]));
-                    auto const b = Simd3f(vertices.p(triangles[i].i[1]));
-                    auto const c = Simd3f(vertices.p(triangles[i].i[2]));
+                    auto const a = Simdf(vertices.p(triangles[i].i[0]));
+                    auto const b = Simdf(vertices.p(triangles[i].i[1]));
+                    auto const c = Simdf(vertices.p(triangles[i].i[2]));
 
                     auto const min = triangle_min(a, b, c);
                     auto const max = triangle_max(a, b, c);

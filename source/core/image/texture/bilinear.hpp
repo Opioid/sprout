@@ -66,14 +66,14 @@ static inline float3 bilinear(float3 const c[4], float s, float t) {
 }
 
 static inline float3 bilinear_simd(float3 const c[4], float s, float t) {
-    Simd3f const ss(s);
-    Simd3f const st(t);
+    Simdf const ss(s);
+    Simdf const st(t);
 
-    Simd3f const _s = Simd3f(1.f) - ss;
-    Simd3f const _t = Simd3f(1.f) - st;
+    Simdf const _s = Simdf(1.f) - ss;
+    Simdf const _t = Simdf(1.f) - st;
 
-    return float3(_t * (_s * Simd3f(c[0]) + ss * Simd3f(c[1])) +
-                  st * (_s * Simd3f(c[2]) + ss * Simd3f(c[3])));
+    return float3(_t * (_s * Simdf(c[0]) + ss * Simdf(c[1])) +
+                  st * (_s * Simdf(c[2]) + ss * Simdf(c[3])));
 }
 
 }  // namespace image::texture

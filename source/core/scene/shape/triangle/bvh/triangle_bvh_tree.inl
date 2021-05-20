@@ -18,20 +18,20 @@ inline float3 Tree::interpolate_p(float2 uv, uint32_t index) const {
     return data_.interpolate_p(uv, index);
 }
 
-inline Simd3f Tree::interpolate_p(Simd3f_p u, Simd3f_p v, uint32_t index) const {
+inline Simdf Tree::interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const {
     return data_.interpolate_p(u, v, index);
 }
 
-inline void Tree::interpolate_triangle_data(Simd3f_p u, Simd3f_p v, uint32_t index, Simd3f& n,
-                                            Simd3f& t, float2& tc) const {
+inline void Tree::interpolate_triangle_data(Simdf_p u, Simdf_p v, uint32_t index, Simdf& n,
+                                            Simdf& t, float2& tc) const {
     data_.interpolate_data(u, v, index, n, t, tc);
 }
 
-inline Simd3f Tree::interpolate_shading_normal(Simd3f_p u, Simd3f_p v, uint32_t index) const {
+inline Simdf Tree::interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index) const {
     return data_.interpolate_shading_normal(u, v, index);
 }
 
-inline float2 Tree::interpolate_triangle_uv(Simd3f_p u, Simd3f_p v, uint32_t index) const {
+inline float2 Tree::interpolate_triangle_uv(Simdf_p u, Simdf_p v, uint32_t index) const {
     return data_.interpolate_uv(u, v, index);
 }
 
@@ -47,7 +47,7 @@ inline float3 Tree::triangle_normal(uint32_t index) const {
     return data_.normal(index);
 }
 
-inline Simd3f Tree::triangle_normal_v(uint32_t index) const {
+inline Simdf Tree::triangle_normal_v(uint32_t index) const {
     return data_.normal_v(index);
 }
 

@@ -10,9 +10,9 @@ float3 triangle_min(float3_p a, float3_p b, float3_p c);
 
 float3 triangle_max(float3_p a, float3_p b, float3_p c);
 
-Simd3f triangle_min(Simd3f_p a, Simd3f_p b, Simd3f_p c);
+Simdf triangle_min(Simdf_p a, Simdf_p b, Simdf_p c);
 
-Simd3f triangle_max(Simd3f_p a, Simd3f_p b, Simd3f_p c);
+Simdf triangle_max(Simdf_p a, Simdf_p b, Simdf_p c);
 
 float3 triangle_min(float3_p a, float3_p b, float3_p c, float3_p x);
 

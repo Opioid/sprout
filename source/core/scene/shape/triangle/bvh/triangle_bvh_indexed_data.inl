@@ -48,7 +48,7 @@ inline bool Indexed_data::intersect_p(uint32_t index, ray const& ray) const {
     return triangle::intersect_p(a, b, c, ray);
 }
 
-inline bool Indexed_data::intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t,
+inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t,
                                     scalar& max_t, uint32_t index, scalar& u, scalar& v) const {
     auto const tri = triangles_[index];
 
@@ -59,7 +59,7 @@ inline bool Indexed_data::intersect(Simd3f_p origin, Simd3f_p direction, scalar_
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
 
-inline bool Indexed_data::intersect(Simd3f_p origin, Simd3f_p direction, scalar_p min_t,
+inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t,
                                     scalar& max_t, uint32_t index) const {
     auto const tri = triangles_[index];
 
@@ -70,7 +70,7 @@ inline bool Indexed_data::intersect(Simd3f_p origin, Simd3f_p direction, scalar_
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
 }
 
-inline bool Indexed_data::intersect_p(Simd3f_p origin, Simd3f_p direction, scalar_p min_t,
+inline bool Indexed_data::intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t,
                                       scalar_p max_t, uint32_t index) const {
     auto const tri = triangles_[index];
 
@@ -93,18 +93,18 @@ inline float3 Indexed_data::interpolate_p(float2 uv, uint32_t index) const {
     return p;
 }
 
-inline Simd3f Indexed_data::interpolate_p(Simd3f_p u, Simd3f_p v, uint32_t index) const {
+inline Simdf Indexed_data::interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
-    Simd3f const ap(positions_[tri.a].v);
-    Simd3f const bp(positions_[tri.b].v);
-    Simd3f const cp(positions_[tri.c].v);
+    Simdf const ap(positions_[tri.a].v);
+    Simdf const bp(positions_[tri.b].v);
+    Simdf const cp(positions_[tri.c].v);
 
     return triangle::interpolate_p(ap, bp, cp, u, v);
 }
 
-inline void Indexed_data::interpolate_data(Simd3f_p u, Simd3f_p v, uint32_t index, Simd3f& n,
-                                           Simd3f& t, float2& tc) const {
+inline void Indexed_data::interpolate_data(Simdf_p u, Simdf_p v, uint32_t index, Simdf& n, Simdf& t,
+                                           float2& tc) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -114,8 +114,7 @@ inline void Indexed_data::interpolate_data(Simd3f_p u, Simd3f_p v, uint32_t inde
     triangle::interpolate_data(u, v, a, b, c, n, t, tc);
 }
 
-inline Simd3f Indexed_data::interpolate_shading_normal(Simd3f_p u, Simd3f_p v,
-                                                       uint32_t index) const {
+inline Simdf Indexed_data::interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -135,7 +134,7 @@ inline float2 Indexed_data::interpolate_uv(uint32_t index, float2 uv) const {
     return triangle::interpolate_uv(a, b, c, uv);
 }
 
-inline float2 Indexed_data::interpolate_uv(Simd3f_p u, Simd3f_p v, uint32_t index) const {
+inline float2 Indexed_data::interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
     SV const& a = shading_vertices_[tri.a];
@@ -166,17 +165,17 @@ inline float3 Indexed_data::normal(uint32_t index) const {
     return normalize(cross(e1, e2));
 }
 
-inline Simd3f Indexed_data::normal_v(uint32_t index) const {
+inline Simdf Indexed_data::normal_v(uint32_t index) const {
     auto const tri = triangles_[index];
 
-    Simd3f const ap(positions_[tri.a].v);
-    Simd3f const bp(positions_[tri.b].v);
-    Simd3f const cp(positions_[tri.c].v);
+    Simdf const ap(positions_[tri.a].v);
+    Simdf const bp(positions_[tri.b].v);
+    Simdf const cp(positions_[tri.c].v);
 
-    Simd3f const e1 = bp - ap;
-    Simd3f const e2 = cp - ap;
+    Simdf const e1 = bp - ap;
+    Simdf const e2 = cp - ap;
 
-    return normalize(cross(e1, e2));
+    return normalize3(cross3(e1, e2));
 }
 
 inline float Indexed_data::area(uint32_t index) const {

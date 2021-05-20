@@ -1,7 +1,7 @@
 #ifndef SU_BASE_MATH_VECTOR3_HPP
 #define SU_BASE_MATH_VECTOR3_HPP
 
-#include "simd/simd.hpp"
+#include "simd.hpp"
 #include "vector.hpp"
 
 namespace math {
@@ -110,7 +110,7 @@ struct alignas(16) Vector3f_a {
     template <typename T>
     explicit constexpr Vector3f_a(Vector3<T> a);
 
-    explicit Vector3f_a(Simd3f_p o);
+    explicit Vector3f_a(Simdf_p o);
 
     constexpr Vector2<float> xy() const;
 
@@ -121,38 +121,6 @@ struct alignas(16) Vector3f_a {
 //==============================================================================
 // SIMD 3D float vector
 //==============================================================================
-
-struct Simd3f {
-    Simd3f() = default;
-
-    Simd3f(__m128 m);
-
-    explicit Simd3f(float s);
-
-    explicit Simd3f(Simd1f_p s);
-
-    Simd3f(float sx, float sy);
-
-    Simd3f(float sx, float sy, float sz);
-
-    explicit Simd3f(float const* a);
-
-    explicit Simd3f(Vector3f_a_p o);
-
-    static Simd3f create_from_3(float const* f);
-
-    static Simd3f create_from_3_unaligned(float const* f);
-
-    float x() const;
-    float y() const;
-    float z() const;
-    float w() const;
-
-    Simd3f splat_x() const;
-    Simd3f splat_w() const;
-
-    __m128 v;
-};
 
 }  // namespace math
 

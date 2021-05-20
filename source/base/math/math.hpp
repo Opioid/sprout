@@ -1,7 +1,7 @@
 #ifndef SU_BASE_MATH_MATH_HPP
 #define SU_BASE_MATH_MATH_HPP
 
-#include "simd/simd_const.hpp"
+#include "simd_const.hpp"
 
 #include <algorithm>
 #include <cmath>

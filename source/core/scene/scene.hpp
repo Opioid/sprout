@@ -254,8 +254,6 @@ class Scene {
 
     bool prop_has_caustic_material(uint32_t entity) const;
 
-    uint32_t count_frames(uint64_t frame_step, uint64_t frame_duration) const;
-
     std::vector<Image*> const&    image_resources_;
     std::vector<Material*> const& material_resources_;
     std::vector<Shape*> const&    shape_resources_;

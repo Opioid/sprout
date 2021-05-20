@@ -185,7 +185,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                     for (uint32_t j = 0; j < num_samples; ++j) {
                         float2 const xi = hammersley(j, num_samples, 0);
                         float2 const s2 = sample_triangle_uniform(xi);
-                        float2 const uv = tree.interpolate_triangle_uv(Simd3f(s2[0]), Simd3f(s2[1]),
+                        float2 const uv = tree.interpolate_triangle_uv(Simdf(s2[0]), Simdf(s2[1]),
                                                                        t);
 
                         radiance += m.evaluate_radiance(Up, Up, float3(uv), 1.f, Filter::Undefined,
@@ -371,8 +371,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
                      shape::Intersection& isec) const {
     Simd4x4f const world_to_object(trafo.world_to_object);
 
-    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
-    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
+    Simdf const ray_origin    = transform_point(world_to_object, Simdf(ray.origin));
+    Simdf const ray_direction = transform_vector(world_to_object, Simdf(ray.direction));
 
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
@@ -381,17 +381,17 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
         tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
-        Simd3f const p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+        Simdf const p = tree_.interpolate_p(pi.u, pi.v, pi.index);
 
         Simd4x4f const object_to_world(trafo.object_to_world());
 
-        Simd3f const p_w = transform_point(object_to_world, p);
+        Simdf const p_w = transform_point(object_to_world, p);
 
-        Simd3f const geo_n = tree_.triangle_normal_v(pi.index);
+        Simdf const geo_n = tree_.triangle_normal_v(pi.index);
 
         Simd3x3f const rotation(trafo.rotation);
 
-        Simd3f const geo_n_w = transform_vector(rotation, geo_n);
+        Simdf const geo_n_w = transform_vector(rotation, geo_n);
 
         isec.p         = float3(p_w);
         isec.geo_n     = float3(geo_n_w);
@@ -399,16 +399,16 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
         isec.primitive = pi.index;
 
         if (Interpolation::All == ipo) {
-            Simd3f n;
-            Simd3f t;
+            Simdf  n;
+            Simdf  t;
             float2 uv;
             tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
 
-            Simd3f const bitangent_sign(tree_.triangle_bitangent_sign(pi.index));
+            Simdf const bitangent_sign(tree_.triangle_bitangent_sign(pi.index));
 
-            Simd3f const n_w = transform_vector(rotation, n);
-            Simd3f const t_w = transform_vector(rotation, t);
-            Simd3f const b_w = bitangent_sign * cross(n_w, t_w);
+            Simdf const n_w = transform_vector(rotation, n);
+            Simdf const t_w = transform_vector(rotation, t);
+            Simdf const b_w = bitangent_sign * cross3(n_w, t_w);
 
             isec.t  = float3(t_w);
             isec.b  = float3(b_w);
@@ -419,8 +419,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
 
             isec.uv = uv;
         } else {
-            Simd3f const n   = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
-            Simd3f const n_w = transform_vector(rotation, n);
+            Simdf const n   = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
+            Simdf const n_w = transform_vector(rotation, n);
 
             isec.n = float3(n_w);
         }
@@ -436,8 +436,8 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
 bool Mesh::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const {
     Simd4x4f const world_to_object(trafo.world_to_object);
 
-    Simd3f const ray_origin    = transform_point(world_to_object, Simd3f(ray.origin));
-    Simd3f const ray_direction = transform_vector(world_to_object, Simd3f(ray.direction));
+    Simdf const ray_origin    = transform_point(world_to_object, Simdf(ray.origin));
+    Simdf const ray_direction = transform_vector(world_to_object, Simdf(ray.direction));
 
     scalar const ray_min_t(ray.min_t());
     scalar const ray_max_t(ray.max_t());

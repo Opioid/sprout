@@ -314,10 +314,9 @@ static inline void set_perspective(Matrix4x4f_a& m, float fov, float ratio) {
 }
 
 inline Simd4x4f::Simd4x4f(Matrix4x4f_a const& source)
-    : r{Simd3f(source.r[0].v), Simd3f(source.r[1].v), Simd3f(source.r[2].v),
-        Simd3f(source.r[3].v)} {}
+    : r{Simdf(source.r[0].v), Simdf(source.r[1].v), Simdf(source.r[2].v), Simdf(source.r[3].v)} {}
 
-static inline Simd3f transform_vector(Simd4x4f const& m, Simd3f_p v) {
+static inline Simdf transform_vector(Simd4x4f const& m, Simdf_p v) {
     __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
     result        = _mm_mul_ps(result, m.r[0].v);
     __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));
@@ -329,7 +328,7 @@ static inline Simd3f transform_vector(Simd4x4f const& m, Simd3f_p v) {
     return result;
 }
 
-static inline Simd3f transform_point(Simd4x4f const& m, Simd3f_p v) {
+static inline Simdf transform_point(Simd4x4f const& m, Simdf_p v) {
     __m128 result = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(0, 0, 0, 0));
     result        = _mm_mul_ps(result, m.r[0].v);
     __m128 temp   = SU_PERMUTE_PS(v.v, _MM_SHUFFLE(1, 1, 1, 1));

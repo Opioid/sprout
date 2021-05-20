@@ -239,26 +239,26 @@ void vector() {
     {
         auto const start = std::chrono::high_resolution_clock::now();
 
-        Simd3f accum(0.f);
+        Simdf accum(0.f);
 
         for (size_t i = 0; i < Num_iterations; ++i) {
             size_t const o = i * 8;
 
-            Simd3f const va(values[o + 0], values[o + 1], values[o + 2]);
-            Simd3f const vb(values[o + 3], values[o + 4], values[o + 5]);
+            Simdf const va(values[o + 0], values[o + 1], values[o + 2]);
+            Simdf const vb(values[o + 3], values[o + 4], values[o + 5]);
 
-            Simd3f const sa = Simd3f(values[o + 6]);
-            Simd3f const sb = Simd3f(values[o + 7]);
+            Simdf const sa = Simdf(values[o + 6]);
+            Simdf const sb = Simdf(values[o + 7]);
 
-            Simd3f const vc = sa * va;
-            Simd3f const vd = sb * vb;
+            Simdf const vc = sa * va;
+            Simdf const vd = sb * vb;
 
-            Simd3f const ve = (vc + vd) / (1.f + sa * sb);
+            Simdf const ve = (vc + vd) / (1.f + sa * sb);
 
-            Simd3f const vf = cross(ve, va);
-            Simd3f const vg = cross(ve, vb);
+            Simdf const vf = cross3(ve, va);
+            Simdf const vg = cross3(ve, vb);
 
-            accum = normalize(dot(vf, vg) * (accum + vf + vg));
+            accum = normalize3(dot3(vf, vg) * (accum + vf + vg));
         }
 
         auto const duration = chrono::seconds_since(start);
@@ -267,7 +267,7 @@ void vector() {
 
         _mm_store_ps(majong.v, accum.v);
 
-        std::cout << "Simd3f " << majong << " in " << string::to_string(duration) << " s"
+        std::cout << "Simdf " << majong << " in " << string::to_string(duration) << " s"
                   << std::endl;
     }
 

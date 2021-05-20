@@ -1,7 +1,7 @@
 #ifndef SU_BASE_MATH_SINCOS_HPP
 #define SU_BASE_MATH_SINCOS_HPP
 
-#include "simd/simd.inl"
+#include "simd.inl"
 #include "vector3.inl"
 
 namespace simd {
@@ -196,7 +196,7 @@ static inline __m128 cos(__m128 x) {
     return y;
 }
 
-static inline void sincos(Simd3f_p x, Simd3f& s, Simd3f& c) {
+static inline void sincos(Simdf_p x, Simdf& s, Simdf& c) {
     __m128 xmm1, xmm2, xmm3, sign_bit_sin, y;
 
     __m128i emm0, emm2, emm4;

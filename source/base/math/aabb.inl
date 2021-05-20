@@ -14,7 +14,7 @@ inline constexpr AABB::AABB(float3_p min, float3_p max) : bounds{min, max} {}
 
 inline AABB::AABB(Simd_AABB const& box) : bounds{float3(box.min), float3(box.max)} {}
 
-inline AABB::AABB(Simd3f_p min, Simd3f_p max) : bounds{float3(min), float3(max)} {}
+inline AABB::AABB(Simdf_p min, Simdf_p max) : bounds{float3(min), float3(max)} {}
 
 inline float3 AABB::min() const {
     return bounds[0];
@@ -101,29 +101,29 @@ inline bool AABB::intersect_p(ray const& ray) const {
 
             return min_t < ray.max_t() && max_t > ray.min_t();*/
 
-    Simd3f const ray_origin(ray.origin);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar const ray_max_t(ray.max_t());
 
-    Simd3f const bb_min(bounds[0]);
-    Simd3f const bb_max(bounds[1]);
+    Simdf const bb_min(bounds[0]);
+    Simdf const bb_max(bounds[1]);
 
-    Simd3f const l1 = (bb_min - ray_origin) * ray_inv_direction;
-    Simd3f const l2 = (bb_max - ray_origin) * ray_inv_direction;
+    Simdf const l1 = (bb_min - ray_origin) * ray_inv_direction;
+    Simdf const l2 = (bb_max - ray_origin) * ray_inv_direction;
 
     // the order we use for those min/max is vital to filter out
     // NaNs that happens when an inv_dir is +/- inf and
     // (box_min - pos) is 0. inf * 0 = NaN
-    Simd3f const filtered_l1a = math::min(l1, Simd3f(simd::Infinity));
-    Simd3f const filtered_l2a = math::min(l2, Simd3f(simd::Infinity));
+    Simdf const filtered_l1a = math::min(l1, Simdf(simd::Infinity));
+    Simdf const filtered_l2a = math::min(l2, Simdf(simd::Infinity));
 
-    Simd3f const filtered_l1b = math::max(l1, Simd3f(simd::Neg_infinity));
-    Simd3f const filtered_l2b = math::max(l2, Simd3f(simd::Neg_infinity));
+    Simdf const filtered_l1b = math::max(l1, Simdf(simd::Neg_infinity));
+    Simdf const filtered_l2b = math::max(l2, Simdf(simd::Neg_infinity));
 
     // now that we're back on our feet, test those slabs.
-    Simd3f max_t = math::max(filtered_l1a, filtered_l2a);
-    Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
+    Simdf max_t = math::max(filtered_l1a, filtered_l2a);
+    Simdf min_t = math::min(filtered_l1b, filtered_l2b);
 
     // unfold back. try to hide the latency of the shufps & co.
     max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));
@@ -137,29 +137,29 @@ inline bool AABB::intersect_p(ray const& ray) const {
 }
 
 inline bool AABB::intersect_p(ray const& ray, float& hit_t) const {
-    Simd3f const ray_origin(ray.origin);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar const ray_max_t(ray.max_t());
 
-    Simd3f const bb_min(bounds[0]);
-    Simd3f const bb_max(bounds[1]);
+    Simdf const bb_min(bounds[0]);
+    Simdf const bb_max(bounds[1]);
 
-    Simd3f const l1 = (bb_min - ray_origin) * ray_inv_direction;
-    Simd3f const l2 = (bb_max - ray_origin) * ray_inv_direction;
+    Simdf const l1 = (bb_min - ray_origin) * ray_inv_direction;
+    Simdf const l2 = (bb_max - ray_origin) * ray_inv_direction;
 
     // the order we use for those min/max is vital to filter out
     // NaNs that happens when an inv_dir is +/- inf and
     // (box_min - pos) is 0. inf * 0 = NaN
-    Simd3f const filtered_l1a = math::min(l1, Simd3f(simd::Infinity));
-    Simd3f const filtered_l2a = math::min(l2, Simd3f(simd::Infinity));
+    Simdf const filtered_l1a = math::min(l1, Simdf(simd::Infinity));
+    Simdf const filtered_l2a = math::min(l2, Simdf(simd::Infinity));
 
-    Simd3f const filtered_l1b = math::max(l1, Simd3f(simd::Neg_infinity));
-    Simd3f const filtered_l2b = math::max(l2, Simd3f(simd::Neg_infinity));
+    Simdf const filtered_l1b = math::max(l1, Simdf(simd::Neg_infinity));
+    Simdf const filtered_l2b = math::max(l2, Simdf(simd::Neg_infinity));
 
     // now that we're back on our feet, test those slabs.
-    Simd3f max_t = math::max(filtered_l1a, filtered_l2a);
-    Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
+    Simdf max_t = math::max(filtered_l1a, filtered_l2a);
+    Simdf min_t = math::min(filtered_l1b, filtered_l2b);
 
     // unfold back. try to hide the latency of the shufps & co.
     max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));
@@ -182,29 +182,29 @@ inline bool AABB::intersect_p(ray const& ray, float& hit_t) const {
 }
 
 inline bool AABB::intersect_inside(ray const& ray, float& hit_t) const {
-    Simd3f const ray_origin(ray.origin);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar const ray_max_t(ray.max_t());
 
-    Simd3f const bb_min(bounds[0]);
-    Simd3f const bb_max(bounds[1]);
+    Simdf const bb_min(bounds[0]);
+    Simdf const bb_max(bounds[1]);
 
-    Simd3f const l1 = (bb_min - ray_origin) * ray_inv_direction;
-    Simd3f const l2 = (bb_max - ray_origin) * ray_inv_direction;
+    Simdf const l1 = (bb_min - ray_origin) * ray_inv_direction;
+    Simdf const l2 = (bb_max - ray_origin) * ray_inv_direction;
 
     // the order we use for those min/max is vital to filter out
     // NaNs that happens when an inv_dir is +/- inf and
     // (box_min - pos) is 0. inf * 0 = NaN
-    Simd3f const filtered_l1a = math::min(l1, Simd3f(simd::Infinity));
-    Simd3f const filtered_l2a = math::min(l2, Simd3f(simd::Infinity));
+    Simdf const filtered_l1a = math::min(l1, Simdf(simd::Infinity));
+    Simdf const filtered_l2a = math::min(l2, Simdf(simd::Infinity));
 
-    Simd3f const filtered_l1b = math::max(l1, Simd3f(simd::Neg_infinity));
-    Simd3f const filtered_l2b = math::max(l2, Simd3f(simd::Neg_infinity));
+    Simdf const filtered_l1b = math::max(l1, Simdf(simd::Neg_infinity));
+    Simdf const filtered_l2b = math::max(l2, Simdf(simd::Neg_infinity));
 
     // now that we're back on our feet, test those slabs.
-    Simd3f max_t = math::max(filtered_l1a, filtered_l2a);
-    Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
+    Simdf max_t = math::max(filtered_l1a, filtered_l2a);
+    Simdf min_t = math::min(filtered_l1b, filtered_l2b);
 
     // unfold back. try to hide the latency of the shufps & co.
     max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));
@@ -352,19 +352,19 @@ inline AABB constexpr Infinite_AABB(float3(-std::numeric_limits<float>::max()),
 
 inline Simd_AABB::Simd_AABB() = default;
 
-inline Simd_AABB::Simd_AABB(AABB const& box) : min(Simd3f(box.min().v)), max(Simd3f(box.max().v)) {}
+inline Simd_AABB::Simd_AABB(AABB const& box) : min(Simdf(box.min().v)), max(Simdf(box.max().v)) {}
 
 inline Simd_AABB::Simd_AABB(float const* min, float const* max)
-    : min(Simd3f::create_from_3(min)), max(Simd3f::create_from_3(max)) {}
+    : min(Simdf::create_from_3(min)), max(Simdf::create_from_3(max)) {}
 
-inline Simd_AABB::Simd_AABB(Simd3f_p min, Simd3f_p max) : min(min), max(max) {}
+inline Simd_AABB::Simd_AABB(Simdf_p min, Simdf_p max) : min(min), max(max) {}
 
 inline void Simd_AABB::merge_assign(Simd_AABB const& other) {
     min = math::min(min, other.min);
     max = math::max(max, other.max);
 }
 
-inline void Simd_AABB::merge_assign(Simd3f_p other_min, Simd3f_p other_max) {
+inline void Simd_AABB::merge_assign(Simdf_p other_min, Simdf_p other_max) {
     min = math::min(min, other_min);
     max = math::max(max, other_max);
 }

@@ -1,7 +1,7 @@
 #ifndef SU_BASE_MATH_EXP_HPP
 #define SU_BASE_MATH_EXP_HPP
 
-#include "simd/simd_const.hpp"
+#include "simd_const.hpp"
 
 namespace simd {
 

@@ -44,8 +44,8 @@ bool BVH_wrapper::intersect(Ray& ray, Worker& worker, Interpolation ipo, Interse
 
     uint32_t n = 0;
 
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin.v);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 
@@ -119,8 +119,8 @@ bool BVH_wrapper::intersect_shadow(Ray& ray, Worker& worker, Intersection& isec)
 
     uint32_t n = 0;
 
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin.v);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 
@@ -190,8 +190,8 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
 
     uint32_t n = 0;
 
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin.v);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 
@@ -258,8 +258,8 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
 
     float visibility = 1.f;
 
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin.v);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 
@@ -328,8 +328,8 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
 
     float3 absorption(1.f);
 
-    Simd3f const ray_origin(ray.origin.v);
-    Simd3f const ray_inv_direction(ray.inv_direction.v);
+    Simdf const  ray_origin(ray.origin.v);
+    Simdf const  ray_inv_direction(ray.inv_direction.v);
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 

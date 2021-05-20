@@ -20,7 +20,7 @@ struct Matrix3x3f_a {
 };
 
 struct Simd3x3f {
-    Simd3f r[3];
+    Simdf r[3];
 
     Simd3x3f(Matrix3x3f_a const& source);
 };

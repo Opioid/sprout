@@ -130,26 +130,26 @@ inline bool Node::intersect_p(math::ray const& ray) const {
 
 // I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
-inline bool Node::intersect_p(Simd3f_p ray_origin, Simd3f_p ray_inv_direction, scalar_p ray_min_t,
+inline bool Node::intersect_p(Simdf_p ray_origin, Simdf_p ray_inv_direction, scalar_p ray_min_t,
                               scalar_p ray_max_t) const {
-    Simd3f const bb_min = Simd3f::create_from_3(min_.v);
-    Simd3f const bb_max = Simd3f::create_from_3(max_.v);
+    Simdf const bb_min = Simdf::create_from_3(min_.v);
+    Simdf const bb_max = Simdf::create_from_3(max_.v);
 
-    Simd3f const l1 = (bb_min - ray_origin) * ray_inv_direction;
-    Simd3f const l2 = (bb_max - ray_origin) * ray_inv_direction;
+    Simdf const l1 = (bb_min - ray_origin) * ray_inv_direction;
+    Simdf const l2 = (bb_max - ray_origin) * ray_inv_direction;
 
     // the order we use for those min/max is vital to filter out
     // NaNs that happens when an inv_dir is +/- inf and
     // (box_min - pos) is 0. inf * 0 = NaN
-    Simd3f const filtered_l1a = math::min(l1, Simd3f(simd::Infinity));
-    Simd3f const filtered_l2a = math::min(l2, Simd3f(simd::Infinity));
+    Simdf const filtered_l1a = math::min(l1, Simdf(simd::Infinity));
+    Simdf const filtered_l2a = math::min(l2, Simdf(simd::Infinity));
 
-    Simd3f const filtered_l1b = math::max(l1, Simd3f(simd::Neg_infinity));
-    Simd3f const filtered_l2b = math::max(l2, Simd3f(simd::Neg_infinity));
+    Simdf const filtered_l1b = math::max(l1, Simdf(simd::Neg_infinity));
+    Simdf const filtered_l2b = math::max(l2, Simdf(simd::Neg_infinity));
 
     // now that we're back on our feet, test those slabs.
-    Simd3f max_t = math::max(filtered_l1a, filtered_l2a);
-    Simd3f min_t = math::min(filtered_l1b, filtered_l2b);
+    Simdf max_t = math::max(filtered_l1a, filtered_l2a);
+    Simdf min_t = math::min(filtered_l1b, filtered_l2b);
 
     // unfold back. try to hide the latency of the shufps & co.
     max_t = min_scalar(max_t, SU_ROTATE_LEFT(max_t.v));

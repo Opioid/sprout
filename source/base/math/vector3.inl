@@ -4,8 +4,7 @@
 #include "exp.hpp"
 #include "math.hpp"
 #include "scalar.inl"
-#include "simd/simd.hpp"
-#include "simd/simd.inl"
+#include "simd.inl"
 #include "vector2.inl"
 #include "vector3.hpp"
 
@@ -318,7 +317,7 @@ inline constexpr Vector3f_a::Vector3f_a(Vector2<float> const xy, float z)
 template <typename T>
 constexpr Vector3f_a::Vector3f_a(Vector3<T> a) : v{float(a[0]), float(a[1]), float(a[2]), 0.f} {}
 
-inline Vector3f_a::Vector3f_a(Simd3f_p o) {
+inline Vector3f_a::Vector3f_a(Simdf_p o) {
     _mm_store_ps(v, o.v);
 }
 
@@ -635,12 +634,12 @@ static inline Vector3f_a cos(Vector3f_a_p v) {
     return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 
-static inline Simd3f sqrt(Simd3f_p x);
+static inline Simdf sqrt(Simdf_p x);
 
 static inline Vector3f_a sqrt(Vector3f_a_p v) {
     //	return Vector3f_a(std::sqrt(v[0]), std::sqrt(v[1]), std::sqrt(v[2]));
 
-    Simd3f const x = Simd3f::create_from_3(v.v);
+    Simdf const x = Simdf::create_from_3(v.v);
 
     return Vector3f_a(sqrt(x));
 }
@@ -648,7 +647,7 @@ static inline Vector3f_a sqrt(Vector3f_a_p v) {
 static inline Vector3f_a log(Vector3f_a_p v) {
     //	return Vector3f_a(std::log(v[0]), std::log(v[1]), std::log(v[2]));
 
-    Simd3f x(v);
+    Simdf x(v);
 
     return Vector3f_a(log(x.v));
 }
@@ -728,217 +727,6 @@ static inline bool finite_and_positive(float s) {
 static inline bool all_finite_and_positive(Vector3f_a_p v) {
     return std::isfinite(v[0]) && v[0] >= 0.f && std::isfinite(v[1]) && v[1] >= 0.f &&
            std::isfinite(v[2]) && v[2] >= 0.f;
-}
-
-//==============================================================================
-// SIMD 3D float vector
-//==============================================================================
-
-inline Simd3f::Simd3f(__m128 m) : v(m) {}
-
-inline Simd3f::Simd3f(float s) : v(_mm_set1_ps(s)) {}
-
-inline Simd3f::Simd3f(Simd1f_p s) : v(SU_PERMUTE_PS(s.v, _MM_SHUFFLE(0, 0, 0, 0))) {}
-
-inline Simd3f::Simd3f(float sx, float sy) {
-    __m128 x = _mm_load_ss(&sx);
-    __m128 y = _mm_load_ss(&sy);
-    v        = _mm_unpacklo_ps(x, y);
-}
-
-inline Simd3f::Simd3f(float sx, float sy, float sz) {
-    __m128 x  = _mm_load_ss(&sx);
-    __m128 y  = _mm_load_ss(&sy);
-    __m128 z  = _mm_load_ss(&sz);
-    __m128 xy = _mm_unpacklo_ps(x, y);
-    v         = _mm_movelh_ps(xy, z);
-}
-
-inline Simd3f::Simd3f(Vector3f_a_p o) : v(_mm_load_ps(o.v)) {}
-
-inline Simd3f::Simd3f(float const* a) : v(_mm_load_ps(a)) {}
-
-inline Simd3f Simd3f::create_from_3(float const* f) {
-    // Reads an extra float which is zero'd
-    __m128 const v = _mm_load_ps(f);
-    return _mm_and_ps(v, simd::Mask3);
-}
-
-inline Simd3f Simd3f::create_from_3_unaligned(float const* f) {
-    // Reads an extra float which is zero'd
-    __m128 const v = _mm_loadu_ps(f);
-    return _mm_and_ps(v, simd::Mask3);
-}
-
-inline float Simd3f::x() const {
-    return _mm_cvtss_f32(v);
-}
-
-inline float Simd3f::y() const {
-    __m128 const t = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
-    return _mm_cvtss_f32(t);
-}
-
-inline float Simd3f::z() const {
-    __m128 const t = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
-    return _mm_cvtss_f32(t);
-}
-
-inline float Simd3f::w() const {
-    __m128 const t = SU_PERMUTE_PS(v, _MM_SHUFFLE(3, 3, 3, 3));
-    return _mm_cvtss_f32(t);
-}
-
-inline Simd3f Simd3f::splat_x() const {
-    return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
-}
-
-inline Simd3f Simd3f::splat_w() const {
-    return SU_PERMUTE_PS(v, _MM_SHUFFLE(3, 3, 3, 3));
-}
-
-static inline Simd3f operator+(float a, Simd3f_p b) {
-    __m128 const s = _mm_set1_ps(a);
-
-    return _mm_add_ps(s, b.v);
-}
-
-static inline Simd3f operator+(Simd3f_p a, Simd3f_p b) {
-    return _mm_add_ps(a.v, b.v);
-}
-
-static inline Simd3f& operator+=(Simd3f& a, Simd3f_p b) {
-    a = _mm_add_ps(a.v, b.v);
-    return a;
-}
-
-static inline float horizontal_sum(Simd3f a) {
-    //	Vector t = _mm_hadd_ps(a, a);
-    //	t = _mm_hadd_ps(t, t);
-    //	float r;
-    //	_mm_store_ss(&r, t);
-    //	return r;
-
-    __m128 shuf = _mm_movehdup_ps(a.v);
-    __m128 sums = _mm_add_ps(a.v, shuf);
-    shuf        = _mm_movehl_ps(shuf, sums);
-    sums        = _mm_add_ss(sums, shuf);
-    return _mm_cvtss_f32(sums);
-}
-
-static inline Simd3f operator-(float a, Simd3f_p b) {
-    __m128 const s = _mm_set1_ps(a);
-
-    return _mm_sub_ps(s, b.v);
-}
-
-static inline Simd3f operator-(Simd3f_p a, Simd3f_p b) {
-    return _mm_sub_ps(a.v, b.v);
-}
-
-static inline Simd3f operator-(__m128 a, Simd3f_p b) {
-    return _mm_sub_ps(a, b.v);
-}
-
-static inline Simd3f operator*(float a, Simd3f_p b) {
-    __m128 const s = _mm_set1_ps(a);
-
-    return _mm_mul_ps(s, b.v);
-}
-
-static inline Simd3f operator*(Simd3f_p a, Simd3f_p b) {
-    return _mm_mul_ps(a.v, b.v);
-}
-
-static inline Simd3f operator/(Simd3f_p a, Simd3f_p b) {
-    return _mm_div_ps(a.v, b.v);
-}
-
-static inline Simd3f& operator*=(Simd3f& a, Simd3f_p b) {
-    a = _mm_mul_ps(a.v, b.v);
-    return a;
-}
-
-static inline Simd3f operator-(Simd3f_p v) {
-    return _mm_sub_ps(_mm_set1_ps(0.f), v.v);
-}
-
-static inline Simd3f dot(Simd3f_p a, Simd3f_p b) {
-    __m128 mul  = _mm_mul_ps(a.v, b.v);
-    __m128 shuf = _mm_movehdup_ps(mul);
-    __m128 sums = _mm_add_ss(mul, shuf);
-    shuf        = _mm_movehl_ps(shuf, sums);
-    __m128 d    = _mm_add_ss(sums, shuf);
-    // Splat x
-    return SU_PERMUTE_PS(d, _MM_SHUFFLE(0, 0, 0, 0));
-}
-
-static inline Simd1f dot_scalar(Simd3f_p a, Simd3f_p b) {
-    __m128 mul  = _mm_mul_ps(a.v, b.v);
-    __m128 shuf = _mm_movehdup_ps(mul);
-    __m128 sums = _mm_add_ss(mul, shuf);
-    shuf        = _mm_movehl_ps(shuf, sums);
-    return _mm_add_ss(sums, shuf);
-}
-
-static inline Simd3f cross(Simd3f_p a, Simd3f_p b) {
-    __m128 tmp0 = _mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(3, 0, 2, 1));
-    __m128 tmp1 = _mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(3, 0, 2, 1));
-
-    tmp0 = _mm_mul_ps(tmp0, a.v);
-    tmp1 = _mm_mul_ps(tmp1, b.v);
-
-    __m128 tmp2 = _mm_sub_ps(tmp0, tmp1);
-
-    return SU_PERMUTE_PS(tmp2, _MM_SHUFFLE(3, 0, 2, 1));
-}
-
-static inline Simd3f sqrt(Simd3f_p x) {
-    __m128 const res  = _mm_rsqrt_ps(x.v);
-    __m128 const muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
-    return _mm_mul_ps(x.v, _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls)));
-}
-
-static inline Simd3f rsqrt(Simd3f_p x) {
-    __m128 const res  = _mm_rsqrt_ps(x.v);
-    __m128 const muls = _mm_mul_ps(_mm_mul_ps(x.v, res), res);
-    return _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls));
-}
-
-static inline Simd3f normalize(Simd3f_p v) {
-    return rsqrt(dot(v, v)) * v;
-}
-
-static inline Simd3f reciprocal(Simd3f_p v) {
-    __m128 rcp = _mm_rcp_ps(v.v);
-    rcp        = _mm_and_ps(rcp, simd::Mask3);
-    __m128 mul = _mm_mul_ps(v.v, _mm_mul_ps(rcp, rcp));
-
-    return _mm_sub_ps(_mm_add_ps(rcp, rcp), mul);
-}
-
-static inline Simd3f min(Simd3f_p a, Simd3f_p b) {
-    return _mm_min_ps(a.v, b.v);
-}
-
-static inline Simd3f max(Simd3f_p a, Simd3f_p b) {
-    return _mm_max_ps(a.v, b.v);
-}
-
-static inline Simd3f min_scalar(Simd3f_p a, Simd3f_p b) {
-    return _mm_min_ss(a.v, b.v);
-}
-
-static inline Simd3f max_scalar(Simd3f_p a, Simd3f_p b) {
-    return _mm_max_ss(a.v, b.v);
-}
-
-static inline void sign(Simd3f_p v, uint32_t s[4]) {
-    __m128 const sm = _mm_cmplt_ps(v.v, simd::Zero);
-
-    __m128i const smi = _mm_and_si128(_mm_castps_si128(sm), simd::Bool_mask);
-
-    _mm_store_si128(reinterpret_cast<__m128i*>(s), smi);
 }
 
 }  // namespace math
