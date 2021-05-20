@@ -634,8 +634,6 @@ static inline Vector3f_a cos(Vector3f_a_p v) {
     return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 
-static inline Simdf sqrt(Simdf_p x);
-
 static inline Vector3f_a sqrt(Vector3f_a_p v) {
     //	return Vector3f_a(std::sqrt(v[0]), std::sqrt(v[1]), std::sqrt(v[2]));
 
