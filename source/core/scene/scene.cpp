@@ -55,7 +55,6 @@ Scene::Scene(std::vector<Image*> const&    image_resources,
     lights_.reserve(Num_reserved_props);
     extensions_.reserve(Num_reserved_props);
     animations_.reserve(Num_reserved_props);
-    animation_stages_.reserve(Num_reserved_props);
     finite_props_.reserve(Num_reserved_props);
     infinite_props_.reserve(3);
     volumes_.reserve(Num_reserved_props);
@@ -90,8 +89,6 @@ void Scene::clear() {
     }
 
     animations_.clear();
-
-    animation_stages_.clear();
 
     for (auto e : extensions_) {
         delete e;
@@ -217,10 +214,7 @@ void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Worker& 
 
     for (auto a : animations_) {
         a->resample(frames_start, frames_end, Tick_duration);
-    }
-
-    for (auto& s : animation_stages_) {
-        s.update(*this, threads);
+        a->update(*this, threads);
     }
 
     compile(camera_pos, start, worker, threads);
@@ -520,18 +514,15 @@ void Scene::prop_prepare_sampling(uint32_t entity, uint32_t part, uint32_t light
         lights_[light].power(average_radiance, aabb(), *this));
 }
 
-animation::Animation* Scene::create_animation(uint32_t count) {
-    animation::Animation* animation = new animation::Animation(count, num_interpolation_frames_);
+animation::Animation* Scene::create_animation(uint32_t entity, uint32_t count) {
+    animation::Animation* animation = new animation::Animation(entity, count,
+                                                               num_interpolation_frames_);
 
     animations_.push_back(animation);
 
-    return animation;
-}
-
-void Scene::create_animation_stage(uint32_t entity, animation::Animation* animation) {
-    animation_stages_.emplace_back(entity, animation);
-
     prop_allocate_frames(entity, true);
+
+    return animation;
 }
 
 void Scene::prop_calculate_world_transformation(uint32_t entity, float3_p camera_pos) {

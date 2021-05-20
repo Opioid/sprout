@@ -37,29 +37,25 @@ static inline Quaternion create(float3x3 const& m) {
 // https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
 static inline float3x3 create_matrix3x3(Quaternion_p q) {
+    Simd3f const qv(q.v);
+
+    Simd3f const tv = qv + qv;
+    Simd3f const vv = tv * qv;
+
+    float3 const wv3(tv * qv.splat_w());
+    float3 const vv3(vv);
+    float3 const tv3(tv);
+
     float const x = q[0];
-    float const y = q[1];
     float const z = q[2];
-    float const w = q[3];
 
-    float const tx = x + x;
-    float const ty = y + y;
-    float const tz = z + z;
+    float const xy = tv3[1] * x;
+    float const xz = tv3[2] * x;
+    float const yz = tv3[1] * z;
 
-    float const xx = tx * x;
-    float const yy = ty * y;
-    float const zz = tz * z;
-
-    float const xy = ty * x;
-    float const xz = tz * x;
-    float const yz = ty * z;
-
-    float const wx = tx * w;
-    float const wy = ty * w;
-    float const wz = tz * w;
-
-    return float3x3(1.f - (yy + zz), xy - wz, xz + wy, xy + wz, 1.f - (xx + zz), yz - wx, xz - wy,
-                    yz + wx, 1.f - (xx + yy));
+    return float3x3(1.f - (vv3[1] + vv3[2]), xy - wv3[2], xz + wv3[1], xy + wv3[2],
+                    1.f - (vv3[0] + vv3[2]), yz - wv3[0], xz - wv3[1], yz + wv3[0],
+                    1.f - (vv3[0] + vv3[1]));
 }
 
 static inline Quaternion create_rotation_x(float a) {

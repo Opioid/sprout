@@ -11,21 +11,22 @@
 namespace scene::animation {
 
 static Animation* load_keyframes(json::Value const& value, Transformation const& default_trafo,
-                                 Scene& scene);
+                                 uint32_t entity, Scene& scene);
 
 static Animation* load_sequence(json::Value const& value, Transformation const& default_trafo,
-                                Scene& scene);
+                                uint32_t entity, Scene& scene);
 
 static void read_morphing(json::Value const& value, entity::Morphing& morphing);
 
-Animation* load(json::Value const& value, Transformation const& default_trafo, Scene& scene) {
+Animation* load(json::Value const& value, Transformation const& default_trafo, uint32_t entity,
+                Scene& scene) {
     for (auto& n : value.GetObject()) {
         if ("keyframes" == n.name) {
-            return load_keyframes(n.value, default_trafo, scene);
+            return load_keyframes(n.value, default_trafo, entity, scene);
         }
 
         if ("morph_sequence" == n.name) {
-            return load_sequence(n.value, default_trafo, scene);
+            return load_sequence(n.value, default_trafo, entity, scene);
         }
     }
 
@@ -33,12 +34,12 @@ Animation* load(json::Value const& value, Transformation const& default_trafo, S
 }
 
 static Animation* load_keyframes(json::Value const& value, Transformation const& default_trafo,
-                                 Scene& scene) {
+                                 uint32_t entity, Scene& scene) {
     if (!value.IsArray()) {
         return nullptr;
     }
 
-    auto animation = scene.create_animation(value.Size());
+    auto animation = scene.create_animation(entity, value.Size());
 
     for (uint32_t i = 0; auto const& k : value.GetArray()) {
         Keyframe keyframe{{default_trafo}, {{0, 0}, 0.f}, 0};
@@ -60,7 +61,7 @@ static Animation* load_keyframes(json::Value const& value, Transformation const&
 }
 
 Animation* load_sequence(json::Value const& value, Transformation const& default_trafo,
-                         Scene& scene) {
+                         uint32_t entity, Scene& scene) {
     uint32_t start_frame       = 0;
     uint32_t num_frames        = 0;
     uint32_t frames_per_second = 0;
@@ -79,7 +80,7 @@ Animation* load_sequence(json::Value const& value, Transformation const& default
         return nullptr;
     }
 
-    auto animation = scene.create_animation(num_frames);
+    auto animation = scene.create_animation(entity, num_frames);
 
     uint64_t time = 0;
 

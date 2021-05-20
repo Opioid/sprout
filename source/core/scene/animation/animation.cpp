@@ -8,8 +8,9 @@
 
 namespace scene::animation {
 
-Animation::Animation(uint32_t num_frames, uint32_t num_interpolated_frames)
-    : last_frame_(0),
+Animation::Animation(uint32_t entity, uint32_t num_frames, uint32_t num_interpolated_frames)
+    : entity_(entity),
+      last_frame_(0),
       num_keyframes_(num_frames),
       keyframes_(new Keyframe[num_frames + num_interpolated_frames]) {}
 
@@ -60,17 +61,13 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) {
     last_frame_ = last_frame;
 }
 
-Keyframe const* Animation::interpolated_frames() const {
-    return &keyframes_[num_keyframes_];
-}
+void Animation::update(Scene& scene, Threads& threads) const {
+    Keyframe const* interpolated = &keyframes_[num_keyframes_];
 
-Stage::Stage(uint32_t entity, Animation* animation) : entity_(entity), animation_(animation) {}
-
-void Stage::update(Scene& scene, Threads& threads) const {
-    scene.prop_set_frames(entity_, animation_->interpolated_frames());
+    scene.prop_set_frames(entity_, interpolated);
 
     if (shape::Morphable* morphable = scene.prop_shape(entity_)->morphable_shape(); morphable) {
-        auto const& m = animation_->interpolated_frames()[0].m;
+        auto const& m = interpolated[0].m;
         morphable->morph(m.targets[0], m.targets[1], m.weight, threads);
     }
 }
