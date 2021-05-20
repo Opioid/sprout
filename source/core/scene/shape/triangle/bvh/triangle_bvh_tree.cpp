@@ -40,7 +40,7 @@ AABB Tree::aabb() const {
 
 bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                      scalar& ray_max_t, Node_stack& nodes, Intersection& isec) const {
-    Simdf const ray_inv_direction = reciprocal(ray_direction);
+    Simdf const ray_inv_direction = reciprocal3(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
@@ -82,19 +82,16 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
         n = nodes.pop();
     }
 
-    if (index != 0xFFFFFFFF) {
-        isec.u     = Simdf(u);
-        isec.v     = Simdf(v);
-        isec.index = index;
-        return true;
-    }
+    isec.u     = Simdf(u);
+    isec.v     = Simdf(v);
+    isec.index = index;
 
-    return false;
+    return index != 0xFFFFFFFF;
 }
 
 bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                      scalar& ray_max_t, Node_stack& nodes) const {
-    Simdf const ray_inv_direction = reciprocal(ray_direction);
+    Simdf const ray_inv_direction = reciprocal3(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
@@ -133,16 +130,12 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
         n = nodes.pop();
     }
 
-    if (index != 0xFFFFFFFF) {
-        return true;
-    }
-
-    return false;
+    return index != 0xFFFFFFFF;
 }
 
 bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                        scalar_p ray_max_t, Node_stack& nodes) const {
-    Simdf const ray_inv_direction = reciprocal(ray_direction);
+    Simdf const ray_inv_direction = reciprocal3(ray_direction);
 
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
