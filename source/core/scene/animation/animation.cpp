@@ -14,6 +14,14 @@ Animation::Animation(uint32_t entity, uint32_t num_frames, uint32_t num_interpol
       num_keyframes_(num_frames),
       keyframes_(new Keyframe[num_frames + num_interpolated_frames]) {}
 
+Animation::Animation(Animation&& other)
+    : entity_(other.entity_),
+      last_frame_(other.last_frame_),
+      num_keyframes_(other.num_keyframes_),
+      keyframes_(other.keyframes_) {
+    other.keyframes_ = nullptr;
+}
+
 Animation::~Animation() {
     delete[] keyframes_;
 }

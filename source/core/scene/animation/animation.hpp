@@ -28,6 +28,8 @@ class Animation {
   public:
     Animation(uint32_t entity, uint32_t num_frames, uint32_t num_interpolated_frames);
 
+    Animation(Animation&& other);
+
     ~Animation();
 
     void set(uint32_t index, Keyframe const& keyframe);
