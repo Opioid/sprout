@@ -607,6 +607,14 @@ Shape* Provider::load_binary(std::istream& stream, Threads& threads) {
                 stream.read(reinterpret_cast<char*>(uv), num_vertices * sizeof(float2));
                 stream.read(reinterpret_cast<char*>(bts), num_vertices * sizeof(uint8_t));
 
+                for (uint32_t i = 0; i < num_vertices; ++i) {
+                    packed_float3& ti = t[i];
+
+                    if (0.f == ti[0] && 0.f == ti[1] && 0.f == ti[2]) {
+                        ti = packed_float3(tangent(float3(n[i])));
+                    }
+                }
+
                 vertex_stream = new Vertex_stream_separate(num_vertices, p, n, t, uv, bts);
             } else {
                 vertex_stream = new Vertex_stream_separate_compact(num_vertices, p, n);

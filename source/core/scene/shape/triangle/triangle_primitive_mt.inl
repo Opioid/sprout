@@ -245,12 +245,7 @@ static inline float area(float3_p a, float3_p b, float3_p c) {
 inline Shading_vertex_MTC::Shading_vertex_MTC() = default;
 
 inline Shading_vertex_MTC::Shading_vertex_MTC(float3_p n, float3_p t, float2 uv)
-    : n_u(n, uv[0]), t_v(t, uv[1]) {
-    // Not too happy about handling degenerate tangents here (only one very special case even)
-    if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
-        t_v = float4(math::tangent(n_u.xyz()), uv[1]);
-    }
-}
+    : n_u(n, uv[0]), t_v(t, uv[1]) {}
 
 static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
                                     const Shading_vertex_MTC& c, float2 uv) {
