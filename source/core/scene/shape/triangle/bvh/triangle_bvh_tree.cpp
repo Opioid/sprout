@@ -72,11 +72,12 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
                 continue;
             }
 
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    index = i;
+            uint32_t out_index;
+                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t,
+                                    node.indices_start(), node.indices_end(), u, v, out_index)) {
+                    index = out_index;
                 }
-            }
+
         }
 
         n = nodes.pop();
