@@ -104,6 +104,14 @@ inline Simdf Simdf::splat_x() const {
     return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 }
 
+inline Simdf Simdf::splat_y() const {
+    return SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
+}
+
+inline Simdf Simdf::splat_z() const {
+    return SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
+}
+
 inline Simdf Simdf::splat_w() const {
     return SU_PERMUTE_PS(v, _MM_SHUFFLE(3, 3, 3, 3));
 }

@@ -97,6 +97,76 @@ static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, 
     return false;
 }
 
+
+struct SimdVec {
+    Simdf v[3];
+};
+
+
+static inline SimdVec operator-(SimdVec a, SimdVec b) {
+    SimdVec temp;
+
+    temp.v[0] = a.v[0] - b.v[0];
+    temp.v[1] = a.v[1] - b.v[1];
+    temp.v[2] = a.v[2] - b.v[2];
+
+    return temp;
+}
+
+static inline SimdVec cross(SimdVec a, SimdVec b) {
+    SimdVec temp;
+
+
+    return temp;
+}
+
+static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p& max_t,
+                             SimdVec a, SimdVec b, SimdVec c, scalar& u_out,
+                             scalar& v_out) {
+
+    SimdVec e1 = a - b;
+    SimdVec e2 = c - a;
+    SimdVec tvec = origin - a;
+
+
+
+    /*
+    Simdf ap(a);
+    Simdf bp(b);
+    Simdf cp(c);
+
+    Simdf e1   = bp - ap;
+    Simdf e2   = cp - ap;
+    Simdf tvec = origin - ap;
+
+    Simdf pvec = cross3(direction, e2);
+    Simdf qvec = cross3(tvec, e1);
+
+    scalar e1_d_pv = dot3_scalar(e1, pvec);
+    scalar tv_d_pv = dot3_scalar(tvec, pvec);
+    scalar di_d_qv = dot3_scalar(direction, qvec);
+    scalar e2_d_qv = dot3_scalar(e2, qvec);
+
+    scalar inv_det = reciprocal(e1_d_pv);
+
+    scalar u     = tv_d_pv * inv_det;
+    scalar v     = di_d_qv * inv_det;
+    scalar hit_t = e2_d_qv * inv_det;
+
+    scalar uv = u + v;
+
+    if (0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
+              _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
+              _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v))) {
+        max_t = hit_t;
+        u_out = u;
+        v_out = v;
+        return true;
+    }
+*/
+    return false;
+}
+
 static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
                              float const* a, float const* b, float const* c) {
     Simdf ap(a);

@@ -54,6 +54,8 @@ struct Simdf {
     float w() const;
 
     Simdf splat_x() const;
+    Simdf splat_y() const;
+    Simdf splat_z() const;
     Simdf splat_w() const;
 
     __m128 v;
