@@ -171,7 +171,7 @@ static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, S
     Simdf di_d_qv = dot(direction, qvec);
     Simdf e2_d_qv = dot(e2, qvec);
 
-    Simdf inv_det = reciprocal(e1_d_pv, m);
+    Simdf inv_det = reciprocal(e1_d_pv);
 
     Simdf u     = tv_d_pv * inv_det;
     Simdf v     = di_d_qv * inv_det;
@@ -362,6 +362,8 @@ static inline bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t
                  _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v));
 }
 
+inline int constexpr Masks[] = { 0x00000001, 0x00000003, 0x00000007, 0x0000000F };
+
 static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p max_t,
                                SimdVec a, SimdVec b, SimdVec c, uint32_t m) {
     SimdVec e1 = b - a;
@@ -376,7 +378,7 @@ static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t,
     Simdf di_d_qv = dot(direction, qvec);
     Simdf e2_d_qv = dot(e2, qvec);
 
-    Simdf inv_det = reciprocal(e1_d_pv, m);
+    Simdf inv_det = reciprocal(e1_d_pv);
 
     Simdf u     = tv_d_pv * inv_det;
     Simdf v     = di_d_qv * inv_det;
@@ -384,14 +386,24 @@ static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t,
 
     Simdf uv = u + v;
 
-    Simdf condition = _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(u.v, simd::Zero), _mm_cmpge_ps(simd::One, u.v)),
-                              _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(v.v, simd::Zero), _mm_cmpge_ps(simd::One, uv.v)),
-                              _mm_and_ps(_mm_cmpge_ps(hit_t.v, min_t.v), _mm_cmpge_ps(max_t.v, hit_t.v))));
 
-    condition        = _mm_and_ps(condition.v, simd::Masks[m]);
+    int const ca = _mm_movemask_ps(_mm_cmpge_ps(u.v, simd::Zero));
+    int const cb = _mm_movemask_ps(_mm_cmpge_ps(simd::One, u.v));
+    int const cc = _mm_movemask_ps(_mm_cmpge_ps(v.v, simd::Zero));
+    int const cd = _mm_movemask_ps(_mm_cmpge_ps(simd::One, uv.v));
+    int const ce = _mm_movemask_ps(_mm_cmpge_ps(hit_t.v, min_t.v));
+    int const cf = _mm_movemask_ps(_mm_cmpge_ps(max_t.v, hit_t.v));
+
+     return 0 != (ca & cb & cc & cd & ce & cf & Masks[m]);
+
+//    Simdf condition = _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(u.v, simd::Zero), _mm_cmpge_ps(simd::One, u.v)),
+//                              _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(v.v, simd::Zero), _mm_cmpge_ps(simd::One, uv.v)),
+//                              _mm_and_ps(_mm_cmpge_ps(hit_t.v, min_t.v), _mm_cmpge_ps(max_t.v, hit_t.v))));
+
+//    condition        = _mm_and_ps(condition.v, simd::Masks[m]);
 
 
-    return 0 != _mm_movemask_ps(condition.v);
+//    return 0 != _mm_movemask_ps(condition.v);
 }
 
 static inline Simdf interpolate_p(Simdf_p a, Simdf_p b, Simdf_p c, Simdf_p u, Simdf_p v) {
