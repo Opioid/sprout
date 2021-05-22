@@ -214,8 +214,9 @@ static inline Simdf normalize3(Simdf_p v) {
     return rsqrt(dot3(v, v)) * v;
 }
 
-static inline Simdf reciprocal(Simdf_p v) {
+static inline Simdf reciprocal(Simdf_p v, uint32_t m) {
     __m128 rcp = _mm_rcp_ps(v.v);
+    rcp        = _mm_and_ps(rcp, simd::Masks[m]);
     __m128 mul = _mm_mul_ps(v.v, _mm_mul_ps(rcp, rcp));
 
     return _mm_sub_ps(_mm_add_ps(rcp, rcp), mul);

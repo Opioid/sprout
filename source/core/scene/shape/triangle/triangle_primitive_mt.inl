@@ -138,7 +138,7 @@ static inline SimdVec cross(SimdVec a, SimdVec b) {
 
 static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p& max_t,
                              SimdVec a, SimdVec b, SimdVec c, scalar& u_out,
-                             scalar& v_out) {
+                             scalar& v_out, uint32_t m) {
 
 /*
     float3 const ori(origin.v[0].x(), origin.v[1].x(), origin.v[2].x());
@@ -171,7 +171,7 @@ static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, S
     Simdf di_d_qv = dot(direction, qvec);
     Simdf e2_d_qv = dot(e2, qvec);
 
-    Simdf inv_det = reciprocal(e1_d_pv);
+    Simdf inv_det = reciprocal(e1_d_pv, m);
 
     Simdf u     = tv_d_pv * inv_det;
     Simdf v     = di_d_qv * inv_det;
@@ -363,7 +363,7 @@ static inline bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t
 }
 
 static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p max_t,
-                             SimdVec a, SimdVec b, SimdVec c, uint32_t n) {
+                               SimdVec a, SimdVec b, SimdVec c, uint32_t m) {
     SimdVec e1 = b - a;
     SimdVec e2 = c - a;
     SimdVec tvec = origin - a;
@@ -376,9 +376,7 @@ static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t,
     Simdf di_d_qv = dot(direction, qvec);
     Simdf e2_d_qv = dot(e2, qvec);
 
-    Simdf inv_det = reciprocal(e1_d_pv);
-
-  //  inv_det        = _mm_and_ps(inv_det.v, simd::Masks[n - 1]);
+    Simdf inv_det = reciprocal(e1_d_pv, m);
 
     Simdf u     = tv_d_pv * inv_det;
     Simdf v     = di_d_qv * inv_det;
@@ -390,7 +388,8 @@ static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t,
                               _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(v.v, simd::Zero), _mm_cmpge_ps(simd::One, uv.v)),
                               _mm_and_ps(_mm_cmpge_ps(hit_t.v, min_t.v), _mm_cmpge_ps(max_t.v, hit_t.v))));
 
-    condition        = _mm_and_ps(condition.v, simd::Masks[n - 1]);
+    condition        = _mm_and_ps(condition.v, simd::Masks[m]);
+
 
     return 0 != _mm_movemask_ps(condition.v);
 }

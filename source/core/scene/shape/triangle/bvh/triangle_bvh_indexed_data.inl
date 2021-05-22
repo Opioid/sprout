@@ -106,7 +106,7 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
     Simdf mintolo(min_t);
     Simdf maxtolo(max_t);
 
-    bool hit = triangle::intersect(o, d, mintolo, maxtolo, a, b, c, u, v);
+    bool hit = triangle::intersect(o, d, mintolo, maxtolo, a, b, c, u, v, n - 1);
 
     max_t = scalar(maxtolo.x());
 
@@ -142,12 +142,12 @@ inline bool Indexed_data::intersect_p(SimdVec origin, SimdVec direction, Simdf m
     alignas(16) float bs[12];
     alignas(16) float cs[12];
 
-    for (uint32_t j = begin; j < end; j += 4) {
+    for (uint32_t j = begin; j < end;) {
 
         uint32_t const n = std::min(end - j, 4u);
 
-        for (uint32_t i = 0; i < n; ++i) {
-            auto const tri = triangles_[begin + i];
+        for (uint32_t i = 0; i < n; ++i, ++j) {
+            auto const tri = triangles_[j];
 
             float const* a = positions_[tri.a].v;
             float const* b = positions_[tri.b].v;
@@ -166,29 +166,13 @@ inline bool Indexed_data::intersect_p(SimdVec origin, SimdVec direction, Simdf m
             cs[8 + i] = c[2];
         }
 
-
-        for (uint32_t i = n; i < 4; ++i) {
-            as[0 + i] = 0.f;
-            as[4 + i] = 0.f;
-            as[8 + i] = 0.f;
-
-            bs[0 + i] = 0.f;
-            bs[4 + i] = 0.f;
-            bs[8 + i] = 0.f;
-
-            cs[0 + i] = 0.f;
-            cs[4 + i] = 0.f;
-            cs[8 + i] = 0.f;
-        }
-
         SimdVec a = {Simdf(&as[0]), Simdf(&as[4]), Simdf(&as[8])};
         SimdVec b = {Simdf(&bs[0]), Simdf(&bs[4]), Simdf(&bs[8])};
         SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
 
-        if (triangle::intersect_p(origin, direction, min_t, max_t, a, b, c, n)) {
+        if (triangle::intersect_p(origin, direction, min_t, max_t, a, b, c, n - 1)) {
             return true;
         }
-
     }
 
     return false;

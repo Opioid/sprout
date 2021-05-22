@@ -181,12 +181,6 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
                                 node.indices_start(), node.indices_end())) {
                 return true;
             }
-
-//            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-//                if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
-//                    return true;
-//                }
-//            }
         }
 
         n = nodes.pop();
