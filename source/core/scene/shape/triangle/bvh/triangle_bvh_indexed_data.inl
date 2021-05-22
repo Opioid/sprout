@@ -9,6 +9,9 @@
 
 #include "base/debug/assert.hpp"
 
+
+#include <iostream>
+
 namespace scene::shape::triangle::bvh {
 
 inline Indexed_data::Indexed_data()
@@ -64,7 +67,6 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
                                     scalar& v, uint32_t& index) const {
     index = begin;
 
-
     alignas(16) float as[12];
     alignas(16) float bs[12];
     alignas(16) float cs[12];
@@ -73,7 +75,7 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
     uint32_t const n = std::min(end - begin, 4u);
 
     for (uint32_t i = 0; i < n; ++i) {
-        auto const tri = triangles_[i];
+        auto const tri = triangles_[begin + i];
 
         float const* a = positions_[tri.a].v;
         float const* b = positions_[tri.b].v;
@@ -104,7 +106,11 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
     Simdf mintolo(min_t);
     Simdf maxtolo(max_t);
 
-    return triangle::intersect(o, d, mintolo, maxtolo, a, b, c, u, v);
+    bool hit = triangle::intersect(o, d, mintolo, maxtolo, a, b, c, u, v);
+
+    max_t = scalar(maxtolo.x());
+
+    return hit;
 }
 
 
@@ -128,6 +134,64 @@ inline bool Indexed_data::intersect_p(Simdf_p origin, Simdf_p direction, scalar_
     float const* c = positions_[tri.c].v;
 
     return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
+}
+
+inline bool Indexed_data::intersect_p(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t,
+                 uint32_t begin, uint32_t end) const {
+    alignas(16) float as[12];
+    alignas(16) float bs[12];
+    alignas(16) float cs[12];
+
+    for (uint32_t j = begin; j < end; j += 4) {
+
+        uint32_t const n = std::min(end - j, 4u);
+
+        for (uint32_t i = 0; i < n; ++i) {
+            auto const tri = triangles_[begin + i];
+
+            float const* a = positions_[tri.a].v;
+            float const* b = positions_[tri.b].v;
+            float const* c = positions_[tri.c].v;
+
+            as[0 + i] = a[0];
+            as[4 + i] = a[1];
+            as[8 + i] = a[2];
+
+            bs[0 + i] = b[0];
+            bs[4 + i] = b[1];
+            bs[8 + i] = b[2];
+
+            cs[0 + i] = c[0];
+            cs[4 + i] = c[1];
+            cs[8 + i] = c[2];
+        }
+
+
+        for (uint32_t i = n; i < 4; ++i) {
+            as[0 + i] = 0.f;
+            as[4 + i] = 0.f;
+            as[8 + i] = 0.f;
+
+            bs[0 + i] = 0.f;
+            bs[4 + i] = 0.f;
+            bs[8 + i] = 0.f;
+
+            cs[0 + i] = 0.f;
+            cs[4 + i] = 0.f;
+            cs[8 + i] = 0.f;
+        }
+
+        SimdVec a = {Simdf(&as[0]), Simdf(&as[4]), Simdf(&as[8])};
+        SimdVec b = {Simdf(&bs[0]), Simdf(&bs[4]), Simdf(&bs[8])};
+        SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
+
+        if (triangle::intersect_p(origin, direction, min_t, max_t, a, b, c, n)) {
+            return true;
+        }
+
+    }
+
+    return false;
 }
 
 inline float3 Indexed_data::interpolate_p(float2 uv, uint32_t index) const {

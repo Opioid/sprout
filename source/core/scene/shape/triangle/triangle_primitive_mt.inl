@@ -5,6 +5,9 @@
 #include "base/math/ray.hpp"
 #include "triangle_primitive_mt.hpp"
 
+#include <iostream>
+#include <cstring>
+
 namespace scene::shape::triangle {
 
 static inline bool intersect(float3_p a, float3_p b, float3_p c, ray& ray, float2& uv) {
@@ -98,10 +101,6 @@ static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, 
 }
 
 
-struct SimdVec {
-    Simdf v[3];
-};
-
 
 static inline SimdVec operator-(SimdVec a, SimdVec b) {
     SimdVec temp;
@@ -113,9 +112,26 @@ static inline SimdVec operator-(SimdVec a, SimdVec b) {
     return temp;
 }
 
+static inline SimdVec operator*(SimdVec a, SimdVec b) {
+    SimdVec temp;
+
+    temp.v[0] = a.v[0] * b.v[0];
+    temp.v[1] = a.v[1] * b.v[1];
+    temp.v[2] = a.v[2] * b.v[2];
+
+    return temp;
+}
+
+static inline Simdf dot(SimdVec a, SimdVec b) {
+    return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] * b.v[2];
+}
+
 static inline SimdVec cross(SimdVec a, SimdVec b) {
     SimdVec temp;
 
+    temp.v[0] = a.v[1] * b.v[2] - a.v[2] * b.v[1];
+    temp.v[1] = a.v[2] * b.v[0] - a.v[0] * b.v[2];
+    temp.v[2] = a.v[0] * b.v[1] - a.v[1] * b.v[0];
 
     return temp;
 }
@@ -124,9 +140,59 @@ static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, S
                              SimdVec a, SimdVec b, SimdVec c, scalar& u_out,
                              scalar& v_out) {
 
-    SimdVec e1 = a - b;
+/*
+    float3 const ori(origin.v[0].x(), origin.v[1].x(), origin.v[2].x());
+    float3 const diri(direction.v[0].x(), direction.v[1].x(), direction.v[2].x());
+
+    scalar  minti(min_t.x());
+    scalar  maxti(max_t.x());
+
+    float3 const ati(a.v[0].x(), a.v[1].x(), a.v[2].x());
+    float3 const bti(b.v[0].x(), b.v[1].x(), b.v[2].x());
+    float3 const cti(c.v[0].x(), c.v[1].x(), c.v[2].x());
+
+    bool hiti = intersect(Simdf(ori), Simdf(diri), minti, maxti, ati.v, bti.v, cti.v, u_out, v_out);
+
+    max_t = Simdf(maxti);
+
+    return hiti;
+*/
+
+
+    SimdVec e1 = b - a;
     SimdVec e2 = c - a;
     SimdVec tvec = origin - a;
+
+    SimdVec pvec = cross(direction, e2);
+    SimdVec qvec = cross(tvec, e1);
+
+    Simdf e1_d_pv = dot(e1, pvec);
+    Simdf tv_d_pv = dot(tvec, pvec);
+    Simdf di_d_qv = dot(direction, qvec);
+    Simdf e2_d_qv = dot(e2, qvec);
+
+    Simdf inv_det = reciprocal(e1_d_pv);
+
+    Simdf u     = tv_d_pv * inv_det;
+    Simdf v     = di_d_qv * inv_det;
+    Simdf hit_t = e2_d_qv * inv_det;
+
+    Simdf uv = u + v;
+
+
+    uint8_t ca = uint8_t(u.x() > 0.f);
+    uint8_t cb = uint8_t(u.x() < 1.f);
+    uint8_t cc = uint8_t(v.x() > 0.f);
+    uint8_t cd = uint8_t(uv.x() < 1.f);
+    uint8_t ce = uint8_t(hit_t.x() > min_t.x());
+    uint8_t cf = uint8_t(hit_t.x() < max_t.x());
+
+    if (0 != (ca & cb & cc & cd & ce & cf)) {
+        max_t = hit_t;
+        u_out = scalar(u.v);
+        v_out = scalar(v.v);
+        return true;
+    }
 
 
 
@@ -164,7 +230,7 @@ static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, S
         return true;
     }
 */
-    return false;
+    return true;
 }
 
 static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
@@ -294,6 +360,39 @@ static inline bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t
     return 0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
                  _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
                  _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v));
+}
+
+static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p max_t,
+                             SimdVec a, SimdVec b, SimdVec c, uint32_t n) {
+    SimdVec e1 = b - a;
+    SimdVec e2 = c - a;
+    SimdVec tvec = origin - a;
+
+    SimdVec pvec = cross(direction, e2);
+    SimdVec qvec = cross(tvec, e1);
+
+    Simdf e1_d_pv = dot(e1, pvec);
+    Simdf tv_d_pv = dot(tvec, pvec);
+    Simdf di_d_qv = dot(direction, qvec);
+    Simdf e2_d_qv = dot(e2, qvec);
+
+    Simdf inv_det = reciprocal(e1_d_pv);
+
+  //  inv_det        = _mm_and_ps(inv_det.v, simd::Masks[n - 1]);
+
+    Simdf u     = tv_d_pv * inv_det;
+    Simdf v     = di_d_qv * inv_det;
+    Simdf hit_t = e2_d_qv * inv_det;
+
+    Simdf uv = u + v;
+
+    Simdf condition = _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(u.v, simd::Zero), _mm_cmpge_ps(simd::One, u.v)),
+                              _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(v.v, simd::Zero), _mm_cmpge_ps(simd::One, uv.v)),
+                              _mm_and_ps(_mm_cmpge_ps(hit_t.v, min_t.v), _mm_cmpge_ps(max_t.v, hit_t.v))));
+
+    condition        = _mm_and_ps(condition.v, simd::Masks[n - 1]);
+
+    return 0 != _mm_movemask_ps(condition.v);
 }
 
 static inline Simdf interpolate_p(Simdf_p a, Simdf_p b, Simdf_p c, Simdf_p u, Simdf_p v) {

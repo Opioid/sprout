@@ -72,10 +72,16 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
                 continue;
             }
 
-            uint32_t out_index;
-                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t,
-                                    node.indices_start(), node.indices_end(), u, v, out_index)) {
-                    index = out_index;
+//            uint32_t out_index;
+//                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t,
+//                                    node.indices_start(), node.indices_end(), u, v, out_index)) {
+//                    index = out_index;
+//                }
+
+                for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+                    if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
+                        index = i;
+                    }
                 }
 
         }
@@ -141,6 +147,14 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
+
+    SimdVec o = {ray_origin.splat_x(), ray_origin.splat_y(), ray_origin.splat_z()};
+    SimdVec d = {ray_direction.splat_x(), ray_direction.splat_y(), ray_direction.splat_z()};
+
+    Simdf mintolo(ray_min_t);
+    Simdf maxtolo(ray_max_t);
+
+
     nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
@@ -163,11 +177,16 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
                 continue;
             }
 
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
-                    return true;
-                }
+            if (data_.intersect_p(o, d, mintolo, maxtolo,
+                                node.indices_start(), node.indices_end())) {
+                return true;
             }
+
+//            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+//                if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
+//                    return true;
+//                }
+//            }
         }
 
         n = nodes.pop();
