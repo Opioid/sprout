@@ -66,7 +66,7 @@ struct Engine {
         : threads(Threads::num_threads(0)),
           resources(threads),
           image_resources(resources.register_provider(image_provider)),
-          material_provider(false, false),
+          material_provider(false, false, false),
           material_resources(resources.register_provider(material_provider)),
           shape_resources(resources.register_provider(mesh_provider)),
           scene_loader(resources, material_provider.create_fallback_material()),

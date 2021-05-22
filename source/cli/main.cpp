@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
     shape::triangle::Provider mesh_provider;
     auto const&               shape_resources = resources.register_provider(mesh_provider);
 
-    material::Provider material_provider(args.no_tex_dwim, args.debug_material);
+    material::Provider material_provider(args.no_tex, args.no_tex_dwim, args.debug_material);
     auto const&        material_resources = resources.register_provider(material_provider);
 
     scene::Loader scene_loader(resources, material_provider.create_fallback_material());
