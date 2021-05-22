@@ -10,7 +10,9 @@ class Material;
 
 class Provider final : public resource::Provider<Material> {
   public:
-    Provider(bool no_tex_dwim, bool force_debug_material);
+    enum class Tex { All, No, DWIM };
+
+    Provider(bool no_tex, bool no_tex_dwim, bool force_debug_material);
 
     ~Provider() final;
 
@@ -42,7 +44,8 @@ class Provider final : public resource::Provider<Material> {
 
     Material* load_volumetric(json::Value const& value, Resources& resources) const;
 
-    bool no_tex_dwim_;
+    Tex tex_;
+
     bool force_debug_material_;
 
   public:
