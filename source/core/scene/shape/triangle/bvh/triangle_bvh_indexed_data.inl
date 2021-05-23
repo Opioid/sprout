@@ -62,53 +62,51 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
 
-inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t,
-                                    scalar& max_t, uint32_t begin, uint32_t end, scalar& u,
-                                    scalar& v, uint32_t& index) const {
-    index = begin;
+inline bool Indexed_data::intersect(SimdVec origin, SimdVec direction, Simdf min_t, Simdf& max_t, uint32_t begin, uint32_t end,
+                                    Simdf& u, Simdf& v, uint32_t& index) const {
+    bool hit = false;
 
     alignas(16) float as[12];
     alignas(16) float bs[12];
     alignas(16) float cs[12];
 
+    for (uint32_t j = begin; j < end;) {
 
-    uint32_t const n = std::min(end - begin, 4u);
+        uint32_t const n = std::min(end - j, 4u);
 
-    for (uint32_t i = 0; i < n; ++i) {
-        auto const tri = triangles_[begin + i];
+        uint32_t const quad = j;
 
-        float const* a = positions_[tri.a].v;
-        float const* b = positions_[tri.b].v;
-        float const* c = positions_[tri.c].v;
+        for (uint32_t i = 0; i < n; ++i, ++j) {
+            auto const tri = triangles_[j];
 
-        as[0 + i] = a[0];
-        as[4 + i] = a[1];
-        as[8 + i] = a[2];
+            float const* a = positions_[tri.a].v;
+            float const* b = positions_[tri.b].v;
+            float const* c = positions_[tri.c].v;
 
-        bs[0 + i] = b[0];
-        bs[4 + i] = b[1];
-        bs[8 + i] = b[2];
+            as[0 + i] = a[0];
+            as[4 + i] = a[1];
+            as[8 + i] = a[2];
 
-        cs[0 + i] = c[0];
-        cs[4 + i] = c[1];
-        cs[8 + i] = c[2];
+            bs[0 + i] = b[0];
+            bs[4 + i] = b[1];
+            bs[8 + i] = b[2];
+
+            cs[0 + i] = c[0];
+            cs[4 + i] = c[1];
+            cs[8 + i] = c[2];
+        }
+
+        SimdVec a = {Simdf(&as[0]), Simdf(&as[4]), Simdf(&as[8])};
+        SimdVec b = {Simdf(&bs[0]), Simdf(&bs[4]), Simdf(&bs[8])};
+        SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
+
+        uint32_t local_index;
+        if (triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v, n - 1, local_index)) {
+            index = quad + local_index;
+            hit = true;
+        }
+
     }
-
-    SimdVec o = {origin.splat_x(), origin.splat_y(), origin.splat_z()};
-
-    SimdVec d = {direction.splat_x(), direction.splat_y(), direction.splat_z()};
-
-
-    SimdVec a = {Simdf(&as[0]), Simdf(&as[4]), Simdf(&as[8])};
-    SimdVec b = {Simdf(&bs[0]), Simdf(&bs[4]), Simdf(&bs[8])};
-    SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
-
-    Simdf mintolo(min_t);
-    Simdf maxtolo(max_t);
-
-    bool hit = triangle::intersect(o, d, mintolo, maxtolo, a, b, c, u, v, n - 1);
-
-    max_t = scalar(maxtolo.x());
 
     return hit;
 }

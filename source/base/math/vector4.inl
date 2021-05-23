@@ -220,6 +220,28 @@ static inline float constexpr max_component(Vector4f_a_p v) {
     return std::max(std::max(std::max(v[0], v[1]), v[2]), v[3]);
 }
 
+static inline uint32_t constexpr index_min_component(Vector4f_a_p v) {
+    float c = v[0];
+    uint32_t i = 0;
+
+    bool const yli = v[1] < v[i];
+
+    c = yli ? v[1] : c;
+    i = yli ? 1 : i;
+
+    bool const zli = v[2] < v[i];
+
+    c = zli ? v[2] : c;
+    i = zli ? 2 : i;
+
+    bool const wli = v[3] < v[i];
+
+    c = wli ? v[3] : c;
+    i = wli ? 3 : i;
+
+    return i;
+}
+
 static inline float constexpr average(Vector4f_a_p c) {
     return (c[0] + c[1] + c[2] + c[3]) / 4.f;
 }

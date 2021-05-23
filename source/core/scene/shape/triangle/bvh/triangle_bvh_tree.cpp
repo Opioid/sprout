@@ -50,8 +50,14 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
 
     uint32_t index = 0xFFFFFFFF;
 
-    scalar u;
-    scalar v;
+    SimdVec o = {ray_origin.splat_x(), ray_origin.splat_y(), ray_origin.splat_z()};
+    SimdVec d = {ray_direction.splat_x(), ray_direction.splat_y(), ray_direction.splat_z()};
+
+    Simdf mintolo(ray_min_t);
+    Simdf maxtolo(ray_max_t);
+
+    Simdf u;
+    Simdf v;
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -72,25 +78,19 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
                 continue;
             }
 
-//            uint32_t out_index;
-//                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t,
-//                                    node.indices_start(), node.indices_end(), u, v, out_index)) {
-//                    index = out_index;
-//                }
+                data_.intersect(o, d, mintolo, maxtolo,
+                                    node.indices_start(), node.indices_end(), u, v, index);
 
-                for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                    if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                        index = i;
-                    }
-                }
 
         }
 
         n = nodes.pop();
     }
 
-    isec.u     = Simdf(u);
-    isec.v     = Simdf(v);
+    ray_max_t = scalar(maxtolo.v);
+
+    isec.u     = u;
+    isec.v     = v;
     isec.index = index;
 
     return index != 0xFFFFFFFF;
@@ -153,7 +153,6 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
 
     Simdf mintolo(ray_min_t);
     Simdf maxtolo(ray_max_t);
-
 
     nodes.push(0xFFFFFFFF);
     uint32_t n = 0;

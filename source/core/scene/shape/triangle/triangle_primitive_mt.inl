@@ -10,6 +10,8 @@
 
 namespace scene::shape::triangle {
 
+inline int constexpr Masks[] = { 0x00000001, 0x00000003, 0x00000007, 0x0000000F };
+
 static inline bool intersect(float3_p a, float3_p b, float3_p c, ray& ray, float2& uv) {
     float3 e1 = b - a;
     float3 e2 = c - a;
@@ -137,8 +139,8 @@ static inline SimdVec cross(SimdVec a, SimdVec b) {
 }
 
 static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p& max_t,
-                             SimdVec a, SimdVec b, SimdVec c, scalar& u_out,
-                             scalar& v_out, uint32_t m) {
+                             SimdVec a, SimdVec b, SimdVec c, Simdf_p& u_out,
+                             Simdf_p& v_out, uint32_t m, uint32_t& index) {
 
 /*
     float3 const ori(origin.v[0].x(), origin.v[1].x(), origin.v[2].x());
@@ -179,58 +181,56 @@ static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, S
 
     Simdf uv = u + v;
 
+//    int const ca = _mm_movemask_ps(_mm_cmpge_ps(u.v, simd::Zero));
+//    int const cb = _mm_movemask_ps(_mm_cmpge_ps(simd::One, u.v));
+//    int const cc = _mm_movemask_ps(_mm_cmpge_ps(v.v, simd::Zero));
+//    int const cd = _mm_movemask_ps(_mm_cmpge_ps(simd::One, uv.v));
+//    int const ce = _mm_movemask_ps(_mm_cmpge_ps(hit_t.v, min_t.v));
+//    int const cf = _mm_movemask_ps(_mm_cmpge_ps(max_t.v, hit_t.v));
 
-    uint8_t ca = uint8_t(u.x() > 0.f);
-    uint8_t cb = uint8_t(u.x() < 1.f);
-    uint8_t cc = uint8_t(v.x() > 0.f);
-    uint8_t cd = uint8_t(uv.x() < 1.f);
-    uint8_t ce = uint8_t(hit_t.x() > min_t.x());
-    uint8_t cf = uint8_t(hit_t.x() < max_t.x());
 
-    if (0 != (ca & cb & cc & cd & ce & cf)) {
-        max_t = hit_t;
-        u_out = scalar(u.v);
-        v_out = scalar(v.v);
+        Simdf condition = _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(u.v, simd::Zero), _mm_cmpge_ps(simd::One, u.v)),
+                                  _mm_and_ps(_mm_and_ps(_mm_cmpge_ps(v.v, simd::Zero), _mm_cmpge_ps(simd::One, uv.v)),
+                                  _mm_and_ps(_mm_cmpge_ps(hit_t.v, min_t.v), _mm_cmpge_ps(max_t.v, hit_t.v))));
+
+        condition        = _mm_and_ps(condition.v, simd::Masks[m]);
+
+
+ //   if (0 != (ca & cb & cc & cd & ce & cf & Masks[m])) {
+      if (0 != _mm_movemask_ps(condition.v)) {
+         hit_t = _mm_or_ps(_mm_and_ps(hit_t.v, condition.v), _mm_andnot_ps(condition.v, simd::Infinity));
+
+
+        uint32_t const i = index_min_component(float4(hit_t));
+
+        switch (i) {
+        case 0:
+            max_t = hit_t.splat_x();
+            u_out = u.splat_x();
+            v_out = v.splat_x();
+            break;
+        case 1:
+            max_t = hit_t.splat_y();
+            u_out = u.splat_y();
+            v_out = v.splat_y();
+            break;
+        case 2:
+            max_t = hit_t.splat_z();
+            u_out = u.splat_z();
+            v_out = v.splat_z();
+            break;
+        default:
+            max_t = hit_t.splat_w();
+            u_out = u.splat_w();
+            v_out = v.splat_w();
+            break;
+        }
+
+        index = i;
         return true;
     }
 
-
-
-    /*
-    Simdf ap(a);
-    Simdf bp(b);
-    Simdf cp(c);
-
-    Simdf e1   = bp - ap;
-    Simdf e2   = cp - ap;
-    Simdf tvec = origin - ap;
-
-    Simdf pvec = cross3(direction, e2);
-    Simdf qvec = cross3(tvec, e1);
-
-    scalar e1_d_pv = dot3_scalar(e1, pvec);
-    scalar tv_d_pv = dot3_scalar(tvec, pvec);
-    scalar di_d_qv = dot3_scalar(direction, qvec);
-    scalar e2_d_qv = dot3_scalar(e2, qvec);
-
-    scalar inv_det = reciprocal(e1_d_pv);
-
-    scalar u     = tv_d_pv * inv_det;
-    scalar v     = di_d_qv * inv_det;
-    scalar hit_t = e2_d_qv * inv_det;
-
-    scalar uv = u + v;
-
-    if (0 != (_mm_ucomige_ss(u.v, simd::Zero) & _mm_ucomige_ss(simd::One, u.v) &
-              _mm_ucomige_ss(v.v, simd::Zero) & _mm_ucomige_ss(simd::One, uv.v) &
-              _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v))) {
-        max_t = hit_t;
-        u_out = u;
-        v_out = v;
-        return true;
-    }
-*/
-    return true;
+    return false;
 }
 
 static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
@@ -362,7 +362,7 @@ static inline bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t
                  _mm_ucomige_ss(hit_t.v, min_t.v) & _mm_ucomige_ss(max_t.v, hit_t.v));
 }
 
-inline int constexpr Masks[] = { 0x00000001, 0x00000003, 0x00000007, 0x0000000F };
+
 
 static inline bool intersect_p(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p max_t,
                                SimdVec a, SimdVec b, SimdVec c, uint32_t m) {
