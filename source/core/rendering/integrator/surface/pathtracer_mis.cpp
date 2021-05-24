@@ -287,8 +287,8 @@ float3 Pathtracer_MIS::sample_lights(Ray const& ray, Intersection& isec,
 
     bool const translucent = mat_sample.is_translucent();
 
-    float3 const p = isec.offset_p(translucent);
     float3 const n = mat_sample.geometric_normal();
+    float3 const p = isec.offset_p(n, translucent);
 
     auto& rng = worker.rng();
 

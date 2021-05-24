@@ -289,7 +289,7 @@ bool Tree::absorption(ray& ray, uint32_t entity, Filter filter, Worker& worker, 
                     float3 const tta = material->thin_absorption(ray.direction, normal, uv, filter,
                                                                  worker);
                     absorption *= tta;
-                    if (all_equal_zero(absorption)) {
+                    if (all_less_equal_zero(absorption)) {
                         ta = float3(0.f);
                         return false;
                     }
