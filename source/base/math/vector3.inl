@@ -666,6 +666,10 @@ static inline constexpr bool all_less(Vector3f_a_p v, float s) {
     return (v[0] < s) & (v[1] < s) & (v[2] < s);
 }
 
+static inline constexpr bool all_less_equal_zero(Vector3f_a_p v) {
+    return (v[0] <= 0.f) & (v[1] <= 0.f) & (v[2] <= 0.f);
+}
+
 static inline constexpr bool all_less_equal(Vector3f_a_p v, float s) {
     return (v[0] <= s) & (v[1] <= s) & (v[2] <= s);
 }

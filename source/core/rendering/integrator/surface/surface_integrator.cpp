@@ -51,7 +51,7 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
 
     if (aov.active(Property::AO)) {
         Ray occlusion_ray;
-        occlusion_ray.origin  = isec.offset_p(false);
+        occlusion_ray.origin  = isec.offset_p(mat_sample.geometric_normal(), false);
         occlusion_ray.max_t() = aov.param(Property::AO);
         occlusion_ray.time    = ray.time;
 

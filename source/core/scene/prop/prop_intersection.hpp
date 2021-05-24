@@ -43,8 +43,6 @@ struct Intersection {
 
     float opacity(Filter filter, Worker const& worker) const;
 
-    float3 thin_absorption(float3_p wo, Filter filter, Worker const& worker) const;
-
     Sample const& sample(float3_p wo, Ray const& ray, Filter filter, float alpha,
                          bool avoid_caustics, Sampler& sampler, Worker& worker) const;
 
@@ -53,8 +51,8 @@ struct Intersection {
 
     bool same_hemisphere(float3_p v) const;
 
-    float3 offset_p(bool translucent) const;
-    float3 offset_p(float3_p wi) const;
+    float3 offset_p(float3_p v) const;
+    float3 offset_p(float3_p geo_n, bool translucent) const;
 
     shape::Intersection geo;
 
