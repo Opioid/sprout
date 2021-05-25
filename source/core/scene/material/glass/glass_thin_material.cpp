@@ -30,7 +30,7 @@ material::Sample const& Glass_thin::sample(float3_p wo, Renderstate const& rs, S
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs, wo, refraction_color_, float3(0.f), float2(rs.alpha()));
+    sample.set_common(rs, wo, float3(1.f), float3(0.f), float2(rs.alpha()));
     sample.set(cc_.a, ior_, rs.ior(), thickness_);
 
     return sample;
@@ -62,7 +62,7 @@ bool Glass_thin::visibility(float3_p wi, float3_p n, float2 uv, Filter filter, W
 
     float3 const attenuation = rendering::attenuation(approx_distance, cc_.a);
 
-    float3 const ta = min((1.f - o) + (refraction_color_ * attenuation), 1.f);
+    float3 const ta = min((1.f - o) + attenuation, 1.f);
 
     v = (1.f - f) * ta;
 
@@ -71,10 +71,6 @@ bool Glass_thin::visibility(float3_p wi, float3_p n, float2 uv, Filter filter, W
 
 void Glass_thin::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
-}
-
-void Glass_thin::set_refraction_color(float3_p color) {
-    refraction_color_ = color;
 }
 
 void Glass_thin::set_thickness(float thickness) {

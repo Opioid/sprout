@@ -239,7 +239,6 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
     Texture mask;
     Texture normal_map;
 
-    float3 refraction_color(1.f);
     float3 attenuation_color(1.f);
 
     float attenuation_distance = 1.f;
@@ -254,8 +253,6 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
             normal_map = read_texture(n.value, tex_, Tex_usage::Normal, resources);
         } else if ("color" == n.name || "attenuation_color" == n.name) {
             attenuation_color = read_color(n.value);
-        } else if ("refraction_color" == n.name) {
-            refraction_color = read_color(n.value);
         } else if ("attenuation_distance" == n.name) {
             attenuation_distance = json::read_float(n.value);
         } else if ("ior" == n.name) {
@@ -275,7 +272,6 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         auto material = new glass::Glass_rough(sampler_settings);
         material->set_normal_map(normal_map);
         material->set_roughness_map(roughness.texture);
-        material->set_refraction_color(refraction_color);
         material->set_volumetric(attenuation_color, float3(0.f), attenuation_distance, 0.f);
         material->set_ior(ior);
         material->set_roughness(roughness.value);
@@ -286,7 +282,6 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
         auto material = new glass::Glass_thin(sampler_settings);
         material->set_mask(mask);
         material->set_normal_map(normal_map);
-        material->set_refraction_color(refraction_color);
         material->set_volumetric(attenuation_color, float3(0.f), attenuation_distance, 0.f);
         material->set_ior(ior);
         material->set_thickness(thickness);
@@ -295,7 +290,6 @@ Material* Provider::load_glass(json::Value const& glass_value, Resources& resour
 
     auto material = new glass::Glass(sampler_settings);
     material->set_normal_map(normal_map);
-    material->set_refraction_color(refraction_color);
     material->set_volumetric(attenuation_color, float3(0.f), attenuation_distance, 0.f);
     material->set_ior(ior);
     material->set_abbe(abbe);

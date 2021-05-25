@@ -27,7 +27,7 @@ material::Sample const& Glass::sample(float3_p wo, Renderstate const& rs, Sample
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs, wo, refraction_color_, float3(0.f), float2(rs.alpha()));
+    sample.set_common(rs, wo, float3(1.f), float3(0.f), float2(rs.alpha()));
     sample.set(ior_, rs.ior(), abbe_, rs.wavelength());
 
     return sample;
@@ -35,10 +35,6 @@ material::Sample const& Glass::sample(float3_p wo, Renderstate const& rs, Sample
 
 void Glass::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
-}
-
-void Glass::set_refraction_color(float3_p color) {
-    refraction_color_ = color;
 }
 
 void Glass::set_abbe(float abbe) {

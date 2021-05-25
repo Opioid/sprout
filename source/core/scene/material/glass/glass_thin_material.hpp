@@ -17,16 +17,12 @@ class Glass_thin : public Material {
 
     void set_normal_map(Texture const& normal_map);
 
-    void set_refraction_color(float3_p color);
-
     void set_thickness(float thickness);
 
     static size_t sample_size();
 
   private:
     Texture normal_map_;
-
-    float3 refraction_color_;
 
     float thickness_;
 };
