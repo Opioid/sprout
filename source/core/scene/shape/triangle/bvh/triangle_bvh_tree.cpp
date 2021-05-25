@@ -175,76 +175,13 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
     return false;
 }
 
-float Tree::visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker) const {
+bool Tree::visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker, float3& vis) const {
     auto& nodes = worker.node_stack();
 
     nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
-    float visibility = 1.f;
-
-    Simdf const  ray_origin(ray.origin.v);
-    Simdf const  ray_direction(ray.direction.v);
-    Simdf const  ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t());
-    scalar       ray_max_t(ray.max_t());
-    scalar const max_t = ray_max_t;
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
-
-    scalar u;
-    scalar v;
-
-    while (0xFFFFFFFF != n) {
-        auto const& node = nodes_[n];
-
-        if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_indices()) {
-                uint32_t const a = node.children();
-                uint32_t const b = a + 1;
-
-                if (0 == ray_signs[node.axis()]) {
-                    nodes.push(b);
-                    n = a;
-                } else {
-                    nodes.push(a);
-                    n = b;
-                }
-
-                continue;
-            }
-
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    float2 const uv = data_.interpolate_uv(Simdf(u), Simdf(v), i);
-
-                    auto const material = worker.scene().prop_material(entity, data_.part(i));
-
-                    visibility *= 1.f - material->opacity(uv, filter, worker);
-                    if (visibility <= 0.f) {
-                        return 0.f;
-                    }
-
-                    // ray_max_t has changed if intersect() returns true!
-                    ray_max_t = max_t;
-                }
-            }
-        }
-
-        n = nodes.pop();
-    }
-
-    return visibility;
-}
-
-bool Tree::absorption(ray& ray, uint32_t entity, Filter filter, Worker& worker, float3& ta) const {
-    auto& nodes = worker.node_stack();
-
-    nodes.push(0xFFFFFFFF);
-    uint32_t n = 0;
-
-    float3 absorption(1.f);
+    float3 local_vis(1.f);
 
     Simdf const  ray_origin(ray.origin.v);
     Simdf const  ray_direction(ray.direction.v);
@@ -286,13 +223,12 @@ bool Tree::absorption(ray& ray, uint32_t entity, Filter filter, Worker& worker, 
 
                     auto const material = worker.scene().prop_material(entity, data_.part(i));
 
-                    float3 const tta = material->thin_absorption(ray.direction, normal, uv, filter,
-                                                                 worker);
-                    absorption *= tta;
-                    if (all_less_equal_zero(absorption)) {
-                        ta = float3(0.f);
+                    float3 tv;
+                    if (!material->visibility(ray.direction, normal, uv, filter, worker, tv)) {
                         return false;
                     }
+
+                    local_vis *= tv;
 
                     // ray_max_t has changed if intersect() returns true!
                     ray_max_t = max_t;
@@ -303,7 +239,7 @@ bool Tree::absorption(ray& ray, uint32_t entity, Filter filter, Worker& worker, 
         n = nodes.pop();
     }
 
-    ta = absorption;
+    vis = local_vis;
     return true;
 }
 

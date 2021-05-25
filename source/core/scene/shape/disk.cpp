@@ -92,36 +92,6 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& 
     return false;
 }
 
-float Disk::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
-                       Worker& worker) const {
-    float3_p normal = trafo.rotation.r[2];
-
-    float const d     = dot(normal, trafo.position);
-    float const denom = -dot(normal, ray.direction);
-    float const numer = dot(normal, ray.origin) - d;
-    float const hit_t = numer / denom;
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 const p = ray.point(hit_t);
-        float3 const k = p - trafo.position;
-        float const  l = dot(k, k);
-
-        float const radius = trafo.scale_x();
-
-        if (l <= radius * radius) {
-            float3 const sk       = k / radius;
-            float const  uv_scale = 0.5f * trafo.scale_z();
-
-            float2 const uv((-dot(trafo.rotation.r[0], sk) + 1.f) * uv_scale,
-                            (-dot(trafo.rotation.r[1], sk) + 1.f) * uv_scale);
-
-            return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
-        }
-    }
-
-    return 1.f;
-}
-
 bool Disk::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                            Filter filter, Worker& worker, float3& ta) const {
     float3_p normal = trafo.rotation.r[2];
@@ -145,10 +115,8 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
             float2 const uv((dot(trafo.rotation.r[0], sk) + 1.f) * uv_scale,
                             (dot(trafo.rotation.r[1], sk) + 1.f) * uv_scale);
 
-            ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, normal, uv,
-                                                                          filter, worker);
-
-            return true;
+            return worker.scene().prop_material(entity, 0)->visibility(ray.direction, normal, uv,
+                                                                       filter, worker, ta);
         }
     }
 

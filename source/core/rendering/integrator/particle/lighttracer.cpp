@@ -280,7 +280,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
         auto const bxdf = mat_sample.evaluate(wi);
 
-        float3 const n  = mat_sample.interpolated_normal();
+        float3 const n = mat_sample.interpolated_normal();
 
         float nsc = material::non_symmetry_compensation(wo, wi, isec.geo.geo_n, n);
 

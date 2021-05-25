@@ -115,9 +115,7 @@ class Scene {
 
     bool intersect_volume(Ray& ray, Worker& worker, Intersection& isec) const;
 
-    Result1 visibility(Ray const& ray, Filter filter, Worker& worker) const;
-
-    bool tinted_visibility(Ray const& ray, Filter filter, Worker& worker, float3& ta) const;
+    bool visibility(Ray const& ray, Filter filter, Worker& worker, float3& v) const;
 
     uint32_t num_props() const;
 
@@ -273,7 +271,6 @@ class Scene {
 
     AABB caustic_aabb_;
 
-    bool has_masked_material_;
     bool has_tinted_shadow_;
     bool has_volumes_;
 

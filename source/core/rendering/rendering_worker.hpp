@@ -103,8 +103,8 @@ class alignas(64) Worker : public scene::Worker {
 
     bool transmittance(Ray const& ray, Filter filter, float3& transmittance);
 
-    bool tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
-                           float3& tv);
+    bool subsurface_visibility(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
+                               float3& tv);
 
     integrator::surface::Integrator* surface_integrator_ = nullptr;
 
