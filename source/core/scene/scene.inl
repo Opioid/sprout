@@ -43,30 +43,12 @@ inline bool Scene::intersect_volume(Ray& ray, Worker& worker, Intersection& isec
     return volume_bvh_.intersect(ray, worker, Interpolation::No_tangent_space, isec);
 }
 
-inline Result1 Scene::visibility(Ray const& ray, Filter filter, Worker& worker) const {
-    if (has_masked_material_) {
-        return prop_bvh_.visibility(ray, filter, worker);
-    }
-
-    if (!prop_bvh_.intersect_p(ray, worker)) {
-        return {true, 1.f};
-    }
-
-    return {false, 0.f};
-}
-
-inline bool Scene::tinted_visibility(Ray const& ray, Filter filter, Worker& worker,
-                                     float3& ta) const {
+inline bool Scene::visibility(Ray const& ray, Filter filter, Worker& worker, float3& v) const {
     if (has_tinted_shadow_) {
-        return prop_bvh_.thin_absorption(ray, filter, worker, ta);
+        return prop_bvh_.visibility(ray, filter, worker, v);
     }
 
-    if (auto const v = visibility(ray, filter, worker); v.valid) {
-        ta = float3(v.value);
-        return true;
-    }
-
-    return false;
+    return !prop_bvh_.intersect_p(ray, worker);
 }
 
 inline uint32_t Scene::num_interpolation_frames() const {

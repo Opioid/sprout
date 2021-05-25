@@ -66,9 +66,13 @@ float Material::emission_pdf(float3_p /*uvw*/, Worker const& /*worker*/) const {
     return 1.f;
 }
 
-float3 Material::thin_absorption(float3_p /*wi*/, float3_p /*n*/, float2 uv, Filter filter,
-                                 Worker const& worker) const {
-    return float3(1.f - opacity(uv, filter, worker));
+bool Material::visibility(float3_p /*wi*/, float3_p /*n*/, float2 uv, Filter filter,
+                          Worker const& worker, float3& v) const {
+    float const o = opacity(uv, filter, worker);
+
+    v = float3(1.f - o);
+
+    return o < 1.f;
 }
 
 CC Material::collision_coefficients(float3_p /*uvw*/, Filter /*filter*/,

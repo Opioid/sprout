@@ -103,9 +103,6 @@ class alignas(64) Mesh final : public Shape {
 
     bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 
-    float visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
-                     Worker& worker) const final;
-
     bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                          Filter filter, Worker& worker, float3& ta) const final;
 

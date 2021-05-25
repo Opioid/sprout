@@ -246,7 +246,7 @@ bool BVH_wrapper::intersect_p(Ray const& ray, Worker& worker) const {
     return false;
 }
 
-Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) const {
+bool BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker, float3& vis) const {
     auto& stack = worker.node_stack();
 
     stack.clear();
@@ -256,77 +256,7 @@ Result1 BVH_wrapper::visibility(Ray const& ray, Filter filter, Worker& worker) c
 
     uint32_t n = 0;
 
-    float visibility = 1.f;
-
-    Simdf const  ray_origin(ray.origin.v);
-    Simdf const  ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t());
-    scalar       ray_max_t(ray.max_t());
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
-
-    bvh::Node* nodes = tree_.nodes_;
-
-    Prop const* props = props_;
-
-    uint32_t const* finite_props = tree_.indices_;
-
-    while (!stack.empty()) {
-        auto const& node = nodes[n];
-
-        if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_indices()) {
-                uint32_t const a = node.children();
-                uint32_t const b = a + 1;
-
-                if (0 == ray_signs[node.axis()]) {
-                    stack.push(b);
-                    n = a;
-                } else {
-                    stack.push(a);
-                    n = b;
-                }
-
-                continue;
-            }
-
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                uint32_t const p = finite_props[i];
-                visibility *= props[p].visibility(p, ray, filter, worker);
-                if (visibility <= 0.f) {
-                    return {false, 0.f};
-                }
-            }
-        }
-
-        n = stack.pop();
-    }
-
-    uint32_t const* infinite_props = infinite_props_;
-
-    for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
-        uint32_t const p = infinite_props[i];
-        visibility *= props[p].visibility(p, ray, filter, worker);
-        if (visibility <= 0.f) {
-            return {false, 0.f};
-        }
-    }
-
-    return {true, visibility};
-}
-
-bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker, float3& ta) const {
-    auto& stack = worker.node_stack();
-
-    stack.clear();
-    if (0 != tree_.num_nodes_) {
-        stack.push(0);
-    }
-
-    uint32_t n = 0;
-
-    float3 absorption(1.f);
+    float3 local_vis(1.f);
 
     Simdf const  ray_origin(ray.origin.v);
     Simdf const  ray_inv_direction(ray.inv_direction.v);
@@ -364,12 +294,12 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
             for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
                 uint32_t const p = finite_props[i];
 
-                float3 tta;
-                if (!props[p].thin_absorption(p, ray, filter, worker, tta)) {
+                float3 tv;
+                if (!props[p].visibility(p, ray, filter, worker, tv)) {
                     return false;
                 }
 
-                absorption *= tta;
+                local_vis *= tv;
             }
         }
 
@@ -381,15 +311,15 @@ bool BVH_wrapper::thin_absorption(Ray const& ray, Filter filter, Worker& worker,
     for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
         uint32_t const p = infinite_props[i];
 
-        float3 tta;
-        if (!props[p].thin_absorption(p, ray, filter, worker, tta)) {
+        float3 tv;
+        if (!props[p].visibility(p, ray, filter, worker, tv)) {
             return false;
         }
 
-        absorption *= tta;
+        local_vis *= tv;
     }
 
-    ta = absorption;
+    vis = local_vis;
     return true;
 }
 

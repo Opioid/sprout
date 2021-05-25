@@ -66,7 +66,8 @@ void Integrator::common_AOVs(float3_p throughput, Ray const& ray, Intersection c
 
         occlusion_ray.set_direction(ws);
 
-        float const result = worker.visibility(occlusion_ray, Filter::Undefined).valid ? 1.f : 0.f;
+        float3      v;
+        float const result = worker.visibility(occlusion_ray, Filter::Undefined, v) ? 1.f : 0.f;
 
         aov.insert(result, Property::AO);
     }

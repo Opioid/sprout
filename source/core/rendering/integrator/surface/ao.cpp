@@ -66,7 +66,11 @@ float4 AO::li(Ray& ray, Intersection& isec, Worker& worker, Interface_stack cons
 
         occlusion_ray.set_direction(ws);
 
-        if (auto const v = worker.visibility(occlusion_ray, Filter::Undefined); v.valid) {
+        //        if (auto const v = worker.visibility(occlusion_ray, Filter::Undefined); v.valid) {
+        //            result += num_samples_reciprocal;
+        //        }
+
+        if (float3 v; worker.visibility(occlusion_ray, Filter::Undefined, v)) {
             result += num_samples_reciprocal;
         }
     }
