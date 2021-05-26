@@ -89,50 +89,6 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
     return index != 0xFFFFFFFF;
 }
 
-bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
-                     scalar& ray_max_t, Node_stack& nodes) const {
-    Simdf const ray_inv_direction = reciprocal3(ray_direction);
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
-
-    nodes.push(0xFFFFFFFF);
-    uint32_t n = 0;
-
-    uint32_t index = 0xFFFFFFFF;
-
-    while (0xFFFFFFFF != n) {
-        auto const& node = nodes_[n];
-
-        if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-            if (0 == node.num_indices()) {
-                uint32_t const a = node.children();
-                uint32_t const b = a + 1;
-
-                if (0 == ray_signs[node.axis()]) {
-                    nodes.push(b);
-                    n = a;
-                } else {
-                    nodes.push(a);
-                    n = b;
-                }
-
-                continue;
-            }
-
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
-                    index = i;
-                }
-            }
-        }
-
-        n = nodes.pop();
-    }
-
-    return index != 0xFFFFFFFF;
-}
-
 bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                        scalar_p ray_max_t, Node_stack& nodes) const {
     Simdf const ray_inv_direction = reciprocal3(ray_direction);
@@ -219,7 +175,7 @@ bool Tree::visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker, 
                 if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
                     float2 const uv = data_.interpolate_uv(Simdf(u), Simdf(v), i);
 
-                    float3 const normal = data_.normal(i);
+                    float3 const normal = float3(data_.normal(i));
 
                     auto const material = worker.scene().prop_material(entity, data_.part(i));
 

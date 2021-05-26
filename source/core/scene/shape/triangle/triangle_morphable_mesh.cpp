@@ -62,7 +62,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack
 
         Simdf p_w = transform_point(object_to_world, p);
 
-        Simdf geo_n = tree_.triangle_normal_v(pi.index);
+        Simdf geo_n = tree_.triangle_normal(pi.index);
 
         Simd3x3f rotation(trafo.rotation);
 

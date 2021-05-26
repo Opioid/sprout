@@ -33,8 +33,6 @@ class Indexed_data {
     bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
                      uint32_t index) const;
 
-    float3 interpolate_p(float2 uv, uint32_t index) const;
-
     Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const;
 
     void interpolate_data(Simdf_p u, Simdf_p v, uint32_t index, Simdf& n, Simdf& t,
@@ -50,9 +48,7 @@ class Indexed_data {
 
     uint32_t part(uint32_t index) const;
 
-    float3 normal(uint32_t index) const;
-
-    Simdf normal_v(uint32_t index) const;
+    Simdf normal(uint32_t index) const;
 
     float area(uint32_t index) const;
 

@@ -169,7 +169,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         AABB const box(scene.light_aabb(l));
 
-        float4 const cone = scene.light_cone(0, l);
+        float4 const cone = scene.light_cone(l);
 
         bool const two_sided = scene.light_two_sided(0, l);
 
@@ -251,7 +251,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         AABB const box(part.light_aabb(l));
 
-        float3 const n = part.light_cone(variant, l).xyz();
+        float3 const n = part.light_cone(l).xyz();
 
         float const power = part.light_power(variant, l);
 
@@ -291,7 +291,7 @@ void Split_candidate::evaluate(uint32_t begin, uint32_t end, UInts lights, AABB 
 
         AABB const box(part.light_aabb(l));
 
-        float3 const n = part.light_cone(variant, l).xyz();
+        float3 const n = part.light_cone(l).xyz();
 
         if (behind(box.max().v)) {
             float const c = dot(dominant_axis_0, n);
@@ -496,7 +496,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
             uint32_t const l = tree.light_mapping_[i];
 
             tbounds.merge_assign(scene.light_aabb(l));
-            cone = cone::merge(cone, scene.light_cone(0, l));
+            cone = cone::merge(cone, scene.light_cone(l));
             two_sided |= scene.light_two_sided(0, l);
             total_power += scene.light_power(0, l);
         }
@@ -539,7 +539,7 @@ void Tree_builder::build(Tree& tree, Scene const& scene, Threads& threads) {
 
 void Tree_builder::build(Primitive_tree& tree, Part const& part, uint32_t variant,
                          Threads& threads) {
-    uint32_t const num_finite_lights = part.num_triangles;
+    uint32_t const num_finite_lights = part.num_triangles_;
 
     tree.allocate_light_mapping(num_finite_lights);
 
@@ -547,7 +547,7 @@ void Tree_builder::build(Primitive_tree& tree, Part const& part, uint32_t varian
 
     uint32_t lm = 0;
 
-    for (uint32_t l = 0, len = part.num_triangles; l < len; ++l) {
+    for (uint32_t l = 0, len = part.num_triangles_; l < len; ++l) {
         tree.light_mapping_[lm++] = l;
     }
 
