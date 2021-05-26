@@ -48,7 +48,10 @@ inline bool Scene::visibility(Ray const& ray, Filter filter, Worker& worker, flo
         return prop_bvh_.visibility(ray, filter, worker, v);
     }
 
-    return !prop_bvh_.intersect_p(ray, worker);
+    bool const ip = prop_bvh_.intersect_p(ray, worker);
+
+    v = float3(ip ? 0.f : 1.f);
+    return !ip;
 }
 
 inline uint32_t Scene::num_interpolation_frames() const {
