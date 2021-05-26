@@ -78,16 +78,16 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
                 continue;
             }
 
-                data_.intersect(o, d, mintolo, maxtolo,
-                                    node.indices_start(), node.indices_end(), u, v, index);
+             if (data_.intersect(o, d, mintolo, maxtolo,
+                                    node.indices_start(), node.indices_end(), u, v, index)) {
+                 ray_max_t = scalar(maxtolo.v);
+             }
 
 
         }
 
         n = nodes.pop();
     }
-
-    ray_max_t = scalar(maxtolo.v);
 
     isec.u     = u;
     isec.v     = v;
