@@ -91,47 +91,6 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& 
     return true;
 }
 
-float Cube::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
-                       Worker& worker) const {
-    float3 v      = trafo.position - ray.origin;
-    float  b      = dot(v, ray.direction);
-    float  radius = trafo.scale_x();
-    float  det    = (b * b) - dot(v, v) + (radius * radius);
-
-    if (det > 0.f) {
-        float dist = std::sqrt(det);
-        float t0   = b - dist;
-
-        if (t0 > ray.min_t() && t0 < ray.max_t()) {
-            float3 n = normalize(ray.point(t0) - trafo.position);
-
-            float3 xyz = transform_vector_transposed(trafo.rotation, n);
-            xyz        = normalize(xyz);
-
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * Pi_inv);
-
-            return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
-        }
-
-        float t1 = b + dist;
-
-        if (t1 > ray.min_t() && t1 < ray.max_t()) {
-            float3 n = normalize(ray.point(t1) - trafo.position);
-
-            float3 xyz = transform_vector_transposed(trafo.rotation, n);
-            xyz        = normalize(xyz);
-
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
-                               std::acos(xyz[1]) * Pi_inv);
-
-            return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
-        }
-    }
-
-    return 1.f;
-}
-
 bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
                            Filter /*filter*/, Worker& /*worker*/, float3& ta) const {
     ta = float3(1.f);

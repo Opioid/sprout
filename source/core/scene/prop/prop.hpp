@@ -60,8 +60,6 @@ class Prop {
 
     bool visible_in_shadow() const;
 
-    bool has_masked_material() const;
-
     bool has_tinted_shadow() const;
 
     void set_visible_in_shadow(bool value);
@@ -77,10 +75,7 @@ class Prop {
 
     bool intersect_p(uint32_t self, Ray const& ray, Worker& worker) const;
 
-    float visibility(uint32_t self, Ray const& ray, Filter filter, Worker& worker) const;
-
-    bool thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker& worker,
-                         float3& ta) const;
+    bool visibility(uint32_t self, Ray const& ray, Filter filter, Worker& worker, float3& v) const;
 
   private:
     bool visible(uint32_t ray_depth) const;
@@ -89,12 +84,11 @@ class Prop {
         Visible_in_camera     = 1 << 0,
         Visible_in_reflection = 1 << 1,
         Visible_in_shadow     = 1 << 2,
-        Masked_material       = 1 << 3,
-        Tinted_shadow         = 1 << 4,
-        Test_AABB             = 1 << 5,
-        Has_parent            = 1 << 6,
-        Static                = 1 << 7,
-        Local_animation       = 1 << 8
+        Tinted_shadow         = 1 << 3,
+        Test_AABB             = 1 << 4,
+        Has_parent            = 1 << 5,
+        Static                = 1 << 6,
+        Local_animation       = 1 << 7
     };
 
     flags::Flags<Property> properties_;

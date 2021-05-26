@@ -255,9 +255,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
     bool hit = false;
 
-    bool const translucent = mat_sample.is_translucent();
-
-    float3 const p = isec.offset_p(translucent);
+    float3 const p = isec.offset_p(mat_sample.geometric_normal(), mat_sample.is_translucent());
 
     weight = 0.f;
 
@@ -271,8 +269,10 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
         Ray ray(p, -camera_sample.dir, p[3], camera_sample.t, history.depth, history.wavelength,
                 history.time);
 
+        float3 const wo = mat_sample.wo();
+
         float3 tr;
-        if (!worker.transmitted(ray, mat_sample.wo(), isec, filter, tr)) {
+        if (!worker.transmitted(ray, wo, isec, filter, tr)) {
             continue;
         }
 
@@ -280,8 +280,7 @@ bool Lighttracer::direct_camera(Camera const& camera, float3_p radiance, Ray con
 
         auto const bxdf = mat_sample.evaluate(wi);
 
-        float3 const wo = mat_sample.wo();
-        float3 const n  = mat_sample.interpolated_normal();
+        float3 const n = mat_sample.interpolated_normal();
 
         float nsc = material::non_symmetry_compensation(wo, wi, isec.geo.geo_n, n);
 

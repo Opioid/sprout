@@ -33,10 +33,6 @@ inline bool Prop::visible_in_shadow() const {
     return properties_.is(Property::Visible_in_shadow);
 }
 
-inline bool Prop::has_masked_material() const {
-    return properties_.is(Property::Masked_material);
-}
-
 inline bool Prop::has_tinted_shadow() const {
     return properties_.is(Property::Tinted_shadow);
 }

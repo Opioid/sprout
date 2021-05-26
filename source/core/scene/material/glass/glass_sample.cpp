@@ -16,8 +16,8 @@ namespace scene::material::glass {
 
 static void reflect(float3_p wo, float3_p n, float n_dot_wo, bxdf::Sample& result);
 
-static void refract(float3_p wo, float3_p n, float3_p color, float n_dot_wo, float n_dot_t,
-                    float eta, bxdf::Sample& result);
+static void refract(float3_p wo, float3_p n, float n_dot_wo, float n_dot_t, float eta,
+                    bxdf::Sample& result);
 
 Sample::Sample() {
     properties_.unset(Property::Can_evaluate);
@@ -130,7 +130,7 @@ void Sample::sample(float ior, float p, bxdf::Sample& result) const {
     if (p <= f) {
         reflect(wo_, n, n_dot_wo, result);
     } else {
-        refract(wo_, n, albedo_, n_dot_wo, n_dot_t, eta, result);
+        refract(wo_, n, n_dot_wo, n_dot_t, eta, result);
     }
 }
 
@@ -143,9 +143,9 @@ void reflect(float3_p wo, float3_p n, float n_dot_wo, bxdf::Sample& result) {
     //    SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 }
 
-void refract(float3_p wo, float3_p n, float3_p color, float n_dot_wo, float n_dot_t, float eta,
+void refract(float3_p wo, float3_p n, float n_dot_wo, float n_dot_t, float eta,
              bxdf::Sample& result) {
-    result.reflection = color;
+    result.reflection = float3(1.f);
     result.wi         = normalize((eta * n_dot_wo - n_dot_t) * n - eta * wo);
     result.pdf        = 1.f;
     result.type.clear(bxdf::Type::Specular_transmission);

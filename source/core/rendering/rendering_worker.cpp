@@ -142,7 +142,7 @@ void Worker::particles(uint32_t frame, uint64_t offset, ulong2 const& range) {
 
 bool Worker::transmitted(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
                          float3& tr) {
-    if (float3 a; tinted_visibility(ray, wo, isec, filter, a)) {
+    if (float3 a; subsurface_visibility(ray, wo, isec, filter, a)) {
         if (float3 b; transmittance(ray, filter, b)) {
             tr = a * b;
             return true;
@@ -266,8 +266,8 @@ bool Worker::transmittance(Ray const& ray, Filter filter, float3& transmittance)
     return true;
 }
 
-bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
-                               float3& tv) {
+bool Worker::subsurface_visibility(Ray& ray, float3_p wo, Intersection const& isec, Filter filter,
+                                   float3& tv) {
     using namespace scene::material;
 
     auto const& material = *isec.material(*this);
@@ -282,7 +282,7 @@ bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, 
                 ray.min_t() = scene::offset_f(ray.max_t());
                 ray.max_t() = ray_max_t;
 
-                if (scene_->tinted_visibility(ray, filter, *this, tv)) {
+                if (scene_->visibility(ray, filter, *this, tv)) {
                     float3 const wi = ray.direction;
 
                     float const vbh = material.border(wi, nisec.geo.n);
@@ -299,7 +299,7 @@ bool Worker::tinted_visibility(Ray& ray, float3_p wo, Intersection const& isec, 
         }
     }
 
-    return scene_->tinted_visibility(ray, filter, *this, tv);
+    return scene_->visibility(ray, filter, *this, tv);
 }
 
 }  // namespace rendering

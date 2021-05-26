@@ -218,8 +218,7 @@ void Scene::simulate(float3_p camera_pos, uint64_t start, uint64_t end, Worker& 
 }
 
 void Scene::compile(float3_p camera_pos, uint64_t time, Worker& worker, Threads& threads) {
-    has_masked_material_ = false;
-    has_tinted_shadow_   = false;
+    has_tinted_shadow_ = false;
 
     for (auto e : extensions_) {
         e->update(*this);
@@ -227,8 +226,7 @@ void Scene::compile(float3_p camera_pos, uint64_t time, Worker& worker, Threads&
 
     for (uint32_t i = 0; auto& p : props_) {
         prop_calculate_world_transformation(i, camera_pos);
-        has_masked_material_ = has_masked_material_ || p.has_masked_material();
-        has_tinted_shadow_   = has_tinted_shadow_ || p.has_tinted_shadow();
+        has_tinted_shadow_ = has_tinted_shadow_ || p.has_tinted_shadow();
 
         ++i;
     }

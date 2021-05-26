@@ -55,7 +55,7 @@ void Sample_thin::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result) const
 
         float3 const attenuation = rendering::attenuation(approx_distance, absorption_coef_);
 
-        refract(wo_, attenuation * albedo_, result);
+        refract(wo_, attenuation, result);
     }
 
     result.wavelength = 0.f;

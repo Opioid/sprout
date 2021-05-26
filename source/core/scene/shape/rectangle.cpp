@@ -96,40 +96,6 @@ bool Rectangle::intersect_p(Ray const& ray, Transformation const& trafo,
     return false;
 }
 
-float Rectangle::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                            Filter filter, Worker& worker) const {
-    float3 const n = trafo.rotation.r[2];
-
-    float const d     = dot(n, trafo.position);
-    float const denom = -dot(n, ray.direction);
-    float const numer = dot(n, ray.origin) - d;
-    float const hit_t = numer / denom;
-
-    if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
-        float3 const p = ray.point(hit_t);
-        float3 const k = p - trafo.position;
-
-        float3 const t = -trafo.rotation.r[0];
-
-        float const u = dot(t, k / trafo.scale_x());
-        if (u > 1.f || u < -1.f) {
-            return 1.f;
-        }
-
-        float3 const b = -trafo.rotation.r[1];
-
-        float const v = dot(b, k / trafo.scale_y());
-        if (v > 1.f || v < -1.f) {
-            return 1.f;
-        }
-
-        float2 const uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-        return 1.f - worker.scene().prop_material(entity, 0)->opacity(uv, filter, worker);
-    }
-
-    return 1.f;
-}
-
 bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
                                 Filter filter, Worker& worker, float3& ta) const {
     float3 const n = trafo.rotation.r[2];
@@ -160,9 +126,8 @@ bool Rectangle::thin_absorption(Ray const& ray, Transformation const& trafo, uin
         }
 
         float2 const uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-        ta = worker.scene().prop_material(entity, 0)->thin_absorption(ray.direction, n, uv, filter,
-                                                                      worker);
-        return true;
+        return worker.scene().prop_material(entity, 0)->visibility(ray.direction, n, uv, filter,
+                                                                   worker, ta);
     }
 
     ta = float3(1.f);

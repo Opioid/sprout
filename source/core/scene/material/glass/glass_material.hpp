@@ -14,16 +14,12 @@ class Glass : public Material {
 
     void set_normal_map(Texture const& normal_map);
 
-    void set_refraction_color(float3_p color);
-
     void set_abbe(float abbe);
 
     static size_t sample_size();
 
   protected:
     Texture normal_map_;
-
-    float3 refraction_color_;
 
     float abbe_;
 };

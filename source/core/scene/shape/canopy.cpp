@@ -64,12 +64,6 @@ bool Canopy::intersect_p(Ray const& /*ray*/, Transformation const& /*trafo*/,
     return false;
 }
 
-float Canopy::visibility(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
-                         Filter /*filter*/, Worker& /*worker*/) const {
-    // Implementation for this is not really needed, so just skip it
-    return 1.f;
-}
-
 bool Canopy::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/,
                              uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
                              float3& ta) const {

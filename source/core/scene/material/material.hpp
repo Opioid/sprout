@@ -97,8 +97,8 @@ class Material {
 
     float opacity(float2 uv, Filter filter, Worker const& worker) const;
 
-    virtual float3 thin_absorption(float3_p wi, float3_p n, float2 uv, Filter filter,
-                                   Worker const& worker) const;
+    virtual bool visibility(float3_p wi, float3_p n, float2 uv, Filter filter, Worker const& worker,
+                            float3& v) const;
 
     float border(float3_p wi, float3_p n) const;
 

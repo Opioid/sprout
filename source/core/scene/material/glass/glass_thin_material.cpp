@@ -30,14 +30,16 @@ material::Sample const& Glass_thin::sample(float3_p wo, Renderstate const& rs, S
         sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
     }
 
-    sample.set_common(rs, wo, refraction_color_, float3(0.f), float2(rs.alpha()));
+    sample.set_common(rs, wo, float3(1.f), float3(0.f), float2(rs.alpha()));
     sample.set(cc_.a, ior_, rs.ior(), thickness_);
 
     return sample;
 }
 
-float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, Filter filter,
-                                   Worker const& worker) const {
+bool Glass_thin::visibility(float3_p wi, float3_p n, float2 uv, Filter filter, Worker const& worker,
+                            float3& v) const {
+    float const o = opacity(uv, filter, worker);
+
     float const eta_i = 1.f;
     float const eta_t = ior_;
 
@@ -46,7 +48,8 @@ float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, Filter fi
     float const sint2    = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
 
     if (sint2 >= 1.f) {
-        return float3(0.f);
+        v = float3(1.f - o);
+        return o < 1.f;
     }
 
     float const n_dot_t = std::sqrt(1.f - sint2);
@@ -59,19 +62,15 @@ float3 Glass_thin::thin_absorption(float3_p wi, float3_p n, float2 uv, Filter fi
 
     float3 const attenuation = rendering::attenuation(approx_distance, cc_.a);
 
-    float const o = opacity(uv, filter, worker);
+    float3 const ta = min((1.f - o) + attenuation, 1.f);
 
-    float3 const ta = min((1.f - o) + (refraction_color_ * attenuation), 1.f);
+    v = (1.f - f) * ta;
 
-    return (1.f - f) * ta;
+    return true;
 }
 
 void Glass_thin::set_normal_map(Texture const& normal_map) {
     normal_map_ = normal_map;
-}
-
-void Glass_thin::set_refraction_color(float3_p color) {
-    refraction_color_ = color;
 }
 
 void Glass_thin::set_thickness(float thickness) {

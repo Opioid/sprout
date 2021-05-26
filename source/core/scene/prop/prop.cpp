@@ -51,11 +51,7 @@ void Prop::configure(uint32_t shape, uint32_t const* materials, Scene const& sce
     for (uint32_t i = 0, len = shape_ptr->num_materials(); i < len; ++i) {
         auto const m = scene.material(materials[i]);
 
-        if (m->is_masked()) {
-            properties_.set(Property::Masked_material);
-        }
-
-        if (m->has_tinted_shadow()) {
+        if (m->is_masked() || m->has_tinted_shadow()) {
             properties_.set(Property::Tinted_shadow);
         }
     }
@@ -129,6 +125,33 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker& worker) const {
     return scene.prop_shape(self)->intersect_p(ray, trafo, worker.node_stack());
 }
 
+bool Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker& worker,
+                      float3& v) const {
+    if (!has_tinted_shadow()) {
+        bool const ip = intersect_p(self, ray, worker);
+
+        v = float3(ip ? 0.f : 1.f);
+        return !ip;
+    }
+
+    if (!visible_in_shadow()) {
+        v = float3(1.f);
+        return true;
+    }
+
+    auto const& scene = worker.scene();
+
+    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
+        v = float3(1.f);
+        return true;
+    }
+
+    Transformation temp;
+    auto const&    trafo = scene.prop_transformation_at(self, ray.time, temp);
+
+    return scene.prop_shape(self)->thin_absorption(ray, trafo, self, filter, worker, v);
+}
+
 bool Prop::visible(uint32_t ray_depth) const {
     if (0 == ray_depth) {
         if (!properties_.is(Property::Visible_in_camera)) {
@@ -141,54 +164,6 @@ bool Prop::visible(uint32_t ray_depth) const {
     }
 
     return true;
-}
-
-float Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker& worker) const {
-    if (!has_masked_material()) {
-        return intersect_p(self, ray, worker) ? 0.f : 1.f;
-    }
-
-    if (!visible_in_shadow()) {
-        return 1.f;
-    }
-
-    auto const& scene = worker.scene();
-
-    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
-        return 1.f;
-    }
-
-    Transformation temp;
-    auto const&    trafo = scene.prop_transformation_at(self, ray.time, temp);
-
-    return scene.prop_shape(self)->visibility(ray, trafo, self, filter, worker);
-}
-
-bool Prop::thin_absorption(uint32_t self, Ray const& ray, Filter filter, Worker& worker,
-                           float3& ta) const {
-    if (!has_tinted_shadow()) {
-        float const v = visibility(self, ray, filter, worker);
-
-        ta = float3(v);
-        return v > 0.f;
-    }
-
-    if (!visible_in_shadow()) {
-        ta = float3(1.f);
-        return true;
-    }
-
-    auto const& scene = worker.scene();
-
-    if (properties_.is(Property::Test_AABB) && !scene.prop_aabb_intersect_p(self, ray)) {
-        ta = float3(1.f);
-        return true;
-    }
-
-    Transformation temp;
-    auto const&    trafo = scene.prop_transformation_at(self, ray.time, temp);
-
-    return scene.prop_shape(self)->thin_absorption(ray, trafo, self, filter, worker, ta);
 }
 
 }  // namespace scene::prop
