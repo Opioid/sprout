@@ -105,37 +105,25 @@ static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, 
 
 
 static inline SimdVec operator-(SimdVec a, SimdVec b) {
-    SimdVec temp;
-
-    temp.v[0] = a.v[0] - b.v[0];
-    temp.v[1] = a.v[1] - b.v[1];
-    temp.v[2] = a.v[2] - b.v[2];
-
-    return temp;
+    return {a.v[0] - b.v[0], a.v[1] - b.v[1], a.v[2] - b.v[2]};
 }
 
 static inline SimdVec operator*(SimdVec a, SimdVec b) {
-    SimdVec temp;
-
-    temp.v[0] = a.v[0] * b.v[0];
-    temp.v[1] = a.v[1] * b.v[1];
-    temp.v[2] = a.v[2] * b.v[2];
-
-    return temp;
+    return {a.v[0] * b.v[0], a.v[1] * b.v[1], a.v[2] * b.v[2]};
 }
 
 static inline Simdf dot(SimdVec a, SimdVec b) {
-    return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] * b.v[2];
+    Simdf const c = a.v[2] * b.v[2];
+    Simdf const d = _mm_fmadd_ps(a.v[1].v, b.v[1].v, c.v);
+    return _mm_fmadd_ps(a.v[0].v, b.v[0].v, d.v);
 }
 
 static inline SimdVec cross(SimdVec a, SimdVec b) {
-    SimdVec temp;
+    SimdVec c = {a.v[2] * b.v[1], a.v[0] * b.v[2], a.v[1] * b.v[0]};
 
-    temp.v[0] = a.v[1] * b.v[2] - a.v[2] * b.v[1];
-    temp.v[1] = a.v[2] * b.v[0] - a.v[0] * b.v[2];
-    temp.v[2] = a.v[0] * b.v[1] - a.v[1] * b.v[0];
-
-    return temp;
+    return {Simdf(_mm_fmsub_ps(a.v[1].v, b.v[2].v, c.v[0].v)),
+            Simdf(_mm_fmsub_ps(a.v[2].v, b.v[0].v, c.v[1].v)),
+            Simdf(_mm_fmsub_ps(a.v[0].v, b.v[1].v, c.v[2].v))};
 }
 
 static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p& max_t,
