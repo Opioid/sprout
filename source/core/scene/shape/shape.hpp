@@ -86,8 +86,8 @@ class Shape {
     virtual bool intersect_p(Ray const& ray, Transformation const& trafo,
                              Node_stack& nodes) const = 0;
 
-    virtual bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                                 Filter filter, Worker& worker, float3& ta) const = 0;
+    virtual bool visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
+                            Filter filter, Worker& worker, float3& v) const = 0;
 
     virtual bool sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,
                         Transformation const& trafo, float area, bool two_sided, bool total_sphere,

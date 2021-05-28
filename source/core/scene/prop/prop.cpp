@@ -149,7 +149,7 @@ bool Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker& work
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(self, ray.time, temp);
 
-    return scene.prop_shape(self)->thin_absorption(ray, trafo, self, filter, worker, v);
+    return scene.prop_shape(self)->visibility(ray, trafo, self, filter, worker, v);
 }
 
 bool Prop::visible(uint32_t ray_depth) const {

@@ -144,23 +144,24 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
     return false;
 }
 
-bool Tree::visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker, float3& vis) const {
+bool Tree::visibility(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
+                      scalar_p ray_max_t, uint32_t entity, Filter filter, Worker& worker,
+                      float3& vis) const {
+    Simdf const ray_inv_direction = reciprocal3(ray_direction);
+
+    alignas(16) uint32_t ray_signs[4];
+    sign(ray_inv_direction, ray_signs);
+
     auto& nodes = worker.node_stack();
 
     nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
+    float3 const ray_dir(ray_direction);
+
     float3 local_vis(1.f);
 
-    Simdf const  ray_origin(ray.origin.v);
-    Simdf const  ray_direction(ray.direction.v);
-    Simdf const  ray_inv_direction(ray.inv_direction.v);
-    scalar const ray_min_t(ray.min_t());
-    scalar       ray_max_t(ray.max_t());
     scalar const max_t = ray_max_t;
-
-    alignas(16) uint32_t ray_signs[4];
-    sign(ray_inv_direction, ray_signs);
 
     scalar u;
     scalar v;
@@ -193,7 +194,7 @@ bool Tree::visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker, 
                     auto const material = worker.scene().prop_material(entity, data_.part(i));
 
                     float3 tv;
-                    if (!material->visibility(ray.direction, normal, uv, filter, worker, tv)) {
+                    if (!material->visibility(ray_dir, normal, uv, filter, worker, tv)) {
                         return false;
                     }
 

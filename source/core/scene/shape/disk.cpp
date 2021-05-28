@@ -92,8 +92,8 @@ bool Disk::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& 
     return false;
 }
 
-bool Disk::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                           Filter filter, Worker& worker, float3& ta) const {
+bool Disk::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                      Worker& worker, float3& v) const {
     float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);
@@ -116,11 +116,11 @@ bool Disk::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t
                             (dot(trafo.rotation.r[1], sk) + 1.f) * uv_scale);
 
             return worker.scene().prop_material(entity, 0)->visibility(ray.direction, normal, uv,
-                                                                       filter, worker, ta);
+                                                                       filter, worker, v);
         }
     }
 
-    ta = float3(1.f);
+    v = float3(1.f);
     return true;
 }
 

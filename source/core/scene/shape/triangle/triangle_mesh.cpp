@@ -34,8 +34,7 @@ Part::Variant::Variant(Variant&& other)
       light_tree(std::move(other.light_tree)),
       cone(other.cone),
       material(other.material),
-      two_sided_(other.two_sided_) {
-}
+      two_sided_(other.two_sided_) {}
 
 bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided,
                             Scene const& scene) const {
@@ -153,8 +152,8 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     static float3 constexpr Up = float3(0.f, 1.f, 0.f);
 
     threads.run_range(
-        [this, &tree, &m, &powers, &temps, &worker, estimate_area](
-            uint32_t id, int32_t begin, int32_t end) noexcept {
+        [this, &tree, &m, &powers, &temps, &worker, estimate_area](uint32_t id, int32_t begin,
+                                                                   int32_t end) noexcept {
             bool const emission_map = m.has_emission_map();
 
             Temp temp;
@@ -233,7 +232,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     for (uint32_t i = 0; i < num; ++i) {
         float3 const n = cones_[i].xyz();
 
-        float const  c = dot(temp.dominant_axis, n);
+        float const c = dot(temp.dominant_axis, n);
 
         SOFT_ASSERT(std::isfinite(c));
 
@@ -252,7 +251,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 }
 
 Part::Discrete Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere,
-                         float r) const {
+                            float r) const {
     auto const pick = variants_[variant].light_tree.random_light(p, n, total_sphere, r, *this,
                                                                  variant);
 
@@ -441,12 +440,18 @@ bool Mesh::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& 
     return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes);
 }
 
-bool Mesh::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                           Filter filter, Worker& worker, float3& ta) const {
-    math::ray tray(trafo.world_to_object_point(ray.origin),
-                   trafo.world_to_object_vector(ray.direction), ray.min_t(), ray.max_t());
+bool Mesh::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                      Worker& worker, float3& v) const {
+    Simd4x4f const world_to_object(trafo.world_to_object);
 
-    return tree_.visibility(tray, entity, filter, worker, ta);
+    Simdf const ray_origin    = transform_point(world_to_object, Simdf(ray.origin));
+    Simdf const ray_direction = transform_vector(world_to_object, Simdf(ray.direction));
+
+    scalar const ray_min_t(ray.min_t());
+    scalar const ray_max_t(ray.max_t());
+
+    return tree_.visibility(ray_origin, ray_direction, ray_min_t, ray_max_t, entity, filter, worker,
+                            v);
 }
 
 bool Mesh::sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,

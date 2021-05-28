@@ -42,7 +42,7 @@ struct Part {
     struct Discrete {
         uint32_t global;
         uint32_t local;
-        float pdf;
+        float    pdf;
     };
 
     Discrete sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere, float r) const;
@@ -107,8 +107,8 @@ class alignas(64) Mesh final : public Shape {
 
     bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 
-    bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                         Filter filter, Worker& worker, float3& ta) const final;
+    bool visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                    Worker& worker, float3& ta) const final;
 
     bool sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,
                 Transformation const& trafo, float area, bool two_sided, bool total_sphere,
