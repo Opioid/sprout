@@ -101,14 +101,10 @@ struct alignas(16) Vector_u32 {
 
 inline Vector_u32 constexpr Mask3 = {{{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000}}};
 
-
-inline Vector_u32 constexpr Masks[] = {
-    {{{0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000}}},
-    {{{0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000}}},
-    {{{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000}}},
-    {{{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF}}}
-};
-
+inline Vector_u32 constexpr Masks[] = {{{{0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000}}},
+                                       {{{0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000}}},
+                                       {{{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000}}},
+                                       {{{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF}}}};
 
 inline Vector_u32 constexpr Sign_mask = {{{0x80000000, 0x80000000, 0x80000000, 0x80000000}}};
 inline Vector_u32 constexpr Inverse_sign_mask = {

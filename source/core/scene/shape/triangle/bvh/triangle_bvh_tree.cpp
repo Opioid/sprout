@@ -4,7 +4,6 @@
 #include "base/math/vector3.inl"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/material/material.hpp"
-#include "scene/material/material.inl"
 #include "scene/scene.inl"
 #include "scene/scene_worker.inl"
 #include "scene/shape/node_stack.inl"
@@ -50,10 +49,10 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
 
     uint32_t index = 0xFFFFFFFF;
 
-    SimdVec o = {ray_origin.splat_x(), ray_origin.splat_y(), ray_origin.splat_z()};
-    SimdVec d = {ray_direction.splat_x(), ray_direction.splat_y(), ray_direction.splat_z()};
+    SimdVec const o = {ray_origin.splat_x(), ray_origin.splat_y(), ray_origin.splat_z()};
+    SimdVec const d = {ray_direction.splat_x(), ray_direction.splat_y(), ray_direction.splat_z()};
 
-    Simdf mintolo(ray_min_t);
+    Simdf const mintolo(ray_min_t);
     Simdf maxtolo(ray_max_t);
 
     Simdf u;
@@ -78,22 +77,23 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
                 continue;
             }
 
-             if (data_.intersect(o, d, mintolo, maxtolo,
-                                    node.indices_start(), node.indices_end(), u, v, index)) {
-                 ray_max_t = scalar(maxtolo.v);
-             }
-
-
+            if (data_.intersect(o, d, mintolo, maxtolo, node.indices_start(), node.indices_end(), u,
+                                v, index)) {
+                ray_max_t = scalar(maxtolo.v);
+            }
         }
 
         n = nodes.pop();
     }
 
+    if (index != 0xFFFFFFFF) {
     isec.u     = u;
     isec.v     = v;
     isec.index = index;
+    return true;
+    }
 
-    return index != 0xFFFFFFFF;
+    return false;
 }
 
 bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
@@ -103,12 +103,11 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
     alignas(16) uint32_t ray_signs[4];
     sign(ray_inv_direction, ray_signs);
 
+    SimdVec const o = {ray_origin.splat_x(), ray_origin.splat_y(), ray_origin.splat_z()};
+    SimdVec const d = {ray_direction.splat_x(), ray_direction.splat_y(), ray_direction.splat_z()};
 
-    SimdVec o = {ray_origin.splat_x(), ray_origin.splat_y(), ray_origin.splat_z()};
-    SimdVec d = {ray_direction.splat_x(), ray_direction.splat_y(), ray_direction.splat_z()};
-
-    Simdf mintolo(ray_min_t);
-    Simdf maxtolo(ray_max_t);
+    Simdf const mintolo(ray_min_t);
+    Simdf const maxtolo(ray_max_t);
 
     nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
@@ -132,8 +131,8 @@ bool Tree::intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_m
                 continue;
             }
 
-            if (data_.intersect_p(o, d, mintolo, maxtolo,
-                                node.indices_start(), node.indices_end())) {
+            if (data_.intersect_p(o, d, mintolo, maxtolo, node.indices_start(),
+                                  node.indices_end())) {
                 return true;
             }
         }
@@ -157,14 +156,15 @@ bool Tree::visibility(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_mi
     nodes.push(0xFFFFFFFF);
     uint32_t n = 0;
 
+    SimdVec const o = {ray_origin.splat_x(), ray_origin.splat_y(), ray_origin.splat_z()};
+    SimdVec const d = {ray_direction.splat_x(), ray_direction.splat_y(), ray_direction.splat_z()};
+
+    Simdf const mintolo(ray_min_t);
+    Simdf const maxtolo(ray_max_t);
+
     float3 const ray_dir(ray_direction);
 
     float3 local_vis(1.f);
-
-    scalar const max_t = ray_max_t;
-
-    scalar u;
-    scalar v;
 
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
@@ -185,25 +185,13 @@ bool Tree::visibility(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_mi
                 continue;
             }
 
-            for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-                if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-                    float2 const uv = data_.interpolate_uv(Simdf(u), Simdf(v), i);
-
-                    float3 const normal = float3(data_.normal(i));
-
-                    auto const material = worker.scene().prop_material(entity, data_.part(i));
-
-                    float3 tv;
-                    if (!material->visibility(ray_dir, normal, uv, filter, worker, tv)) {
-                        return false;
-                    }
-
-                    local_vis *= tv;
-
-                    // ray_max_t has changed if intersect() returns true!
-                    ray_max_t = max_t;
-                }
+            float3 tv;
+            if (!data_.visibility(o, d, mintolo, maxtolo, node.indices_start(), node.indices_end(),
+                                  ray_dir, entity, filter, worker, tv)) {
+                return false;
             }
+
+            local_vis *= tv;
         }
 
         n = nodes.pop();

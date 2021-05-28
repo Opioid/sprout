@@ -3,12 +3,13 @@
 
 #include "base/math/quaternion.inl"
 #include "base/math/sampling.inl"
+#include "scene/material/material.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "triangle_bvh_indexed_data.hpp"
 
 #include "base/debug/assert.hpp"
-
 
 #include <iostream>
 
@@ -31,19 +32,9 @@ inline uint32_t Indexed_data::num_triangles() const {
     return num_triangles_;
 }
 
-inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t,
-                                    scalar& max_t, uint32_t index, scalar& u, scalar& v) const {
-    auto const tri = triangles_[index];
-
-    float const* a = positions_[tri.a].v;
-    float const* b = positions_[tri.b].v;
-    float const* c = positions_[tri.c].v;
-
-    return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
-}
-
-inline bool Indexed_data::intersect(SimdVec origin, SimdVec direction, Simdf min_t, Simdf& max_t, uint32_t begin, uint32_t end,
-                                    Simdf& u, Simdf& v, uint32_t& index) const {
+inline bool Indexed_data::intersect(SimdVec origin, SimdVec direction, Simdf min_t, Simdf& max_t,
+                                    uint32_t begin, uint32_t end, Simdf& u, Simdf& v,
+                                    uint32_t& index) const {
     bool hit = false;
 
     alignas(16) float as[12];
@@ -51,7 +42,6 @@ inline bool Indexed_data::intersect(SimdVec origin, SimdVec direction, Simdf min
     alignas(16) float cs[12];
 
     for (uint32_t j = begin; j < end;) {
-
         uint32_t const n = std::min(end - j, 4u);
 
         uint32_t const quad = j;
@@ -81,24 +71,134 @@ inline bool Indexed_data::intersect(SimdVec origin, SimdVec direction, Simdf min
         SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
 
         uint32_t local_index;
-        if (triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v, n - 1, local_index)) {
+        if (triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v, n - 1,
+                                local_index)) {
             index = quad + local_index;
-            hit = true;
+            hit   = true;
         }
-
     }
 
     return hit;
 }
 
-inline bool Indexed_data::intersect_p(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t,
-                 uint32_t begin, uint32_t end) const {
+static inline bool visibility_helper(float3_p ray_dir, float2 uv, uint32_t index, uint32_t entity, Indexed_data::Filter filter , Indexed_data const& data, Worker& worker,
+                                     float3& vis) {
+    float3 const n = float3(data.normal(index));
+
+     auto const material = worker.scene().prop_material(entity, data.part(index));
+
+     return material->visibility(ray_dir, n, uv, filter, worker, vis);
+}
+
+inline bool Indexed_data::visibility(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t,
+                                     uint32_t begin, uint32_t end, float3_p ray_dir,
+                                     uint32_t entity, Filter filter, Worker& worker,
+                                     float3& vis) const {
+    Simdf u;
+    Simdf v;
+
+    float3 local_vis(1.f);
+
     alignas(16) float as[12];
     alignas(16) float bs[12];
     alignas(16) float cs[12];
 
     for (uint32_t j = begin; j < end;) {
+        uint32_t const n = std::min(end - j, 4u);
 
+        uint32_t const quad = j;
+
+        for (uint32_t i = 0; i < n; ++i, ++j) {
+            auto const tri = triangles_[j];
+
+            float const* a = positions_[tri.a].v;
+            float const* b = positions_[tri.b].v;
+            float const* c = positions_[tri.c].v;
+
+            as[0 + i] = a[0];
+            as[4 + i] = a[1];
+            as[8 + i] = a[2];
+
+            bs[0 + i] = b[0];
+            bs[4 + i] = b[1];
+            bs[8 + i] = b[2];
+
+            cs[0 + i] = c[0];
+            cs[4 + i] = c[1];
+            cs[8 + i] = c[2];
+        }
+
+        SimdVec a = {Simdf(&as[0]), Simdf(&as[4]), Simdf(&as[8])};
+        SimdVec b = {Simdf(&bs[0]), Simdf(&bs[4]), Simdf(&bs[8])};
+        SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
+
+        uint32_t hit_mask;
+        if (triangle::intersect2(origin, direction, min_t, max_t, a, b, c, u, v, n - 1, hit_mask)) {
+            if (0 != (triangle::Select[0] & hit_mask)) {
+                uint32_t index = quad + 0;
+
+                float2 const uv = interpolate_uv(u.splat_x(), v.splat_x(), index);
+
+                float3 tv;
+                if (!visibility_helper(ray_dir, uv, index, entity, filter, *this, worker, tv)) {
+                    return false;
+                }
+
+                local_vis *= tv;
+            }
+
+            if ((0 != (triangle::Select[1] & hit_mask)) & (n > 1)) {
+                uint32_t index = quad + 1;
+
+                float2 const uv = interpolate_uv(u.splat_y(), v.splat_y(), index);
+
+                float3 tv;
+                if (!visibility_helper(ray_dir, uv, index, entity, filter, *this, worker, tv)) {
+                    return false;
+                }
+
+                local_vis *= tv;
+            }
+
+            if ((0 != (triangle::Select[2] & hit_mask)) & (n > 2)) {
+                uint32_t index = quad + 2;
+
+                float2 const uv = interpolate_uv(u.splat_z(), v.splat_z(), index);
+
+                float3 tv;
+                if (!visibility_helper(ray_dir, uv, index, entity, filter, *this, worker, tv)) {
+                    return false;
+                }
+
+                local_vis *= tv;
+            }
+
+            if ((0 != (triangle::Select[3] & hit_mask)) & (n > 3)) {
+                uint32_t index = quad + 3;
+
+                float2 const uv = interpolate_uv(u.splat_w(), v.splat_w(), index);
+
+                float3 tv;
+                if (!visibility_helper(ray_dir, uv, index, entity, filter, *this, worker, tv)) {
+                    return false;
+                }
+
+                local_vis *= tv;
+            }
+        }
+    }
+
+    vis = local_vis;
+    return true;
+}
+
+inline bool Indexed_data::intersect_p(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t,
+                                      uint32_t begin, uint32_t end) const {
+    alignas(16) float as[12];
+    alignas(16) float bs[12];
+    alignas(16) float cs[12];
+
+    for (uint32_t j = begin; j < end;) {
         uint32_t const n = std::min(end - j, 4u);
 
         for (uint32_t i = 0; i < n; ++i, ++j) {

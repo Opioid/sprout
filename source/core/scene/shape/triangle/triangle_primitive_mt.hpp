@@ -1,8 +1,8 @@
 #ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_MT_HPP
 #define SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_MT_HPP
 
-#include "base/math/vector4.hpp"
 #include "base/math/simd.hpp"
+#include "base/math/vector4.hpp"
 
 namespace scene::shape::triangle {
 

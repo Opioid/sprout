@@ -4,9 +4,14 @@
 #include "base/math/ray.hpp"
 #include "base/math/simd.hpp"
 #include "base/math/vector3.hpp"
+#include "scene/material/sampler_settings.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
 
-namespace scene::shape {
+namespace scene {
+
+class Worker;
+
+namespace shape {
 
 class Vertex_stream;
 
@@ -14,20 +19,23 @@ namespace triangle::bvh {
 
 class Indexed_data {
   public:
+    using Filter = material::Sampler_settings::Filter;
+
     Indexed_data();
 
     ~Indexed_data();
 
     uint32_t num_triangles() const;
 
-    bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t, uint32_t index,
-                   scalar& u, scalar& v) const;
+    bool intersect(SimdVec origin, SimdVec direction, Simdf min_t, Simdf& max_t, uint32_t begin,
+                   uint32_t end, Simdf& u, Simdf& v, uint32_t& index) const;
 
-    bool intersect(SimdVec origin, SimdVec direction, Simdf min_t, Simdf& max_t, uint32_t begin, uint32_t end,
-                   Simdf& u, Simdf& v, uint32_t& index) const;
+    bool visibility(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t, uint32_t begin,
+                    uint32_t end, float3_p ray_dir, uint32_t entity, Filter filter, Worker& worker,
+                    float3& vis) const;
 
-    bool intersect_p(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t,
-                     uint32_t begin, uint32_t end) const;
+    bool intersect_p(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t, uint32_t begin,
+                     uint32_t end) const;
 
     Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const;
 
@@ -82,6 +90,7 @@ class Indexed_data {
 };
 
 }  // namespace triangle::bvh
-}  // namespace scene::shape
+}  // namespace shape
+}  // namespace scene
 
 #endif
