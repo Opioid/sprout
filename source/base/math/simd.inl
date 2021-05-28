@@ -182,20 +182,18 @@ static inline Simdf cross3(Simdf_p a, Simdf_p b) {
     __m128 tmp0 = _mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(3, 0, 2, 1));
     __m128 tmp1 = _mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(3, 0, 2, 1));
 
-    /*
+ #if defined (__AVX2__)
     tmp1 = _mm_mul_ps(tmp1, b.v);
 
     __m128 tmp2 = _mm_fmsub_ps(tmp0, a.v, tmp1);
-
-    return SU_PERMUTE_PS(tmp2, _MM_SHUFFLE(3, 0, 2, 1));
-    */
-
+#else
     tmp0 = _mm_mul_ps(tmp0, a.v);
     tmp1 = _mm_mul_ps(tmp1, b.v);
 
     __m128 tmp2 = _mm_sub_ps(tmp0, tmp1);
-
+#endif
     return SU_PERMUTE_PS(tmp2, _MM_SHUFFLE(3, 0, 2, 1));
+
 }
 
 static inline Simdf sqrt(Simdf_p x) {
