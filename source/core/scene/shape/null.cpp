@@ -31,9 +31,9 @@ bool Null::intersect_p(Ray const& /*ray*/, Transformation const& /*trafo*/,
     return false;
 }
 
-bool Null::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
-                           Filter /*filter*/, Worker& /*worker*/, float3& ta) const {
-    ta = float3(1.f);
+bool Null::visibility(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
+                      Filter /*filter*/, Worker& /*worker*/, float3& v) const {
+    v = float3(1.f);
     return true;
 }
 

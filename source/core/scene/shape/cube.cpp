@@ -91,9 +91,9 @@ bool Cube::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& 
     return true;
 }
 
-bool Cube::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
-                           Filter /*filter*/, Worker& /*worker*/, float3& ta) const {
-    ta = float3(1.f);
+bool Cube::visibility(Ray const& /*ray*/, Transformation const& /*trafo*/, uint32_t /*entity*/,
+                      Filter /*filter*/, Worker& /*worker*/, float3& vis) const {
+    vis = float3(1.f);
     return true;
 }
 

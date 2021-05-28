@@ -130,8 +130,8 @@ bool Sphere::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack
     return false;
 }
 
-bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                             Filter filter, Worker& worker, float3& ta) const {
+bool Sphere::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                        Worker& worker, float3& vis) const {
     float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
@@ -156,7 +156,7 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32
                                std::acos(xyz[1]) * Pi_inv);
 
             return worker.scene().prop_material(entity, 0)->visibility(ray.direction, n, uv, filter,
-                                                                       worker, ta);
+                                                                       worker, vis);
         }
 
         float const t1 = b + dist;
@@ -171,11 +171,11 @@ bool Sphere::thin_absorption(Ray const& ray, Transformation const& trafo, uint32
                                std::acos(xyz[1]) * Pi_inv);
 
             return worker.scene().prop_material(entity, 0)->visibility(ray.direction, n, uv, filter,
-                                                                       worker, ta);
+                                                                       worker, vis);
         }
     }
 
-    ta = float3(0.f);
+    vis = float3(1.f);
     return true;
 }
 

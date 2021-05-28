@@ -57,8 +57,8 @@ bool Plane::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack&
     return (hit_t > ray.min_t()) & (hit_t < ray.max_t());
 }
 
-bool Plane::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                            Filter filter, Worker& worker, float3& ta) const {
+bool Plane::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                       Worker& worker, float3& vis) const {
     float3 const n = trafo.rotation.r[2];
 
     float const d     = dot(n, trafo.position);
@@ -70,10 +70,10 @@ bool Plane::thin_absorption(Ray const& ray, Transformation const& trafo, uint32_
         float2 const uv(dot(trafo.rotation.r[0], k), dot(trafo.rotation.r[1], k));
 
         return worker.scene().prop_material(entity, 0)->visibility(ray.direction, n, uv, filter,
-                                                                   worker, ta);
+                                                                   worker, vis);
     }
 
-    ta = float3(1.f);
+    vis = float3(1.f);
     return true;
 }
 
