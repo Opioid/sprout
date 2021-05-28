@@ -219,7 +219,7 @@ class Scene {
 
     AABB light_aabb(uint32_t light) const;
 
-    float4 light_cone(uint32_t variant, uint32_t light) const;
+    float4 light_cone(uint32_t light) const;
 
     uint32_t create_animation(uint32_t entity, uint32_t count);
 

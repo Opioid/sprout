@@ -19,11 +19,7 @@ struct Part {
 
         Variant(Variant&& other);
 
-        ~Variant();
-
         bool matches(uint32_t m, bool emission_map, bool two_sided, Scene const& scene) const;
-
-        float4* cones;
 
         Distribution_1D distribution;
 
@@ -43,11 +39,17 @@ struct Part {
     uint32_t init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                   light::Tree_builder& builder, Worker const& worker, Threads& threads);
 
-    light::Pick sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere, float r) const;
+    struct Discrete {
+        uint32_t global;
+        uint32_t local;
+        float pdf;
+    };
+
+    Discrete sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere, float r) const;
 
     float pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uint32_t id) const;
 
-    Distribution_1D::Discrete sample(uint32_t variant, float r) const;
+    Discrete sample(uint32_t variant, float r) const;
 
     AABB const& aabb(uint32_t variant) const;
 
@@ -57,7 +59,7 @@ struct Part {
 
     AABB const& light_aabb(uint32_t light) const;
 
-    float4_p light_cone(uint32_t variant, uint32_t light) const;
+    float4_p light_cone(uint32_t light) const;
 
     bool light_two_sided(uint32_t variant, uint32_t light) const;
 
@@ -65,11 +67,13 @@ struct Part {
 
     uint32_t material_;
 
-    uint32_t num_triangles = 0;
+    uint32_t num_triangles_ = 0;
 
     uint32_t* triangle_mapping_ = nullptr;
 
     AABB* aabbs_ = nullptr;
+
+    float4* cones_ = nullptr;
 
     std::vector<Variant> variants_;
 

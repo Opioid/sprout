@@ -60,15 +60,10 @@ class Tree {
     bool intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t, scalar& ray_max_t,
                    Node_stack& nodes, Intersection& isec) const;
 
-    bool intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t, scalar& ray_max_t,
-                   Node_stack& nodes) const;
-
     bool intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                      scalar_p ray_max_t, Node_stack& nodes) const;
 
     bool visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker, float3& ta) const;
-
-    float3 interpolate_p(float2 uv, uint32_t index) const;
 
     Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const;
 
@@ -83,9 +78,7 @@ class Tree {
 
     uint32_t triangle_part(uint32_t index) const;
 
-    float3 triangle_normal(uint32_t index) const;
-
-    Simdf triangle_normal_v(uint32_t index) const;
+    Simdf triangle_normal(uint32_t index) const;
 
     float triangle_area(uint32_t index) const;
 

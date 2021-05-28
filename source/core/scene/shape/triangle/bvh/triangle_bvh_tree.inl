@@ -14,10 +14,6 @@ inline uint32_t Tree::num_triangles() const {
     return data_.num_triangles();
 }
 
-inline float3 Tree::interpolate_p(float2 uv, uint32_t index) const {
-    return data_.interpolate_p(uv, index);
-}
-
 inline Simdf Tree::interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const {
     return data_.interpolate_p(u, v, index);
 }
@@ -43,12 +39,8 @@ inline uint32_t Tree::triangle_part(uint32_t index) const {
     return data_.part(index);
 }
 
-inline float3 Tree::triangle_normal(uint32_t index) const {
+inline Simdf Tree::triangle_normal(uint32_t index) const {
     return data_.normal(index);
-}
-
-inline Simdf Tree::triangle_normal_v(uint32_t index) const {
-    return data_.normal_v(index);
 }
 
 inline float Tree::triangle_area(uint32_t index) const {
