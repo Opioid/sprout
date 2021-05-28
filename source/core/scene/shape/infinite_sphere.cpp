@@ -59,11 +59,11 @@ bool Infinite_sphere::intersect_p(Ray const& /*ray*/, Transformation const& /*tr
     return false;
 }
 
-bool Infinite_sphere::thin_absorption(Ray const& /*ray*/, Transformation const& /*trafo*/,
-                                      uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
-                                      float3& ta) const {
+bool Infinite_sphere::visibility(Ray const& /*ray*/, Transformation const& /*trafo*/,
+                                 uint32_t /*entity*/, Filter /*filter*/, Worker& /*worker*/,
+                                 float3& vis) const {
     // Implementation for this is not really needed, so just skip it
-    ta = float3(1.f);
+    vis = float3(1.f);
     return true;
 }
 

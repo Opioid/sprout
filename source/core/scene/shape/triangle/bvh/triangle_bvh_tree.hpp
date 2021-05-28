@@ -69,7 +69,9 @@ class Tree {
     bool intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                      scalar_p ray_max_t, Node_stack& nodes) const;
 
-    bool visibility(ray& ray, uint32_t entity, Filter filter, Worker& worker, float3& ta) const;
+    bool visibility(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
+                    scalar_p ray_max_t, uint32_t entity, Filter filter, Worker& worker,
+                    float3& ta) const;
 
     Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const;
 

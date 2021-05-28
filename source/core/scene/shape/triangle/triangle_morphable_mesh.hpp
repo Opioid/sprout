@@ -25,8 +25,8 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
 
-    bool thin_absorption(Ray const& ray, Transformation const& trafo, uint32_t entity,
-                         Filter filter, Worker& worker, float3& ta) const final;
+    bool visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
+                    Worker& worker, float3& v) const final;
 
     bool sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,
                 Transformation const& trafo, float area, bool two_sided, bool total_sphere,
