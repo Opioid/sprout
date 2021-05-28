@@ -21,15 +21,8 @@ class Indexed_data {
 
     uint32_t num_triangles() const;
 
-    bool intersect(uint32_t index, ray& ray, float2& uv) const;
-
-    bool intersect_p(uint32_t index, ray const& ray) const;
-
     bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t, uint32_t index,
                    scalar& u, scalar& v) const;
-
-    bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
-                   uint32_t index) const;
 
     bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
                      uint32_t index) const;
@@ -40,8 +33,6 @@ class Indexed_data {
                           float2& tc) const;
 
     Simdf interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index) const;
-
-    float2 interpolate_uv(uint32_t index, float2 uv) const;
 
     float2 interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index) const;
 

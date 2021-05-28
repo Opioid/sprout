@@ -30,26 +30,6 @@ inline uint32_t Indexed_data::num_triangles() const {
     return num_triangles_;
 }
 
-inline bool Indexed_data::intersect(uint32_t index, ray& ray, float2& uv) const {
-    auto const t = triangles_[index];
-
-    float3 const a = positions_[t.a];
-    float3 const b = positions_[t.b];
-    float3 const c = positions_[t.c];
-
-    return triangle::intersect(a, b, c, ray, uv);
-}
-
-inline bool Indexed_data::intersect_p(uint32_t index, ray const& ray) const {
-    auto const tri = triangles_[index];
-
-    float3 const a = positions_[tri.a];
-    float3 const b = positions_[tri.b];
-    float3 const c = positions_[tri.c];
-
-    return triangle::intersect_p(a, b, c, ray);
-}
-
 inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t,
                                     scalar& max_t, uint32_t index, scalar& u, scalar& v) const {
     auto const tri = triangles_[index];
@@ -59,17 +39,6 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
     float const* c = positions_[tri.c].v;
 
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
-}
-
-inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t,
-                                    scalar& max_t, uint32_t index) const {
-    auto const tri = triangles_[index];
-
-    float const* a = positions_[tri.a].v;
-    float const* b = positions_[tri.b].v;
-    float const* c = positions_[tri.c].v;
-
-    return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
 }
 
 inline bool Indexed_data::intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t,
@@ -125,16 +94,6 @@ inline Simdf Indexed_data::interpolate_shading_normal(Simdf_p u, Simdf_p v, uint
     float3 const c = quaternion::create_normal(frames_[tri.c]);
 
     return triangle::interpolate_normal(u, v, a, b, c);
-}
-
-inline float2 Indexed_data::interpolate_uv(uint32_t index, float2 uv) const {
-    auto const tri = triangles_[index];
-
-    float2 const a = uvs_[tri.a];
-    float2 const b = uvs_[tri.b];
-    float2 const c = uvs_[tri.c];
-
-    return triangle::interpolate_uv(a, b, c, uv);
 }
 
 inline float2 Indexed_data::interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index) const {
