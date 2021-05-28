@@ -58,6 +58,8 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
     Simdf u;
     Simdf v;
 
+    bool hit = false;
+
     while (0xFFFFFFFF != n) {
         auto const& node = nodes_[n];
 
@@ -80,16 +82,23 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
             if (data_.intersect(o, d, mintolo, maxtolo, node.indices_start(), node.indices_end(), u,
                                 v, index)) {
                 ray_max_t = scalar(maxtolo.v);
+
+                hit = true;
             }
         }
 
         n = nodes.pop();
     }
 
-    if (index != 0xFFFFFFFF) {
+    if (hit) {
     isec.u     = u;
     isec.v     = v;
     isec.index = index;
+
+    if (index == 0xFFFFFFFF) {
+        std::cout << "scream" << std::endl;
+    }
+
     return true;
     }
 

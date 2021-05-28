@@ -128,7 +128,7 @@ static inline SimdVec cross(SimdVec a, SimdVec b) {
 
 static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p& max_t,
                              SimdVec a, SimdVec b, SimdVec c, Simdf_p& u_out, Simdf_p& v_out,
-                             uint32_t m, uint32_t& index) {
+                             uint32_t m) {
     /*
         float3 const ori(origin.v[0].x(), origin.v[1].x(), origin.v[2].x());
         float3 const diri(direction.v[0].x(), direction.v[1].x(), direction.v[2].x());
@@ -187,32 +187,12 @@ static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, S
         hit_t = _mm_or_ps(_mm_and_ps(hit_t.v, condition.v),
                           _mm_andnot_ps(condition.v, simd::Infinity));
 
-        uint32_t const i = index_min_component(float4(hit_t));
+        max_t = hit_t;
 
-        switch (i) {
-            case 0:
-                max_t = hit_t.splat_x();
-                u_out = u.splat_x();
-                v_out = v.splat_x();
-                break;
-            case 1:
-                max_t = hit_t.splat_y();
-                u_out = u.splat_y();
-                v_out = v.splat_y();
-                break;
-            case 2:
-                max_t = hit_t.splat_z();
-                u_out = u.splat_z();
-                v_out = v.splat_z();
-                break;
-            default:
-                max_t = hit_t.splat_w();
-                u_out = u.splat_w();
-                v_out = v.splat_w();
-                break;
-        }
 
-        index = i;
+        u_out = u;
+        v_out = v;
+
         return true;
     }
 

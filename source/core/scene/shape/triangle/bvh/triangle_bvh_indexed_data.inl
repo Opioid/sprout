@@ -41,6 +41,10 @@ inline bool Indexed_data::intersect(SimdVec origin, SimdVec direction, Simdf min
     alignas(16) float bs[12];
     alignas(16) float cs[12];
 
+    Simdf local_max_t = max_t;
+
+    uint32_t quad_index = 0;
+
     for (uint32_t j = begin; j < end;) {
         uint32_t const n = std::min(end - j, 4u);
 
@@ -70,13 +74,47 @@ inline bool Indexed_data::intersect(SimdVec origin, SimdVec direction, Simdf min
         SimdVec b = {Simdf(&bs[0]), Simdf(&bs[4]), Simdf(&bs[8])};
         SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
 
-        uint32_t local_index;
-        if (triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v, n - 1,
-                                local_index)) {
-            index = quad + local_index;
+        if (triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v, n - 1)) {
+
             hit   = true;
+
+            quad_index = quad;
+
+            local_max_t = max_t;
+
+            max_t = _mm_min_ps(max_t.v, _mm_shuffle_ps(max_t.v, max_t.v, _MM_SHUFFLE(2, 1, 0, 3)));
+            max_t = _mm_min_ps(max_t.v, _mm_shuffle_ps(max_t.v, max_t.v, _MM_SHUFFLE(1, 0, 3, 2)));
+
         }
     }
+
+    if (hit) {
+
+        int const hit_mask = _mm_movemask_ps(_mm_cmpeq_ps(local_max_t.v, max_t.v));
+
+        if (hit_mask >= 8) {
+            index = quad_index + 3;
+
+            u = u.splat_w();
+            v = v.splat_w();
+        } else if (hit_mask >= 4) {
+            index = quad_index + 2;
+
+            u = u.splat_z();
+            v = v.splat_z();
+        } else if (hit_mask >= 2) {
+            index = quad_index + 1;
+
+            u = u.splat_y();
+            v = v.splat_y();
+        } else if (hit_mask == 1) {
+            index = quad_index + 0;
+
+            u = u.splat_x();
+            v = v.splat_x();
+        }
+    }
+
 
     return hit;
 }
