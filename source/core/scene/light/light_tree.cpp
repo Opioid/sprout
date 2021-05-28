@@ -129,7 +129,7 @@ static float light_weight(float3_p p, float3_p n, bool total_sphere, uint32_t li
     bool const   two_sided = set.light_two_sided(variant, light);
     AABB const   aabb      = set.light_aabb(light);
     float3 const center    = aabb.position();
-    float4 const cone      = set.light_cone(variant, light);
+    float4 const cone      = set.light_cone(light);
     float const  radius    = aabb.cached_radius();
     float const  power     = set.light_power(variant, light);
 
@@ -141,7 +141,7 @@ static float light_weight(float3_p p0, float3_p p1, float3_p dir, uint32_t light
     bool const   two_sided = scene.light_two_sided(0, light);
     AABB const   aabb      = scene.light_aabb(light);
     float3 const center    = aabb.position();
-    float4 const cone      = scene.light_cone(0, light);
+    float4 const cone      = scene.light_cone(light);
     float const  radius    = aabb.cached_radius();
     float const  power     = scene.light_power(0, light);
 

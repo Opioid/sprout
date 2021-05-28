@@ -27,20 +27,14 @@
 
 namespace scene::shape::triangle {
 
-Part::Variant::Variant() : cones(nullptr) {}
+Part::Variant::Variant() = default;
 
 Part::Variant::Variant(Variant&& other)
-    : cones(other.cones),
-      distribution(std::move(other.distribution)),
+    : distribution(std::move(other.distribution)),
       light_tree(std::move(other.light_tree)),
       cone(other.cone),
       material(other.material),
       two_sided_(other.two_sided_) {
-    other.cones = nullptr;
-}
-
-Part::Variant::~Variant() {
-    delete[] cones;
 }
 
 bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided,
@@ -59,6 +53,7 @@ bool Part::Variant::matches(uint32_t m, bool emission_map, bool two_sided,
 }
 
 Part::~Part() {
+    delete[] cones_;
     delete[] aabbs_;
     delete[] triangle_mapping_;
 }
@@ -74,12 +69,14 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                     light::Tree_builder& builder, Worker const& worker, Threads& threads) {
     using Filter = material::Sampler_settings::Filter;
 
-    uint32_t const num = num_triangles;
+    uint32_t const num = num_triangles_;
 
     if (!triangle_mapping_) {
         triangle_mapping_ = new uint32_t[num];
 
         aabbs_ = new AABB[num];
+
+        cones_ = new float4[num];
 
         float total_area = 0.f;
 
@@ -104,6 +101,10 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
                 box.bounds[1][3] = area;
 
                 aabbs_[mt] = box;
+
+                float3 const n = float3(tree.triangle_normal(t));
+
+                cones_[mt] = float4(n, 1.f);
 
                 ++mt;
             }
@@ -135,8 +136,6 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
     Variant& variant = variants_[v];
 
-    variant.cones = new float4[num];
-
     memory::Buffer<float> powers(num);
 
     struct Temp {
@@ -154,7 +153,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     static float3 constexpr Up = float3(0.f, 1.f, 0.f);
 
     threads.run_range(
-        [this, &variant, &tree, &m, &powers, &temps, &worker, estimate_area](
+        [this, &tree, &m, &powers, &temps, &worker, estimate_area](
             uint32_t id, int32_t begin, int32_t end) noexcept {
             bool const emission_map = m.has_emission_map();
 
@@ -201,9 +200,7 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
 
                 powers[i] = power;
 
-                float3 const n = tree.triangle_normal(t);
-
-                variant.cones[i] = float4(n, 1.f);
+                float3 const n = cones_[i].xyz();
 
                 if (power > 0.f) {
                     temp.dominant_axis += power * n;
@@ -234,9 +231,8 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     float angle = 0.f;
 
     for (uint32_t i = 0; i < num; ++i) {
-        uint32_t const t = triangle_mapping_[i];
+        float3 const n = cones_[i].xyz();
 
-        float3 const n = tree.triangle_normal(t);
         float const  c = dot(temp.dominant_axis, n);
 
         SOFT_ASSERT(std::isfinite(c));
@@ -255,14 +251,14 @@ uint32_t Part::init(uint32_t part, uint32_t material, bvh::Tree const& tree,
     return v;
 }
 
-light::Pick Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere,
+Part::Discrete Part::sample(uint32_t variant, float3_p p, float3_p n, bool total_sphere,
                          float r) const {
     auto const pick = variants_[variant].light_tree.random_light(p, n, total_sphere, r, *this,
                                                                  variant);
 
     float const relative_area = aabbs_[pick.offset].bounds[1][3];
 
-    return {triangle_mapping_[pick.offset], pick.pdf * relative_area};
+    return {triangle_mapping_[pick.offset], pick.offset, pick.pdf * relative_area};
 }
 
 float Part::pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uint32_t id) const {
@@ -273,12 +269,12 @@ float Part::pdf(uint32_t variant, float3_p p, float3_p n, bool total_sphere, uin
     return pdf * relative_area;
 }
 
-math::Distribution_1D::Discrete Part::sample(uint32_t variant, float r) const {
+Part::Discrete Part::sample(uint32_t variant, float r) const {
     auto const result = variants_[variant].distribution.sample_discrete(r);
 
     float const relative_area = aabbs_[result.offset].bounds[1][3];
 
-    return {triangle_mapping_[result.offset], result.pdf * relative_area};
+    return {triangle_mapping_[result.offset], result.offset, result.pdf * relative_area};
 }
 
 AABB const& Part::aabb(uint32_t variant) const {
@@ -299,10 +295,10 @@ AABB const& Part::light_aabb(uint32_t light) const {
     return aabbs_[light];
 }
 
-float4_p Part::light_cone(uint32_t variant, uint32_t light) const {
+float4_p Part::light_cone(uint32_t light) const {
     SOFT_ASSERT(light < num_triangles);
 
-    return variants_[variant].cones[light];
+    return cones_[light];
 }
 
 bool Part::light_two_sided(uint32_t variant, uint32_t /*light*/) const {
@@ -387,7 +383,7 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
 
         Simdf const p_w = transform_point(object_to_world, p);
 
-        Simdf const geo_n = tree_.triangle_normal_v(pi.index);
+        Simdf const geo_n = tree_.triangle_normal(pi.index);
 
         Simd3x3f const rotation(trafo.rotation);
 
@@ -469,9 +465,9 @@ bool Mesh::sample(uint32_t part, uint32_t variant, float3_p p, float3_p n,
 
     float3 sv;
     float2 tc;
-    tree_.sample(s.offset, r2, sv, tc);
+    tree_.sample(s.global, r2, sv, tc);
     float3 const v  = trafo.object_to_world_point(sv);
-    float3 const sn = tree_.triangle_normal(s.offset);
+    float3 const sn = parts_[part].light_cone(s.local).xyz();
     float3       wn = transform_vector(trafo.rotation, sn);
 
     if (two_sided && dot(wn, v - p) > 0.f) {
@@ -519,10 +515,10 @@ bool Mesh::sample(uint32_t part, uint32_t variant, Transformation const& trafo, 
 
     float3 sv;
     float2 tc;
-    tree_.sample(s.offset, r0, sv, tc);
+    tree_.sample(s.global, r0, sv, tc);
     float3 const ws = trafo.object_to_world_point(sv);
 
-    float3 const sn = tree_.triangle_normal(s.offset);
+    float3 const sn = parts_[part].light_cone(s.local).xyz();
     float3 const wn = transform_vector(trafo.rotation, sn);
 
     auto const [x, y] = orthonormal_basis(wn);
@@ -643,7 +639,7 @@ uint32_t Mesh::prepare_sampling(uint32_t part, uint32_t material, light::Tree_bu
         primitive_mapping_ = new uint32_t[tree_.num_triangles()];
 
         for (uint32_t i = 0, len = tree_.num_triangles(); i < len; ++i) {
-            uint32_t const pm = parts_[tree_.triangle_part(i)].num_triangles++;
+            uint32_t const pm = parts_[tree_.triangle_part(i)].num_triangles_++;
 
             primitive_mapping_[i] = pm;
         }

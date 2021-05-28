@@ -176,18 +176,6 @@ inline bool Indexed_data::intersect_p(SimdVec origin, SimdVec direction, Simdf m
     return false;
 }
 
-inline float3 Indexed_data::interpolate_p(float2 uv, uint32_t index) const {
-    auto const tri = triangles_[index];
-
-    float3 const ap = positions_[tri.a];
-    float3 const bp = positions_[tri.b];
-    float3 const cp = positions_[tri.c];
-
-    float3 p;
-    triangle::interpolate_p(ap, bp, cp, uv, p);
-    return p;
-}
-
 inline Simdf Indexed_data::interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
@@ -247,20 +235,7 @@ inline uint32_t Indexed_data::part(uint32_t index) const {
     return triangles_[index].part;
 }
 
-inline float3 Indexed_data::normal(uint32_t index) const {
-    auto const tri = triangles_[index];
-
-    float3 const a = positions_[tri.a];
-    float3 const b = positions_[tri.b];
-    float3 const c = positions_[tri.c];
-
-    float3 const e1 = b - a;
-    float3 const e2 = c - a;
-
-    return normalize(cross(e1, e2));
-}
-
-inline Simdf Indexed_data::normal_v(uint32_t index) const {
+inline Simdf Indexed_data::normal(uint32_t index) const {
     auto const tri = triangles_[index];
 
     Simdf const ap(positions_[tri.a].v);
