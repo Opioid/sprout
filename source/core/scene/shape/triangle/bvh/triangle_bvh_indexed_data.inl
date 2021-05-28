@@ -123,17 +123,6 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c);
 }
 
-inline bool Indexed_data::intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t,
-                                      scalar_p max_t, uint32_t index) const {
-    auto const tri = triangles_[index];
-
-    float const* a = positions_[tri.a].v;
-    float const* b = positions_[tri.b].v;
-    float const* c = positions_[tri.c].v;
-
-    return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
-}
-
 inline bool Indexed_data::intersect_p(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t,
                  uint32_t begin, uint32_t end) const {
     alignas(16) float as[12];

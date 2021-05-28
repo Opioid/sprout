@@ -33,9 +33,6 @@ class Indexed_data {
     bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
                    uint32_t index) const;
 
-    bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
-                     uint32_t index) const;
-
     bool intersect_p(SimdVec origin, SimdVec direction, Simdf min_t, Simdf max_t,
                      uint32_t begin, uint32_t end) const;
 
