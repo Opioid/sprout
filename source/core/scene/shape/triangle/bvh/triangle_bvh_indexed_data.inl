@@ -132,9 +132,8 @@ inline bool Indexed_data::visibility(SimdVec origin, SimdVec direction, Simdf mi
         SimdVec b = {Simdf(&bs[0]), Simdf(&bs[4]), Simdf(&bs[8])};
         SimdVec c = {Simdf(&cs[0]), Simdf(&cs[4]), Simdf(&cs[8])};
 
-        uint32_t hit_mask;
-        if (triangle::intersect2(origin, direction, min_t, max_t, a, b, c, u, v, n - 1, hit_mask)) {
-            if (0 != (triangle::Select[0] & hit_mask)) {
+        if (uint32_t hit = triangle::intersect2(origin, direction, min_t, max_t, a, b, c, u, v, n - 1); 0 != hit) {
+            if (0 != (triangle::Select[0] & hit)) {
                 uint32_t index = quad + 0;
 
                 float2 const uv = interpolate_uv(u.splat_x(), v.splat_x(), index);
@@ -147,7 +146,7 @@ inline bool Indexed_data::visibility(SimdVec origin, SimdVec direction, Simdf mi
                 local_vis *= tv;
             }
 
-            if ((0 != (triangle::Select[1] & hit_mask)) & (n > 1)) {
+            if ((0 != (triangle::Select[1] & hit)) & (n > 1)) {
                 uint32_t index = quad + 1;
 
                 float2 const uv = interpolate_uv(u.splat_y(), v.splat_y(), index);
@@ -160,7 +159,7 @@ inline bool Indexed_data::visibility(SimdVec origin, SimdVec direction, Simdf mi
                 local_vis *= tv;
             }
 
-            if ((0 != (triangle::Select[2] & hit_mask)) & (n > 2)) {
+            if ((0 != (triangle::Select[2] & hit)) & (n > 2)) {
                 uint32_t index = quad + 2;
 
                 float2 const uv = interpolate_uv(u.splat_z(), v.splat_z(), index);
@@ -173,7 +172,7 @@ inline bool Indexed_data::visibility(SimdVec origin, SimdVec direction, Simdf mi
                 local_vis *= tv;
             }
 
-            if ((0 != (triangle::Select[3] & hit_mask)) & (n > 3)) {
+            if ((0 != (triangle::Select[3] & hit)) & (n > 3)) {
                 uint32_t index = quad + 3;
 
                 float2 const uv = interpolate_uv(u.splat_w(), v.splat_w(), index);
