@@ -219,9 +219,9 @@ static inline bool intersect(SimdVec origin, SimdVec direction, Simdf_p min_t, S
     return false;
 }
 
-static inline bool intersect2(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p max_t,
+static inline uint32_t intersect2(SimdVec origin, SimdVec direction, Simdf_p min_t, Simdf_p max_t,
                               SimdVec a, SimdVec b, SimdVec c, Simdf_p& u_out, Simdf_p& v_out,
-                              uint32_t m, uint32_t& hit_mask) {
+                              uint32_t m) {
     SimdVec e1   = b - a;
     SimdVec e2   = c - a;
     SimdVec tvec = origin - a;
@@ -249,12 +249,12 @@ static inline bool intersect2(SimdVec origin, SimdVec direction, Simdf_p min_t, 
 
     condition = _mm_and_ps(condition.v, simd::Masks[m]);
 
-    hit_mask = _mm_movemask_ps(condition.v);
+    uint32_t const hit = _mm_movemask_ps(condition.v);
 
     u_out = u;
     v_out = v;
 
-    return 0 != hit_mask;
+    return hit;
 }
 
 static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
