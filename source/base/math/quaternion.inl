@@ -62,24 +62,22 @@ static inline Quaternion create(float3_p t, float3_p n) {
 // https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
 static inline float3x3 create_matrix3x3(Quaternion_p q) {
-    Simdf const qv(q.v);
+    Simdf const qv(q);
 
     Simdf const tv = qv + qv;
     Simdf const vv = tv * qv;
 
     float3 const wv3(tv * qv.splat_w());
     float3 const vv3(vv);
-    float3 const tv3(tv);
 
-    float const x = q[0];
-    float const z = q[2];
+    Simdf const vl = _mm_moveldup_ps(qv.v);
 
-    float const xy = tv3[1] * x;
-    float const xz = tv3[2] * x;
-    float const yz = tv3[1] * z;
+    Simdf const xyz = Simdf(SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1))) * vl;
 
-    return float3x3(1.f - (vv3[1] + vv3[2]), xy - wv3[2], xz + wv3[1], xy + wv3[2],
-                    1.f - (vv3[0] + vv3[2]), yz - wv3[0], xz - wv3[1], yz + wv3[0],
+    float3 const xyz3(xyz);
+
+    return float3x3(1.f - (vv3[1] + vv3[2]), xyz3[0] - wv3[2], xyz3[1] + wv3[1], xyz3[0] + wv3[2],
+                    1.f - (vv3[0] + vv3[2]), xyz3[2] - wv3[0], xyz3[1] - wv3[1], xyz3[2] + wv3[0],
                     1.f - (vv3[0] + vv3[1]));
 }
 
@@ -91,17 +89,15 @@ static inline Vector3f_a_pair create_tangent_normal(Quaternion_p q) {
 
     float3 const wv3(tv * qv.splat_w());
     float3 const vv3(vv);
-    float3 const tv3(tv);
 
-    float const x = q[0];
-    float const z = q[2];
+    Simdf const vl = _mm_moveldup_ps(qv.v);
 
-    float const xy = tv3[1] * x;
-    float const xz = tv3[2] * x;
-    float const yz = tv3[1] * z;
+    Simdf const xyz = Simdf(SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1))) * vl;
 
-    return {float3(1.f - (vv3[1] + vv3[2]), xy - wv3[2], xz + wv3[1]),
-            float3(xz - wv3[1], yz + wv3[0], 1.f - (vv3[0] + vv3[1]))};
+    float3 const xyz3(xyz);
+
+    return {float3(1.f - (vv3[1] + vv3[2]), xyz3[0] - wv3[2], xyz3[1] + wv3[1]),
+            float3(xyz3[1] - wv3[1], xyz3[2] + wv3[0], 1.f - (vv3[0] + vv3[1]))};
 }
 
 static inline float3 create_normal(Quaternion_p q) {
@@ -112,15 +108,14 @@ static inline float3 create_normal(Quaternion_p q) {
 
     float3 const wv3(tv * qv.splat_w());
     float3 const vv3(vv);
-    float3 const tv3(tv);
 
-    float const x = q[0];
-    float const z = q[2];
+    Simdf const vl = _mm_moveldup_ps(qv.v);
 
-    float const xz = tv3[2] * x;
-    float const yz = tv3[1] * z;
+    Simdf const xyz = Simdf(SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1))) * vl;
 
-    return float3(xz - wv3[1], yz + wv3[0], 1.f - (vv3[0] + vv3[1]));
+    float3 const xyz3(xyz);
+
+    return float3(xyz3[1] - wv3[1], xyz3[2] + wv3[0], 1.f - (vv3[0] + vv3[1]));
 }
 
 static inline Quaternion create_rotation_x(float a) {
