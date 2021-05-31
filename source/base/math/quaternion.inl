@@ -67,18 +67,22 @@ static inline float3x3 create_matrix3x3(Quaternion_p q) {
     Simdf const tv = qv + qv;
     Simdf const vv = tv * qv;
 
-    float3 const wv3(tv * qv.splat_w());
-    float3 const vv3(vv);
+    Simdf const wv(tv * qv.splat_w());
 
     Simdf const vl = _mm_moveldup_ps(qv.v);
 
-    Simdf const xyz = Simdf(SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1))) * vl;
+    Simdf xyz = SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1)) * vl;
+    xyz       = SU_PERMUTE_PS(xyz.v, _MM_SHUFFLE(3, 0, 1, 2));
 
-    float3 const xyz3(xyz);
+    Simdf const a = xyz - wv;
+    Simdf const b = xyz + wv;
 
-    return float3x3(1.f - (vv3[1] + vv3[2]), xyz3[0] - wv3[2], xyz3[1] + wv3[1], xyz3[0] + wv3[2],
-                    1.f - (vv3[0] + vv3[2]), xyz3[2] - wv3[0], xyz3[1] - wv3[1], xyz3[2] + wv3[0],
-                    1.f - (vv3[0] + vv3[1]));
+    float3 const vv3(vv);
+    float3 const a3(a);
+    float3 const b3(b);
+
+    return float3x3(1.f - (vv3[1] + vv3[2]), a3[2], b3[1], b3[2], 1.f - (vv3[0] + vv3[2]), a3[0],
+                    a3[1], b3[0], 1.f - (vv3[0] + vv3[1]));
 }
 
 static inline Vector3f_a_pair create_tangent_normal(Quaternion_p q) {
@@ -87,17 +91,22 @@ static inline Vector3f_a_pair create_tangent_normal(Quaternion_p q) {
     Simdf const tv = qv + qv;
     Simdf const vv = tv * qv;
 
-    float3 const wv3(tv * qv.splat_w());
-    float3 const vv3(vv);
+    Simdf const wv(tv * qv.splat_w());
 
     Simdf const vl = _mm_moveldup_ps(qv.v);
 
-    Simdf const xyz = Simdf(SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1))) * vl;
+    Simdf xyz = SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1)) * vl;
+    xyz       = SU_PERMUTE_PS(xyz.v, _MM_SHUFFLE(3, 0, 1, 2));
 
-    float3 const xyz3(xyz);
+    Simdf const a = xyz - wv;
+    Simdf const b = xyz + wv;
 
-    return {float3(1.f - (vv3[1] + vv3[2]), xyz3[0] - wv3[2], xyz3[1] + wv3[1]),
-            float3(xyz3[1] - wv3[1], xyz3[2] + wv3[0], 1.f - (vv3[0] + vv3[1]))};
+    float3 const vv3(vv);
+    float3 const a3(a);
+    float3 const b3(b);
+
+    return {float3(1.f - (vv3[1] + vv3[2]), a3[2], b3[1]),
+            float3(a3[1], b3[0], 1.f - (vv3[0] + vv3[1]))};
 }
 
 static inline float3 create_normal(Quaternion_p q) {
@@ -106,16 +115,14 @@ static inline float3 create_normal(Quaternion_p q) {
     Simdf const tv = qv + qv;
     Simdf const vv = tv * qv;
 
-    float3 const wv3(tv * qv.splat_w());
     float3 const vv3(vv);
 
-    Simdf const vl = _mm_moveldup_ps(qv.v);
+    Simdf const tvs = SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(1, 0, 1, 2));
+    Simdf const qvs = SU_PERMUTE_PS(qv.v, _MM_SHUFFLE(3, 3, 2, 0));
 
-    Simdf const xyz = Simdf(SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1))) * vl;
+    float3 const wv = float3(tvs * qvs);
 
-    float3 const xyz3(xyz);
-
-    return float3(xyz3[1] - wv3[1], xyz3[2] + wv3[0], 1.f - (vv3[0] + vv3[1]));
+    return float3(wv[0] - wv[3], wv[1] + wv[2], 1.f - (vv3[0] + vv3[1]));
 }
 
 static inline Quaternion create_rotation_x(float a) {
