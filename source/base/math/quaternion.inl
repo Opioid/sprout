@@ -37,25 +37,27 @@ static inline Quaternion create(float3x3 const& m) {
 // https://marc-b-reynolds.github.io/quaternions/2017/08/08/QuatRotMatrix.html
 
 static inline float3x3 create_matrix3x3(Quaternion_p q) {
-    Simdf const qv(q.v);
+    Simdf const qv(q);
 
     Simdf const tv = qv + qv;
     Simdf const vv = tv * qv;
 
-    float3 const wv3(tv * qv.splat_w());
+    Simdf const wv(tv * qv.splat_w());
+
+    Simdf const vl = _mm_moveldup_ps(qv.v);
+
+    Simdf xyz = SU_PERMUTE_PS(tv.v, _MM_SHUFFLE(2, 1, 2, 1)) * vl;
+    xyz       = SU_PERMUTE_PS(xyz.v, _MM_SHUFFLE(3, 0, 1, 2));
+
+    Simdf const a = xyz - wv;
+    Simdf const b = xyz + wv;
+
     float3 const vv3(vv);
-    float3 const tv3(tv);
+    float3 const a3(a);
+    float3 const b3(b);
 
-    float const x = q[0];
-    float const z = q[2];
-
-    float const xy = tv3[1] * x;
-    float const xz = tv3[2] * x;
-    float const yz = tv3[1] * z;
-
-    return float3x3(1.f - (vv3[1] + vv3[2]), xy - wv3[2], xz + wv3[1], xy + wv3[2],
-                    1.f - (vv3[0] + vv3[2]), yz - wv3[0], xz - wv3[1], yz + wv3[0],
-                    1.f - (vv3[0] + vv3[1]));
+    return float3x3(1.f - (vv3[1] + vv3[2]), a3[2], b3[1], b3[2], 1.f - (vv3[0] + vv3[2]), a3[0],
+                    a3[1], b3[0], 1.f - (vv3[0] + vv3[1]));
 }
 
 static inline Quaternion create_rotation_x(float a) {
