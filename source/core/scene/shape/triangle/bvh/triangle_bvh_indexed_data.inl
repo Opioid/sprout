@@ -368,19 +368,22 @@ inline void Indexed_data::sample(uint32_t index, float2 r2, float3& p, float2& t
 
     float2 const uv = sample_triangle_uniform(r2);
 
+    Simdf const u(uv[0]);
+    Simdf const v(uv[1]);
+
     auto const tri = triangles_[index];
 
-    float3 const ia = positions_[tri.a];
-    float3 const ib = positions_[tri.b];
-    float3 const ic = positions_[tri.c];
+    Simdf const ia = Simdf(positions_[tri.a]);
+    Simdf const ib = Simdf(positions_[tri.b]);
+    Simdf const ic = Simdf(positions_[tri.c]);
 
-    triangle::interpolate_p(ia, ib, ic, uv, p);
+    p = float3(triangle::interpolate_p(ia, ib, ic, u, v));
 
     SV const& sa = shading_vertices_[tri.a];
     SV const& sb = shading_vertices_[tri.b];
     SV const& sc = shading_vertices_[tri.c];
 
-    tc = triangle::interpolate_uv(sa, sb, sc, uv);
+    tc = triangle::interpolate_uv(u, v, sa, sb, sc);
 }
 
 inline void Indexed_data::allocate_triangles(uint32_t             num_triangles,
