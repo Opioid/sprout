@@ -6,7 +6,6 @@
 #include "triangle_primitive_mt.hpp"
 
 #include <cstring>
-#include <iostream>
 
 namespace scene::shape::triangle {
 
