@@ -11,8 +11,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include <iostream>
-
 namespace scene::shape::triangle::bvh {
 
 inline Indexed_data::Indexed_data()

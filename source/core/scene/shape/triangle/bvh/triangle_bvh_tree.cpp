@@ -94,11 +94,6 @@ bool Tree::intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min
     isec.u     = u;
     isec.v     = v;
     isec.index = index;
-
-    if (index == 0xFFFFFFFF) {
-        std::cout << "scream" << std::endl;
-    }
-
     return true;
     }
 
