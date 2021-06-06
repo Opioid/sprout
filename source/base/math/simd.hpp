@@ -36,8 +36,6 @@ struct Simdf {
 
     Simdf(float sx, float sy);
 
-    Simdf(float sx, float sy, float sz);
-
     explicit Simdf(float const* a);
 
     explicit Simdf(Vector3f_a_p o);

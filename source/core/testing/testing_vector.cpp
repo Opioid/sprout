@@ -244,8 +244,8 @@ void vector() {
         for (size_t i = 0; i < Num_iterations; ++i) {
             size_t const o = i * 8;
 
-            Simdf const va(values[o + 0], values[o + 1], values[o + 2]);
-            Simdf const vb(values[o + 3], values[o + 4], values[o + 5]);
+            Simdf const va = Simdf::create_from_3_unaligned(&values[o]);
+            Simdf const vb = Simdf::create_from_3_unaligned(&values[o + 3]);
 
             Simdf const sa = Simdf(values[o + 6]);
             Simdf const sb = Simdf(values[o + 7]);

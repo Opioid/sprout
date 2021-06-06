@@ -55,14 +55,6 @@ inline Simdf::Simdf(float sx, float sy) {
     v        = _mm_unpacklo_ps(x, y);
 }
 
-inline Simdf::Simdf(float sx, float sy, float sz) {
-    __m128 x  = _mm_load_ss(&sx);
-    __m128 y  = _mm_load_ss(&sy);
-    __m128 z  = _mm_load_ss(&sz);
-    __m128 xy = _mm_unpacklo_ps(x, y);
-    v         = _mm_movelh_ps(xy, z);
-}
-
 inline Simdf::Simdf(Vector3f_a_p o) : v(_mm_load_ps(o.v)) {}
 
 inline Simdf::Simdf(Vector4f_a_p o) : v(_mm_load_ps(o.v)) {}
