@@ -6,7 +6,6 @@
 #include "triangle_primitive_mt.hpp"
 
 #include <cstring>
-#include <iostream>
 
 namespace scene::shape::triangle {
 
@@ -424,12 +423,6 @@ static inline Simdf interpolate_p(Simdf_p a, Simdf_p b, Simdf_p c, Simdf_p u, Si
     return w * a + u * b + v * c;
 }
 
-static inline void interpolate_p(float3_p a, float3_p b, float3_p c, float2 uv, float3& p) {
-    float const w = 1.f - uv[0] - uv[1];
-
-    p = w * a + uv[0] * b + uv[1] * c;
-}
-
 static inline float area(float3_p a, float3_p b, float3_p c) {
     return 0.5f * length(cross(b - a, c - a));
 }
@@ -439,26 +432,18 @@ inline Shading_vertex_MTC::Shading_vertex_MTC() = default;
 inline Shading_vertex_MTC::Shading_vertex_MTC(float3_p n, float3_p t, float2 uv)
     : n_u(n, uv[0]), t_v(t, uv[1]) {}
 
-static inline float2 interpolate_uv(const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
-                                    const Shading_vertex_MTC& c, float2 uv) {
-    float const w = 1.f - uv[0] - uv[1];
-
-    return float2(w * a.n_u[3] + uv[0] * b.n_u[3] + uv[1] * c.n_u[3],
-                  w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
-}
-
 static inline float2 interpolate_uv(Simdf_p u, Simdf_p v, const Shading_vertex_MTC& a,
                                     const Shading_vertex_MTC& b, const Shading_vertex_MTC& c) {
     Simdf const w = simd::One - u - v;
 
-    Simdf va(a.n_u[3], a.t_v[3], 0.f);
-    Simdf vb(b.n_u[3], b.t_v[3], 0.f);
+    Simdf va(a.n_u[3], a.t_v[3]);
+    Simdf vb(b.n_u[3], b.t_v[3]);
 
     va = w * va;
     vb = u * vb;
     va = va + vb;
 
-    Simdf vc(c.n_u[3], c.t_v[3], 0.f);
+    Simdf vc(c.n_u[3], c.t_v[3]);
 
     vc = v * vc;
 
@@ -467,18 +452,23 @@ static inline float2 interpolate_uv(Simdf_p u, Simdf_p v, const Shading_vertex_M
     return float3(uv).xy();
 }
 
-static inline void interpolate_data(const Shading_vertex_MTC& a, const Shading_vertex_MTC& b,
-                                    const Shading_vertex_MTC& c, float2 uv, float3& n, float3& t,
-                                    float2& tc) {
-    float const w = 1.f - uv[0] - uv[1];
+static inline float2 interpolate_uv(Simdf_p u, Simdf_p v, float2 a, float2 b, float2 c) {
+    Simdf const w = simd::One - u - v;
 
-    float4 const n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
-    float4 const t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
+    Simdf va(a[0], a[1]);
+    Simdf vb(b[0], b[1]);
 
-    n = normalize(n_u.xyz());
-    t = normalize(t_v.xyz());
+    va = w * va;
+    vb = u * vb;
+    va = va + vb;
 
-    tc = float2(n_u[3], t_v[3]);
+    Simdf vc(c[0], c[1]);
+
+    vc = v * vc;
+
+    Simdf const uv = va + vc;
+
+    return float3(uv).xy();
 }
 
 static inline void interpolate_data(Simdf_p u, Simdf_p v, const Shading_vertex_MTC& a,
@@ -512,6 +502,20 @@ static inline void interpolate_data(Simdf_p u, Simdf_p v, const Shading_vertex_M
     tc[1] = r[1];
     //    tc[0] = v0.w();
     //    tc[1] = v1.w();
+}
+
+static inline Simdf interpolate_normal(Simdf_p u, Simdf_p v, float3_p a, float3_p b, float3_p c) {
+    Simdf const w = simd::One - u - v;
+
+    Simdf va = w * Simdf(a.v);
+    Simdf vb = u * Simdf(b.v);
+
+    va = va + vb;
+
+    Simdf vc = v * Simdf(c.v);
+    Simdf v0 = va + vc;
+
+    return normalize3(v0);
 }
 
 static inline Simdf interpolate_normal(Simdf_p u, Simdf_p v, const Shading_vertex_MTC& a,

@@ -38,7 +38,7 @@ static inline float importance(float3_p p, float3_p n, float3_p center, float4_p
     float const cos_a    = material::abs_dot(da, na, two_sided);
     float const cos_n    = -dot(n, na);
 
-    Simdf const  sa(float3(sin_cu, cos_cone, cos_a, cos_n));
+    Simdf const  sa(float4(sin_cu, cos_cone, cos_a, cos_n));
     Simdf const  sb = max(simd::One - sa * sa, simd::Min_normal.v);
     Simdf const  sr = sqrt(sb);
     float4 const out(sr);

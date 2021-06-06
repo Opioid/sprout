@@ -55,14 +55,6 @@ inline Simdf::Simdf(float sx, float sy) {
     v        = _mm_unpacklo_ps(x, y);
 }
 
-inline Simdf::Simdf(float sx, float sy, float sz) {
-    __m128 x  = _mm_load_ss(&sx);
-    __m128 y  = _mm_load_ss(&sy);
-    __m128 z  = _mm_load_ss(&sz);
-    __m128 xy = _mm_unpacklo_ps(x, y);
-    v         = _mm_movelh_ps(xy, z);
-}
-
 inline Simdf::Simdf(Vector3f_a_p o) : v(_mm_load_ps(o.v)) {}
 
 inline Simdf::Simdf(Vector4f_a_p o) : v(_mm_load_ps(o.v)) {}
@@ -190,19 +182,16 @@ static inline Simdf cross3(Simdf_p a, Simdf_p b) {
     __m128 tmp0 = _mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(3, 0, 2, 1));
     __m128 tmp1 = _mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(3, 0, 2, 1));
 
-    /*
+#if defined(__AVX2__)
     tmp1 = _mm_mul_ps(tmp1, b.v);
 
     __m128 tmp2 = _mm_fmsub_ps(tmp0, a.v, tmp1);
-
-    return SU_PERMUTE_PS(tmp2, _MM_SHUFFLE(3, 0, 2, 1));
-    */
-
+#else
     tmp0 = _mm_mul_ps(tmp0, a.v);
     tmp1 = _mm_mul_ps(tmp1, b.v);
 
     __m128 tmp2 = _mm_sub_ps(tmp0, tmp1);
-
+#endif
     return SU_PERMUTE_PS(tmp2, _MM_SHUFFLE(3, 0, 2, 1));
 }
 

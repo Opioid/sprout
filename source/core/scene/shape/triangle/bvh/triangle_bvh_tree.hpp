@@ -25,15 +25,9 @@ class Worker;
 namespace shape {
 
 class Node_stack;
-struct Vertex;
 class Vertex_stream;
 
 namespace triangle {
-
-struct Index_triangle;
-struct Triangle;
-struct Position_triangle;
-struct Data_triangle;
 
 struct Intersection {
     Simdf u;
