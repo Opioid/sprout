@@ -84,9 +84,9 @@ class Indexed_data {
 
     float3* positions_;
 
-    using SV = shape::triangle::Shading_vertex_MTC;
+    float4* frames_;
 
-    SV* shading_vertices_;
+    float2* uvs_;
 };
 
 }  // namespace triangle::bvh

@@ -6,7 +6,11 @@
 #include "scene/shape/morphable.hpp"
 #include "scene/shape/shape.hpp"
 
-namespace scene::shape::triangle {
+namespace scene::shape {
+
+struct Vertex;
+
+namespace triangle {
 
 class Morph_target_collection;
 
@@ -78,6 +82,8 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
     friend class Provider;
 };
 
-}  // namespace scene::shape::triangle
+}  // namespace triangle
+
+}  // namespace scene::shape
 
 #endif
