@@ -48,7 +48,7 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) {
                 uint64_t const range = b.time - a.time;
                 uint64_t const delta = time - a.time;
 
-                float const t = float(delta) / float(range);
+                float const t = float(double(delta) / double(range));
 
                 a.k.interpolate(interpolated_frames[i].k, b.k, t);
                 a.m.interpolate(interpolated_frames[i].m, b.m, t);

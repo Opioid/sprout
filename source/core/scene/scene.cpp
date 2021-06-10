@@ -42,7 +42,6 @@ Scene::Scene(std::vector<Image*> const&    image_resources,
     : image_resources_(image_resources),
       material_resources_(material_resources),
       shape_resources_(shape_resources),
-
       null_shape_(null_shape) {
     props_.reserve(Num_reserved_props);
     prop_world_transformations_.reserve(Num_reserved_props);

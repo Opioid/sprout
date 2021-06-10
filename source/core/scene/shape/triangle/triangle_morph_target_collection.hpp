@@ -24,7 +24,7 @@ class Morph_target_collection {
 
     Morph_target_collection(Morph_target_collection&& other);
 
-    const std::vector<Index_triangle>& triangles() const;
+    std::vector<Index_triangle> const& triangles() const;
 
     std::vector<Index_triangle>& triangles();
 

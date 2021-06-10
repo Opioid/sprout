@@ -4,6 +4,8 @@
 #include "scene/shape/shape_vertex.hpp"
 #include "triangle_primitive.hpp"
 
+#include <algorithm>
+
 namespace scene::shape::triangle {
 
 Morph_target_collection::Morph_target_collection() = default;
@@ -11,7 +13,7 @@ Morph_target_collection::Morph_target_collection() = default;
 Morph_target_collection::Morph_target_collection(Morph_target_collection&& other)
     : triangles_(std::move(other.triangles_)), morph_targets_(std::move(other.morph_targets_)) {}
 
-const std::vector<Index_triangle>& Morph_target_collection::triangles() const {
+std::vector<Index_triangle> const& Morph_target_collection::triangles() const {
     return triangles_;
 }
 
@@ -30,6 +32,14 @@ uint32_t Morph_target_collection::num_vertices() const {
 
 void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, Threads& threads,
                                     Vertex* vertices) {
+    if (0.f == weight) {
+        Vertex const* source = morph_targets_[a].data();
+
+        std::copy(source, source + num_vertices(), vertices);
+
+        return;
+    }
+
     struct Args {
         Vertex const* va;
         Vertex const* vb;
@@ -51,7 +61,7 @@ void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, Thread
                 args.vertices[i].bitangent_sign = args.va[i].bitangent_sign;
             }
         },
-        0, int32_t(morph_targets_[0].size()));
+        0, int32_t(num_vertices()));
 }
 
 }  // namespace scene::shape::triangle
