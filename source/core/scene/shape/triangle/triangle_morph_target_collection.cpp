@@ -6,6 +6,11 @@
 
 namespace scene::shape::triangle {
 
+Morph_target_collection::Morph_target_collection() = default;
+
+Morph_target_collection::Morph_target_collection(Morph_target_collection&& other)
+    : triangles_(std::move(other.triangles_)), morph_targets_(std::move(other.morph_targets_)) {}
+
 const std::vector<Index_triangle>& Morph_target_collection::triangles() const {
     return triangles_;
 }

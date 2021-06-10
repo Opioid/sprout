@@ -5,6 +5,7 @@
 #include "bvh/triangle_bvh_tree.hpp"
 #include "scene/shape/morphable.hpp"
 #include "scene/shape/shape.hpp"
+#include "triangle_morph_target_collection.hpp"
 
 namespace scene::shape {
 
@@ -12,11 +13,9 @@ struct Vertex;
 
 namespace triangle {
 
-class Morph_target_collection;
-
 class alignas(64) Morphable_mesh final : public Shape, public Morphable {
   public:
-    Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts);
+    Morphable_mesh(Morph_target_collection&& collection, uint32_t num_parts);
 
     ~Morphable_mesh() final;
 
@@ -75,7 +74,7 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
   private:
     bvh::Tree tree_;
 
-    Morph_target_collection* collection_;
+    Morph_target_collection collection_;
 
     Vertex* vertices_;
 

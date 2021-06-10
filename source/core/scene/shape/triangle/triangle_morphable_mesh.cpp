@@ -12,7 +12,6 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/shape_vertex.hpp"
-#include "triangle_morph_target_collection.hpp"
 #include "triangle_primitive.hpp"
 
 #ifdef SU_DEBUG
@@ -22,16 +21,15 @@
 
 namespace scene::shape::triangle {
 
-Morphable_mesh::Morphable_mesh(Morph_target_collection* collection, uint32_t num_parts)
+Morphable_mesh::Morphable_mesh(Morph_target_collection&& collection, uint32_t num_parts)
     : Shape(Properties(Property::Complex, Property::Finite)),
-      collection_(collection),
-      vertices_(new Vertex[collection->num_vertices()]) {
+      collection_(std::move(collection)),
+      vertices_(new Vertex[collection_.num_vertices()]) {
     tree_.allocate_parts(num_parts);
 }
 
 Morphable_mesh::~Morphable_mesh() {
     delete[] vertices_;
-    delete collection_;
 }
 
 AABB Morphable_mesh::aabb() const {
@@ -208,12 +206,12 @@ Morphable* Morphable_mesh::morphable_shape() {
 }
 
 void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, Threads& threads) {
-    collection_->morph(a, b, weight, threads, vertices_);
+    collection_.morph(a, b, weight, threads, vertices_);
 
-    Vertex_stream_interleaved vertices(collection_->num_vertices(), vertices_);
+    Vertex_stream_interleaved vertices(collection_.num_vertices(), vertices_);
 
     bvh::Builder_SAH builder(16, 64, 4);
-    builder.build(tree_, uint32_t(collection_->triangles().size()), collection_->triangles().data(),
+    builder.build(tree_, uint32_t(collection_.triangles().size()), collection_.triangles().data(),
                   vertices, threads);
 }
 

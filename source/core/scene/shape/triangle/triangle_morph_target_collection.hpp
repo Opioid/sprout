@@ -20,6 +20,10 @@ struct Index_triangle;
 
 class Morph_target_collection {
   public:
+    Morph_target_collection();
+
+    Morph_target_collection(Morph_target_collection&& other);
+
     const std::vector<Index_triangle>& triangles() const;
 
     std::vector<Index_triangle>& triangles();

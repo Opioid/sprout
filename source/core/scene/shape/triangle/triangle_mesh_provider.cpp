@@ -264,7 +264,7 @@ Shape* Provider::load(void const* data, std::string const& /*source_name*/,
 
 Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const& morph_targets,
                                      Resources& resources) {
-    auto collection = new Morph_target_collection;
+    Morph_target_collection collection;
 
     serialize::Json_handler handler;
 
@@ -278,7 +278,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
             continue;
         }
 
-        handler.clear(collection->triangles().empty());
+        handler.clear(collection.triangles().empty());
 
         rapidjson::IStreamWrapper json_stream(*stream, buffer.data(), Buffer_size);
 
@@ -310,7 +310,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
         }
 
         // The idea is to have one identical set of indices for all morph targets
-        if (collection->triangles().empty()) {
+        if (collection.triangles().empty()) {
             auto& triangles = handler.triangles();
 
             uint32_t part = 0;
@@ -323,7 +323,7 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
                     uint32_t const b = triangles[i].i[1];
                     uint32_t const c = triangles[i].i[2];
 
-                    collection->triangles().emplace_back(a, b, c, part);
+                    collection.triangles().emplace_back(a, b, c, part);
                 }
 
                 ++part;
@@ -333,16 +333,16 @@ Shape* Provider::load_morphable_mesh(std::string const& filename, Strings const&
         (void)filename;
         SOFT_ASSERT(check(handler.vertices(), filename));
 
-        collection->add_swap_vertices(handler.vertices());
+        collection.add_swap_vertices(handler.vertices());
     }
 
-    if (collection->triangles().empty()) {
+    if (collection.triangles().empty()) {
         return nullptr;
     }
 
     uint32_t const num_parts = uint32_t(handler.parts().size());
 
-    auto mesh = new Morphable_mesh(collection, num_parts);
+    auto mesh = new Morphable_mesh(std::move(collection), num_parts);
 
     return mesh;
 }
