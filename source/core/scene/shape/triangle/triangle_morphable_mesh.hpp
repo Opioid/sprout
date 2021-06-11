@@ -69,7 +69,7 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     Morphable* morphable_shape() final;
 
-    void morph(uint32_t a, uint32_t b, float weight, Threads& threads) final;
+    void morph(Morphing const& a, Threads& threads) final;
 
   private:
     bvh::Tree tree_;

@@ -9,15 +9,24 @@ class Pool;
 
 using Threads = thread::Pool;
 
-namespace scene::shape {
+namespace scene {
+
+namespace entity {
+struct Morphing;
+}
+
+namespace shape {
 
 class Morphable {
   public:
+    using Morphing = entity::Morphing;
+
     virtual ~Morphable() {}
 
-    virtual void morph(uint32_t a, uint32_t b, float weight, Threads& threads) = 0;
+    virtual void morph(Morphing const& a, Threads& threads) = 0;
 };
 
 }  // namespace scene::shape
+}
 
 #endif

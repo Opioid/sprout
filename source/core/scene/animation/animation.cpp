@@ -6,6 +6,8 @@
 #include "scene/scene.inl"
 #include "scene/shape/morphable.hpp"
 
+#include <iostream>
+
 namespace scene::animation {
 
 Animation::Animation(uint32_t entity, uint32_t num_frames, uint32_t num_interpolated_frames)
@@ -74,9 +76,17 @@ void Animation::update(Scene& scene, Threads& threads) const {
 
     scene.prop_set_frames(entity_, interpolated);
 
+
+
     if (shape::Morphable* morphable = scene.prop_shape(entity_)->morphable_shape(); morphable) {
-        auto const& m = interpolated[0].m;
-        morphable->morph(m.targets[0], m.targets[1], m.weight, threads);
+        auto const& a = interpolated[0].m;
+
+        auto const& b = interpolated[scene.num_interpolation_frames() - 1].m;
+
+        std::cout << "a: " << a.targets[0] << ", " << a.targets[1] << ", " << a.weight << std::endl;
+        std::cout << "b: " << b.targets[0] << ", " << b.targets[1] << ", " << b.weight << std::endl;
+
+        morphable->morph(a, threads);
     }
 }
 

@@ -10,7 +10,13 @@ class Pool;
 
 using Threads = thread::Pool;
 
-namespace scene::shape {
+namespace scene {
+
+namespace entity {
+struct Morphing;
+}
+
+namespace shape {
 
 struct Vertex;
 
@@ -20,6 +26,8 @@ struct Index_triangle;
 
 class Morph_target_collection {
   public:
+    using Morphing = entity::Morphing;
+
     Morph_target_collection();
 
     Morph_target_collection(Morph_target_collection&& other);
@@ -32,7 +40,7 @@ class Morph_target_collection {
 
     void add_swap_vertices(std::vector<Vertex>& vertices);
 
-    void morph(uint32_t a, uint32_t b, float weight, Threads& threads, Vertex* vertices);
+    void morph(Morphing const& a, Threads& threads, Vertex* vertices);
 
   private:
     std::vector<Index_triangle> triangles_;
@@ -42,5 +50,6 @@ class Morph_target_collection {
 
 }  // namespace triangle
 }  // namespace scene::shape
+}
 
 #endif

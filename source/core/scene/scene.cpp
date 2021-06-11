@@ -621,15 +621,13 @@ Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t    
                                                                     Transformation& trafo) const {
     entity::Keyframe const* frames = &keyframes_[frames_id];
 
-    uint64_t const i = (time - current_time_start_) / Tick_duration;
+    uint64_t const delta = time - current_time_start_;
+    uint64_t const i     = delta / Tick_duration;
+
+    float const t = float(double(delta) / double(Tick_duration));
 
     auto const& a = frames[i];
     auto const& b = frames[i + 1];
-
-    uint64_t const a_time = current_time_start_ + i * Tick_duration;
-    uint64_t const delta  = time - a_time;
-
-    float const t = float(delta) / float(Tick_duration);
 
     trafo.set(lerp(a.trafo, b.trafo, t));
 
