@@ -61,8 +61,8 @@ static inline void intersect(float hit_t, Ray const& ray, Shape::Transformation 
     }
 }
 
-bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                       Interpolation ipo, Intersection& isec) const {
+bool Sphere::intersect(Ray& ray, Transformation const& trafo, Worker& /*worker*/, Interpolation ipo,
+                       Intersection& isec) const {
     float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);
@@ -101,7 +101,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*node
     return false;
 }
 
-bool Sphere::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
+bool Sphere::intersect_p(Ray const& ray, Transformation const& trafo, Worker& /*worker*/) const {
     float3 const v = trafo.position - ray.origin;
 
     float const b = dot(ray.direction, v);

@@ -44,55 +44,6 @@ bool check(const Sample_to& sample) {
     return all_finite(sample.uvw);
 }
 
-void test() {
-    std::cout << "scene::shape::testing::test()" << std::endl;
-
-    Node_stack nodes;
-
-    math::Transformation trafo;
-    trafo.position = float3(0.f);
-    trafo.scale    = float3(1.f);
-    trafo.rotation = math::quaternion::Identity;
-
-    entity::Composed_transformation composed_transformation;
-    composed_transformation.set(trafo);
-
-    scene::Ray ray;
-    ray.origin = float3(0.f, 4.f, 0.f);
-    ray.set_direction(float3(0.f, -1.f, 0.f));
-    ray.max_t() = scene::Ray_max_t;
-    ray.min_t() = 0.f;
-
-    Intersection isec;
-
-    //	{
-    //		Infinite_sphere infinite_sphere;
-    //		if (infinite_sphere.intersect(composed_transformation, ray, nodes,
-    // isec)) { 			print(isec);
-    //		}
-    //	}
-
-    {
-        ray.origin = float3(0.f, 4.f, 0.f);
-        ray.set_direction(float3(0.f, -1.f, 0.f));
-
-        Sphere sphere;
-        if (sphere.intersect(ray, composed_transformation, nodes, Interpolation::All, isec)) {
-            print(isec);
-        }
-    }
-
-    //	{
-    //		ray.origin = float3(0.f, 0.f, 0.f);
-    //		ray.set_direction(float3(0.f, -1.f, 0.f));
-
-    //		Sphere sphere;
-    //		if (sphere.intersect(composed_transformation, ray, nodes, isec)) {
-    //			print(isec);
-    //		}
-    //	}
-}
-
 void print(Intersection const& isec) {
     std::cout << "n: ";
     print_vector(isec.n);

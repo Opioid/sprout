@@ -7,12 +7,15 @@
 #include "light/light.inl"
 #include "prop/prop.inl"
 #include "scene.hpp"
+#include "scene_constants.hpp"
 #include "scene_ray.hpp"
 #include "shape/shape_intersection.hpp"
 
 #include "base/debug/assert.hpp"
 
 namespace scene {
+
+static uint64_t constexpr Tick_duration = Units_per_second / 60;
 
 inline AABB Scene::aabb() const {
     return prop_bvh_.aabb();
@@ -98,6 +101,17 @@ inline Scene::Transformation const& Scene::prop_transformation_at(uint32_t entit
     }
 
     return prop_animated_transformation_at(prop_frames_[entity], time, trafo);
+}
+
+inline Scene::Frame Scene::frame_at(uint64_t time) const {
+    uint64_t const i = (time - current_time_start_) / Tick_duration;
+
+    uint64_t const a_time = current_time_start_ + i * Tick_duration;
+    uint64_t const delta  = time - a_time;
+
+    float const t = float(double(delta) / double(Tick_duration));
+
+    return {uint32_t(i), t};
 }
 
 inline AABB const& Scene::prop_aabb(uint32_t entity) const {

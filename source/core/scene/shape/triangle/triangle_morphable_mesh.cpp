@@ -9,6 +9,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/entity/composed_transformation.inl"
 #include "scene/scene_ray.inl"
+#include "scene/scene_worker.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/shape_vertex.hpp"
@@ -24,7 +25,7 @@ namespace scene::shape::triangle {
 Morphable_mesh::Morphable_mesh(Morph_target_collection&& collection, uint32_t num_parts)
     : Shape(Properties(Property::Complex, Property::Finite)),
       collection_(std::move(collection)),
-      vertices_(new Vertex[collection_.num_vertices()]) {
+      vertices_(nullptr) {
     tree_.allocate_parts(num_parts);
 }
 
@@ -40,8 +41,10 @@ uint32_t Morphable_mesh::num_parts() const {
     return tree_.num_parts();
 }
 
-bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
+bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Worker& worker,
                                Interpolation ipo, shape::Intersection& isec) const {
+    Node_stack& nodes = worker.node_stack();
+
     Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simdf const ray_origin    = transform_point(world_to_object, Simdf(ray.origin));
@@ -50,17 +53,21 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 
+    auto const f = worker.scene().frame_at(ray.time);
+
+    Simdf const weight(f.w);
+
     if (Intersection pi;
-        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes, pi)) {
+        tree_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, f.f, weight, nodes, pi)) {
         ray.max_t() = ray_max_t.x();
 
-        Simdf p = tree_.interpolate_p(pi.u, pi.v, pi.index);
+        Simdf p = tree_.interpolate_p(pi.u, pi.v, pi.index, f.f, weight);
 
         Simd4x4f const object_to_world(trafo.object_to_world());
 
         Simdf p_w = transform_point(object_to_world, p);
 
-        Simdf geo_n = tree_.triangle_normal(pi.index);
+        Simdf geo_n = tree_.triangle_normal(pi.index, f.f, weight);
 
         Simd3x3f rotation(trafo.rotation);
 
@@ -76,7 +83,7 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack
             Simdf  n;
             Simdf  t;
             float2 uv;
-            tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
+            tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, f.f, weight, n, t, uv);
 
             Simdf const bitangent_sign(tree_.triangle_bitangent_sign(pi.index));
 
@@ -90,11 +97,11 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack
 
             isec.uv = uv;
         } else if (Interpolation::No_tangent_space == ipo) {
-            float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index);
+            float2 const uv = tree_.interpolate_triangle_uv(pi.u, pi.v, pi.index, f.f, weight);
 
             isec.uv = uv;
         } else {
-            Simdf const n   = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index);
+            Simdf const n   = tree_.interpolate_shading_normal(pi.u, pi.v, pi.index, f.f, weight);
             Simdf const n_w = transform_vector(rotation, n);
 
             isec.n = float3(n_w);
@@ -109,7 +116,9 @@ bool Morphable_mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack
 }
 
 bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& trafo,
-                                 Node_stack& nodes) const {
+                                 Worker& worker) const {
+    Node_stack& nodes = worker.node_stack();
+
     Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simdf const ray_origin    = transform_point(world_to_object, Simdf(ray.origin));
@@ -118,7 +127,11 @@ bool Morphable_mesh::intersect_p(Ray const& ray, Transformation const& trafo,
     scalar const ray_min_t(ray.min_t());
     scalar       ray_max_t(ray.max_t());
 
-    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, nodes);
+    auto const f = worker.scene().frame_at(ray.time);
+
+    Simdf const weight(f.w);
+
+    return tree_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, f.f, weight, nodes);
 }
 
 bool Morphable_mesh::visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
@@ -131,8 +144,12 @@ bool Morphable_mesh::visibility(Ray const& ray, Transformation const& trafo, uin
     scalar const ray_min_t(ray.min_t());
     scalar const ray_max_t(ray.max_t());
 
-    return tree_.visibility(ray_origin, ray_direction, ray_min_t, ray_max_t, entity, filter, worker,
-                            v);
+    auto const f = worker.scene().frame_at(ray.time);
+
+    Simdf const weight(f.w);
+
+    return tree_.visibility(ray_origin, ray_direction, ray_min_t, ray_max_t, entity, f.f, weight,
+                            filter, worker, v);
 }
 
 bool Morphable_mesh::sample(uint32_t /*part*/, uint32_t /*variant*/, float3_p /*p*/, float3_p /*n*/,
@@ -205,14 +222,18 @@ Morphable* Morphable_mesh::morphable_shape() {
     return this;
 }
 
-void Morphable_mesh::morph(Morphing const& a, Threads& threads) {
-    collection_.morph(a, threads, vertices_);
+void Morphable_mesh::morph(Keyframe const* frames, uint32_t num_frames, Threads& threads) {
+    if (!vertices_) {
+        vertices_ = new Vertex[collection_.num_vertices() * num_frames];
+    }
+
+    collection_.morph(frames, num_frames, threads, vertices_);
 
     Vertex_stream_interleaved vertices(collection_.num_vertices(), vertices_);
 
     bvh::Builder_SAH builder(16, 64, 4);
     builder.build(tree_, uint32_t(collection_.triangles().size()), collection_.triangles().data(),
-                  vertices, threads);
+                  vertices, num_frames, threads);
 }
 
 }  // namespace scene::shape::triangle

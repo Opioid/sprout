@@ -182,6 +182,13 @@ class Scene {
 
     Transformation const& prop_world_transformation(uint32_t entity) const;
 
+    struct Frame {
+        uint32_t f;
+        float    w;
+    };
+
+    Frame frame_at(uint64_t time) const;
+
     float3_p prop_world_position(uint32_t entity) const;
 
     void prop_allocate_frames(uint32_t entity, bool local_animation);

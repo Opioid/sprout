@@ -59,28 +59,43 @@ class Tree {
 
     bool intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t, scalar& ray_max_t,
                    Node_stack& nodes, Intersection& isec) const;
+    bool intersect(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t, scalar& ray_max_t,
+                   uint32_t frame, Simdf_p weight, Node_stack& nodes, Intersection& isec) const;
 
     bool intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                      scalar_p ray_max_t, Node_stack& nodes) const;
+    bool intersect_p(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
+                     scalar_p ray_max_t, uint32_t frame, Simdf_p weight, Node_stack& nodes) const;
 
     bool visibility(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
                     scalar_p ray_max_t, uint32_t entity, Filter filter, Worker& worker,
                     float3& ta) const;
+    bool visibility(Simdf_p ray_origin, Simdf_p ray_direction, scalar_p ray_min_t,
+                    scalar_p ray_max_t, uint32_t entity, uint32_t frame, Simdf_p weight,
+                    Filter filter, Worker& worker, float3& ta) const;
 
     Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const;
+    Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame, Simdf_p weight) const;
 
     void interpolate_triangle_data(Simdf_p u, Simdf_p v, uint32_t index, Simdf& n, Simdf& t,
                                    float2& tc) const;
+    void interpolate_triangle_data(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                                   Simdf_p weight, Simdf& n, Simdf& t, float2& tc) const;
 
     Simdf interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index) const;
+    Simdf interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                                     Simdf_p weight) const;
 
     float2 interpolate_triangle_uv(Simdf_p u, Simdf_p v, uint32_t index) const;
+    float2 interpolate_triangle_uv(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                                   Simdf_p weight) const;
 
     float triangle_bitangent_sign(uint32_t index) const;
 
     uint32_t triangle_part(uint32_t index) const;
 
     Simdf triangle_normal(uint32_t index) const;
+    Simdf triangle_normal(uint32_t index, uint32_t frame, Simdf_p weight) const;
 
     float triangle_area(uint32_t index) const;
 
@@ -93,7 +108,8 @@ class Tree {
 
     void allocate_parts(uint32_t num_parts);
 
-    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices);
+    void allocate_triangles(uint32_t num_triangles, uint32_t num_frames,
+                            Vertex_stream const& vertices);
 
     void set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
                       Vertex_stream const& vertices, uint32_t triangle_id);

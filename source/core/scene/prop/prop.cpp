@@ -82,7 +82,7 @@ bool Prop::intersect(uint32_t self, Ray& ray, Worker& worker, shape::Interpolati
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(), ipo, isec);
+    return scene.prop_shape(self)->intersect(ray, trafo, worker, ipo, isec);
 }
 
 bool Prop::intersect_shadow(uint32_t self, Ray& ray, Worker& worker,
@@ -102,8 +102,8 @@ bool Prop::intersect_shadow(uint32_t self, Ray& ray, Worker& worker,
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect(ray, trafo, worker.node_stack(),
-                                             shape::Interpolation::Normal, isec);
+    return scene.prop_shape(self)->intersect(ray, trafo, worker, shape::Interpolation::Normal,
+                                             isec);
 }
 
 bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker& worker) const {
@@ -122,7 +122,7 @@ bool Prop::intersect_p(uint32_t self, Ray const& ray, Worker& worker) const {
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(self, ray.time, is_static, temp);
 
-    return scene.prop_shape(self)->intersect_p(ray, trafo, worker.node_stack());
+    return scene.prop_shape(self)->intersect_p(ray, trafo, worker);
 }
 
 bool Prop::visibility(uint32_t self, Ray const& ray, Filter filter, Worker& worker,

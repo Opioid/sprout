@@ -59,15 +59,10 @@ static inline bool intersect(float3_p a, float3_p b, float3_p c, ray& ray, float
 }
 
 static inline bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t,
-                             float const* a, float const* b, float const* c, scalar& u_out,
-                             scalar& v_out) {
-    Simdf ap(a);
-    Simdf bp(b);
-    Simdf cp(c);
-
-    Simdf e1   = bp - ap;
-    Simdf e2   = cp - ap;
-    Simdf tvec = origin - ap;
+                             Simdf_p a, Simdf_p b, Simdf_p c, scalar& u_out, scalar& v_out) {
+    Simdf e1   = b - a;
+    Simdf e2   = c - a;
+    Simdf tvec = origin - a;
 
     Simdf pvec = cross3(direction, e2);
     Simdf qvec = cross3(tvec, e1);
@@ -194,16 +189,12 @@ static inline bool intersect_p(float3_p a, float3_p b, float3_p c, ray const& ra
 }
 
 static inline bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
-                               float const* a, float const* b, float const* c) {
+                               Simdf_p a, Simdf_p b, Simdf_p c) {
     // Implementation C
 
-    Simdf ap(a);
-    Simdf bp(b);
-    Simdf cp(c);
-
-    Simdf e1   = bp - ap;
-    Simdf e2   = cp - ap;
-    Simdf tvec = origin - ap;
+    Simdf e1   = b - a;
+    Simdf e2   = c - a;
+    Simdf tvec = origin - a;
 
     Simdf pvec = cross3(direction, e2);
     Simdf qvec = cross3(tvec, e1);

@@ -23,10 +23,10 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     uint32_t num_parts() const final;
 
-    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, Interpolation ipo,
+    bool intersect(Ray& ray, Transformation const& trafo, Worker& worker, Interpolation ipo,
                    shape::Intersection& isec) const final;
 
-    bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
+    bool intersect_p(Ray const& ray, Transformation const& trafo, Worker& worker) const final;
 
     bool visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
                     Worker& worker, float3& v) const final;
@@ -69,7 +69,7 @@ class alignas(64) Morphable_mesh final : public Shape, public Morphable {
 
     Morphable* morphable_shape() final;
 
-    void morph(Morphing const& a, Threads& threads) final;
+    void morph(Keyframe const* frames, uint32_t num_frames, Threads& threads) final;
 
   private:
     bvh::Tree tree_;

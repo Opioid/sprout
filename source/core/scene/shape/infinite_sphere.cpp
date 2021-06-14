@@ -22,7 +22,7 @@ AABB Infinite_sphere::aabb() const {
     return Empty_AABB;
 }
 
-bool Infinite_sphere::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*nodes*/,
+bool Infinite_sphere::intersect(Ray& ray, Transformation const&      trafo, Worker& /*worker*/,
                                 Interpolation /*ipo*/, Intersection& isec) const {
     if (ray.max_t() < Ray_max_t) {
         return false;
@@ -54,7 +54,7 @@ bool Infinite_sphere::intersect(Ray& ray, Transformation const&      trafo, Node
 }
 
 bool Infinite_sphere::intersect_p(Ray const& /*ray*/, Transformation const& /*trafo*/,
-                                  Node_stack& /*nodes*/) const {
+                                  Worker& /*worker*/) const {
     // Implementation for this is not really needed, so just skip it
     return false;
 }

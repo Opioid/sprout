@@ -25,7 +25,7 @@ AABB Disk::aabb() const {
     return AABB(float3(-1.f, -1.f, -0.01f), float3(1.f, 1.f, 0.01f));
 }
 
-bool Disk::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*nodes*/,
+bool Disk::intersect(Ray& ray, Transformation const&      trafo, Worker& /*worker*/,
                      Interpolation /*ipo*/, Intersection& isec) const {
     float3_p normal = trafo.rotation.r[2];
 
@@ -69,7 +69,7 @@ bool Disk::intersect(Ray& ray, Transformation const&      trafo, Node_stack& /*n
     return false;
 }
 
-bool Disk::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
+bool Disk::intersect_p(Ray const& ray, Transformation const& trafo, Worker& /*worker*/) const {
     float3_p normal = trafo.rotation.r[2];
 
     float const d     = dot(normal, trafo.position);

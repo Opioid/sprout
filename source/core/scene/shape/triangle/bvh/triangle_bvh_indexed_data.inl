@@ -34,9 +34,33 @@ inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p 
                                     scalar& max_t, uint32_t index, scalar& u, scalar& v) const {
     auto const tri = triangles_[index];
 
-    float const* a = positions_[tri.a].v;
-    float const* b = positions_[tri.b].v;
-    float const* c = positions_[tri.c].v;
+    Simdf const a(positions_[tri.a].v);
+    Simdf const b(positions_[tri.b].v);
+    Simdf const c(positions_[tri.c].v);
+
+    return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
+}
+
+inline bool Indexed_data::intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t,
+                                    scalar& max_t, uint32_t index, uint32_t frame, Simdf_p weight,
+                                    scalar& u, scalar& v) const {
+    auto const tri = triangles_[index];
+
+    uint32_t const o0 = (frame)*num_vertices_;
+
+    Simdf const a0(positions_[tri.a + o0].v);
+    Simdf const b0(positions_[tri.b + o0].v);
+    Simdf const c0(positions_[tri.c + o0].v);
+
+    uint32_t const o1 = (frame + 1) * num_vertices_;
+
+    Simdf const a1(positions_[tri.a + o1].v);
+    Simdf const b1(positions_[tri.b + o1].v);
+    Simdf const c1(positions_[tri.c + o1].v);
+
+    Simdf const a = lerp(a0, a1, weight);
+    Simdf const b = lerp(b0, b1, weight);
+    Simdf const c = lerp(c0, c1, weight);
 
     return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
@@ -45,9 +69,33 @@ inline bool Indexed_data::intersect_p(Simdf_p origin, Simdf_p direction, scalar_
                                       scalar_p max_t, uint32_t index) const {
     auto const tri = triangles_[index];
 
-    float const* a = positions_[tri.a].v;
-    float const* b = positions_[tri.b].v;
-    float const* c = positions_[tri.c].v;
+    Simdf const a(positions_[tri.a].v);
+    Simdf const b(positions_[tri.b].v);
+    Simdf const c(positions_[tri.c].v);
+
+    return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
+}
+
+inline bool Indexed_data::intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t,
+                                      scalar_p max_t, uint32_t index, uint32_t frame,
+                                      Simdf_p weight) const {
+    auto const tri = triangles_[index];
+
+    uint32_t const o0 = (frame)*num_vertices_;
+
+    Simdf const a0(positions_[tri.a + o0].v);
+    Simdf const b0(positions_[tri.b + o0].v);
+    Simdf const c0(positions_[tri.c + o0].v);
+
+    uint32_t const o1 = (frame + 1) * num_vertices_;
+
+    Simdf const a1(positions_[tri.a + o1].v);
+    Simdf const b1(positions_[tri.b + o1].v);
+    Simdf const c1(positions_[tri.c + o1].v);
+
+    Simdf const a = lerp(a0, a1, weight);
+    Simdf const b = lerp(b0, b1, weight);
+    Simdf const c = lerp(c0, c1, weight);
 
     return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
 }
@@ -62,6 +110,29 @@ inline Simdf Indexed_data::interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) c
     return triangle::interpolate_p(ap, bp, cp, u, v);
 }
 
+inline Simdf Indexed_data::interpolate_p(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                                         Simdf_p weight) const {
+    auto const tri = triangles_[index];
+
+    uint32_t const o0 = (frame)*num_vertices_;
+
+    Simdf const a0(positions_[tri.a + o0].v);
+    Simdf const b0(positions_[tri.b + o0].v);
+    Simdf const c0(positions_[tri.c + o0].v);
+
+    uint32_t const o1 = (frame + 1) * num_vertices_;
+
+    Simdf const a1(positions_[tri.a + o1].v);
+    Simdf const b1(positions_[tri.b + o1].v);
+    Simdf const c1(positions_[tri.c + o1].v);
+
+    Simdf const a = lerp(a0, a1, weight);
+    Simdf const b = lerp(b0, b1, weight);
+    Simdf const c = lerp(c0, c1, weight);
+
+    return triangle::interpolate_p(a, b, c, u, v);
+}
+
 inline void Indexed_data::interpolate_data(Simdf_p u, Simdf_p v, uint32_t index, Simdf& n, Simdf& t,
                                            float2& tc) const {
     auto const tri = triangles_[index];
@@ -70,14 +141,54 @@ inline void Indexed_data::interpolate_data(Simdf_p u, Simdf_p v, uint32_t index,
     auto const tnb = quaternion::create_tangent_normal(frames_[tri.b]);
     auto const tnc = quaternion::create_tangent_normal(frames_[tri.c]);
 
-    //   n = triangle::interpolate_normal(u, v, tna.b, tnb.b, tnc.b);
-    //   t = triangle::interpolate_normal(u, v, tna.a, tnb.a, tnc.a);
-
     float2 const uva = uvs_[tri.a];
     float2 const uvb = uvs_[tri.b];
     float2 const uvc = uvs_[tri.c];
 
-    //   tc = triangle::interpolate_uv(u, v, uva, uvb, uvc);
+    Shading_vertex_MTC const sa(tna.b, tna.a, uva);
+    Shading_vertex_MTC const sb(tnb.b, tnb.a, uvb);
+    Shading_vertex_MTC const sc(tnc.b, tnc.a, uvc);
+
+    triangle::interpolate_data(u, v, sa, sb, sc, n, t, tc);
+}
+
+inline void Indexed_data::interpolate_data(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                                           Simdf_p weight, Simdf& n, Simdf& t, float2& tc) const {
+    auto const tri = triangles_[index];
+
+    uint32_t const o0 = (frame)*num_vertices_;
+
+    auto const fa0 = frames_[tri.a + o0];
+    auto const fb0 = frames_[tri.b + o0];
+    auto const fc0 = frames_[tri.c + o0];
+
+    uint32_t const o1 = (frame + 1) * num_vertices_;
+
+    auto const fa1 = frames_[tri.a + o1];
+    auto const fb1 = frames_[tri.b + o1];
+    auto const fc1 = frames_[tri.c + o1];
+
+    float const w = weight.x();
+
+    auto const fa = quaternion::slerp(fa0, fa1, w);
+    auto const fb = quaternion::slerp(fb0, fb1, w);
+    auto const fc = quaternion::slerp(fc0, fc1, w);
+
+    auto const tna = quaternion::create_tangent_normal(fa);
+    auto const tnb = quaternion::create_tangent_normal(fb);
+    auto const tnc = quaternion::create_tangent_normal(fc);
+
+    float2 const uva0 = uvs_[tri.a + o0];
+    float2 const uvb0 = uvs_[tri.b + o0];
+    float2 const uvc0 = uvs_[tri.c + o0];
+
+    float2 const uva1 = uvs_[tri.a + o1];
+    float2 const uvb1 = uvs_[tri.b + o1];
+    float2 const uvc1 = uvs_[tri.c + o1];
+
+    float2 const uva = lerp(uva0, uva1, w);
+    float2 const uvb = lerp(uvb0, uvb1, w);
+    float2 const uvc = lerp(uvc0, uvc1, w);
 
     Shading_vertex_MTC const sa(tna.b, tna.a, uva);
     Shading_vertex_MTC const sb(tnb.b, tnb.a, uvb);
@@ -96,6 +207,35 @@ inline Simdf Indexed_data::interpolate_shading_normal(Simdf_p u, Simdf_p v, uint
     return triangle::interpolate_normal(u, v, a, b, c);
 }
 
+inline Simdf Indexed_data::interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index,
+                                                      uint32_t frame, Simdf_p weight) const {
+    auto const tri = triangles_[index];
+
+    uint32_t const o0 = (frame)*num_vertices_;
+
+    auto const fa0 = frames_[tri.a + o0];
+    auto const fb0 = frames_[tri.b + o0];
+    auto const fc0 = frames_[tri.c + o0];
+
+    uint32_t const o1 = (frame + 1) * num_vertices_;
+
+    auto const fa1 = frames_[tri.a + o1];
+    auto const fb1 = frames_[tri.b + o1];
+    auto const fc1 = frames_[tri.c + o1];
+
+    float const w = weight.x();
+
+    auto const fa = quaternion::slerp(fa0, fa1, w);
+    auto const fb = quaternion::slerp(fb0, fb1, w);
+    auto const fc = quaternion::slerp(fc0, fc1, w);
+
+    float3 const a = quaternion::create_normal(fa);
+    float3 const b = quaternion::create_normal(fb);
+    float3 const c = quaternion::create_normal(fc);
+
+    return triangle::interpolate_normal(u, v, a, b, c);
+}
+
 inline float2 Indexed_data::interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index) const {
     auto const tri = triangles_[index];
 
@@ -103,6 +243,30 @@ inline float2 Indexed_data::interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index)
     float2 const b = uvs_[tri.b];
     float2 const c = uvs_[tri.c];
 
+    return triangle::interpolate_uv(u, v, a, b, c);
+}
+
+inline float2 Indexed_data::interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                                           Simdf_p weight) const {
+    auto const tri = triangles_[index];
+
+    uint32_t const o0 = (frame)*num_vertices_;
+
+    float2 const a0 = uvs_[tri.a + o0];
+    float2 const b0 = uvs_[tri.b + o0];
+    float2 const c0 = uvs_[tri.c + o0];
+
+    uint32_t const o1 = (frame + 1) * num_vertices_;
+
+    float2 const a1 = uvs_[tri.a + o1];
+    float2 const b1 = uvs_[tri.b + o1];
+    float2 const c1 = uvs_[tri.c + o1];
+
+    float const w = weight.x();
+
+    float2 const a = lerp(a0, a1, w);
+    float2 const b = lerp(b0, b1, w);
+    float2 const c = lerp(c0, c1, w);
     return triangle::interpolate_uv(u, v, a, b, c);
 }
 
@@ -118,12 +282,35 @@ inline uint32_t Indexed_data::part(uint32_t index) const {
 inline Simdf Indexed_data::normal(uint32_t index) const {
     auto const tri = triangles_[index];
 
-    Simdf const ap(positions_[tri.a].v);
-    Simdf const bp(positions_[tri.b].v);
-    Simdf const cp(positions_[tri.c].v);
+    Simdf const a(positions_[tri.a].v);
+    Simdf const b(positions_[tri.b].v);
+    Simdf const c(positions_[tri.c].v);
 
-    Simdf const e1 = bp - ap;
-    Simdf const e2 = cp - ap;
+    Simdf const e1 = b - a;
+    Simdf const e2 = c - a;
+
+    return normalize3(cross3(e1, e2));
+}
+
+inline Simdf Indexed_data::normal(uint32_t index, uint32_t frame, Simdf_p weight) const {
+    auto const tri = triangles_[index];
+
+    Simdf const a0(positions_[tri.a].v);
+    Simdf const b0(positions_[tri.b].v);
+    Simdf const c0(positions_[tri.c].v);
+
+    uint32_t const nv = num_vertices_;
+
+    Simdf const a1(positions_[tri.a + nv].v);
+    Simdf const b1(positions_[tri.b + nv].v);
+    Simdf const c1(positions_[tri.c + nv].v);
+
+    Simdf const a = lerp(a0, a1, weight);
+    Simdf const b = lerp(b0, b1, weight);
+    Simdf const c = lerp(c0, c1, weight);
+
+    Simdf const e1 = b - a;
+    Simdf const e2 = c - a;
 
     return normalize3(cross3(e1, e2));
 }
@@ -182,9 +369,11 @@ inline void Indexed_data::sample(uint32_t index, float2 r2, float3& p, float2& t
     tc = triangle::interpolate_uv(u, v, sa, sb, sc);
 }
 
-inline void Indexed_data::allocate_triangles(uint32_t             num_triangles,
+inline void Indexed_data::allocate_triangles(uint32_t num_triangles, uint32_t num_frames,
                                              Vertex_stream const& vertices) {
-    uint32_t const num_vertices = vertices.num_vertices();
+    uint32_t const num_vertices       = vertices.num_vertices();
+    uint32_t const num_total_vertices = num_frames * num_vertices;
+
     if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
         num_triangles_ = num_triangles;
         num_vertices_  = num_vertices;
@@ -195,12 +384,12 @@ inline void Indexed_data::allocate_triangles(uint32_t             num_triangles,
         delete[] triangles_;
 
         triangles_ = new Index_triangle[num_triangles];
-        positions_ = new float3[num_vertices];
-        frames_    = new float4[num_vertices];
-        uvs_       = new float2[num_vertices];
+        positions_ = new float3[num_total_vertices];
+        frames_    = new float4[num_total_vertices];
+        uvs_       = new float2[num_total_vertices];
     }
 
-    for (uint32_t i = 0; i < num_vertices; ++i) {
+    for (uint32_t i = 0; i < num_total_vertices; ++i) {
         positions_[i] = vertices.p(i);
 
         frames_[i] = vertices.frame(i);

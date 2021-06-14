@@ -15,10 +15,10 @@ class Null final : public Shape {
 
     uint32_t num_materials() const final;
 
-    bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, Interpolation ipo,
+    bool intersect(Ray& ray, Transformation const& trafo, Worker& worker, Interpolation ipo,
                    Intersection& isec) const final;
 
-    bool intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const final;
+    bool intersect_p(Ray const& ray, Transformation const& trafo, Worker& worker) const final;
 
     bool visibility(Ray const& ray, Transformation const& trafo, uint32_t entity, Filter filter,
                     Worker& worker, float3& v) const final;

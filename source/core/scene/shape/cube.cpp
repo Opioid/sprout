@@ -25,8 +25,8 @@ AABB Cube::aabb() const {
     return AABB(float3(-1.f), float3(1.f));
 }
 
-bool Cube::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*/,
-                     Interpolation ipo, Intersection& isec) const {
+bool Cube::intersect(Ray& ray, Transformation const& trafo, Worker& /*worker*/, Interpolation ipo,
+                     Intersection& isec) const {
     float3 const local_origin = trafo.world_to_object_point(ray.origin);
     float3 const local_dir    = trafo.world_to_object_vector(ray.direction);
 
@@ -71,7 +71,7 @@ bool Cube::intersect(Ray& ray, Transformation const& trafo, Node_stack& /*nodes*
     return true;
 }
 
-bool Cube::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& /*nodes*/) const {
+bool Cube::intersect_p(Ray const& ray, Transformation const& trafo, Worker& /*worker*/) const {
     float3 const local_origin = trafo.world_to_object_point(ray.origin);
     float3 const local_dir    = trafo.world_to_object_vector(ray.direction);
 

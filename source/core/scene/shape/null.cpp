@@ -21,13 +21,13 @@ uint32_t Null::num_materials() const {
     return 0;
 }
 
-bool Null::intersect(Ray& /*ray*/, Transformation const& /*trafo*/, Node_stack& /*nodes*/,
+bool Null::intersect(Ray& /*ray*/, Transformation const& /*trafo*/, Worker& /*worker*/,
                      Interpolation /*ipo*/, Intersection& /*isec*/) const {
     return false;
 }
 
 bool Null::intersect_p(Ray const& /*ray*/, Transformation const& /*trafo*/,
-                       Node_stack& /*nodes*/) const {
+                       Worker& /*worker*/) const {
     return false;
 }
 

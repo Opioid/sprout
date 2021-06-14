@@ -17,6 +17,7 @@
 #include "scene/material/material.inl"
 #include "scene/ray_offset.inl"
 #include "scene/scene_ray.inl"
+#include "scene/scene_worker.inl"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 
@@ -362,8 +363,10 @@ uint32_t Mesh::part_id_to_material_id(uint32_t part) const {
     return parts_[part].material_;
 }
 
-bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, Interpolation ipo,
+bool Mesh::intersect(Ray& ray, Transformation const& trafo, Worker& worker, Interpolation ipo,
                      shape::Intersection& isec) const {
+    Node_stack& nodes = worker.node_stack();
+
     Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simdf const ray_origin    = transform_point(world_to_object, Simdf(ray.origin));
@@ -428,7 +431,9 @@ bool Mesh::intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes, I
     return false;
 }
 
-bool Mesh::intersect_p(Ray const& ray, Transformation const& trafo, Node_stack& nodes) const {
+bool Mesh::intersect_p(Ray const& ray, Transformation const& trafo, Worker& worker) const {
+    Node_stack& nodes = worker.node_stack();
+
     Simd4x4f const world_to_object(trafo.world_to_object);
 
     Simdf const ray_origin    = transform_point(world_to_object, Simdf(ray.origin));

@@ -1,7 +1,7 @@
 #include "triangle_morph_target_collection.hpp"
 #include "base/math/vector3.inl"
-#include "scene/entity/keyframe.hpp"
 #include "base/thread/thread_pool.hpp"
+#include "scene/animation/animation.hpp"
 #include "scene/shape/shape_vertex.hpp"
 #include "triangle_primitive.hpp"
 
@@ -31,10 +31,18 @@ uint32_t Morph_target_collection::num_vertices() const {
     return uint32_t(morph_targets_[0].size());
 }
 
-void Morph_target_collection::morph(Morphing const& a, Threads& threads,
+void Morph_target_collection::morph(Keyframe const* frames, uint32_t num_frames, Threads& threads,
                                     Vertex* vertices) {
-    if (0.f == a.weight) {
-        Vertex const* source = morph_targets_[a.targets[0]].data();
+    for (uint32_t i = 0; i < num_frames; ++i) {
+        morph(frames[i], threads, vertices + i * num_vertices());
+    }
+}
+
+void Morph_target_collection::morph(Keyframe const& f, Threads& threads, Vertex* vertices) {
+    auto const& m = f.m;
+
+    if (0.f == m.weight) {
+        Vertex const* source = morph_targets_[m.targets[0]].data();
 
         std::copy(source, source + num_vertices(), vertices);
 
@@ -49,7 +57,8 @@ void Morph_target_collection::morph(Morphing const& a, Threads& threads,
         float   weight;
     };
 
-    Args const args{morph_targets_[a.targets[0]].data(), morph_targets_[a.targets[1]].data(), vertices, a.weight};
+    Args const args{morph_targets_[m.targets[0]].data(), morph_targets_[m.targets[1]].data(),
+                    vertices, m.weight};
 
     threads.run_range(
         [&args](uint32_t /*id*/, int32_t begin, int32_t end) {

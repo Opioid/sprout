@@ -235,6 +235,11 @@ static inline void sign(Simdf_p v, uint32_t s[4]) {
     _mm_store_si128(reinterpret_cast<__m128i*>(s), smi);
 }
 
+static inline Simdf lerp(Simdf_p a, Simdf_p b, Simdf_p t) {
+    Simdf const u = 1.f - t;
+    return u * a + t * b;
+}
+
 }  // namespace math
 
 #endif

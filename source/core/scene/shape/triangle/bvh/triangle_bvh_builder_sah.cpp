@@ -25,7 +25,7 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
     {
         References references(num_triangles);
 
-        memory::Array<Simd_AABB> aabbs(threads.num_threads() /*, Empty_AABB*/);
+        memory::Array<Simd_AABB> aabbs(threads.num_threads());
 
         threads.run_range(
             [&triangles, &vertices, &references, &aabbs](uint32_t id, int32_t begin,
@@ -47,7 +47,6 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
                 }
 
                 aabbs[id] = aabb;
-                // aabbs[id].merge_assign(aabb);
             },
             0, int32_t(num_triangles));
 
@@ -59,7 +58,67 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
         split(references, AABB(aabb), threads);
     }
 
-    tree.allocate_triangles(uint32_t(reference_ids_.size()), vertices);
+    tree.allocate_triangles(uint32_t(reference_ids_.size()), 1, vertices);
+    nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
+
+    uint32_t current_triangle = 0;
+    new_node();
+    serialize(0, 0, triangles, vertices, tree, current_triangle);
+}
+
+void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
+                        uint32_t num_frames, Threads& threads) {
+    reserve(num_triangles);
+
+    {
+        References references(num_triangles);
+
+        memory::Array<Simd_AABB> aabbs(threads.num_threads());
+
+        threads.run_range(
+            [&triangles, &vertices, num_frames, &references, &aabbs](uint32_t id, int32_t begin,
+                                                                     int32_t end) noexcept {
+                uint32_t const num_vertices = vertices.num_vertices();
+
+                Simd_AABB aabb(Empty_AABB);
+
+                for (int32_t i = begin; i < end; ++i) {
+                    Simdf min = Simdf(float3(std::numeric_limits<float>::max()));
+                    Simdf max = Simdf(float3(-std::numeric_limits<float>::max()));
+
+                    for (uint32_t j = 0; j < num_frames; ++j) {
+                        uint32_t const offset = j * num_vertices;
+
+                        auto const a = Simdf(vertices.p(triangles[i].i[0] + offset));
+                        auto const b = Simdf(vertices.p(triangles[i].i[1] + offset));
+                        auto const c = Simdf(vertices.p(triangles[i].i[2] + offset));
+
+                        auto const frame_min = triangle_min(a, b, c);
+                        auto const frame_max = triangle_max(a, b, c);
+
+                        min = math::min(min, frame_min);
+                        max = math::max(max, frame_max);
+                    }
+
+                    uint32_t const ui = uint32_t(i);
+                    references[ui].set(min, max, ui);
+
+                    aabb.merge_assign(min, max);
+                }
+
+                aabbs[id] = aabb;
+            },
+            0, int32_t(num_triangles));
+
+        Simd_AABB aabb(Empty_AABB);
+        for (auto const& b : aabbs) {
+            aabb.merge_assign(b);
+        }
+
+        split(references, AABB(aabb), threads);
+    }
+
+    tree.allocate_triangles(uint32_t(reference_ids_.size()), num_frames, vertices);
     nodes_ = tree.allocate_nodes(uint32_t(build_nodes_.size()));
 
     uint32_t current_triangle = 0;

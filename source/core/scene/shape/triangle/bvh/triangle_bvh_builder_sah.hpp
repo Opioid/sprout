@@ -40,6 +40,9 @@ class Builder_SAH final : private scene::bvh::Builder_base {
     void build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
                Threads& threads);
 
+    void build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,
+               uint32_t num_frames, Threads& threads);
+
   private:
     using Node       = scene::bvh::Node;
     using Reference  = scene::bvh::Reference;

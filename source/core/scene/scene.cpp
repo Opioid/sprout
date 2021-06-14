@@ -15,7 +15,6 @@
 #include "light/light_tree_builder.hpp"
 #include "material/material.inl"
 #include "prop/prop.inl"
-#include "scene_constants.hpp"
 #include "scene_ray.hpp"
 #include "scene_worker.hpp"
 #include "shape/shape.inl"
@@ -27,8 +26,6 @@
 namespace scene {
 
 static size_t constexpr Num_reserved_props = 32;
-
-static uint64_t constexpr Tick_duration = Units_per_second / 60;
 
 static uint32_t constexpr Num_steps = 4;
 
@@ -619,17 +616,14 @@ void Scene::prop_inherit_transformation(uint32_t entity, entity::Keyframe const*
 Scene::Transformation const& Scene::prop_animated_transformation_at(uint32_t        frames_id,
                                                                     uint64_t        time,
                                                                     Transformation& trafo) const {
+    auto const f = frame_at(time);
+
     entity::Keyframe const* frames = &keyframes_[frames_id];
 
-    uint64_t const delta = time - current_time_start_;
-    uint64_t const i     = delta / Tick_duration;
+    auto const& a = frames[f.f];
+    auto const& b = frames[f.f + 1];
 
-    float const t = float(double(delta) / double(Tick_duration));
-
-    auto const& a = frames[i];
-    auto const& b = frames[i + 1];
-
-    trafo.set(lerp(a.trafo, b.trafo, t));
+    trafo.set(lerp(a.trafo, b.trafo, f.w));
 
     return trafo;
 }

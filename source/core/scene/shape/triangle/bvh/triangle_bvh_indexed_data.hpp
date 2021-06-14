@@ -23,35 +23,47 @@ class Indexed_data {
 
     bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t, uint32_t index,
                    scalar& u, scalar& v) const;
+    bool intersect(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar& max_t, uint32_t index,
+                   uint32_t frame, Simdf_p weight, scalar& u, scalar& v) const;
 
     bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
                      uint32_t index) const;
+    bool intersect_p(Simdf_p origin, Simdf_p direction, scalar_p min_t, scalar_p max_t,
+                     uint32_t index, uint32_t frame, Simdf_p weight) const;
 
     Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index) const;
+    Simdf interpolate_p(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame, Simdf_p weight) const;
 
     void interpolate_data(Simdf_p u, Simdf_p v, uint32_t index, Simdf& n, Simdf& t,
                           float2& tc) const;
+    void interpolate_data(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame, Simdf_p weight,
+                          Simdf& n, Simdf& t, float2& tc) const;
 
     Simdf interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index) const;
+    Simdf interpolate_shading_normal(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                                     Simdf_p weight) const;
 
     float2 interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index) const;
+    float2 interpolate_uv(Simdf_p u, Simdf_p v, uint32_t index, uint32_t frame,
+                          Simdf_p weight) const;
 
     float bitangent_sign(uint32_t index) const;
 
     uint32_t part(uint32_t index) const;
 
     Simdf normal(uint32_t index) const;
+    Simdf normal(uint32_t index, uint32_t frame, Simdf_p weight) const;
 
     float area(uint32_t index) const;
 
     void triangle(uint32_t index, float3& pa, float3& pb, float3& pc) const;
-
     void triangle(uint32_t index, float3& pa, float3& pb, float3& pc, float2& uva, float2& uvb,
                   float2& uvc) const;
 
     void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
-    void allocate_triangles(uint32_t num_triangles, Vertex_stream const& vertices);
+    void allocate_triangles(uint32_t num_triangles, uint32_t num_frames,
+                            Vertex_stream const& vertices);
 
     void set_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t part,
                       Vertex_stream const& vertices, uint32_t triangle_id);

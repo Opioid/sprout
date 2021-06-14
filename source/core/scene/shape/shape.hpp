@@ -49,7 +49,6 @@ struct Intersection;
 enum class Interpolation;
 struct Sample_to;
 struct Sample_from;
-class Node_stack;
 class Morphable;
 
 class Shape {
@@ -80,11 +79,10 @@ class Shape {
 
     virtual uint32_t part_id_to_material_id(uint32_t part) const;
 
-    virtual bool intersect(Ray& ray, Transformation const& trafo, Node_stack& nodes,
-                           Interpolation ipo, Intersection& isec) const = 0;
+    virtual bool intersect(Ray& ray, Transformation const& trafo, Worker& worker, Interpolation ipo,
+                           Intersection& isec) const = 0;
 
-    virtual bool intersect_p(Ray const& ray, Transformation const& trafo,
-                             Node_stack& nodes) const = 0;
+    virtual bool intersect_p(Ray const& ray, Transformation const& trafo, Worker& worker) const = 0;
 
     virtual bool visibility(Ray const& ray, Transformation const& trafo, uint32_t entity,
                             Filter filter, Worker& worker, float3& v) const = 0;
