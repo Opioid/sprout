@@ -1,9 +1,7 @@
 #ifndef SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
 #define SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
 
-#include "scene/entity/keyframe.hpp"
-
-#include <cstdint>
+#include "base/math/transformation.hpp"
 
 namespace thread {
 class Pool;
@@ -17,9 +15,17 @@ class Scene;
 
 namespace animation {
 
+struct Morphing {
+    void interpolate(Morphing& __restrict result, Morphing const& __restrict other, float t) const;
+
+    uint32_t targets[2];
+    float    weight;
+};
+
 struct Keyframe {
-    entity::Keyframe k;
-    entity::Morphing m;
+    math::Transformation k;
+
+    Morphing m;
 
     uint64_t time;
 };

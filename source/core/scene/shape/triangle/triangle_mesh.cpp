@@ -11,7 +11,7 @@
 #include "base/thread/thread_pool.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_tree_builder.hpp"
 #include "scene/material/material.inl"

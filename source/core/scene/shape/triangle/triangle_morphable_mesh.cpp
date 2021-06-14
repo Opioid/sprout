@@ -7,7 +7,7 @@
 #include "bvh/triangle_bvh_builder_sah.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.inl"
 #include "scene/shape/shape_intersection.hpp"

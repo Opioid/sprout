@@ -4,7 +4,7 @@
 #include "base/random/generator.inl"
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"
 #include "scene/material/volumetric/volumetric_octree.hpp"

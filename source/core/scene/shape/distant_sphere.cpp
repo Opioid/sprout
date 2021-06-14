@@ -4,7 +4,7 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "shape_intersection.hpp"

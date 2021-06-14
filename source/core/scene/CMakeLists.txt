@@ -1,7 +1,6 @@
 add_subdirectory(animation)
 add_subdirectory(bvh)
 add_subdirectory(camera)
-add_subdirectory(entity)
 add_subdirectory(light)
 add_subdirectory(material)
 add_subdirectory(prop)
@@ -9,6 +8,8 @@ add_subdirectory(shape)
 
 target_sources(core
     PRIVATE
+    "composed_transformation.hpp"
+	"composed_transformation.inl"
     "extension.hpp"
     "extension_provider.hpp"
     "ray_offset.inl"

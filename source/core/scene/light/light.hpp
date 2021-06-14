@@ -25,10 +25,6 @@ using Threads = thread::Pool;
 
 namespace scene {
 
-namespace entity {
-struct Composed_transformation;
-}
-
 namespace prop {
 class Prop;
 struct Intersection;
@@ -42,6 +38,7 @@ struct Sample_from;
 
 class Scene;
 class Worker;
+struct Composed_transformation;
 struct Ray;
 
 namespace light {
@@ -50,7 +47,7 @@ inline uint32_t constexpr Null = 0xFFFFFFFF;
 
 class alignas(16) Light {
   public:
-    using Transformation = entity::Composed_transformation;
+    using Transformation = Composed_transformation;
     using Filter         = material::Sampler_settings::Filter;
     using Intersection   = prop::Intersection;
     using Sample_to      = shape::Sample_to;

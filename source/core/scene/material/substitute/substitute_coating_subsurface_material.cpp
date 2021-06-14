@@ -3,7 +3,7 @@
 #include "base/math/ray.inl"
 #include "base/math/vector4.inl"
 #include "base/spectrum/mapping.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/composed_transformation.hpp"
 //#include "scene/material/coating/coating.inl"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"

@@ -8,7 +8,7 @@
 #include "rendering/integrator/integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/light/light.inl"
 #include "scene/material/collision_coefficients.inl"
 #include "scene/material/material.inl"

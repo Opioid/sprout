@@ -9,7 +9,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/scene.hpp"

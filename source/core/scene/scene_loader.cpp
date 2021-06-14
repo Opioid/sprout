@@ -296,7 +296,7 @@ void Loader::load_entities(json::Value const& entities_value, uint32_t parent_id
                 scene.prop_set_transformation(entity_id, trafo);
             } else {
                 if (prop::Null != parent_id) {
-                    trafo = trafo.transform(parent_transformation);
+                    trafo = transform(trafo, parent_transformation);
                 }
 
                 scene.prop_set_world_transformation(entity_id, trafo);

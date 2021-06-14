@@ -2,8 +2,7 @@
 #define SU_CORE_SCENE_SCENE_INL
 
 #include "base/math/aabb.inl"
-#include "entity/composed_transformation.inl"
-#include "entity/keyframe.hpp"
+#include "composed_transformation.inl"
 #include "light/light.inl"
 #include "prop/prop.inl"
 #include "scene.hpp"
@@ -72,9 +71,7 @@ inline float3_p Scene::prop_world_position(uint32_t entity) const {
 inline void Scene::prop_set_transformation(uint32_t entity, math::Transformation const& t) {
     uint32_t const f = prop_frames_[entity];
 
-    entity::Keyframe& local_frame = keyframes_[f + num_interpolation_frames_];
-
-    local_frame.trafo = t;
+    keyframes_[f + num_interpolation_frames_] = t;
 }
 
 inline void Scene::prop_set_world_transformation(uint32_t entity, math::Transformation const& t) {

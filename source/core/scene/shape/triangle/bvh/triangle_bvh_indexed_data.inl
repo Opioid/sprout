@@ -295,15 +295,17 @@ inline Simdf Indexed_data::normal(uint32_t index) const {
 inline Simdf Indexed_data::normal(uint32_t index, uint32_t frame, Simdf_p weight) const {
     auto const tri = triangles_[index];
 
-    Simdf const a0(positions_[tri.a].v);
-    Simdf const b0(positions_[tri.b].v);
-    Simdf const c0(positions_[tri.c].v);
+    uint32_t const o0 = (frame)*num_vertices_;
 
-    uint32_t const nv = num_vertices_;
+    Simdf const a0(positions_[tri.a + o0].v);
+    Simdf const b0(positions_[tri.b + o0].v);
+    Simdf const c0(positions_[tri.c + o0].v);
 
-    Simdf const a1(positions_[tri.a + nv].v);
-    Simdf const b1(positions_[tri.b + nv].v);
-    Simdf const c1(positions_[tri.c + nv].v);
+    uint32_t const o1 = (frame + 1) * num_vertices_;
+
+    Simdf const a1(positions_[tri.a + o1].v);
+    Simdf const b1(positions_[tri.b + o1].v);
+    Simdf const c1(positions_[tri.c + o1].v);
 
     Simdf const a = lerp(a0, a1, weight);
     Simdf const b = lerp(b0, b1, weight);

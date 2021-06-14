@@ -30,12 +30,9 @@ namespace scene {
 
 struct Ray;
 struct Renderstate;
+struct Composed_transformation;
 class Worker;
 class Scene;
-
-namespace entity {
-struct Composed_transformation;
-}
 
 namespace shape {
 class Shape;
@@ -53,7 +50,7 @@ class Material {
   public:
     using Filter         = Sampler_settings::Filter;
     using Shape          = shape::Shape;
-    using Transformation = entity::Composed_transformation;
+    using Transformation = Composed_transformation;
     using Sampler        = sampler::Sampler;
     using Texture        = image::texture::Texture;
 

@@ -4,7 +4,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "sampler/sampler.hpp"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/composed_transformation.hpp"
 #include "scene/material/material.inl"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.inl"

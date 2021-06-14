@@ -12,8 +12,7 @@
 #include "scene/bvh/scene_bvh_builder_base.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
-#include "scene/entity/composed_transformation.hpp"
-#include "scene/entity/keyframe.hpp"
+#include "scene/composed_transformation.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/debug/debug_material.hpp"
 #include "scene/material/debug/debug_sample.hpp"
@@ -71,9 +70,7 @@ void size() {
 
     print_size<math::Transformation>("transformation", 48);
 
-    print_size<scene::entity::Keyframe>("Keyframe", 48);
-
-    print_size<scene::entity::Composed_transformation>("Composed_transformation", 128);
+    print_size<scene::Composed_transformation>("Composed_transformation", 128);
 
     print_size<ray>("ray", 48);
     print_size<scene::Ray>("scene::Ray", 64);

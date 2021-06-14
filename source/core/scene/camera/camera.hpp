@@ -30,12 +30,9 @@ class Sensor;
 
 namespace scene {
 
-namespace entity {
-struct Composed_transformation;
-}  // namespace entity
-
 struct Ray;
 struct Ray_dif;
+struct Composed_transformation;
 class Scene;
 class Worker;
 
@@ -45,7 +42,7 @@ class Camera {
   public:
     using Frustum        = math::Frustum;
     using Prop           = prop::Prop;
-    using Transformation = entity::Composed_transformation;
+    using Transformation = Composed_transformation;
     using Sample         = sampler::Camera_sample;
     using Sample_to      = sampler::Camera_sample_to;
     using Sampler        = sampler::Sampler;

@@ -5,7 +5,7 @@
 #include "base/memory/align.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "photon.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
@@ -620,8 +620,8 @@ static float3 scattering_coefficient(prop::Intersection const& isec, Worker cons
     auto const& material = *isec.material(worker);
 
     if (material.is_heterogeneous_volume()) {
-        entity::Composed_transformation temp;
-        auto const& trafo = worker.scene().prop_transformation_at(isec.prop, 0, temp);
+        Composed_transformation temp;
+        auto const&             trafo = worker.scene().prop_transformation_at(isec.prop, 0, temp);
 
         float3 const local_position = trafo.world_to_object_point(isec.geo.p);
 

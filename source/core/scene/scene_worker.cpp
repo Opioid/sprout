@@ -21,8 +21,8 @@ namespace scene {
 
 static material::Sampler_cache const Sampler_cache;
 
-using Transformation     = entity::Composed_transformation;
-using Material_sample    = scene::material::Sample;
+using Transformation     = Composed_transformation;
+using Material_sample    = material::Sample;
 using Texture_sampler_2D = image::texture::Sampler_2D;
 using Texture_sampler_3D = image::texture::Sampler_3D;
 

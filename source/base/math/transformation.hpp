@@ -11,7 +11,7 @@ struct Transformation {
 
     bool operator!=(Transformation const& o) const;
 
-    Transformation transform(Transformation const& other) const;
+    void set(Transformation const& other, float3_p camera_pos);
 
     float3     position;
     float3     scale;

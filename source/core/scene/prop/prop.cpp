@@ -6,7 +6,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 #include "scene/animation/animation.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/material/material.inl"
 #include "scene/scene.inl"
 #include "scene/scene_ray.inl"
@@ -17,7 +17,7 @@
 
 namespace scene::prop {
 
-using Transformation = entity::Composed_transformation;
+using Transformation = Composed_transformation;
 
 Prop::Prop() = default;
 

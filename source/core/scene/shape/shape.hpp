@@ -36,12 +36,9 @@ namespace material {
 class Material;
 }
 
-struct Ray;
 class Worker;
-
-namespace entity {
+struct Ray;
 struct Composed_transformation;
-}
 
 namespace shape {
 
@@ -57,7 +54,7 @@ class Shape {
     using Material       = material::Material;
     using Materials      = Material const* const*;
     using Sampler        = sampler::Sampler;
-    using Transformation = entity::Composed_transformation;
+    using Transformation = Composed_transformation;
 
     enum class Property { Complex = 1 << 0, Finite = 1 << 1, Analytical = 1 << 2 };
 

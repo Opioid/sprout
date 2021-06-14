@@ -3,13 +3,13 @@
 
 #include "base/math/vector3.inl"
 #include "light.hpp"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/scene.hpp"
 #include "scene/shape/shape.hpp"
 
 namespace scene::light {
 
-using Transformation = entity::Composed_transformation;
+using Transformation = Composed_transformation;
 
 inline bool Light::is_two_sided() const {
     return two_sided_;

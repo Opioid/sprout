@@ -43,16 +43,6 @@ class Animation;
 
 }  // namespace animation
 
-namespace entity {
-
-class Entity;
-struct Entity_ref;
-class Dummy;
-struct Morphing;
-struct Keyframe;
-
-}  // namespace entity
-
 namespace prop {
 
 struct Intersection;
@@ -65,7 +55,7 @@ struct Prop_topology;
 
 class Extension;
 class Worker;
-
+struct Composed_transformation;
 struct Ray;
 
 struct Light_pick {
@@ -79,10 +69,7 @@ class Scene {
   public:
     using Node_stack     = shape::Node_stack;
     using Filter         = material::Sampler_settings::Filter;
-    using Entity         = entity::Entity;
-    using Entity_ref     = entity::Entity_ref;
-    using Transformation = entity::Composed_transformation;
-    using Keyframe       = entity::Keyframe;
+    using Transformation = Composed_transformation;
     using Lights         = light::Tree::Lights;
     using Interpolation  = shape::Interpolation;
     using Intersection   = prop::Intersection;
@@ -197,7 +184,7 @@ class Scene {
 
     void prop_set_frames(uint32_t entity, animation::Keyframe const* frames);
 
-    void prop_set_frame(uint32_t entity, uint32_t frame, Keyframe const& k);
+    void prop_set_frame(uint32_t entity, uint32_t frame, math::Transformation const& k);
 
     void prop_set_visibility(uint32_t entity, bool in_camera, bool in_reflection, bool in_shadow);
 
@@ -241,7 +228,8 @@ class Scene {
     void prop_inherit_transformation(uint32_t entity, const Transformation& trafo,
                                      float3_p camera_pos);
 
-    void prop_inherit_transformation(uint32_t entity, Keyframe const* frames, float3_p camera_pos);
+    void prop_inherit_transformation(uint32_t entity, math::Transformation const* frames,
+                                     float3_p camera_pos);
 
     Transformation const& prop_animated_transformation_at(uint32_t frames, uint64_t time,
                                                           Transformation& trafo) const;
@@ -297,7 +285,8 @@ class Scene {
 
     std::vector<uint32_t> materials_;
     std::vector<uint32_t> light_ids_;
-    std::vector<Keyframe> keyframes_;
+
+    std::vector<math::Transformation> keyframes_;
 
     std::vector<animation::Animation> animations_;
 

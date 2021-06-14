@@ -557,7 +557,7 @@ int32_t su_entity_set_transformation_frame(uint32_t entity, uint32_t frame, floa
 
     t.rotation = quaternion::create(r);
 
-    engine->scene.prop_set_frame(entity, frame, entity::Keyframe{t});
+    engine->scene.prop_set_frame(entity, frame, t);
 
     return 0;
 }

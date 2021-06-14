@@ -2,11 +2,25 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 #include "base/math/vector3.inl"
-#include "scene/entity/keyframe.hpp"
 #include "scene/scene.inl"
 #include "scene/shape/morphable.hpp"
 
 namespace scene::animation {
+
+void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restrict other,
+                           float t) const {
+    if (targets[0] == targets[1] && other.targets[0] == other.targets[1]) {
+        result.weight = t;
+
+        result.targets[0] = targets[0];
+        result.targets[1] = other.targets[0];
+    } else {
+        result.weight = lerp(weight, other.weight, t);
+
+        result.targets[0] = other.targets[0];
+        result.targets[1] = other.targets[1];
+    }
+}
 
 Animation::Animation(uint32_t entity, uint32_t num_frames, uint32_t num_interpolated_frames)
     : entity_(entity),
@@ -50,7 +64,7 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) {
 
                 float const t = float(double(delta) / double(range));
 
-                a.k.interpolate(interpolated_frames[i].k, b.k, t);
+                interpolated_frames[i].k = lerp(a.k, b.k, t);
                 a.m.interpolate(interpolated_frames[i].m, b.m, t);
 
                 break;

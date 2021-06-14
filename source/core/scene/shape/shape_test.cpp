@@ -5,7 +5,7 @@
 #include "base/math/vector3.inl"
 #include "infinite_sphere.hpp"
 #include "node_stack.inl"
-#include "scene/entity/composed_transformation.inl"
+#include "scene/composed_transformation.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "shape_intersection.hpp"
@@ -20,8 +20,7 @@ void print(Intersection const& isec);
 
 void print_vector(float3_p v);
 
-bool check(Intersection const& isec, entity::Composed_transformation const& trafo,
-           Ray const& /*ray*/) {
+bool check(Intersection const& isec, Composed_transformation const& trafo, Ray const& /*ray*/) {
     if (!std::isfinite(length(isec.b)) || !all_finite(isec.t) || !all_finite(isec.b) ||
         !all_finite(isec.n) || !all_finite(isec.geo_n)) {
         print(isec);

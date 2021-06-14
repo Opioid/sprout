@@ -4,7 +4,6 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.hpp"
 #include "base/math/vector3.inl"
-#include "scene/entity/keyframe.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
 
@@ -16,7 +15,7 @@ static bool load_keyframes(json::Value const& value, Transformation const& defau
 static bool load_sequence(json::Value const& value, Transformation const& default_trafo,
                           uint32_t entity, Scene& scene);
 
-static void read_morphing(json::Value const& value, entity::Morphing& morphing);
+static void read_morphing(json::Value const& value, Morphing& morphing);
 
 bool load(json::Value const& value, Transformation const& default_trafo, uint32_t entity,
           Scene& scene) {
@@ -48,7 +47,7 @@ static bool load_keyframes(json::Value const& value, Transformation const& defau
             if ("time" == n.name) {
                 keyframe.time = time(json::read_double(n.value));
             } else if ("transformation" == n.name) {
-                json::read_transformation(n.value, keyframe.k.trafo);
+                json::read_transformation(n.value, keyframe.k);
             } else if ("morphing" == n.name) {
                 read_morphing(n.value, keyframe.m);
             }
@@ -99,7 +98,7 @@ bool load_sequence(json::Value const& value, Transformation const& default_trafo
     return true;
 }
 
-void read_morphing(json::Value const& value, entity::Morphing& morphing) {
+void read_morphing(json::Value const& value, Morphing& morphing) {
     for (auto& n : value.GetObject()) {
         if ("targets" == n.name) {
             if (n.value.IsArray() && n.value.Size() >= 2) {

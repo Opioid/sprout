@@ -16,9 +16,15 @@ inline bool Transformation::operator!=(Transformation const& o) const {
     return position != o.position || scale != o.scale || rotation != o.rotation;
 }
 
-inline Transformation Transformation::transform(Transformation const& other) const {
-    return {transform_point(float4x4(other), position), scale,
-            quaternion::mul(other.rotation, rotation)};
+inline void Transformation::set(Transformation const& other, float3_p camera_pos) {
+    position = other.position - camera_pos;
+    scale    = other.scale;
+    rotation = other.rotation;
+}
+
+static inline Transformation transform(Transformation const& a, Transformation const& b) {
+    return {transform_point(float4x4(b), a.position), a.scale,
+            quaternion::mul(b.rotation, a.rotation)};
 }
 
 static inline Transformation lerp(Transformation const& a, Transformation const& b, float t) {

@@ -10,7 +10,7 @@
 #include "core/image/texture/texture.inl"
 #include "core/image/texture/texture_sampler.hpp"
 #include "core/resource/resource_manager.inl"
-#include "core/scene/entity/composed_transformation.hpp"
+#include "core/scene/composed_transformation.hpp"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "core/scene/material/material.inl"
 #include "core/scene/material/material_sample.inl"

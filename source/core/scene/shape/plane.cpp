@@ -1,7 +1,7 @@
 #include "plane.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
-#include "scene/entity/composed_transformation.hpp"
+#include "scene/composed_transformation.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material.inl"
 #include "scene/scene.inl"
