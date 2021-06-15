@@ -182,7 +182,7 @@ class Scene {
 
     bool prop_has_animated_frames(uint32_t entity) const;
 
-    void prop_set_frames(uint32_t entity, animation::Keyframe const* frames);
+    void prop_set_frames(uint32_t entity, math::Transformation const* frames);
 
     void prop_set_frame(uint32_t entity, uint32_t frame, math::Transformation const& k);
 
@@ -225,7 +225,7 @@ class Scene {
 
     void prop_propagate_transformation(uint32_t entity, float3_p camera_pos);
 
-    void prop_inherit_transformation(uint32_t entity, const Transformation& trafo,
+    void prop_inherit_transformation(uint32_t entity, Transformation const& trafo,
                                      float3_p camera_pos);
 
     void prop_inherit_transformation(uint32_t entity, math::Transformation const* frames,

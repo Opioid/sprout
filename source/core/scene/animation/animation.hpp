@@ -16,10 +16,9 @@ class Scene;
 namespace animation {
 
 struct Morphing {
-    void interpolate(Morphing& __restrict result, Morphing const& __restrict other, float t) const;
-
     uint32_t targets[2];
-    float    weight;
+
+    float weight;
 };
 
 struct Keyframe {
@@ -50,7 +49,11 @@ class Animation {
     uint32_t last_frame_;
     uint32_t num_keyframes_;
 
-    Keyframe* keyframes_;
+    uint64_t* times_;
+
+    math::Transformation* frames_;
+
+    Morphing* morphings_;
 };
 
 }  // namespace animation

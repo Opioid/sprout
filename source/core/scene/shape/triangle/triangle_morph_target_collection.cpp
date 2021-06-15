@@ -31,18 +31,16 @@ uint32_t Morph_target_collection::num_vertices() const {
     return uint32_t(morph_targets_[0].size());
 }
 
-void Morph_target_collection::morph(Keyframe const* frames, uint32_t num_frames, Threads& threads,
-                                    Vertex* vertices) {
+void Morph_target_collection::morph(Morphing const* morphings, uint32_t num_frames,
+                                    Threads& threads, Vertex* vertices) {
     for (uint32_t i = 0; i < num_frames; ++i) {
-        morph(frames[i], threads, vertices + i * num_vertices());
+        morph(morphings[i], threads, vertices + i * num_vertices());
     }
 }
 
-void Morph_target_collection::morph(Keyframe const& f, Threads& threads, Vertex* vertices) {
-    auto const& m = f.m;
-
-    if (0.f == m.weight) {
-        Vertex const* source = morph_targets_[m.targets[0]].data();
+void Morph_target_collection::morph(Morphing const& morphing, Threads& threads, Vertex* vertices) {
+    if (0.f == morphing.weight) {
+        Vertex const* source = morph_targets_[morphing.targets[0]].data();
 
         std::copy(source, source + num_vertices(), vertices);
 
@@ -57,8 +55,8 @@ void Morph_target_collection::morph(Keyframe const& f, Threads& threads, Vertex*
         float   weight;
     };
 
-    Args const args{morph_targets_[m.targets[0]].data(), morph_targets_[m.targets[1]].data(),
-                    vertices, m.weight};
+    Args const args{morph_targets_[morphing.targets[0]].data(),
+                    morph_targets_[morphing.targets[1]].data(), vertices, morphing.weight};
 
     threads.run_range(
         [&args](uint32_t /*id*/, int32_t begin, int32_t end) {

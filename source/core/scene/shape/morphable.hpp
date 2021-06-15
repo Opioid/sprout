@@ -12,18 +12,18 @@ using Threads = thread::Pool;
 namespace scene {
 
 namespace animation {
-struct Keyframe;
+struct Morphing;
 }
 
 namespace shape {
 
 class Morphable {
   public:
-    using Keyframe = animation::Keyframe;
+    using Morphing = animation::Morphing;
 
     virtual ~Morphable() {}
 
-    virtual void morph(Keyframe const* frames, uint32_t num_frames, Threads& threads) = 0;
+    virtual void morph(Morphing const* morphings, uint32_t num_frames, Threads& threads) = 0;
 };
 
 }  // namespace shape

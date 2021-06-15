@@ -397,14 +397,14 @@ bool Scene::prop_has_animated_frames(uint32_t entity) const {
     return prop::Null != prop_frames_[entity];
 }
 
-void Scene::prop_set_frames(uint32_t entity, animation::Keyframe const* frames) {
+void Scene::prop_set_frames(uint32_t entity, math::Transformation const* frames) {
     uint32_t const num_frames = num_interpolation_frames_;
 
     uint32_t const f = prop_frames_[entity];
 
     math::Transformation* local_frames = &keyframes_[f + num_frames];
     for (uint32_t i = 0; i < num_frames; ++i) {
-        local_frames[i] = frames[i].k;
+        local_frames[i] = frames[i];
     }
 }
 

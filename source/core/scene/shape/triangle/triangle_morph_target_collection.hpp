@@ -13,7 +13,7 @@ using Threads = thread::Pool;
 namespace scene {
 
 namespace animation {
-struct Keyframe;
+struct Morphing;
 }
 
 namespace shape {
@@ -26,7 +26,7 @@ struct Index_triangle;
 
 class Morph_target_collection {
   public:
-    using Keyframe = animation::Keyframe;
+    using Morphing = animation::Morphing;
 
     Morph_target_collection();
 
@@ -40,10 +40,10 @@ class Morph_target_collection {
 
     void add_swap_vertices(std::vector<Vertex>& vertices);
 
-    void morph(Keyframe const* frames, uint32_t num_frames, Threads& threads, Vertex* vertices);
+    void morph(Morphing const* morphings, uint32_t num_frames, Threads& threads, Vertex* vertices);
 
   private:
-    void morph(Keyframe const& m, Threads& threads, Vertex* vertices);
+    void morph(Morphing const& morphing, Threads& threads, Vertex* vertices);
 
     std::vector<Index_triangle> triangles_;
 

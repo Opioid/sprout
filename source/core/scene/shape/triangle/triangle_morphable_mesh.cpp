@@ -222,12 +222,12 @@ Morphable* Morphable_mesh::morphable_shape() {
     return this;
 }
 
-void Morphable_mesh::morph(Keyframe const* frames, uint32_t num_frames, Threads& threads) {
+void Morphable_mesh::morph(Morphing const* morphings, uint32_t num_frames, Threads& threads) {
     if (!vertices_) {
         vertices_ = new Vertex[collection_.num_vertices() * num_frames];
     }
 
-    collection_.morph(frames, num_frames, threads, vertices_);
+    collection_.morph(morphings, num_frames, threads, vertices_);
 
     Vertex_stream_interleaved vertices(collection_.num_vertices(), vertices_);
 

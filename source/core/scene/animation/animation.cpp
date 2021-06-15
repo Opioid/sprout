@@ -7,18 +7,11 @@
 
 namespace scene::animation {
 
-void Morphing::interpolate(Morphing& __restrict result, Morphing const& __restrict other,
-                           float t) const {
-    if (targets[0] == targets[1] && other.targets[0] == other.targets[1]) {
-        result.weight = t;
-
-        result.targets[0] = targets[0];
-        result.targets[1] = other.targets[0];
+static inline Morphing lerp(Morphing const& a, Morphing const& b, float t) {
+    if (a.targets[0] == a.targets[1] && b.targets[0] == b.targets[1]) {
+        return {{a.targets[0], b.targets[0]}, t};
     } else {
-        result.weight = lerp(weight, other.weight, t);
-
-        result.targets[0] = other.targets[0];
-        result.targets[1] = other.targets[1];
+        return {{b.targets[0], b.targets[1]}, ::lerp(a.weight, b.weight, t)};
     }
 }
 
@@ -26,22 +19,32 @@ Animation::Animation(uint32_t entity, uint32_t num_frames, uint32_t num_interpol
     : entity_(entity),
       last_frame_(0),
       num_keyframes_(num_frames),
-      keyframes_(new Keyframe[num_frames + num_interpolated_frames]) {}
+      times_(new uint64_t[num_frames]),
+      frames_(new math::Transformation[num_frames + num_interpolated_frames]),
+      morphings_(new Morphing[num_frames + num_interpolated_frames]) {}
 
 Animation::Animation(Animation&& other)
     : entity_(other.entity_),
       last_frame_(other.last_frame_),
       num_keyframes_(other.num_keyframes_),
-      keyframes_(other.keyframes_) {
-    other.keyframes_ = nullptr;
+      times_(other.times_),
+      frames_(other.frames_),
+      morphings_(other.morphings_) {
+    other.times_     = nullptr;
+    other.frames_    = nullptr;
+    other.morphings_ = nullptr;
 }
 
 Animation::~Animation() {
-    delete[] keyframes_;
+    delete[] morphings_;
+    delete[] frames_;
+    delete[] times_;
 }
 
 void Animation::set(uint32_t index, Keyframe const& keyframe) {
-    keyframes_[index] = keyframe;
+    times_[index]     = keyframe.time;
+    frames_[index]    = keyframe.k;
+    morphings_[index] = keyframe.m;
 }
 
 void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) {
@@ -51,27 +54,34 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) {
 
     uint32_t last_frame = last_frame_ > 2 ? last_frame_ - 2 : 0;
 
-    Keyframe* interpolated_frames = &keyframes_[num_keyframes_];
+    math::Transformation* interpolated_frames    = &frames_[num_keyframes_];
+    Morphing*             interpolated_morphings = &morphings_[num_keyframes_];
 
     for (uint32_t i = 0; time <= end; ++i, time += frame_length) {
         for (uint32_t j = last_frame; j < keyframes_back; ++j) {
-            auto const& a = keyframes_[j];
-            auto const& b = keyframes_[j + 1];
+            uint64_t const a_time = times_[j];
+            uint64_t const b_time = times_[j + 1];
 
-            if (time >= a.time && time < b.time) {
-                uint64_t const range = b.time - a.time;
-                uint64_t const delta = time - a.time;
+            auto const& a_frame = frames_[j];
+            auto const& b_frame = frames_[j + 1];
+
+            auto const& a_morphing = morphings_[j];
+            auto const& b_morphing = morphings_[j + 1];
+
+            if (time >= a_time && time < b_time) {
+                uint64_t const range = b_time - a_time;
+                uint64_t const delta = time - a_time;
 
                 float const t = float(double(delta) / double(range));
 
-                interpolated_frames[i].k = lerp(a.k, b.k, t);
-                a.m.interpolate(interpolated_frames[i].m, b.m, t);
+                interpolated_frames[i]    = lerp(a_frame, b_frame, t);
+                interpolated_morphings[i] = lerp(a_morphing, b_morphing, t);
 
                 break;
             }
 
             if (j + 1 == keyframes_back) {
-                interpolated_frames[i] = b;
+                interpolated_frames[i] = b_frame;
 
                 break;
             }
@@ -84,12 +94,14 @@ void Animation::resample(uint64_t start, uint64_t end, uint64_t frame_length) {
 }
 
 void Animation::update(Scene& scene, Threads& threads) const {
-    Keyframe const* interpolated = &keyframes_[num_keyframes_];
+    math::Transformation const* interpolated = &frames_[num_keyframes_];
 
     scene.prop_set_frames(entity_, interpolated);
 
     if (shape::Morphable* morphable = scene.prop_shape(entity_)->morphable_shape(); morphable) {
-        morphable->morph(interpolated, scene.num_interpolation_frames(), threads);
+        Morphing const* im = &morphings_[num_keyframes_];
+
+        morphable->morph(im, scene.num_interpolation_frames(), threads);
     }
 }
 
