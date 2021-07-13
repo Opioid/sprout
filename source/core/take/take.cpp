@@ -1,4 +1,5 @@
 #include "take.hpp"
+#include "base/math/vector3.inl"
 #include "base/memory/array.inl"
 #include "base/thread/thread_pool.hpp"
 #include "exporting/exporting_sink.hpp"

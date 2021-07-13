@@ -134,7 +134,7 @@ const ms = average(mu_s * w); float const mn = average(mu_n * w); float const c 
         ws = (mu_s / (mt * ps));
         wn = (mu_n / (mt * pn));
 }
-*/
+
 static inline void avg_history_probabilities(float mt, float3_p mu_s, float3_p mu_n, float3_p w,
                                              float& ps, float& pn, float3& ws, float3& wn) {
     float const ms = average(mu_s * w);
@@ -147,7 +147,7 @@ static inline void avg_history_probabilities(float mt, float3_p mu_s, float3_p m
     ws = (mu_s / (mt * ps));
     wn = (mu_n / (mt * pn));
 }
-/*
+
 static inline void avg_history_probabilities(float mt,
                                                                                          float3
 const& mu_s, float3_p mu_n, float3_p w, float& pn, float3& wn) { float const ms =

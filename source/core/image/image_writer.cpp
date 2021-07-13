@@ -1,4 +1,5 @@
 #include "image_writer.hpp"
+#include "base/math/vector3.inl"
 #include "channels.hpp"
 
 namespace image {

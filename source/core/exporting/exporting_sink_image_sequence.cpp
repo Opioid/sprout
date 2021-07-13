@@ -1,4 +1,5 @@
 #include "exporting_sink_image_sequence.hpp"
+#include "base/math/vector3.inl"
 #include "base/string/string.hpp"
 #include "image/image_writer.hpp"
 

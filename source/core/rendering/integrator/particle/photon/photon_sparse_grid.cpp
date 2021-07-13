@@ -317,11 +317,13 @@ uint32_t Sparse_grid::reduce_and_move(Photon* photons, float merge_radius, uint3
     return comp_num_photons;
 }
 
+/*
 static inline float cone_filter(float squared_distance, float inv_squared_radius) {
     float const s = 1.f - squared_distance * inv_squared_radius;
 
     return s * s;
 }
+*/
 
 static inline float conely_filter(float squared_distance, float inv_squared_radius) {
     float const s = 1.f - squared_distance * inv_squared_radius;
@@ -599,12 +601,12 @@ void Sparse_grid::adjacent_cells(float3_p v, float2 cell_bound, Adjacency& adjac
     uint8_t    adjacents;
     int3 const c = map3(v, cell_bound, adjacents);
 
-    int32_t const ic = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
+    // int32_t const ic = (c[2] * dimensions_[1] + c[1]) * dimensions_[0] + c[0];
 
     adjacency = adjacencies_[adjacents];
 
     for (uint32_t i = 0; i < adjacency.num_cells; ++i) {
-        int2 const cells = adjacency.cells[i];
+        // int2 const cells = adjacency.cells[i];
 
         adjacency.cells[i][0] = 0;
         adjacency.cells[i][1] = 0;

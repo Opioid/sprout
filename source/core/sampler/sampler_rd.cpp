@@ -17,6 +17,7 @@ static inline float r1(float seed, float n) {
     return frac(seed + a1 * n);
 }
 
+/*
 static inline float2 r2(float2 seed, float n) {
     static float constexpr g = 1.32471795724474602596090885447809f;
 
@@ -24,7 +25,7 @@ static inline float2 r2(float2 seed, float n) {
     static float constexpr a2 = 1.f / (g * g);
 
     return float2(frac(seed[0] + a1 * n), frac(seed[1] + a2 * n));
-}
+}*/
 
 static inline float2 r2i(float2 seed, uint32_t n) {
     // https://www.shadertoy.com/view/4dtBWH

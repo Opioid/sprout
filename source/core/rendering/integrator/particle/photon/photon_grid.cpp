@@ -291,11 +291,13 @@ uint32_t Grid::reduce_and_move(Photon* photons, float merge_radius, uint32_t* nu
     return comp_num_photons;
 }
 
+/*
 static inline float cone_filter(float squared_distance, float inv_squared_radius) {
     float const s = 1.f - squared_distance * inv_squared_radius;
 
     return s * s;
 }
+*/
 
 static inline float conely_filter(float squared_distance, float inv_squared_radius) {
     float const s = 1.f - squared_distance * inv_squared_radius;

@@ -1,6 +1,7 @@
 #include "any_key.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/debug/assert.hpp"
+#include "base/math/vector3.inl"
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"

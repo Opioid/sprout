@@ -1,4 +1,5 @@
 #include "operator_helper.hpp"
+#include "base/math/vector3.inl"
 #include "base/string/string.hpp"
 #include "core/image/encoding/exr/exr_writer.hpp"
 #include "core/image/encoding/png/png_writer.hpp"

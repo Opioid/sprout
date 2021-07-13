@@ -264,24 +264,8 @@ void write_histogram(Item const& item, Scene const& scene, std::ostream& stream)
     }
 }
 
-static inline float linear_to_gamma_sRGB_unbounded(float c) {
-    if (c <= 0.f) {
-        return 0.f;
-    }
-
-    if (c < 0.0031308f) {
-        return 12.92f * c;
-    }
-
-    if (c < 1.f) {
-        return 1.055f * std::pow(c, 0.41666f) - 0.055f;
-    }
-
-    return std::pow(c, 0.41666f);
-}
-
 float luminance_gamma_sRGB(float3_p linear) {
-    return /*linear_to_gamma_sRGB_unbounded*/ (spectrum::luminance(linear));
+    return spectrum::luminance(linear);
 }
 
 }  // namespace op
