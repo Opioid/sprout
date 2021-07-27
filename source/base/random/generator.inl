@@ -43,7 +43,6 @@ inline uint32_t Generator::advance_pcg32() {
 
     // Calculate output function (XSH RR), uses old state for max ILP
     uint32_t const xrs = uint32_t(((old >> 18ull) ^ old) >> 27ull);
-
     uint32_t const rot = uint32_t(old >> 59ull);
 
     return (xrs >> rot) | (xrs << ((0u - rot) & 31u));

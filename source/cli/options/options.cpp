@@ -114,8 +114,10 @@ Usage:
   sprout [OPTION...]
 
   -h, --help                     Print help.
-  -f, --frame       int          Index of the frame to render.
-  -n, --num-frames  int          Index of the frame to render.
+  -f, --frame       int          Index of the first frame to render.
+                                 The default value is 0.
+  -n, --num-frames  int          Number of frames to render.
+                                 The default value is 1.
   -i, --input       file/string  Path of the take file to render,
                                  or json-string describing the take.
   -m, --mount       path+        Specifies a mount point for the data directory.
@@ -123,7 +125,8 @@ Usage:
   -t, --threads     int          Specifies the number of threads used by sprout.
                                  0 creates one thread for each logical CPU.
                                  -x creates as many threads as the number of
-                                 logical CPUs minus x. The default value is 0.
+                                 logical CPUs minus x.
+                                 The default value is 0.
   -q, --quit                     Automatically quit sprout after rendering.
       --no-tex                   Disables loading of all textures
       --no-tex-dwim              Disables loading of most textures)";

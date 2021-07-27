@@ -73,7 +73,7 @@ bool Sphere::intersect(Ray& ray, Transformation const& trafo, Worker& /*worker*/
 
     float const discriminant = radius * radius - dot(remedy_term, remedy_term);
 
-    if (discriminant >= 0.f) {
+    if (discriminant > 0.f) {
         float const dist = std::sqrt(discriminant);
         float const t0   = b - dist;
 
