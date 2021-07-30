@@ -40,7 +40,7 @@ material::Sample const& Glass_rough::sample(float3_p wo, Renderstate const& rs,
         alpha = alpha_;
     }
 
-    sample.set_common(rs, wo, refraction_color_, float3(0.f), float2(alpha));
+    sample.set_common(rs, wo, float3(1.f), float3(0.f), float2(alpha));
     sample.set(ior_, rs.ior());
 
     return sample;
@@ -52,10 +52,6 @@ void Glass_rough::set_normal_map(Texture const& normal_map) {
 
 void Glass_rough::set_roughness_map(Texture const& roughness_map) {
     roughness_map_ = roughness_map;
-}
-
-void Glass_rough::set_refraction_color(float3_p color) {
-    refraction_color_ = color;
 }
 
 void Glass_rough::set_roughness(float roughness) {

@@ -17,7 +17,6 @@ class Glass_rough : public Material {
     void set_normal_map(Texture const& normal_map);
     void set_roughness_map(Texture const& roughness_map);
 
-    void set_refraction_color(float3_p color);
     void set_roughness(float roughness);
 
     static size_t sample_size();
@@ -25,8 +24,6 @@ class Glass_rough : public Material {
   protected:
     Texture normal_map_;
     Texture roughness_map_;
-
-    float3 refraction_color_;
 
     float alpha_;
 };
