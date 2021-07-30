@@ -118,7 +118,7 @@ void Srgb::to_sRGB(Float4 const& image, int32_t begin, int32_t end) {
 
 #ifdef SU_ACESCG
 static inline float3 AP1_to_gamma_sRGB(float3 c) {
-    return min(spectrum::AP1_to_sRGB(spectrum::linear_to_gamma_sRGB(c)), 1.f);
+    return spectrum::linear_to_gamma_sRGB(spectrum::AP1_to_sRGB(c));
 }
 
 void Srgb::ACEScg_to_sRGB(Float4 const& image, int32_t begin, int32_t end) {

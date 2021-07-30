@@ -5,9 +5,7 @@
 
 namespace scene {
 
-namespace entity {
 struct Composed_transformation;
-}
 
 struct Ray;
 
@@ -18,7 +16,7 @@ struct Sample_to;
 
 namespace testing {
 
-bool check(Intersection const& isec, entity::Composed_transformation const& trafo, Ray const& ray);
+bool check(Intersection const& isec, Composed_transformation const& trafo, Ray const& ray);
 
 bool check(const Sample_to& sample);
 

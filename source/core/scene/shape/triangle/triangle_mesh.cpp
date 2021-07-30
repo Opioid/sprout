@@ -290,13 +290,13 @@ float4_p Part::cone(uint32_t variant) const {
 }
 
 AABB const& Part::light_aabb(uint32_t light) const {
-    SOFT_ASSERT(light < num_triangles);
+    SOFT_ASSERT(light < num_triangles_);
 
     return aabbs_[light];
 }
 
 float4_p Part::light_cone(uint32_t light) const {
-    SOFT_ASSERT(light < num_triangles);
+    SOFT_ASSERT(light < num_triangles_);
 
     return cones_[light];
 }
@@ -306,7 +306,7 @@ bool Part::light_two_sided(uint32_t variant, uint32_t /*light*/) const {
 }
 
 float Part::light_power(uint32_t variant, uint32_t light) const {
-    SOFT_ASSERT(light < num_triangles);
+    SOFT_ASSERT(light < num_triangles_);
 
     auto const& v = variants_[variant];
 
