@@ -169,8 +169,8 @@ Split_candidate Kernel::splitting_plane(References const& references, AABB const
 
     auto const& sp = split_candidates_[sc];
 
-    exhausted = (sp.aabb_0() == aabb && num_references == sp.num_side_0()) ||
-                (sp.aabb_1() == aabb && num_references == sp.num_side_1());
+    exhausted = (sp.aabb_0().covers(aabb) && num_references == sp.num_side_0()) ||
+                (sp.aabb_1().covers(aabb) && num_references == sp.num_side_1());
 
     return sp;
 }

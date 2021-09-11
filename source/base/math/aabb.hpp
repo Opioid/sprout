@@ -63,7 +63,7 @@ struct AABB {
     void clip_min(float d, uint8_t axis);
     void clip_max(float d, uint8_t axis);
 
-    bool operator==(AABB const& other) const;
+    bool covers(AABB const& other) const;
 
     float3 bounds[2];
 };

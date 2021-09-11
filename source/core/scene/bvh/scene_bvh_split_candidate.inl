@@ -133,7 +133,6 @@ inline void Split_candidate::distribute(References const& __restrict references,
                 references1.push_back(r);
             } else {
                 references0.push_back(r.clipped_max(d_, axis_));
-
                 references1.push_back(r.clipped_min(d_, axis_));
             }
         }
