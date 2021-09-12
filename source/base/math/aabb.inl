@@ -341,8 +341,9 @@ inline void AABB::clip_max(float d, uint8_t axis) {
 }
 
 inline bool AABB::covers(AABB const& other) const {
-    return bounds[0][0] <= other.bounds[0][0] && bounds[0][1] <= other.bounds[0][1] && bounds[0][2] <= other.bounds[0][2]
-        && bounds[1][0] >= other.bounds[1][0] && bounds[1][1] >= other.bounds[1][1] && bounds[1][2] >= other.bounds[1][2];
+    return bounds[0][0] <= other.bounds[0][0] && bounds[0][1] <= other.bounds[0][1] &&
+           bounds[0][2] <= other.bounds[0][2] && bounds[1][0] >= other.bounds[1][0] &&
+           bounds[1][1] >= other.bounds[1][1] && bounds[1][2] >= other.bounds[1][2];
 }
 
 inline AABB constexpr Empty_AABB(float3(std::numeric_limits<float>::max()),

@@ -21,57 +21,63 @@ class Split_candidate;
 
 using References = memory::Array<Reference>;
 
+struct Task;
+
 class Kernel {
   public:
-    Kernel(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives,
-           uint32_t spatial_split_threshold);
+    Kernel();
+
+    Kernel(uint32_t num_slices, uint32_t sweep_threshold);
+
+    Kernel(Kernel&& other);
 
     ~Kernel();
 
-    struct Task {
-        Task();
+    struct Settings {
+        Settings(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives);
 
-        Task(Kernel* k, uint32_t rt, uint32_t d, AABB const& box, References&& refs);
+        uint32_t const num_slices_;
+        uint32_t const sweep_threshold_;
+        uint32_t const max_primitives_;
 
-        Task(Task&& other);
-
-        ~Task();
-
-        Kernel* kernel = nullptr;
-
-        uint32_t root;
-        uint32_t depth;
-
-        AABB aabb;
-
-        References references;
+        uint32_t spatial_split_threshold_;
+        uint32_t parallel_build_depth_;
     };
 
     using Tasks = std::vector<Task>;
 
     void split(uint32_t node_id, References& references, AABB const& aabb, uint32_t depth,
-               Threads& threads, Tasks& tasks);
+               Settings const& settings, Threads& threads, Tasks& tasks);
 
     Split_candidate splitting_plane(References const& references, AABB const& aabb, uint32_t depth,
-                                    bool& exhausted, Threads& threads);
+                                    Settings const& settings, bool& exhausted, Threads& threads);
 
     void assign(Node& node, References const& references);
 
-    void reserve(uint32_t num_primitives);
-
-    uint32_t const num_slices_;
-    uint32_t const sweep_threshold_;
-    uint32_t const max_primitives_;
-
-    uint32_t spatial_split_threshold_;
-
-    uint32_t parallel_build_depth_;
+    void reserve(uint32_t num_primitives, Settings const& settings);
 
     std::vector<uint32_t> reference_ids_;
 
     std::vector<Split_candidate> split_candidates_;
 
     std::vector<Node> build_nodes_;
+};
+
+struct Task {
+    Task();
+
+    Task(Kernel&& kernel, uint32_t rt, uint32_t d, AABB const& box, References&& refs);
+
+    Task(Task&& other);
+
+    Kernel kernel;
+
+    uint32_t root;
+    uint32_t depth;
+
+    AABB aabb;
+
+    References references;
 };
 
 class Builder_base : protected Kernel {
@@ -89,6 +95,8 @@ class Builder_base : protected Kernel {
     void new_node();
 
     uint32_t current_node_index() const;
+
+    Kernel::Settings settings_;
 
     uint32_t current_node_;
 

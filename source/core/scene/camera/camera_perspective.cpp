@@ -71,7 +71,7 @@ bool Perspective::generate_ray(Sample const& sample, uint32_t frame, uint32_t /*
     Transformation temp;
     auto const&    trafo = scene.prop_transformation_at(entity_, time, temp);
 
-    float3 const origin_w = trafo.object_to_world_point(origin);
+    float3 const origin_w    = trafo.object_to_world_point(origin);
     float3 const direction_w = trafo.object_to_world_vector(normalize(direction));
 
     ray = create_ray(origin_w, direction_w, time);

@@ -112,7 +112,8 @@ inline void Split_candidate::evaluate(References const& references, float aabb_s
         float const weight_0 = float(num_side_0) * aabb_0_.surface_area();
         float const weight_1 = float(num_side_1) * aabb_1_.surface_area();
 
-        float const duplication_penality = 0.125f * float(num_side_0 + num_side_1 - references.size());
+        float const duplication_penality = 0.125f *
+                                           float(num_side_0 + num_side_1 - references.size());
 
         cost_ = 2.f + (weight_0 + weight_1) / aabb_surface_area + duplication_penality;
     }
