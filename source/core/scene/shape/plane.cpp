@@ -10,6 +10,9 @@
 #include "shape_intersection.hpp"
 #include "shape_sample.hpp"
 
+#include <iostream>
+#include "base/math/print.inl"
+
 namespace scene::shape {
 
 Plane::Plane() : Shape(Properties(Property::Analytical)) {}
@@ -30,6 +33,9 @@ bool Plane::intersect(Ray& ray, Transformation const&      trafo, Worker& /*work
         float3 const k = p - trafo.position;
         float3 const t = -trafo.rotation.r[0];
         float3 const b = -trafo.rotation.r[1];
+
+
+      //  std::cout << trafo.position <<  std::endl;
 
         isec.p     = p;
         isec.t     = t;
@@ -67,7 +73,7 @@ bool Plane::visibility(Ray const& ray, Transformation const& trafo, uint32_t ent
     if (hit_t > ray.min_t() && hit_t < ray.max_t()) {
         float3 const p = ray.point(hit_t);
         float3 const k = p - trafo.position;
-        float2 const uv(dot(trafo.rotation.r[0], k), dot(trafo.rotation.r[1], k));
+        float2 const uv(-dot(trafo.rotation.r[0], k), -dot(trafo.rotation.r[1], k));
 
         return worker.scene().prop_material(entity, 0)->visibility(ray.direction, n, uv, filter,
                                                                    worker, vis);

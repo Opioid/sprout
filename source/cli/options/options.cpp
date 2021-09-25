@@ -128,8 +128,8 @@ Usage:
                                  logical CPUs minus x.
                                  The default value is 0.
   -q, --quit                     Automatically quit sprout after rendering.
-      --no-tex                   Disables loading of all textures
-      --no-tex-dwim              Disables loading of most textures)";
+      --no-tex                   Disables loading of all textures.
+      --no-tex-dwim              Disables loading of most textures.)";
 
     logging::info(text);
 }

@@ -11,6 +11,8 @@
 #include "triangle_bvh_helper.hpp"
 #include "triangle_bvh_tree.inl"
 
+#include <iostream>
+
 namespace scene::shape::triangle::bvh {
 
 Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold, uint32_t max_primitives)
@@ -64,6 +66,8 @@ void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles,
     uint32_t current_triangle = 0;
     new_node();
     serialize(0, 0, triangles, vertices, tree, current_triangle);
+
+    std::cout << "before/after " << num_triangles << "/" << reference_ids_.size() << std::endl;
 }
 
 void Builder_SAH::build(Tree& tree, uint32_t num_triangles, Triangles triangles, Vertices vertices,

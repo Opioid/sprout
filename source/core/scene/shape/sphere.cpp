@@ -147,12 +147,12 @@ bool Sphere::visibility(Ray const& ray, Transformation const& trafo, uint32_t en
         float const t0   = b - dist;
 
         if (t0 > ray.min_t() && t0 < ray.max_t()) {
-            float3 n = normalize(ray.point(t0) - trafo.position);
+            float3 const n = normalize(ray.point(t0) - trafo.position);
 
             float3 xyz = transform_vector_transposed(trafo.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+            float2 const uv = float2((-std::atan2(xyz[0], xyz[2]) + Pi) * (Pi_inv * 0.5f),
                                std::acos(xyz[1]) * Pi_inv);
 
             return worker.scene().prop_material(entity, 0)->visibility(ray.direction, n, uv, filter,
@@ -162,12 +162,12 @@ bool Sphere::visibility(Ray const& ray, Transformation const& trafo, uint32_t en
         float const t1 = b + dist;
 
         if (t1 > ray.min_t() && t1 < ray.max_t()) {
-            float3 n = normalize(ray.point(t1) - trafo.position);
+            float3 const n = normalize(ray.point(t1) - trafo.position);
 
             float3 xyz = transform_vector_transposed(trafo.rotation, n);
             xyz        = normalize(xyz);
 
-            float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (Pi_inv * 0.5f) + 0.5f,
+            float2 const uv = float2((-std::atan2(xyz[0], xyz[2]) + Pi) * (Pi_inv * 0.5f),
                                std::acos(xyz[1]) * Pi_inv);
 
             return worker.scene().prop_material(entity, 0)->visibility(ray.direction, n, uv, filter,

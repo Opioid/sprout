@@ -225,7 +225,7 @@ static Vector3<T> lerp(Vector3<T> a, Vector3<T> b, T t) {
 
 template <typename T>
 static Vector3<T> reflect(Vector3<T> normal, Vector3<T> v) {
-    return T(2) * dot(v, normal) * normal - v;
+    return (T(2) * dot(v, normal)) * normal - v;
 }
 
 template <typename T>
