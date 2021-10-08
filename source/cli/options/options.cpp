@@ -78,7 +78,7 @@ bool handle(std::string const& command, std::string const& parameter, Options& r
         result.no_tex = true;
     } else if ("no-tex-dwim" == command) {
         result.no_tex_dwim = true;
-    } else if ("debug-material" == command) {
+    } else if ("debug-mat" == command) {
         result.debug_material = true;
     } else {
         logging::warning("Option %S does not exist.", command);

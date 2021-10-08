@@ -79,10 +79,9 @@ static inline bool prop_image_sample(uint32_t prop, uint32_t part, float area, f
                                      float3_p n, Transformation const& trafo, bool two_sided,
                                      bool total_sphere, Sampler& sampler, uint32_t sampler_d,
                                      Worker& worker, Sample_to& result) {
-    auto const material = worker.scene().prop_material(prop, part);
-
     float2 const s2d = sampler.sample_2D(worker.rng(), sampler_d);
 
+    auto const material = worker.scene().prop_material(prop, part);
     auto const rs = material->radiance_sample(float3(s2d, 0.f));
     if (0.f == rs.pdf()) {
         return false;
