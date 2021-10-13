@@ -38,7 +38,7 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
         return nullptr;
     }
 
-    std::string const previous_name = previous_name_;
+    bool const same_file = previous_name_ == resolved_name;
 
     previous_name_ = resolved_name;
 
@@ -55,7 +55,7 @@ Image* Provider::load(std::string const& filename, Variants const& options, Reso
 
         bool const invert = options.query("invert", false);
 
-        if (previous_name == resolved_name) {
+        if (same_file) {
             return png_reader_.create_from_buffer(swizzle, invert);
         }
 
