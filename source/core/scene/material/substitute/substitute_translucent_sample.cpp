@@ -68,7 +68,7 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
                                                          result);
 
             // This is the least attempt we can do at energy conservation
-            float const n_dot_wo = layer_.clamp_n_dot(wo_);
+            float const n_dot_wo = layer_.clamp_abs_n_dot(wo_);
 
             float const f = base_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
@@ -79,7 +79,6 @@ void Sample_translucent::sample(Sampler& sampler, RNG& rng, bxdf::Sample& result
             float3 const attenuation = rendering::attenuation(approx_distance, attenuation_);
 
             result.reflection *= (t * n_dot_wi * (1.f - f)) * attenuation;
-
             result.pdf *= t;
         } else {
             float const o = 1.f - t;
