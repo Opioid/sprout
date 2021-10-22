@@ -22,7 +22,7 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
 
     bool color = false;
 
-    if (Usage::Color == usage) {
+    if (Usage::Color == usage || Usage::Emission == usage) {
         if (Swizzle::Undefined == swizzle) {
             swizzle = Swizzle::XYZ;
         }
@@ -87,7 +87,7 @@ Texture Provider::load(std::string const& filename, Variants const& options, flo
     }
 
     if (Image::Type::Byte3 == image->type()) {
-        if (Usage::Color == usage) {
+        if (Usage::Color == usage || Usage::Emission == usage) {
             return Texture(Texture::Type::Byte3_sRGB, image_id, scale);
         }
 

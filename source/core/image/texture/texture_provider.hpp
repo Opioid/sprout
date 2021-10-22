@@ -20,7 +20,7 @@ class Provider {
     using Resources = resource::Manager;
     using Variants  = memory::Variant_map;
 
-    enum class Usage { Undefined, Color, Color_with_alpha, Normal, Roughness, Surface, Mask };
+    enum class Usage { Undefined, Color, Color_with_alpha, Emission, Normal, Roughness, Surface, Mask };
 
     static Texture load(std::string const& filename, Variants const& options, float2 scale,
                         Resources& resources);
