@@ -27,9 +27,6 @@ class Clearcoat {
     Result evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
                     bool avoid_caustics) const;
 
-    Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
-                      bool avoid_caustics) const;
-
     void reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
                  float wo_dot_h, Layer const& layer, float3& attenuation,
                  bxdf::Sample& result) const;
@@ -58,9 +55,6 @@ class Thinfilm {
   protected:
     Result evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
                     bool avoid_caustics) const;
-
-    Result evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, Layer const& layer,
-                      bool avoid_caustics) const;
 
     void reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
                  float wo_dot_h, Layer const& layer, float3& attenuation,

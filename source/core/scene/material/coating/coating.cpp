@@ -65,30 +65,6 @@ Result Clearcoat::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
     return {ep * weight_ * n_dot_wi * ggx.reflection, attenuation, fresnel_result[0], ggx.pdf()};
 }
 
-Result Clearcoat::evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                             Layer const& layer, bool avoid_caustics) const {
-    float const n_dot_wi = layer.clamp_n_dot(wi);
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo);
-
-    float3 const attenuation = Clearcoat::attenuation(n_dot_wi, n_dot_wo);
-
-    if (avoid_caustics && alpha_ <= ggx::Min_alpha) {
-        return {float3(0.f), attenuation, 0.f, 0.f};
-    }
-
-    float const n_dot_h = saturate(dot(layer.n_, h));
-
-    fresnel::Schlick const schlick(f0_);
-
-    float3     fresnel_result;
-    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, schlick,
-                                          fresnel_result);
-
-    float const ep = ggx::ilm_ep_dielectric(n_dot_wo, alpha_, ior_);
-
-    return {ep * weight_ * ggx.reflection, attenuation, fresnel_result[0], ggx.pdf()};
-}
-
 void Clearcoat::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
                         float wo_dot_h, Layer const& layer, float3& attenuation,
                         bxdf::Sample& result) const {
@@ -148,24 +124,6 @@ Result Thinfilm::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, 
     float3 const attenuation = (1.f - fresnel);
 
     return {n_dot_wi * ggx.reflection, attenuation, max_component(fresnel), ggx.pdf()};
-}
-
-Result Thinfilm::evaluate_b(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
-                            Layer const& layer, bool /*avoid_caustics*/) const {
-    float const n_dot_wi = layer.clamp_n_dot(wi);
-    float const n_dot_wo = layer.clamp_abs_n_dot(wo);
-
-    float const n_dot_h = saturate(dot(layer.n_, h));
-
-    const fresnel::Thinfilm thinfilm(1.f, ior_, ior_internal_, thickness_);
-
-    float3     fresnel;
-    auto const ggx = ggx::Iso::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, alpha_, thinfilm,
-                                          fresnel);
-
-    float3 const attenuation = (1.f - fresnel);
-
-    return {ggx.reflection, attenuation, max_component(fresnel), ggx.pdf()};
 }
 
 void Thinfilm::reflect(float3_p wo, float3_p h, float n_dot_wo, float n_dot_h, float wi_dot_h,
