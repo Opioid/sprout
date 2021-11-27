@@ -7,6 +7,10 @@
 #include "image/texture/texture.inl"
 #include "scene/scene_renderstate.hpp"
 
+//#include "base/spectrum/rgb.hpp"
+//#include "base/encoding/encoding.inl"
+//#include "image/encoding/png/png_writer.hpp"
+
 namespace scene::material {
 
 char const* Material::identifier() {
@@ -146,7 +150,7 @@ void Material::init_rainbow() {
 
         temp.set_bin(i, 1.f);
 
-        float3 const rgb = saturate(spectrum::XYZ_to_AP1(temp.normalized_XYZ()));
+        float3 const rgb = spectrum::XYZ_to_AP1(temp.normalized_XYZ());
 
         rainbow_[i] = rgb;
 
@@ -157,7 +161,7 @@ void Material::init_rainbow() {
 
     // now we hack-normalize it
     for (uint32_t i = 0; i < Num_bands; ++i) {
-        rainbow_[i] = n * rainbow_[i];
+        rainbow_[i] = saturate(n * rainbow_[i]);
     }
 
     rainbow_[Num_bands] = rainbow_[Num_bands - 1];
@@ -174,7 +178,7 @@ void Material::init_rainbow() {
     for (int32_t x = 0; x < d[0]; ++x) {
         float const wl = Spectrum::start_wavelength() + float(x) * wl_range;
         byte3 const color =
-        encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(spectrum_at_wavelength(wl, 1.f)));
+        encoding::float_to_unorm(spectrum::linear_to_gamma_sRGB(spectrum::AP1_to_sRGB(spectrum_at_wavelength(wl, 1.f))));
 
         for (int32_t y = 0; y < d[1]; ++y) {
             image.store(x, y, color);
