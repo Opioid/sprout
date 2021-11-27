@@ -21,9 +21,8 @@ using Light_type = scene::light::Light::Type;
 
 static Provider provider;
 
-void init(scene::Loader& loader, material::Provider& material_provider) {
+void init(scene::Loader& loader) {
     provider.set_scene_loader(loader);
-    provider.set_material_provider(material_provider);
 
     loader.register_extension_provider("Sky", &provider);
 }
@@ -32,10 +31,6 @@ Provider::~Provider() = default;
 
 void Provider::set_scene_loader(Loader& loader) {
     scene_loader_ = &loader;
-}
-
-void Provider::set_material_provider(material::Provider& material_provider) {
-    material_provider_ = &material_provider;
 }
 
 uint32_t Provider::create_extension(json::Value const& value, Scene& scene, Resources& resources) {
@@ -90,7 +85,6 @@ uint32_t Provider::create_extension(json::Value const& value, Scene& scene, Reso
     scene.create_light(sun_prop);
 
     return scene.create_extension(sky);
-    ;
 }
 
 }  // namespace procedural::sky

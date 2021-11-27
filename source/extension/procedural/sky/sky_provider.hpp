@@ -4,18 +4,12 @@
 #include "core/scene/extension_provider.hpp"
 
 namespace scene {
-
 class Loader;
-
-namespace material {
-class Provider;
-}
-
 }  // namespace scene
 
 namespace procedural::sky {
 
-void init(scene::Loader& loader, scene::material::Provider& material_provider);
+void init(scene::Loader& loader);
 
 class Provider final : public scene::Extension_provider {
   public:
@@ -23,15 +17,11 @@ class Provider final : public scene::Extension_provider {
 
     void set_scene_loader(scene::Loader& loader);
 
-    void set_material_provider(scene::material::Provider& provider);
-
     uint32_t create_extension(json::Value const& value, scene::Scene& scene,
                               Resources& resources) final;
 
   private:
     scene::Loader* scene_loader_ = nullptr;
-
-    scene::material::Provider* material_provider_ = nullptr;
 };
 
 }  // namespace procedural::sky

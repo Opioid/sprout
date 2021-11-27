@@ -141,7 +141,7 @@ int32_t su_init(bool progressive) {
 
     engine = new Engine(progressive);
 
-    procedural::sky::init(engine->scene_loader, engine->material_provider);
+    procedural::sky::init(engine->scene_loader);
 
     return 0;
 }

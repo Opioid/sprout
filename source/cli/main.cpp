@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
     scene::Loader scene_loader(resources, material_provider.create_fallback_material());
 
     procedural::mesh::init(scene_loader);
-    procedural::sky::init(scene_loader, material_provider);
+    procedural::sky::init(scene_loader);
 
     Scene scene(image_resources, material_resources, shape_resources, scene_loader.null_shape());
 
