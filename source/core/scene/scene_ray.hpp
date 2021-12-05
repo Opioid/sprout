@@ -19,8 +19,6 @@ struct Ray : public ray {
 };
 
 struct Ray_dif {
-    float3 origin;
-    float3 direction;
     float3 x_origin;
     float3 x_direction;
     float3 y_origin;

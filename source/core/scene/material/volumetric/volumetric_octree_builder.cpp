@@ -171,7 +171,7 @@ void Octree_builder::Splitter::split(Build_node* node, Box const& box, Texture c
             max_density = 0.f;
         }
 
-        CM cm(ccs[0]);
+        CM const cm(ccs[0]);
 
         float const minorant_mu_a = min_density * cm.minorant_mu_a;
         float const minorant_mu_s = min_density * cm.minorant_mu_s;

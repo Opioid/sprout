@@ -166,7 +166,7 @@ Ray_dif Perspective::calculate_ray_differential(float3_p p, uint64_t time,
     float3 const x_dir_w = normalize(dir_w + ss * d_x_w);
     float3 const y_dir_w = normalize(dir_w + ss * d_y_w);
 
-    return {p_w, dir_w, p_w, x_dir_w, p_w, y_dir_w};
+    return {p_w, x_dir_w, p_w, y_dir_w};
 }
 
 Frustum Perspective::frustum() const {

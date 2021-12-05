@@ -121,7 +121,7 @@ template <typename T, uint32_t X, uint32_t Y, uint32_t Z>
 T Interpolated_function_3D_N<T, X, Y, Z>::operator()(float x, float y, float z) const {
     x = std::min(x, 1.f);
     y = std::min(y, 1.f);
-    z = std::min(y, 1.f);
+    z = std::min(z, 1.f);
 
     float3 const o = float3(x, y, z) * float3(X - 1, Y - 1, Z - 1);
 

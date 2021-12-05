@@ -7,7 +7,7 @@
 namespace scene::material {
 
 static inline float van_de_hulst(float g, float gs) {
-    return (1.f - g) / (1 - gs);
+    return (1.f - g) / (1.f - gs);
 }
 
 static inline CC constexpr operator*(float s, CC const& cc) {
