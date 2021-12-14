@@ -160,8 +160,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& isec, Worker& worker,
                 if (0 == ray.depth) {
                     // This is the direct eye-light connection for the volume case.
                     result += vli;
-                } else {
-                    result += throughput * vli;
                 }
 
                 SOFT_ASSERT(all_finite_and_positive(result));

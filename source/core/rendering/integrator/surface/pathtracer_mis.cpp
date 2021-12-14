@@ -348,7 +348,7 @@ float3 Pathtracer_MIS::evaluate_light(Light const& light, float light_weight, Ra
 
 float3 Pathtracer_MIS::connect_light(Ray const& ray, float3_p geo_n, Intersection const& isec,
                                      Bxdf_sample sample_result, Path_state state, Filter filter,
-                                     Worker& worker, bool& pure_emissive) {
+                                     Worker& worker, bool& pure_emissive) const {
     uint32_t const light_id = isec.light_id(worker);
     if (!Light::is_area_light(light_id)) {
         pure_emissive = false;

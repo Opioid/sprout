@@ -184,11 +184,11 @@ Typed_sparse_image<T>::Typed_sparse_image(Description const& description)
 
     num_cells_ += math::min(d - (num_cells_ << Log2_cell_dim), 1);
 
-    int32_t const cell_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
+    int32_t const cells_len = num_cells_[0] * num_cells_[1] * num_cells_[2];
 
-    cells_ = new Cell[uint32_t(cell_len)];
+    cells_ = new Cell[uint32_t(cells_len)];
 
-    for (int32_t i = 0; i < cell_len; ++i) {
+    for (int32_t i = 0; i < cells_len; ++i) {
         cells_[i].data  = nullptr;
         cells_[i].value = T(0);
     }

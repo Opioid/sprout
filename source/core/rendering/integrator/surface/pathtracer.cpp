@@ -128,7 +128,7 @@ float4 Pathtracer::integrate(Ray& ray, Intersection& isec, Worker& worker, AOV* 
             break;
         }
 
-        if (ray.depth > settings_.min_bounces) {
+        if (ray.depth >= settings_.min_bounces) {
             if (russian_roulette(throughput, sampler_.sample_1D(worker.rng()))) {
                 break;
             }

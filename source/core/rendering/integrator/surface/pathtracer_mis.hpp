@@ -62,7 +62,7 @@ class alignas(64) Pathtracer_MIS final : public Integrator {
 
     float3 connect_light(Ray const& ray, float3_p geo_n, Intersection const& isec,
                          Bxdf_sample sample_result, Path_state state, Filter filter, Worker& worker,
-                         bool& pure_emissive);
+                         bool& pure_emissive) const;
 
     float connect_light_volume(Ray const& ray, float3_p geo_n, Intersection const& isec,
                                float bxdf_pdf, Path_state state, Worker& worker) const;

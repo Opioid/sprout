@@ -151,7 +151,7 @@ float3 Sky_baked_material::prepare_sampling(Shape const&          shape, uint32_
 
                     cache.store(x, y, packed_float3(li));
 
-                    float const uv_weight = shape.uv_weight(float2(u, v));
+                    float const uv_weight = shape.uv_weight(uv);
 
                     float3 const wli = uv_weight * li;
 
