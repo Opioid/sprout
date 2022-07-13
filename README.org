@@ -1,5 +1,7 @@
 * sprout
 
+NOTE: The development of this renderer lives on in a different code-base now: [[https://github.com/Opioid/zyg][zyg]]!
+
 [[https://opioid.github.io/sprout/images/san_miguel_720.jpg]]
 [[http://casual-effects.com/data/index.html][San Miguel 2.0]]
 
